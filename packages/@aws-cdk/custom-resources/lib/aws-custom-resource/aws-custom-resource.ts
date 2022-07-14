@@ -7,10 +7,6 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
  */
@@ -199,6 +195,13 @@ export class AwsCustomResourcePolicy {
    *
    * Each SDK call with be translated to an IAM Policy Statement in the form of: `call.service:call.action` (e.g `s3:PutObject`).
    *
+   * This policy generator assumes the IAM policy name has the same name as the API
+   * call. This is true in 99% of cases, but there are exceptions (for example,
+   * S3's `PutBucketLifecycleConfiguration` requires
+   * `s3:PutLifecycleConfiguration` permissions, Lambda's `Invoke` requires
+   * `lambda:InvokeFunction` permissions). Use `fromStatements` if you want to
+   * do a call that requires different IAM action names.
+   *
    * @param options options for the policy generation
    */
   public static fromSdkCalls(options: SdkCallsPolicyOptions) {
@@ -263,7 +266,7 @@ export interface AwsCustomResourceProps {
   readonly policy: AwsCustomResourcePolicy;
 
   /**
-   * The execution role for the Lambda function implementing this custom
+   * The execution role for the singleton Lambda function implementing this custom
    * resource provider. This role will apply to all `AwsCustomResource`
    * instances in the stack. The role must be assumable by the
    * `lambda.amazonaws.com` service principal.
@@ -273,14 +276,14 @@ export interface AwsCustomResourceProps {
   readonly role?: iam.IRole;
 
   /**
-   * The timeout for the Lambda function implementing this custom resource.
+   * The timeout for the singleton Lambda function implementing this custom resource.
    *
    * @default Duration.minutes(2)
    */
   readonly timeout?: cdk.Duration
 
   /**
-   * The number of days log events of the Lambda function implementing
+   * The number of days log events of the singleton Lambda function implementing
    * this custom resource are kept in CloudWatch Logs.
    *
    * @default logs.RetentionDays.INFINITE
@@ -298,7 +301,8 @@ export interface AwsCustomResourceProps {
   readonly installLatestAwsSdk?: boolean;
 
   /**
-   * A name for the Lambda function implementing this custom resource.
+   * A name for the singleton Lambda function implementing this custom resource.
+   * The function name will remain the same after the first AwsCustomResource is created in a stack.
    *
    * @default - AWS CloudFormation generates a unique physical ID and uses that
    * ID for the function's name. For more information, see Name Type.
@@ -307,13 +311,14 @@ export interface AwsCustomResourceProps {
 }
 
 /**
- * Defines a custom resource that is materialized using specific AWS API calls.
+ * Defines a custom resource that is materialized using specific AWS API calls. These calls are created using
+ * a singleton Lambda function.
  *
  * Use this to bridge any gap that might exist in the CloudFormation Coverage.
  * You can specify exactly which calls are invoked for the 'CREATE', 'UPDATE' and 'DELETE' life cycle events.
  *
  */
-export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
+export class AwsCustomResource extends Construct implements iam.IGrantable {
 
   private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
 
@@ -358,8 +363,10 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
     this.props = props;
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'runtime')),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
+        exclude: ['*.ts'],
+      }),
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS',

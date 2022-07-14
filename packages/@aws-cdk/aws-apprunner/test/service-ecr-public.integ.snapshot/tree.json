@@ -1,0 +1,78 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "integ-apprunner-ecr-public": {
+        "id": "integ-apprunner-ecr-public",
+        "path": "integ-apprunner-ecr-public",
+        "children": {
+          "Service1": {
+            "id": "Service1",
+            "path": "integ-apprunner-ecr-public/Service1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner-ecr-public/Service1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppRunner::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "sourceConfiguration": {
+                      "authenticationConfiguration": {},
+                      "imageRepository": {
+                        "imageConfiguration": {
+                          "port": "8000"
+                        },
+                        "imageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+                        "imageRepositoryType": "ECR_PUBLIC"
+                      }
+                    },
+                    "instanceConfiguration": {},
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apprunner.CfnService",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apprunner.Service",
+              "version": "0.0.0"
+            }
+          },
+          "URL1": {
+            "id": "URL1",
+            "path": "integ-apprunner-ecr-public/URL1",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

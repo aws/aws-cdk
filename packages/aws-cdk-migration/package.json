@@ -34,12 +34,12 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "glob": "^7.2.0",
+    "glob": "^7.2.3",
     "typescript": "~3.9.10"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.5.2",
     "@types/node": "^10.17.60",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0"
@@ -52,9 +52,10 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "stability": "experimental",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "publishConfig": {
-    "tag": "latest"
-  }
+    "tag": "next"
+  },
+  "private": true
 }

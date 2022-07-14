@@ -1,0 +1,13 @@
+{
+  "version": "v1.0.0",
+  "testCases": {
+    "enableLookups": true,
+    "xxxxx.test-with-snapshot-assets-diff": {
+      "stacks": ["test-stack"],
+      "diffAssets": true,
+      "allowDestroy": [
+        "AWS::IAM::Role"
+      ]
+    }
+  }
+}

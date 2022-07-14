@@ -6,7 +6,7 @@ import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi } from './restapi';
 import { Stage } from './stage';
-import { validateInteger } from './util';
+import { validateDouble, validateInteger } from './util';
 
 /**
  * Container for defining throttling parameters to API stages or methods.
@@ -316,7 +316,7 @@ export class UsagePlan extends UsagePlanBase {
       const burstLimit = props.burstLimit;
       validateInteger(burstLimit, 'Throttle burst limit');
       const rateLimit = props.rateLimit;
-      validateInteger(rateLimit, 'Throttle rate limit');
+      validateDouble(rateLimit, 'Throttle rate limit');
 
       ret = {
         burstLimit: burstLimit,

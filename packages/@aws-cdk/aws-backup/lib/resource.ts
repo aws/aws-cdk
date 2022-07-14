@@ -5,10 +5,6 @@ import * as rds from '@aws-cdk/aws-rds';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * An operation that is applied to a key-value pair
  */
@@ -149,11 +145,11 @@ export class BackupResource {
   /**
    * A construct
    */
-  public readonly construct?: CoreConstruct;
+  public readonly construct?: Construct;
 
   constructor(resource?: string, tagCondition?: TagCondition, construct?: Construct) {
     this.resource = resource;
     this.tagCondition = tagCondition;
-    this.construct = construct as CoreConstruct;
+    this.construct = construct;
   }
 }

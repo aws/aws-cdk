@@ -1,19 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource, PhysicalName, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack } from '@aws-cdk/core';
+import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { CfnFlowLog } from './ec2.generated';
 import { ISubnet, IVpc } from './vpc';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * A FlowLog
- *
- *
  */
 export interface IFlowLog extends IResource {
   /**
@@ -26,8 +21,6 @@ export interface IFlowLog extends IResource {
 
 /**
  * The type of VPC traffic to log
- *
- *
  */
 export enum FlowLogTrafficType {
   /**
@@ -48,7 +41,6 @@ export enum FlowLogTrafficType {
 
 /**
  * The available destination types for Flow Logs
- *
  */
 export enum FlowLogDestinationType {
   /**
@@ -64,8 +56,6 @@ export enum FlowLogDestinationType {
 
 /**
  * The type of resource to create the flow log for
- *
- *
  */
 export abstract class FlowLogResourceType {
   /**
@@ -110,9 +100,60 @@ export abstract class FlowLogResourceType {
 }
 
 /**
+ * The file format for flow logs written to an S3 bucket destination
+ */
+export enum FlowLogFileFormat {
+  /**
+   * File will be written as plain text
+   *
+   * This is the default value
+   */
+  PLAIN_TEXT = 'plain-text',
+
+  /**
+   * File will be written in parquet format
+   */
+  PARQUET = 'parquet',
+}
+
+/**
+ * Options for writing logs to a S3 destination
+ */
+export interface S3DestinationOptions {
+  /**
+   * Use Hive-compatible prefixes for flow logs
+   * stored in Amazon S3
+   *
+   * @default false
+   */
+  readonly hiveCompatiblePartitions?: boolean;
+
+  /**
+   * The format for the flow log
+   *
+   * @default FlowLogFileFormat.PLAIN_TEXT
+   */
+  readonly fileFormat?: FlowLogFileFormat;
+
+  /**
+   * Partition the flow log per hour
+   *
+   * @default false
+   */
+  readonly perHourPartition?: boolean;
+}
+
+/**
+ * Options for writing logs to a destination
+ *
+ * TODO: there are other destination options, currently they are
+ * only for s3 destinations (not sure if that will change)
+ */
+export interface DestinationOptions extends S3DestinationOptions { }
+
+
+/**
  * The destination type for the flow log
- *
- *
  */
 export abstract class FlowLogDestination {
   /**
@@ -128,25 +169,29 @@ export abstract class FlowLogDestination {
 
   /**
    * Use S3 as the destination
+   *
+   * @param bucket optional s3 bucket to publish logs to. If one is not provided
+   * a default bucket will be created
+   * @param keyPrefix optional prefix within the bucket to write logs to
+   * @param options additional s3 destination options
    */
-  public static toS3(bucket?: s3.IBucket, keyPrefix?: string): FlowLogDestination {
+  public static toS3(bucket?: s3.IBucket, keyPrefix?: string, options?: S3DestinationOptions): FlowLogDestination {
     return new S3Destination({
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket: bucket,
       keyPrefix,
+      destinationOptions: options,
     });
   }
 
   /**
    * Generates a flow log destination configuration
    */
-  public abstract bind(scope: CoreConstruct, flowLog: FlowLog): FlowLogDestinationConfig;
+  public abstract bind(scope: Construct, flowLog: FlowLog): FlowLogDestinationConfig;
 }
 
 /**
  * Flow Log Destination configuration
- *
- *
  */
 export interface FlowLogDestinationConfig {
   /**
@@ -183,6 +228,13 @@ export interface FlowLogDestinationConfig {
    * @default - undefined
    */
   readonly keyPrefix?: string;
+
+  /**
+   * Options for writing flow logs to a supported destination
+   *
+   * @default - undefined
+   */
+  readonly destinationOptions?: DestinationOptions;
 }
 
 /**
@@ -193,21 +245,86 @@ class S3Destination extends FlowLogDestination {
     super();
   }
 
-  public bind(scope: CoreConstruct, _flowLog: FlowLog): FlowLogDestinationConfig {
+  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
     let s3Bucket: s3.IBucket;
     if (this.props.s3Bucket === undefined) {
       s3Bucket = new s3.Bucket(scope, 'Bucket', {
         encryption: s3.BucketEncryption.UNENCRYPTED,
-        enforceSSL: true,
         removalPolicy: RemovalPolicy.RETAIN,
       });
+
     } else {
       s3Bucket = this.props.s3Bucket;
+    }
+
+    // https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html#flow-logs-s3-permissions
+    if (FeatureFlags.of(scope).isEnabled(S3_CREATE_DEFAULT_LOGGING_POLICY)) {
+      const stack = Stack.of(scope);
+      let keyPrefix = this.props.keyPrefix ?? '';
+      if (keyPrefix && !keyPrefix.endsWith('/')) {
+        keyPrefix = keyPrefix + '/';
+      }
+      const prefix = this.props.destinationOptions?.hiveCompatiblePartitions
+        ? s3Bucket.arnForObjects(`${keyPrefix}AWSLogs/aws-account-id=${stack.account}/*`)
+        : s3Bucket.arnForObjects(`${keyPrefix}AWSLogs/${stack.account}/*`);
+
+      s3Bucket.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [
+          new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
+        ],
+        resources: [
+          prefix,
+        ],
+        actions: ['s3:PutObject'],
+        conditions: {
+          StringEquals: {
+            's3:x-amz-acl': 'bucket-owner-full-control',
+            'aws:SourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': stack.formatArn({
+              service: 'logs',
+              resource: '*',
+            }),
+          },
+        },
+      }));
+
+      s3Bucket.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [
+          new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
+        ],
+        resources: [s3Bucket.bucketArn],
+        actions: [
+          's3:GetBucketAcl',
+          's3:ListBucket',
+        ],
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': stack.formatArn({
+              service: 'logs',
+              resource: '*',
+            }),
+          },
+        },
+      }));
     }
     return {
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket,
       keyPrefix: this.props.keyPrefix,
+      destinationOptions: (this.props.destinationOptions?.fileFormat || this.props.destinationOptions?.perHourPartition
+      || this.props.destinationOptions?.hiveCompatiblePartitions)
+        ? {
+          fileFormat: this.props.destinationOptions.fileFormat ?? FlowLogFileFormat.PLAIN_TEXT,
+          perHourPartition: this.props.destinationOptions.perHourPartition ?? false,
+          hiveCompatiblePartitions: this.props.destinationOptions.hiveCompatiblePartitions ?? false,
+        } : undefined,
     };
   }
 }
@@ -220,7 +337,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
     super();
   }
 
-  public bind(scope: CoreConstruct, _flowLog: FlowLog): FlowLogDestinationConfig {
+  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
     let iamRole: iam.IRole;
     let logGroup: logs.ILogGroup;
     if (this.props.iamRole === undefined) {
@@ -268,8 +385,6 @@ class CloudWatchLogsDestination extends FlowLogDestination {
 
 /**
  * Options to add a flow log to a VPC
- *
- *
  */
 export interface FlowLogOptions {
   /**
@@ -290,8 +405,6 @@ export interface FlowLogOptions {
 
 /**
  * Properties of a VPC Flow Log
- *
- *
  */
 export interface FlowLogProps extends FlowLogOptions {
   /**
@@ -312,8 +425,6 @@ export interface FlowLogProps extends FlowLogOptions {
 
 /**
  * The base class for a Flow Log
- *
- *
  */
 abstract class FlowLogBase extends Resource implements IFlowLog {
   /**
@@ -327,8 +438,6 @@ abstract class FlowLogBase extends Resource implements IFlowLog {
 /**
  * A VPC flow log.
  * @resource AWS::EC2::FlowLog
- *
- *
  */
 export class FlowLog extends FlowLogBase {
   /**
@@ -388,6 +497,7 @@ export class FlowLog extends FlowLogBase {
     }
 
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
+      destinationOptions: destinationConfig.destinationOptions,
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
       logDestinationType: destinationConfig.logDestinationType,
       logGroupName: this.logGroup ? this.logGroup.logGroupName : undefined,
@@ -400,5 +510,6 @@ export class FlowLog extends FlowLogBase {
     });
 
     this.flowLogId = flowLog.ref;
+    this.node.defaultChild = flowLog;
   }
 }

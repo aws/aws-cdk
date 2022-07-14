@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as eks from '../lib';
 import { testFixture, testFixtureCluster } from './util';
@@ -15,7 +15,7 @@ describe('service account', () => {
       new eks.ServiceAccount(stack, 'MyServiceAccount', { cluster });
 
       // THEN
-      expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
@@ -38,7 +38,72 @@ describe('service account', () => {
           ],
         },
       });
-      expect(stack).toHaveResource(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
+      Template.fromStack(stack).hasResourceProperties(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRoleWithWebIdentity',
+              Effect: 'Allow',
+              Principal: {
+                Federated: {
+                  Ref: 'ClusterOpenIdConnectProviderE7EB0530',
+                },
+              },
+              Condition: {
+                StringEquals: {
+                  'Fn::GetAtt': [
+                    'MyServiceAccountConditionJson1ED3BC54',
+                    'Value',
+                  ],
+                },
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+
+    });
+    test('it is possible to add annotations and labels', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        annotations: {
+          'eks.amazonaws.com/sts-regional-endpoints': 'false',
+        },
+        labels: {
+          'some-label': 'with-some-value',
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
+            'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+          ],
+        },
+        Manifest: {
+          'Fn::Join': [
+            '',
+            [
+              '[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"stackmyserviceaccount58b9529e\",\"namespace\":\"default\",\"labels\":{\"app.kubernetes.io/name\":\"stackmyserviceaccount58b9529e\",\"some-label\":\"with-some-value\"},\"annotations\":{\"eks.amazonaws.com/role-arn\":\"',
+              {
+                'Fn::GetAtt': [
+                  'MyServiceAccountRoleB41709FF',
+                  'Arn',
+                ],
+              },
+              '\",\"eks.amazonaws.com/sts-regional-endpoints\":\"false\"}}}]',
+            ],
+          ],
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -73,7 +138,7 @@ describe('service account', () => {
       cluster.addServiceAccount('MyOtherServiceAccount');
 
       // THEN
-      expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
@@ -122,7 +187,7 @@ describe('service account', () => {
 
       cluster.addServiceAccount('MyServiceAccount');
 
-      expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
             'StackClusterF0EB02FAKubectlProviderNestedStackStackClusterF0EB02FAKubectlProviderNestedStackResource739D12C4',
@@ -147,7 +212,7 @@ describe('service account', () => {
         },
       });
 
-      expect(stack).toHaveResource(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
+      Template.fromStack(stack).hasResourceProperties(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -172,6 +237,103 @@ describe('service account', () => {
         },
       });
 
+    });
+  });
+
+  describe('Service Account name must follow Kubernetes spec', () => {
+    test('throw error on capital letters', () => {
+      // GIVEN
+      const { cluster } = testFixtureCluster();
+
+      // WHEN
+      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
+        name: 'XXX',
+      }))
+      // THEN
+        .toThrowError(RangeError);
+    });
+    test('throw error if ends with dot', () => {
+      // GIVEN
+      const { cluster } = testFixtureCluster();
+
+      // WHEN
+      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
+        name: 'test.',
+      }))
+      // THEN
+        .toThrowError(RangeError);
+    });
+    test('dot in the name is allowed', () => {
+      // GIVEN
+      const { cluster } = testFixtureCluster();
+      const valueWithDot = 'test.name';
+
+      // WHEN
+      const sa = cluster.addServiceAccount('InvalidServiceAccount', {
+        name: valueWithDot,
+      });
+
+      // THEN
+      expect(sa.serviceAccountName).toEqual(valueWithDot);
+    });
+    test('throw error if name is too long', () => {
+      // GIVEN
+      const { cluster } = testFixtureCluster();
+
+      // WHEN
+      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
+        name: 'x'.repeat(255),
+      }))
+      // THEN
+        .toThrowError(RangeError);
+    });
+  });
+
+  describe('Service Account namespace must follow Kubernetes spec', () => {
+    test('throw error on capital letters', () => {
+      // GIVEN
+      const { cluster } = testFixtureCluster();
+
+      // WHEN
+      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
+        namespace: 'XXX',
+      }))
+      // THEN
+        .toThrowError(RangeError);
+    });
+    test('throw error if ends with dot', () => {
+      // GIVEN
+      const { cluster } = testFixtureCluster();
+
+      // WHEN
+      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
+        namespace: 'test.',
+      }))
+      // THEN
+        .toThrowError(RangeError);
+    });
+    test('throw error if dot is in the name', () => {
+      // GIVEN
+      const { cluster } = testFixtureCluster();
+      const valueWithDot = 'test.name';
+
+      // WHEN
+      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
+        namespace: valueWithDot,
+      }))
+      // THEN
+        .toThrowError(RangeError);
+    });
+    test('throw error if name is too long', () => {
+      // GIVEN
+      const { cluster } = testFixtureCluster();
+
+      // WHEN
+      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
+        namespace: 'x'.repeat(65),
+      }))
+      // THEN
+        .toThrowError(RangeError);
     });
   });
 });

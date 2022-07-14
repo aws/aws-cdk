@@ -80,6 +80,30 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
 });
 ```
 
+You can optionally pass networking mode to the `docker build` command by specifying
+the `networkMode` property:
+
+```ts
+import { DockerImageAsset, NetworkMode } from '@aws-cdk/aws-ecr-assets';
+
+const asset = new DockerImageAsset(this, 'MyBuildImage', {
+  directory: path.join(__dirname, 'my-image'),
+  networkMode: NetworkMode.HOST,
+})
+```
+
+You can optionally pass an alternate platform to the `docker build` command by specifying
+the `platform` property:
+
+```ts
+import { DockerImageAsset, Platform } from '@aws-cdk/aws-ecr-assets';
+
+const asset = new DockerImageAsset(this, 'MyBuildImage', {
+  directory: path.join(__dirname, 'my-image'),
+  platform: Platform.LINUX_ARM64,
+})
+```
+
 ## Images from Tarball
 
 Images are loaded from a local tarball, uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be

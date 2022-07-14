@@ -159,7 +159,7 @@ test('Bundling a function with pipenv dependencies', () => {
   expect(files).toContain('Pipfile');
   expect(files).toContain('Pipfile.lock');
   // Contains hidden files.
-  expect(files).toContain('.gitignore');
+  expect(files).toContain('.ignorefile');
 });
 
 test('Bundling a function with poetry dependencies', () => {
@@ -186,7 +186,7 @@ test('Bundling a function with poetry dependencies', () => {
   expect(files).toContain('pyproject.toml');
   expect(files).toContain('poetry.lock');
   // Contains hidden files.
-  expect(files).toContain('.gitignore');
+  expect(files).toContain('.ignorefile');
 });
 
 test('Bundling a function with custom bundling image', () => {
@@ -211,6 +211,7 @@ test('Bundling a function with custom bundling image', () => {
     }),
   }));
 
+  expect(DockerImage.fromBuild).toHaveBeenCalledTimes(1);
   expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(entry));
 });
 
@@ -228,4 +229,45 @@ test('Bundling with custom build args', () => {
       PIP_INDEX_URL: testPypi,
     }),
   }));
+});
+
+test('Bundling with custom environment vars`', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    environment: {
+      KEY: 'value',
+    },
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      environment: {
+        KEY: 'value',
+      },
+    }),
+  }));
+});
+
+test('Do not build docker image when skipping bundling', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    skip: true,
+  });
+
+  expect(DockerImage.fromBuild).not.toHaveBeenCalled();
+});
+
+test('Build docker image when bundling is not skipped', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    skip: false,
+  });
+
+  expect(DockerImage.fromBuild).toHaveBeenCalled();
 });

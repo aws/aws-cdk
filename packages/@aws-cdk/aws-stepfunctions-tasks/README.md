@@ -208,6 +208,7 @@ and invokes it asynchronously.
 
 ```ts
 declare const fn: lambda.Function;
+
 const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
   payload: sfn.TaskInput.fromJsonPathAt('$.input'),
@@ -215,12 +216,12 @@ const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
 });
 ```
 
-You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`.
+You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) available on `JsonPath`, for example `JsonPath.format()`.
 Here is an example of starting an Athena query that is dynamically created using the task input:
 
 ```ts
 const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Athena Start Query', {
-  queryString: sfn.JsonPath.stringAt("States.Format('select contacts where year={};', $.year)"),
+  queryString: sfn.JsonPath.format('select contacts where year={};', sfn.JsonPath.stringAt('$.year')),
   queryExecutionContext: {
     databaseName: 'interactions',
   },
@@ -302,6 +303,25 @@ const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API'
   api: restApi,
   stageName: 'prod',
   method: tasks.HttpMethod.GET,
+});
+```
+
+Be aware that the header values must be arrays. When passing the Task Token
+in the headers field `WAIT_FOR_TASK_TOKEN` integration, use
+`JsonPath.array()` to wrap the token in an array:
+
+```ts
+import * as apigateway from '@aws-cdk/aws-apigateway';
+declare const api: apigateway.RestApi;
+
+new tasks.CallApiGatewayRestApiEndpoint(this, 'Endpoint', {
+  api,
+  stageName: 'Stage',
+  method: tasks.HttpMethod.PUT,
+  integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+  headers: sfn.TaskInput.fromObject({
+    TaskToken: sfn.JsonPath.array(sfn.JsonPath.taskToken),
+  }),
 });
 ```
 
@@ -798,7 +818,7 @@ The service integration APIs correspond to Amazon EMR on EKS APIs, but differ in
 
 ### Create Virtual Cluster
 
-The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace. 
+The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace.
 
 The EKS cluster containing the Kubernetes namespace where the virtual cluster will be mapped can be passed in from the task input.
 
@@ -1147,6 +1167,8 @@ If your training job or model uses resources from AWS Marketplace,
 [network isolation is required](https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html).
 To do so, set the `enableNetworkIsolation` property to `true` for `SageMakerCreateModel` or `SageMakerCreateTrainingJob`.
 
+To set environment variables for the Docker container use the `environment` property.
+
 ### Create Training Job
 
 You can call the [`CreateTrainingJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTrainingJob.html) API from a `Task` state.
@@ -1379,6 +1401,25 @@ const submitJobActivity = new sfn.Activity(this, 'SubmitJob');
 
 new tasks.StepFunctionsInvokeActivity(this, 'Submit Job', {
   activity: submitJobActivity,
+});
+```
+
+Use the [Parameters](https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters) field to create a collection of key-value pairs that are passed as input. 
+The values of each can either be static values that you include in your state machine definition, or selected from either the input or the context object with a path. 
+
+```ts
+const submitJobActivity = new sfn.Activity(this, 'SubmitJob');
+
+new tasks.StepFunctionsInvokeActivity(this, 'Submit Job', {
+  activity: submitJobActivity,
+  parameters: {
+    comment: 'Selecting what I care about.',
+    MyDetails: {
+      size: sfn.JsonPath.stringAt('$.product.details.size'),
+      exists: sfn.JsonPath.stringAt('$.product.availability'),
+      StaticValue: 'foo'
+    },
+  },
 });
 ```
 

@@ -4,7 +4,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
-import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
+import { HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
 import { makeHostedZoneArn, validateZoneName } from './util';
@@ -61,7 +61,8 @@ export class HostedZone extends Resource implements IHostedZone {
   /**
    * Import a Route 53 hosted zone defined either outside the CDK, or in a different CDK stack
    *
-   * Use when hosted zone ID is known. Hosted zone name becomes unavailable through this query.
+   * Use when hosted zone ID is known. If a HostedZone is imported with this method the zoneName cannot be referenced.
+   * If the zoneName is needed then the HostedZone should be imported with `fromHostedZoneAttributes()` or `fromLookup()`
    *
    * @param scope the parent Construct for this Construct
    * @param id  the logical name of this Construct
@@ -71,7 +72,7 @@ export class HostedZone extends Resource implements IHostedZone {
     class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get zoneName(): string {
-        throw new Error('HostedZone.fromHostedZoneId doesn\'t support "zoneName"');
+        throw new Error('Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.');
       }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
@@ -222,6 +223,9 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   /**
    * Import a Route 53 public hosted zone defined either outside the CDK, or in a different CDK stack
    *
+   * Use when hosted zone ID is known. If a PublicHostedZone is imported with this method the zoneName cannot be referenced.
+   * If the zoneName is needed then the PublicHostedZone should be imported with `fromPublicHostedZoneAttributes()`.
+   *
    * @param scope the parent Construct for this Construct
    * @param id the logical name of this Construct
    * @param publicHostedZoneId the ID of the public hosted zone to import
@@ -229,7 +233,27 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   public static fromPublicHostedZoneId(scope: Construct, id: string, publicHostedZoneId: string): IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
-      public get zoneName(): string { throw new Error('cannot retrieve "zoneName" from an an imported hosted zone'); }
+      public get zoneName(): string { throw new Error('Cannot reference `zoneName` when using `PublicHostedZone.fromPublicHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromPublicHostedZoneAttributes()` instead'); }
+      public get hostedZoneArn(): string {
+        return makeHostedZoneArn(this, this.hostedZoneId);
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * Imports a public hosted zone from another stack.
+   *
+   * Use when both hosted zone ID and hosted zone name are known.
+   *
+   * @param scope the parent Construct for this Construct
+   * @param id  the logical name of this Construct
+   * @param attrs the PublicHostedZoneAttributes (hosted zone ID and hosted zone name)
+   */
+  public static fromPublicHostedZoneAttributes(scope: Construct, id: string, attrs: PublicHostedZoneAttributes): IPublicHostedZone {
+    class Import extends Resource implements IPublicHostedZone {
+      public readonly hostedZoneId = attrs.hostedZoneId;
+      public readonly zoneName = attrs.zoneName;
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
@@ -348,6 +372,9 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
   /**
    * Import a Route 53 private hosted zone defined either outside the CDK, or in a different CDK stack
    *
+   * Use when hosted zone ID is known. If a HostedZone is imported with this method the zoneName cannot be referenced.
+   * If the zoneName is needed then you cannot import a PrivateHostedZone.
+   *
    * @param scope the parent Construct for this Construct
    * @param id the logical name of this Construct
    * @param privateHostedZoneId the ID of the private hosted zone to import
@@ -355,7 +382,7 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
   public static fromPrivateHostedZoneId(scope: Construct, id: string, privateHostedZoneId: string): IPrivateHostedZone {
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
-      public get zoneName(): string { throw new Error('cannot retrieve "zoneName" from an an imported hosted zone'); }
+      public get zoneName(): string { throw new Error('Cannot reference `zoneName` when using `PrivateHostedZone.fromPrivateHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`'); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }

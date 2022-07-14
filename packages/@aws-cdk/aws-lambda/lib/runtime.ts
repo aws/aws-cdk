@@ -42,30 +42,31 @@ export class Runtime {
 
   /**
    * The NodeJS runtime (nodejs)
-   * Legacy runtime no longer supported by AWS Lambda.
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS = new Runtime('nodejs', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 4.3 runtime (nodejs4.3)
-   * Legacy runtime no longer supported by AWS Lambda.
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_4_3 = new Runtime('nodejs4.3', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 6.10 runtime (nodejs6.10)
-   * Legacy runtime no longer supported by AWS Lambda.
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_6_10 = new Runtime('nodejs6.10', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 8.10 runtime (nodejs8.10)
-   * Legacy runtime no longer supported by AWS Lambda.
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_8_10 = new Runtime('nodejs8.10', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 10.x runtime (nodejs10.x)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_10_X = new Runtime('nodejs10.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
@@ -80,12 +81,22 @@ export class Runtime {
   public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
+   * The NodeJS 16.x runtime (nodejs16.x)
+   */
+  public static readonly NODEJS_16_X = new Runtime('nodejs16.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+  /**
    * The Python 2.7 runtime (python2.7)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
   public static readonly PYTHON_2_7 = new Runtime('python2.7', RuntimeFamily.PYTHON, { supportsInlineCode: true });
 
   /**
-   * The Python 3.6 runtime (python3.6)
+   * The Python 3.6 runtime (python3.6) (not recommended)
+   *
+   * The Python 3.6 runtime is deprecated as of July 2022.
+   *
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
   public static readonly PYTHON_3_6 = new Runtime('python3.6', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
@@ -138,19 +149,25 @@ export class Runtime {
   });
 
   /**
+   * The .NET 6 runtime (dotnet6)
+   */
+  public static readonly DOTNET_6 = new Runtime('dotnet6', RuntimeFamily.DOTNET_CORE);
+
+  /**
    * The .NET Core 1.0 runtime (dotnetcore1.0)
-   * Legacy runtime no longer supported by AWS Lambda.
+   * Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
   public static readonly DOTNET_CORE_1 = new Runtime('dotnetcore1.0', RuntimeFamily.DOTNET_CORE);
 
   /**
    * The .NET Core 2.0 runtime (dotnetcore2.0)
-   * Legacy runtime no longer supported by AWS Lambda.
+   * Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
   public static readonly DOTNET_CORE_2 = new Runtime('dotnetcore2.0', RuntimeFamily.DOTNET_CORE);
 
   /**
    * The .NET Core 2.1 runtime (dotnetcore2.1)
+   * Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
   public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1', RuntimeFamily.DOTNET_CORE);
 
@@ -166,6 +183,7 @@ export class Runtime {
 
   /**
    * The Ruby 2.5 runtime (ruby2.5)
+   * Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Ruby runtime.
    */
   public static readonly RUBY_2_5 = new Runtime('ruby2.5', RuntimeFamily.RUBY);
 

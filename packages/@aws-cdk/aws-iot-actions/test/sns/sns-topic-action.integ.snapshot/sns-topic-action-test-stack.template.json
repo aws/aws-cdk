@@ -1,0 +1,71 @@
+{
+ "Resources": {
+  "TopicRule40A4EA44": {
+   "Type": "AWS::IoT::TopicRule",
+   "Properties": {
+    "TopicRulePayload": {
+     "Actions": [
+      {
+       "Sns": {
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "TopicRuleTopicRuleActionRole246C4F77",
+          "Arn"
+         ]
+        },
+        "TargetArn": {
+         "Ref": "MyTopic86869434"
+        }
+       }
+      }
+     ],
+     "AwsIotSqlVersion": "2016-03-23",
+     "Sql": "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'"
+    }
+   }
+  },
+  "TopicRuleTopicRuleActionRole246C4F77": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "iot.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MyTopic86869434"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687",
+    "Roles": [
+     {
+      "Ref": "TopicRuleTopicRuleActionRole246C4F77"
+     }
+    ]
+   }
+  },
+  "MyTopic86869434": {
+   "Type": "AWS::SNS::Topic"
+  }
+ }
+}

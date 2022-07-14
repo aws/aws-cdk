@@ -137,10 +137,14 @@ test('file system is created correctly with a life cycle property and out of inf
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
-    LifecyclePolicies: [{
-      TransitionToIA: 'AFTER_7_DAYS',
-      TransitionToPrimaryStorageClass: 'AFTER_1_ACCESS',
-    }],
+    LifecyclePolicies: [
+      {
+        TransitionToIA: 'AFTER_7_DAYS',
+      },
+      {
+        TransitionToPrimaryStorageClass: 'AFTER_1_ACCESS',
+      },
+    ],
   });
 });
 
@@ -399,7 +403,7 @@ test('can create when using a VPC with multiple subnets per availability zone', 
   // create a vpc with two subnets in the same availability zone.
   const oneAzVpc = new ec2.Vpc(stack, 'Vpc', {
     maxAzs: 1,
-    subnetConfiguration: [{ name: 'One', subnetType: ec2.SubnetType.ISOLATED }, { name: 'Two', subnetType: ec2.SubnetType.ISOLATED }],
+    subnetConfiguration: [{ name: 'One', subnetType: ec2.SubnetType.PRIVATE_ISOLATED }, { name: 'Two', subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
     natGateways: 0,
   });
   new FileSystem(stack, 'EfsFileSystem', {

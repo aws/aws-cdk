@@ -1,0 +1,487 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "eks-integ-test-basic": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://12345678/test-region",
+      "properties": {
+        "templateFile": "eks-integ-test-basic.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/eks-integ-test-basic": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204",
+              "id": "ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204",
+              "packaging": "zip",
+              "sourceHash": "ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204",
+              "s3BucketParameter": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8",
+              "s3KeyParameter": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD",
+              "artifactHashParameter": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204ArtifactHashB80B497F"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444",
+              "id": "640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444",
+              "packaging": "zip",
+              "sourceHash": "640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444",
+              "s3BucketParameter": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB",
+              "s3KeyParameter": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54",
+              "artifactHashParameter": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127"
+            }
+          }
+        ],
+        "/eks-integ-test-basic/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3Subnet631C5E25",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTable98AE0E14"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTableAssociation427FE0C6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3DefaultRouteA0D29D46"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet3/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3EIPAD4BC883"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PublicSubnet3/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3NATGatewayD3048F5C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3Subnet3EDCD457",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTable192186F8"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTableAssociationC28D144E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/eks-integ-test-basic/VPC/PrivateSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3DefaultRoute27F311AE"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/eks-integ-test-basic/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "The @aws-cdk/aws-eks-legacy module will no longer be released as part of the AWS CDK starting March 1st, 2020. Please refer to https://github.com/aws/aws-cdk/issues/5544 for upgrade instructions"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/ClusterRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterClusterRoleB72F3251"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/ControlPlaneSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterControlPlaneSecurityGroup580AD1FE"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/ControlPlaneSecurityGroup/from eksintegtestbasicEKSClusterNodesInstanceSecurityGroup5B890E25:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterControlPlaneSecurityGroupfromeksintegtestbasicEKSClusterNodesInstanceSecurityGroup5B890E254434E08C84B"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Resource/ResourceHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterResourceHandlerServiceRoleFD631254"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Resource/ResourceHandler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterResourceHandlerServiceRoleDefaultPolicy4D087A98"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Resource/ResourceHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterResourceHandler31198B21"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Resource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterE11008B6"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/KubernetesResourceHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterKubernetesResourceHandler90E6DD64"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/ConfigCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterConfigCommand3809C9C9"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/GetTokenCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterGetTokenCommand10DBF41A"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Nodes": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Nodes/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Nodes/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterNodesInstanceSecurityGroup460A275E"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Nodes/InstanceSecurityGroup/from eksintegtestbasicEKSClusterNodesInstanceSecurityGroup5B890E25:ALL TRAFFIC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterNodesInstanceSecurityGroupfromeksintegtestbasicEKSClusterNodesInstanceSecurityGroup5B890E25ALLTRAFFIC17050541"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Nodes/InstanceSecurityGroup/from eksintegtestbasicEKSClusterControlPlaneSecurityGroup389B14F1:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterNodesInstanceSecurityGroupfromeksintegtestbasicEKSClusterControlPlaneSecurityGroup389B14F14436EFF5343"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Nodes/InstanceSecurityGroup/from eksintegtestbasicEKSClusterControlPlaneSecurityGroup389B14F1:1025-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterNodesInstanceSecurityGroupfromeksintegtestbasicEKSClusterControlPlaneSecurityGroup389B14F1102565535BB0D6C6D"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Nodes/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterNodesInstanceRoleEE5595D6"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Nodes/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterNodesInstanceProfile0F2DB3B9"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Nodes/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterNodesLaunchConfig921F1106"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/Nodes/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterNodesASGC2597E34"
+          }
+        ],
+        "/eks-integ-test-basic/EKSCluster/AwsAuth/manifest/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EKSClusterAwsAuthmanifestA4E0796C"
+          }
+        ],
+        "/eks-integ-test-basic/kubectl-layer-8C2542BC-BF2B-4DFE-B765-E181FD30A9A0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "kubectllayer8C2542BCBF2B4DFEB765E181FD30A9A0617C4ADA"
+          }
+        ],
+        "/eks-integ-test-basic/AssetParameters/ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8"
+          }
+        ],
+        "/eks-integ-test-basic/AssetParameters/ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
+          }
+        ],
+        "/eks-integ-test-basic/AssetParameters/ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204ArtifactHashB80B497F"
+          }
+        ],
+        "/eks-integ-test-basic/AssetParameters/640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB"
+          }
+        ],
+        "/eks-integ-test-basic/AssetParameters/640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
+          }
+        ],
+        "/eks-integ-test-basic/AssetParameters/640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127"
+          }
+        ],
+        "/eks-integ-test-basic/SsmParameterValue:--aws--service--eks--optimized-ami--1.14--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ]
+      },
+      "displayName": "eks-integ-test-basic"
+    }
+  }
+}

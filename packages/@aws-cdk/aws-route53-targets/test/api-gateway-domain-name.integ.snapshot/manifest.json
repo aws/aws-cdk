@@ -1,0 +1,130 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-apigw-alias-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-apigw-alias-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-apigw-alias-integ/Handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HandlerServiceRoleFCDC14AE"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/Handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Handler886CB40B"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiC8550315"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiCloudWatchRoleAC81D93E"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiAccount57E28B43"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiDeployment149F1294891f10d69bae7c4d19bdee7af013a950"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiDeploymentStageprod896C8101"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiEndpoint9349E63C"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/CustomDomain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiCustomDomain64773C4F"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/CustomDomain/Map:--=>awscdkapigwaliasintegapiF4DF08AC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiCustomDomainMapawscdkapigwaliasintegapiF4DF08ACCF365F22"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Default/{proxy+}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiproxy4EA44110"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Default/{proxy+}/ANY/ApiPermission.awscdkapigwaliasintegapiF4DF08AC.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiproxyANYApiPermissionawscdkapigwaliasintegapiF4DF08ACANYproxy80933581"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Default/{proxy+}/ANY/ApiPermission.Test.awscdkapigwaliasintegapiF4DF08AC.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiproxyANYApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANYproxyCF8E3D8C"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Default/{proxy+}/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiproxyANY7F13F09C"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Default/ANY/ApiPermission.awscdkapigwaliasintegapiF4DF08AC.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiANYApiPermissionawscdkapigwaliasintegapiF4DF08ACANYBCED9DDA"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Default/ANY/ApiPermission.Test.awscdkapigwaliasintegapiF4DF08AC.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiANYApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANYC10548C8"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiANYB3DF8C3C"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alias325C5727"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-apigw-alias-integ"
+    }
+  }
+}

@@ -7,10 +7,6 @@ import { ParameterMapping } from '../parameter-mapping';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Represents an Integration for an HTTP API.
  */
@@ -291,7 +287,7 @@ export interface HttpRouteIntegrationBindOptions {
    * If the `HttpRouteIntegration` being bound creates additional constructs,
    * this will be used as their parent scope.
    */
-  readonly scope: CoreConstruct;
+  readonly scope: Construct;
 }
 
 /**
@@ -332,7 +328,20 @@ export abstract class HttpRouteIntegration {
         credentials: config.credentials,
       });
     }
+    this.completeBind(options);
     return { integrationId: this.integration.integrationId };
+  }
+
+  /**
+   * Complete the binding of the integration to the route. In some cases, there is
+   * some additional work to do, such as adding permissions for the API to access
+   * the target. This work is necessary whether the integration has just been
+   * created for this route or it is an existing one, previously created for other
+   * routes. In most cases, however, concrete implementations do not need to
+   * override this method.
+   */
+  protected completeBind(_options: HttpRouteIntegrationBindOptions): void {
+    // no-op by default
   }
 
   /**

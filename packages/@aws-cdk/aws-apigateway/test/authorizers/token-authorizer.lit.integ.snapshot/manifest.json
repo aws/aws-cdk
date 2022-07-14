@@ -1,0 +1,120 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "TokenAuthorizerInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "TokenAuthorizerInteg.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/TokenAuthorizerInteg": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3.handler",
+              "id": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3",
+              "packaging": "zip",
+              "sourceHash": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3",
+              "s3BucketParameter": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3Bucket2E551A38",
+              "s3KeyParameter": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621",
+              "artifactHashParameter": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3ArtifactHashD7A29DA9"
+            }
+          }
+        ],
+        "/TokenAuthorizerInteg/MyAuthorizerFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizerFunctionServiceRole8A34C19E"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyAuthorizerFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizerFunction70F1223E"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyAuthorizerFunction/TokenAuthorizerIntegMyAuthorizer793B1D5F:Permissions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizerFunctionTokenAuthorizerIntegMyAuthorizer793B1D5FPermissions7557AE26"
+          }
+        ],
+        "/TokenAuthorizerInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3Bucket2E551A38"
+          }
+        ],
+        "/TokenAuthorizerInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621"
+          }
+        ],
+        "/TokenAuthorizerInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3ArtifactHashD7A29DA9"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApi2D1F47A9"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiCloudWatchRoleD4042E8E"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiAccount2FB6DB7A"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentB555B582dcff966d69deeda8d47e3bf409ce29cb"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentStageprodC33B8E5F"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiEndpoint4C55E4CB"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiANY05143F93"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyAuthorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizer6575980E"
+          }
+        ]
+      },
+      "displayName": "TokenAuthorizerInteg"
+    }
+  }
+}

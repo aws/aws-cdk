@@ -9,6 +9,7 @@
 #set($includeHeaders = %INCLUDE_HEADERS%)
 #set($includeQueryString = %INCLUDE_QUERYSTRING%)
 #set($includePath = %INCLUDE_PATH%)
+#set($includeAuthorizer = %INCLUDE_AUTHORIZER%)
 #set($allParams = $input.params())
 {
     "stateMachineArn": "%STATEMACHINE%",
@@ -49,6 +50,17 @@
         #set($inputString = "$inputString }")
     #end
     
+    #if ($includeAuthorizer)
+        #set($inputString = "$inputString, @@authorizer@@:{")
+        #foreach($paramName in $context.authorizer.keySet())
+            #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($context.authorizer.get($paramName))@@")
+            #if($foreach.hasNext)
+                #set($inputString = "$inputString,")
+            #end
+        #end
+        #set($inputString = "$inputString }")
+    #end
+
     #set($requestContext = "%REQUESTCONTEXT%")
     ## Check if the request context should be included as part of the execution input
     #if($requestContext && !$requestContext.empty)
@@ -59,5 +71,5 @@
     #set($inputString = "$inputString}")
     #set($inputString = $inputString.replaceAll("@@",'"'))
     #set($len = $inputString.length() - 1)
-    "input": "{$util.escapeJavaScript($inputString.substring(1,$len))}"
+    "input": "{$util.escapeJavaScript($inputString.substring(1,$len)).replaceAll("\\'","'")}"
 }

@@ -159,7 +159,7 @@ export interface QueueProps {
   readonly fifoThroughputLimit?: FifoThroughputLimit;
 
   /**
-   * Policy to apply when the user pool is removed from the stack
+   * Policy to apply when the queue is removed from the stack
    *
    * Even though queues are technically stateful, their contents are transient and it
    * is common to add and remove Queues while rearchitecting your application. The

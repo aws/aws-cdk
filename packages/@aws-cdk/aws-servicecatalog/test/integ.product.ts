@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
+import { ProductStackHistory } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-servicecatalog-product');
@@ -13,6 +14,12 @@ class TestProductStack extends servicecatalog.ProductStack {
     new sns.Topic(this, 'TopicProduct');
   }
 }
+
+const productStackHistory = new ProductStackHistory(stack, 'ProductStackHistory', {
+  productStack: new TestProductStack(stack, 'SNSTopicProduct3'),
+  currentVersionName: 'v1',
+  currentVersionLocked: true,
+});
 
 const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
   productName: 'testProduct',
@@ -35,12 +42,15 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
     {
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct2')),
     },
+    productStackHistory.currentVersion(),
   ],
 });
 
-const tagOptions = new servicecatalog.TagOptions({
-  key1: ['value1', 'value2'],
-  key2: ['value1'],
+const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+  allowedValuesForTags: {
+    key1: ['value1', 'value2'],
+    key2: ['value1'],
+  },
 });
 
 product.associateTagOptions(tagOptions);

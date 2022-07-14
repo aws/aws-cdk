@@ -10,7 +10,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws/aws-cdk.git"
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/cdk"
   },
   "keywords": [
     "aws",
@@ -35,11 +36,11 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test+extract": "npm run build+test",
     "build+extract": "npm run build"
- },
+  },
   "engines": {
     "node": ">= 8.10.0"
   },
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }

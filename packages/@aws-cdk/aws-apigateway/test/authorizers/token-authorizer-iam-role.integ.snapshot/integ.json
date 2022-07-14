@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-apigateway/test/authorizers/integ.token-authorizer-iam-role": {
+      "stacks": [
+        "TokenAuthorizerIAMRoleInteg"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

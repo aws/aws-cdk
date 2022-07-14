@@ -115,9 +115,7 @@ test('Task with all the parameters', () => {
         Command: ['sudo', 'rm'],
         Environment: [{ Name: 'key', Value: 'value' }],
         InstanceType: 'MULTI',
-        Memory: 1024,
-        ResourceRequirements: [{ Type: 'GPU', Value: '1' }],
-        Vcpus: 10,
+        ResourceRequirements: [{ Type: 'GPU', Value: '1' }, { Type: 'MEMORY', Value: '1024' }, { Type: 'VCPU', Value: '10' }],
       },
       DependsOn: [{ JobId: '1234', Type: 'some_type' }],
       Parameters: { 'foo.$': '$.bar' },
@@ -166,6 +164,33 @@ test('supports tokens', () => {
       },
       'Timeout': {
         'AttemptDurationSeconds.$': '$.timeout',
+      },
+    },
+  });
+});
+
+test('container overrides are tokens', () => {
+  // WHEN
+  const task = new BatchSubmitJob(stack, 'Task', {
+    jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+    jobName: 'JobName',
+    jobQueueArn: batchJobQueue.jobQueueArn,
+    containerOverrides: {
+      memory: cdk.Size.mebibytes(sfn.JsonPath.numberAt('$.asdf')),
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':states:::batch:submitJob.sync']] },
+    End: true,
+    Parameters: {
+      JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
+      JobName: 'JobName',
+      JobQueue: { Ref: 'JobQueueEE3AD499' },
+      ContainerOverrides: {
+        ResourceRequirements: [{ 'Type': 'MEMORY', 'Value.$': '$.asdf' }],
       },
     },
   });

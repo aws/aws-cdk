@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-/// !cdk-integ PipelineStack
+/// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
@@ -17,7 +17,7 @@ class PipelineStack extends Stack {
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       codeBuildDefaults: { vpc },
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub('rix0rrr/cdk-pipelines-demo', 'main'),
+        input: pipelines.CodePipelineSource.gitHub('aws/aws-cdk', 'v2-main'),
         commands: [
           'npm ci',
           'npm run build',

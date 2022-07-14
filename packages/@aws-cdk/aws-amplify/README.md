@@ -29,37 +29,36 @@ To set up an Amplify Console app, define an `App`:
 
 ```ts
 import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as amplify from '@aws-cdk/aws-amplify';
-import * as cdk from '@aws-cdk/core';
 
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
     owner: '<user>',
     repository: '<repo>',
-    oauthToken: cdk.SecretValue.secretsManager('my-github-token')
+    oauthToken: SecretValue.secretsManager('my-github-token'),
   }),
-  buildSpec: codebuild.BuildSpec.fromObjectToYaml({ // Alternatively add a `amplify.yml` to the repo
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+    // Alternatively add a `amplify.yml` to the repo
     version: '1.0',
     frontend: {
       phases: {
         preBuild: {
           commands: [
-            'yarn'
-          ]
+            'yarn',
+          ],
         },
         build: {
           commands: [
-            'yarn build'
-          ]
-        }
+            'yarn build',
+          ],
+        },
       },
       artifacts: {
         baseDirectory: 'public',
         files:
-        - '**/*'
-      }
-    }
-  })
+        - '**/*',
+      },
+    },
+  }),
 });
 ```
 
@@ -70,20 +69,22 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitLabSourceCodeProvider({
     owner: '<user>',
     repository: '<repo>',
-    oauthToken: cdk.SecretValue.secretsManager('my-gitlab-token')
-  })
+    oauthToken: SecretValue.secretsManager('my-gitlab-token'),
+  }),
 });
 ```
 
 To connect your `App` to CodeCommit, use the `CodeCommitSourceCodeProvider`:
 
 ```ts
+import * as codecommit from '@aws-cdk/aws-codecommit';
+
 const repository = new codecommit.Repository(this, 'Repo', {
-  repositoryName: 'my-repo'
+  repositoryName: 'my-repo',
 });
 
 const amplifyApp = new amplify.App(this, 'App', {
-  sourceCodeProvider: new amplify.CodeCommitSourceCodeProvider({ repository })
+  sourceCodeProvider: new amplify.CodeCommitSourceCodeProvider({ repository }),
 });
 ```
 
@@ -93,8 +94,12 @@ to pull the CodeCommit repository.
 Add branches:
 
 ```ts
-const master = amplifyApp.addBranch('master'); // `id` will be used as repo branch name
-const dev = amplifyApp.addBranch('dev');
+declare const amplifyApp: amplify.App;
+
+const main = amplifyApp.addBranch('main'); // `id` will be used as repo branch name
+const dev = amplifyApp.addBranch('dev', {
+  performanceMode: true, // optional, enables performance mode
+});
 dev.addEnvironment('STAGE', 'dev');
 ```
 
@@ -103,10 +108,11 @@ Auto build and pull request preview are enabled by default.
 Add custom rules for redirection:
 
 ```ts
+declare const amplifyApp: amplify.App;
 amplifyApp.addCustomRule({
   source: '/docs/specific-filename.html',
   target: '/documents/different-filename.html',
-  status: amplify.RedirectStatus.TEMPORARY_REDIRECT
+  status: amplify.RedirectStatus.TEMPORARY_REDIRECT,
 });
 ```
 
@@ -117,18 +123,24 @@ file extensions: css, gif, ico, jpg, js, png, txt, svg, woff,
 ttf, map, json, webmanifest.
 
 ```ts
+declare const mySinglePageApp: amplify.App;
+
 mySinglePageApp.addCustomRule(amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT);
 ```
 
 Add a domain and map sub domains to branches:
 
 ```ts
+declare const amplifyApp: amplify.App;
+declare const main: amplify.Branch;
+declare const dev: amplify.Branch;
+
 const domain = amplifyApp.addDomain('example.com', {
   enableAutoSubdomain: true, // in case subdomains should be auto registered for branches
   autoSubdomainCreationPatterns: ['*', 'pr*'], // regex for branches that should auto register subdomains
 });
-domain.mapRoot(master); // map master branch to domain root
-domain.mapSubDomain(master, 'www');
+domain.mapRoot(main); // map main branch to domain root
+domain.mapSubDomain(main, 'www');
 domain.mapSubDomain(dev); // sub domain prefix defaults to branch name
 ```
 
@@ -140,9 +152,12 @@ Use `BasicAuth.fromCredentials` when referencing an existing secret:
 
 ```ts
 const amplifyApp = new amplify.App(this, 'MyApp', {
-  repository: 'https://github.com/<user>/<repo>',
-  oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
-  basicAuth: amplify.BasicAuth.fromCredentials('username', cdk.SecretValue.secretsManager('my-github-token'))
+  sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+    owner: '<user>',
+    repository: '<repo>',
+    oauthToken: SecretValue.secretsManager('my-github-token'),
+  }),
+  basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.secretsManager('my-github-token')),
 });
 ```
 
@@ -150,17 +165,21 @@ Use `BasicAuth.fromGeneratedPassword` to generate a password in Secrets Manager:
 
 ```ts
 const amplifyApp = new amplify.App(this, 'MyApp', {
-  repository: 'https://github.com/<user>/<repo>',
-  oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
-  basicAuth: amplify.BasicAuth.fromGeneratedPassword('username')
+  sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+    owner: '<user>',
+    repository: '<repo>',
+    oauthToken: SecretValue.secretsManager('my-github-token'),
+  }),
+  basicAuth: amplify.BasicAuth.fromGeneratedPassword('username'),
 });
 ```
 
 Basic auth can be added to specific branches:
 
 ```ts
-app.addBranch('feature/next', {
-  basicAuth: amplify.BasicAuth.fromGeneratedPassword('username')
+declare const amplifyApp: amplify.App;
+amplifyApp.addBranch('feature/next', {
+  basicAuth: amplify.BasicAuth.fromGeneratedPassword('username'),
 });
 ```
 
@@ -171,11 +190,14 @@ of branches:
 
 ```ts
 const amplifyApp = new amplify.App(this, 'MyApp', {
-  repository: 'https://github.com/<user>/<repo>',
-  oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
+  sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+    owner: '<user>',
+    repository: '<repo>',
+    oauthToken: SecretValue.secretsManager('my-github-token'),
+  }),
   autoBranchCreation: { // Automatically connect branches that match a pattern set
-    patterns: ['feature/*', 'test/*']
-  }
+    patterns: ['feature/*', 'test/*'],
+  },
   autoBranchDeletion: true, // Automatically disconnect a branch when you delete a branch from your repository
 });
 ```
@@ -185,11 +207,11 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 Use the `customResponseHeaders` prop to configure custom response headers for an Amplify app:
 
 ```ts
-const amplifyApp = new amplify.App(stack, 'App', {
+const amplifyApp = new amplify.App(this, 'App', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
     owner: '<user>',
     repository: '<repo>',
-    oauthToken: cdk.SecretValue.secretsManager('my-github-token')
+    oauthToken: SecretValue.secretsManager('my-github-token'),
   }),
   customResponseHeaders: [
     {
@@ -214,7 +236,9 @@ const amplifyApp = new amplify.App(stack, 'App', {
 `sourceCodeProvider` is optional; when this is not specified the Amplify app can be deployed to using `.zip` packages. The `asset` property can be used to deploy S3 assets to Amplify as part of the CDK:
 
 ```ts
-const asset = new assets.Asset(this, "SampleAsset", {});
-const amplifyApp = new amplify.App(this, 'MyApp', {});
+import * as assets from '@aws-cdk/aws-s3-assets';
+
+declare const asset: assets.Asset;
+declare const amplifyApp: amplify.App;
 const branch = amplifyApp.addBranch("dev", { asset: asset });
 ```

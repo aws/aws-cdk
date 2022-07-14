@@ -1,12 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IOptionGroup, OptionGroup } from './option-group';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The options passed to {@link IInstanceEngine.bind}.
@@ -492,6 +489,12 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_33 = MysqlEngineVersion.of('5.7.33', '5.7');
   /** Version "5.7.34". */
   public static readonly VER_5_7_34 = MysqlEngineVersion.of('5.7.34', '5.7');
+  /** Version "5.7.35". */
+  public static readonly VER_5_7_35 = MysqlEngineVersion.of('5.7.35', '5.7');
+  /** Version "5.7.36". */
+  public static readonly VER_5_7_36 = MysqlEngineVersion.of('5.7.36', '5.7');
+  /** Version "5.7.37". */
+  public static readonly VER_5_7_37 = MysqlEngineVersion.of('5.7.37', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -517,6 +520,10 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_25 = MysqlEngineVersion.of('8.0.25', '8.0');
   /** Version "8.0.26". */
   public static readonly VER_8_0_26 = MysqlEngineVersion.of('8.0.26', '8.0');
+  /** Version "8.0.27". */
+  public static readonly VER_8_0_27 = MysqlEngineVersion.of('8.0.27', '8.0');
+  /** Version "8.0.28". */
+  public static readonly VER_8_0_28 = MysqlEngineVersion.of('8.0.28', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -799,6 +806,11 @@ export class PostgresEngineVersion {
    * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
   */
   public static readonly VER_9_6_23 = PostgresEngineVersion.of('9.6.23', '9.6');
+  /**
+   * Version "9.6.24".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
+  public static readonly VER_9_6_24 = PostgresEngineVersion.of('9.6.24', '9.6');
 
   /** Version "10" (only a major version, without a specific minor version). */
   public static readonly VER_10 = PostgresEngineVersion.of('10', '10');
@@ -834,6 +846,10 @@ export class PostgresEngineVersion {
   public static readonly VER_10_17 = PostgresEngineVersion.of('10.17', '10', { s3Import: true, s3Export: true });
   /** Version "10.18". */
   public static readonly VER_10_18 = PostgresEngineVersion.of('10.18', '10', { s3Import: true, s3Export: true });
+  /** Version "10.19". */
+  public static readonly VER_10_19 = PostgresEngineVersion.of('10.19', '10', { s3Import: true, s3Export: true });
+  /** Version "10.20". */
+  public static readonly VER_10_20 = PostgresEngineVersion.of('10.20', '10', { s3Import: true, s3Export: true });
 
   /** Version "11" (only a major version, without a specific minor version). */
   public static readonly VER_11 = PostgresEngineVersion.of('11', '11', { s3Import: true });
@@ -861,6 +877,10 @@ export class PostgresEngineVersion {
   public static readonly VER_11_12 = PostgresEngineVersion.of('11.12', '11', { s3Import: true, s3Export: true });
   /** Version "11.13". */
   public static readonly VER_11_13 = PostgresEngineVersion.of('11.13', '11', { s3Import: true, s3Export: true });
+  /** Version "11.14". */
+  public static readonly VER_11_14 = PostgresEngineVersion.of('11.14', '11', { s3Import: true, s3Export: true });
+  /** Version "11.15". */
+  public static readonly VER_11_15 = PostgresEngineVersion.of('11.15', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -878,6 +898,10 @@ export class PostgresEngineVersion {
   public static readonly VER_12_7 = PostgresEngineVersion.of('12.7', '12', { s3Import: true, s3Export: true });
   /** Version "12.8". */
   public static readonly VER_12_8 = PostgresEngineVersion.of('12.8', '12', { s3Import: true, s3Export: true });
+  /** Version "12.9". */
+  public static readonly VER_12_9 = PostgresEngineVersion.of('12.9', '12', { s3Import: true, s3Export: true });
+  /** Version "12.10". */
+  public static readonly VER_12_10 = PostgresEngineVersion.of('12.10', '12', { s3Import: true, s3Export: true });
 
   /** Version "13" (only a major version, without a specific minor version). */
   public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true, s3Export: true });
@@ -889,6 +913,17 @@ export class PostgresEngineVersion {
   public static readonly VER_13_3 = PostgresEngineVersion.of('13.3', '13', { s3Import: true, s3Export: true });
   /** Version "13.4". */
   public static readonly VER_13_4 = PostgresEngineVersion.of('13.4', '13', { s3Import: true, s3Export: true });
+  /** Version "13.5". */
+  public static readonly VER_13_5 = PostgresEngineVersion.of('13.5', '13', { s3Import: true, s3Export: true });
+  /** Version "13.6". */
+  public static readonly VER_13_6 = PostgresEngineVersion.of('13.6', '13', { s3Import: true, s3Export: true });
+
+  /** Version "14" (only a major version, without a specific minor version). */
+  public static readonly VER_14 = PostgresEngineVersion.of('14', '14', { s3Import: true, s3Export: true });
+  /** Version "14.1". */
+  public static readonly VER_14_1 = PostgresEngineVersion.of('14.1', '14', { s3Import: true, s3Export: true });
+  /** Version "14.2". */
+  public static readonly VER_14_2 = PostgresEngineVersion.of('14.2', '14', { s3Import: true, s3Export: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.

@@ -1,8 +1,10 @@
 import json
 import logging
 import os
+import re
 import subprocess
 import shutil
+import tempfile
 import zipfile
 from urllib.parse import urlparse, unquote
 
@@ -27,7 +29,7 @@ def get_chart_asset_from_url(chart_asset_url):
     return chart_dir
 
 def helm_handler(event, context):
-    logger.info(json.dumps(event))
+    logger.info(json.dumps(dict(event, ResponseURL='...')))
 
     request_type = event['RequestType']
     props = event['ResourceProperties']
@@ -78,12 +80,71 @@ def helm_handler(event, context):
             # future work: support versions from s3 assets
             chart = get_chart_asset_from_url(chart_asset_url)
 
+        if repository is not None and repository.startswith('oci://'):
+            tmpdir = tempfile.TemporaryDirectory()
+            chart_dir = get_chart_from_oci(tmpdir.name, release, repository, version)
+            chart = chart_dir
+
         helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace)
     elif request_type == "Delete":
         try:
             helm('uninstall', release, namespace=namespace, timeout=timeout)
         except Exception as e:
             logger.info("delete error: %s" % e)
+
+
+def get_oci_cmd(repository, version):
+    # Generates OCI command based on pattern. Public ECR vs Private ECR are treated differently.
+    cmnd = []
+    private_ecr_pattern = '\d+.dkr.ecr.[a-z]+-[a-z]+-\d.amazonaws.com'
+    public_ecr = 'public.ecr.aws'
+
+    registry = repository.rsplit('/', 1)[0].replace('oci://', '')
+
+    if re.fullmatch(private_ecr_pattern, registry) is not None:
+        logger.info("Found AWS private repository")
+        region = registry.replace('.amazonaws.com', '').split('.')[-1]
+        cmnd = [
+            f"aws ecr get-login-password --region {region} | " \
+            f"helm registry login --username AWS --password-stdin {registry}; helm pull {repository} --version {version} --untar"
+            ]
+    elif registry.startswith(public_ecr):
+        logger.info("Found AWS public repository, will use default region as deployment")
+        region = os.environ.get('AWS_REGION', 'us-east-1')
+
+        cmnd = [
+            f"aws ecr-public get-login-password --region {region} | " \
+            f"helm registry login --username AWS --password-stdin {public_ecr}; helm pull {repository} --version {version} --untar"
+            ]
+    else:
+        logger.error("OCI repository format not recognized, falling back to helm pull")
+        cmnd = ['helm', 'pull', repository, '--version', version, '--untar']
+
+    return cmnd
+
+
+def get_chart_from_oci(tmpdir, release, repository = None, version = None):
+
+    cmnd = get_oci_cmd(repository, version)
+
+    maxAttempts = 3
+    retry = maxAttempts
+    while retry > 0:
+        try:
+            logger.info(cmnd)
+            output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, shell=True)
+            logger.info(output)
+
+            return os.path.join(tmpdir, release)
+        except subprocess.CalledProcessError as exc:
+            output = exc.output
+            if b'Broken pipe' in output:
+                retry = retry - 1
+                logger.info("Broken pipe, retries left: %s" % retry)
+            else:
+                raise Exception(output)
+    raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
+
 
 def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None):
     import subprocess

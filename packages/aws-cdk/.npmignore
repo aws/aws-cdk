@@ -27,6 +27,7 @@ tsconfig.json
 !test/integ/cli/jest.config.js
 !test/integ/uberpackage/jest.config.js
 !test/integ/cli-regression-patches/**/*
+!test/integ/cli/sam_cdk_integ_app/**/*.ts
 
 .DS_Store
 

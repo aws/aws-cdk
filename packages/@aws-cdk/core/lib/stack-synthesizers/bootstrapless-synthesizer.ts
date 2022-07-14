@@ -1,7 +1,7 @@
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../construct-compat';
 import { assertBound } from './_shared';
 import { DefaultStackSynthesizer } from './default-synthesizer';
+import { ISynthesisSession } from './types';
 
 /**
  * Construction properties of {@link BootstraplessSynthesizer}.
@@ -24,11 +24,19 @@ export interface BootstraplessSynthesizerProps {
 }
 
 /**
- * A special synthesizer that behaves similarly to DefaultStackSynthesizer,
- * but doesn't require bootstrapping the environment it operates in.
- * Because of that, stacks using it cannot have assets inside of them.
+ * Synthesizer that reuses bootstrap roles from a different region
+ *
+ * A special synthesizer that behaves similarly to `DefaultStackSynthesizer`,
+ * but doesn't require bootstrapping the environment it operates in. Instead,
+ * it will re-use the Roles that were created for a different region (which
+ * is possible because IAM is a global service).
+ *
+ * However, it will not assume asset buckets or repositories have been created,
+ * and therefore does not support assets.
+ *
  * Used by the CodePipeline construct for the support stacks needed for
- * cross-region replication S3 buckets.
+ * cross-region replication S3 buckets. App builders do not need to use this
+ * synthesizer directly.
  */
 export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
   constructor(props: BootstraplessSynthesizerProps) {

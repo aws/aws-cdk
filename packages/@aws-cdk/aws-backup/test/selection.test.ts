@@ -7,10 +7,6 @@ import { RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BackupPlan, BackupResource, BackupSelection } from '../lib';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 let stack: Stack;
 let plan: BackupPlan;
 beforeEach(() => {
@@ -126,14 +122,14 @@ test('allow restores', () => {
 
 test('fromConstruct', () => {
   // GIVEN
-  class EfsConstruct extends CoreConstruct {
+  class EfsConstruct extends Construct {
     constructor(scope: Construct, id: string) {
       super(scope, id);
       const fs = new efs.CfnFileSystem(this, 'FileSystem');
       fs.applyRemovalPolicy(RemovalPolicy.DESTROY);
     }
   }
-  class MyConstruct extends CoreConstruct {
+  class MyConstruct extends Construct {
     constructor(scope: Construct, id: string) {
       super(scope, id);
 

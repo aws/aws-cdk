@@ -1,0 +1,485 @@
+{
+    "$ref": "#/definitions/IntegManifest",
+    "definitions": {
+        "IntegManifest": {
+            "description": "Definitions for the integration testing manifest",
+            "type": "object",
+            "properties": {
+                "version": {
+                    "description": "Version of the manifest",
+                    "type": "string"
+                },
+                "enableLookups": {
+                    "description": "Enable lookups for this test. If lookups are enabled\nthen `stackUpdateWorkflow` must be set to false.\nLookups should only be enabled when you are explicitely testing\nlookups.",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "synthContext": {
+                    "description": "Additional context to use when performing\na synth. Any context provided here will override\nany default context (Default - no additional context)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "testCases": {
+                    "description": "test cases",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/TestCase"
+                    }
+                }
+            },
+            "required": [
+                "testCases",
+                "version"
+            ]
+        },
+        "TestCase": {
+            "description": "Represents an integration test case",
+            "type": "object",
+            "properties": {
+                "stacks": {
+                    "description": "Stacks that should be tested as part of this test case\nThe stackNames will be passed as args to the cdk commands\nso dependent stacks will be automatically deployed unless\n`exclusively` is passed",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "assertionStack": {
+                    "description": "The name of the stack that contains assertions (Default - no assertion stack)",
+                    "type": "string"
+                },
+                "stackUpdateWorkflow": {
+                    "description": "Run update workflow on this test case\nThis should only be set to false to test scenarios\nthat are not possible to test as part of the update workflow (Default true)",
+                    "type": "boolean"
+                },
+                "cdkCommandOptions": {
+                    "description": "Additional options to use for each CDK command (Default - runner default options)",
+                    "$ref": "#/definitions/CdkCommands"
+                },
+                "hooks": {
+                    "description": "Additional commands to run at predefined points in the test workflow\n\ne.g. { postDeploy: ['yarn', 'test'] } (Default - no hooks)",
+                    "$ref": "#/definitions/Hooks"
+                },
+                "diffAssets": {
+                    "description": "Whether or not to include asset hashes in the diff\nAsset hashes can introduces a lot of unneccessary noise into tests,\nbut there are some cases where asset hashes _should_ be included. For example\nany tests involving custom resources or bundling",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "allowDestroy": {
+                    "description": "List of CloudFormation resource types in this stack that can\nbe destroyed as part of an update without failing the test.\n\nThis list should only include resources that for this specific\nintegration test we are sure will not cause errors or an outage if\ndestroyed. For example, maybe we know that a new resource will be created\nfirst before the old resource is destroyed which prevents any outage.\n\ne.g. ['AWS::IAM::Role'] (Default - do not allow destruction of any resources on update)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "regions": {
+                    "description": "Limit deployment to these regions (Default - can run in any region)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "stacks"
+            ]
+        },
+        "CdkCommands": {
+            "description": "Options for specific cdk commands that are run\nas part of the integration test workflow",
+            "type": "object",
+            "properties": {
+                "deploy": {
+                    "description": "Options to for the cdk deploy command (Default - default deploy options)",
+                    "$ref": "#/definitions/DeployCommand"
+                },
+                "destroy": {
+                    "description": "Options to for the cdk destroy command (Default - default destroy options)",
+                    "$ref": "#/definitions/DestroyCommand"
+                }
+            }
+        },
+        "DeployCommand": {
+            "description": "Represents a cdk deploy command",
+            "type": "object",
+            "properties": {
+                "args": {
+                    "description": "Additional arguments to pass to the command\nThis can be used to test specific CLI functionality (Default - only default args are used)",
+                    "$ref": "#/definitions/DeployOptions"
+                },
+                "enabled": {
+                    "description": "Whether or not to run this command as part of the workflow\nThis can be used if you only want to test some of the workflow\nfor example enable `synth` and disable `deploy` & `destroy` in order\nto limit the test to synthesis (Default true)",
+                    "type": "boolean"
+                },
+                "expectError": {
+                    "description": "If the runner should expect this command to fail",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "expectedMessage": {
+                    "description": "This can be used in combination with `expectedError`\nto validate that a specific message is returned. (Default - do not validate message)",
+                    "type": "string"
+                }
+            }
+        },
+        "DeployOptions": {
+            "description": "Options to use with cdk deploy",
+            "type": "object",
+            "properties": {
+                "exclusively": {
+                    "description": "Only perform action on the given stack",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "toolkitStackName": {
+                    "description": "Name of the toolkit stack to use/deploy (Default CDKToolkit)",
+                    "type": "string"
+                },
+                "reuseAssets": {
+                    "description": "Reuse the assets with the given asset IDs (Default - do not reuse assets)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "changeSetName": {
+                    "description": "Optional name to use for the CloudFormation change set.\nIf not provided, a name will be generated automatically. (Default - auto generate a name)",
+                    "type": "string"
+                },
+                "force": {
+                    "description": "Always deploy, even if templates are identical.",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "rollback": {
+                    "description": "Rollback failed deployments (Default true)",
+                    "type": "boolean"
+                },
+                "notificationArns": {
+                    "description": "ARNs of SNS topics that CloudFormation will notify with stack related events (Default - no notifications)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "requireApproval": {
+                    "description": "What kind of security changes require approval (Default RequireApproval.Never)",
+                    "enum": [
+                        "any-change",
+                        "broadening",
+                        "never"
+                    ],
+                    "type": "string"
+                },
+                "execute": {
+                    "description": "Whether to execute the ChangeSet\nNot providing `execute` parameter will result in execution of ChangeSet (Default true)",
+                    "type": "boolean"
+                },
+                "parameters": {
+                    "description": "Additional parameters for CloudFormation at deploy time (Default [object Object])",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "usePreviousParameters": {
+                    "description": "Use previous values for unspecified parameters\n\nIf not set, all parameters must be specified for every deployment. (Default true)",
+                    "type": "boolean"
+                },
+                "outputsFile": {
+                    "description": "Path to file where stack outputs will be written after a successful deploy as JSON (Default - Outputs are not written to any file)",
+                    "type": "string"
+                },
+                "ci": {
+                    "description": "Whether we are on a CI system",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "stacks": {
+                    "description": "List of stacks to deploy\n\nRequried if `all` is not set (Default - [])",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "all": {
+                    "description": "Deploy all stacks\n\nRequried if `stacks` is not set (Default - false)",
+                    "type": "boolean"
+                },
+                "app": {
+                    "description": "command-line for executing your app or a cloud assembly directory\ne.g. \"node bin/my-app.js\"\nor\n\"cdk.out\" (Default - read from cdk.json)",
+                    "type": "string"
+                },
+                "roleArn": {
+                    "description": "Role to pass to CloudFormation for deployment (Default - use the bootstrap cfn-exec role)",
+                    "type": "string"
+                },
+                "context": {
+                    "description": "Additional context (Default - no additional context)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "trace": {
+                    "description": "Print trace for stack warnings",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "strict": {
+                    "description": "Do not construct stacks with warnings",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "lookups": {
+                    "description": "Perform context lookups.\n\nSynthesis fails if this is disabled and context lookups need\nto be performed (Default true)",
+                    "type": "boolean"
+                },
+                "ignoreErrors": {
+                    "description": "Ignores synthesis errors, which will likely produce an invalid output",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "json": {
+                    "description": "Use JSON output instead of YAML when templates are printed\nto STDOUT",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "verbose": {
+                    "description": "show debug logs",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "debug": {
+                    "description": "enable emission of additional debugging information, such as creation stack\ntraces of tokens",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "profile": {
+                    "description": "Use the indicated AWS profile as the default environment (Default - no profile is used)",
+                    "type": "string"
+                },
+                "proxy": {
+                    "description": "Use the indicated proxy. Will read from\nHTTPS_PROXY environment if specified (Default - no proxy)",
+                    "type": "string"
+                },
+                "caBundlePath": {
+                    "description": "Path to CA certificate to use when validating HTTPS\nrequests. (Default - read from AWS_CA_BUNDLE environment variable)",
+                    "type": "string"
+                },
+                "ec2Creds": {
+                    "description": "Force trying to fetch EC2 instance credentials (Default - guess EC2 instance status)",
+                    "type": "boolean"
+                },
+                "versionReporting": {
+                    "description": "Include \"AWS::CDK::Metadata\" resource in synthesized templates (Default true)",
+                    "type": "boolean"
+                },
+                "pathMetadata": {
+                    "description": "Include \"aws:cdk:path\" CloudFormation metadata for each resource (Default true)",
+                    "type": "boolean"
+                },
+                "assetMetadata": {
+                    "description": "Include \"aws:asset:*\" CloudFormation metadata for resources that use assets (Default true)",
+                    "type": "boolean"
+                },
+                "staging": {
+                    "description": "Copy assets to the output directory\n\nNeeded for local debugging the source files with SAM CLI",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "output": {
+                    "description": "Emits the synthesized cloud assembly into a directory (Default cdk.out)",
+                    "type": "string"
+                },
+                "notices": {
+                    "description": "Show relevant notices (Default true)",
+                    "type": "boolean"
+                },
+                "color": {
+                    "description": "Show colors and other style from console output (Default true)",
+                    "type": "boolean"
+                }
+            }
+        },
+        "DestroyCommand": {
+            "description": "Represents a cdk destroy command",
+            "type": "object",
+            "properties": {
+                "args": {
+                    "description": "Additional arguments to pass to the command\nThis can be used to test specific CLI functionality (Default - only default args are used)",
+                    "$ref": "#/definitions/DestroyOptions"
+                },
+                "enabled": {
+                    "description": "Whether or not to run this command as part of the workflow\nThis can be used if you only want to test some of the workflow\nfor example enable `synth` and disable `deploy` & `destroy` in order\nto limit the test to synthesis (Default true)",
+                    "type": "boolean"
+                },
+                "expectError": {
+                    "description": "If the runner should expect this command to fail",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "expectedMessage": {
+                    "description": "This can be used in combination with `expectedError`\nto validate that a specific message is returned. (Default - do not validate message)",
+                    "type": "string"
+                }
+            }
+        },
+        "DestroyOptions": {
+            "description": "Options to use with cdk destroy",
+            "type": "object",
+            "properties": {
+                "force": {
+                    "description": "Do not ask for permission before destroying stacks",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "exclusively": {
+                    "description": "Only destroy the given stack",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "stacks": {
+                    "description": "List of stacks to deploy\n\nRequried if `all` is not set (Default - [])",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "all": {
+                    "description": "Deploy all stacks\n\nRequried if `stacks` is not set (Default - false)",
+                    "type": "boolean"
+                },
+                "app": {
+                    "description": "command-line for executing your app or a cloud assembly directory\ne.g. \"node bin/my-app.js\"\nor\n\"cdk.out\" (Default - read from cdk.json)",
+                    "type": "string"
+                },
+                "roleArn": {
+                    "description": "Role to pass to CloudFormation for deployment (Default - use the bootstrap cfn-exec role)",
+                    "type": "string"
+                },
+                "context": {
+                    "description": "Additional context (Default - no additional context)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "trace": {
+                    "description": "Print trace for stack warnings",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "strict": {
+                    "description": "Do not construct stacks with warnings",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "lookups": {
+                    "description": "Perform context lookups.\n\nSynthesis fails if this is disabled and context lookups need\nto be performed (Default true)",
+                    "type": "boolean"
+                },
+                "ignoreErrors": {
+                    "description": "Ignores synthesis errors, which will likely produce an invalid output",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "json": {
+                    "description": "Use JSON output instead of YAML when templates are printed\nto STDOUT",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "verbose": {
+                    "description": "show debug logs",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "debug": {
+                    "description": "enable emission of additional debugging information, such as creation stack\ntraces of tokens",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "profile": {
+                    "description": "Use the indicated AWS profile as the default environment (Default - no profile is used)",
+                    "type": "string"
+                },
+                "proxy": {
+                    "description": "Use the indicated proxy. Will read from\nHTTPS_PROXY environment if specified (Default - no proxy)",
+                    "type": "string"
+                },
+                "caBundlePath": {
+                    "description": "Path to CA certificate to use when validating HTTPS\nrequests. (Default - read from AWS_CA_BUNDLE environment variable)",
+                    "type": "string"
+                },
+                "ec2Creds": {
+                    "description": "Force trying to fetch EC2 instance credentials (Default - guess EC2 instance status)",
+                    "type": "boolean"
+                },
+                "versionReporting": {
+                    "description": "Include \"AWS::CDK::Metadata\" resource in synthesized templates (Default true)",
+                    "type": "boolean"
+                },
+                "pathMetadata": {
+                    "description": "Include \"aws:cdk:path\" CloudFormation metadata for each resource (Default true)",
+                    "type": "boolean"
+                },
+                "assetMetadata": {
+                    "description": "Include \"aws:asset:*\" CloudFormation metadata for resources that use assets (Default true)",
+                    "type": "boolean"
+                },
+                "staging": {
+                    "description": "Copy assets to the output directory\n\nNeeded for local debugging the source files with SAM CLI",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "output": {
+                    "description": "Emits the synthesized cloud assembly into a directory (Default cdk.out)",
+                    "type": "string"
+                },
+                "notices": {
+                    "description": "Show relevant notices (Default true)",
+                    "type": "boolean"
+                },
+                "color": {
+                    "description": "Show colors and other style from console output (Default true)",
+                    "type": "boolean"
+                }
+            }
+        },
+        "Hooks": {
+            "description": "Commands to run at predefined points during the\nintegration test workflow",
+            "type": "object",
+            "properties": {
+                "preDeploy": {
+                    "description": "Commands to run prior to deploying the cdk stacks\nin the integration test (Default - no commands)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "postDeploy": {
+                    "description": "Commands to run prior after deploying the cdk stacks\nin the integration test (Default - no commands)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "preDestroy": {
+                    "description": "Commands to run prior to destroying the cdk stacks\nin the integration test (Default - no commands)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "postDestroy": {
+                    "description": "Commands to run after destroying the cdk stacks\nin the integration test (Default - no commands)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}

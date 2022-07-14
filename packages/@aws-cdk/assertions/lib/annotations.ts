@@ -1,7 +1,7 @@
 import { Stack, Stage } from '@aws-cdk/core';
 import { SynthesisMessage } from '@aws-cdk/cx-api';
 import { Messages } from './private/message';
-import { findMessage, hasMessage } from './private/messages';
+import { findMessage, hasMessage, hasNoMessage } from './private/messages';
 
 /**
  * Suite of assertions that can be run on a CDK Stack.
@@ -36,6 +36,19 @@ export class Annotations {
   }
 
   /**
+   * Assert that an error with the given message does not exist in the synthesized CDK `Stack`.
+   *
+   * @param constructPath the construct path to the error. Provide `'*'` to match all errors in the template.
+   * @param message the error message as should be expected. This should be a string or Matcher object.
+   */
+  public hasNoError(constructPath: string, message: any): void {
+    const matchError = hasNoMessage(this._messages, constructPath, constructMessage('error', message));
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
    * Get the set of matching errors of a given construct path and message.
    *
    * @param constructPath the construct path to the error. Provide `'*'` to match all errors in the template.
@@ -53,6 +66,19 @@ export class Annotations {
    */
   public hasWarning(constructPath: string, message: any): void {
     const matchError = hasMessage(this._messages, constructPath, constructMessage('warning', message));
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
+   * Assert that an warning with the given message does not exist in the synthesized CDK `Stack`.
+   *
+   * @param constructPath the construct path to the warning. Provide `'*'` to match all warnings in the template.
+   * @param message the warning message as should be expected. This should be a string or Matcher object.
+   */
+  public hasNoWarning(constructPath: string, message: any): void {
+    const matchError = hasNoMessage(this._messages, constructPath, constructMessage('warning', message));
     if (matchError) {
       throw new Error(matchError);
     }
@@ -82,6 +108,19 @@ export class Annotations {
   }
 
   /**
+   * Assert that an info with the given message does not exist in the synthesized CDK `Stack`.
+   *
+   * @param constructPath the construct path to the info. Provide `'*'` to match all info in the template.
+   * @param message the info message as should be expected. This should be a string or Matcher object.
+   */
+  public hasNoInfo(constructPath: string, message: any): void {
+    const matchError = hasNoMessage(this._messages, constructPath, constructMessage('info', message));
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
    * Get the set of matching infos of a given construct path and message.
    *
    * @param constructPath the construct path to the info. Provide `'*'` to match all infos in the template.
@@ -102,10 +141,10 @@ function constructMessage(type: 'info' | 'warning' | 'error', message: any): {[k
 }
 
 function convertArrayToMessagesType(messages: SynthesisMessage[]): Messages {
-  return messages.reduce((obj, item) => {
+  return messages.reduce((obj, item, index) => {
     return {
       ...obj,
-      [item.id]: item,
+      [index]: item,
     };
   }, {}) as Messages;
 }

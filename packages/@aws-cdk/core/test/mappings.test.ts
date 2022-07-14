@@ -1,6 +1,6 @@
 import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import { CloudAssembly } from '@aws-cdk/cx-api';
-import { App, Aws, CfnMapping, CfnResource, Fn, Stack } from '../lib';
+import { App, Aws, CfnMapping, CfnResource, CfnOutput, Fn, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 describe('mappings', () => {
@@ -58,8 +58,6 @@ describe('mappings', () => {
          },
       },
     });
-
-
   });
 
   test('allow using unresolved tokens in find-in-map', () => {
@@ -67,26 +65,25 @@ describe('mappings', () => {
 
     const mapping = new CfnMapping(stack, 'mapping', {
       mapping: {
-        instanceCount: {
-          'us-east-1': 12,
+        'us-east-1': {
+          instanceCount: 12,
         },
       },
     });
 
-    const v1 = mapping.findInMap('instanceCount', Aws.REGION);
-    const v2 = Fn.findInMap(mapping.logicalId, 'instanceCount', Aws.REGION);
+    const v1 = mapping.findInMap(Aws.REGION, 'instanceCount');
+    const v2 = Fn.findInMap(mapping.logicalId, Aws.REGION, 'instanceCount');
 
-    const expected = { 'Fn::FindInMap': ['mapping', 'instanceCount', { Ref: 'AWS::Region' }] };
+    const expected = { 'Fn::FindInMap': ['mapping', { Ref: 'AWS::Region' }, 'instanceCount'] };
     expect(stack.resolve(v1)).toEqual(expected);
     expect(stack.resolve(v2)).toEqual(expected);
     expect(toCloudFormation(stack).Mappings).toEqual({
       mapping: {
-        instanceCount: {
-          'us-east-1': 12,
+        'us-east-1': {
+          instanceCount: 12,
         },
       },
     });
-
   });
 
   test('no validation if first key is token and second is a static string', () => {
@@ -114,7 +111,6 @@ describe('mappings', () => {
         },
       },
     });
-
   });
 
   test('validate first key if it is a string and second is a token', () => {
@@ -122,26 +118,93 @@ describe('mappings', () => {
     const stack = new Stack();
     const mapping = new CfnMapping(stack, 'mapping', {
       mapping: {
-        size: {
-          'us-east-1': 12,
+        'us-east-1': {
+          size: 12,
         },
       },
     });
 
     // WHEN
-    const v = mapping.findInMap('size', Aws.REGION);
+    const v = mapping.findInMap(Aws.REGION, 'size');
 
     // THEN
-    expect(() => mapping.findInMap('not-found', Aws.REGION)).toThrow(/Mapping doesn't contain top-level key 'not-found'/);
-    expect(stack.resolve(v)).toEqual({ 'Fn::FindInMap': ['mapping', 'size', { Ref: 'AWS::Region' }] });
+    expect(() => mapping.findInMap('not-found', 'size')).toThrow(/Mapping doesn't contain top-level key 'not-found'/);
+    expect(stack.resolve(v)).toEqual({ 'Fn::FindInMap': ['mapping', { Ref: 'AWS::Region' }, 'size'] });
     expect(toCloudFormation(stack).Mappings).toEqual({
+      mapping: {
+        'us-east-1': {
+          size: 12,
+        },
+      },
+    });
+  });
+
+  test('throws if mapping attribute name not alphanumeric', () => {
+    const stack = new Stack();
+    expect(() => new CfnMapping(stack, 'mapping', {
       mapping: {
         size: {
           'us-east-1': 12,
         },
       },
+    })).toThrowError(/Attribute name 'us-east-1' must contain only alphanumeric characters./);
+  });
+
+  test('using the value of a mapping in a different stack copies the mapping to the consuming stack', () => {
+    const app = new App();
+    const creationStack = new Stack(app, 'creationStack');
+    const consumingStack = new Stack(app, 'consumingStack');
+
+    const mapping = new CfnMapping(creationStack, 'MyMapping', {
+      mapping: {
+        boo: {
+          bah: 'foo',
+        },
+      },
     });
 
+    new CfnOutput(consumingStack, 'Output', {
+      value: mapping.findInMap('boo', 'bah'),
+    });
+
+    const v1 = mapping.findInMap('boo', 'bah');
+    let v2 = Fn.findInMap(mapping.logicalId, 'boo', 'bah');
+
+    const creationStackExpected = { 'Fn::FindInMap': ['MyMapping', 'boo', 'bah'] };
+    expect(creationStack.resolve(v1)).toEqual(creationStackExpected);
+    expect(creationStack.resolve(v2)).toEqual(creationStackExpected);
+    expect(toCloudFormation(creationStack).Mappings).toEqual({
+      MyMapping: {
+        boo: {
+          bah: 'foo',
+        },
+      },
+    });
+
+    const mappingCopyLogicalId = 'MappingCopyMyMappingc843c23de60b3672d919ab3e4cb2c14042794164d8';
+    v2 = Fn.findInMap(mappingCopyLogicalId, 'boo', 'bah');
+    const consumingStackExpected = { 'Fn::FindInMap': [mappingCopyLogicalId, 'boo', 'bah'] };
+
+    expect(consumingStack.resolve(v1)).toEqual(consumingStackExpected);
+    expect(consumingStack.resolve(v2)).toEqual(consumingStackExpected);
+    expect(toCloudFormation(consumingStack).Mappings).toEqual({
+      [mappingCopyLogicalId]: {
+        boo: {
+          bah: 'foo',
+        },
+      },
+    });
+    expect(toCloudFormation(consumingStack).Outputs).toEqual({
+      Output: {
+        Value: {
+          'Fn::FindInMap': [
+            mappingCopyLogicalId,
+            'boo',
+            'bah',
+          ],
+        },
+      },
+    });
   });
 });
 

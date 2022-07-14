@@ -1,0 +1,85 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-lambda-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-lambda-1.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-lambda-1/MyLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaServiceRole4539ECB6"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCCE802FB"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/FunctionUrl/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaFunctionUrlC2055677"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629"
+          }
+        ],
+        "/aws-cdk-lambda-1/Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alias325C5727"
+          }
+        ],
+        "/aws-cdk-lambda-1/Alias/AliasPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AliasAliasPermissionAF30F9E8"
+          }
+        ],
+        "/aws-cdk-lambda-1/Alias/FunctionUrl/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AliasFunctionUrlDC6EC566"
+          }
+        ],
+        "/aws-cdk-lambda-1/Alias/invoke-function-url": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Aliasinvokefunctionurl4CA9917B"
+          }
+        ],
+        "MyLambdaCurrentVersionE7A382CCf9fac83eca6426eeed700cdc0106fc3d": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCurrentVersionE7A382CCf9fac83eca6426eeed700cdc0106fc3d",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-lambda-1"
+    }
+  }
+}

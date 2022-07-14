@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import { HttpApi, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
@@ -71,12 +71,47 @@ describe('LambdaProxyIntegration', () => {
 
     expect(() => app.synth()).not.toThrow();
   });
+
+  test('multiple routes for the same lambda integration', () => {
+    const app = new App();
+    const lambdaStack = new Stack(app, 'lambdaStack');
+    const fooFn = fooFunction(lambdaStack, 'Fn');
+
+    const stack = new Stack(app, 'apigwStack');
+    const api = new HttpApi(stack, 'httpApi');
+    const integration = new HttpLambdaIntegration('Integration', fooFn);
+
+    api.addRoutes({
+      path: '/foo',
+      integration,
+    });
+
+    api.addRoutes({
+      path: '/bar',
+      integration,
+    });
+
+    // Make sure we have two permissions -- one for each method -- but a single integration
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::Join': ['', Match.arrayWith([':execute-api:', '/*/*/foo'])],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::Join': ['', Match.arrayWith([':execute-api:', '/*/*/bar'])],
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
+  });
 });
 
 function fooFunction(stack: Stack, id: string) {
   return new Function(stack, id, {
     code: Code.fromInline('foo'),
-    runtime: Runtime.NODEJS_12_X,
+    runtime: Runtime.NODEJS_14_X,
     handler: 'index.handler',
   });
 }

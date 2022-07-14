@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import { AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseClusterEngine } from '../lib';
 
 describe('cluster engine', () => {
@@ -11,8 +10,6 @@ describe('cluster engine', () => {
 
     // THEN
     expect(family).toEqual('aurora5.6');
-
-
   });
 
   test("default parameterGroupFamily for versionless Aurora MySQL cluster engine is 'aurora-mysql5.7'", () => {
@@ -24,8 +21,6 @@ describe('cluster engine', () => {
 
     // THEN
     expect(family).toEqual('aurora-mysql5.7');
-
-
   });
 
   test('default parameterGroupFamily for versionless Aurora PostgreSQL is not defined', () => {
@@ -37,8 +32,6 @@ describe('cluster engine', () => {
 
     // THEN
     expect(family).toEqual(undefined);
-
-
   });
 
   test('cluster parameter group correctly determined for AURORA and given version', () => {
@@ -52,8 +45,6 @@ describe('cluster engine', () => {
 
     // THEN
     expect(family).toEqual('aurora5.6');
-
-
   });
 
   test('cluster parameter group correctly determined for AURORA_MYSQL and given version', () => {
@@ -67,8 +58,6 @@ describe('cluster engine', () => {
 
     // THEN
     expect(family).toEqual('aurora-mysql5.7');
-
-
   });
 
   test('cluster parameter group correctly determined for AURORA_MYSQL and given version 3', () => {
@@ -95,8 +84,6 @@ describe('cluster engine', () => {
 
     // THEN
     expect(family).toEqual('aurora-postgresql11');
-
-
   });
 
   test('parameter group family', () => {
@@ -117,8 +104,6 @@ describe('cluster engine', () => {
       'aurora-postgresql9.6');
     expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('10.0', '10') }).parameterGroupFamily).toEqual(
       'aurora-postgresql10');
-
-
   });
 
   test('supported log types', () => {
@@ -126,6 +111,5 @@ describe('cluster engine', () => {
     expect(DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }).supportedLogTypes).toEqual(mysqlLogTypes);
     expect(DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_08_1 }).supportedLogTypes).toEqual(mysqlLogTypes);
     expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_9_6_9 }).supportedLogTypes).toEqual(['postgresql']);
-
   });
 });

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as rds from '../lib';
@@ -10,7 +10,6 @@ describe('subnet group', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     vpc = new ec2.Vpc(stack, 'VPC');
-
   });
 
   test('creates a subnet group from minimal properties', () => {
@@ -19,15 +18,13 @@ describe('subnet group', () => {
       vpc,
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBSubnetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
       DBSubnetGroupDescription: 'MyGroup',
       SubnetIds: [
         { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
         { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
       ],
     });
-
-
   });
 
   test('creates a subnet group from all properties', () => {
@@ -35,10 +32,10 @@ describe('subnet group', () => {
       description: 'My Shared Group',
       subnetGroupName: 'SharedGroup',
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBSubnetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
       DBSubnetGroupDescription: 'My Shared Group',
       DBSubnetGroupName: 'sharedgroup',
       SubnetIds: [
@@ -46,8 +43,6 @@ describe('subnet group', () => {
         { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
       ],
     });
-
-
   });
 
   test('correctly creates a subnet group with a deploy-time value for its name', () => {
@@ -56,16 +51,14 @@ describe('subnet group', () => {
       description: 'My Shared Group',
       subnetGroupName: parameter.valueAsString,
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
     });
 
-    expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
       DBSubnetGroupName: {
         Ref: 'Parameter',
       },
     });
-
-
   });
 
   describe('subnet selection', () => {
@@ -75,15 +68,13 @@ describe('subnet group', () => {
         vpc,
       });
 
-      expect(stack).toHaveResource('AWS::RDS::DBSubnetGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
         DBSubnetGroupDescription: 'MyGroup',
         SubnetIds: [
           { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
           { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
         ],
       });
-
-
     });
 
     test('can specify subnet type', () => {
@@ -93,14 +84,13 @@ describe('subnet group', () => {
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
 
-      expect(stack).toHaveResource('AWS::RDS::DBSubnetGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
         DBSubnetGroupDescription: 'MyGroup',
         SubnetIds: [
           { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
           { Ref: 'VPCPublicSubnet2Subnet74179F39' },
         ],
       });
-
     });
   });
 
@@ -108,8 +98,5 @@ describe('subnet group', () => {
     const subnetGroup = rds.SubnetGroup.fromSubnetGroupName(stack, 'Group', 'my-subnet-group');
 
     expect(subnetGroup.subnetGroupName).toEqual('my-subnet-group');
-
-
   });
-
 });

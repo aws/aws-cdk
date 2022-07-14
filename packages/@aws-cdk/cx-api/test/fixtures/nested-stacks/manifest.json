@@ -1,0 +1,30 @@
+{
+  "version": "0.0.0",
+  "artifacts": {
+    "topLevelStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://111111111111/us-east-1",
+      "properties": {
+        "templateFile": "topLevelStack.template.json"
+      },
+      "displayName": "topLevelStack"
+    },
+    "topLevelStackNestedStackDAC87084": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://111111111111/us-east-1",
+      "properties": {
+        "templateFile": "nestedStack.template.json"
+      },
+      "displayName": "topLevelStack/nestedStack"
+    },
+    "topLevelStackNestedStackWithStackName6D28EAEF": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://111111111111/us-east-1",
+      "properties": {
+        "templateFile": "nestedStackWithStackName.template.json",
+        "stackName": "explicitStackName"
+      },
+      "displayName": "topLevelStack/nestedStackWithStackName"
+    }
+  }
+}

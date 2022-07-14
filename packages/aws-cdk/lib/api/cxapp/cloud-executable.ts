@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import * as cxapi from '@aws-cdk/cx-api';
 import { RegionInfo } from '@aws-cdk/region-info';
+import * as semver from 'semver';
 import * as contextproviders from '../../context-providers';
 import { debug, warning } from '../../logging';
 import { Configuration } from '../../settings';
@@ -11,6 +12,13 @@ import { CloudAssembly } from './cloud-assembly';
  * @returns output directory
  */
 type Synthesizer = (aws: SdkProvider, config: Configuration) => Promise<cxapi.CloudAssembly>;
+
+/**
+ * The Cloud Assembly schema version where the framework started to generate analytics itself
+ *
+ * See https://github.com/aws/aws-cdk/pull/10306
+ */
+const TEMPLATE_INCLUDES_ANALYTICS_SCHEMA_VERSION = '6.0.0';
 
 export interface CloudExecutableProps {
   /**
@@ -104,13 +112,10 @@ export class CloudExecutable {
         }
       }
 
-      if (trackVersions) {
-        // @deprecated(v2): remove this 'if' block and all code referenced by it.
-        // This should honestly not be done here. The framework
-        // should (and will, shortly) synthesize this information directly into
-        // the template. However, in order to support old framework versions
-        // that don't synthesize this info yet, we can only remove this code
-        // once we break backwards compatibility.
+      if (trackVersions && !semver.gte(assembly.version, TEMPLATE_INCLUDES_ANALYTICS_SCHEMA_VERSION)) {
+        // @deprecate(v2): the framework now manages its own analytics. For
+        // Cloud Assemblies *older* than when we introduced this feature, have
+        // the CLI add it. Otherwise, do nothing.
         await this.addMetadataResource(assembly);
       }
 

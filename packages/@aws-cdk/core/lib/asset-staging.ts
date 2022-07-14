@@ -4,7 +4,6 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
-import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
 import { BundlingOptions, BundlingOutput } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
@@ -12,10 +11,6 @@ import { Names } from './names';
 import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
 
 const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
 
@@ -72,7 +67,7 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  * The file/directory are staged based on their content hash (fingerprint). This
  * means that only if content was changed, copy will happen.
  */
-export class AssetStaging extends CoreConstruct {
+export class AssetStaging extends Construct {
   /**
    * The directory inside the bundling container into which the asset sources will be mounted.
    */
@@ -188,9 +183,7 @@ export class AssetStaging extends CoreConstruct {
     let skip = false;
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
-      const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
-      // bundlingStacks is of the form `Stage/Stack`, convert it to `Stage-Stack` before comparing to stack name
-      skip = !bundlingStacks.find(pattern => minimatch(Stack.of(this).stackName, pattern.replace('/', '-')));
+      skip = !Stack.of(this).bundlingRequired;
       const bundling = props.bundling;
       stageThisAsset = () => this.stageByBundling(bundling, skip);
     } else {

@@ -1,7 +1,9 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { SdkProvider } from '../api';
-import { replaceEnvPlaceholders } from '../api/cloudformation-deployments';
+import { PluginHost } from '../api/plugin';
+import { ContextProviderPlugin } from '../api/plugin/context-provider-plugin';
+import { replaceEnvPlaceholders } from '../api/util/placeholders';
 import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 import { AmiContextProviderPlugin } from './ami';
@@ -10,13 +12,14 @@ import { EndpointServiceAZContextProviderPlugin } from './endpoint-service-avail
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
 import { KeyContextProviderPlugin } from './keys';
 import { LoadBalancerContextProviderPlugin, LoadBalancerListenerContextProviderPlugin } from './load-balancers';
-import { ContextProviderPlugin } from './provider';
 import { SecurityGroupContextProviderPlugin } from './security-groups';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
 
 export type ContextProviderFactory = ((sdk: SdkProvider) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ContextProviderFactory};
+
+const PLUGIN_PROVIDER_PREFIX = 'plugin';
 
 /**
  * Iterate over the list of missing context values and invoke the appropriate providers from the map to retrieve them
@@ -28,10 +31,25 @@ export async function provideContextValues(
 
   for (const missingContext of missingValues) {
     const key = missingContext.key;
-    const factory = availableContextProviders[missingContext.provider];
-    if (!factory) {
-      // eslint-disable-next-line max-len
-      throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
+
+    const providerName = missingContext.provider === cxschema.ContextProvider.PLUGIN
+      ? `${PLUGIN_PROVIDER_PREFIX}:${(missingContext.props as cxschema.PluginContextQuery).pluginName}`
+      : missingContext.provider;
+
+    let factory;
+    if (providerName.startsWith(`${PLUGIN_PROVIDER_PREFIX}:`)) {
+      const plugin = PluginHost.instance.contextProviderPlugins[providerName.substring(PLUGIN_PROVIDER_PREFIX.length + 1)];
+      if (!plugin) {
+        // eslint-disable-next-line max-len
+        throw new Error(`Unrecognized plugin context provider name: ${missingContext.provider}.`);
+      }
+      factory = () => plugin;
+    } else {
+      factory = availableContextProviders[providerName];
+      if (!factory) {
+        // eslint-disable-next-line max-len
+        throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
+      }
     }
 
     const provider = factory(sdk);
@@ -68,6 +86,15 @@ export async function provideContextValues(
  */
 export function registerContextProvider(name: string, provider: ContextProviderPlugin) {
   availableContextProviders[name] = () => provider;
+}
+
+/**
+ * Register a plugin context provider
+ *
+ * A plugin provider cannot reuse the SDKs authentication mechanisms.
+ */
+export function registerPluginContextProvider(name: string, provider: ContextProviderPlugin) {
+  registerContextProvider(`${PLUGIN_PROVIDER_PREFIX}:${name}`, provider);
 }
 
 /**

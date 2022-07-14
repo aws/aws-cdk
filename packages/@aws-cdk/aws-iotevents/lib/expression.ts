@@ -1,12 +1,12 @@
 import { IInput } from './input';
 
 /**
- * Expression for events in Detector Model state
+ * Expression for events in Detector Model state.
  * @see https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html
  */
 export abstract class Expression {
   /**
-   * Create a expression from the given string
+   * Create a expression from the given string.
    */
   public static fromString(value: string): Expression {
     return new StringExpression(value);
@@ -28,26 +28,74 @@ export abstract class Expression {
   }
 
   /**
-   * Create a expression for the Equal operator
+   * Create a expression for the Equal operator.
    */
   public static eq(left: Expression, right: Expression): Expression {
-    return new BinaryOperationExpression(left, '==', right);
+    return new BinaryOperationExpression(left, '==', right, 9);
   }
 
   /**
-   * Create a expression for the AND operator
+   * Create a expression for the Not Equal operator.
+   */
+  public static neq(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '!=', right, 9);
+  }
+
+  /**
+   * Create a expression for the Less Than operator.
+   */
+  public static lt(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '<', right, 10);
+  }
+
+  /**
+   * Create a expression for the Less Than Or Equal operator.
+   */
+  public static lte(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '<=', right, 10);
+  }
+
+  /**
+   * Create a expression for the Greater Than operator.
+   */
+  public static gt(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '>', right, 10);
+  }
+
+  /**
+   * Create a expression for the Greater Than Or Equal operator.
+   */
+  public static gte(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '>=', right, 10);
+  }
+
+  /**
+   * Create a expression for the AND operator.
    */
   public static and(left: Expression, right: Expression): Expression {
-    return new BinaryOperationExpression(left, '&&', right);
+    return new BinaryOperationExpression(left, '&&', right, 5);
+  }
+
+  /**
+   * Create a expression for the OR operator.
+   */
+  public static or(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '||', right, 4);
   }
 
   constructor() {
   }
 
   /**
-   * this is called to evaluate the expression
+   * This is called to evaluate the expression.
+   *
+   * @param parentPriority priority of the parent of this expression,
+   *   used for determining whether or not to add parenthesis around the expression.
+   *   This is intended to be set according to MDN rules, see
+   *   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#table
+   *   for details
    */
-  public abstract evaluate(): string;
+  public abstract evaluate(parentPriority?: number): string;
 }
 
 class StringExpression extends Expression {
@@ -65,11 +113,20 @@ class BinaryOperationExpression extends Expression {
     private readonly left: Expression,
     private readonly operator: string,
     private readonly right: Expression,
+    /**
+     * Indicates the priority of the operator.
+     * This is intended to be set according to MDN rules.
+     * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#table
+     */
+    private readonly priority: number,
   ) {
     super();
   }
 
-  public evaluate() {
-    return `${this.left.evaluate()} ${this.operator} ${this.right.evaluate()}`;
+  public evaluate(parentPriority?: number) {
+    const expression = `${this.left.evaluate(this.priority)} ${this.operator} ${this.right.evaluate(this.priority)}`;
+    return parentPriority === undefined || parentPriority <= this.priority
+      ? expression
+      : `(${expression})`;
   }
 }

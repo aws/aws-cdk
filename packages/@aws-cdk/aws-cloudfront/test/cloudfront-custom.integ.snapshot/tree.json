@@ -1,0 +1,107 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "aws-cdk-cloudfront-custom": {
+        "id": "aws-cdk-cloudfront-custom",
+        "path": "aws-cdk-cloudfront-custom",
+        "children": {
+          "AnAmazingWebsiteProbably": {
+            "id": "AnAmazingWebsiteProbably",
+            "path": "aws-cdk-cloudfront-custom/AnAmazingWebsiteProbably",
+            "children": {
+              "CFDistribution": {
+                "id": "CFDistribution",
+                "path": "aws-cdk-cloudfront-custom/AnAmazingWebsiteProbably/CFDistribution",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "defaultRootObject": "index.html",
+                      "httpVersion": "http2",
+                      "priceClass": "PriceClass_100",
+                      "ipv6Enabled": true,
+                      "origins": [
+                        {
+                          "id": "origin1",
+                          "domainName": "brelandm.a2z.com",
+                          "originCustomHeaders": [
+                            {
+                              "headerName": "X-Custom-Header",
+                              "headerValue": "somevalue"
+                            }
+                          ],
+                          "customOriginConfig": {
+                            "httpPort": 80,
+                            "httpsPort": 443,
+                            "originKeepaliveTimeout": 5,
+                            "originReadTimeout": 30,
+                            "originProtocolPolicy": "https-only",
+                            "originSslProtocols": [
+                              "TLSv1.2"
+                            ]
+                          },
+                          "connectionAttempts": 3,
+                          "connectionTimeout": 10
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "allowedMethods": [
+                          "GET",
+                          "HEAD"
+                        ],
+                        "cachedMethods": [
+                          "GET",
+                          "HEAD"
+                        ],
+                        "compress": true,
+                        "forwardedValues": {
+                          "queryString": false,
+                          "cookies": {
+                            "forward": "none"
+                          }
+                        },
+                        "targetOriginId": "origin1",
+                        "viewerProtocolPolicy": "redirect-to-https"
+                      },
+                      "viewerCertificate": {
+                        "cloudFrontDefaultCertificate": true
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.CloudFrontWebDistribution",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

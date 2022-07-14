@@ -1,5 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import { Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { PublicSubnet, Vpc, VpnConnection } from '../lib';
 
 describe('vpn', () => {
@@ -84,7 +84,7 @@ describe('vpn', () => {
 
   });
 
-  test('with tunnel options', () => {
+  test.each([false, true])('with tunnel options, using secret: %p', (secret) => {
     // GIVEN
     const stack = new Stack();
 
@@ -93,10 +93,15 @@ describe('vpn', () => {
         VpnConnection: {
           ip: '192.0.2.1',
           tunnelOptions: [
-            {
-              preSharedKey: 'secretkey1234',
-              tunnelInsideCidr: '169.254.10.0/30',
-            },
+            secret
+              ? {
+                preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+                tunnelInsideCidr: '169.254.10.0/30',
+              }
+              : {
+                preSharedKey: 'secretkey1234',
+                tunnelInsideCidr: '169.254.10.0/30',
+              },
           ],
         },
       },
@@ -118,8 +123,6 @@ describe('vpn', () => {
         },
       ],
     });
-
-
   });
 
   test('fails when ip is invalid', () => {

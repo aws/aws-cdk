@@ -9,6 +9,9 @@
 
 <!--END STABILITY BANNER-->
 
+If you're migrating from the old `assert` library, the migration guide can be found in
+[our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/assertions/MIGRATING.md).
+
 Functions for writing test asserting against CDK applications, with focus on CloudFormation templates.
 
 The `Template` class includes a set of methods for writing assertions against CloudFormation templates. Use one of the `Template.fromXxx()` static methods to create an instance of this class.
@@ -547,9 +550,9 @@ Annotations.fromStack(stack).hasError(
 
 Here are the available APIs for `Annotations`:
 
-- `hasError()` and `findError()`
-- `hasWarning()` and `findWarning()`
-- `hasInfo()` and `findInfo()`
+- `hasError()`, `hasNoError()`, and `findError()`
+- `hasWarning()`, `hasNoWarning()`, and `findWarning()`
+- `hasInfo()`, `hasNoInfo()`, and `findInfo()`
 
 The corresponding `findXxx()` API is complementary to the `hasXxx()` API, except instead
 of asserting its presence, it returns the set of matching messages.

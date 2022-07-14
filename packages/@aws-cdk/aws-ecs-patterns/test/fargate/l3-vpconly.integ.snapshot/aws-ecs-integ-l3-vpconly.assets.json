@@ -1,0 +1,19 @@
+{
+  "version": "17.0.0",
+  "files": {
+    "72afed9b4a46733798b0fc890b1fa3854b9eb0bed85cfa7031713f9f17ab6603": {
+      "source": {
+        "path": "aws-ecs-integ-l3-vpconly.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "72afed9b4a46733798b0fc890b1fa3854b9eb0bed85cfa7031713f9f17ab6603.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

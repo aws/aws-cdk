@@ -57,6 +57,45 @@ organize their deployments with. If you want to vend a reusable construct,
 define it as a subclasses of `Construct`: the consumers of your construct
 will decide where to place it in their own stacks.
 
+## Stack Synthesizers
+
+Each Stack has a *synthesizer*, an object that determines how and where
+the Stack should be synthesized and deployed. The synthesizer controls
+aspects like:
+
+- How does the stack reference assets? (Either through CloudFormation
+  parameters the CLI supplies, or because the Stack knows a predefined
+  location where assets will be uploaded).
+- What roles are used to deploy the stack? These can be bootstrapped
+  roles, roles created in some other way, or just the CLI's current
+  credentials.
+
+The following synthesizers are available:
+
+- `DefaultStackSynthesizer`: recommended. Uses predefined asset locations and
+  roles created by the modern bootstrap template. Access control is done by
+  controlling who can assume the deploy role. This is the default stack
+  synthesizer in CDKv2.
+- `LegacyStackSynthesizer`: Uses CloudFormation parameters to communicate
+  asset locations, and the CLI's current permissions to deploy stacks. The
+  is the default stack synthesizer in CDKv1.
+- `CliCredentialsStackSynthesizer`: Uses predefined asset locations, and the
+  CLI's current permissions.
+
+Each of these synthesizers takes configuration arguments. To configure
+a stack with a synthesizer, pass it as one of its properties:
+
+```ts
+new MyStack(app, 'MyStack', {
+  synthesizer: new DefaultStackSynthesizer({
+    fileAssetsBucketName: 'my-orgs-asset-bucket',
+  }),
+});
+```
+
+For more information on bootstrapping accounts and customizing synthesis,
+see [Bootstrapping in the CDK Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
+
 ## Nested Stacks
 
 [Nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) are stacks created as part of other stacks. You create a nested stack within another stack by using the `NestedStack` construct.
@@ -222,12 +261,27 @@ const secret = SecretValue.secretsManager('secretId', {
 Using AWS Secrets Manager is the recommended way to reference secrets in a CDK app.
 `SecretValue` also supports the following secret sources:
 
- - `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
- - `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM
+- `SecretValue.unsafePlainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
+- `SecretValue.secretsManager(secret)`: refers to a secret stored in Secrets Manager
+- `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM
  Parameter Store. If you don't specify the exact version, AWS CloudFormation uses the latest
  version of the parameter.
- - `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
- - `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+- `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
+- `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+- `SecretValue.resourceAttribute(attr)`: refers to a secret returned from a CloudFormation resource creation.
+
+`SecretValue`s should only be passed to constructs that accept properties of type
+`SecretValue`. These constructs are written to ensure your secrets will not be
+exposed where they shouldn't be. If you try to use a `SecretValue` in a
+different location, an error about unsafe secret usage will be thrown at
+synthesis time.
+
+If you rotate the secret's value in Secrets Manager, you must also change at
+least one property on the resource where you are using the secret, to force
+CloudFormation to re-read the secret.
+
+`SecretValue.ssmSecure()` is only supported for a limited set of resources.
+[Click here for a list of supported resources and properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#template-parameters-dynamic-patterns-resources).
 
 ## ARN manipulation
 
@@ -446,7 +500,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -541,7 +595,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -571,13 +625,30 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
 });
 
 const roleArn = provider.roleArn;
 ```
 
 This role ARN can then be used in resource-based IAM policies.
+
+To add IAM policy statements to this role, use `addToRolePolicy()`:
+
+```ts
+const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
+  codeDirectory: `${__dirname}/my-handler`,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+});
+provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: 's3:GetObject',
+  Resource: '*',
+})
+```
+
+Note that `addToRolePolicy()` uses direct IAM JSON policy blobs, *not* a
+`iam.PolicyStatement` object like you will see in the rest of the CDK.
 
 #### The Custom Resource Provider Framework
 
@@ -923,6 +994,16 @@ const stack = new Stack(app, 'StackName', {
 ```
 
 By default, termination protection is disabled.
+
+### Description
+
+You can add a description of the stack in the same way as `StackProps`.
+
+```ts
+const stack = new Stack(app, 'StackName', {
+  description: 'This is a description.',
+});
+```
 
 ### CfnJson
 

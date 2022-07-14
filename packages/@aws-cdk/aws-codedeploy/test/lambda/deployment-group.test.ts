@@ -9,7 +9,7 @@ function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
     code: lambda.Code.fromInline('mock'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
   });
 }
 function mockAlias(stack: cdk.Stack) {
@@ -87,7 +87,15 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
           Action: 'sts:AssumeRole',
           Effect: 'Allow',
           Principal: {
-            Service: { 'Fn::Join': ['', ['codedeploy.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }]] },
+            Service: {
+              'Fn::FindInMap': [
+                'ServiceprincipalMap',
+                {
+                  Ref: 'AWS::Region',
+                },
+                'codedeploy',
+              ],
+            },
           },
         }],
         Version: '2012-10-17',
@@ -107,7 +115,6 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
     });
   });
 
-
   test('can be created with explicit name', () => {
     const stack = new cdk.Stack();
     const application = new codedeploy.LambdaApplication(stack, 'MyApp');
@@ -122,6 +129,30 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       DeploymentGroupName: 'test',
     });
+  });
+
+  test('fail with more than 100 characters in name', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const alias = mockAlias(stack);
+    new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+      alias,
+      deploymentGroupName: 'a'.repeat(101),
+    });
+
+    expect(() => app.synth()).toThrow(`Deployment group name: "${'a'.repeat(101)}" can be a max of 100 characters.`);
+  });
+
+  test('fail with unallowed characters in name', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const alias = mockAlias(stack);
+    new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+      alias,
+      deploymentGroupName: 'my name',
+    });
+
+    expect(() => app.synth()).toThrow('Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
   });
 
   test('can be created with explicit role', () => {
@@ -291,12 +322,10 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       PolicyDocument: {
         Statement: [{
           Action: 'lambda:InvokeFunction',
-          Resource: {
-            'Fn::GetAtt': [
-              'PreHook8B53F672',
-              'Arn',
-            ],
-          },
+          Resource: [
+            { 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] }, ':*']] },
+          ],
           Effect: 'Allow',
         }],
         Version: '2012-10-17',
@@ -339,12 +368,10 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       PolicyDocument: {
         Statement: [{
           Action: 'lambda:InvokeFunction',
-          Resource: {
-            'Fn::GetAtt': [
-              'PreHook8B53F672',
-              'Arn',
-            ],
-          },
+          Resource: [
+            { 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] }, ':*']] },
+          ],
           Effect: 'Allow',
         }],
         Version: '2012-10-17',
@@ -387,12 +414,10 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       PolicyDocument: {
         Statement: [{
           Action: 'lambda:InvokeFunction',
-          Resource: {
-            'Fn::GetAtt': [
-              'PostHookF2E49B30',
-              'Arn',
-            ],
-          },
+          Resource: [
+            { 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] }, ':*']] },
+          ],
           Effect: 'Allow',
         }],
         Version: '2012-10-17',
@@ -435,12 +460,10 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       PolicyDocument: {
         Statement: [{
           Action: 'lambda:InvokeFunction',
-          Resource: {
-            'Fn::GetAtt': [
-              'PostHookF2E49B30',
-              'Arn',
-            ],
-          },
+          Resource: [
+            { 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] }, ':*']] },
+          ],
           Effect: 'Allow',
         }],
         Version: '2012-10-17',
@@ -562,6 +585,32 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
         Events: [
           'DEPLOYMENT_FAILURE',
         ],
+      },
+    });
+  });
+
+  test('uses the correct Service Principal in the us-isob-east-1 region', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'CodeDeployLambdaStack', {
+      env: { region: 'us-isob-east-1' },
+    });
+    const alias = mockAlias(stack);
+    new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+      alias,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'codedeploy.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });

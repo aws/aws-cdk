@@ -2,10 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 export class NotificationsResourceHandlerProps {
   role?: iam.IRole;
@@ -84,11 +81,21 @@ export class NotificationsResourceHandler extends Construct {
         return properties;
       }
     }
+
+    const handlerSource = fs.readFileSync(path.join(__dirname, 'lambda/index.py'), 'utf8');
+
+    // Removing lines that starts with '#' (comment lines) in order to fit the 4096 limit
+    const handlerSourceWithoutComments = handlerSource.replace(/^ *#.*\n?/gm, '');
+
+    if (handlerSourceWithoutComments.length > 4096) {
+      throw new Error(`Source of Notifications Resource Handler is too large (${handlerSourceWithoutComments.length} > 4096)`);
+    }
+
     const resource = new InLineLambda(this, 'Resource', {
       type: resourceType,
       properties: {
         Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
-        Code: { ZipFile: fs.readFileSync(path.join(__dirname, 'lambda/index.py'), 'utf8') },
+        Code: { ZipFile: handlerSourceWithoutComments },
         Handler: 'index.handler',
         Role: this.role.roleArn,
         Runtime: 'python3.7',

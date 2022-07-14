@@ -1,8 +1,11 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
+import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from '../lib';
+import { ProductStackHistory } from '../lib/product-stack-history';
 
 /* eslint-disable quote-props */
 describe('Product', () => {
@@ -11,7 +14,9 @@ describe('Product', () => {
 
   beforeEach(() => {
     app = new cdk.App();
-    stack = new cdk.Stack(app);
+    stack = new cdk.Stack(app, 'Stack', {
+      synthesizer: new cdk.LegacyStackSynthesizer(),
+    });
   });
 
   test('default product test', () => {
@@ -121,7 +126,7 @@ describe('Product', () => {
     const assembly = app.synth();
     expect(assembly.artifacts.length).toEqual(2);
     expect(assembly.stacks[0].assets.length).toBe(1);
-    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStack190B56DE.product.template.json');
   }),
 
   test('multiple product versions from product stack', () => {
@@ -152,8 +157,8 @@ describe('Product', () => {
     const assembly = app.synth();
 
     expect(assembly.stacks[0].assets.length).toBe(2);
-    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStackV1.product.template.json');
-    expect(assembly.stacks[0].assets[1].path).toEqual('ProductStackV2.product.template.json');
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStackV111F65963.product.template.json');
+    expect(assembly.stacks[0].assets[1].path).toEqual('StackProductStackV24832700A.product.template.json');
   }),
 
   test('identical product versions from product stack creates one asset', () => {
@@ -187,6 +192,160 @@ describe('Product', () => {
     const assembly = app.synth();
 
     expect(assembly.stacks[0].assets.length).toBe(1);
+  }),
+
+  test('product test from product stack history', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
+      productStack: productStack,
+      currentVersionName: 'v1',
+      currentVersionLocked: false,
+    });
+
+    new sns.Topic(productStack, 'SNSTopicProductStack');
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        productStackHistory.currentVersion(),
+      ],
+    });
+
+    const assembly = app.synth();
+    expect(assembly.artifacts.length).toEqual(2);
+    expect(assembly.stacks[0].assets.length).toBe(1);
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStack190B56DE.product.template.json');
+
+    const expectedTemplateFileKey = 'StackMyProductStackHistory8F05371C.StackProductStack190B56DE.v1.product.template.json';
+    const snapshotExists = fs.existsSync(path.join(DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY, expectedTemplateFileKey));
+    expect(snapshotExists).toBe(true);
+  }),
+
+  test('product test from product stack history with nested directory', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
+      productStack: productStack,
+      currentVersionName: 'v1',
+      currentVersionLocked: false,
+      directory: 'product-stack-snapshots/nested',
+    });
+
+    new sns.Topic(productStack, 'SNSTopicProductStack');
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        productStackHistory.currentVersion(),
+      ],
+    });
+
+    const assembly = app.synth();
+    expect(assembly.artifacts.length).toEqual(2);
+    expect(assembly.stacks[0].assets.length).toBe(1);
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStack190B56DE.product.template.json');
+
+    const expectedTemplateFileKey = 'StackMyProductStackHistory8F05371C.StackProductStack190B56DE.v1.product.template.json';
+    const snapshotExists = fs.existsSync(path.join('product-stack-snapshots/nested', expectedTemplateFileKey));
+    expect(snapshotExists).toBe(true);
+  }),
+
+  test('fails product test from product stack when template changes and locked', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
+      productStack: productStack,
+      currentVersionName: 'v1',
+      currentVersionLocked: true,
+    });
+
+    new sns.Topic(productStack, 'SNSTopicProductStack2');
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        productStackHistory.currentVersion(),
+      ],
+    });
+    expect(() => {
+      app.synth();
+    }).toThrowError('Template has changed for ProductStack Version v1');
+  }),
+
+  test('product test from product stack history when template changes and unlocked', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
+      productStack: productStack,
+      currentVersionName: 'v1',
+      currentVersionLocked: false,
+    });
+
+    new sns.Topic(productStack, 'SNSTopicProductStack2');
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        productStackHistory.currentVersion(),
+      ],
+    });
+
+    const assembly = app.synth();
+    expect(assembly.artifacts.length).toEqual(2);
+    expect(assembly.stacks[0].assets.length).toBe(1);
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStack190B56DE.product.template.json');
+
+    const expectedTemplateFileKey = 'StackMyProductStackHistory8F05371C.StackProductStack190B56DE.v1.product.template.json';
+    const snapshotExists = fs.existsSync(path.join(DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY, expectedTemplateFileKey));
+    expect(snapshotExists).toBe(true);
+  }),
+
+  test('product test from product stack history snapshot', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
+      productStack: productStack,
+      currentVersionName: 'v2',
+      currentVersionLocked: false,
+    });
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        productStackHistory.versionFromSnapshot('v1'),
+      ],
+    });
+
+    const assembly = app.synth();
+    expect(assembly.artifacts.length).toEqual(2);
+    expect(assembly.stacks[0].assets.length).toBe(2);
+    expect(assembly.stacks[0].assets[0].path).toEqual('asset.434625edc7e017d93f388b5f116c2ebcf11a38457cfb89a9b00d4e551c0bf731.json');
+  }),
+
+  test('fails product from product stack history snapshot not found', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
+      productStack: productStack,
+      currentVersionName: 'v2',
+      currentVersionLocked: false,
+    });
+
+    expect(() => {
+      new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+        productName: 'testProduct',
+        owner: 'testOwner',
+        productVersions: [
+          productStackHistory.versionFromSnapshot('v3'),
+        ],
+      });
+    }).toThrowError('Template StackMyProductStackHistory8F05371C.StackProductStack190B56DE.v3.product.template.json cannot be found in product-stack-snapshots');
   }),
 
   test('product test from multiple sources', () => {
@@ -246,7 +405,7 @@ describe('Product', () => {
         ],
         supportEmail: 'invalid email',
       });
-    }).toThrowError(/Invalid support email for resource Default\/MyProduct/);
+    }).toThrowError(/Invalid support email for resource Stack\/MyProduct/);
   }),
 
   test('fails product creation with invalid url', () => {
@@ -260,7 +419,7 @@ describe('Product', () => {
           },
         ],
       });
-    }).toThrowError(/Invalid provisioning template url for resource Default\/MyProduct/);
+    }).toThrowError(/Invalid provisioning template url for resource Stack\/MyProduct/);
   }),
 
   test('fails product creation with empty productVersions', () => {
@@ -270,7 +429,7 @@ describe('Product', () => {
         owner: 'testOwner',
         productVersions: [],
       });
-    }).toThrowError(/Invalid product versions for resource Default\/MyProduct/);
+    }).toThrowError(/Invalid product versions for resource Stack\/MyProduct/);
   }),
 
   describe('adding and associating TagOptions to a product', () => {
@@ -286,12 +445,14 @@ describe('Product', () => {
           },
         ],
       });
-    }),
+    });
 
     test('add tag options to product', () => {
-      const tagOptions = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-        key2: ['value1'],
+      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+        allowedValuesForTags: {
+          key1: ['value1', 'value2'],
+          key2: ['value1'],
+        },
       });
 
       product.associateTagOptions(tagOptions);
@@ -301,9 +462,11 @@ describe('Product', () => {
     }),
 
     test('add tag options as input to product in props', () => {
-      const tagOptions = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-        key2: ['value1'],
+      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+        allowedValuesForTags: {
+          key1: ['value1', 'value2'],
+          key2: ['value1'],
+        },
       });
 
       new servicecatalog.CloudFormationProduct(stack, 'MyProductWithTagOptions', {
@@ -321,44 +484,19 @@ describe('Product', () => {
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
     }),
 
-    test('adding identical tag options to product is idempotent', () => {
-      const tagOptions1 = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-        key2: ['value1'],
+    test('adding tag options to product multiple times is idempotent', () => {
+      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+        allowedValuesForTags: {
+          key1: ['value1', 'value2'],
+          key2: ['value1'],
+        },
       });
 
-      const tagOptions2 = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-      });
-
-      product.associateTagOptions(tagOptions1);
-      product.associateTagOptions(tagOptions2); // If not idempotent this would fail
+      product.associateTagOptions(tagOptions);
+      product.associateTagOptions(tagOptions); // If not idempotent this would fail
 
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
-    }),
-
-    test('adding duplicate tag options to portfolio and product creates unique tag options and enumerated associations', () => {
-      const tagOptions1 = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-        key2: ['value1'],
-      });
-
-      const tagOptions2 = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-        key2: ['value2'],
-      });
-
-      const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
-        displayName: 'testPortfolio',
-        providerName: 'testProvider',
-      });
-
-      portfolio.associateTagOptions(tagOptions1);
-      product.associateTagOptions(tagOptions2); // If not idempotent this would fail
-
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 4); //Generates a resource for each unique key-value pair
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 6);
     });
   });
 });

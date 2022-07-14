@@ -4,9 +4,12 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
+import { Construct, IConstruct } from 'constructs';
+import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
 import { ICodeSigningConfig } from './code-signing-config';
@@ -20,11 +23,9 @@ import { LambdaInsightsVersion } from './lambda-insights';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
-import { Runtime } from './runtime';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line
 import { LogRetentionRetryOptions } from './log-retention';
+import { Runtime } from './runtime';
+import { addAlias } from './util';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -93,6 +94,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default 128
    */
   readonly memorySize?: number;
+
+  /**
+   * The size of the function’s /tmp directory in MiB.
+   *
+   * @default 512 MiB
+   */
+  readonly ephemeralStorageSize?: Size;
 
   /**
    * Initial policy statements to add to the created Lambda Role.
@@ -188,10 +196,20 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * The SQS queue to use if DLQ is enabled.
+   * If SNS topic is desired, specify `deadLetterTopic` property instead.
    *
    * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
   readonly deadLetterQueue?: sqs.IQueue;
+
+  /**
+   * The SNS topic to use as a DLQ.
+   * Note that if `deadLetterQueueEnabled` is set to `true`, an SQS queue will be created
+   * rather than an SNS topic. Using an SNS topic as a DLQ requires this property to be set explicitly.
+   *
+   * @default - no SNS topic
+   */
+  readonly deadLetterTopic?: sns.ITopic;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
@@ -336,7 +354,7 @@ export interface FunctionProps extends FunctionOptions {
    * For valid values, see the Runtime property in the AWS Lambda Developer
    * Guide.
    *
-   * Use `Runtime.FROM_IMAGE` when when defining a function from a Docker image.
+   * Use `Runtime.FROM_IMAGE` when defining a function from a Docker image.
    */
   readonly runtime: Runtime;
 
@@ -388,6 +406,10 @@ export class Function extends FunctionBase {
       return this._currentVersion;
     }
 
+    if (this._warnIfCurrentVersionCalled) {
+      this.warnInvokeFunctionPermissions(this);
+    };
+
     this._currentVersion = new Version(this, 'CurrentVersion', {
       lambda: this,
       ...this.currentVersionOptions,
@@ -410,6 +432,10 @@ export class Function extends FunctionBase {
     return this._currentVersion;
   }
 
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn, `${this.functionArn}:*`];
+  }
+
   /** @internal */
   public static _VER_PROPS: { [key: string]: boolean } = {};
 
@@ -422,6 +448,20 @@ export class Function extends FunctionBase {
    */
   public static classifyVersionProperty(propertyName: string, locked: boolean) {
     this._VER_PROPS[propertyName] = locked;
+  }
+
+  /**
+   * Import a lambda function into the CDK using its name
+   */
+  public static fromFunctionName(scope: Construct, id: string, functionName: string): IFunction {
+    return Function.fromFunctionAttributes(scope, id, {
+      functionArn: Stack.of(scope).formatArn({
+        service: 'lambda',
+        resource: 'function',
+        resourceName: functionName,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      }),
+    });
   }
 
   /**
@@ -451,8 +491,10 @@ export class Function extends FunctionBase {
       public readonly role = role;
       public readonly permissionsNode = this.node;
       public readonly architecture = attrs.architecture ?? Architecture.X86_64;
+      public readonly resourceArnsForGrantInvoke = [this.functionArn, `${this.functionArn}:*`];
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
+      protected readonly _skipPermissions = attrs.skipPermissions ?? false;
 
       constructor(s: Construct, i: string) {
         super(s, i, {
@@ -572,9 +614,14 @@ export class Function extends FunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
-   * The DLQ associated with this Lambda Function (this is an optional attribute).
+   * The DLQ (as queue) associated with this Lambda Function (this is an optional attribute).
    */
   public readonly deadLetterQueue?: sqs.IQueue;
+
+  /**
+   * The DLQ (as topic) associated with this Lambda Function (this is an optional attribute).
+   */
+  public readonly deadLetterTopic?: sns.ITopic;
 
   /**
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
@@ -588,10 +635,10 @@ export class Function extends FunctionBase {
 
   public readonly permissionsNode = this.node;
 
-
   protected readonly canCreatePermissions = true;
 
-  private readonly layers: ILayerVersion[] = [];
+  /** @internal */
+  public readonly _layers: ILayerVersion[] = [];
 
   private _logGroup?: logs.ILogGroup;
 
@@ -609,6 +656,21 @@ export class Function extends FunctionBase {
     super(scope, id, {
       physicalName: props.functionName,
     });
+
+    if (props.functionName && !Token.isUnresolved(props.functionName)) {
+      if (props.functionName.length > 64) {
+        throw new Error(`Function name can not be longer than 64 characters but has ${props.functionName.length} characters.`);
+      }
+      if (!/^[a-zA-Z0-9-_]+$/.test(props.functionName)) {
+        throw new Error(`Function name ${props.functionName} can contain only letters, numbers, hyphens, or underscores with no spaces.`);
+      }
+    }
+
+    if (props.description && !Token.isUnresolved(props.description)) {
+      if (props.description.length > 256) {
+        throw new Error(`Function description can not be longer than 256 characters but has ${props.description.length} characters.`);
+      }
+    }
 
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
@@ -672,7 +734,15 @@ export class Function extends FunctionBase {
       this.addEnvironment(key, value);
     }
 
-    this.deadLetterQueue = this.buildDeadLetterQueue(props);
+    // DLQ can be either sns.ITopic or sqs.IQueue
+    const dlqTopicOrQueue = this.buildDeadLetterQueue(props);
+    if (dlqTopicOrQueue !== undefined) {
+      if (this.isQueue(dlqTopicOrQueue)) {
+        this.deadLetterQueue = dlqTopicOrQueue;
+      } else {
+        this.deadLetterTopic = dlqTopicOrQueue;
+      }
+    }
 
     let fileSystemConfigs: CfnFunction.FileSystemConfigProperty[] | undefined = undefined;
     if (props.filesystem) {
@@ -690,6 +760,11 @@ export class Function extends FunctionBase {
     }
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
+    if (props.ephemeralStorageSize && !props.ephemeralStorageSize.isUnresolved()
+      && (props.ephemeralStorageSize.toMebibytes() < 512 || props.ephemeralStorageSize.toMebibytes() > 10240)) {
+      throw new Error(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`);
+    }
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -700,7 +775,7 @@ export class Function extends FunctionBase {
         zipFile: code.inlineCode,
         imageUri: code.image?.imageUri,
       },
-      layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }), // Evaluated on synthesis
+      layers: Lazy.list({ produce: () => this.renderLayers() }), // Evaluated on synthesis
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
@@ -710,8 +785,11 @@ export class Function extends FunctionBase {
       // Token, actually *modifies* the 'environment' map.
       environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
+      ephemeralStorage: props.ephemeralStorageSize ? {
+        size: props.ephemeralStorageSize.toMebibytes(),
+      } : undefined,
       vpcConfig: this.configureVpc(props),
-      deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
+      deadLetterConfig: this.buildDeadLetterConfig(dlqTopicOrQueue),
       tracingConfig: this.buildTracingConfig(props),
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
       imageConfig: undefinedIfNoKeys({
@@ -829,7 +907,7 @@ export class Function extends FunctionBase {
    */
   public addLayers(...layers: ILayerVersion[]): void {
     for (const layer of layers) {
-      if (this.layers.length === 5) {
+      if (this._layers.length === 5) {
         throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
       }
       if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
@@ -840,8 +918,7 @@ export class Function extends FunctionBase {
       // Currently no validations for compatible architectures since Lambda service
       // allows layers configured with one architecture to be used with a Lambda function
       // from another architecture.
-
-      this.layers.push(layer);
+      this._layers.push(layer);
     }
   }
 
@@ -885,6 +962,32 @@ export class Function extends FunctionBase {
       provisionedConcurrentExecutions: provisionedExecutions,
       ...asyncInvokeConfig,
     });
+  }
+
+  /**
+   * Defines an alias for this function.
+   *
+   * The alias will automatically be updated to point to the latest version of
+   * the function as it is being updated during a deployment.
+   *
+   * ```ts
+   * declare const fn: lambda.Function;
+   *
+   * fn.addAlias('Live');
+   *
+   * // Is equivalent to
+   *
+   * new lambda.Alias(this, 'AliasLive', {
+   *   aliasName: 'Live',
+   *   version: fn.currentVersion,
+   * });
+   * ```
+   *
+   * @param aliasName The name of the alias
+   * @param options Alias options
+   */
+  public addAlias(aliasName: string, options?: AliasOptions): Alias {
+    return addAlias(this, this.currentVersion, aliasName, options);
   }
 
   /**
@@ -943,6 +1046,18 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion._bind(this, this).arn));
     }
     this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
+  }
+
+  private renderLayers() {
+    if (!this._layers || this._layers.length === 0) {
+      return undefined;
+    }
+
+    if (FeatureFlags.of(this).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
+      this._layers.sort();
+    }
+
+    return this._layers.map(layer => layer.layerVersionArn);
   }
 
   private renderEnvironment() {
@@ -1016,7 +1131,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     for (const subnetId of subnetIds) {
       if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
         throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
-          'If you are aware of this limitation and would still like to place the function int a public subnet, set `allowPublicSubnet` to true');
+          'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true');
       }
     }
 
@@ -1030,31 +1145,45 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     };
   }
 
-  private buildDeadLetterQueue(props: FunctionProps) {
+  private isQueue(deadLetterQueue: sqs.IQueue | sns.ITopic): deadLetterQueue is sqs.IQueue {
+    return (<sqs.IQueue>deadLetterQueue).queueArn !== undefined;
+  }
+
+  private buildDeadLetterQueue(props: FunctionProps): sqs.IQueue | sns.ITopic | undefined {
+    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled && !props.deadLetterTopic) {
+      return undefined;
+    }
     if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
-
-    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled) {
-      return undefined;
+    if (props.deadLetterTopic && (props.deadLetterQueue || props.deadLetterQueueEnabled !== undefined)) {
+      throw new Error('deadLetterQueue and deadLetterTopic cannot be specified together at the same time');
     }
 
-    const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-      retentionPeriod: Duration.days(14),
-    });
-
-    this.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['sqs:SendMessage'],
-      resources: [deadLetterQueue.queueArn],
-    }));
+    let deadLetterQueue: sqs.IQueue | sns.ITopic;
+    if (props.deadLetterTopic) {
+      deadLetterQueue = props.deadLetterTopic;
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['sns:Publish'],
+        resources: [deadLetterQueue.topicArn],
+      }));
+    } else {
+      deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
+        retentionPeriod: Duration.days(14),
+      });
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [deadLetterQueue.queueArn],
+      }));
+    }
 
     return deadLetterQueue;
   }
 
-  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue) {
+  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue | sns.ITopic) {
     if (deadLetterQueue) {
       return {
-        targetArn: deadLetterQueue.queueArn,
+        targetArn: this.isQueue(deadLetterQueue) ? deadLetterQueue.queueArn : deadLetterQueue.topicArn,
       };
     } else {
       return undefined;
@@ -1149,4 +1278,24 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
 function undefinedIfNoKeys<A>(struct: A): A | undefined {
   const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;
+}
+
+/**
+ * Aspect for upgrading function versions when the feature flag
+ * provided feature flag present. This can be necessary when the feature flag
+ * changes the function hash, as such changes must be associated with a new
+ * version. This aspect will change the function description in these cases,
+ * which "validates" the new function hash.
+ */
+export class FunctionVersionUpgrade implements IAspect {
+  constructor(private readonly featureFlag: string, private readonly enabled=true) {}
+
+  public visit(node: IConstruct): void {
+    if (node instanceof Function &&
+      this.enabled === FeatureFlags.of(node).isEnabled(this.featureFlag)) {
+      const cfnFunction = node.node.defaultChild as CfnFunction;
+      const desc = cfnFunction.description ? `${cfnFunction.description} ` : '';
+      cfnFunction.addPropertyOverride('Description', `${desc}version-hash:${calculateFunctionHash(node)}`);
+    }
+  };
 }

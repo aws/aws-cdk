@@ -1,12 +1,8 @@
 import * as core from '@aws-cdk/core';
-import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
+import * as cfn_parse from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -54,7 +50,11 @@ export interface CfnIncludeProps {
    * If you include a parameter here with an ID that isn't in the template,
    * template creation will fail and an error will be thrown.
    *
-   * @default - no parameters will be replaced
+   * If you are importing a parameter from a live stack, we cannot know the value of that
+   * parameter. You will need to supply a value for your parameters, else the default
+   * value will be used.
+   *
+   * @default - parameters will retain their original definitions
    */
   readonly parameters?: { [parameterName: string]: any };
 }
@@ -118,7 +118,7 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the Mappings
-    this.mappingsScope = new CoreConstruct(this, '$Mappings');
+    this.mappingsScope = new Construct(this, '$Mappings');
     for (const mappingName of Object.keys(this.template.Mappings || {})) {
       this.createMapping(mappingName);
     }
@@ -129,13 +129,13 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the conditions
-    this.conditionsScope = new CoreConstruct(this, '$Conditions');
+    this.conditionsScope = new Construct(this, '$Conditions');
     for (const conditionName of Object.keys(this.template.Conditions || {})) {
       this.getOrCreateCondition(conditionName);
     }
 
     // instantiate the rules
-    this.rulesScope = new CoreConstruct(this, '$Rules');
+    this.rulesScope = new Construct(this, '$Rules');
     for (const ruleName of Object.keys(this.template.Rules || {})) {
       this.createRule(ruleName);
     }
@@ -153,12 +153,12 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the Hooks
-    this.hooksScope = new CoreConstruct(this, '$Hooks');
+    this.hooksScope = new Construct(this, '$Hooks');
     for (const hookName of Object.keys(this.template.Hooks || {})) {
       this.createHook(hookName);
     }
 
-    const outputScope = new CoreConstruct(this, '$Ouputs');
+    const outputScope = new Construct(this, '$Ouputs');
     for (const logicalId of Object.keys(this.template.Outputs || {})) {
       this.createOutput(logicalId, outputScope);
     }
@@ -584,7 +584,12 @@ export class CfnInclude extends core.CfnElement {
     return cfnCondition;
   }
 
-  private getOrCreateResource(logicalId: string): core.CfnResource {
+  private getOrCreateResource(logicalId: string, cycleChain: string[] = []): core.CfnResource {
+    cycleChain = cycleChain.concat([logicalId]);
+    if (cycleChain.length !== new Set(cycleChain).size) {
+      throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
+    }
+
     const ret = this.resources[logicalId];
     if (ret) {
       return ret;
@@ -618,7 +623,7 @@ export class CfnInclude extends core.CfnElement {
         if (!(lId in (self.template.Resources || {}))) {
           return undefined;
         }
-        return self.getOrCreateResource(lId);
+        return self.getOrCreateResource(lId, cycleChain);
       },
 
       findRefTarget(elementName: string): core.CfnElement | undefined {

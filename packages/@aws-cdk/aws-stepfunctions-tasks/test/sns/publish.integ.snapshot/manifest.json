@@ -1,0 +1,82 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-stepfunctions-tasks-sns-publish-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-tasks-sns-publish-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-stepfunctions-tasks-sns-publish-integ/cool-topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cooltopic4736778A"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/show-me-the-messages/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "showmethemessages8D16BBDB"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/show-me-the-messages/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "showmethemessagesPolicyB08B04B0"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/show-me-the-messages/awsstepfunctionstaskssnspublishintegcooltopic8388C976/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "showmethemessagesawsstepfunctionstaskssnspublishintegcooltopic8388C976F1D63091"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/stateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stateMachineArn"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/queueUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "queueUrl"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-tasks-sns-publish-integ"
+    }
+  }
+}

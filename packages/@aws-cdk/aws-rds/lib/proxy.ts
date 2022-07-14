@@ -504,7 +504,7 @@ export class DatabaseProxy extends DatabaseProxyBase
       }
       // 'username' is the field RDS uses here,
       // see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html#rds-proxy-secrets-arns
-      dbUser = this.secrets[0].secretValueFromJson('username').toString();
+      dbUser = this.secrets[0].secretValueFromJson('username').unsafeUnwrap();
     }
     return super.grantConnect(grantee, dbUser);
   }

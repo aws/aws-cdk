@@ -48,7 +48,7 @@ test('import an AccessPoint using fromAccessPointId throws when accessing fileSy
   });
   const imported = AccessPoint.fromAccessPointId(stack, 'ImportedAccessPoint', ap.accessPointId);
   // THEN
-  expect(() => imported.fileSystem).toThrow(/fileSystem is not available when 'fromAccessPointId\(\)' is used. Use 'fromAccessPointAttributes\(\)' instead/);
+  expect(() => imported.fileSystem).toThrow(/fileSystem is only available if 'fromAccessPointAttributes\(\)' is used and a fileSystem is passed in as an attribute./);
 });
 
 test('import an AccessPoint using fromAccessPointAttributes and the accessPointId', () => {

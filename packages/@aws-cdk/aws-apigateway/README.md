@@ -107,6 +107,21 @@ item.addMethod('GET');   // GET /items/{item}
 item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 ```
 
+Additionally, `integrationOptions` can be supplied to explicitly define
+options of the Lambda integration:
+
+```ts
+declare const backend: lambda.Function;
+
+const api = new apigateway.LambdaRestApi(this, 'myapi', {
+  handler: backend,
+  integrationOptions: {
+    allowTestInvoke: false,
+    timeout: Duration.seconds(1),
+  }
+})
+```
+
 ## AWS StepFunctions backed APIs
 
 You can use Amazon API Gateway with AWS Step Functions as the backend integration, specifically Synchronous Express Workflows.
@@ -126,7 +141,7 @@ Other metadata such as billing details, AWS account ID and resource ARNs are not
 
 By default, a `prod` stage is provisioned.
 
-In order to reduce the payload size sent to AWS Step Functions, `headers` are not forwarded to the Step Functions execution input. It is possible to choose whether `headers`,  `requestContext`, `path` and `querystring` are included or not. By default, `headers` are excluded in all requests.
+In order to reduce the payload size sent to AWS Step Functions, `headers` are not forwarded to the Step Functions execution input. It is possible to choose whether `headers`,  `requestContext`, `path`, `querystring`, and `authorizer` are included or not. By default, `headers` are excluded in all requests.
 
 More details about AWS Step Functions payload limit can be found at https://docs.aws.amazon.com/step-functions/latest/dg/limits-overview.html#service-limits-task-executions.
 
@@ -184,7 +199,7 @@ AWS Step Functions will receive the following execution input:
 }
 ```
 
-Additional information around the request such as the request context and headers can be included as part of the input
+Additional information around the request such as the request context, authorizer context, and headers can be included as part of the input
 forwarded to the state machine. The following example enables headers to be included in the input but not query string.
 
 ```ts fixture=stepfunctions
@@ -193,6 +208,7 @@ new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
   headers: true,
   path: false,
   querystring: false,
+  authorizer: false,
   requestContext: {
     caller: true,
     user: true,
@@ -425,7 +441,7 @@ have to define your models and mappings for the request, response, and integrati
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });

@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-servicediscovery",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::ServiceDiscovery",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,18 +18,25 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ServiceDiscovery",
         "packageId": "Amazon.CDK.AWS.ServiceDiscovery",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-servicediscovery",
         "module": "aws_cdk.aws_servicediscovery",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -40,7 +48,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -77,18 +85,18 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.0",
-    "jest": "^27.4.7"
+    "@types/jest": "^27.5.2",
+    "jest": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -96,10 +104,10 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "awslint": {
     "exclude": [
@@ -156,7 +164,9 @@
       "docs-public-apis:@aws-cdk/aws-servicediscovery.PrivateDnsNamespaceAttributes",
       "docs-public-apis:@aws-cdk/aws-servicediscovery.PrivateDnsNamespaceProps",
       "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceAttributes",
-      "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceProps"
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceProps",
+      "resource-attribute:@aws-cdk/aws-servicediscovery.PrivateDnsNamespace.privateDnsNamespaceHostedZoneId",
+      "resource-attribute:@aws-cdk/aws-servicediscovery.PublicDnsNamespace.publicDnsNamespaceHostedZoneId"
     ]
   },
   "stability": "stable",

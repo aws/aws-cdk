@@ -809,6 +809,10 @@ describe('bucket', () => {
                       's3:List*',
                       's3:DeleteObject*',
                       's3:PutObject',
+                      's3:PutObjectLegalHold',
+                      's3:PutObjectRetention',
+                      's3:PutObjectTagging',
+                      's3:PutObjectVersionTagging',
                       's3:Abort*',
                     ],
                     'Effect': 'Allow',
@@ -1084,6 +1088,10 @@ describe('bucket', () => {
                 's3:List*',
                 's3:DeleteObject*',
                 's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
               'Effect': 'Allow',
@@ -1117,6 +1125,10 @@ describe('bucket', () => {
               'Action': [
                 's3:DeleteObject*',
                 's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
               'Effect': 'Allow',
@@ -1184,6 +1196,10 @@ describe('bucket', () => {
               'Action': [
                 's3:DeleteObject*',
                 's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
               'Effect': 'Allow',
@@ -1217,6 +1233,10 @@ describe('bucket', () => {
             {
               'Action': [
                 's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
               'Effect': 'Allow',
@@ -1247,8 +1267,23 @@ describe('bucket', () => {
     const resources = Template.fromStack(stack).toJSON().Resources;
     const actions = (id: string) => resources[id].Properties.PolicyDocument.Statement[0].Action;
 
-    expect(actions('WriterDefaultPolicyDC585BCE')).toEqual(['s3:DeleteObject*', 's3:PutObject', 's3:Abort*']);
-    expect(actions('PutterDefaultPolicyAB138DD3')).toEqual(['s3:PutObject', 's3:Abort*']);
+    expect(actions('WriterDefaultPolicyDC585BCE')).toEqual([
+      's3:DeleteObject*',
+      's3:PutObject',
+      's3:PutObjectLegalHold',
+      's3:PutObjectRetention',
+      's3:PutObjectTagging',
+      's3:PutObjectVersionTagging',
+      's3:Abort*',
+    ]);
+    expect(actions('PutterDefaultPolicyAB138DD3')).toEqual([
+      's3:PutObject',
+      's3:PutObjectLegalHold',
+      's3:PutObjectRetention',
+      's3:PutObjectTagging',
+      's3:PutObjectVersionTagging',
+      's3:Abort*',
+    ]);
     expect(actions('DeleterDefaultPolicyCD33B8A0')).toEqual('s3:DeleteObject*');
 
   });
@@ -2705,6 +2740,18 @@ describe('bucket', () => {
           'DeletionPolicy': 'Retain',
           'UpdateReplacePolicy': 'Retain',
         },
+      },
+    });
+  });
+
+  test('Event Bridge notification can be enabled after the bucket is created', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    bucket.enableEventBridgeNotification();
+
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+      NotificationConfiguration: {
+        EventBridgeConfiguration: {},
       },
     });
   });
