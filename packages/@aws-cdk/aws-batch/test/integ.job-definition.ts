@@ -33,7 +33,7 @@ const awsApiCallResponse = integ.assertions.awsApiCall(
   "describeJobDefinitions",
   {
     jobDefinitionName,
-  }
+  },
 );
 
 awsApiCallResponse.assertAtPath(
@@ -43,7 +43,7 @@ awsApiCallResponse.assertAtPath(
       name: "AWS_REGION",
       value: "",
     },
-  ])
+  ]),
 );
 
 app.synth();
