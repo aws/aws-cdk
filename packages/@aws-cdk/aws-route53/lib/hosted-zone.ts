@@ -250,8 +250,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
    * @param id  the logical name of this Construct
    * @param attrs the PublicHostedZoneAttributes (hosted zone ID and hosted zone name)
    */
-  public static fromPublicHostedZoneAttributes(scope: Construct, id: string, attrs: PublicHostedZoneAttributes): IHostedZone {
-    class Import extends Resource implements IHostedZone {
+  public static fromPublicHostedZoneAttributes(scope: Construct, id: string, attrs: PublicHostedZoneAttributes): IPublicHostedZone {
+    class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
       public get hostedZoneArn(): string {

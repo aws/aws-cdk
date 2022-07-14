@@ -66,9 +66,17 @@ export enum AllocationStrategy {
  */
 export interface LaunchTemplateSpecification {
   /**
-   * The Launch template name
+   * The Launch template ID. Mutually exclusive with `launchTemplateName`.
+   *
+   * @default - no launch template id provided
    */
-  readonly launchTemplateName: string;
+  readonly launchTemplateId?: string;
+  /**
+   * The Launch template name. Mutually exclusive with `launchTemplateId`
+   *
+   * @default - no launch template name provided
+   */
+  readonly launchTemplateName?: string;
   /**
    * The launch template version to be used (optional).
    *
@@ -518,6 +526,19 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
             throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
           }
         }
+
+        // Check if both launchTemplateId and launchTemplateName are provided
+        if (props.computeResources.launchTemplate &&
+          (props.computeResources.launchTemplate.launchTemplateId && props.computeResources.launchTemplate.launchTemplateName)) {
+          throw new Error('You must specify either the launch template ID or launch template name in the request, but not both.');
+        }
+
+        // Check if both launchTemplateId and launchTemplateName are missing
+        if (props.computeResources.launchTemplate &&
+          (!props.computeResources.launchTemplate.launchTemplateId && !props.computeResources.launchTemplate.launchTemplateName)) {
+          throw new Error('You must specify either the launch template ID or launch template name in the request.');
+        }
+
         // Setting a bid percentage is only allowed on SPOT resources +
         // Cannot use SPOT_CAPACITY_OPTIMIZED when using ON_DEMAND
         if (props.computeResources.type === ComputeResourceType.ON_DEMAND) {

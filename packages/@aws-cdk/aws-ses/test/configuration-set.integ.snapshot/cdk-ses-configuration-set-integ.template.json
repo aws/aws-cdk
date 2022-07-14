@@ -1,0 +1,7 @@
+{
+ "Resources": {
+  "ConfigurationSet3DD38186": {
+   "Type": "AWS::SES::ConfigurationSet"
+  }
+ }
+}

@@ -264,6 +264,31 @@ myTable.addPartitionIndex({
 });
 ```
 
+### Partition Filtering
+
+If you have a table with a large number of partitions that grows over time, consider using AWS Glue partition indexing and filtering.
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
+    database: myDatabase,
+    tableName: 'my_table',
+    columns: [{
+        name: 'col1',
+        type: glue.Schema.STRING,
+    }],
+    partitionKeys: [{
+        name: 'year',
+        type: glue.Schema.SMALL_INT,
+    }, {
+        name: 'month',
+        type: glue.Schema.SMALL_INT,
+    }],
+    dataFormat: glue.DataFormat.JSON,
+    enablePartitionFiltering: true,
+});
+```
+
 ## [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
 You can enable encryption on a Table's data:

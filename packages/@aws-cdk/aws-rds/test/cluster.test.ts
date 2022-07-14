@@ -10,7 +10,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
-  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials,
+  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour,
 } from '../lib';
 
 describe('cluster', () => {
@@ -120,6 +120,36 @@ describe('cluster', () => {
         ]],
       },
     });
+  });
+
+  test('can create a cluster with ROLLING instance update behaviour', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 5,
+      instanceProps: {
+        vpc,
+      },
+      instanceUpdateBehaviour: InstanceUpdateBehaviour.ROLLING,
+    });
+
+    // THEN
+    const instanceResources = Template.fromStack(stack).findResources('AWS::RDS::DBInstance');
+    const instances = Object.keys(instanceResources);
+    const instanceDependencies = Object.values(instanceResources)
+      .map(properties => (properties.DependsOn as string[]).filter(dependency => instances.includes(dependency)));
+    // check that there are only required dependencies to form a chain of dependant instances
+    for (const dependencies of instanceDependencies) {
+      expect(dependencies.length).toBeLessThanOrEqual(1);
+    }
+    // check that all but one instance are a dependency of another instance
+    const dependantInstances = instanceDependencies.flat();
+    expect(dependantInstances).toHaveLength(instances.length - 1);
+    expect(instances.filter(it => !dependantInstances.includes(it))).toHaveLength(1);
   });
 
   test('can create a cluster with imported vpc and security group', () => {

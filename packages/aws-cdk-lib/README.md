@@ -1026,6 +1026,16 @@ const stack = new Stack(app, 'StackName', {
 
 By default, termination protection is disabled.
 
+### Description
+
+You can add a description of the stack in the same way as `StackProps`.
+
+```ts
+const stack = new Stack(app, 'StackName', {
+  description: 'This is a description.',
+});
+```
+
 ### CfnJson
 
 `CfnJson` allows you to postpone the resolution of a JSON blob from

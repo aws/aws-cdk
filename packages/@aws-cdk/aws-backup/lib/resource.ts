@@ -99,6 +99,21 @@ export class BackupResource {
   }
 
   /**
+   * A RDS database cluter
+   */
+  public static fromRdsDatabaseCluster(cluster: rds.IDatabaseCluster) {
+    const stack = Stack.of(cluster);
+    return BackupResource.fromArn(`arn:${stack.partition}:rds:${stack.region}:${stack.account}:cluster:${cluster.clusterIdentifier}`);
+  }
+
+  /**
+   * An Aurora database instance
+   */
+  public static fromRdsServerlessCluster(cluster: rds.IServerlessCluster) {
+    return BackupResource.fromArn(cluster.clusterArn);
+  }
+
+  /**
    * A list of ARNs or match patterns such as
    * `arn:aws:ec2:us-east-1:123456789012:volume/*`
    */

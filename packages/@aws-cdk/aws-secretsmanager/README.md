@@ -252,3 +252,36 @@ Alternatively, use `addReplicaRegion()`:
 const secret = new secretsmanager.Secret(this, 'Secret');
 secret.addReplicaRegion('eu-west-1');
 ```
+
+## Creating JSON Secrets
+
+Sometimes it is necessary to create a secret in SecretsManager that contains a JSON object.
+For example:
+
+```json
+{
+  "username": "myUsername",
+  "database": "foo",
+  "password": "mypassword"
+}
+```
+
+In order to create this type of secret, use the `secretObjectValue` input prop.
+
+```ts
+const user = new iam.User(stack, 'User');
+const accessKey = new iam.AccessKey(stack, 'AccessKey', { user });
+declare const stack: Stack;
+
+new secretsmanager.Secret(stack, 'Secret', {
+  secretObjectValue: {
+    username: SecretValue.unsafePlainText(user.userName),
+    database: SecretValue.unsafePlainText('foo'),
+    password: accessKey.secretAccessKey,
+  },
+})
+```
+
+In this case both the `username` and `database` are not a `Secret` so `SecretValue.unsafePlainText` needs to be used.
+This means that they will be rendered as plain text in the template, but in this case neither of those
+are actual "secrets".

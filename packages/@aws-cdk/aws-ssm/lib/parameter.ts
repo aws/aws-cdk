@@ -329,6 +329,27 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
 /**
  * Creates a new String SSM Parameter.
  * @resource AWS::SSM::Parameter
+ *
+ * @example
+ *
+ * const ssmParameter = new ssm.StringParameter(this, 'mySsmParameter', {
+ *    parameterName: 'mySsmParameter',
+ *    stringValue: 'mySsmParameterValue',
+ *    type: ssm.ParameterType.STRING,
+ * });
+ *
+ * const secureParameter = new ssm.StringParameter(this, 'mySecretParameter', {
+ *    parameterName: 'mySecretParameter',
+ *    stringValue: 'mySecretParameterValue',
+ *    type: ssm.ParameterType.SECURE_STRING,
+ * });
+ *
+ * const listParameter = new ssm.StringParameter(this, 'myListParameter', {
+ *    parameterName: 'myListParameter',
+ *    stringValue: ["myListParameterValue1", "myListParameterValue2"],
+ *    type: ssm.ParameterType.STRING_LIST,
+ * });
+ *
  */
 export class StringParameter extends ParameterBase implements IStringParameter {
 

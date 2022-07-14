@@ -175,7 +175,7 @@ describe('IntegTest runSnapshotTests', () => {
 
     // THEN
     expect(integTest.actualTests()).toEqual(expect.objectContaining({
-      'test-data/xxxxx.integ-test1': {
+      'xxxxx.integ-test1': {
         diffAssets: false,
         stackUpdateWorkflow: true,
         stacks: ['stack1'],
@@ -197,7 +197,7 @@ describe('IntegTest runSnapshotTests', () => {
 
     // THEN
     expect(integTest.actualTests()).toEqual(expect.objectContaining({
-      'test-data/xxxxx.integ-test2': {
+      'xxxxx.integ-test2': {
         diffAssets: false,
         stackUpdateWorkflow: true,
         stacks: ['stackabc'],

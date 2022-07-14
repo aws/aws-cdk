@@ -268,6 +268,13 @@ describe('vpc endpoint', () => {
 
     });
 
+    describe('interface endpoint retains service name in shortName property', () => {
+      test('shortName property', () => {
+        expect(InterfaceVpcEndpointAwsService.ECS.shortName).toBe('ecs');
+        expect(InterfaceVpcEndpointAwsService.ECR_DOCKER.shortName).toBe('ecr.dkr');
+      });
+    });
+
     describe('add interface endpoint to looked-up VPC', () => {
       test('initial run', () => {
         // GIVEN

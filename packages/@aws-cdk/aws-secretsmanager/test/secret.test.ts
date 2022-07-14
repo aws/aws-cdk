@@ -1335,3 +1335,57 @@ test('with replication regions', () => {
     ],
   });
 });
+
+describe('secretObjectValue', () => {
+  test('can be used with a mixture of plain text and SecretValue', () => {
+    const user = new iam.User(stack, 'User');
+    const accessKey = new iam.AccessKey(stack, 'MyKey', { user });
+    new secretsmanager.Secret(stack, 'Secret', {
+      secretObjectValue: {
+        username: cdk.SecretValue.unsafePlainText('username'),
+        password: accessKey.secretAccessKey,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      GenerateSecretString: Match.absent(),
+      SecretString: {
+        'Fn::Join': [
+          '',
+          [
+            '{"username":"username","password":"',
+            { 'Fn::GetAtt': ['MyKey6AB29FA6', 'SecretAccessKey'] },
+            '"}',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('can be used with a mixture of plain text and SecretValue, with feature flag', () => {
+    const featureStack = new cdk.Stack();
+    featureStack.node.setContext('@aws-cdk/core:checkSecretUsage', true);
+    const user = new iam.User(featureStack, 'User');
+    const accessKey = new iam.AccessKey(featureStack, 'MyKey', { user });
+    new secretsmanager.Secret(featureStack, 'Secret', {
+      secretObjectValue: {
+        username: cdk.SecretValue.unsafePlainText('username'),
+        password: accessKey.secretAccessKey,
+      },
+    });
+
+    Template.fromStack(featureStack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      GenerateSecretString: Match.absent(),
+      SecretString: {
+        'Fn::Join': [
+          '',
+          [
+            '{"username":"username","password":"',
+            { 'Fn::GetAtt': ['MyKey6AB29FA6', 'SecretAccessKey'] },
+            '"}',
+          ],
+        ],
+      },
+    });
+  });
+});

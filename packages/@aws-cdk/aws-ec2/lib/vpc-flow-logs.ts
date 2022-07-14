@@ -100,6 +100,23 @@ export abstract class FlowLogResourceType {
 }
 
 /**
+ * The file format for flow logs written to an S3 bucket destination
+ */
+export enum FlowLogFileFormat {
+  /**
+   * File will be written as plain text
+   *
+   * This is the default value
+   */
+  PLAIN_TEXT = 'plain-text',
+
+  /**
+   * File will be written in parquet format
+   */
+  PARQUET = 'parquet',
+}
+
+/**
  * Options for writing logs to a S3 destination
  */
 export interface S3DestinationOptions {
@@ -110,6 +127,20 @@ export interface S3DestinationOptions {
    * @default false
    */
   readonly hiveCompatiblePartitions?: boolean;
+
+  /**
+   * The format for the flow log
+   *
+   * @default FlowLogFileFormat.PLAIN_TEXT
+   */
+  readonly fileFormat?: FlowLogFileFormat;
+
+  /**
+   * Partition the flow log per hour
+   *
+   * @default false
+   */
+  readonly perHourPartition?: boolean;
 }
 
 /**
@@ -287,7 +318,13 @@ class S3Destination extends FlowLogDestination {
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket,
       keyPrefix: this.props.keyPrefix,
-      destinationOptions: this.props.destinationOptions,
+      destinationOptions: (this.props.destinationOptions?.fileFormat || this.props.destinationOptions?.perHourPartition
+      || this.props.destinationOptions?.hiveCompatiblePartitions)
+        ? {
+          fileFormat: this.props.destinationOptions.fileFormat ?? FlowLogFileFormat.PLAIN_TEXT,
+          perHourPartition: this.props.destinationOptions.perHourPartition ?? false,
+          hiveCompatiblePartitions: this.props.destinationOptions.hiveCompatiblePartitions ?? false,
+        } : undefined,
     };
   }
 }
@@ -473,5 +510,6 @@ export class FlowLog extends FlowLogBase {
     });
 
     this.flowLogId = flowLog.ref;
+    this.node.defaultChild = flowLog;
   }
 }

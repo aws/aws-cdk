@@ -455,8 +455,9 @@ locally to your terminal. To disable this feature you can pass the `--no-logs` o
 $ cdk watch --no-logs
 ```
 
-**Note**: This command is considered experimental,
-and might have breaking changes in the future.
+**Note**: This command is considered experimental, and might have breaking changes in the future.
+The same limitations apply to to `watch` deployments as do to `--hotswap` deployments. See the
+*Hotswap deployments for faster development* section for more information.
 
 ### `cdk import`
 
@@ -517,10 +518,10 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 
 ### `cdk bootstrap`
 
-Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket 
-and ECR reposity that `cdk deploy` will use to store synthesized templates and the related assets, before 
-triggering a CloudFormation stack update. The name of the deployed stack can be configured using the 
-`--toolkit-stack-name` argument. The S3 Bucket Public Access Block Configuration can be configured using 
+Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket
+and ECR reposity that `cdk deploy` will use to store synthesized templates and the related assets, before
+triggering a CloudFormation stack update. The name of the deployed stack can be configured using the
+`--toolkit-stack-name` argument. The S3 Bucket Public Access Block Configuration can be configured using
 the `--public-access-block-configuration` argument. ECR uses immutable tags for images.
 
 ```console
