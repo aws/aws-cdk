@@ -337,7 +337,7 @@ describe('key policies', () => {
     });
   });
 
-  testFutureBehavior('withoutPolicyUpdates', flags, cdk.App, (app) => {
+  testFutureBehavior('grant for an immutable role', flags, cdk.App, (app) => {
     const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '0123456789012' } });
     const principal = new iam.Role(principalStack, 'Role', {
       assumedBy: new iam.AnyPrincipal(),
