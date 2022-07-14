@@ -238,6 +238,7 @@ async function parseCommandLineArguments() {
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
+      .option('force', { alias: 'f', desc: 'Ignore missing key error', type: 'boolean', default: false })
       .option('clear', { desc: 'Clear all context', type: 'boolean' }))
     .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) => yargs
       .option('browser', {
