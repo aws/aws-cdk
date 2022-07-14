@@ -612,6 +612,31 @@ describe('staging', () => {
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
 
+  test('bundling with docker entrypoint', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        entrypoint: [DockerStubCommand.SUCCESS],
+        command: [DockerStubCommand.SUCCESS],
+      },
+      assetHashType: AssetHashType.OUTPUT,
+    });
+
+    // THEN
+    expect(
+      readDockerStubInput()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input --entrypoint DOCKER_STUB_SUCCESS alpine DOCKER_STUB_SUCCESS`,
+    );
+    expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
+  });
+
   test('bundling with OUTPUT asset hash type', () => {
     // GIVEN
     const app = new App();
