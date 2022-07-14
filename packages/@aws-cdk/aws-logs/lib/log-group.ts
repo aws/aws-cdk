@@ -349,9 +349,9 @@ export enum RetentionDays {
  */
 export interface LogGroupProps {
   /**
-   * The KMS Key to encrypt the log group with.
+   * The KMS customer managed key to encrypt the log group with.
    *
-   * @default - log group is encrypted with the default master key
+   * @default Server-side encrpytion managed by the CloudWatch Logs service
    */
   readonly encryptionKey?: kms.IKey;
 
