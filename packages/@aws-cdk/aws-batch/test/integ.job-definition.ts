@@ -5,7 +5,7 @@ import { ExpectedResult, IntegTest } from "@aws-cdk/integ-tests";
 import { Construct } from "constructs";
 import { JobDefinition } from "../lib";
 
-const jobDefinitionName = "aws-batch-with-fallback-env";
+const jobDefinitionName = "aws-batch-test";
 
 class SampleStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -33,7 +33,7 @@ const awsApiCallResponse = integ.assertions.awsApiCall(
   "describeJobDefinitions",
   {
     jobDefinitionName,
-  },
+  }
 );
 
 awsApiCallResponse.assertAtPath(
@@ -43,7 +43,7 @@ awsApiCallResponse.assertAtPath(
       name: "AWS_REGION",
       value: "",
     },
-  ]),
+  ])
 );
 
 app.synth();
