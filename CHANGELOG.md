@@ -12,7 +12,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **custom-resources:** Custom resource provider framework not passing `ResponseURL` to user function (backport [#21117](https://github.com/aws/aws-cdk/issues/21117)) ([#21123](https://github.com/aws/aws-cdk/issues/21123)) ([e280dfe](https://github.com/aws/aws-cdk/commit/e280dfe7c5062c76a2be2ed2ad5f623e57fdb188))
 * **ec2:** deprecated `SubnetType` enums are treated incorrectly (backport [#21140](https://github.com/aws/aws-cdk/issues/21140)) ([#21141](https://github.com/aws/aws-cdk/issues/21141)) ([683298e](https://github.com/aws/aws-cdk/commit/683298e151d9283e1c0b5c53fcdbc127ab6aad43))
 
 ## [1.163.2](https://github.com/aws/aws-cdk/compare/v1.163.1...v1.163.2) (2022-07-13)
