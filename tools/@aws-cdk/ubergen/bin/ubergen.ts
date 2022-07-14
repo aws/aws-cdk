@@ -13,6 +13,8 @@ const MONOPACKAGE_ROOT = process.cwd();
 const ROOT_PATH = findWorkspacePath();
 const UBER_PACKAGE_JSON_PATH = path.join(MONOPACKAGE_ROOT, 'package.json');
 
+const EXCLUDED_PACKAGES = ['@aws-cdk/example-construct-library'];
+
 async function main() {
   console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
   const uberPackageJson = await fs.readJson(UBER_PACKAGE_JSON_PATH) as PackageJson;
@@ -95,6 +97,11 @@ interface PackageJson {
      * @default true
      */
     readonly explicitExports?: boolean;
+
+    /**
+     * An exports section that should be ignored for v1 but included for ubergen
+     */
+    readonly exports?: Record<string, string>;
   };
   exports?: Record<string, string>;
 }
@@ -129,7 +136,7 @@ async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<rea
   for (const dir of await fs.readdir(librariesRoot)) {
     const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
 
-    if (packageJson.private || packageJson.ubergen?.exclude) {
+    if (packageJson.ubergen?.exclude || EXCLUDED_PACKAGES.includes(packageJson.name)) {
       console.log(`\t⚠️ Skipping (ubergen excluded):   ${packageJson.name}`);
       continue;
     } else if (packageJson.jsii == null ) {
@@ -147,7 +154,7 @@ async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<rea
     result.push({
       packageJson,
       root: path.join(librariesRoot, dir),
-      shortName: packageJson.name.substr('@aws-cdk/'.length),
+      shortName: packageJson.name.slice('@aws-cdk/'.length),
     });
   }
 
@@ -285,8 +292,8 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
       indexStatements.push(`export * from './${library.shortName}';`);
     } else {
       indexStatements.push(`export * as ${library.shortName.replace(/-/g, '_')} from './${library.shortName}';`);
-      copySubmoduleExports(packageJson.exports, library, library.shortName);
     }
+    copySubmoduleExports(packageJson.exports, library, library.shortName);
   }
 
   await fs.writeFile(path.join(libRoot, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
@@ -303,13 +310,18 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
 function copySubmoduleExports(targetExports: Record<string, string>, library: LibraryReference, subdirectory: string) {
   const visibleName = library.shortName;
 
-  for (const [relPath, relSource] of Object.entries(library.packageJson.exports ?? {})) {
-    targetExports[`./${unixPath(path.join(visibleName, relPath))}`] = `./${unixPath(path.join(subdirectory, relSource))}`;
+  // Do both REAL "exports" section, as well as virtual, ubergen-only "exports" section
+  for (const exportSet of [library.packageJson.exports, library.packageJson.ubergen?.exports]) {
+    for (const [relPath, relSource] of Object.entries(exportSet ?? {})) {
+      targetExports[`./${unixPath(path.join(visibleName, relPath))}`] = `./${unixPath(path.join(subdirectory, relSource))}`;
+    }
   }
 
-  // If there was an export for '.' in the original submodule, this assignment will overwrite it,
-  // which is exactly what we want.
-  targetExports[`./${unixPath(visibleName)}`] = `./${unixPath(subdirectory)}/index.js`;
+  if (visibleName !== 'core') {
+    // If there was an export for '.' in the original submodule, this assignment will overwrite it,
+    // which is exactly what we want.
+    targetExports[`./${unixPath(visibleName)}`] = `./${unixPath(subdirectory)}/index.js`;
+  }
 }
 
 async function combineRosettaFixtures(libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
@@ -575,7 +587,7 @@ async function rewriteLibraryImports(fromFile: string, targetDir: string, libRoo
 
     const importedFile = modulePath === sourceLibrary.packageJson.name
       ? path.join(libRoot, sourceLibrary.shortName)
-      : path.join(libRoot, sourceLibrary.shortName, modulePath.substr(sourceLibrary.packageJson.name.length + 1));
+      : path.join(libRoot, sourceLibrary.shortName, modulePath.slice(sourceLibrary.packageJson.name.length + 1));
 
     return path.relative(targetDir, importedFile);
   }

@@ -1,0 +1,40 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "ChatbotInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ChatbotInteg.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/ChatbotInteg/MySlackChannel/ConfigurationRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySlackChannelConfigurationRole1D3F23AE"
+          }
+        ],
+        "/ChatbotInteg/MySlackChannel/ConfigurationRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySlackChannelConfigurationRoleDefaultPolicyE4C1FA62"
+          }
+        ],
+        "/ChatbotInteg/MySlackChannel/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySlackChannelA8E0B56C"
+          }
+        ]
+      },
+      "displayName": "ChatbotInteg"
+    }
+  }
+}

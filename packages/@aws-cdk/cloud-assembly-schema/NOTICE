@@ -45,7 +45,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ----------------
 
-** yallist - https://www.npmjs.com/package/yallist
+** semver - https://www.npmjs.com/package/semver
 Copyright (c) Isaac Z. Schlueter and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -62,7 +62,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ----------------
 
-** semver - https://www.npmjs.com/package/semver
+** yallist - https://www.npmjs.com/package/yallist
 Copyright (c) Isaac Z. Schlueter and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any

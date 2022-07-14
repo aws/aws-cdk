@@ -62,8 +62,8 @@ declare const myZone: route53.HostedZone;
 
 new route53.NsRecord(this, 'NSRecord', {
   zone: myZone,
-  recordName: 'foo',  
-  values: [            
+  recordName: 'foo',
+  values: [
     'ns-1.awsdns.co.uk.',
     'ns-2.awsdns.com.',
   ],
@@ -132,6 +132,26 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
 
+### Working with existing record sets
+
+Use the `deleteExisting` prop to delete an existing record set before deploying the new one.
+This is useful if you want to minimize downtime and avoid "manual" actions while deploying a
+stack with a record set that already exists. This is typically the case for record sets that
+are not already "owned" by CloudFormation or "owned" by another stack or construct that is
+going to be deleted (migration).
+
+```ts
+declare const myZone: route53.HostedZone;
+
+new route53.ARecord(this, 'ARecord', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+  deleteExisting: true,
+});
+```
+
+### Cross Account Zone Delegation
+
 To add a NS record to a HostedZone in different account you can do the following:
 
 In the account containing the parent hosted zone:
@@ -171,7 +191,7 @@ new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
 
 ## Imports
 
-If you don't know the ID of the Hosted Zone to import, you can use the 
+If you don't know the ID of the Hosted Zone to import, you can use the
 `HostedZone.fromLookup`:
 
 ```ts
@@ -181,14 +201,14 @@ route53.HostedZone.fromLookup(this, 'MyZone', {
 ```
 
 `HostedZone.fromLookup` requires an environment to be configured. Check
-out the [documentation](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) for more documentation and examples. CDK 
+out the [documentation](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) for more documentation and examples. CDK
 automatically looks into your `~/.aws/config` file for the `[default]` profile.
 If you want to specify a different account run `cdk deploy --profile [profile]`.
 
 ```text
-new MyDevStack(app, 'dev', { 
-  env: { 
-    account: process.env.CDK_DEFAULT_ACCOUNT, 
+new MyDevStack(app, 'dev', {
+  env: {
+    account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,
   },
 });
@@ -208,6 +228,18 @@ you know the ID and the retrieval for the `zoneName` is undesirable.
 
 ```ts
 const zone = route53.HostedZone.fromHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
+```
+
+You can import a Public Hosted Zone as well with the similar `PubicHostedZone.fromPublicHostedZoneId` and `PubicHostedZone.fromPublicHostedZoneAttributes` methods:
+
+```ts
+const zoneFromAttributes = route53.PublicHostedZone.fromPublicHostedZoneAttributes(this, 'MyZone', {
+  zoneName: 'example.com',
+  hostedZoneId: 'ZOJJZC49E0EPZ',
+});
+
+// Does not know zoneName
+const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
 ```
 
 ## VPC Endpoint Service Private DNS

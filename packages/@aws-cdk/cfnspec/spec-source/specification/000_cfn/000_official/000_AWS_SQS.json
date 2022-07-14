@@ -1,5 +1,5 @@
 {
-  "$version": "61.0.0",
+  "$version": "79.0.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::SQS::Queue": {
@@ -94,6 +94,12 @@
           "Required": false,
           "UpdateType": "Mutable"
         },
+        "SqsManagedSseEnabled": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-sqsmanagedsseenabled",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-tags",
           "DuplicatesAllowed": true,
@@ -111,21 +117,16 @@
       }
     },
     "AWS::SQS::QueuePolicy": {
-      "Attributes": {
-        "Id": {
-          "PrimitiveType": "String"
-        }
-      },
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html",
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html",
       "Properties": {
         "PolicyDocument": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-policydocument",
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-policydoc",
           "PrimitiveType": "Json",
           "Required": true,
           "UpdateType": "Mutable"
         },
         "Queues": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-queues",
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-queues",
           "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,

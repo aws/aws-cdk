@@ -1,0 +1,34 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-saml-provider": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-saml-provider.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-saml-provider/Provider/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Provider2281708E"
+          }
+        ],
+        "/cdk-saml-provider/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ]
+      },
+      "displayName": "cdk-saml-provider"
+    }
+  }
+}

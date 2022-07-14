@@ -127,3 +127,31 @@ test('validate and fix', () => {
   expect(fs.existsSync(tarball)).toBeTruthy();
 
 });
+
+test('write ignores only .git and node_modules directories', () => {
+
+  const pkg = Package.create({ name: 'consumer', licenses: ['Apache-2.0'] });
+  pkg.addDependency({ name: 'dep1', licenses: ['MIT'] });
+  pkg.addDependency({ name: 'dep2', licenses: ['Apache-2.0'] });
+
+  pkg.write();
+  pkg.install();
+
+  const bundle = new Bundle({
+    packageDir: pkg.dir,
+    entryPoints: [pkg.entrypoint],
+    allowedLicenses: ['Apache-2.0', 'MIT'],
+  });
+
+  // add a gitignore file to the package - it should be included
+  fs.writeFileSync(path.join(pkg.dir, '.gitignore'), 'something');
+
+  // add a silly node_modules_file to the package - it should be included
+  fs.writeFileSync(path.join(pkg.dir, 'node_modules_file'), 'something');
+
+  const bundleDir = bundle.write();
+
+  expect(fs.existsSync(path.join(bundleDir, '.gitignore'))).toBeTruthy();
+  expect(fs.existsSync(path.join(bundleDir, 'node_modules_file'))).toBeTruthy();
+
+});

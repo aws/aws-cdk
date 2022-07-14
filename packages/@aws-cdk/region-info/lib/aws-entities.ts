@@ -133,14 +133,3 @@ export function partitionInformation(region: string): Region {
   }
   return PARTITION_MAP.default;
 }
-
-/**
- * Build a lookup map for all regions
- */
-export function generateRegionMap(cb: (region: string) => string): Record<string, string> {
-  const ret: Record<string, string> = {};
-  for (const region of AWS_REGIONS) {
-    ret[region] = cb(region);
-  }
-  return ret;
-}

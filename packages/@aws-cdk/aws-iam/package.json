@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-iam",
   "version": "0.0.0",
+  "private": true,
   "description": "CDK routines for easily assigning correct and minimal IAM permissions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,14 +18,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.IAM",
         "packageId": "Amazon.CDK.AWS.IAM",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-iam",
         "module": "aws_cdk.aws_iam",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -48,7 +49,7 @@
     "lint": "cdk-lint",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
@@ -81,11 +82,11 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.93",
-    "@types/jest": "^27.4.1",
+    "@types/aws-lambda": "^8.10.99",
+    "@types/jest": "^27.5.2",
     "@types/sinon": "^9.0.11",
     "jest": "^27.5.1",
     "sinon": "^9.2.4"
@@ -94,20 +95,21 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "awslint": {
     "exclude": [
       "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
+      "from-signature:@aws-cdk/aws-iam.Role.fromRoleName",
       "from-method:@aws-cdk/aws-iam.AccessKey",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
       "props-physical-name:@aws-cdk/aws-iam.OpenIdConnectProviderProps",

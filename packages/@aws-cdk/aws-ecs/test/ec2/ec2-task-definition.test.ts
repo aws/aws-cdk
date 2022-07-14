@@ -1,11 +1,11 @@
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
@@ -90,8 +90,6 @@ describe('ec2 task definition', () => {
           },
         ],
       });
-
-
     });
 
     test('correctly sets placement constraint', () => {
@@ -112,8 +110,6 @@ describe('ec2 task definition', () => {
         ],
 
       });
-
-
     });
 
     test('correctly sets network mode', () => {
@@ -127,8 +123,6 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: ecs.NetworkMode.AWS_VPC,
       });
-
-
     });
 
     test('correctly sets ipc mode', () => {
@@ -142,8 +136,6 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         IpcMode: ecs.IpcMode.TASK,
       });
-
-
     });
 
     test('correctly sets pid mode', () => {
@@ -157,8 +149,6 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         PidMode: ecs.PidMode.HOST,
       });
-
-
     });
 
     test('correctly sets containers', () => {
@@ -233,13 +223,12 @@ describe('ec2 task definition', () => {
           ],
         },
       });
-
-
     });
 
     test('all container definition options defined', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new cdk.Stack(app);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const secret = new secretsmanager.Secret(stack, 'Secret');
@@ -439,8 +428,6 @@ describe('ec2 task definition', () => {
           },
         ],
       });
-
-
     });
 
     test('correctly sets containers from ECR repository using all props', () => {
@@ -465,9 +452,6 @@ describe('ec2 task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-        ImageScanningConfiguration: {
-          ScanOnPush: false,
-        },
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
@@ -533,8 +517,6 @@ describe('ec2 task definition', () => {
           Name: 'web',
         }],
       });
-
-
     });
 
     test('correctly sets containers from ECR repository using an image tag', () => {
@@ -690,13 +672,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-        ImageScanningConfiguration: {
-          ScanOnPush: false,
-        },
-      });
-
-
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {});
     });
 
     test('warns when setting containers from ECR repository using fromRegistry method', () => {
@@ -706,14 +682,13 @@ describe('ec2 task definition', () => {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // WHEN
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY'),
         memoryLimitMiB: 512,
       });
 
       // THEN
-      expect(container.node.metadataEntry[0].data).toEqual("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
-
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     });
 
     test('warns when setting containers from ECR repository by creating a RepositoryImage class', () => {
@@ -725,18 +700,26 @@ describe('ec2 task definition', () => {
       const repo = new ecs.RepositoryImage('ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY');
 
       // WHEN
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: repo,
         memoryLimitMiB: 512,
       });
 
       // THEN
-      expect(container.node.metadataEntry[0].data).toEqual("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
-
-
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     });
 
-    testFutureBehavior('correctly sets containers from asset using default props', { [cxapi.DOCKER_IGNORE_SUPPORT]: true }, cdk.App, (app) => {
+    class MyApp extends cdk.App {
+      constructor() {
+        super({
+          context: {
+            [cxapi.DOCKER_IGNORE_SUPPORT]: true,
+          },
+        });
+      }
+    }
+
+    testLegacyBehavior('correctly sets containers from asset using default props', MyApp, (app) => {
       // GIVEN
       const stack = new cdk.Stack(app, 'Stack');
 
@@ -769,7 +752,7 @@ describe('ec2 task definition', () => {
                   {
                     Ref: 'AWS::URLSuffix',
                   },
-                  '/aws-cdk/assets:8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
+                  '/aws-cdk/assets:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
                 ],
               ],
             },
@@ -778,8 +761,6 @@ describe('ec2 task definition', () => {
           },
         ],
       });
-
-
     });
 
     test('correctly sets containers from asset using all props', () => {
@@ -794,8 +775,6 @@ describe('ec2 task definition', () => {
         }),
         memoryLimitMiB: 512,
       });
-
-
     });
 
     test('correctly sets scratch space', () => {
@@ -886,8 +865,6 @@ describe('ec2 task definition', () => {
           }],
         })],
       });
-
-
     });
     test('correctly sets links', () => {
       const stack = new cdk.Stack();
@@ -1012,8 +989,6 @@ describe('ec2 task definition', () => {
           ],
         },
       });
-
-
     });
 
     test('correctly sets volumes', () => {
@@ -1087,8 +1062,6 @@ describe('ec2 task definition', () => {
           },
         ],
       });
-
-
     });
 
     test('correctly sets taskRole', () => {
@@ -1109,8 +1082,6 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn),
       });
-
-
     });
 
     test('automatically sets taskRole by default', () => {
@@ -1122,8 +1093,6 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn),
       });
-
-
     });
 
     test('correctly sets dockerVolumeConfiguration', () => {
@@ -1163,8 +1132,6 @@ describe('ec2 task definition', () => {
           },
         }],
       });
-
-
     });
 
     test('correctly sets efsVolumeConfiguration', () => {
@@ -1191,13 +1158,11 @@ describe('ec2 task definition', () => {
         Family: 'Ec2TaskDef',
         Volumes: [{
           Name: 'scratch',
-          EfsVolumeConfiguration: {
-            FileSystemId: 'local',
+          EFSVolumeConfiguration: {
+            FilesystemId: 'local',
           },
         }],
       });
-
-
     });
   });
 

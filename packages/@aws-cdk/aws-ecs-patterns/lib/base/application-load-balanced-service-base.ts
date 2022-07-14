@@ -14,10 +14,6 @@ import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Describes the type of DNS record the service should create
  */
@@ -93,7 +89,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default - No certificate associated with the load balancer, if using
    * the HTTP protocol. For HTTPS, a DNS-validated certificate will be
-   * created for the load balancer's specified domain name.
+   * created for the load balancer's specified domain name if a domain name
+   * and domain zone are specified.
    */
   readonly certificate?: ICertificate;
 
@@ -109,8 +106,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   /**
    * The protocol for connections from clients to the load balancer.
    * The load balancer port is determined from the protocol (port 80 for
-   * HTTP, port 443 for HTTPS).  A domain name and zone must be also be
-   * specified if using HTTPS.
+   * HTTP, port 443 for HTTPS).  If HTTPS, either a certificate or domain
+   * name and domain zone must also be specified.
    *
    * @default HTTP. If a certificate is specified, the protocol will be
    * set by default to HTTPS.
@@ -258,6 +255,12 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    */
   readonly loadBalancerName?: string;
 
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -351,7 +354,8 @@ export interface ApplicationLoadBalancedTaskImageOptions {
 /**
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
-export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
+export abstract class ApplicationLoadBalancedServiceBase extends Construct {
+
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    * @deprecated - Use `internalDesiredCount` instead.
@@ -413,7 +417,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    if (props.desiredCount !== undefined && props.desiredCount < 1) {
+    if (props.desiredCount !== undefined && !cdk.Token.isUnresolved(props.desiredCount) && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
 
@@ -523,7 +527,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
   /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: CoreConstruct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);

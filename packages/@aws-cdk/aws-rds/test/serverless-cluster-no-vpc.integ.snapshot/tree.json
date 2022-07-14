@@ -1,0 +1,69 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "aws-cdk-sls-cluster-no-vpc-integ": {
+        "id": "aws-cdk-sls-cluster-no-vpc-integ",
+        "path": "aws-cdk-sls-cluster-no-vpc-integ",
+        "children": {
+          "Serverless Database Without VPC": {
+            "id": "Serverless Database Without VPC",
+            "path": "aws-cdk-sls-cluster-no-vpc-integ/Serverless Database Without VPC",
+            "children": {
+              "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
+                "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "aws-cdk-sls-cluster-no-vpc-integ/Serverless Database Without VPC/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-sls-cluster-no-vpc-integ/Serverless Database Without VPC/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
+                  "aws:cdk:cloudformation:props": {
+                    "engine": "aurora-mysql",
+                    "dbClusterParameterGroupName": "default.aurora-mysql5.7",
+                    "engineMode": "serverless",
+                    "masterUsername": "admin",
+                    "masterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
+                    "storageEncrypted": true,
+                    "vpcSecurityGroupIds": []
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBCluster",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-rds.ServerlessCluster",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

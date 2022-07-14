@@ -16,10 +16,6 @@ import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
 
@@ -603,6 +599,15 @@ export interface TableAttributes {
    * @default - no local indexes
    */
   readonly localIndexes?: string[];
+
+  /**
+   * If set to true, grant methods always grant permissions for all indexes.
+   * If false is provided, grant methods grant the permissions
+   * only when {@link globalIndexes} or {@link localIndexes} is specified.
+   *
+   * @default - false
+   */
+  readonly grantIndexPermissions?: boolean;
 }
 
 abstract class TableBase extends Resource implements ITable {
@@ -1082,7 +1087,8 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
-      protected readonly hasIndex = (attrs.globalIndexes ?? []).length > 0 ||
+      protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
+        (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
@@ -1183,7 +1189,7 @@ export class Table extends TableBase {
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
-      pointInTimeRecoverySpecification: props.pointInTimeRecovery ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
+      pointInTimeRecoverySpecification: props.pointInTimeRecovery != null ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
@@ -1224,6 +1230,8 @@ export class Table extends TableBase {
     if (props.replicationRegions && props.replicationRegions.length > 0) {
       this.createReplicaTables(props.replicationRegions, props.replicationTimeout, props.waitForReplicationToFinish);
     }
+
+    this.node.addValidation({ validate: () => this.validateTable() });
   }
 
   /**
@@ -1410,7 +1418,7 @@ export class Table extends TableBase {
    *
    * @returns an array of validation error message
    */
-  protected validate(): string[] {
+  private validateTable(): string[] {
     const errors = new Array<string>();
 
     if (!this.tablePartitionKey) {
@@ -1814,7 +1822,7 @@ interface ScalableAttributePair {
  * policy resource), new permissions are in effect before clean up happens, and so replicas that
  * need to be dropped can no longer be due to lack of permissions.
  */
-class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable {
+class SourceTableAttachedPolicy extends Construct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly policy: iam.IManagedPolicy;
 
@@ -1853,5 +1861,9 @@ class SourceTableAttachedPrincipal extends iam.PrincipalBase {
       policyDependable: this.policy,
       statementAdded: true,
     };
+  }
+
+  public dedupeString(): string | undefined {
+    return undefined;
   }
 }

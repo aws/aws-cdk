@@ -32,8 +32,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@aws-cdk/cfnspec": "0.0.0",
-    "codemaker": "^1.55.0",
-    "fast-json-patch": "^3.1.0",
+    "codemaker": "^1.60.1",
+    "fast-json-patch": "^3.1.1",
     "fs-extra": "^9.1.0",
     "yargs": "^16.2.0"
   },
@@ -41,7 +41,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/yargs": "^15.0.14",
     "jest": "^27.5.1"
   },
@@ -51,7 +51,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "ubergen": {
     "exclude": true

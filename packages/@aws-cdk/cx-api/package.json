@@ -17,14 +17,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.CXAPI",
         "packageId": "Amazon.CDK.CXAPI",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.cx-api",
         "module": "aws_cdk.cx_api",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "semver": "^7.3.5"
+    "semver": "^7.3.7"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
@@ -67,8 +67,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "@types/mock-fs": "^4.13.1",
     "@types/semver": "^7.3.9",
     "jest": "^27.5.1",
@@ -89,7 +90,7 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "maturity": "stable",
@@ -158,6 +159,6 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }

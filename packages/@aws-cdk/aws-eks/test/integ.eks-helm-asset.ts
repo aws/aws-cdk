@@ -1,12 +1,12 @@
+/// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Asset } from '@aws-cdk/aws-s3-assets';
-import { App } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import * as eks from '../lib/index';
-import { TestStack } from './util';
 
-class EksClusterStack extends TestStack {
+class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 
@@ -19,7 +19,7 @@ class EksClusterStack extends TestStack {
     });
 
     // just need one nat gateway to simplify the test
-    this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
+    this.vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1 });
 
     // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
@@ -47,6 +47,15 @@ class EksClusterStack extends TestStack {
     });
     this.cluster.addHelmChart('test-chart', {
       chartAsset: chartAsset,
+    });
+
+    this.cluster.addHelmChart('test-oci-chart', {
+      chart: 's3-chart',
+      release: 's3-chart',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/s3-chart',
+      version: 'v0.1.0',
+      namespace: 'ack-system',
+      createNamespace: true,
     });
   }
 }

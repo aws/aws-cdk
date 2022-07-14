@@ -410,7 +410,7 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
   vpc = new ec2.Vpc(stack, 'Vpc2', {
     maxAzs: 1,
     subnetConfiguration: [{
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       name: 'Isolated',
     }],
   });
@@ -430,7 +430,7 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
     cluster,
     taskDefinition,
     taskCount: 1,
-    subnetSelection: { subnetType: ec2.SubnetType.ISOLATED },
+    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     containerOverrides: [{
       containerName: 'TheContainer',
       command: ['echo', 'yay'],

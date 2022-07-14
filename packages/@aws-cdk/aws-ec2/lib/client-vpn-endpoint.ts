@@ -1,7 +1,7 @@
 import { ISamlProvider } from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { CfnOutput, ConcreteDependable, IDependable, Resource, Token } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { CfnOutput, Resource, Token } from '@aws-cdk/core';
+import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
 import { IClientVpnConnectionHandler, IClientVpnEndpoint, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
 import { ClientVpnRoute, ClientVpnRouteOptions } from './client-vpn-route';
@@ -274,7 +274,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     class Import extends Resource implements IClientVpnEndpoint {
       public readonly endpointId = attrs.endpointId;
       public readonly connections = new Connections({ securityGroups: attrs.securityGroups });
-      public readonly targetNetworksAssociated: IDependable = new ConcreteDependable();
+      public readonly targetNetworksAssociated: IDependable = new DependencyGroup();
     }
     return new Import(scope, id);
   }
@@ -288,7 +288,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
 
   public readonly targetNetworksAssociated: IDependable;
 
-  private readonly _targetNetworksAssociated = new ConcreteDependable();
+  private readonly _targetNetworksAssociated = new DependencyGroup();
 
   constructor(scope: Construct, id: string, props: ClientVpnEndpointProps) {
     super(scope, id);

@@ -18,7 +18,7 @@
 This package provides constructs for creating Kinesis Analytics Flink
 applications. To learn more about using using managed Flink applications, see
 the [AWS developer
-guide](https://docs.aws.amazon.com/kinesisanalytics/latest/java/what-is.html).
+guide](https://docs.aws.amazon.com/kinesisanalytics/latest/java/).
 
 ## Creating Flink Applications
 

@@ -1,0 +1,121 @@
+---
+name: "🐛 Bug Report"
+description: Report a bug
+title: "(module name): (short issue description)"
+labels: [bug, needs-triage]
+assignees: []
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: What is the problem? A clear and concise description of the bug.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: |
+        What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current Behavior
+      description: |
+        What actually happened?
+        
+        Please include full errors, uncaught exceptions, stack traces, and relevant logs.
+        If service responses are relevant, please include wire logs.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction Steps
+      description: |
+        Provide a self-contained, concise snippet of code that can be used to reproduce the issue.
+        For more complex issues provide a repo with the smallest sample that reproduces the bug.
+        
+        Avoid including business logic or unrelated code, it makes diagnosis more difficult.
+        The code sample should be an SSCCE. See http://sscce.org/ for details. In short, please provide a code sample that we can copy/paste, run and reproduce.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Possible Solution
+      description: |
+        Suggest a fix/reason for the bug
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Information/Context
+      description: |
+        Anything else that might be relevant for troubleshooting this bug. Providing context helps us come up with a solution that is most useful in the real world.
+    validations:
+      required: false
+
+  - type: input
+    id: cdk-version
+    attributes:
+      label: CDK CLI Version
+      description: Output of `cdk version`
+    validations:
+      required: true
+
+  - type: input
+    id: framework-version
+    attributes:
+      label: Framework Version
+    validations:
+      required: false
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js Version
+    validations:
+      required: true
+
+  - type: input
+    id: operating-system
+    attributes:
+      label: OS
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      multiple: true
+      options:
+        - Typescript
+        - Python
+        - .NET
+        - Java
+        - Go
+    validations:
+      required: true
+
+  - type: input
+    id: language-version
+    attributes:
+      label: Language Version
+      description: E.g. TypeScript (3.8.3) | Java (8) | Python (3.7.3)
+    validations:
+      required: false
+
+  - type: textarea
+    id: other
+    attributes:
+      label: Other information
+      description: |
+        e.g. detailed explanation, stacktraces, related issues, suggestions how to fix, links for us to have context, eg. associated pull-request, stackoverflow, slack, etc
+    validations:
+      required: false

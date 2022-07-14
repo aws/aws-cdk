@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnService } from './apprunner.generated';
+import { IVpcConnector } from './vpc-connector';
 
 /**
  * The image repository types
@@ -219,8 +220,14 @@ export interface EcrProps {
   /**
    * Image tag.
    * @default - 'latest'
+   * @deprecated use `tagOrDigest`
    */
   readonly tag?: string;
+  /**
+   * Image tag or digest (digests must start with `sha256:`).
+   * @default - 'latest'
+   */
+  readonly tagOrDigest?: string;
 }
 
 /**
@@ -313,7 +320,9 @@ export class EcrSource extends Source {
     return {
       imageRepository: {
         imageConfiguration: this.props.imageConfiguration,
-        imageIdentifier: this.props.repository.repositoryUriForTag(this.props.tag || 'latest'),
+        imageIdentifier: this.props.repository.repositoryUriForTagOrDigest(
+          this.props.tagOrDigest || this.props.tag || 'latest',
+        ),
         imageRepositoryType: ImageRepositoryType.ECR,
       },
       ecrRepository: this.props.repository,
@@ -516,6 +525,13 @@ export interface ServiceProps {
    * @default - auto-generated if undefined.
    */
   readonly serviceName?: string;
+
+  /**
+   * Settings for an App Runner VPC connector to associate with the service.
+   *
+   * @default - no VPC connector, uses the DEFAULT egress type instead
+   */
+  readonly vpcConnector?: IVpcConnector;
 }
 
 /**
@@ -783,6 +799,12 @@ export class Service extends cdk.Resource {
         authenticationConfiguration: this.renderAuthenticationConfiguration(),
         imageRepository: source.imageRepository ? this.renderImageRepository() : undefined,
         codeRepository: source.codeRepository ? this.renderCodeConfiguration() : undefined,
+      },
+      networkConfiguration: {
+        egressConfiguration: {
+          egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
+          vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
+        },
       },
     });
 
