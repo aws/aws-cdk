@@ -431,6 +431,9 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
+   * Deprecated
+   * @deprecated use `updatedProperties`
+   *
    * Return properties modified after initiation
    *
    * Resources that expose mutable properties should override this function to
