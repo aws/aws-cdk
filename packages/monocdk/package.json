@@ -62,7 +62,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.MonoCDK",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
         "versionSuffix": "-devpreview"
       },
       "java": {
@@ -107,7 +107,7 @@
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
     "ignore": "^5.2.0",
-    "jsonschema": "^1.4.0",
+    "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
     "semver": "^7.3.7",
@@ -203,6 +203,7 @@
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-emr": "0.0.0",
     "@aws-cdk/aws-emrcontainers": "0.0.0",
+    "@aws-cdk/aws-emrserverless": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
@@ -292,6 +293,7 @@
     "@aws-cdk/aws-ram": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-redshift": "0.0.0",
+    "@aws-cdk/aws-redshiftserverless": "0.0.0",
     "@aws-cdk/aws-refactorspaces": "0.0.0",
     "@aws-cdk/aws-rekognition": "0.0.0",
     "@aws-cdk/aws-resiliencehub": "0.0.0",

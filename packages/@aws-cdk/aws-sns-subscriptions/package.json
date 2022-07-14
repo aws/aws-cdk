@@ -18,7 +18,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SNS.Subscriptions",
         "packageId": "Amazon.CDK.AWS.SNS.Subscriptions",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-sns-subscriptions",
@@ -77,7 +77,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
   "dependencies": {
@@ -87,6 +87,7 @@
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",

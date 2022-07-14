@@ -58,7 +58,7 @@ export class ApplicationSecurityCheck extends Construct {
 
     this.preApproveLambda = new lambda.Function(this, 'CDKPipelinesAutoApprove', {
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(path.resolve(__dirname, 'approve-lambda')),
       timeout: Duration.minutes(5),
     });
@@ -99,6 +99,9 @@ export class ApplicationSecurityCheck extends Construct {
       ` --message "${message.join('\n')}"`;
 
     this.cdkDiffProject = new codebuild.Project(this, 'CDKSecurityCheck', {
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+      },
       buildSpec: codebuild.BuildSpec.fromObject({
         version: 0.2,
         phases: {

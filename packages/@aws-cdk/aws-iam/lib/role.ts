@@ -162,7 +162,24 @@ export interface FromRoleArnOptions {
    * @default false
    */
   readonly addGrantsToResources?: boolean;
+
+  /**
+   * Any policies created by this role will use this value as their ID, if specified.
+   * Specify this if importing the same role in multiple stacks, and granting it
+   * different permissions in at least two stacks. If this is not specified
+   * (or if the same name is specified in more than one stack),
+   * a CloudFormation issue will result in the policy created in whichever stack
+   * is deployed last overwriting the policies created by the others.
+   *
+   * @default 'Policy'
+   */
+  readonly defaultPolicyName?: string;
 }
+
+/**
+ * Options allowing customizing the behavior of {@link Role.fromRoleName}.
+ */
+export interface FromRoleNameOptions extends FromRoleArnOptions { }
 
 /**
  * IAM Role
@@ -206,12 +223,15 @@ export class Role extends Resource implements IRole {
       public readonly roleArn = roleArn;
       public readonly roleName = roleName;
       private readonly attachedPolicies = new AttachedPolicies();
+      private readonly defaultPolicyName?: string;
       private defaultPolicy?: Policy;
 
       constructor(_scope: Construct, _id: string) {
         super(_scope, _id, {
           account: roleAccount,
         });
+
+        this.defaultPolicyName = options.defaultPolicyName;
       }
 
       public addToPolicy(statement: PolicyStatement): boolean {
@@ -220,7 +240,7 @@ export class Role extends Resource implements IRole {
 
       public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
-          this.defaultPolicy = new Policy(this, 'Policy');
+          this.defaultPolicy = new Policy(this, this.defaultPolicyName ?? 'Policy');
           this.attachInlinePolicy(this.defaultPolicy);
         }
         this.defaultPolicy.addStatements(statement);
@@ -277,15 +297,20 @@ export class Role extends Resource implements IRole {
       throw new Error('\'addGrantsToResources\' can only be passed if \'mutable: false\'');
     }
 
-    const importedRole = new Import(scope, id);
-    const roleArnAndScopeStackAccountComparison = Token.compareStrings(importedRole.env.account, scopeStack.account);
+    const roleArnAndScopeStackAccountComparison = Token.compareStrings(roleAccount ?? '', scopeStack.account);
     const equalOrAnyUnresolved = roleArnAndScopeStackAccountComparison === TokenComparison.SAME ||
       roleArnAndScopeStackAccountComparison === TokenComparison.BOTH_UNRESOLVED ||
       roleArnAndScopeStackAccountComparison === TokenComparison.ONE_UNRESOLVED;
+
+    // if we are returning an immutable role then the 'importedRole' is just a throwaway construct
+    // so give it a different id
+    const mutableRoleId = (options.mutable !== false && equalOrAnyUnresolved) ? id : `MutableRole${id}`;
+    const importedRole = new Import(scope, mutableRoleId);
+
     // we only return an immutable Role if both accounts were explicitly provided, and different
     return options.mutable !== false && equalOrAnyUnresolved
       ? importedRole
-      : new ImmutableRole(scope, `ImmutableRole${id}`, importedRole, options.addGrantsToResources ?? false);
+      : new ImmutableRole(scope, id, importedRole, options.addGrantsToResources ?? false);
   }
 
   /**
@@ -293,14 +318,19 @@ export class Role extends Resource implements IRole {
    *
    * The imported role is assumed to exist in the same account as the account
    * the scope's containing Stack is being deployed to.
+
+   * @param scope construct scope
+   * @param id construct id
+   * @param roleName the name of the role to import
+   * @param options allow customizing the behavior of the returned role
    */
-  public static fromRoleName(scope: Construct, id: string, roleName: string) {
+  public static fromRoleName(scope: Construct, id: string, roleName: string, options: FromRoleNameOptions = {}) {
     return Role.fromRoleArn(scope, id, Stack.of(scope).formatArn({
       region: '',
       service: 'iam',
       resource: 'role',
       resourceName: roleName,
-    }));
+    }), options);
   }
 
   public readonly grantPrincipal: IPrincipal = this;

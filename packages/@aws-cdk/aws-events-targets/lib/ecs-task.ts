@@ -3,12 +3,9 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerOverride } from './ecs-task-properties';
 import { singletonEventRole } from './util';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * Properties to define an ECS Event Task
@@ -122,12 +119,9 @@ export class EcsTask implements events.IRuleTarget {
     this.taskCount = props.taskCount ?? 1;
     this.platformVersion = props.platformVersion;
 
-    if (props.role) {
-      const role = props.role;
-      this.createEventRolePolicyStatements().forEach(role.addToPrincipalPolicy.bind(role));
-      this.role = role;
-    } else {
-      this.role = singletonEventRole(this.taskDefinition, this.createEventRolePolicyStatements());
+    this.role = props.role ?? singletonEventRole(this.taskDefinition);
+    for (const stmt of this.createEventRolePolicyStatements()) {
+      this.role.addToPrincipalPolicy(stmt);
     }
 
     // Security groups are only configurable with the "awsvpc" network mode.

@@ -18,7 +18,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.EC2",
         "packageId": "Amazon.CDK.AWS.EC2",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-ec2",
@@ -83,12 +83,13 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.97",
-    "@types/jest": "^27.5.0",
+    "@types/aws-lambda": "^8.10.99",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
   "dependencies": {
@@ -304,6 +305,8 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SSM",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.STS",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TEXTRACT",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TEXTRACT_FIPS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TRANSFER",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.STORAGE_GATEWAY",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.REKOGNITION",
@@ -696,7 +699,8 @@
       "props-physical-name:@aws-cdk/aws-ec2.ClientVpnAuthorizationRuleProps",
       "props-physical-name:@aws-cdk/aws-ec2.ClientVpnRouteProps",
       "duration-prop-type:@aws-cdk/aws-ec2.ClientVpnEndpointOptions.sessionTimeout",
-      "duration-prop-type:@aws-cdk/aws-ec2.ClientVpnEndpointProps.sessionTimeout"
+      "duration-prop-type:@aws-cdk/aws-ec2.ClientVpnEndpointProps.sessionTimeout",
+      "resource-attribute:@aws-cdk/aws-ec2.VpnGateway.vpnGatewayId"
     ]
   },
   "stability": "stable",

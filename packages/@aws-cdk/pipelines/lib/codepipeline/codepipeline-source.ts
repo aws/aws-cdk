@@ -34,6 +34,9 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Authentication will be done by a secret called `github-token` in AWS
    * Secrets Manager (unless specified otherwise).
    *
+   * If you rotate the value in the Secret, you must also change at least one property
+   * on the Pipeline, to force CloudFormation to re-read the secret.
+   *
    * The token should have these permissions:
    *
    * * **repo** - to read the repository
@@ -291,6 +294,14 @@ export interface S3SourceOptions {
    * @default - The bucket name
    */
   readonly actionName?: string;
+
+  /**
+   * The role that will be assumed by the pipeline prior to executing
+   * the `S3Source` action.
+   *
+   * @default - a new role will be generated
+   */
+  readonly role?: iam.IRole;
 }
 
 class S3Source extends CodePipelineSource {
@@ -309,6 +320,7 @@ class S3Source extends CodePipelineSource {
       bucketKey: this.objectKey,
       trigger: this.props.trigger,
       bucket: this.bucket,
+      role: this.props.role,
       variablesNamespace,
     });
   }

@@ -235,11 +235,11 @@ export class Bundle {
     // to mutate it.
     const manifest = { ...this.manifest };
 
-      // manifest mutations
+    // manifest mutations
     this.removeDependencies(manifest);
     this.addExternals(manifest);
 
-      // write artifacts
+    // write artifacts
     this.writeOutputs(target);
     this.writeResources(target);
     this.writeManifest(target, manifest);
@@ -392,7 +392,7 @@ export class Bundle {
     const bundle = esbuild.buildSync({
       entryPoints: this.entryPoints,
       bundle: true,
-      target: 'node12',
+      target: 'node14',
       platform: 'node',
       sourcemap: 'inline',
       metafile: true,

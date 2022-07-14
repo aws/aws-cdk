@@ -93,6 +93,7 @@ export class AssetManifestBuilder {
         dockerBuildTarget: asset.dockerBuildTarget,
         dockerFile: asset.dockerFile,
         networkMode: asset.networkMode,
+        platform: asset.platform,
       },
       destinations: {
         [this.manifestEnvName(stack)]: {

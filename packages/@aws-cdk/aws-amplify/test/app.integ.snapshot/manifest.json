@@ -1,5 +1,5 @@
 {
-  "version": "19.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -33,10 +33,19 @@
             "data": "AppF1B96344"
           }
         ],
-        "/cdk-amplify-app/App/master/Resource": [
+        "/cdk-amplify-app/App/main/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Appmaster71597E87"
+            "data": "AppmainF505BAED"
+          }
+        ],
+        "Appmaster71597E87": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Appmaster71597E87",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

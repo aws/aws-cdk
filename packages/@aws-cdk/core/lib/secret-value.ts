@@ -68,7 +68,18 @@ export class SecretValue extends Intrinsic {
    * will be visible to anyone who has access to the CloudFormation template
    * (via the AWS Console, SDKs, or CLI).
    *
-   * The only reasonable use case for using this method is when you are testing.
+   * The primary use case for using this method is when you are testing.
+   *
+   * The other use case where this is appropriate is when constructing a JSON secret.
+   * For example, a JSON secret might have multiple fields where only some are actual
+   * secret values.
+   *
+   * @example
+   * declare const secret: SecretValue;
+   * const jsonSecret = {
+   *   username: SecretValue.unsafePlainText('myUsername'),
+   *   password: secret,
+   * };
    */
   public static unsafePlainText(secret: string): SecretValue {
     return new SecretValue(secret);
@@ -76,6 +87,10 @@ export class SecretValue extends Intrinsic {
 
   /**
    * Creates a `SecretValue` with a value which is dynamically loaded from AWS Secrets Manager.
+   *
+   * If you rotate the value in the Secret, you must also change at least one property
+   * on the resource where you are using the secret, to force CloudFormation to re-read the secret.
+   *
    * @param secretId The ID or ARN of the secret
    * @param options Options
    */
@@ -106,6 +121,10 @@ export class SecretValue extends Intrinsic {
 
   /**
    * Use a secret value stored from a Systems Manager (SSM) parameter.
+   *
+   * This secret source in only supported in a limited set of resources and
+   * properties. [Click here for the list of supported
+   * properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#template-parameters-dynamic-patterns-resources).
    *
    * @param parameterName The name of the parameter in the Systems Manager
    * Parameter Store. The parameter name is case-sensitive.

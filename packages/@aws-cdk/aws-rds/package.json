@@ -18,7 +18,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.RDS",
         "packageId": "Amazon.CDK.AWS.RDS",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-rds",
@@ -84,11 +84,13 @@
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
   "dependencies": {
@@ -148,7 +150,8 @@
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER",
-      "resource-attribute:@aws-cdk/aws-rds.DatabaseProxy.dbProxyVpcId"
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseProxy.dbProxyVpcId",
+      "resource-attribute:@aws-cdk/aws-rds.ParameterGroup.dbParameterGroupName"
     ]
   },
   "stability": "stable",
