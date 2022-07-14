@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-ecs-integ-exec-command": {
@@ -672,45 +672,6 @@
                     "keyPolicy": {
                       "Statement": [
                         {
-                          "Action": [
-                            "kms:Create*",
-                            "kms:Describe*",
-                            "kms:Enable*",
-                            "kms:List*",
-                            "kms:Put*",
-                            "kms:Update*",
-                            "kms:Revoke*",
-                            "kms:Disable*",
-                            "kms:Get*",
-                            "kms:Delete*",
-                            "kms:ScheduleKeyDeletion",
-                            "kms:CancelKeyDeletion",
-                            "kms:GenerateDataKey",
-                            "kms:TagResource",
-                            "kms:UntagResource"
-                          ],
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":iam::",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ":root"
-                                ]
-                              ]
-                            }
-                          },
-                          "Resource": "*"
-                        },
-                        {
                           "Action": "kms:*",
                           "Effect": "Allow",
                           "Principal": {
@@ -735,11 +696,11 @@
                         },
                         {
                           "Action": [
-                            "kms:Encrypt*",
                             "kms:Decrypt*",
-                            "kms:ReEncrypt*",
+                            "kms:Describe*",
+                            "kms:Encrypt*",
                             "kms:GenerateDataKey*",
-                            "kms:Describe*"
+                            "kms:ReEncrypt*"
                           ],
                           "Condition": {
                             "ArnLike": {
@@ -958,6 +919,8 @@
                               "Statement": [
                                 {
                                   "Action": [
+                                    "logs:DescribeLogGroups",
+                                    "s3:GetBucketLocation",
                                     "ssmmessages:CreateControlChannel",
                                     "ssmmessages:CreateDataChannel",
                                     "ssmmessages:OpenControlChannel",
@@ -978,11 +941,6 @@
                                       "Arn"
                                     ]
                                   }
-                                },
-                                {
-                                  "Action": "logs:DescribeLogGroups",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
                                 },
                                 {
                                   "Action": [
@@ -1015,11 +973,6 @@
                                       ]
                                     ]
                                   }
-                                },
-                                {
-                                  "Action": "s3:GetBucketLocation",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
                                 },
                                 {
                                   "Action": "s3:PutObject",

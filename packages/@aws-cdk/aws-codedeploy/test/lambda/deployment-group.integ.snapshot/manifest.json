@@ -1,12 +1,11 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-codedeploy-lambda": {
       "type": "aws:cloudformation:stack",
@@ -69,7 +68,7 @@
         "/aws-cdk-codedeploy-lambda/Handler/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HandlerCurrentVersion93FB80BF9a6cf166b667631aba3958d26c7ca1bb"
+            "data": "HandlerCurrentVersion93FB80BFf2e6129c63154d1f37c0092df295ab51"
           }
         ],
         "/aws-cdk-codedeploy-lambda/AssetParameters/edb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3/S3Bucket": [
@@ -202,6 +201,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ServiceprincipalMap"
+          }
+        ],
+        "HandlerCurrentVersion93FB80BF9a6cf166b667631aba3958d26c7ca1bb": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HandlerCurrentVersion93FB80BF9a6cf166b667631aba3958d26c7ca1bb",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

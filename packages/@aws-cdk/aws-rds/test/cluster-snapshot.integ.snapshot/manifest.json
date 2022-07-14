@@ -1,0 +1,462 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-cluster-snapshot": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-cluster-snapshot.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-cluster-snapshot": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aadd",
+              "id": "2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aadd",
+              "packaging": "zip",
+              "sourceHash": "2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aadd",
+              "s3BucketParameter": "AssetParameters2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aaddS3BucketDCD8B62D",
+              "s3KeyParameter": "AssetParameters2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aaddS3VersionKey96F91EAE",
+              "artifactHashParameter": "AssetParameters2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aaddArtifactHashB3DFB88A"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9",
+              "id": "8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9",
+              "packaging": "zip",
+              "sourceHash": "8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9",
+              "s3BucketParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90",
+              "s3KeyParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212",
+              "artifactHashParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA"
+            }
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Cluster/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSubnetsDCFA5CB7"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Cluster/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecurityGroup0921994B"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Cluster/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecret6368BD0F"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Cluster/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecretAttachment769E6258"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterEB0386A7"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Cluster/Instance1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterInstance1448F06E4"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Cluster/Instance2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterInstance2C3E0561B"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterOnEventHandlerServiceRole7F84B26D"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterOnEventHandlerServiceRoleDefaultPolicyAF0DFD57"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterOnEventHandlerDF82DF85"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterIsCompleteHandlerServiceRole40F5F1A8"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterIsCompleteHandlerServiceRoleDefaultPolicyA43EB222"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterIsCompleteHandler93DE2591"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicy21CE9686"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonEventF0C0D052"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicyF410E478"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkisComplete803B4F1B"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy05DF1C30"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonTimeout04342B00"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderwaiterstatemachineRole76E414C5"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyCF7716B2"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderwaiterstatemachineE1F05D1F"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/Snapshot/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotAA1755BE"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/AssetParameters/2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aadd/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aaddS3BucketDCD8B62D"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/AssetParameters/2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aadd/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aaddS3VersionKey96F91EAE"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/AssetParameters/2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aadd/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aaddArtifactHashB3DFB88A"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSubnets9ED4B8EE"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSecurityGroup72F11E81"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/SecurityGroup/from cdkintegclustersnapshotFromSnapshotRotationSingleUserSecurityGroup8B231219:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSecurityGroupfromcdkintegclustersnapshotFromSnapshotRotationSingleUserSecurityGroup8B231219IndirectPort7C6DDFDF"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSecret9100F61C"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSecretAttachmentB62DA1C6"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkintegclustersnapshotFromSnapshotSnapshotSecretD93327943fdaad7efa858a3daf9490cf0a702aeb"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSnapshotSecretAttachmentA3F619B8"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/RotationSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSnapshotSecretAttachmentRotationSchedule102BDEB3"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSnapshotSecretAttachmentPolicy3136FEC0"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotEE0682C5"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/Instance1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotInstance167EFB569"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/Instance2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotInstance2CD342D07"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/RotationSingleUser/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotRotationSingleUserSecurityGroupF78A9956"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/RotationSingleUser/SARMapping": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotRotationSingleUserSARMapping4464D796"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/FromSnapshot/RotationSingleUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotRotationSingleUserEBCAA50C"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-cluster-snapshot"
+    }
+  }
+}

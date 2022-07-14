@@ -4,10 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Represents the Lambda Handler Code.
@@ -241,7 +238,7 @@ export class S3Code extends Code {
 }
 
 /**
- * Lambda code from an inline string (limited to 4KiB).
+ * Lambda code from an inline string.
  */
 export class InlineCode extends Code {
   public readonly isInline = true;
@@ -251,10 +248,6 @@ export class InlineCode extends Code {
 
     if (code.length === 0) {
       throw new Error('Lambda inline code cannot be empty');
-    }
-
-    if (code.length > 4096) {
-      throw new Error('Lambda source is too large, must be <= 4096 but is ' + code.length);
     }
   }
 
@@ -454,8 +447,15 @@ export interface EcrImageCodeProps {
   /**
    * The image tag to use when pulling the image from ECR.
    * @default 'latest'
+   * @deprecated use `tagOrDigest`
    */
   readonly tag?: string;
+
+  /**
+   * The image tag or digest to use when pulling the image from ECR (digests must start with `sha256:`).
+   * @default 'latest'
+   */
+  readonly tagOrDigest?: string;
 }
 
 /**
@@ -473,7 +473,7 @@ export class EcrImageCode extends Code {
 
     return {
       image: {
-        imageUri: this.repository.repositoryUriForTag(this.props?.tag ?? 'latest'),
+        imageUri: this.repository.repositoryUriForTagOrDigest(this.props?.tagOrDigest ?? this.props?.tag ?? 'latest'),
         cmd: this.props.cmd,
         entrypoint: this.props.entrypoint,
         workingDirectory: this.props.workingDirectory,

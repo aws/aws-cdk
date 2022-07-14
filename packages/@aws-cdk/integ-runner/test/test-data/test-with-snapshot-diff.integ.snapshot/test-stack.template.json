@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "MyFunction1ServiceRole9852B06B": {
+    "MyFunction2ServiceRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -27,6 +27,27 @@
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
+          }
+        ]
+      }
+    },
+    "MyLambdaFuncServiceRoleDefaultPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+            "Action": "*",
+            "Effect": "Allow",
+            "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyLambdaFuncServiceRoleDefaultPolicyBEB0E748",
+        "Roles": [
+          {
+            "Ref": "MyLambdaFuncServiceRole"
           }
         ]
       }

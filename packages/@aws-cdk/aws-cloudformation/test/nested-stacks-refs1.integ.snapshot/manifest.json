@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "nest-stacks-refs1-producer": {
       "type": "aws:cloudformation:stack",

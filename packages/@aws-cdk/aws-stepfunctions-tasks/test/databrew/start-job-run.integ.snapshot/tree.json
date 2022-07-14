@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-stepfunctions-tasks-databrew-start-job-run-integ": {
@@ -71,13 +71,19 @@
                           "Statement": [
                             {
                               "Action": [
-                                "s3:GetObject",
-                                "s3:PutObject",
                                 "s3:DeleteObject",
-                                "s3:ListBucket"
+                                "s3:GetObject",
+                                "s3:ListBucket",
+                                "s3:PutObject"
                               ],
                               "Effect": "Allow",
                               "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "JobOutputBucketACE3BC7B",
+                                    "Arn"
+                                  ]
+                                },
                                 {
                                   "Fn::Join": [
                                     "",
@@ -113,12 +119,6 @@
                                       },
                                       "/*"
                                     ]
-                                  ]
-                                },
-                                {
-                                  "Fn::GetAtt": [
-                                    "JobOutputBucketACE3BC7B",
-                                    "Arn"
                                   ]
                                 }
                               ]

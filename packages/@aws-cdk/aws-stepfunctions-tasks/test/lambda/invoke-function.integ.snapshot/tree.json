@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-stepfunctions-integ": {
@@ -146,7 +146,7 @@
                       ]
                     },
                     "handler": "index.main",
-                    "runtime": "python3.6"
+                    "runtime": "python3.9"
                   }
                 },
                 "constructInfo": {
@@ -194,14 +194,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.0.9"
             }
           },
           "Invoke Handler": {
@@ -342,7 +342,7 @@
                       ]
                     },
                     "handler": "index.main",
-                    "runtime": "python3.6"
+                    "runtime": "python3.9"
                   }
                 },
                 "constructInfo": {
@@ -447,6 +447,12 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
+                                        "CallbackHandler4434C38D",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
                                         "Handler886CB40B",
                                         "Arn"
                                       ]
@@ -457,24 +463,12 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "Handler886CB40B",
+                                              "CallbackHandler4434C38D",
                                               "Arn"
                                             ]
                                           },
                                           ":*"
                                         ]
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "Action": "lambda:InvokeFunction",
-                                  "Effect": "Allow",
-                                  "Resource": [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "CallbackHandler4434C38D",
-                                        "Arn"
                                       ]
                                     },
                                     {
@@ -483,7 +477,7 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "CallbackHandler4434C38D",
+                                              "Handler886CB40B",
                                               "Arn"
                                             ]
                                           },

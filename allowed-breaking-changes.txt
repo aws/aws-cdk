@@ -130,3 +130,12 @@ removed:@aws-cdk/aws-s3.BucketProps.eventBridgeEnabled
 # changed the type of RDS's SnapshotCredentials.secret from Secret to ISecret,
 # shouldn't matter
 changed-type:@aws-cdk/aws-rds.SnapshotCredentials.secret
+
+# removed property from kafka eventsources as they are not supported
+removed:@aws-cdk/aws-lambda-event-sources.BaseStreamEventSourceProps.onFailure
+removed:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps.onFailure
+removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.onFailure
+removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.onFailure
+
+# removed kubernetes version from EKS
+removed:@aws-cdk/aws-eks.KubernetesVersion.V1_22

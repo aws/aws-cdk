@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "@aws-cdk/aws-stepfunctions-tasks/test/emrcontainers/integ.start-job-run": {
+      "stacks": [
+        "aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": false
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

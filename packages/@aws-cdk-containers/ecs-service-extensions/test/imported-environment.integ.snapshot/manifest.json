@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "imported-environment-integ": {
       "type": "aws:cloudformation:stack",
@@ -285,7 +284,28 @@
         "/imported-environment-integ/Service-task-definition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Servicetaskdefinition0CEAD834"
+            "data": "Servicetaskdefinition0CEAD834",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/imported-environment-integ/Service-task-definition/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServicetaskdefinitionExecutionRoleD09F4578"
+          }
+        ],
+        "/imported-environment-integ/Service-task-definition/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServicetaskdefinitionExecutionRoleDefaultPolicy25CEAFC5"
+          }
+        ],
+        "/imported-environment-integ/Service-logs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Servicelogs9F4E1F70"
           }
         ],
         "/imported-environment-integ/Service-service/Service": [

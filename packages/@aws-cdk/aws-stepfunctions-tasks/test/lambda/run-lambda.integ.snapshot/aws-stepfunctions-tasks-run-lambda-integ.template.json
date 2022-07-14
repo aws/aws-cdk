@@ -136,6 +136,12 @@
        "Resource": [
         {
          "Fn::GetAtt": [
+          "checkJobStateLambda4618B7B7",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "submitJobLambdaEFB00F3C",
           "Arn"
          ]
@@ -146,24 +152,12 @@
           [
            {
             "Fn::GetAtt": [
-             "submitJobLambdaEFB00F3C",
+             "checkJobStateLambda4618B7B7",
              "Arn"
             ]
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "checkJobStateLambda4618B7B7",
-          "Arn"
          ]
         },
         {
@@ -172,7 +166,7 @@
           [
            {
             "Fn::GetAtt": [
-             "checkJobStateLambda4618B7B7",
+             "submitJobLambdaEFB00F3C",
              "Arn"
             ]
            },

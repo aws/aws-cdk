@@ -19,6 +19,13 @@
 
 ## Overview
 
+This tool has been created to be used initially by this repo (aws/aws-cdk). Long term the goal is
+for this tool to be a general tool that can be used for running CDK integration tests. We are
+publishing this tool so that it can be used by the community and we would love to receive feedback
+on use cases that the tool should support, or issues that prevent the tool from being used in your
+library.
+
+This tool is meant to be used with the [integ-tests](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests) library.
 
 ## Usage
 
@@ -44,9 +51,7 @@ to be a self contained CDK app. The runner will execute the following for each f
 - `--clean` (default=`true`)
   Destroy stacks after deploy (use `--no-clean` for debugging)
 - `--verbose` (default=`false`)
-  verbose logging
-- `--parallel` (default=`true`)
-  Run tests in parallel across default regions
+  verbose logging, including integration test metrics
 - `--parallel-regions` (default=`us-east-1`,`us-east-2`, `us-west-2`)
   List of regions to run tests in. If this is provided then all tests will
   be run in parallel across these regions
@@ -60,14 +65,23 @@ to be a self contained CDK app. The runner will execute the following for each f
   If this is set to `true` then the list of tests provided will be excluded
 - `--from-file`
   Read the list of tests from this file
+- `--disable-update-workflow` (default=`false`)
+  If this is set to `true` then the [update workflow](#update-workflow) will be disabled
 
 Example:
 
 ```bash
-integ-runner --update --parallel --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-2 --directory ./
+integ-runner --update-on-failed --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-2 --directory ./
 ```
 
 This will search for integration tests recursively from the current directory and then execute them in parallel across `us-east-1`, `us-east-2`, & `us-west-2`.
+
+If you are providing a list of tests to execute, either as CLI arguments or from a file, the name of the test needs to be relative to the `directory`.
+For example, if there is a test `aws-iam/test/integ.policy.js` and the current working directory is `aws-iam` you would provide `integ.policy.js`
+
+```bash
+yarn integ integ.policy.js
+```
 
 ### Common Workflow
 
@@ -149,6 +163,37 @@ Test Results:
 
 Tests:    1 passed, 1 total
 ```
+
+#### Update Workflow
+
+By default, integration tests are run with the "update workflow" enabled. This can be disabled by using the `--disable-update-workflow` command line option.
+
+If an existing snapshot is being updated, the integration test runner will first deploy the existing snapshot and then perform a stack update
+with the new changes. This is to test for cases where an update would cause a breaking change only on a stack update.
+
+The `integ-runner` will also attempt to warn you if you are making any destructive changes with a message like:
+
+```bash
+!!! This test contains destructive changes !!!
+    Stack: aws-cdk-lambda-1 - Resource: MyLambdaServiceRole4539ECB6 - Impact: WILL_DESTROY
+    Stack: aws-cdk-lambda-1 - Resource: AliasAliasPermissionAF30F9E8 - Impact: WILL_REPLACE
+    Stack: aws-cdk-lambda-1 - Resource: AliasFunctionUrlDC6EC566 - Impact: WILL_REPLACE
+    Stack: aws-cdk-lambda-1 - Resource: Aliasinvokefunctionurl4CA9917B - Impact: WILL_REPLACE
+!!! If these destructive changes are necessary, please indicate this on the PR !!!
+```
+
+If the destructive changes are expected (and required) then please indicate this on your PR.
+
+##### New tests
+
+If you are adding a new test which creates a new snapshot then you should run that specific test with `--disable-update-workflow`.
+For example, if you are working on a new test `integ.new-test.js` then you would run:
+
+```bash
+yarn integ --update-on-failed --disable-update-workflow integ.new-test.js
+```
+
+This is because for a new test we do not need to test the update workflow (there is nothing to update).
 
 ### integ.json schema
 

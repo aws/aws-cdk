@@ -3,7 +3,6 @@
   "loggroupB02AAEB1": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "LogGroupName": "MyLogGroupName",
     "RetentionInDays": 731
    },
    "UpdateReplacePolicy": "Delete",
@@ -12,7 +11,6 @@
   "loggroup2F19C5C9B": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "LogGroupName": "MyLogGroupName2",
     "RetentionInDays": 731
    },
    "UpdateReplacePolicy": "Delete",
@@ -68,12 +66,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "logs:PutResourcePolicy",
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": "logs:DeleteResourcePolicy",
+       "Action": [
+        "logs:DeleteResourcePolicy",
+        "logs:PutResourcePolicy"
+       ],
        "Effect": "Allow",
        "Resource": "*"
       }
@@ -172,7 +168,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3Bucket0C90C820"
+      "Ref": "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560S3Bucket648C0EE1"
      },
      "S3Key": {
       "Fn::Join": [
@@ -185,7 +181,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3VersionKey2007A749"
+             "Ref": "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560S3VersionKeyDCBB7AC4"
             }
            ]
           }
@@ -198,7 +194,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3VersionKey2007A749"
+             "Ref": "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560S3VersionKeyDCBB7AC4"
             }
            ]
           }
@@ -215,17 +211,24 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 120
    },
    "DependsOn": [
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
   },
-  "Timer2B6F162E9": {
+  "CustomRuleB1CBBADE": {
    "Type": "AWS::Events::Rule",
    "Properties": {
-    "ScheduleExpression": "rate(2 minutes)",
+    "EventPattern": {
+     "source": [
+      "cdk-integ"
+     ],
+     "detail-type": [
+      "cdk-integ-custom-rule"
+     ]
+    },
     "State": "ENABLED",
     "Targets": [
      {
@@ -255,33 +258,32 @@
       "Id": "Target0",
       "InputTransformer": {
        "InputPathsMap": {
-        "detail-type": "$.detail-type"
+        "time": "$.time",
+        "detail-date": "$.detail.date"
        },
-       "InputTemplate": "{\"data\":<detail-type>}"
+       "InputTemplate": "{\"timestamp\":<time>,\"message\":<detail-date>}"
       }
      }
     ]
    }
   },
-  "EventsLogGroupPolicyloggroupeventsTimer289E3527ECustomResourcePolicy24E754C4": {
+  "EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6CustomResourcePolicy361E9A96": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "logs:PutResourcePolicy",
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": "logs:DeleteResourcePolicy",
+       "Action": [
+        "logs:DeleteResourcePolicy",
+        "logs:PutResourcePolicy"
+       ],
        "Effect": "Allow",
        "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "EventsLogGroupPolicyloggroupeventsTimer289E3527ECustomResourcePolicy24E754C4",
+    "PolicyName": "EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6CustomResourcePolicy361E9A96",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -289,7 +291,7 @@
     ]
    }
   },
-  "EventsLogGroupPolicyloggroupeventsTimer289E3527E78608648": {
+  "EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6C647CDBC": {
    "Type": "Custom::CloudwatchLogResourcePolicy",
    "Properties": {
     "ServiceToken": {
@@ -302,14 +304,14 @@
      "Fn::Join": [
       "",
       [
-       "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
+       "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsCustomRule99E1EEF62FFABD78\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
        {
         "Fn::GetAtt": [
          "loggroup2F19C5C9B",
          "Arn"
         ]
        },
-       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimer289E3527E\"}}"
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6\"}}"
       ]
      ]
     },
@@ -317,22 +319,22 @@
      "Fn::Join": [
       "",
       [
-       "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
+       "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsCustomRule99E1EEF62FFABD78\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
        {
         "Fn::GetAtt": [
          "loggroup2F19C5C9B",
          "Arn"
         ]
        },
-       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimer289E3527E\"}}"
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6\"}}"
       ]
      ]
     },
-    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F\"},\"ignoreErrorCodesMatching\":\"400\"}",
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsCustomRule99E1EEF62FFABD78\"},\"ignoreErrorCodesMatching\":\"400\"}",
     "InstallLatestAwsSdk": true
    },
    "DependsOn": [
-    "EventsLogGroupPolicyloggroupeventsTimer289E3527ECustomResourcePolicy24E754C4"
+    "EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6CustomResourcePolicy361E9A96"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -392,12 +394,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "logs:PutResourcePolicy",
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": "logs:DeleteResourcePolicy",
+       "Action": [
+        "logs:DeleteResourcePolicy",
+        "logs:PutResourcePolicy"
+       ],
        "Effect": "Allow",
        "Resource": "*"
       }
@@ -472,17 +472,27 @@
   }
  },
  "Parameters": {
-  "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3Bucket0C90C820": {
+  "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560S3Bucket648C0EE1": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981\""
+   "Description": "S3 bucket for asset \"c1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560\""
   },
-  "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3VersionKey2007A749": {
+  "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560S3VersionKeyDCBB7AC4": {
    "Type": "String",
-   "Description": "S3 key for asset version \"dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981\""
+   "Description": "S3 key for asset version \"c1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560\""
   },
-  "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981ArtifactHash0C4FC28E": {
+  "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560ArtifactHash99A6E846": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981\""
+   "Description": "Artifact hash for asset \"c1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560\""
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefloggroup2F19C5C9B4F4C6918": {
+   "Value": {
+    "Ref": "loggroup2F19C5C9B"
+   },
+   "Export": {
+    "Name": "log-group-events:ExportsOutputRefloggroup2F19C5C9B4F4C6918"
+   }
   }
  }
 }

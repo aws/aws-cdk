@@ -1,0 +1,14 @@
+{
+  "version": "18.0.0",
+  "testCases": {
+    "aws-codecommit/test/integ.codecommit-code-asset-zip": {
+      "stacks": [
+        "aws-cdk-codecommit-repo-contents-zip-file"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

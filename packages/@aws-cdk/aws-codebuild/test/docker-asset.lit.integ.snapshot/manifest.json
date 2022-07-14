@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "test-codebuild-docker-asset": {
       "type": "aws:cloudformation:stack",
@@ -21,11 +20,11 @@
             "type": "aws:cdk:asset",
             "data": {
               "repositoryName": "aws-cdk/assets",
-              "imageTag": "b79a9515455fd043f9f3b7d7136690d584616aaf59ad882a5ccae24e6f91d81d",
-              "id": "b79a9515455fd043f9f3b7d7136690d584616aaf59ad882a5ccae24e6f91d81d",
+              "imageTag": "73ee9c3cafd103104e2a42ee76961a90a2410d0dcad42110343c5fd85ad6db78",
+              "id": "73ee9c3cafd103104e2a42ee76961a90a2410d0dcad42110343c5fd85ad6db78",
               "packaging": "container-image",
-              "path": "asset.b79a9515455fd043f9f3b7d7136690d584616aaf59ad882a5ccae24e6f91d81d",
-              "sourceHash": "b79a9515455fd043f9f3b7d7136690d584616aaf59ad882a5ccae24e6f91d81d"
+              "path": "asset.73ee9c3cafd103104e2a42ee76961a90a2410d0dcad42110343c5fd85ad6db78",
+              "sourceHash": "73ee9c3cafd103104e2a42ee76961a90a2410d0dcad42110343c5fd85ad6db78"
             }
           }
         ],

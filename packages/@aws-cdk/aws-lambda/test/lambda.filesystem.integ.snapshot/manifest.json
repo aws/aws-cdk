@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-cdk-lambda-1": {
       "type": "aws:cloudformation:stack",
@@ -145,7 +144,10 @@
         "/aws-cdk-lambda-1/Efs/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Efs9E8BF36B"
+            "data": "Efs9E8BF36B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-lambda-1/Efs/EfsSecurityGroup/Resource": [
@@ -163,19 +165,28 @@
         "/aws-cdk-lambda-1/Efs/EfsMountTarget1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EfsEfsMountTarget195B2DD2E"
+            "data": "EfsEfsMountTarget195B2DD2E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-lambda-1/Efs/EfsMountTarget2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EfsEfsMountTarget2315C927F"
+            "data": "EfsEfsMountTarget2315C927F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-lambda-1/Efs/AccessPoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EfsAccessPointE419FED9"
+            "data": "EfsAccessPointE419FED9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-lambda-1/MyLambda/ServiceRole/Resource": [

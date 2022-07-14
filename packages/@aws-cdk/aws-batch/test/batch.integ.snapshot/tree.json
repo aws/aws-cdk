@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
         }
       },
       "batch-stack": {
@@ -1601,11 +1601,7 @@
                 "path": "batch-stack/batch-job-repo/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
-                  "aws:cdk:cloudformation:props": {
-                    "imageScanningConfiguration": {
-                      "scanOnPush": false
-                    }
-                  }
+                  "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-ecr.CfnRepository",
@@ -1615,6 +1611,30 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-ecr.Repository",
+              "version": "0.0.0"
+            }
+          },
+          "batch-secret": {
+            "id": "batch-secret",
+            "path": "batch-stack/batch-secret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-stack/batch-secret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
               "version": "0.0.0"
             }
           },
@@ -1818,6 +1838,50 @@
                   "fqn": "@aws-cdk/aws-iam.CfnRole",
                   "version": "0.0.0"
                 }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "batch-stack/execution-role/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-stack/execution-role/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "secretsmanager:DescribeSecret",
+                                "secretsmanager:GetSecretValue"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "batchsecret7CD5E4C6"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "executionroleDefaultPolicy497F11A3",
+                        "roles": [
+                          {
+                            "Ref": "executionroleD9A39BE6"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -1853,6 +1917,14 @@
                   "aws:cdk:cloudformation:props": {
                     "type": "container",
                     "containerProperties": {
+                      "secrets": [
+                        {
+                          "name": "SECRET",
+                          "valueFrom": {
+                            "Ref": "batchsecret7CD5E4C6"
+                          }
+                        }
+                      ],
                       "image": "docker/whalesay",
                       "executionRoleArn": {
                         "Fn::GetAtt": [

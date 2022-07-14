@@ -1,60 +1,53 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "assembly-PipelineSecurityStack-SingleStage": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineSecurityStack-SingleStage",
         "displayName": "PipelineSecurityStack/SingleStage"
-      },
-      "metadata": {}
+      }
     },
     "assembly-PipelineSecurityStack-PreProduction": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineSecurityStack-PreProduction",
         "displayName": "PipelineSecurityStack/PreProduction"
-      },
-      "metadata": {}
+      }
     },
     "assembly-PipelineSecurityStack-SafeProduction": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineSecurityStack-SafeProduction",
         "displayName": "PipelineSecurityStack/SafeProduction"
-      },
-      "metadata": {}
+      }
     },
     "assembly-PipelineSecurityStack-DisableSecurityCheck": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineSecurityStack-DisableSecurityCheck",
         "displayName": "PipelineSecurityStack/DisableSecurityCheck"
-      },
-      "metadata": {}
+      }
     },
     "assembly-PipelineSecurityStack-NoSecurityCheck": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineSecurityStack-NoSecurityCheck",
         "displayName": "PipelineSecurityStack/NoSecurityCheck"
-      },
-      "metadata": {}
+      }
     },
     "assembly-PipelineSecurityStack-EnableSecurityCheck": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PipelineSecurityStack-EnableSecurityCheck",
         "displayName": "PipelineSecurityStack/EnableSecurityCheck"
-      },
-      "metadata": {}
+      }
     },
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "PipelineSecurityStack.assets": {
       "type": "cdk:asset-manifest",
@@ -62,8 +55,7 @@
         "file": "PipelineSecurityStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      },
-      "metadata": {}
+      }
     },
     "PipelineSecurityStack": {
       "type": "aws:cloudformation:stack",
@@ -73,7 +65,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/11e6807f416cee4507a97b65c041836f410b7e42baf782d3d76a55d9b951f7d5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ff8909e2b3e01298b53c87d97e8e745b4f0b2e4b6d29d5680c44e5da87a207a4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

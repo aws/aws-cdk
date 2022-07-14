@@ -1,12 +1,11 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "Integ-SecretsManager-Secret": {
       "type": "aws:cloudformation:stack",
@@ -63,9 +62,24 @@
             "type": "aws:cdk:logicalId",
             "data": "PredefinedSecret660AF4EC"
           }
+        ],
+        "/Integ-SecretsManager-Secret/JSONSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JSONSecret6FE68AEF"
+          }
         ]
       },
       "displayName": "Integ-SecretsManager-Secret"
+    },
+    "SecretTestDefaultTestDeployAssert519F6A06": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SecretTestDefaultTestDeployAssert519F6A06.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "SecretTest/DefaultTest/DeployAssert"
     }
   }
 }

@@ -240,6 +240,18 @@
       ],
       "Essential": true,
       "Image": "nathanpeck/name",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "namelogsF4B17D31"
+        },
+        "awslogs-stream-prefix": "name",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
       "Memory": 512,
       "Name": "app",
       "PortMappings": [
@@ -258,6 +270,12 @@
      }
     ],
     "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "nametaskdefinitionExecutionRole45AC5C9A",
+      "Arn"
+     ]
+    },
     "Family": "awsecsintegnametaskdefinition0EA6A1A0",
     "Memory": "512",
     "NetworkMode": "awsvpc",
@@ -277,6 +295,71 @@
     "nameserviceTaskRecordManagerRuleRunningCD85F46F",
     "nameserviceTaskRecordManagerRuleStopped66D08B70"
    ]
+  },
+  "nametaskdefinitionExecutionRole45AC5C9A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "DependsOn": [
+    "nameserviceTaskRecordManagerCleanupE19F1043",
+    "nameserviceTaskRecordManagerRuleRunningCD85F46F",
+    "nameserviceTaskRecordManagerRuleStopped66D08B70"
+   ]
+  },
+  "nametaskdefinitionExecutionRoleDefaultPolicyF7942D20": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "namelogsF4B17D31",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "nametaskdefinitionExecutionRoleDefaultPolicyF7942D20",
+    "Roles": [
+     {
+      "Ref": "nametaskdefinitionExecutionRole45AC5C9A"
+     }
+    ]
+   },
+   "DependsOn": [
+    "nameserviceTaskRecordManagerCleanupE19F1043",
+    "nameserviceTaskRecordManagerRuleRunningCD85F46F",
+    "nameserviceTaskRecordManagerRuleStopped66D08B70"
+   ]
+  },
+  "namelogsF4B17D31": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "name-logs",
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "nameserviceService8015C8D6": {
    "Type": "AWS::ECS::Service",
@@ -374,9 +457,9 @@
      "Statement": [
       {
        "Action": [
-        "sqs:SendMessage",
         "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl"
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
        ],
        "Condition": {
         "ArnEquals": {
@@ -401,9 +484,9 @@
       },
       {
        "Action": [
-        "sqs:SendMessage",
         "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl"
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
        ],
        "Condition": {
         "ArnEquals": {
@@ -603,11 +686,11 @@
       },
       {
        "Action": [
-        "sqs:ReceiveMessage",
         "sqs:ChangeMessageVisibility",
-        "sqs:GetQueueUrl",
         "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes"
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -620,17 +703,17 @@
       {
        "Action": [
         "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
         "dynamodb:GetRecords",
         "dynamodb:GetShardIterator",
-        "dynamodb:Query",
-        "dynamodb:GetItem",
-        "dynamodb:Scan",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:BatchWriteItem",
         "dynamodb:PutItem",
-        "dynamodb:UpdateItem",
-        "dynamodb:DeleteItem",
-        "dynamodb:DescribeTable"
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -1007,7 +1090,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -1153,7 +1236,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3Bucket0C90C820"
+      "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F"
      },
      "S3Key": {
       "Fn::Join": [
@@ -1166,7 +1249,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3VersionKey2007A749"
+             "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
             }
            ]
           }
@@ -1179,7 +1262,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3VersionKey2007A749"
+             "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
             }
            ]
           }
@@ -1196,7 +1279,7 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 120
    },
    "DependsOn": [
@@ -1229,17 +1312,17 @@
    "Type": "String",
    "Description": "Artifact hash for asset \"8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9\""
   },
-  "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3Bucket0C90C820": {
+  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981\""
+   "Description": "S3 bucket for asset \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
   },
-  "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3VersionKey2007A749": {
+  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058": {
    "Type": "String",
-   "Description": "S3 key for asset version \"dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981\""
+   "Description": "S3 key for asset version \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
   },
-  "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981ArtifactHash0C4FC28E": {
+  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90ArtifactHashC00C7285": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981\""
+   "Description": "Artifact hash for asset \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
   }
  },
  "Outputs": {

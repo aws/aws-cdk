@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-ecs-integ": {
       "type": "aws:cloudformation:stack",
@@ -337,13 +336,10 @@
         "/aws-ecs-integ/name-production-task-definition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "nameproductiontaskdefinition33A5D5E0"
-          }
-        ],
-        "/aws-ecs-integ/name-production-task-definition/envoy/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "nameproductiontaskdefinitionenvoyLogGroupF79A2732"
+            "data": "nameproductiontaskdefinition33A5D5E0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ/name-production-task-definition/ExecutionRole/Resource": [
@@ -356,6 +352,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "nameproductiontaskdefinitionExecutionRoleDefaultPolicyB66C67BE"
+          }
+        ],
+        "/aws-ecs-integ/name-production-task-definition/envoy/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "nameproductiontaskdefinitionenvoyLogGroupF79A2732"
+          }
+        ],
+        "/aws-ecs-integ/name-production-logs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "nameproductionlogsD0BFFE8C"
           }
         ],
         "/aws-ecs-integ/name-production-envoy-image-account-mapping": [
@@ -421,13 +429,10 @@
         "/aws-ecs-integ/name-development-task-definition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "namedevelopmenttaskdefinition0468FBFF"
-          }
-        ],
-        "/aws-ecs-integ/name-development-task-definition/envoy/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6"
+            "data": "namedevelopmenttaskdefinition0468FBFF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ/name-development-task-definition/ExecutionRole/Resource": [
@@ -440,6 +445,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "namedevelopmenttaskdefinitionExecutionRoleDefaultPolicy34EAA008"
+          }
+        ],
+        "/aws-ecs-integ/name-development-task-definition/envoy/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6"
+          }
+        ],
+        "/aws-ecs-integ/name-development-logs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "namedevelopmentlogs108670CC"
           }
         ],
         "/aws-ecs-integ/name-development-envoy-image-account-mapping": [

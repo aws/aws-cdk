@@ -23,9 +23,9 @@
      "Statement": [
       {
        "Action": [
+        "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*",
-        "s3:DeleteObject*"
+        "s3:List*"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -155,7 +155,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -246,9 +246,9 @@
      "Statement": [
       {
        "Action": [
+        "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*",
-        "s3:DeleteObject*"
+        "s3:List*"
        ],
        "Effect": "Allow",
        "Principal": {

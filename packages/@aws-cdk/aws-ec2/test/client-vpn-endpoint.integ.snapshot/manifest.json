@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "cdk-ec2-client-vpn-endpoint": {
       "type": "aws:cloudformation:stack",

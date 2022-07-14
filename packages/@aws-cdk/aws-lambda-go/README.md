@@ -99,7 +99,7 @@ generally fall into two scenarios:
    If you are not vendoring then `go build` will be run without `-mod=vendor`
     since the default behavior is to download dependencies
 
-All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
+All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda).
 
 ## Environment
 

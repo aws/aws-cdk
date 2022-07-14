@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "SecretTest/DefaultTest": {
+      "stacks": [
+        "Integ-SecretsManager-Secret"
+      ],
+      "assertionStack": "SecretTestDefaultTestDeployAssert519F6A06"
+    }
+  }
+}

@@ -156,6 +156,22 @@ describe('context --reset', () => {
     } as any)).rejects.toThrow(/No context value matching key/);
   });
 
+  test('Doesn\'t throw when key not found and --force is set', async () => {
+    // GIVEN
+    const configuration = new Configuration();
+    configuration.context.set('foo', 'bar');
+
+    expect(configuration.context.all).toEqual({
+      foo: 'bar',
+    });
+
+    // THEN
+    await expect(realHandler({
+      configuration,
+      args: { reset: 'baz', force: true },
+    } as any));
+  });
+
 
   test('throws when no key of index found', async () => {
     // GIVEN

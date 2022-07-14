@@ -23,9 +23,9 @@
      "Statement": [
       {
        "Action": [
+        "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*",
-        "s3:DeleteObject*"
+        "s3:List*"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824.zip"
+     "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -123,7 +123,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -234,12 +234,16 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
-        "s3:GetBucket*",
-        "s3:List*",
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -268,42 +272,20 @@
       {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineSourceS3CodePipelineActionRole83895A58",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineMyWaveProduceCodePipelineActionRoleE0DCE9D3",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineMyWaveConsumeCodePipelineActionRole7FAA4EFA",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineCodeBuildActionRole226DB0CB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "PipelineSourceS3CodePipelineActionRole83895A58",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -387,7 +369,7 @@
         ],
         "RoleArn": {
          "Fn::GetAtt": [
-          "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
+          "PipelineCodeBuildActionRole226DB0CB",
           "Arn"
          ]
         },
@@ -419,7 +401,7 @@
         "Namespace": "MyWave@Produce",
         "RoleArn": {
          "Fn::GetAtt": [
-          "PipelineMyWaveProduceCodePipelineActionRoleE0DCE9D3",
+          "PipelineCodeBuildActionRole226DB0CB",
           "Arn"
          ]
         },
@@ -446,7 +428,7 @@
         "Name": "Consume",
         "RoleArn": {
          "Fn::GetAtt": [
-          "PipelineMyWaveConsumeCodePipelineActionRole7FAA4EFA",
+          "PipelineCodeBuildActionRole226DB0CB",
           "Arn"
          ]
         },
@@ -508,8 +490,8 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -538,9 +520,13 @@
       },
       {
        "Action": [
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -626,7 +612,8 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-           }
+           },
+           ":*"
           ]
          ]
         },
@@ -649,8 +636,7 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-           },
-           ":*"
+           }
           ]
          ]
         }
@@ -658,11 +644,11 @@
       },
       {
        "Action": [
-        "codebuild:CreateReportGroup",
-        "codebuild:CreateReport",
-        "codebuild:UpdateReport",
+        "codebuild:BatchPutCodeCoverages",
         "codebuild:BatchPutTestCases",
-        "codebuild:BatchPutCodeCoverages"
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -692,12 +678,16 @@
       },
       {
        "Action": [
-        "s3:GetObject*",
-        "s3:GetBucket*",
-        "s3:List*",
+        "s3:Abort*",
         "s3:DeleteObject*",
-        "s3:PutObject*",
-        "s3:Abort*"
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -764,68 +754,6 @@
     "EncryptionKey": "alias/aws/s3"
    }
   },
-  "PipelineBuildSynthCodePipelineActionRole4E7A6C97": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "codebuild:BatchGetBuilds",
-        "codebuild:StartBuild",
-        "codebuild:StopBuild"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineBuildSynthCdkBuildProject6BEFA8E6",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290",
-    "Roles": [
-     {
-      "Ref": "PipelineBuildSynthCodePipelineActionRole4E7A6C97"
-     }
-    ]
-   }
-  },
   "PipelineMyWaveProduceRole24E3565D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -848,6 +776,43 @@
    "Properties": {
     "PolicyDocument": {
      "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TestCacheBucketA6BDC126",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TestCacheBucketA6BDC126",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
       {
        "Action": [
         "logs:CreateLogGroup",
@@ -875,7 +840,8 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "PipelineMyWaveProduce884410D6"
-           }
+           },
+           ":*"
           ]
          ]
         },
@@ -898,8 +864,7 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "PipelineMyWaveProduce884410D6"
-           },
-           ":*"
+           }
           ]
          ]
         }
@@ -907,11 +872,11 @@
       },
       {
        "Action": [
-        "codebuild:CreateReportGroup",
-        "codebuild:CreateReport",
-        "codebuild:UpdateReport",
+        "codebuild:BatchPutCodeCoverages",
         "codebuild:BatchPutTestCases",
-        "codebuild:BatchPutCodeCoverages"
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -941,8 +906,8 @@
       },
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -1004,72 +969,23 @@
      "Type": "CODEPIPELINE"
     },
     "Cache": {
-     "Type": "NO_CACHE"
+     "Location": {
+      "Fn::Join": [
+       "/",
+       [
+        {
+         "Ref": "TestCacheBucketA6BDC126"
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      ]
+     },
+     "Type": "S3"
     },
     "Description": "Pipeline step VariablePipelineStack/Pipeline/MyWave/Produce",
     "EncryptionKey": "alias/aws/s3"
-   }
-  },
-  "PipelineMyWaveProduceCodePipelineActionRoleE0DCE9D3": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "PipelineMyWaveProduceCodePipelineActionRoleDefaultPolicy34DCB79A": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "codebuild:BatchGetBuilds",
-        "codebuild:StartBuild",
-        "codebuild:StopBuild"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineMyWaveProduce884410D6",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "PipelineMyWaveProduceCodePipelineActionRoleDefaultPolicy34DCB79A",
-    "Roles": [
-     {
-      "Ref": "PipelineMyWaveProduceCodePipelineActionRoleE0DCE9D3"
-     }
-    ]
    }
   },
   "PipelineMyWaveConsumeRole2A96FF33": {
@@ -1094,6 +1010,43 @@
    "Properties": {
     "PolicyDocument": {
      "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TestCacheBucketA6BDC126",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TestCacheBucketA6BDC126",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
       {
        "Action": [
         "logs:CreateLogGroup",
@@ -1121,7 +1074,8 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "PipelineMyWaveConsumeC5D5CCD7"
-           }
+           },
+           ":*"
           ]
          ]
         },
@@ -1144,8 +1098,7 @@
            ":log-group:/aws/codebuild/",
            {
             "Ref": "PipelineMyWaveConsumeC5D5CCD7"
-           },
-           ":*"
+           }
           ]
          ]
         }
@@ -1153,11 +1106,11 @@
       },
       {
        "Action": [
-        "codebuild:CreateReportGroup",
-        "codebuild:CreateReport",
-        "codebuild:UpdateReport",
+        "codebuild:BatchPutCodeCoverages",
         "codebuild:BatchPutTestCases",
-        "codebuild:BatchPutCodeCoverages"
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -1187,8 +1140,8 @@
       },
       {
        "Action": [
-        "s3:GetObject*",
         "s3:GetBucket*",
+        "s3:GetObject*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -1250,19 +1203,37 @@
      "Type": "CODEPIPELINE"
     },
     "Cache": {
-     "Type": "NO_CACHE"
+     "Location": {
+      "Fn::Join": [
+       "/",
+       [
+        {
+         "Ref": "TestCacheBucketA6BDC126"
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      ]
+     },
+     "Type": "S3"
     },
     "Description": "Pipeline step VariablePipelineStack/Pipeline/MyWave/Consume",
     "EncryptionKey": "alias/aws/s3"
    }
   },
-  "PipelineMyWaveConsumeCodePipelineActionRole7FAA4EFA": {
+  "PipelineCodeBuildActionRole226DB0CB": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "Bool": {
+         "aws:ViaAWSService": "codepipeline.amazonaws.com"
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "AWS": {
@@ -1288,7 +1259,7 @@
     }
    }
   },
-  "PipelineMyWaveConsumeCodePipelineActionRoleDefaultPolicy3666898A": {
+  "PipelineCodeBuildActionRoleDefaultPolicy1D62A6FE": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1300,23 +1271,42 @@
         "codebuild:StopBuild"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineMyWaveConsumeC5D5CCD7",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineBuildSynthCdkBuildProject6BEFA8E6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "PipelineMyWaveConsumeC5D5CCD7",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "PipelineMyWaveProduce884410D6",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "PipelineMyWaveConsumeCodePipelineActionRoleDefaultPolicy3666898A",
+    "PolicyName": "PipelineCodeBuildActionRoleDefaultPolicy1D62A6FE",
     "Roles": [
      {
-      "Ref": "PipelineMyWaveConsumeCodePipelineActionRole7FAA4EFA"
+      "Ref": "PipelineCodeBuildActionRole226DB0CB"
      }
     ]
    }
+  },
+  "TestCacheBucketA6BDC126": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {

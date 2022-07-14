@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "iam-integ-composite-principal": {
       "type": "aws:cloudformation:stack",

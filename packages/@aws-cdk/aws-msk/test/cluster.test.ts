@@ -212,48 +212,32 @@ describe('MSK Cluster', () => {
       test('with a policy allowing the secrets manager service to use the key', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
           KeyPolicy: {
-            Statement: [
+            'Statement': [
               {
-                Action: [
-                  'kms:Create*',
-                  'kms:Describe*',
-                  'kms:Enable*',
-                  'kms:List*',
-                  'kms:Put*',
-                  'kms:Update*',
-                  'kms:Revoke*',
-                  'kms:Disable*',
-                  'kms:Get*',
-                  'kms:Delete*',
-                  'kms:ScheduleKeyDeletion',
-                  'kms:CancelKeyDeletion',
-                  'kms:GenerateDataKey',
-                  'kms:TagResource',
-                  'kms:UntagResource',
-                ],
-                Effect: 'Allow',
-                Principal: {
-                  AWS: {
+                'Action': 'kms:*',
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
                     'Fn::Join': [
                       '',
                       [
                         'arn:',
                         {
-                          Ref: 'AWS::Partition',
+                          'Ref': 'AWS::Partition',
                         },
                         ':iam::',
                         {
-                          Ref: 'AWS::AccountId',
+                          'Ref': 'AWS::AccountId',
                         },
                         ':root',
                       ],
                     ],
                   },
                 },
-                Resource: '*',
+                'Resource': '*',
               },
               {
-                Action: [
+                'Action': [
                   'kms:Encrypt',
                   'kms:Decrypt',
                   'kms:ReEncrypt*',
@@ -261,22 +245,22 @@ describe('MSK Cluster', () => {
                   'kms:CreateGrant',
                   'kms:DescribeKey',
                 ],
-                Condition: {
-                  StringEquals: {
+                'Condition': {
+                  'StringEquals': {
                     'kms:ViaService': {
                       'Fn::Join': [
                         '',
                         [
                           'secretsmanager.',
                           {
-                            Ref: 'AWS::Region',
+                            'Ref': 'AWS::Region',
                           },
                           '.amazonaws.com',
                         ],
                       ],
                     },
                     'kms:CallerAccount': {
-                      Ref: 'AWS::AccountId',
+                      'Ref': 'AWS::AccountId',
                     },
                   },
                 },
@@ -286,6 +270,7 @@ describe('MSK Cluster', () => {
                 Sid: 'Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager',
               },
             ],
+            'Version': '2012-10-17',
           },
         });
       });
@@ -379,6 +364,7 @@ describe('MSK Cluster', () => {
         },
       });
 
+      Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 0);
       Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
         LoggingInfo: {
           BrokerLogs: {
@@ -389,6 +375,126 @@ describe('MSK Cluster', () => {
               Enabled: true,
             },
           },
+        },
+      });
+    });
+
+    test('feature flag @aws-cdk/aws-s3:defaultBucketPolicy', () => {
+      const localStack = new core.Stack();
+      localStack.node.setContext('@aws-cdk/aws-s3:createDefaultLoggingPolicy', true);
+      new msk.Cluster(localStack, 'Cluster', {
+        clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
+        vpc: new ec2.Vpc(localStack, 'Vpc'),
+        logging: {
+          s3: { bucket: new s3.Bucket(localStack, 'Bucket') },
+        },
+      });
+
+      Template.fromStack(localStack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  's3:x-amz-acl': 'bucket-owner-full-control',
+                  'aws:SourceAccount': {
+                    Ref: 'AWS::AccountId',
+                  },
+                },
+                ArnLike: {
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':logs:',
+                        {
+                          Ref: 'AWS::Region',
+                        },
+                        ':',
+                        {
+                          Ref: 'AWS::AccountId',
+                        },
+                        ':*',
+                      ],
+                    ],
+                  },
+                },
+              },
+              Principal: {
+                Service: 'delivery.logs.amazonaws.com',
+              },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'Bucket83908E77',
+                        'Arn',
+                      ],
+                    },
+                    '/AWSLogs/',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                's3:GetBucketAcl',
+                's3:ListBucket',
+              ],
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': {
+                    Ref: 'AWS::AccountId',
+                  },
+                },
+                ArnLike: {
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':logs:',
+                        {
+                          Ref: 'AWS::Region',
+                        },
+                        ':',
+                        {
+                          Ref: 'AWS::AccountId',
+                        },
+                        ':*',
+                      ],
+                    ],
+                  },
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: 'delivery.logs.amazonaws.com',
+              },
+              Resource: {
+                'Fn::GetAtt': [
+                  'Bucket83908E77',
+                  'Arn',
+                ],
+              },
+            },
+          ],
         },
       });
     });

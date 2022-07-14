@@ -244,6 +244,7 @@ export interface DestroyStackOptions {
   roleArn?: string;
   quiet?: boolean;
   force?: boolean;
+  ci?: boolean;
 }
 
 export interface StackExistsOptions {
@@ -385,6 +386,7 @@ export class CloudFormationDeployments {
       stack: options.stack,
       deployName: options.deployName,
       quiet: options.quiet,
+      ci: options.ci,
     });
   }
 

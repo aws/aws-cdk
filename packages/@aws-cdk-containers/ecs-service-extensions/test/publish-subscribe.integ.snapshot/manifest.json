@@ -5,8 +5,7 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      },
-      "metadata": {}
+      }
     },
     "aws-ecs-integ": {
       "type": "aws:cloudformation:stack",
@@ -201,7 +200,28 @@
         "/aws-ecs-integ/Publisher-task-definition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublishertaskdefinitionA4324C64"
+            "data": "PublishertaskdefinitionA4324C64",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Publisher-task-definition/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishertaskdefinitionExecutionRole5C00C542"
+          }
+        ],
+        "/aws-ecs-integ/Publisher-task-definition/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishertaskdefinitionExecutionRoleDefaultPolicy681FD8E6"
+          }
+        ],
+        "/aws-ecs-integ/Publisher-logs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublisherlogsDF0C1067"
           }
         ],
         "/aws-ecs-integ/Publisher-service/Service": [
@@ -273,7 +293,28 @@
         "/aws-ecs-integ/Worker-task-definition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WorkertaskdefinitionBF93A675"
+            "data": "WorkertaskdefinitionBF93A675",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Worker-task-definition/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WorkertaskdefinitionExecutionRole3C1A1848"
+          }
+        ],
+        "/aws-ecs-integ/Worker-task-definition/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WorkertaskdefinitionExecutionRoleDefaultPolicy6E199B19"
+          }
+        ],
+        "/aws-ecs-integ/Worker-logs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Workerlogs2994AC4D"
           }
         ],
         "/aws-ecs-integ/Worker-service/Service": [

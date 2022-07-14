@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "test-stack": {
@@ -96,18 +96,9 @@
                                 {
                                   "Action": [
                                     "logs:CreateLogStream",
+                                    "logs:DescribeLogStreams",
                                     "logs:PutLogEvents"
                                   ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "MyLogGroup5C0DAD85",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "logs:DescribeLogStreams",
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [

@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "PipelineStackPreProdStack65A0AD1F.assets": {
       "type": "cdk:asset-manifest",
@@ -37,72 +37,19 @@
         "/PipelineStack/PreProd/Stack/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Resource",
-            "trace": [
-              "new MyStage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.pipeline-with-assets.js:21:9)",
-              "new CdkpipelinesDemoPipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.pipeline-with-assets.js:63:52)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.pipeline-with-assets.js:79:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Resource"
           }
         ],
         "/PipelineStack/PreProd/Stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion",
-            "trace": [
-              "addBootstrapVersionRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:237:19)",
-              "DefaultStackSynthesizer.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:127:13)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:155:35",
-              "visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:200:9)",
-              "visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:197:9)",
-              "synthesizeTree (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:148:5)",
-              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:33:5)",
-              "MyStage.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
-              "Object.pipelineSynth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/private/construct-internals.js:25:18)",
-              "CdkStage.addApplication (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/legacy/stage.js:66:43)",
-              "CdkPipeline.addApplicationStage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/legacy/pipeline.js:174:15)",
-              "new CdkpipelinesDemoPipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.pipeline-with-assets.js:63:32)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.pipeline-with-assets.js:79:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "BootstrapVersion"
           }
         ],
         "/PipelineStack/PreProd/Stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion",
-            "trace": [
-              "addBootstrapVersionRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:245:5)",
-              "DefaultStackSynthesizer.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:127:13)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:155:35",
-              "visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:200:9)",
-              "visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:197:9)",
-              "synthesizeTree (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:148:5)",
-              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:33:5)",
-              "MyStage.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
-              "Object.pipelineSynth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/private/construct-internals.js:25:18)",
-              "CdkStage.addApplication (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/legacy/stage.js:66:43)",
-              "CdkPipeline.addApplicationStage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/legacy/pipeline.js:174:15)",
-              "new CdkpipelinesDemoPipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.pipeline-with-assets.js:63:32)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.pipeline-with-assets.js:79:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

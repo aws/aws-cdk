@@ -64,6 +64,7 @@
       "Arn"
      ]
     },
+    "Description": "version-hash:1786de9fc1bc4cb2fd5b64d612628c6f",
     "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
@@ -84,7 +85,7 @@
     }
    }
   },
-  "MyLambdaCurrentVersionE7A382CCf9fac83eca6426eeed700cdc0106fc3d": {
+  "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -100,7 +101,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CCf9fac83eca6426eeed700cdc0106fc3d",
+      "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629",
       "Version"
      ]
     },

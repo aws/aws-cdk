@@ -178,14 +178,40 @@ export class CloudFormationStack {
 /**
  * Describe a changeset in CloudFormation, regardless of its current state.
  *
- * @param cfn       a CloudFormation client
- * @param stackName   the name of the Stack the ChangeSet belongs to
+ * @param cfn           a CloudFormation client
+ * @param stackName     the name of the Stack the ChangeSet belongs to
  * @param changeSetName the name of the ChangeSet
+ * @param fetchAll      if true, fetches all pages of the change set description.
  *
  * @returns       CloudFormation information about the ChangeSet
  */
-async function describeChangeSet(cfn: CloudFormation, stackName: string, changeSetName: string): Promise<CloudFormation.DescribeChangeSetOutput> {
+async function describeChangeSet(
+  cfn: CloudFormation,
+  stackName: string,
+  changeSetName: string,
+  { fetchAll }: { fetchAll: boolean },
+): Promise<CloudFormation.DescribeChangeSetOutput> {
   const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
+
+  // If fetchAll is true, traverse all pages from the change set description.
+  while (fetchAll && response.NextToken != null) {
+    const nextPage = await cfn.describeChangeSet({
+      StackName: stackName,
+      ChangeSetName: response.ChangeSetId ?? changeSetName,
+      NextToken: response.NextToken,
+    }).promise();
+
+    // Consolidate the changes
+    if (nextPage.Changes != null) {
+      response.Changes = response.Changes != null
+        ? response.Changes.concat(nextPage.Changes)
+        : nextPage.Changes;
+    }
+
+    // Forward the new NextToken
+    response.NextToken = nextPage.NextToken;
+  }
+
   return response;
 }
 
@@ -215,17 +241,23 @@ async function waitFor<T>(valueProvider: () => Promise<T | null | undefined>, ti
  * Will return a changeset that is either ready to be executed or has no changes.
  * Will throw in other cases.
  *
- * @param cfn       a CloudFormation client
- * @param stackName   the name of the Stack that the ChangeSet belongs to
+ * @param cfn           a CloudFormation client
+ * @param stackName     the name of the Stack that the ChangeSet belongs to
  * @param changeSetName the name of the ChangeSet
+ * @param fetchAll      if true, fetches all pages of the ChangeSet before returning.
  *
  * @returns       the CloudFormation description of the ChangeSet
  */
 // eslint-disable-next-line max-len
-export async function waitForChangeSet(cfn: CloudFormation, stackName: string, changeSetName: string): Promise<CloudFormation.DescribeChangeSetOutput> {
+export async function waitForChangeSet(
+  cfn: CloudFormation,
+  stackName: string,
+  changeSetName: string,
+  { fetchAll }: { fetchAll: boolean },
+): Promise<CloudFormation.DescribeChangeSetOutput> {
   debug('Waiting for changeset %s on stack %s to finish creating...', changeSetName, stackName);
   const ret = await waitFor(async () => {
-    const description = await describeChangeSet(cfn, stackName, changeSetName);
+    const description = await describeChangeSet(cfn, stackName, changeSetName, { fetchAll });
     // The following doesn't use a switch because tsc will not allow fall-through, UNLESS it is allows
     // EVERYWHERE that uses this library directly or indirectly, which is undesirable.
     if (description.Status === 'CREATE_PENDING' || description.Status === 'CREATE_IN_PROGRESS') {
