@@ -19,6 +19,11 @@ code and dependencies needed to run the function.
 
 It uses [esbuild](https://esbuild.github.io/) under the hood.
 
+## Node.js Edge Function
+
+The `NodejsEdgeFunction` has identical behaviour to the `NodejsFunction` however it supports
+Lambda@Edge instead of standard Lambda functions.
+
 ## Reference project architecture
 
 The `NodejsFunction` allows you to define your CDK and runtime dependencies in a single
