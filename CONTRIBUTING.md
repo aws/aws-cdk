@@ -959,8 +959,15 @@ The pattern is simple:
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
 4. Add an entry for your feature flag in the [README](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/README.md) file.
-5. In your tests, use the `testFutureBehavior` and `testLegacyBehavior` [jest helper methods] to test the enabled and disabled behavior.
-6. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
+5. In your tests, ensure that you test your feature with and without the feature flag enabled. You can do this by passing the feature flag to the `context` property when instantiating an `App`.
+   ```ts
+   const myFeatureFlag = { [cxapi.MY_FEATURE_FLAG]: true };
+   const app = new App({
+      context: myFeatureFlag,
+   }),
+   const stackUnderTest = new Stack(app);
+   ```
+7. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
 
     `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
