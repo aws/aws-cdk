@@ -547,33 +547,6 @@ path in `PhysicalResourceId.fromResponse()`.
 
 ### Custom Resource Examples
 
-#### Verify a domain with SES
-
-```ts
-import * as route53 from '@aws-cdk/aws-route53';
-
-const verifyDomainIdentity = new cr.AwsCustomResource(this, 'VerifyDomainIdentity', {
-  onCreate: {
-    service: 'SES',
-    action: 'verifyDomainIdentity',
-    parameters: {
-      Domain: 'example.com',
-    },
-    physicalResourceId: cr.PhysicalResourceId.fromResponse('VerificationToken'), // Use the token returned by the call as physical id
-  },
-  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-  }),
-});
-
-declare const zone: route53.HostedZone;
-new route53.TxtRecord(this, 'SESVerificationRecord', {
-  zone,
-  recordName: `_amazonses.example.com`,
-  values: [verifyDomainIdentity.getResponseField('VerificationToken')],
-});
-```
-
 #### Get the latest version of a secure SSM parameter
 
 ```ts
