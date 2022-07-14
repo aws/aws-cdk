@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-codepipeline-actions/test/integ.pipeline-code-build-batch": {
+    "integ.pipeline-code-build-batch": {
       "stacks": [
         "aws-cdk-codepipeline-codebuild-batch"
       ],

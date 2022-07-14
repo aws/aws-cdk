@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "@aws-cdk/aws-events-targets/test/ecs/integ.event-ec2-task.lit": {
+    "integ.event-ec2-task.lit": {
       "stacks": [
         "aws-ecs-integ-ecs"
       ],
