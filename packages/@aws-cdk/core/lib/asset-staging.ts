@@ -456,6 +456,7 @@ export class AssetStaging extends Construct {
           user,
           volumes,
           environment: options.environment,
+          entrypoint: options.entrypoint,
           workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
           securityOpt: options.securityOpt ?? '',
         });
