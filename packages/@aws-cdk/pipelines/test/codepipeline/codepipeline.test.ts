@@ -1,5 +1,6 @@
 import { Template, Annotations, Match } from '@aws-cdk/assertions';
 import * as ccommit from '@aws-cdk/aws-codecommit';
+import { Pipeline } from '@aws-cdk/aws-codepipeline';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -71,6 +72,24 @@ describe('CodePipeline support stack reuse', () => {
   });
 });
 
+describe('Providing codePipeline parameter and prop(s) of codePipeline parameter to CodePipeline constructor should throw error', () => {
+  test('Providing codePipeline parameter and pipelineName parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      pipelineName: 'randomName',
+    }).create()).toThrowError('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+  test('Providing codePipeline parameter and crossAccountKeys parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      crossAccountKeys: true,
+    }).create()).toThrowError('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+  test('Providing codePipeline parameter and reuseCrossRegionSupportStacks parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      reuseCrossRegionSupportStacks: true,
+    }).create()).toThrowError('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+});
+
 test('Policy sizes do not exceed the maximum size', () => {
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   pipelineStack.node.setContext('@aws-cdk/aws-iam:minimizePolicies', true);
@@ -111,7 +130,6 @@ test('Policy sizes do not exceed the maximum size', () => {
       rolePolicies[roleLogicalId].push(pol.Properties.PolicyDocument);
     }
   }
-
 
   // Validate sizes
   //
@@ -216,5 +234,42 @@ class ReuseStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
     new sqs.Queue(this, 'Queue');
+  }
+}
+
+interface CodePipelineStackProps extends cdk.StackProps {
+  pipelineName?: string;
+  crossAccountKeys?: boolean;
+  reuseCrossRegionSupportStacks?: boolean;
+}
+
+class CodePipelinePropsCheckTest extends cdk.Stack {
+  cProps: CodePipelineStackProps;
+  public constructor(scope: Construct, id: string, props: CodePipelineStackProps) {
+    super(scope, id, props);
+    this.cProps = props;
+  }
+  public create() {
+    if (this.cProps.pipelineName !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline1', {
+        pipelineName: this.cProps.pipelineName,
+        codePipeline: new Pipeline(this, 'Pipeline1'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.crossAccountKeys !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline2', {
+        crossAccountKeys: this.cProps.crossAccountKeys,
+        codePipeline: new Pipeline(this, 'Pipline2'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.reuseCrossRegionSupportStacks !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline3', {
+        reuseCrossRegionSupportStacks: this.cProps.reuseCrossRegionSupportStacks,
+        codePipeline: new Pipeline(this, 'Pipline3'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
   }
 }
