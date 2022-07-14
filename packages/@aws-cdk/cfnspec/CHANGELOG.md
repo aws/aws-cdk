@@ -1,3 +1,58 @@
+# CloudFormation Resource Specification v79.0.0
+
+## New Resource Types
+
+* AWS::RedshiftServerless::Workgroup
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::IoT::CACertificate CertificateMode (__added__)
+* AWS::IoT::CACertificate CACertificatePem.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Logs::MetricFilter FilterName (__added__)
+* AWS::Logs::MetricFilter FilterPattern.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-filterpattern
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-logs-metricfilter-filterpattern
+* AWS::Logs::MetricFilter LogGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-loggroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-logs-metricfilter-loggroupname
+* AWS::Logs::MetricFilter MetricTransformations.DuplicatesAllowed (__deleted__)
+* AWS::Logs::MetricFilter MetricTransformations.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-metrictransformations
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-logs-metricfilter-metrictransformations
+* AWS::StepFunctions::StateMachine DefinitionSubstitutions.PrimitiveItemType (__changed__)
+  * Old: String
+  * New: Json
+
+## Property Type Changes
+
+* AWS::Logs::MetricFilter.Dimension (__added__)
+* AWS::CloudFormation::StackSet.DeploymentTargets AccountFilterType (__added__)
+* AWS::Logs::MetricFilter.MetricTransformation Dimensions (__added__)
+* AWS::Logs::MetricFilter.MetricTransformation Unit (__added__)
+* AWS::Logs::MetricFilter.MetricTransformation DefaultValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-defaultvalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-defaultvalue
+* AWS::Logs::MetricFilter.MetricTransformation MetricName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-metricname
+* AWS::Logs::MetricFilter.MetricTransformation MetricNamespace.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricnamespace
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-metricnamespace
+* AWS::Logs::MetricFilter.MetricTransformation MetricValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricvalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-metricvalue
+* AWS::SSMIncidents::ResponsePlan.IncidentTemplate IncidentTags (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
 # CloudFormation Resource Specification v78.1.0
 
 ## New Resource Types
