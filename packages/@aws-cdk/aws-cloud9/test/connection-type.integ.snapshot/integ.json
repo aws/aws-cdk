@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cloud9/test/integ.cloud9": {
+    "integ.connection-type": {
       "stacks": [
         "C9Stack"
       ],

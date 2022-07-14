@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ec2/test/integ.client-vpn-endpoint": {
+    "integ.client-vpn-endpoint": {
       "stacks": [
         "cdk-ec2-client-vpn-endpoint"
       ],

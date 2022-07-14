@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-iotevents/test/integ.detector-model": {
+    "integ.detector-model": {
       "stacks": [
         "detector-model-test-stack"
       ],

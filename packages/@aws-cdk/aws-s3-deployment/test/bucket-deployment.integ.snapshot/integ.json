@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-s3-deployment/test/integ.bucket-deployment": {
+    "integ.bucket-deployment": {
       "stacks": [
         "test-bucket-deployments-2"
       ],

@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "apigateway/integ.call-rest-api": {
+    "integ.call-rest-api": {
       "stacks": [
         "CallRestApiInteg"
       ],
