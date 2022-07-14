@@ -2,7 +2,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Capture, Match, Template } from '@aws-cdk/assertions';
-import '@aws-cdk/assert-internal/jest';
 import { Stack, Stage, StageProps, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { behavior, LegacyTestGitHubNpmPipeline, OneStackApp, BucketStack, PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, stringLike } from '../testhelpers';

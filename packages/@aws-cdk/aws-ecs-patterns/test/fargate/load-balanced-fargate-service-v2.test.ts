@@ -3,10 +3,39 @@ import { Vpc } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
-import { App, Duration, Stack } from '@aws-cdk/core';
-import { ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT } from '@aws-cdk/cx-api';
+import { Duration, Stack } from '@aws-cdk/core';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
+
+
+const enableExecuteCommandPermissions = {
+  Statement: [
+    {
+      Action: [
+        'ssmmessages:CreateControlChannel',
+        'ssmmessages:CreateDataChannel',
+        'ssmmessages:OpenControlChannel',
+        'ssmmessages:OpenDataChannel',
+      ],
+      Effect: 'Allow',
+      Resource: '*',
+    },
+    {
+      Action: 'logs:DescribeLogGroups',
+      Effect: 'Allow',
+      Resource: '*',
+    },
+    {
+      Action: [
+        'logs:CreateLogStream',
+        'logs:DescribeLogStreams',
+        'logs:PutLogEvents',
+      ],
+      Effect: 'Allow',
+      Resource: '*',
+    },
+  ],
+  Version: '2012-10-17',
+};
 
 describe('When Application Load Balancer', () => {
   test('test Fargate loadbalanced construct with default settings', () => {
@@ -27,7 +56,6 @@ describe('When Application Load Balancer', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
         {
@@ -120,6 +148,7 @@ describe('When Application Load Balancer', () => {
       memoryLimitMiB: 512,
       desiredCount: 3,
       enableECSManagedTags: true,
+      enableExecuteCommand: true,
       healthCheckGracePeriod: Duration.millis(2000),
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
       propagateTags: ecs.PropagatedTagSource.SERVICE,
@@ -183,6 +212,17 @@ describe('When Application Load Balancer', () => {
       PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
       PropagateTags: 'SERVICE',
       ServiceName: 'myService',
+    });
+
+    // ECS Exec
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: enableExecuteCommandPermissions,
+      PolicyName: 'TaskRoleDefaultPolicy07FC53DE',
+      Roles: [
+        {
+          Ref: 'TaskRole30FC0FBB',
+        },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -322,7 +362,6 @@ describe('When Application Load Balancer', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
         {
@@ -396,7 +435,6 @@ describe('When Network Load Balancer', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
         {
@@ -489,6 +527,7 @@ describe('When Network Load Balancer', () => {
       memoryLimitMiB: 512,
       desiredCount: 3,
       enableECSManagedTags: true,
+      enableExecuteCommand: true,
       healthCheckGracePeriod: Duration.millis(2000),
       propagateTags: ecs.PropagatedTagSource.SERVICE,
       serviceName: 'myService',
@@ -548,6 +587,7 @@ describe('When Network Load Balancer', () => {
       PropagateTags: 'SERVICE',
       ServiceName: 'myService',
     });
+
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
@@ -615,6 +655,72 @@ describe('When Network Load Balancer', () => {
     });
   });
 
+  test('EnableExecuteCommand generates correct IAM Permissions', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        containerName: 'hello',
+        containerPorts: [80, 90],
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        logDriver: new ecs.AwsLogDriver({
+          streamPrefix: 'TestStream',
+        }),
+        family: 'Ec2TaskDef',
+        executionRole: new Role(stack, 'ExecutionRole', {
+          path: '/',
+          assumedBy: new CompositePrincipal(
+            new ServicePrincipal('ecs.amazonaws.com'),
+            new ServicePrincipal('ecs-tasks.amazonaws.com'),
+          ),
+        }),
+        taskRole: new Role(stack, 'TaskRole', {
+          assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+      },
+      cpu: 256,
+      assignPublicIp: true,
+      memoryLimitMiB: 512,
+      desiredCount: 3,
+      enableECSManagedTags: true,
+      enableExecuteCommand: true,
+      healthCheckGracePeriod: Duration.millis(2000),
+      propagateTags: ecs.PropagatedTagSource.SERVICE,
+      serviceName: 'myService',
+      targetGroups: [
+        {
+          containerPort: 80,
+        },
+        {
+          containerPort: 90,
+        },
+      ],
+    });
+
+
+    // ECS Exec
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: enableExecuteCommandPermissions,
+      PolicyName: 'TaskRoleDefaultPolicy07FC53DE',
+      Roles: [
+        {
+          Ref: 'TaskRole30FC0FBB',
+        },
+      ],
+    });
+  });
+
   test('errors if no essential container in pre-defined task definition', () => {
     // GIVEN
     const stack = new Stack();
@@ -665,36 +771,9 @@ describe('When Network Load Balancer', () => {
     }).toThrow(/You must specify one of: taskDefinition or image/);
   });
 
-  testLegacyBehavior('Fargate neworkloadbalanced construct uses Port 80 for target group when feature flag is not enabled', App, (app) => {
+  test('test Fargate networkloadbalanced construct with custom Port', () => {
     // GIVEN
-    const stack = new Stack(app);
-    const vpc = new Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-    new NetworkLoadBalancedFargateService(stack, 'NLBService', {
-      cluster: cluster,
-      memoryLimitMiB: 1024,
-      cpu: 512,
-      taskImageOptions: {
-        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        containerPort: 81,
-      },
-      listenerPort: 8181,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      Port: 80,
-      Protocol: 'TCP',
-      TargetType: 'ip',
-      VpcId: {
-        Ref: 'VPCB9E5F0B4',
-      },
-    });
-  });
-
-  testFutureBehavior('Fargate networkloadbalanced construct uses custom Port for target group when feature flag is enabled', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT]: true }, App, (app) => {
-    // GIVEN
-    const stack = new Stack(app);
+    const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -719,79 +798,9 @@ describe('When Network Load Balancer', () => {
     });
   });
 
-  testFutureBehavior('Fargate networkloadbalanced construct uses 80 for target group when feature flag is enabled but container port is not provided', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT]: true }, App, (app) => {
+  test('test Fargate multinetworkloadbalanced construct with custom Port', () => {
     // GIVEN
-    const stack = new Stack(app);
-    const vpc = new Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-    new NetworkLoadBalancedFargateService(stack, 'NLBService', {
-      cluster: cluster,
-      memoryLimitMiB: 1024,
-      cpu: 512,
-      taskImageOptions: {
-        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      },
-      listenerPort: 8181,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      Port: 80,
-      Protocol: 'TCP',
-      TargetType: 'ip',
-      VpcId: {
-        Ref: 'VPCB9E5F0B4',
-      },
-    });
-  });
-
-  testLegacyBehavior('Fargate multinetworkloadbalanced construct uses Port 80 for target group when feature flag is not enabled', App, (app) => {
-    // GIVEN
-    const stack = new Stack(app);
-    const vpc = new Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-    new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-      },
-    });
-
-
-    new NetworkMultipleTargetGroupsFargateService(stack, 'NLBService', {
-      cluster: cluster,
-      memoryLimitMiB: 1024,
-      cpu: 512,
-      taskImageOptions: {
-        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      },
-      loadBalancers: [
-        {
-          name: 'lb1',
-          listeners: [
-            { name: 'listener1', port: 8181 },
-          ],
-        },
-      ],
-      targetGroups: [{
-        containerPort: 81,
-      }],
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      Port: 80,
-      Protocol: 'TCP',
-      TargetType: 'ip',
-      VpcId: {
-        Ref: 'VPCB9E5F0B4',
-      },
-    });
-  });
-
-  testFutureBehavior('test Fargate multinetworkloadbalanced construct uses custom Port for target group when feature flag is enabled', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT]: true }, App, (app) => {
-    // GIVEN
-    const stack = new Stack(app);
+    const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -825,47 +834,6 @@ describe('When Network Load Balancer', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Port: 81,
-      Protocol: 'TCP',
-      TargetType: 'ip',
-      VpcId: {
-        Ref: 'VPCB9E5F0B4',
-      },
-    });
-  });
-
-  testFutureBehavior('test Fargate multinetworkloadbalanced construct uses 80 for target group when feature flag is enabled but container port is not provided', { [ECS_PATTERNS_TARGET_GROUP_PORT_FROM_CONTAINER_PORT]: true }, App, (app) => {
-    // GIVEN
-    const stack = new Stack(app);
-    const vpc = new Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-    new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-      },
-    });
-
-
-    new NetworkMultipleTargetGroupsFargateService(stack, 'NLBService', {
-      cluster: cluster,
-      memoryLimitMiB: 1024,
-      cpu: 512,
-      taskImageOptions: {
-        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      },
-      loadBalancers: [
-        {
-          name: 'lb1',
-          listeners: [
-            { name: 'listener1', port: 8181 },
-          ],
-        },
-      ],
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      Port: 80,
       Protocol: 'TCP',
       TargetType: 'ip',
       VpcId: {

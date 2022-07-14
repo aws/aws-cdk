@@ -413,8 +413,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
     }
 
-    if (this.isExternalCompatible && this.networkMode !== NetworkMode.BRIDGE) {
-      throw new Error(`External tasks can only have Bridge network mode, got: ${this.networkMode}`);
+    if (this.isExternalCompatible && ![NetworkMode.BRIDGE, NetworkMode.HOST, NetworkMode.NONE].includes(this.networkMode)) {
+      throw new Error(`External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`);
     }
 
     if (!this.isFargateCompatible && props.runtimePlatform) {
@@ -481,6 +481,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.taskDefinitionArn = taskDef.ref;
+    this.node.addValidation({ validate: () => this.validateTaskDefinition() });
   }
 
   public get executionRole(): iam.IRole | undefined {
@@ -678,8 +679,8 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Validates the task definition.
    */
-  protected validate(): string[] {
-    const ret = super.validate();
+  private validateTaskDefinition(): string[] {
+    const ret = new Array<string>();
 
     if (isEc2Compatible(this.compatibility)) {
       // EC2 mode validations

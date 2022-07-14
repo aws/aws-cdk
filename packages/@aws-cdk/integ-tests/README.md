@@ -33,7 +33,7 @@ we would need to create a file to contain our integration test application.
 const app = new App();
 const stack = new Stack();
 new lambda.Function(stack, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -75,7 +75,7 @@ class StackUnderTest extends Stack {
     super(scope, id, props);
 	
     new lambda.Function(this, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
       architecture: props.architecture,
@@ -99,7 +99,7 @@ class StackUnderTest extends Stack {
     super(scope, id, props);
 	
     new lambda.Function(this, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
       architecture: props.architecture,
@@ -177,14 +177,33 @@ new IntegTest(app, 'Integ', { testCases: [stackUnderTest, testCaseWithAssets] })
 
 This library also provides a utility to make assertions against the infrastructure that the integration test deploys.
 
-The easiest way to do this is to create a `TestCase` and then access the `DeployAssert` that is automatically created.
+There are two main scenarios in which assertions are created.
+
+- Part of an integration test using `integ-runner`
+
+In this case you would create an integration test using the `IntegTest` construct and then make assertions using the `assert` property.
+You should **not** utilize the assertion constructs directly, but should instead use the `methods` on `IntegTest.assert`.
 
 ```ts
 declare const app: App;
 declare const stack: Stack;
 
 const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
-integ.assert.awsApiCall('S3', 'getObject');
+integ.assertions.awsApiCall('S3', 'getObject');
+```
+
+- Part of a  normal CDK deployment
+
+In this case you may be using assertions as part of a normal CDK deployment in order to make an assertion on the infrastructure
+before the deployment is considered successful. In this case you can utilize the assertions constructs directly.
+
+```ts
+declare const myAppStack: Stack;
+
+new AwsApiCall(myAppStack, 'GetObject', {
+  service: 'S3',
+  api: 'getObject',
+});
 ```
 
 ### DeployAssert
@@ -193,25 +212,15 @@ Assertions are created by using the `DeployAssert` construct. This construct cre
 any stacks that you create as part of your integration tests. This `Stack` is treated differently from other stacks
 by the `integ-runner` tool. For example, this stack will not be diffed by the `integ-runner`.
 
-Any assertions that you create should be created in the scope of `DeployAssert`. For example,
-
-```ts
-declare const app: App;
-
-const assert = new DeployAssert(app);
-new AwsApiCall(assert, 'GetObject', {
-  service: 'S3',
-  api: 'getObject',
-});
-```
-
 `DeployAssert` also provides utilities to register your own assertions.
 
 ```ts
 declare const myCustomResource: CustomResource;
+declare const stack: Stack;
 declare const app: App;
-const assert = new DeployAssert(app);
-assert.assert(
+
+const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
+integ.assertions.expect(
   'CustomAssertion',
   ExpectedResult.objectLike({ foo: 'bar' }),
   ActualResult.fromCustomResource(myCustomResource, 'data'),
@@ -228,12 +237,12 @@ AWS API call to receive some data. This library does this by utilizing CloudForm
 which means that CloudFormation will call out to a Lambda Function which will
 use the AWS JavaScript SDK to make the API call.
 
-This can be done by using the class directory:
+This can be done by using the class directory (in the case of a normal deployment):
 
 ```ts
-declare const assert: DeployAssert;
+declare const stack: Stack;
 
-new AwsApiCall(assert, 'MyAssertion', {
+new AwsApiCall(stack, 'MyAssertion', {
   service: 'SQS',
   api: 'receiveMessage',
   parameters: {
@@ -242,15 +251,46 @@ new AwsApiCall(assert, 'MyAssertion', {
 });
 ```
 
-Or by using the `awsApiCall` method on `DeployAssert`:
+Or by using the `awsApiCall` method on `DeployAssert` (when writing integration tests):
 
 ```ts
 declare const app: App;
-const assert = new DeployAssert(app);
-assert.awsApiCall('SQS', 'receiveMessage', {
+declare const stack: Stack;
+const integ = new IntegTest(app, 'Integ', {
+  testCases: [stack],
+});
+integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: 'url',
 });
 ```
+
+By default, the `AwsApiCall` construct will automatically add the correct IAM policies
+to allow the Lambda function to make the API call. It does this based on the `service`
+and `api` that is provided. In the above example the service is `SQS` and the api is
+`receiveMessage` so it will create a policy with `Action: 'sqs:ReceiveMessage`.
+
+There are some cases where the permissions do not exactly match the service/api call, for
+example the S3 `listObjectsV2` api. In these cases it is possible to add the correct policy
+by accessing the `provider` object.
+
+```ts
+declare const app: App;
+declare const stack: Stack;
+declare const integ: IntegTest;
+
+const apiCall = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
+  Bucket: 'mybucket',
+});
+
+apiCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['s3:GetObject', 's3:ListBucket'],
+  Resource: ['*'],
+});
+```
+
+Note that addToRolePolicy() uses direct IAM JSON policy blobs, not a iam.PolicyStatement
+object like you will see in the rest of the CDK.
 
 ### EqualsAssertion
 
@@ -270,32 +310,29 @@ const integ = new IntegTest(app, 'Integ', {
   testCases: [stack],
 });
 
-integ.assert.invokeFunction({
+integ.assertions.invokeFunction({
   functionName: fn.functionName,
   invocationType: InvocationType.EVENT,
   payload: JSON.stringify({ status: 'OK' }),
 });
 
-const message = integ.assert.awsApiCall('SQS', 'receiveMessage', {
+const message = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: queue.queueUrl,
   WaitTimeSeconds: 20,
 });
 
-new EqualsAssertion(integ.assert, 'ReceiveMessage', {
-  actual: ActualResult.fromAwsApiCall(message, 'Messages.0.Body'),
-  expected: ExpectedResult.objectLike({
-    requestContext: {
-      condition: 'Success',
-    },
-    requestPayload: {
-      status: 'OK',
-    },
-    responseContext: {
-      statusCode: 200,
-    },
-    responsePayload: 'success',
-  }),
-});
+message.assertAtPath('Messages.0.Body', ExpectedResult.objectLike({
+  requestContext: {
+    condition: 'Success',
+  },
+  requestPayload: {
+    status: 'OK',
+  },
+  responseContext: {
+    statusCode: 200,
+  },
+  responsePayload: 'success',
+}));
 ```
 
 #### Match
@@ -305,9 +342,8 @@ can be used to construct the `ExpectedResult`.
 
 ```ts
 declare const message: AwsApiCall;
-declare const assert: DeployAssert;
 
-message.assert(ExpectedResult.objectLike({
+message.expect(ExpectedResult.objectLike({
   Messages: Match.arrayWith([
     {
 	  Body: {
@@ -336,10 +372,10 @@ const integ = new IntegTest(app, 'IntegTest', {
   testCases: [stack],
 });
 
-const invoke = integ.assert.invokeFunction({
+const invoke = integ.assertions.invokeFunction({
   functionName: lambdaFunction.functionName,
 });
-invoke.assert(ExpectedResult.objectLike({
+invoke.expect(ExpectedResult.objectLike({
   Payload: '200',
 }));
 ```
@@ -359,17 +395,17 @@ const testCase = new IntegTest(app, 'IntegTest', {
 });
 
 // Start an execution
-const start = testCase.assert.awsApiCall('StepFunctions', 'startExecution', {
+const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', {
   stateMachineArn: sm.stateMachineArn,
 });
 
 // describe the results of the execution
-const describe = testCase.assert.awsApiCall('StepFunctions', 'describeExecution', {
+const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecution', {
   executionArn: start.getAttString('executionArn'),
 });
 
 // assert the results
-describe.assert(ExpectedResult.objectLike({
+describe.expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
 }));
 ```

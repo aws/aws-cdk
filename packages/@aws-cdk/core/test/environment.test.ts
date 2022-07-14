@@ -21,8 +21,6 @@ describe('environment', () => {
 
     expect(stack2.resolve(stack2.account)).toEqual('only-account');
     expect(stack2.resolve(stack2.region)).toEqual({ Ref: 'AWS::Region' });
-
-
   });
 
   describe('environment defaults', () => {
@@ -41,8 +39,6 @@ describe('environment', () => {
         region: 'unknown-region',
         name: 'aws://unknown-account/unknown-region',
       });
-
-
     });
 
     test('only region is set', () => {
@@ -60,8 +56,6 @@ describe('environment', () => {
         region: 'explicit-region',
         name: 'aws://unknown-account/explicit-region',
       });
-
-
     });
 
     test('both "region" and "account" are set', () => {
@@ -84,8 +78,6 @@ describe('environment', () => {
         region: 'explicit-region',
         name: 'aws://explicit-account/explicit-region',
       });
-
-
     });
 
     test('token-account and token-region', () => {
@@ -108,8 +100,6 @@ describe('environment', () => {
         region: 'unknown-region',
         name: 'aws://unknown-account/unknown-region',
       });
-
-
     });
 
     test('token-account explicit region', () => {
@@ -132,8 +122,6 @@ describe('environment', () => {
         region: 'us-east-2',
         name: 'aws://unknown-account/us-east-2',
       });
-
-
     });
   });
 });

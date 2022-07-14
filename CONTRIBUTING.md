@@ -33,6 +33,8 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
   - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
   - [Find dependency cycles between packages](#find-dependency-cycles-between-packages)
 - [Running CLI integration tests](#running-cli-integration-tests)
+- [Building aws-cdk-lib](#building-aws-cdk-lib)
+- [Building and testing v2 -alpha packages](#building-and-testing-v2--alpha-packages)
 - [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
 - [Feature Flags](#feature-flags)
 - [Versioning and Release](#versioning-and-release)
@@ -55,7 +57,7 @@ The following tools need to be installed on your system prior to installing the 
 - [Node.js >= 14.15.0](https://nodejs.org/download/release/latest-v14.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
-- [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
+- [.NET Core SDK >= 3.1.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
@@ -254,7 +256,7 @@ Work your magic. Here are some guidelines:
 
 Integration tests perform a few functions in the CDK code base -
 1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against
-   the `*.expected.json` file. This highlights how a change affects the synthesized stacks.
+   the `*.integ.snapshot` directory. This highlights how a change affects the synthesized stacks.
 2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change.
    This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package. If you are developing a new integration test or for some other reason want to work on a single integration test over and over again without running through all the integration tests you can do so using `yarn integ integ.test-name.js`
    Remember to set up AWS credentials before doing this.
@@ -273,9 +275,10 @@ new features unless there is a good reason why one is not needed.
 4. Adding a new supported version (e.g. a new [AuroraMysqlEngineVersion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_rds.AuroraMysqlEngineVersion.html))
 5. Adding any functionality via a [Custom Resource](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.custom_resources-readme.html)
 
-To the extent possible, include a section (like below) in the integration test file that specifies how the successfully
-deployed stack can be verified for correctness. Correctness here implies that the resources have been set up correctly.
-The steps here are usually AWS CLI commands but they need not be.
+All integration tests going forward should use the [IntegTest](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests)
+construct. Over time we will be updating all of our existing tests to use this construct. It
+allows for more control over configuring each tests as well as the ability to perform
+assertions against the deployed infrastructure.
 
 ```ts
 /*
@@ -287,7 +290,7 @@ The steps here are usually AWS CLI commands but they need not be.
 
 Examples:
 * [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
-* [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
+* [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
 
 **What do do if you cannot run integration tests**
 
@@ -326,6 +329,11 @@ $ yarn watch & # runs in the background
   [conventionalcommits](https://www.conventionalcommits.org).
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
     `chore(module): title`.
+    * `feat`: indicates a feature added (requires tests and README updates in principle, but can be suppressed)
+    * `fix`: indicates a bug fixes (requires tests in principle, but can be suppressed)
+    * `docs`: indicates updated documentation (docstrings or Markdown files)
+    * `refactor`: indicates a feature-preserving refactoring
+    * `chore`: something without directly visible user benefit (does not end up in the CHANGELOG). Typically used for build scripts, config, or changes so minor they don't warrant showing up the CHANGELOG.
   * Titles for `feat` and `fix` PRs end up in the change log. Think about what makes most sense for users reading the changelog while writing them.
     * `feat`: describe the feature (not the action of creating the commit or PR, for example, avoid words like "added" or "changed")
     * `fix`: describe the bug (not the solution)
@@ -355,13 +363,17 @@ $ yarn watch & # runs in the background
   * **module-name:** Yet another breaking change
   ```
 
+  Breaking changes are only allowed in experimental libraries. Experimental
+  libraries are published with an `-alpha` suffix, and have the `stability`
+  property set to `experimental` in their `package.json`.
+
 * Once the pull request is submitted, a reviewer will be assigned by the maintainers.
 
 * If the PR build is failing, update the PR with fixes until the build succeeds. You may have trouble getting attention
   from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed.
 
 * Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
-  same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
+  same branch. Usually all these are going to be squashed when you merge to main. The commit messages should be hints
   for you when you finalize your merge commit message.
 
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
@@ -394,7 +406,7 @@ out in the description so that we can discuss the best way to manage that depend
 ### Step 5: Merge
 
 * Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs).
-* Once approved and tested, one of our bots will squash-merge to master and will use your PR title/description as the
+* Once approved and tested, one of our bots will squash-merge to main and will use your PR title/description as the
   commit message.
 
 ## Breaking Changes
@@ -821,16 +833,7 @@ $ <path to the AWS CDK repo>/link-all.sh
 
 ### Running integration tests in parallel
 
-Integration tests may take a long time to complete. We can speed this up by running them in parallel
-in different regions.
-
-```shell
-# Install GNU parallel (may require uninstall 'moreutils' if you have it)
-$ apt-get install parallel
-$ brew install parallel
-
-$ scripts/run-integ-parallel @aws-cdk/aws-ec2 @aws-cdk/aws-autoscaling ...
-```
+See the [Integration testing guide](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#running-large-numbers-of-tests)
 
 ### Visualizing dependencies in a CloudFormation Template
 
@@ -863,6 +866,69 @@ run as part of the regular build, since they have some particular requirements.
 See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
 more information on running those tests.
 
+## Building aws-cdk-lib
+
+In AWS CDK v2, all stable libraries are packaged into a single monolithic
+package and published as `aws-cdk-lib`. In most cases, you can iterate on a
+single module's directory as previously described in this document (e.g.
+`packages/@aws-cdk/aws-s3`). In some cases, you might need to build
+`aws-cdk-lib`:
+
+```
+# Generate all of the L1s first. If you have already done a full build in the repository, you can skip this.
+cd <CDK repo root>/
+./scripts/gen.sh
+
+# Generate and build `aws-cdk-lib`
+cd packages/aws-cdk-lib
+yarn build
+```
+
+The commands above perform the following steps:
+1. Run `yarn install` to install all dependencies
+2. Generate `.generated.ts` files in each `packages/@aws-cdk/aws-<service>`
+   directory. These files contain TypeScript source code for all of the L1 (Cfn)
+   Constructs, and are generated from the [CloudFormation Resource
+   Specification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html).
+3. Copy the `.ts` source code files from each `packages/@aws-cdk/aws-<service>`
+   directory to the corresponding `packages/aws-cdk-lib/aws-<service>`
+   directory.
+4. Compile `aws-cdk-lib`.
+
+Running unit tests and integration tests still has to be performed in each
+module's `packages/@aws-cdk` directory.
+
+## Building and testing v2 -alpha packages
+
+In AWS CDK v2, all experimental libraries are published separately with an
+-alpha suffix. In most cases, you can iterate on a single module's directory as
+already described in this document (e.g. `packages/@aws-cdk/aws-amplify`). If
+you need to generate and iterate on the alpha package, here are the steps. The
+main differences between the alpha package is naming of the package, and import
+statements.
+
+First, make sure the following packages are built:
+  - packages/@aws-cdk/assert
+  - packages/aws-cdk-lib
+  - tools/individual-pkg-gen
+
+The following command will create all of the alpha packages by copying files
+from their source directories under `packages/@aws-cdk/aws-<service>`, and it
+will build and run unit tests for all of them. This is sometimes too much for a
+developer machine or laptop.
+
+```
+<CDK repo root>/scripts/transform.sh
+```
+
+To only copy and transform the source files, and then build and test one
+alpha package at a time, use the following:
+
+```
+<CDK repo root>/scripts/transform.sh --skip-build
+cd packages/individual-packages/aws-<service>
+yarn build+test
+```
 ## Changing Cloud Assembly Schema
 
 If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
@@ -882,14 +948,14 @@ created through `cdk init`.
 The pattern is simple:
 
 1. Define a new const under
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts)
    with the name of the context key that **enables** this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FUTURE_FLAGS` map in
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts).
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
 4. In your tests, use the `testFutureBehavior` and `testLegacyBehavior` [jest helper methods] to test the enabled and disabled behavior.
@@ -897,7 +963,7 @@ The pattern is simple:
 
     `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
-[jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
+[jest helper methods]: https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
 
 ## Versioning and Release
 

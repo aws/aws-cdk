@@ -86,7 +86,6 @@ describe('staging', () => {
 
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(true);
-
   });
 
   test('asset packaging type is correct when staging is skipped because of memory cache', () => {
@@ -102,7 +101,6 @@ describe('staging', () => {
     expect(staging1.isArchive).toEqual(true);
     expect(staging2.packaging).toEqual(staging1.packaging);
     expect(staging2.isArchive).toEqual(staging1.isArchive);
-
   });
 
   test('asset packaging type is correct when staging is skipped because of disk cache', () => {
@@ -135,8 +133,6 @@ describe('staging', () => {
     expect(staging1.isArchive).toEqual(true);
     expect(staging2.packaging).toEqual(staging1.packaging);
     expect(staging2.isArchive).toEqual(staging1.isArchive);
-
-
   });
 
   test('staging of a non-archive file correctly sets packaging and isArchive', () => {
@@ -149,7 +145,6 @@ describe('staging', () => {
 
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(false);
-
   });
 
   test('staging can be disabled through context', () => {
@@ -165,12 +160,11 @@ describe('staging', () => {
     expect(staging.sourcePath).toEqual(sourcePath);
     expect(staging.absoluteStagedPath).toEqual(sourcePath);
     expect(staging.relativeStagedPath(stack)).toEqual(sourcePath);
-
   });
 
   test('files are copied to the output directory during synth', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
 
     // WHEN
@@ -187,7 +181,6 @@ describe('staging', () => {
       'stack.template.json',
       'tree.json',
     ]);
-
   });
 
   test('assets in nested assemblies get staged into assembly root directory', () => {
@@ -212,7 +205,6 @@ describe('staging', () => {
       'manifest.json',
       'tree.json',
     ]);
-
   });
 
   test('allow specifying extra data to include in the source hash', () => {
@@ -229,12 +221,11 @@ describe('staging', () => {
     expect(withoutExtra.assetHash).not.toEqual(withExtra.assetHash);
     expect(withoutExtra.assetHash).toEqual(FIXTURE_TEST1_HASH);
     expect(withExtra.assetHash).toEqual('c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
-
   });
 
   test('with bundling', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const processStdErrWriteSpy = sinon.spy(process.stderr, 'write');
@@ -264,13 +255,11 @@ describe('staging', () => {
 
     // shows a message before bundling
     expect(processStdErrWriteSpy.calledWith('Bundling asset stack/Asset...\n')).toEqual(true);
-
-
   });
 
   test('bundled resources have absolute path when staging is disabled', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
@@ -302,13 +291,11 @@ describe('staging', () => {
     // absolute path ending with bundling dir
     expect(path.isAbsolute(resolvedStagePath)).toEqual(true);
     expect(new RegExp('asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4$').test(resolvedStagePath)).toEqual(true);
-
-
   });
 
   test('bundler reuses its output when it can', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -345,13 +332,11 @@ describe('staging', () => {
       'stack.template.json',
       'tree.json',
     ]);
-
-
   });
 
   test('uses asset hash cache with AssetHashType.OUTPUT', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const fingerPrintSpy = sinon.spy(FileSystem, 'fingerprint');
@@ -395,13 +380,11 @@ describe('staging', () => {
 
     // Only one fingerprinting
     expect(fingerPrintSpy.calledOnce).toEqual(true);
-
-
   });
 
   test('bundler considers its options when reusing bundle output', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -444,13 +427,11 @@ describe('staging', () => {
       'stack.template.json',
       'tree.json',
     ]);
-
-
   });
 
   test('bundler outputs to intermediate dir and renames to asset', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const ensureDirSync = sinon.spy(fs, 'ensureDirSync');
@@ -481,8 +462,6 @@ describe('staging', () => {
       'stack.template.json',
       'tree.json',
     ]);
-
-
   });
 
   test('bundling failure preserves the bundleDir for diagnosability', () => {
@@ -505,8 +484,6 @@ describe('staging', () => {
 
     const dir = fs.readdirSync(assembly.directory);
     expect(dir.some(entry => entry.match(/asset.*-error/))).toEqual(true);
-
-
   });
 
   test('bundler re-uses assets from previous synths', () => {
@@ -516,7 +493,7 @@ describe('staging', () => {
       fs.removeSync(TEST_OUTDIR);
     }
 
-    const app = new App({ outdir: TEST_OUTDIR });
+    const app = new App({ outdir: TEST_OUTDIR, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -534,7 +511,7 @@ describe('staging', () => {
     AssetStaging.clearAssetHashCache();
 
     // GIVEN
-    const app2 = new App({ outdir: TEST_OUTDIR });
+    const app2 = new App({ outdir: TEST_OUTDIR, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack2 = new Stack(app2, 'stack');
 
     // WHEN
@@ -563,8 +540,6 @@ describe('staging', () => {
       'stack.template.json',
       'tree.json',
     ]);
-
-
   });
 
   test('bundling throws when /asset-ouput is empty', () => {
@@ -586,7 +561,6 @@ describe('staging', () => {
       readDockerStubInput()).toEqual(
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT`,
     );
-
   });
 
   testDeprecated('bundling with BUNDLE asset hash type', () => {
@@ -611,10 +585,7 @@ describe('staging', () => {
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
-
-
   });
-
 
   test('bundling with docker security option', () => {
     // GIVEN
@@ -639,8 +610,31 @@ describe('staging', () => {
       `run --rm --security-opt no-new-privileges ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
+  });
 
+  test('bundling with docker entrypoint', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
+    // WHEN
+    const asset = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        entrypoint: [DockerStubCommand.SUCCESS],
+        command: [DockerStubCommand.SUCCESS],
+      },
+      assetHashType: AssetHashType.OUTPUT,
+    });
+
+    // THEN
+    expect(
+      readDockerStubInput()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input --entrypoint DOCKER_STUB_SUCCESS alpine DOCKER_STUB_SUCCESS`,
+    );
+    expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
 
   test('bundling with OUTPUT asset hash type', () => {
@@ -661,8 +655,6 @@ describe('staging', () => {
 
     // THEN
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
-
-
   });
 
   test('custom hash', () => {
@@ -680,8 +672,6 @@ describe('staging', () => {
     // THEN
     expect(fs.existsSync(STUB_INPUT_FILE)).toEqual(false);
     expect(asset.assetHash).toEqual('b9c77053f5b83bbe5ba343bc18e92db939a49017010813225fea91fa892c4823'); // hash of 'my-custom-hash'
-
-
   });
 
   test('throws with assetHash and not CUSTOM hash type', () => {
@@ -700,8 +690,6 @@ describe('staging', () => {
       assetHash: 'my-custom-hash',
       assetHashType: AssetHashType.OUTPUT,
     })).toThrow(/Cannot specify `output` for `assetHashType`/);
-
-
   });
 
   testDeprecated('throws with BUNDLE hash type and no bundling', () => {
@@ -716,8 +704,6 @@ describe('staging', () => {
       assetHashType: AssetHashType.BUNDLE,
     })).toThrow(/Cannot use `bundle` hash type when `bundling` is not specified/);
     expect(fs.existsSync(STUB_INPUT_FILE)).toEqual(false);
-
-
   });
 
   test('throws with OUTPUT hash type and no bundling', () => {
@@ -732,8 +718,6 @@ describe('staging', () => {
       assetHashType: AssetHashType.OUTPUT,
     })).toThrow(/Cannot use `output` hash type when `bundling` is not specified/);
     expect(fs.existsSync(STUB_INPUT_FILE)).toEqual(false);
-
-
   });
 
   test('throws with CUSTOM and no hash', () => {
@@ -748,8 +732,6 @@ describe('staging', () => {
       assetHashType: AssetHashType.CUSTOM,
     })).toThrow(/`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`/);
     expect(fs.existsSync(STUB_INPUT_FILE)).toEqual(false); // "docker" not executed
-
-
   });
 
   test('throws when bundling fails', () => {
@@ -770,8 +752,6 @@ describe('staging', () => {
       readDockerStubInput()).toEqual(
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
     );
-
-
   });
 
   test('with local bundling', () => {
@@ -807,8 +787,6 @@ describe('staging', () => {
     if (dir) {
       fs.removeSync(path.join(dir, 'hello.txt'));
     }
-
-
   });
 
   test('with local bundling returning false', () => {
@@ -833,8 +811,6 @@ describe('staging', () => {
 
     // THEN
     expect(readDockerStubInput()).toBeDefined();
-
-
   });
 
   test('bundling can be skipped by setting context', () => {
@@ -893,7 +869,45 @@ describe('staging', () => {
     const dockerStubInput = readDockerStubInputConcat();
     // Docker ran for the asset in Stack1
     expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
-    // DOcker did not run for the asset in Stack2
+    // Docker did not run for the asset in Stack2
+    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
+  });
+
+  test('correctly skips bundling with stack under stage and custom stack name', () => {
+    // GIVEN
+    const app = new App();
+
+    const stage = new Stage(app, 'Stage');
+    stage.node.setContext(cxapi.BUNDLING_STACKS, ['Stage/Stack1']);
+
+    const stack1 = new Stack(stage, 'Stack1', { stackName: 'unrelated-stack1-name' });
+    const stack2 = new Stack(stage, 'Stack2', { stackName: 'unrelated-stack2-name' });
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack1, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    // THEN
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in Stack1
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // Docker did not run for the asset in Stack2
     expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
   });
 
@@ -919,8 +933,6 @@ describe('staging', () => {
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
-
-
   });
 
   test('bundling still occurs with full wildcard', () => {
@@ -945,13 +957,11 @@ describe('staging', () => {
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
-
-
   });
 
   test('bundling that produces a single archive file is autodiscovered', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -979,8 +989,6 @@ describe('staging', () => {
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(true);
-
-
   });
 
   test('bundling that produces a single archive file with disk cache', () => {
@@ -1027,13 +1035,11 @@ describe('staging', () => {
     expect(staging1.isArchive).toEqual(true);
     expect(staging2.packaging).toEqual(staging1.packaging);
     expect(staging2.isArchive).toEqual(staging1.isArchive);
-
-
   });
 
   test('bundling that produces a single archive file with NOT_ARCHIVED', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -1058,8 +1064,6 @@ describe('staging', () => {
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.ZIP_DIRECTORY);
     expect(staging.isArchive).toEqual(true);
-
-
   });
 
   test('throws with ARCHIVED and bundling that does not produce a single archive file', () => {
@@ -1077,8 +1081,6 @@ describe('staging', () => {
         outputType: BundlingOutput.ARCHIVED,
       },
     })).toThrow(/Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`/);
-
-
   });
 });
 

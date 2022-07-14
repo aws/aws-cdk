@@ -10,12 +10,12 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(RomainMuller|garnaat|skinny85|rix0rrr|NGL321|Jerry-AWS|MrArnoldPalmer|iliapolo|pkandasamy91|SoManyHs|uttarasridhar|otaviomacedo|madeline-k|kaizencc|comcalvi|Chriscbr|corymhall|peterwoodworth|ryparker|TheRealAmazonKendra|yuth|vinayak-kukreja)$
+      - author~=^(RomainMuller|rix0rrr|Jerry-AWS|MrArnoldPalmer|iliapolo|uttarasridhar|otaviomacedo|madeline-k|kaizencc|comcalvi|corymhall|peterwoodworth|ryparker|TheRealAmazonKendra|yuth|vinayak-kukreja|Naumel|mrgrain)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:
       comment:
-        message: Thank you for contributing! Your pull request will be updated from master and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+        message: Thank you for contributing! Your pull request will be updated from main and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       queue:
         name: default
         method: squash
@@ -92,7 +92,7 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - label!=contribution/core
-      - base=master
+      - base=main
       - -merged
       - -closed
   - name: if fails conventional commits

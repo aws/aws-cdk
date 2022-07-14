@@ -1,5 +1,5 @@
 {
-  "$version": "72.0.0",
+  "$version": "79.0.0",
   "PropertyTypes": {
     "AWS::DataBrew::Dataset.CsvOptions": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-dataset-csvoptions.html",

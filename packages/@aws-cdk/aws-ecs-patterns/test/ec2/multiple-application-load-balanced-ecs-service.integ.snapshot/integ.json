@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs-patterns/test/ec2/integ.multiple-application-load-balanced-ecs-service": {
+    "@aws-cdk/aws-ecs-patterns/test/ec2/integ.multiple-application-load-balanced-ecs-service": {
       "stacks": [
         "aws-ecs-integ"
       ],

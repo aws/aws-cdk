@@ -73,13 +73,13 @@ const integ = new IntegTest(app, 'Destinations', {
   testCases: [stack],
 });
 
-integ.assert.invokeFunction({
+integ.assertions.invokeFunction({
   functionName: stack.fn.functionName,
   invocationType: InvocationType.EVENT,
   payload: JSON.stringify({ status: 'OK' }),
 });
 
-const message = integ.assert.awsApiCall('SQS', 'receiveMessage', {
+const message = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: stack.queue.queueUrl,
   WaitTimeSeconds: 20,
 });

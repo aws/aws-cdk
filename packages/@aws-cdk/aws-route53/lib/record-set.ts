@@ -8,10 +8,7 @@ import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';
 
 /**
  * A record set
@@ -165,6 +162,17 @@ export interface RecordSetOptions {
    * @default false
    */
   readonly removeDomainNamePeriodEnd?: boolean;
+  
+  /**
+   * Whether to delete the same record set in the hosted zone if it already exists.
+   *
+   * This allows to deploy a new record set while minimizing the downtime because the
+   * new record set will be created immediately after the existing one is deleted. It
+   * also avoids "manual" actions to delete existing record sets.
+   *
+   * @default false
+   */
+  readonly deleteExisting?: boolean;
 }
 
 /**
@@ -228,9 +236,11 @@ export class RecordSet extends Resource implements IRecordSet {
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
+    const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone, props.removeDomainNamePeriodEnd);
+
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
-      name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone, props.removeDomainNamePeriodEnd),
+      name: recordName,
       type: props.recordType,
       resourceRecords: props.target.values,
       aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this, props.zone),
@@ -239,6 +249,40 @@ export class RecordSet extends Resource implements IRecordSet {
     });
 
     this.domainName = recordSet.ref;
+
+    if (props.deleteExisting) {
+      // Delete existing record before creating the new one
+      const provider = CustomResourceProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
+        codeDirectory: path.join(__dirname, 'delete-existing-record-set-handler'),
+        runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+        policyStatements: [{ // IAM permissions for all providers
+          Effect: 'Allow',
+          Action: 'route53:GetChange',
+          Resource: '*',
+        }],
+      });
+
+      provider.addToRolePolicy({ // Add to the singleton policy for this specific provider
+        Effect: 'Allow',
+        Action: [
+          'route53:ChangeResourceRecordSets',
+          'route53:ListResourceRecordSets',
+        ],
+        Resource: props.zone.hostedZoneArn,
+      });
+
+      const customResource = new CustomResource(this, 'DeleteExistingRecordSetCustomResource', {
+        resourceType: DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE,
+        serviceToken: provider.serviceToken,
+        properties: {
+          HostedZoneId: props.zone.hostedZoneId,
+          RecordName: recordName,
+          RecordType: props.recordType,
+        },
+      });
+
+      recordSet.node.addDependency(customResource);
+    }
   }
 }
 
@@ -678,7 +722,7 @@ export interface CrossAccountZoneDelegationRecordProps {
 /**
  * A Cross Account Zone Delegation record
  */
-export class CrossAccountZoneDelegationRecord extends CoreConstruct {
+export class CrossAccountZoneDelegationRecord extends Construct {
   constructor(scope: Construct, id: string, props: CrossAccountZoneDelegationRecordProps) {
     super(scope, id);
 
@@ -692,7 +736,7 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
 
     const provider = CustomResourceProvider.getOrCreateProvider(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'cross-account-zone-delegation-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
     const role = iam.Role.fromRoleArn(this, 'cross-account-zone-delegation-handler-role', provider.roleArn);
