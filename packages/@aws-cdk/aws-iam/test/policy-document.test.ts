@@ -347,8 +347,8 @@ describe('IAM policy document', () => {
 
     expect(stack.resolve(statement.toStatementJson())).toEqual({
       Effect: 'Allow',
-      Action: ['a'],
-      Resource: ['x'],
+      Action: 'a',
+      Resource: 'x',
     });
   });
 
@@ -364,8 +364,8 @@ describe('IAM policy document', () => {
 
     expect(stack.resolve(statement.toStatementJson())).toEqual({
       Effect: 'Allow',
-      NotAction: ['a'],
-      NotResource: ['x'],
+      NotAction: 'a',
+      NotResource: 'x',
     });
   });
 

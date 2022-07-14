@@ -494,16 +494,18 @@ export class GraphqlApi extends GraphqlApiBase {
     this.schemaResource = this.schema.bind(this);
 
     if (props.domainName) {
-      new CfnDomainName(this, 'DomainName', {
+      const domainName = new CfnDomainName(this, 'DomainName', {
         domainName: props.domainName.domainName,
         certificateArn: props.domainName.certificate.certificateArn,
         description: `domain for ${this.name} at ${this.graphqlUrl}`,
       });
 
-      new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
+      const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
         domainName: props.domainName.domainName,
         apiId: this.apiId,
       });
+
+      domainNameAssociation.addDependsOn(domainName);
     }
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {

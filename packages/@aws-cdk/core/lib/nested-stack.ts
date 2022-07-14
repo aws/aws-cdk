@@ -68,6 +68,13 @@ export interface NestedStackProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * A description of the stack.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -112,6 +119,7 @@ export class NestedStack extends Stack {
     super(scope, id, {
       env: { account: parentStack.account, region: parentStack.region },
       synthesizer: new NestedStackSynthesizer(parentStack.synthesizer),
+      description: props.description,
     });
 
     this._parentStack = parentStack;

@@ -20,6 +20,12 @@ class FeatureFlagStack extends Stack {
     this.bucket = flowLog.bucket!;
     this.bucketArn = this.exportValue(flowLog.bucket!.bucketArn);
 
+    vpc.addFlowLog('FlowLogsS3WithDestinationOptions', {
+      destination: FlowLogDestination.toS3(undefined, undefined, {
+        hiveCompatiblePartitions: true,
+      }),
+    });
+
     new Instance(this, 'FlowLogsInstance', {
       vpc,
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),

@@ -59,7 +59,7 @@ describe('tests', () => {
     const endpointService = new ec2.VpcEndpointService(stack, 'EndpointService', { vpcEndpointServiceLoadBalancers: [nlb] });
 
     // WHEN
-    const importedPHZ = route53.PublicHostedZone.fromHostedZoneAttributes(stack, 'MyPHZ', {
+    const importedPHZ = route53.PublicHostedZone.fromPublicHostedZoneAttributes(stack, 'MyPHZ', {
       hostedZoneId: 'sampleid',
       zoneName: 'MyZone',
     });

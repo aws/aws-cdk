@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
         }
       },
       "cdk-backup": {
@@ -85,7 +85,10 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Backup::BackupVault",
                   "aws:cdk:cloudformation:props": {
-                    "backupVaultName": "cdkbackupVaultC2A6D3CB"
+                    "backupVaultName": "cdkbackupVaultC2A6D3CB",
+                    "lockConfiguration": {
+                      "minRetentionDays": 5
+                    }
                   }
                 },
                 "constructInfo": {

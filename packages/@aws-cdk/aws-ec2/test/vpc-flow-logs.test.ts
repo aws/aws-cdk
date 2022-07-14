@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -67,6 +67,9 @@ describe('vpc flow logs', () => {
       ),
     });
 
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      DestinationOptions: Match.absent(),
+    });
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
@@ -91,6 +94,8 @@ describe('vpc flow logs', () => {
       ResourceId: 'eni-123456',
       DestinationOptions: {
         hiveCompatiblePartitions: true,
+        fileFormat: 'plain-text',
+        perHourPartition: false,
       },
       LogDestination: {
         'Fn::GetAtt': [
@@ -100,7 +105,6 @@ describe('vpc flow logs', () => {
       },
       LogDestinationType: 's3',
     });
-
   });
 
   describe('s3 bucket policy - @aws-cdk/aws-s3:createDefaultLoggingPolicy feature flag', () => {
@@ -437,6 +441,16 @@ describe('vpc flow logs', () => {
         Ref: 'VPCFlowLogsLogGroupF48E1B0A',
       },
     });
+  });
+  test('flowlog has defaultchild', () => {
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    const flowlog = new FlowLog(stack, 'FlowLog', {
+      resourceType: FlowLogResourceType.fromVpc(vpc),
+    });
+
+    expect(flowlog.node.defaultChild).toBeDefined();
   });
 });
 

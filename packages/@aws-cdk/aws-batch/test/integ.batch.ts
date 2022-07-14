@@ -63,6 +63,22 @@ new batch.JobQueue(stack, 'batch-job-queue', {
       }),
       order: 3,
     },
+    {
+      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-demand-compute-env-launch-template-2', {
+        managed: true,
+        computeResources: {
+          type: batch.ComputeResourceType.ON_DEMAND,
+          vpc,
+          launchTemplate: {
+            launchTemplateId: launchTemplate.ref as string,
+          },
+          computeResourcesTags: {
+            'compute-env-tag': '123XYZ',
+          },
+        },
+      }),
+      order: 4,
+    },
   ],
 });
 
