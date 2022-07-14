@@ -19,6 +19,7 @@ exports.handler = (event, context, callback) => {
     console.log("Got an BatchInvoke Request. The payload has %d items to resolve.", event.length);
     const field = event[0].field;
     switch(field) {
+      case "relatedPostsMaxBatchSize":
       case "relatedPosts":
         var results = [];
         // the response MUST contain the same number

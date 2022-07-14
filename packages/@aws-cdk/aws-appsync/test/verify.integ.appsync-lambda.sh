@@ -21,7 +21,7 @@ elif [[ "$1" == "--check" ]]; then
     exit 1
   fi
   echo THIS TEST SHOULD PRODUCE A LIST OF BOOKS
-  curl -XPOST -H "Content-Type:application/graphql" -H "x-api-key:$2" -d '{ "query": "query { allPosts { id author title relatedPosts { id title } } }" }" }' $3 | json_pp
+  curl -XPOST -H "Content-Type:application/graphql" -H "x-api-key:$2" -d '{ "query": "query { allPosts { id author title relatedPosts { id title } relatedPostsMaxBatchSize { id title } } }" }" }' $3 | json_pp
   echo ""
 elif [[ "$1" == "--clean" ]];then
   cdk destroy --app "node integ.appsync-lambda.js"
