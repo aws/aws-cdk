@@ -319,7 +319,7 @@ describe('State Machine', () => {
       });
     });
 
-    describe('for a state machine in a different account and region', () => {
+    describe('for a state machine in the same account and region', () => {
       let mach: stepfunctions.IStateMachine;
 
       beforeEach(() => {
