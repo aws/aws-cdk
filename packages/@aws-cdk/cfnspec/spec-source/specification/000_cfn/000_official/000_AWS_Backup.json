@@ -1,5 +1,5 @@
 {
-  "$version": "75.0.0",
+  "$version": "80.0.0",
   "PropertyTypes": {
     "AWS::Backup::BackupPlan.AdvancedBackupSettingResourceType": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-backup-backupplan-advancedbackupsettingresourcetype.html",

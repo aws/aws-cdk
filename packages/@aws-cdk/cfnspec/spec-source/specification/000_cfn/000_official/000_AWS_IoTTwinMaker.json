@@ -1,5 +1,5 @@
 {
-  "$version": "75.0.0",
+  "$version": "80.0.0",
   "PropertyTypes": {
     "AWS::IoTTwinMaker::ComponentType.DataConnector": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-dataconnector.html",

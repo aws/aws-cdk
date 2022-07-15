@@ -7,7 +7,7 @@ from patch import patch_handler
 from get import get_handler
 
 def handler(event, context):
-  print(json.dumps(event))
+  print(json.dumps(dict(event, ResponseURL='...')))
 
   resource_type = event['ResourceType']
   if resource_type == 'Custom::AWSCDK-EKS-KubernetesResource':
