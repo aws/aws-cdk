@@ -908,45 +908,7 @@ describe('staging', () => {
     const dockerStubInput = readDockerStubInputConcat();
     // Docker ran for the asset in Stack1
     expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
-    // Docker did not run for the asset in Stack2
-    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
-  });
-
-  test('correctly skips bundling with stack under stage and custom stack name', () => {
-    // GIVEN
-    const app = new App();
-
-    const stage = new Stage(app, 'Stage');
-    stage.node.setContext(cxapi.BUNDLING_STACKS, ['Stage/Stack1']);
-
-    const stack1 = new Stack(stage, 'Stack1', { stackName: 'unrelated-stack1-name' });
-    const stack2 = new Stack(stage, 'Stack2', { stackName: 'unrelated-stack2-name' });
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-
-    // WHEN
-    new AssetStaging(stack1, 'Asset', {
-      sourcePath: directory,
-      assetHashType: AssetHashType.OUTPUT,
-      bundling: {
-        image: DockerImage.fromRegistry('alpine'),
-        command: [DockerStubCommand.SUCCESS],
-      },
-    });
-
-    new AssetStaging(stack2, 'Asset', {
-      sourcePath: directory,
-      assetHashType: AssetHashType.OUTPUT,
-      bundling: {
-        image: DockerImage.fromRegistry('alpine'),
-        command: [DockerStubCommand.MULTIPLE_FILES],
-      },
-    });
-
-    // THEN
-    const dockerStubInput = readDockerStubInputConcat();
-    // Docker ran for the asset in Stack1
-    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
-    // Docker did not run for the asset in Stack2
+    // DOcker did not run for the asset in Stack2
     expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
   });
 
