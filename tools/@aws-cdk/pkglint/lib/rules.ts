@@ -1709,6 +1709,12 @@ export class NoExperimentalDependents extends ValidationRule {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const maturity = require(`${dep}/package.json`).maturity;
+      if (maturity === 'cfn-only') {
+        return;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const stability = require(`${dep}/package.json`).stability;
       if (stability === 'experimental') {
         if (this.excludedDependencies.get(pkg.packageName)?.includes(dep)) {
