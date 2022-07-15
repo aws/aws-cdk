@@ -30,7 +30,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/17d6e2e352291c19b6ea8d29329c35f32b69d7cc7bde7864a68bf10421289b8a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2cc04f6563340ecf5529214a606172fd8d1bd84655b0cc832f52ef53cf131d23.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -218,30 +218,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineUpdatePipelineSelfMutationDAA41400"
-          }
-        ],
-        "/PipelineStack/Pipeline/Assets/FileRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileRole59943A77"
-          }
-        ],
-        "/PipelineStack/Pipeline/Assets/FileRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileRoleDefaultPolicy14DB8755"
-          }
-        ],
-        "/PipelineStack/Pipeline/Assets/FileAsset1/Default/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset185A67CB4"
-          }
-        ],
-        "/PipelineStack/Pipeline/Assets/FileAsset2/Default/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineAssetsFileAsset24D2D639B"
           }
         ],
         "/PipelineStack/BootstrapVersion": [
