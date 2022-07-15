@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [2.32.1](https://github.com/aws/aws-cdk/compare/v2.32.0...v2.32.1) (2022-07-15)
+## [2.32.1](https://github.com/aws/aws-cdk/compare/v2.32.0...v2.32.1) (2022-07-15)
 
 
 ### Bug Fixes
@@ -13,13 +13,6 @@ All notable changes to this project will be documented in this file. See [standa
 ### Reverts
 
 * **core:** revert "fix(core): use node.path in skip bundling check for consistency with cdk deploy CLI" ([#21174](https://github.com/aws/aws-cdk/issues/21174)) ([05ac2d8](https://github.com/aws/aws-cdk/commit/05ac2d841b124f341302070c63b80764ffcf8464)), closes [#19950](https://github.com/aws/aws-cdk/issues/19950)
-
-## [2.32.1](https://github.com/aws/aws-cdk/compare/v2.32.0...v2.32.1) (2022-07-15)
-
-
-### Bug Fixes
-
-* **cli:** pin geonamescache dependency to 1.3 (backport [#21152](https://github.com/aws/aws-cdk/issues/21152)) ([#21157](https://github.com/aws/aws-cdk/issues/21157)) ([32846f9](https://github.com/aws/aws-cdk/commit/32846f9680e39813f6ff299339aa060b1840ec73))
 
 ## [2.32.0](https://github.com/aws/aws-cdk/compare/v2.31.2...v2.32.0) (2022-07-14)
 
