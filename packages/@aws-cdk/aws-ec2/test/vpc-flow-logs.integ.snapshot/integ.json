@@ -1,14 +1,12 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ec2/test/integ.vpc-flow-logs": {
+    "FlowLogs/DefaultTest": {
       "stacks": [
-        "*"
+        "FlowLogsTestStack",
+        "FlowLogsFeatureFlag"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "FlowLogsDefaultTestDeployAssert6AFD1854"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

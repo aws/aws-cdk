@@ -112,7 +112,7 @@ export class CdkToolkit {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        const currentTemplate = await this.props.cloudFormation.readCurrentTemplateWithNestedStacks(stack);
+        const currentTemplate = await this.props.cloudFormation.readCurrentTemplateWithNestedStacks(stack, options.compareAgainstProcessedTemplate);
         diffs += options.securityOnly
           ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
           : printStackDiff(currentTemplate, stack, strict, contextLines, stream);
@@ -175,6 +175,7 @@ export class CdkToolkit {
             force: true,
             roleArn: options.roleArn,
             fromDeploy: true,
+            ci: options.ci,
           });
         }
         continue;
@@ -460,6 +461,7 @@ export class CdkToolkit {
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
+          ci: options.ci,
         });
         success(`\n ✅  %s: ${action}ed`, chalk.blue(stack.displayName));
       } catch (e) {
@@ -767,6 +769,14 @@ export interface DiffOptions {
    * @default false
    */
   securityOnly?: boolean;
+
+  /**
+   * Whether to run the diff against the template after the CloudFormation Transforms inside it have been executed
+   * (as opposed to the original template, the default, which contains the unprocessed Transforms).
+   *
+   * @default false
+   */
+  compareAgainstProcessedTemplate?: boolean;
 }
 
 interface CfnDeployOptions {
@@ -980,6 +990,13 @@ export interface DestroyOptions {
    * Whether the destroy request came from a deploy.
    */
   fromDeploy?: boolean
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 /**

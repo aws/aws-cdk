@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "ecs/integ.fargate-task": {
+    "integ.fargate-task": {
       "stacks": [
         "aws-ecs-integ2"
       ],

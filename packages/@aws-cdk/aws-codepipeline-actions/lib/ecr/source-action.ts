@@ -33,7 +33,8 @@ export interface EcrSourceVariables {
 export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The image tag that will be checked for changes.
-   * Provide an empty string to trigger on changes to any tag.
+   *
+   * It is not possible to trigger on changes to more than one tag.
    *
    * @default 'latest'
    */
