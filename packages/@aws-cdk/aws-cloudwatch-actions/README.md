@@ -45,7 +45,7 @@ declare const alarm: cloudwatch.Alarm;
 // Create an Incident Manager incident based on a specific response plan
 alarm.addAlarmAction(
   new actions.SsmIncidentAction(
-      'arn:aws:ssm-incidents::123456789012:response-plan/ResponsePlanName'
+      'arn:aws:ssm-incidents::123456789012:response-plan/ResponsePlanName',
   )
 );
 ```
