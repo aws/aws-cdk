@@ -373,7 +373,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   }
 
   public addToParameterGroup(_name: string, _value: string): AddParameterResult {
-    return { parameterAddedResult: AddParameterResultStatus.I_FAILURE };
+    return { parameterAddedResult: AddParameterResultStatus.IMPORTED_RESOURCE_FAILURE };
   }
 }
 
@@ -617,9 +617,8 @@ export class Cluster extends ClusterBase {
     } else if (this.parameterGroup) {
       return this.parameterGroup.addParameter(name, value);
     } else {
-      return { parameterAddedResult: AddParameterResultStatus.I_FAILURE };
+      return { parameterAddedResult: AddParameterResultStatus.IMPORTED_RESOURCE_FAILURE };
     };
-
   }
 
   private parseParameterGroup(): string | undefined {

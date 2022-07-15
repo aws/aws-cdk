@@ -126,6 +126,6 @@ describe('Adding parameters to an existing group', () => {
     const result = params.addParameter('param', 'value');
 
     // THEN
-    expect(result.parameterAddedResult).toEqual(AddParameterResultStatus.I_FAILURE);
+    expect(result.parameterAddedResult).toEqual(AddParameterResultStatus.IMPORTED_RESOURCE_FAILURE);
   });
 });

@@ -36,13 +36,8 @@ abstract class ClusterParameterGroupBase extends Resource implements IClusterPar
    */
   public abstract readonly clusterParameterGroupName: string;
 
-  /**
-   * Indicates if the parameter group parameters can be updated.
-   */
-  protected abstract updatableParameters: boolean;
-
   public addParameter(_name: string, _value: string): AddParameterResult {
-    return { parameterAddedResult: AddParameterResultStatus.I_FAILURE };
+    return { parameterAddedResult: AddParameterResultStatus.IMPORTED_RESOURCE_FAILURE };
   }
 }
 
@@ -71,7 +66,6 @@ export interface AddParameterResult {
    * Whether the parameter was added
    */
   readonly parameterAddedResult: AddParameterResultStatus;
-
 }
 
 /**
@@ -95,9 +89,8 @@ export enum AddParameterResultStatus {
    * The parameter group is an imported parameter group.
    * The cluster is an imported cluster.
    */
-  I_FAILURE
+  IMPORTED_RESOURCE_FAILURE
 }
-
 
 /**
  * A cluster parameter group
@@ -109,12 +102,8 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
    * Imports a parameter group
    */
   public static fromClusterParameterGroupName(scope: Construct, id: string, clusterParameterGroupName: string): IClusterParameterGroup {
-    class Import extends Resource implements IClusterParameterGroup {
+    class Import extends ClusterParameterGroupBase {
       public readonly clusterParameterGroupName = clusterParameterGroupName;
-      protected updatableParameters = false;
-      public addParameter(_name: string, _value: string): AddParameterResult {
-        return { parameterAddedResult: AddParameterResultStatus.I_FAILURE };
-      }
     }
     return new Import(scope, id);
   }
@@ -129,8 +118,6 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
   */
   readonly parameters: { [name: string]: string };
 
-
-  protected updatableParameters = true;
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
     this.parameters = props.parameters;
@@ -149,19 +136,14 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
   }
 
   public addParameter(name: string, value: string): AddParameterResult {
-    if (this.updatableParameters) {
-      const existingValue = Object.entries(this.parameters).find(([key, _]) => key === name)?.[1];
-      if (existingValue === undefined) {
-        this.parameters[name] = value;
-        return { parameterAddedResult: AddParameterResultStatus.SUCCESS };
-      } else if (existingValue === value) {
-        return { parameterAddedResult: AddParameterResultStatus.SAME_VALUE_FAILURE };
-      } else {
-        return { parameterAddedResult: AddParameterResultStatus.CONFLICTING_VALUE_FAILURE };
-      }
+    const existingValue = Object.entries(this.parameters).find(([key, _]) => key === name)?.[1];
+    if (existingValue === undefined) {
+      this.parameters[name] = value;
+      return { parameterAddedResult: AddParameterResultStatus.SUCCESS };
+    } else if (existingValue === value) {
+      return { parameterAddedResult: AddParameterResultStatus.SAME_VALUE_FAILURE };
+    } else {
+      return { parameterAddedResult: AddParameterResultStatus.CONFLICTING_VALUE_FAILURE };
     }
-    return { parameterAddedResult: AddParameterResultStatus.I_FAILURE };
   }
-
-
 }

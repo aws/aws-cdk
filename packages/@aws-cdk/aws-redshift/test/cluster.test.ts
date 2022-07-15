@@ -323,7 +323,7 @@ describe('parameter group', () => {
     const result = cluster.addToParameterGroup('foo', 'bar');
 
     // THEN
-    expect(result.parameterAddedResult).toBe(AddParameterResultStatus.I_FAILURE);
+    expect(result.parameterAddedResult).toBe(AddParameterResultStatus.IMPORTED_RESOURCE_FAILURE);
 
     Template.fromStack(stack).resourceCountIs('AWS::Redshift::ClusterParameterGroup', 0);
   });
