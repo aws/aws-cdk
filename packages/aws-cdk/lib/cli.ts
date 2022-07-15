@@ -74,7 +74,6 @@ async function parseCommandLineArguments() {
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
-    .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('notices', { type: 'boolean', desc: 'Show relevant notices' })
@@ -93,6 +92,7 @@ async function parseCommandLineArguments() {
       .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
+      .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when creating the bootstrap stack', default: undefined, requiresArg: true })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
       .option('trust-for-lookup', { type: 'array', desc: 'The AWS account IDs that should be trusted to look up values in this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
@@ -105,6 +105,7 @@ async function parseCommandLineArguments() {
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
+      .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when deploying the stack(s)', default: undefined, requiresArg: true })
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
@@ -150,6 +151,7 @@ async function parseCommandLineArguments() {
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
+      .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when importing resource(s) into the given stack', default: undefined, requiresArg: true })
       .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
       .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
       .option('rollback', {
@@ -192,6 +194,7 @@ async function parseCommandLineArguments() {
       // .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
+      .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when deploying the stack(s)', default: undefined, requiresArg: true })
       .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('toolkit-stack-name', { type: 'string', desc: 'The name of the existing CDK toolkit stack (only used for app using legacy synthesis)', requiresArg: true })
@@ -219,6 +222,7 @@ async function parseCommandLineArguments() {
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', (yargs: Argv) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Destroy all available stacks' })
+      .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when destroying the stack(s)', default: undefined, requiresArg: true })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
     .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', (yargs: Argv) => yargs
