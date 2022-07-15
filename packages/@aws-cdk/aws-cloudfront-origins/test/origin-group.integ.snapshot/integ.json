@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cloudfront-origins/test/integ.origin-group": {
+    "integ.origin-group": {
       "stacks": [
         "cloudfront-origin-group"
       ],

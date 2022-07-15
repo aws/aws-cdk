@@ -1,14 +1,14 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.import-default-vpc.lit": {
+    "integ.send-message-encrypted": {
       "stacks": [
-        "*"
+        "aws-stepfunctions-tasks-sqs-send-message-integ"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true
     }
   },
   "synthContext": {},
-  "enableLookups": true
+  "enableLookups": false
 }
