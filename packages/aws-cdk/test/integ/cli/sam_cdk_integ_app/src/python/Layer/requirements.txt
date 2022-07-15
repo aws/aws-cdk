@@ -1,1 +1,1 @@
-geonamescache=1.3
+geonamescache==1.3
