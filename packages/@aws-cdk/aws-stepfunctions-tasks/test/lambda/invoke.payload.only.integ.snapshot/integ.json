@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "lambda/integ.invoke.payload.only": {
+    "integ.invoke.payload.only": {
       "stacks": [
         "aws-stepfunctions-tasks-lambda-invoke-integ"
       ],
