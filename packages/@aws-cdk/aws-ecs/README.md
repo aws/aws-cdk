@@ -420,6 +420,7 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
 ```
 
 To grant a principal permission to run your `TaskDefinition`, you can use the `TaskDefinition.grantRun()` method:
+
 ```ts
 declare const role: iam.IGrantable;
 const taskDef = new ecs.TaskDefinition(stack, 'TaskDef', {
