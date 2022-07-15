@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -285,6 +285,12 @@
             "data": "batchjobrepo4C508C51"
           }
         ],
+        "/batch-stack/batch-secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchsecret7CD5E4C6"
+          }
+        ],
         "/batch-stack/batch-job-def-from-ecr/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -301,6 +307,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "executionroleD9A39BE6"
+          }
+        ],
+        "/batch-stack/execution-role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "executionroleDefaultPolicy497F11A3"
           }
         ],
         "/batch-stack/batch-job-def-fargate/Resource": [
