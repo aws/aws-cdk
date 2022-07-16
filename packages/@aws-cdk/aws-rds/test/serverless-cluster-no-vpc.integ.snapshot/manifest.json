@@ -20,6 +20,12 @@
             "type": "aws:cdk:logicalId",
             "data": "ServerlessDatabaseWithoutVPC93F9A752"
           }
+        ],
+        "/aws-cdk-sls-cluster-no-vpc-integ/Serverless Database Without VPC and Copy Tags/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServerlessDatabaseWithoutVPCandCopyTags216AC6C7"
+          }
         ]
       },
       "displayName": "aws-cdk-sls-cluster-no-vpc-integ"
