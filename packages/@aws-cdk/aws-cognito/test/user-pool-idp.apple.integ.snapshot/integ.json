@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cognito/test/integ.user-pool-idp.apple": {
+    "integ.user-pool-idp.apple": {
       "stacks": [
         "integ-user-pool-idp-apple"
       ],

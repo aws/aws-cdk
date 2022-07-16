@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-codebuild/test/integ.github": {
+    "integ.github": {
       "stacks": [
         "test-codebuild-github"
       ],

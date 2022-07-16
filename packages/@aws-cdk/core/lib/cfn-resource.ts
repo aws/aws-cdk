@@ -440,7 +440,7 @@ export class CfnResource extends CfnRefElement {
    * collect and return the properties object for this resource.
    */
   protected get updatedProperites(): { [key: string]: any } {
-    return this._cfnProperties;
+    return this.updatedProperties;
   }
 
   /**

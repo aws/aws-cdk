@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-lambda-event-sources/test/integ.kinesiswithdlq": {
+    "integ.kinesiswithdlq": {
       "stacks": [
         "lambda-event-source-kinesis-with-dlq"
       ],

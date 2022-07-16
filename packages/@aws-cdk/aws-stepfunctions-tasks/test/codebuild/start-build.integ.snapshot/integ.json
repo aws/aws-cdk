@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "codebuild/integ.start-build": {
+    "integ.start-build": {
       "stacks": [
         "aws-stepfunctions-tasks-codebuild-start-build-integ"
       ],

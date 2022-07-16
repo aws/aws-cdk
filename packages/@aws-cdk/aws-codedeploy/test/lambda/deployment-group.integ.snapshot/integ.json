@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "lambda/integ.deployment-group": {
+    "integ.deployment-group": {
       "stacks": [
         "aws-cdk-codedeploy-lambda"
       ],

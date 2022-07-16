@@ -112,7 +112,7 @@ export class CdkToolkit {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        const currentTemplate = await this.props.cloudFormation.readCurrentTemplateWithNestedStacks(stack);
+        const currentTemplate = await this.props.cloudFormation.readCurrentTemplateWithNestedStacks(stack, options.compareAgainstProcessedTemplate);
         diffs += options.securityOnly
           ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
           : printStackDiff(currentTemplate, stack, strict, contextLines, stream);
@@ -769,6 +769,14 @@ export interface DiffOptions {
    * @default false
    */
   securityOnly?: boolean;
+
+  /**
+   * Whether to run the diff against the template after the CloudFormation Transforms inside it have been executed
+   * (as opposed to the original template, the default, which contains the unprocessed Transforms).
+   *
+   * @default false
+   */
+  compareAgainstProcessedTemplate?: boolean;
 }
 
 interface CfnDeployOptions {

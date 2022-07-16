@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-events-targets/test/kinesis/integ.kinesis-stream": {
+    "integ.kinesis-stream": {
       "stacks": [
         "aws-cdk-kinesis-event-target"
       ],

@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ec2/test/integ.vpc-gateway": {
+    "integ.vpc-gateway": {
       "stacks": [
         "aws-cdk-ec2-vpc-gateway"
       ],
