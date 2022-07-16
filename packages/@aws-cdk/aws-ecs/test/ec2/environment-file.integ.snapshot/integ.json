@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "@aws-cdk/aws-ecs/test/ec2/integ.environment-file": {
+    "integ.environment-file": {
       "stacks": [
         "aws-ecs-integ"
       ],

@@ -227,7 +227,8 @@ async function parseCommandLineArguments() {
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false })
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
-      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' }))
+      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
+      .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
@@ -419,6 +420,7 @@ async function initCommandLine() {
           securityOnly: args.securityOnly,
           fail: args.fail != null ? args.fail : !enableDiffNoFail,
           stream: args.ci ? process.stdout : undefined,
+          compareAgainstProcessedTemplate: args.processed,
         });
 
       case 'bootstrap':
