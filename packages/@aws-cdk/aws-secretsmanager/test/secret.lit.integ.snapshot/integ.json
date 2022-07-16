@@ -1,11 +1,14 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "SecretTest/DefaultTest": {
+    "integ.secret.lit": {
       "stacks": [
         "Integ-SecretsManager-Secret"
       ],
-      "assertionStack": "SecretTestDefaultTestDeployAssert519F6A06"
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
     }
-  }
+  },
+  "synthContext": {},
+  "enableLookups": false
 }
