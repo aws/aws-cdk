@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
         }
       },
       "aws-cdk-sls-cluster-no-vpc-integ": {
@@ -35,6 +35,7 @@
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
                     "engine": "aurora-mysql",
+                    "copyTagsToSnapshot": true,
                     "dbClusterParameterGroupName": "default.aurora-mysql5.7",
                     "engineMode": "serverless",
                     "masterUsername": "admin",

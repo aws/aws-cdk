@@ -444,6 +444,7 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "Engine": "aurora-mysql",
+    "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-mysql5.7",
     "DBSubnetGroupName": {
      "Ref": "SubnetGroup"

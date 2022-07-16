@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "64f3490dce9d5218f6ede16fef6e55503a91dedec5ef6376333d42ad957e60e2": {
+      "source": {
+        "path": "aws-cdk-sls-cluster-no-vpc-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "64f3490dce9d5218f6ede16fef6e55503a91dedec5ef6376333d42ad957e60e2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
