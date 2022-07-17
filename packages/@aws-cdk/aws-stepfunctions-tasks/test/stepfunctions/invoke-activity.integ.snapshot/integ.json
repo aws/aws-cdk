@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "stepfunctions/integ.invoke-activity": {
+    "integ.invoke-activity": {
       "stacks": [
         "aws-stepfunctions-integ"
       ],
