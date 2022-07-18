@@ -65,6 +65,25 @@ export interface AutoVerifiedAttrs {
 }
 
 /**
+ * Attributes that will be kept until the user verifies the changed attribute.
+ */
+export interface KeepOriginalAttrs {
+  /**
+   * Whether the email address of the user should remain the original value until the new email address is verified.
+   *
+   * @default - false
+   */
+  readonly email?: boolean;
+
+  /**
+   * Whether the phone number of the user should remain the original value until the new phone number is verified.
+   *
+   * @default - false
+   */
+  readonly phone?: boolean;
+}
+
+/**
  * Triggers for a user pool
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
  */
@@ -562,6 +581,14 @@ export interface UserPoolProps {
   readonly autoVerify?: AutoVerifiedAttrs;
 
   /**
+   * Attributes which Cognito will look to handle changes to the value of your users' email address and phone number attributes.
+   * EMAIL and PHONE are the only available options.
+   *
+   * @default - Nothing is kept.
+   */
+  readonly keepOriginal?: KeepOriginalAttrs;
+
+  /**
    * The set of attributes that are required for every user in the user pool.
    * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
    *
@@ -910,6 +937,7 @@ export class UserPool extends UserPoolBase {
       }),
       accountRecoverySetting: this.accountRecovery(props),
       deviceConfiguration: props.deviceTracking,
+      userAttributeUpdateSettings: this.configureUserAttributeChanges(props),
     });
     userPool.applyRemovalPolicy(props.removalPolicy);
 
@@ -1220,6 +1248,27 @@ export class UserPool extends UserPoolBase {
       default:
         throw new Error(`Unsupported AccountRecovery type - ${accountRecovery}`);
     }
+  }
+
+  private configureUserAttributeChanges(props: UserPoolProps) {
+    let userAttributeUpdateSettings;
+    if (props.keepOriginal) {
+      let attributesRequireVerificationBeforeUpdate: string[] = [];
+
+      if (props.keepOriginal.email) {
+        attributesRequireVerificationBeforeUpdate.push('email');
+      }
+
+      if (props.keepOriginal.phone) {
+        attributesRequireVerificationBeforeUpdate.push('phone');
+      }
+
+      userAttributeUpdateSettings = {
+        attributesRequireVerificationBeforeUpdate,
+      };
+    }
+
+    return userAttributeUpdateSettings;
   }
 }
 
