@@ -1838,7 +1838,7 @@ test('keep original attrs is configured correctly', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
     UserAttributeUpdateSettings: {
-      AttributesRequireVerificationBeforeUpdate: ['email', 'phone'],
+      AttributesRequireVerificationBeforeUpdate: ['email', 'phone_number'],
     },
   });
 });

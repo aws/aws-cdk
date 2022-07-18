@@ -1250,25 +1250,24 @@ export class UserPool extends UserPoolBase {
     }
   }
 
-  private configureUserAttributeChanges(props: UserPoolProps) {
-    let userAttributeUpdateSettings;
-    if (props.keepOriginal) {
-      let attributesRequireVerificationBeforeUpdate: string[] = [];
-
-      if (props.keepOriginal.email) {
-        attributesRequireVerificationBeforeUpdate.push('email');
-      }
-
-      if (props.keepOriginal.phone) {
-        attributesRequireVerificationBeforeUpdate.push('phone');
-      }
-
-      userAttributeUpdateSettings = {
-        attributesRequireVerificationBeforeUpdate,
-      };
+  private configureUserAttributeChanges(props: UserPoolProps): CfnUserPool.UserAttributeUpdateSettingsProperty | undefined {
+    if (!props.keepOriginal) {
+      return undefined;
     }
 
-    return userAttributeUpdateSettings;
+    const attributesRequireVerificationBeforeUpdate: string[] = [];
+
+    if (props.keepOriginal.email) {
+      attributesRequireVerificationBeforeUpdate.push(StandardAttributeNames.email);
+    }
+
+    if (props.keepOriginal.phone) {
+      attributesRequireVerificationBeforeUpdate.push(StandardAttributeNames.phoneNumber);
+    }
+
+    return {
+      attributesRequireVerificationBeforeUpdate,
+    };
   }
 }
 
