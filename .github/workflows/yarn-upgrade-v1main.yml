@@ -119,7 +119,7 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           # Git commit details
-          branch: automation/yarn-upgrade
+          branch: automation/yarn-upgrade-v1
           commit-message: |-
             chore: npm-check-updates && yarn upgrade
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
