@@ -56,6 +56,17 @@ const idPool = new IdentityPool(stack, 'identitypool', {
     amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
     google: { clientId: '12345678012.apps.googleusercontent.com' },
   },
+  roleMappings: [
+    {
+      providerUrl: IdentityPoolProviderUrl.AMAZON,
+      useToken: true,
+    },
+    {
+      mappingKey: 'theKey',
+      providerUrl: IdentityPoolProviderUrl.userPool(Fn.importValue('ProviderUrl')),
+      useToken: true,
+    },
+  ],
   allowClassicFlow: true,
   identityPoolName: 'my-id-pool',
 });

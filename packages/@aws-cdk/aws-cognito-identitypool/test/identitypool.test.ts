@@ -18,6 +18,7 @@ import {
   PolicyDocument,
 } from '@aws-cdk/aws-iam';
 import {
+  Fn,
   Stack,
 } from '@aws-cdk/core';
 import {
@@ -397,6 +398,93 @@ describe('identity pool', () => {
 });
 
 describe('role mappings', () => {
+  test('mappingKey respected when identity provider is not a token', () => {
+    const stack = new Stack();
+    new IdentityPool(stack, 'TestIdentityPoolRoleMappingToken', {
+      roleMappings: [{
+        mappingKey: 'amazon',
+        providerUrl: IdentityPoolProviderUrl.AMAZON,
+        useToken: true,
+      }],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      IdentityPoolId: {
+        Ref: 'TestIdentityPoolRoleMappingToken0B11D690',
+      },
+      RoleMappings: {
+        amazon: {
+          AmbiguousRoleResolution: 'Deny',
+          IdentityProvider: 'www.amazon.com',
+          Type: 'Token',
+        },
+      },
+      Roles: {
+        authenticated: {
+          'Fn::GetAtt': [
+            'TestIdentityPoolRoleMappingTokenAuthenticatedRoleD99CE043',
+            'Arn',
+          ],
+        },
+        unauthenticated: {
+          'Fn::GetAtt': [
+            'TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800',
+            'Arn',
+          ],
+        },
+      },
+    });
+  });
+
+  test('mappingKey required when identity provider is not a token', () => {
+    const stack = new Stack();
+    const providerUrl = Fn.importValue('ProviderUrl');
+    expect(() => new IdentityPool(stack, 'TestIdentityPoolRoleMappingErrors', {
+      roleMappings: [{
+        providerUrl: IdentityPoolProviderUrl.userPool(providerUrl),
+        useToken: true,
+      }],
+    })).toThrowError('mappingKey must be provided when providerUrl.value is an unresolved token');
+  });
+
+  test('mappingKey respected when identity provider is a token', () => {
+    const stack = new Stack();
+    const providerUrl = Fn.importValue('ProviderUrl');
+    new IdentityPool(stack, 'TestIdentityPoolRoleMappingToken', {
+      roleMappings: [{
+        mappingKey: 'theKey',
+        providerUrl: IdentityPoolProviderUrl.userPool(providerUrl),
+        useToken: true,
+      }],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      IdentityPoolId: {
+        Ref: 'TestIdentityPoolRoleMappingToken0B11D690',
+      },
+      RoleMappings: {
+        theKey: {
+          AmbiguousRoleResolution: 'Deny',
+          IdentityProvider: {
+            'Fn::ImportValue': 'ProviderUrl',
+          },
+          Type: 'Token',
+        },
+      },
+      Roles: {
+        authenticated: {
+          'Fn::GetAtt': [
+            'TestIdentityPoolRoleMappingTokenAuthenticatedRoleD99CE043',
+            'Arn',
+          ],
+        },
+        unauthenticated: {
+          'Fn::GetAtt': [
+            'TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800',
+            'Arn',
+          ],
+        },
+      },
+    });
+  });
   test('using token', () => {
     const stack = new Stack();
     new IdentityPool(stack, 'TestIdentityPoolRoleMappingToken', {
