@@ -45,6 +45,12 @@ export interface BaseResolverProps {
    * @default - No caching configuration
    */
   readonly cachingConfig?: CachingConfig;
+  /**
+   * The maximum number of elements per batch, when using batch invoke
+   *
+   * @default - No max batch size
+   */
+  readonly maxBatchSize?: number;
 }
 
 /**
@@ -112,6 +118,7 @@ export class Resolver extends Construct {
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
       cachingConfig: this.createCachingConfig(props.cachingConfig),
+      maxBatchSize: props.maxBatchSize,
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {

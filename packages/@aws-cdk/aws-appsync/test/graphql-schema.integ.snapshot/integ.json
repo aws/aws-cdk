@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-appsync/test/integ.graphql-schema": {
+    "integ.graphql-schema": {
       "stacks": [
         "code-first-schema"
       ],
