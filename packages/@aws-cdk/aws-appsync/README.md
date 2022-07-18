@@ -96,11 +96,8 @@ demoDS.createResolver({
   ),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
-```
 
-To enable DynamoDB read consistency with the `MappingTemplate`:
-
-```ts
+//To enable DynamoDB read consistency with the `MappingTemplate`:
 demoDS.createResolver({
   typeName: 'Query',
   fieldName: 'getDemosConsistent',
