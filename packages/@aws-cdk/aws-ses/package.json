@@ -82,6 +82,7 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -92,6 +93,7 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^10.0.0"
   },
@@ -99,6 +101,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^10.0.0"
   },
@@ -118,7 +121,8 @@
       "docs-public-apis:@aws-cdk/aws-ses.DropSpamReceiptRuleProps",
       "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.s3Action",
       "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.bounceAction",
-      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.lambdaAction"
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.lambdaAction",
+      "props-physical-name:@aws-cdk/aws-ses.EmailIdentityProps"
     ]
   },
   "awscdkio": {
