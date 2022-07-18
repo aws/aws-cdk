@@ -180,6 +180,13 @@ export interface RestApiBaseProps {
    * @default false
    */
   readonly disableExecuteApiEndpoint?: boolean;
+
+  /**
+   * A description of the RestApi construct.
+   *
+   * @default - 'Automatically created by the RestApi construct'
+   */
+  readonly description?: string;
 }
 
 /**
@@ -554,7 +561,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     if (deploy) {
 
       this._latestDeployment = new Deployment(this, 'Deployment', {
-        description: 'Automatically created by the RestApi construct',
+        description: props.description? props.description :'Automatically created by the RestApi construct',
         api: this,
         retainDeployments: props.retainDeployments,
       });
