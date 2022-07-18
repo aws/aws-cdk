@@ -1,6 +1,6 @@
 // Fixture with packages imported, but nothing else
 import { Construct } from 'constructs';
-import { Duration, Stack } from '@aws-cdk/core';  
+import { Duration, Stack, SecretValue } from '@aws-cdk/core';  
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as kms from '@aws-cdk/aws-kms';
 import * as iam from '@aws-cdk/aws-iam';

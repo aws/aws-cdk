@@ -2,9 +2,7 @@
 
 This is a blank project for CDK development with Go.
 
-**NOTICE**: Go support is still in Developer Preview. This implies that APIs may
-change while we address early feedback from the community. We would love to hear
-about your experience through GitHub issues.
+The `cdk.json` file tells the CDK toolkit how to execute your app.
 
 ## Useful commands
 
