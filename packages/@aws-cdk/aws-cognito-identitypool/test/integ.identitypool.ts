@@ -10,10 +10,12 @@ import {
 } from '@aws-cdk/aws-iam';
 import {
   App,
+  Fn,
   Stack,
 } from '@aws-cdk/core';
 import {
   IdentityPool,
+  IdentityPoolProviderUrl,
 } from '../lib/identitypool';
 import {
   UserPoolAuthenticationProvider,
