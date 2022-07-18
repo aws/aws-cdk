@@ -15,6 +15,10 @@ import { TagManager } from './tag-manager';
 import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
+import { Stack } from './stack';
+
+type Element = CfnResource | Stack;
+
 
 export interface CfnResourceProps {
   /**
@@ -295,7 +299,7 @@ export class CfnResource extends CfnRefElement {
    * This can be used for resources across stacks (including nested stacks)
    * and the dependency will automatically be removed from the relevant scope.
    */
-  public removeDependsOn(target: CfnResource) {
+  public removeDependsOn(target: CfnResource) : void {
     // skip this dependency if the target is not part of the output
     if (!target.shouldSynthesize()) {
       return;
@@ -310,7 +314,7 @@ export class CfnResource extends CfnRefElement {
    * This assembles dependencies on resources across stacks (including nested stacks)
    * automatically.
    */
-  public obtainDependsOn() {
+  public obtainDependsOn() : Element[] {
     return obtainDependencies(this);
   }
 
@@ -319,7 +323,7 @@ export class CfnResource extends CfnRefElement {
    * @param target The dependency to replace
    * @param newTarget The new dependency to add
    */
-  public replaceDependsOn(target: CfnResource, newTarget: CfnResource) {
+  public replaceDependsOn(target: CfnResource, newTarget: CfnResource) : void {
     if (this.obtainDependsOn().includes(target)) {
       this.removeDependsOn(target);
       this.addDependsOn(newTarget);

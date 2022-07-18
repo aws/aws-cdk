@@ -20,11 +20,6 @@ import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
-
-
 type Element = CfnResource | Stack;
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
@@ -821,17 +816,16 @@ export class Stack extends Construct implements ITaggable {
       reasonFilter.target = target;
     }
 
-    let dep = this._stackDependencies[Names.uniqueId(target)];
+    let dep = this._stackDependencies[Names.uniqueResourceName(target, {})];
     if (!dep) {
       // Dependency doesn't exist - return now
       return;
     }
 
     // Find and remove the specified reason from the dependency
-    let index;
     let filteredReasons = filterReasons(dep, reasonFilter);
     if (filteredReasons.length > 1) {
-      throw new Error(`Reason for dependency removal is too ambiguous: ${reasonFilter}`);
+      throw new Error(`There cannot be more than one reason for dependency removal, found: ${filteredReasons}`);
     }
     if (filteredReasons.length == 0) {
       // Reason is already not there - return now
@@ -839,7 +833,7 @@ export class Stack extends Construct implements ITaggable {
     }
     let matchedReason = filteredReasons[0];
 
-    index = dep.reasons.indexOf(matchedReason, 0);
+    let index = dep.reasons.indexOf(matchedReason, 0);
     dep.reasons.splice(index, 1);
     // If that was the last reason, remove the dependency
     if (dep.reasons.length == 0) {
@@ -1495,4 +1489,3 @@ import { referenceNestedStackValueInParent } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';
-

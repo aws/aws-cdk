@@ -143,21 +143,18 @@ describe('cfn resource', () => {
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
       resource1.addDependsOn(resource2);
 
-      expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-        Resources: {
-          Resource1: {
-            Type: 'Test::Resource::Fake1',
-            DependsOn: [
-              'Resource2',
-            ],
-          },
-          Resource2: {
-            Type: 'Test::Resource::Fake2',
-          },
+      expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
+        Resource1: {
+          Type: 'Test::Resource::Fake1',
+          DependsOn: [
+            'Resource2',
+          ],
+        },
+        Resource2: {
+          Type: 'Test::Resource::Fake2',
         },
       });
     });
-
 
     test('can explicitly remove a dependency between resources', () => {
       const app = new core.App();
@@ -167,14 +164,12 @@ describe('cfn resource', () => {
       resource1.addDependsOn(resource2);
       resource1.removeDependsOn(resource2);
 
-      expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-        Resources: {
-          Resource1: {
-            Type: 'Test::Resource::Fake1',
-          },
-          Resource2: {
-            Type: 'Test::Resource::Fake2',
-          },
+      expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
+        Resource1: {
+          Type: 'Test::Resource::Fake1',
+        },
+        Resource2: {
+          Type: 'Test::Resource::Fake2',
         },
       });
     });

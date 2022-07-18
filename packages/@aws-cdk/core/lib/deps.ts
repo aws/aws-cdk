@@ -185,8 +185,6 @@ function resourceInCommonStackFor(element: CfnResource | Stack, commonStack: Sta
 
 /**
  * Return a string representation of the given assembler, for use in error messages
- *
- * @internal
  */
 function describeStage(assembly: Stage | undefined): string {
   if (!assembly) { return 'an unrooted construct tree'; }
