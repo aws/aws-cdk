@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.49"
         }
       },
       "aws-ecs-integ": {
@@ -699,6 +699,10 @@
                           {
                             "key": "deletion_protection.enabled",
                             "value": "false"
+                          },
+                          {
+                            "key": "idle_timeout.timeout_seconds",
+                            "value": "60"
                           }
                         ],
                         "scheme": "internet-facing",
@@ -1245,6 +1249,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "circuitBreakerLbTest": {
+        "id": "circuitBreakerLbTest",
+        "path": "circuitBreakerLbTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "circuitBreakerLbTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "circuitBreakerLbTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.49"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "circuitBreakerLbTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

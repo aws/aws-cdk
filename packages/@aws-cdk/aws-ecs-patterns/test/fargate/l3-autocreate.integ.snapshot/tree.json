@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.49"
         }
       },
       "aws-ecs-integ-l3-autocreate": {
@@ -34,6 +34,10 @@
                           {
                             "key": "deletion_protection.enabled",
                             "value": "false"
+                          },
+                          {
+                            "key": "idle_timeout.timeout_seconds",
+                            "value": "60"
                           }
                         ],
                         "scheme": "internet-facing",
@@ -1676,6 +1680,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "l3AutoCreateTest": {
+        "id": "l3AutoCreateTest",
+        "path": "l3AutoCreateTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "l3AutoCreateTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "l3AutoCreateTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.49"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "l3AutoCreateTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

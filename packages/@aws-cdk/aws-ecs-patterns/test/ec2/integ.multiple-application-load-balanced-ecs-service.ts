@@ -1,6 +1,7 @@
 import { InstanceType, Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 
 import { ApplicationMultipleTargetGroupsEc2Service } from '../../lib';
 
@@ -28,6 +29,10 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
       priority: 10,
     },
   ],
+});
+
+new integ.IntegTest(app, 'multiAlbEcsEc2Test', {
+  testCases: [stack],
 });
 
 app.synth();

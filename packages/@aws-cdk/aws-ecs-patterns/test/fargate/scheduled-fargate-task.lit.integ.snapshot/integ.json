@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.scheduled-fargate-task.lit": {
+    "scheduledFargateTaskTest/DefaultTest": {
       "stacks": [
-        "aws-fargate-integ"
+        "aws-ecs-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "scheduledFargateTaskTestDefaultTestDeployAssertDAB51B5F"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

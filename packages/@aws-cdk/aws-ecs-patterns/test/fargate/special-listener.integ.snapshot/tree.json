@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.49"
         }
       },
       "aws-ecs-integ": {
@@ -1137,6 +1137,10 @@
                           {
                             "key": "deletion_protection.enabled",
                             "value": "false"
+                          },
+                          {
+                            "key": "idle_timeout.timeout_seconds",
+                            "value": "60"
                           }
                         ],
                         "scheme": "internet-facing",
@@ -1692,6 +1696,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "specialListenerFargateTest": {
+        "id": "specialListenerFargateTest",
+        "path": "specialListenerFargateTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "specialListenerFargateTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "specialListenerFargateTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.49"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "specialListenerFargateTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

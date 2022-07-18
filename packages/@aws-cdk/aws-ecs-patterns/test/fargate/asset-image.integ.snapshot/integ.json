@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.asset-image": {
+    "assetImageFargateTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "assetImageFargateTestDefaultTestDeployAssertD29EA122"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

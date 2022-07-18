@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.special-listener": {
+    "specialListenerFargateTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "specialListenerFargateTestDefaultTestDeployAssert7B2B62D3"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

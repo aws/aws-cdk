@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -329,6 +329,15 @@
         ]
       },
       "displayName": "aws-ecs-integ"
+    },
+    "specialListenerFargateTestDefaultTestDeployAssert7B2B62D3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "specialListenerFargateTestDefaultTestDeployAssert7B2B62D3.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "specialListenerFargateTest/DefaultTest/DeployAssert"
     }
   }
 }

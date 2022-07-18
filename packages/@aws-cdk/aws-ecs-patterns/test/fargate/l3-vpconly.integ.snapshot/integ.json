@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.l3-vpconly": {
+    "l3VpcOnlyTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-l3-vpconly"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "l3VpcOnlyTestDefaultTestDeployAssertCD532522"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

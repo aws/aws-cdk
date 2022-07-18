@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as ecsPatterns from '../../lib';
 
 const app = new cdk.App();
@@ -27,6 +28,10 @@ new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
+});
+
+new integ.IntegTest(app, 'l3VpcOnlyTest', {
+  testCases: [stack],
 });
 
 app.synth();

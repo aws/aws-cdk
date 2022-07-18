@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.executionrole": {
+    "executionRolesTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "executionRolesTestDefaultTestDeployAssertAAC15FAF"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

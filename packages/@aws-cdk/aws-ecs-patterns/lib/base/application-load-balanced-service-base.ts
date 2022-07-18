@@ -12,6 +12,7 @@ import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 /**
@@ -261,6 +262,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - false
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * The load balancer idle timeout, in seconds
+   *
+   * @default 60
+   */
+  readonly idleTimeout?: Duration;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -430,6 +438,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       vpc: this.cluster.vpc,
       loadBalancerName: props.loadBalancerName,
       internetFacing,
+      idleTimeout: props.idleTimeout ?? Duration.seconds(60),
     };
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
