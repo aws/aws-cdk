@@ -57,12 +57,14 @@ describe('Lambda Mapping Templates', () => {
       fieldName: 'relatedPosts',
       requestMappingTemplate: appsync.MappingTemplate.lambdaRequest('$util.toJson($ctx)', 'BatchInvoke'),
       responseMappingTemplate: appsync.MappingTemplate.lambdaResult(),
+      maxBatchSize: 10,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
       FieldName: 'relatedPosts',
       RequestMappingTemplate: batchMT,
+      MaxBatchSize: 10,
     });
   });
 });

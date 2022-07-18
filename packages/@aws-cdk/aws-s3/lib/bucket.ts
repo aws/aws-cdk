@@ -4,8 +4,20 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags, Duration,
+  CustomResource,
+  CustomResourceProvider,
+  CustomResourceProviderRuntime,
+  Duration,
+  FeatureFlags,
+  Fn,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  ResourceProps,
+  Stack,
+  Tags,
+  Token,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -1550,6 +1562,17 @@ export interface Tag {
  *
  * This bucket does not yet have all features that exposed by the underlying
  * BucketResource.
+ *
+ * @example
+ *
+ * new Bucket(scope, 'Bucket', {
+ *   blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+ *   encryption: BucketEncryption.S3_MANAGED,
+ *   enforceSSL: true,
+ *   versioned: true,
+ *   removalPolicy: RemovalPolicy.RETAIN,
+ * });
+ *
  */
 export class Bucket extends BucketBase {
 

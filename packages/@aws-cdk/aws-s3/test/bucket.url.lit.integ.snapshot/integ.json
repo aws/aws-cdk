@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-s3/test/integ.bucket.url.lit": {
+    "integ.bucket.url.lit": {
       "stacks": [
         "aws-cdk-s3-urls"
       ],
