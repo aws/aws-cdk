@@ -312,24 +312,6 @@ declare const myAddedRoleMapping3: IdentityPoolRoleMapping;
 identityPool.addRoleMappings(myAddedRoleMapping1, myAddedRoleMapping2, myAddedRoleMapping3);
 ```
 
-If a provider URL is a CDK Token, as it will be if you are trying to use a previously defined Cognito User Pool, you will need to also provide a mappingKey.
-This is because by default, the key in the Cloudformation role mapping hash is the providerUrl, and Cloudformation map keys must be concrete strings, they
-cannot be references. For example:
-
-```ts
-import { UserPool } from '@aws-cdk/aws-cognito';
-
-declare const userPool : UserPool;
-new IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  roleMappings: [{
-    mappingKey: 'cognito',
-    providerUrl: IdentityPoolProviderUrl.userPool(userPool.userPoolProviderUrl),
-    useToken: true,
-  }],
-});
-```
-
 #### Provider Urls
 
 Role mappings must be associated with the url of an Identity Provider which can be supplied
@@ -364,6 +346,25 @@ new IdentityPool(this, 'myidentitypool', {
       useToken: true,
     },
   ],
+});
+```
+
+If a provider URL is a CDK Token, as it will be if you are trying to use a previously defined Cognito User Pool, you will need to also provide a mappingKey.
+This is because by default, the key in the Cloudformation role mapping hash is the providerUrl, and Cloudformation map keys must be concrete strings, they
+cannot be references. For example:
+
+```ts
+import { UserPool } from '@aws-cdk/aws-cognito';
+import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool';
+
+declare const userPool : UserPool;
+new IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  roleMappings: [{
+    mappingKey: 'cognito',
+    providerUrl: IdentityPoolProviderUrl.userPool(userPool.userPoolProviderUrl),
+    useToken: true,
+  }],
 });
 ```
 
