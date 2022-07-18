@@ -1,8 +1,12 @@
 {
   "Resources": {
-    "Bucket2": {
+    "Bucket": {
       "Type": "AWS::S3::Bucket",
-      "NonExistentResourceAttribute": "Bucket1"
+      "NonExistentResourceAttribute": {
+        "SomeProp": {
+          "Ref": "NonExistentResource"
+        }
+      }
     }
   }
 }
