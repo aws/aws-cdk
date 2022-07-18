@@ -8,13 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-<<<<<<< HEAD
           "fqn": "@aws-cdk/core.Construct",
           "version": "0.0.0"
-=======
-          "fqn": "constructs.Construct",
-          "version": "10.1.33"
->>>>>>> 37a44d7a86 (fix: integration test for appsync apikey auth fails with out of bound API key expiration (#21198))
         }
       },
       "aws-appsync-integ": {
