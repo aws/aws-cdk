@@ -1,11 +1,14 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "IntegTest-aws-batch-default-env-variables/DefaultTest": {
+    "IntegTest-BatchDefaultEnvVarsStack/DefaultTest": {
       "stacks": [
-        "SampleStack-aws-batch-default-env-variables"
+        "BatchDefaultEnvVarsStack"
       ],
-      "assertionStack": "IntegTestawsbatchdefaultenvvariablesDefaultTestDeployAssert58502566"
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "IntegTestBatchDefaultEnvVarsStackDefaultTestDeployAssertC15EFFF2"
     }
   }
 }

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "batchC9C7DC44": {
+  "JobDefinition24FFE3ED": {
    "Type": "AWS::Batch::JobDefinition",
    "Properties": {
     "Type": "container",
@@ -8,15 +8,11 @@
      "Environment": [
       {
        "Name": "AWS_REGION",
-       "Value": {
-        "Ref": "AWS::Region"
-       }
+       "Value": "us-east-1"
       },
       {
        "Name": "AWS_ACCOUNT",
-       "Value": {
-        "Ref": "AWS::AccountId"
-       }
+       "Value": "347315207830"
       }
      ],
      "Image": "docker/whalesay",
@@ -33,7 +29,6 @@
       }
      ]
     },
-    "JobDefinitionName": "aws-batch-test",
     "PlatformCapabilities": [
      "EC2"
     ],

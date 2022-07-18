@@ -12,10 +12,10 @@
     "service": "Batch",
     "api": "describeJobDefinitions",
     "parameters": {
-     "jobDefinitionName": "aws-batch-test"
+     "status": "ACTIVE"
     },
     "flattenResponse": "true",
-    "salt": "1657836599834"
+    "salt": "1658183315795"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -32,11 +32,11 @@
     "actual": {
      "Fn::GetAtt": [
       "AwsApiCallBatchdescribeJobDefinitions",
-      "apiCallResponse.jobDefinitions.0.containerProperties.environment"
+      "apiCallResponse.jobDefinitions.0.containerProperties.environment.0.name"
      ]
     },
-    "expected": "{\"$ArrayWith\":[{\"name\":\"AWS_REGION\",\"value\":\"\"}]}",
-    "salt": "1657836599835"
+    "expected": "{\"$StringLike\":\"AWS_REGION\"}",
+    "salt": "1658183315795"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
