@@ -3,7 +3,7 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as cloud9 from '../lib';
-import { ConnectionType } from '../lib';
+import { ConnectionType, ImageId } from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -13,20 +13,24 @@ beforeEach(() => {
   vpc = new ec2.Vpc(stack, 'VPC');
 });
 
-test('create resource correctly with only vpc provide', () => {
+test('create resource correctly with only vpc and imageId provided', () => {
   // WHEN
-  new cloud9.Ec2Environment(stack, 'C9Env', { vpc });
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
+  });
   // THEN
   Template.fromStack(stack).resourceCountIs('AWS::Cloud9::EnvironmentEC2', 1);
 });
 
-test('create resource correctly with both vpc and subnetSelectio', () => {
+test('create resource correctly with vpc, imageId, and subnetSelection', () => {
   // WHEN
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     subnetSelection: {
       subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
   });
   // THEN
   Template.fromStack(stack).resourceCountIs('AWS::Cloud9::EnvironmentEC2', 1);
@@ -44,6 +48,7 @@ test('create correctly with instanceType specified', () => {
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
   });
   // THEN
   Template.fromStack(stack).resourceCountIs('AWS::Cloud9::EnvironmentEC2', 1);
@@ -66,6 +71,7 @@ test('throw error when subnetSelection not specified and the provided VPC has no
     new cloud9.Ec2Environment(stack, 'C9Env', {
       vpc: privateOnlyVpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+      imageId: cloud9.ImageId.AMAZON_LINUX_2,
     });
   }).toThrow(/no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection/);
 });
@@ -79,6 +85,7 @@ test('can use CodeCommit repositories', () => {
     clonedRepositories: [
       cloud9.CloneRepository.fromCodeCommit(repo, '/src'),
     ],
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
@@ -115,11 +122,29 @@ test.each([
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     connectionType,
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
     InstanceType: Match.anyValue(),
     ConnectionType: expected,
+    SubnetId: Match.anyValue(),
+  });
+});
+
+test.each([
+  [ImageId.AMAZON_LINUX_1, 'amazonlinux-1-x86_64'],
+  [ImageId.AMAZON_LINUX_2, 'amazonlinux-2-x86_64'],
+  [ImageId.UBUNTU_18_04, 'ubuntu-18.04-x86_64'],
+])('has image ID property (%s)', (imageId, expected) => {
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    imageId: imageId,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
+    InstanceType: Match.anyValue(),
+    ImageId: expected,
     SubnetId: Match.anyValue(),
   });
 });
