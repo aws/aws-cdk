@@ -79,10 +79,10 @@ describe('CDK Include', () => {
     }).toThrow(/Unsupported CloudFormation function 'Fn::ValueOfAll'/);
   });
 
-  test('throws a validation exception when encountering an unrecognized resource attribute', () => {
+  test('parses even the unrecognized attributes of resources', () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-attribute.json');
-    }).toThrow(/The 'NonExistentResourceAttribute' resource attribute is not supported by cloudformation-include yet/);
+    }).toThrow(/Element used in Ref expression with logical ID: 'NonExistentResource' not found/);
   });
 
   test("throws a validation exception when encountering a Ref-erence to a template element that doesn't exist", () => {
