@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-events-targets/test/sqs/integ.sqs-event-rule-target": {
+    "integ.sqs-event-rule-target": {
       "stacks": [
         "aws-cdk-sqs-event-target"
       ],
