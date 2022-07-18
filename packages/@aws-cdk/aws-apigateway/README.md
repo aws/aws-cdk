@@ -1307,6 +1307,7 @@ in your openApi file.
 The API Gateway service sends metrics around the performance of Rest APIs to Amazon CloudWatch.
 These metrics can be referred to using the metric APIs available on the `RestApi`, `Stage` and `Method` constructs.
 Note that detailed metrics must be enabled for a stage to use the `Method` metrics.
+Read more about [API Gateway metrics](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-metrics-and-dimensions.html), including enabling detailed metrics.
 The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example:
 
 ```ts
