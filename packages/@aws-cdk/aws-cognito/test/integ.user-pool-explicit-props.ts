@@ -27,6 +27,10 @@ const userpool = new UserPool(stack, 'myuserpool', {
     email: true,
     phone: true,
   },
+  keepOriginal: {
+    email: true,
+    phone: true,
+  },
   standardAttributes: {
     fullname: {
       required: true,
