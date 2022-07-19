@@ -1,0 +1,37 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-ses-configuration-set-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-ses-configuration-set-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-ses-configuration-set-integ/ConfigurationSet/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigurationSet3DD38186"
+          }
+        ]
+      },
+      "displayName": "cdk-ses-configuration-set-integ"
+    },
+    "ConfigurationSetIntegDefaultTestDeployAssert9B6AD46A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ConfigurationSetIntegDefaultTestDeployAssert9B6AD46A.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "ConfigurationSetInteg/DefaultTest/DeployAssert"
+    }
+  }
+}
