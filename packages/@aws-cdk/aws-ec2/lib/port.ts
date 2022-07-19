@@ -308,6 +308,18 @@ export class Port {
   }
 
   /**
+   * All ICMPv6 traffic
+   */
+  public static allIcmpV6() {
+    return new Port({
+      protocol: Protocol.ICMPV6,
+      fromPort: -1,
+      toPort: -1,
+      stringRepresentation: 'ALL ICMPv6',
+    });
+  }
+
+  /**
    * All traffic
    */
   public static allTraffic() {
