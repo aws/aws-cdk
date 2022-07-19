@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC"
+      "Value": "TestStack/VPC"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC/PublicSubnet1"
+      "Value": "TestStack/VPC/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC/PublicSubnet1"
+      "Value": "TestStack/VPC/PublicSubnet1"
      }
     ]
    }
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC/PublicSubnet1"
+      "Value": "TestStack/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC/PublicSubnet1"
+      "Value": "TestStack/VPC/PublicSubnet1"
      }
     ]
    }
@@ -146,7 +146,7 @@
      },
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC/PublicSubnet2"
+      "Value": "TestStack/VPC/PublicSubnet2"
      }
     ]
    }
@@ -160,7 +160,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC/PublicSubnet2"
+      "Value": "TestStack/VPC/PublicSubnet2"
      }
     ]
    }
@@ -191,6 +191,38 @@
     "VPCVPCGW99B986DC"
    ]
   },
+  "VPCPublicSubnet2EIP4947BC00": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "TestStack/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2NATGateway3C070193": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet2EIP4947BC00",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "TestStack/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -218,7 +250,7 @@
      },
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC/PrivateSubnet1"
+      "Value": "TestStack/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -232,7 +264,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC/PrivateSubnet1"
+      "Value": "TestStack/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -287,7 +319,7 @@
      },
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC/PrivateSubnet2"
+      "Value": "TestStack/VPC/PrivateSubnet2"
      }
     ]
    }
@@ -301,7 +333,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC/PrivateSubnet2"
+      "Value": "TestStack/VPC/PrivateSubnet2"
      }
     ]
    }
@@ -325,7 +357,7 @@
     },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
-     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+     "Ref": "VPCPublicSubnet2NATGateway3C070193"
     }
    }
   },
@@ -335,7 +367,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9Stack/VPC"
+      "Value": "TestStack/VPC"
      }
     ]
    }
@@ -351,59 +383,29 @@
     }
    }
   },
-  "Repo02AC86CF": {
-   "Type": "AWS::CodeCommit::Repository",
+  "SecGroupE6B49EB2": {
+   "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "RepositoryName": "foo"
-   }
-  },
-  "C9EnvF05FC3BE": {
-   "Type": "AWS::Cloud9::EnvironmentEC2",
-   "Properties": {
-    "ConnectionType": "CONNECT_SSH",
-    "ImageId": "amazonlinux-2-x86_64",
-    "InstanceType": "t2.micro",
-    "Repositories": [
+    "GroupDescription": "TestStack/SecGroup",
+    "SecurityGroupEgress": [
      {
-      "PathComponent": "/foo",
-      "RepositoryUrl": {
-       "Fn::GetAtt": [
-        "Repo02AC86CF",
-        "CloneUrlHttp"
-       ]
-      }
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
      }
     ],
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    "SecurityGroupIngress": [
+     {
+      "CidrIpv6": "::/0",
+      "Description": "allow ICMP6",
+      "FromPort": -1,
+      "IpProtocol": "icmpv6",
+      "ToPort": -1
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
     }
-   }
-  }
- },
- "Outputs": {
-  "URL": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "https://",
-      {
-       "Ref": "AWS::Region"
-      },
-      ".console.aws.amazon.com/cloud9/ide/",
-      {
-       "Ref": "C9EnvF05FC3BE"
-      }
-     ]
-    ]
-   }
-  },
-  "ARN": {
-   "Value": {
-    "Fn::GetAtt": [
-     "C9EnvF05FC3BE",
-     "Arn"
-    ]
    }
   }
  }
