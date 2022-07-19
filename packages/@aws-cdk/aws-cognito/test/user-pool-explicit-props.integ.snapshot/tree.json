@@ -1218,6 +1218,9 @@
                       "email",
                       "phone_number"
                     ],
+                    "userAttributeUpdateSettings": {
+                      "attributesRequireVerificationBeforeUpdate": ["email", "phone_number"]
+                    },
                     "emailVerificationMessage": "verification email body from the integ test. Code is {####}.",
                     "emailVerificationSubject": "verification email subject from the integ test",
                     "lambdaConfig": {
