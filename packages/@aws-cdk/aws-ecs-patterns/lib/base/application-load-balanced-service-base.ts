@@ -2,7 +2,7 @@ import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-c
 import { IVpc } from '@aws-cdk/aws-ec2';
 import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
-  ICluster, LogDriver, PropagatedTagSource, Secret,
+  ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
 } from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
@@ -248,6 +248,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - disabled
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * A list of Capacity Provider strategies used to place a service.
+   *
+   * @default - undefined
+   *
+   */
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
 
   /**
    * Name of the load balancer
