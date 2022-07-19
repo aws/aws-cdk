@@ -10,26 +10,57 @@ const USE_OVERRIDE = { ParameterKey: PARAM, ParameterValue: OVERRIDE };
 const USE_PREVIOUS = { ParameterKey: PARAM, UsePreviousValue: true };
 
 let sdkProvider: MockSdkProvider;
+let describeStackMock: jest.Mock;
+let getTemplateMock: jest.Mock;
 let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
 let cfn: AWS.CloudFormation;
 beforeEach(async () => {
   sdkProvider = new MockSdkProvider();
 
+  describeStackMock = jest.fn();
+  getTemplateMock = jest.fn();
   cfnMocks = {
-    describeStacks: jest.fn()
-      // No stacks exist
-      .mockImplementation(() => ({ Stacks: [] })),
+    describeStacks: describeStackMock,
+    getTemplate: getTemplateMock,
   };
   sdkProvider.stubCloudFormation(cfnMocks as any);
   cfn = (await sdkProvider.forEnvironment()).sdk.cloudFormation();
 });
 
 test('A non-existent stack pretends to have an empty template', async () => {
+  // GIVEN
+  describeStackMock.mockImplementation(() => ({ Stacks: [] })); // No stacks exist
+
   // WHEN
   const stack = await CloudFormationStack.lookup(cfn, 'Dummy');
 
   // THEN
   expect(await stack.template()).toEqual({});
+});
+
+test("Retrieving a processed template passes 'Processed' to CloudFormation", async () => {
+  // GIVEN
+  describeStackMock.mockImplementation(() => ({
+    Stacks: [
+      {
+        StackName: 'Dummy',
+      },
+    ],
+  }));
+  getTemplateMock.mockImplementation(() => ({
+    TemplateBody: '{}',
+  }));
+
+  // WHEN
+  const retrieveProcessedTemplate = true;
+  const cloudFormationStack = await CloudFormationStack.lookup(cfn, 'Dummy', retrieveProcessedTemplate);
+  await cloudFormationStack.template();
+
+  // THEN
+  expect(getTemplateMock).toHaveBeenCalledWith({
+    StackName: 'Dummy',
+    TemplateStage: 'Processed',
+  });
 });
 
 test.each([

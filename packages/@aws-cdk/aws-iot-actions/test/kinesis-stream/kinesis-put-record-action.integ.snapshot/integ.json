@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-iot-actions/test/kinesis-stream/integ.kinesis-put-record-action": {
+    "integ.kinesis-put-record-action": {
       "stacks": [
         "test-kinesis-stream-action-stack"
       ],
