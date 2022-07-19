@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.33"
         }
       },
       "aws-appsync-integ": {
@@ -66,8 +66,7 @@
                         "ApiF70053CD",
                         "ApiId"
                       ]
-                    },
-                    "expires": 1658053715
+                    }
                   }
                 },
                 "constructInfo": {
