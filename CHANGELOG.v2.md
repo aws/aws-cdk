@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.33.0](https://github.com/aws/aws-cdk/compare/v2.32.1...v2.33.0) (2022-07-19)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v80.0.0 ([#21159](https://github.com/aws/aws-cdk/issues/21159)) ([db4524a](https://github.com/aws/aws-cdk/commit/db4524a3ea930fc286d83f5ff19071f74b69efeb))
+* **cfnspec:** cloudformation spec v81.0.0 ([#21196](https://github.com/aws/aws-cdk/issues/21196)) ([7bf2433](https://github.com/aws/aws-cdk/commit/7bf24337094695e507388deb8cdf5212c3a1f7a6))
+* **cli:** allow diffing against a processed template ([#19908](https://github.com/aws/aws-cdk/issues/19908)) ([cd4851a](https://github.com/aws/aws-cdk/commit/cd4851a53b75768fc352bc6255b5e9b2af20cf74))
+* **cognito:** added verified attribute changes ([#21180](https://github.com/aws/aws-cdk/issues/21180)) ([ad67594](https://github.com/aws/aws-cdk/commit/ad67594a9304aa5a5aa2f9736143577cf6e0ad52)), closes [#21179](https://github.com/aws/aws-cdk/issues/21179)
+* **ec2:** add ICMPv6 protocol  ([#20626](https://github.com/aws/aws-cdk/issues/20626)) ([99831b0](https://github.com/aws/aws-cdk/commit/99831b09a8f58a356c66d561a971290b840cda6d))
+* **ecs-patterns:** add capacityProviderStrategies props to (Application/Network)LoadBalanced(Ec2/Fargate)Service ([#20879](https://github.com/aws/aws-cdk/issues/20879)) ([1f0656e](https://github.com/aws/aws-cdk/commit/1f0656e65cd34f66d42814e5523e0cfd943794d5)), closes [#18868](https://github.com/aws/aws-cdk/issues/18868)
+* **stepfunctions:** add `fromStateMachineName` to import a state machine by resource name ([#20036](https://github.com/aws/aws-cdk/issues/20036)) ([2b5bd59](https://github.com/aws/aws-cdk/commit/2b5bd596757e27df7d7ec7f46f7ae04c58eb0467))
+
+
+### Bug Fixes
+
+* **aws-s3-assets:** support asset url with two extension name like tar.gz ([#20874](https://github.com/aws/aws-cdk/issues/20874)) ([673b0d1](https://github.com/aws/aws-cdk/commit/673b0d162b1c8b3ad6d4b3518bdf12bf9702c4de)), closes [#12699](https://github.com/aws/aws-cdk/issues/12699)
+* **cfn-include:** preserve unrecognized resource attributes ([#19920](https://github.com/aws/aws-cdk/issues/19920)) ([f7f23a7](https://github.com/aws/aws-cdk/commit/f7f23a7f418aa2e4c694c008f3d8895a8f74101b))
+* **cli:** CLI timeout fetching notices prints "unreachable" branch error message ([#20308](https://github.com/aws/aws-cdk/issues/20308)) ([7c4cd96](https://github.com/aws/aws-cdk/commit/7c4cd96dfeea8d4eec5fa140c6fcf026a482756f)), closes [#20069](https://github.com/aws/aws-cdk/issues/20069) [/github.com/aws/aws-cdk/blob/fd306ee05cfa7ebaa8d997007500d89d62868897/packages/aws-cdk/lib/notices.ts#L148-L154](https://github.com/aws//github.com/aws/aws-cdk/blob/fd306ee05cfa7ebaa8d997007500d89d62868897/packages/aws-cdk/lib/notices.ts/issues/L148-L154)
+* **cli:** pin geonamescache dependency to 1.3 (backport [#21152](https://github.com/aws/aws-cdk/issues/21152)) ([#21157](https://github.com/aws/aws-cdk/issues/21157)) ([4bdd4fb](https://github.com/aws/aws-cdk/commit/4bdd4fb6465d839344ec5d6ee4a5d67ef0de6a82))
+* **core:** CustomResourceProvider assets are staged in node_modules ([#20953](https://github.com/aws/aws-cdk/issues/20953)) ([901b225](https://github.com/aws/aws-cdk/commit/901b225f170555e766d4763d57c11b4a03b75ed3))
+* integration test for appsync apikey auth fails with out of bound API key expiration ([#21198](https://github.com/aws/aws-cdk/issues/21198)) ([37a44d7](https://github.com/aws/aws-cdk/commit/37a44d7a86e1e63c186bb81d90ec359f2a1633f4))
+
+
+### Reverts
+
+* **core:** revert "fix(core): use node.path in skip bundling check for consistency with cdk deploy CLI" ([#21174](https://github.com/aws/aws-cdk/issues/21174)) ([07cfe77](https://github.com/aws/aws-cdk/commit/07cfe773bf24a4186f94b59a44bc889220e7a353)), closes [#19950](https://github.com/aws/aws-cdk/issues/19950)
+
 ## [2.32.1](https://github.com/aws/aws-cdk/compare/v2.32.0...v2.32.1) (2022-07-15)
 
 
