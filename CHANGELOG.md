@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.165.0](https://github.com/aws/aws-cdk/compare/v1.164.0...v1.165.0) (2022-07-19)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v81.0.0 ([#21195](https://github.com/aws/aws-cdk/issues/21195)) ([63117b4](https://github.com/aws/aws-cdk/commit/63117b4a030b75ab789a65c13a44629054274ebf))
+
+
+### Bug Fixes
+
+* integration test for appsync apikey auth fails with out of bound API key expiration (backport [#21198](https://github.com/aws/aws-cdk/issues/21198)) ([#21204](https://github.com/aws/aws-cdk/issues/21204)) ([0134d87](https://github.com/aws/aws-cdk/commit/0134d878cf28f5d9f5f6c84453d5341fdbb6081b))
+
 ## [1.164.0](https://github.com/aws/aws-cdk/compare/v1.163.2...v1.164.0) (2022-07-15)
 
 
