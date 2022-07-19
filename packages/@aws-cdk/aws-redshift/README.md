@@ -276,3 +276,41 @@ cluster.addRotationMultiUser('MultiUserRotation', {
   secret: user.secret,
 });
 ```
+
+## Elastic IP
+
+If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    vpc,
+    publiclyAccessible: true,
+    elasticIp: '10.123.123.255', // A elastic ip you own
+})
+```
+
+If the Cluster is in a VPC and you want to connect to it using the private IP address from within the cluster, it is important to enable *DNS resolution* and *DNS hostnames* in the VPC config. If these parameters would not be set, connections from within the VPC would connect to the elastic IP address and not the private IP address.
+
+```ts
+const vpc = new ec2.Vpc(this, 'VPC', {
+  enableDnsSupport: true,
+  enableDnsHostnames: true,
+});
+```
+
+Note that if there is already an existing, public accessible Cluster, which VPC configuration is changed to use *DNS hostnames* and *DNS resolution*, connections still use the elastic IP address until the cluster is resized.
+
+### Elastic IP vs. Cluster node public IP
+
+The elastic IP address is an external IP address for accessing the cluster outside of a VPC. It's not related to the cluster node public IP addresses and private IP addresses that are accessible via the `clusterEndpoint` property. The public and private cluster node IP addresses appear regardless of whether the cluster is publicly accessible or not. They are used only in certain circumstances to configure ingress rules on the remote host. These circumstances occur when you load data from an Amazon EC2 instance or other remote host using a Secure Shell (SSH) connection.
+
+### Attach Elastic IP after Cluster creation
+
+In some cases, you might want to associate the cluster with an elastic IP address or change an elastic IP address that is associated with the cluster. To attach an elastic IP address after the cluster is created, first update the cluster so that it is not publicly accessible, then make it both publicly accessible and add an Elastic IP address in the same operation.
+
