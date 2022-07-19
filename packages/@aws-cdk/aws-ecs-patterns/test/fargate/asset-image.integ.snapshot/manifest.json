@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -223,10 +223,7 @@
         "/aws-ecs-integ/FargateService/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateServiceTaskDef940E3A80",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FargateServiceTaskDef940E3A80"
           }
         ],
         "/aws-ecs-integ/FargateService/TaskDef/web/LogGroup/Resource": [
@@ -273,6 +270,15 @@
         ]
       },
       "displayName": "aws-ecs-integ"
+    },
+    "fargateAssetImageTestDefaultTestDeployAssert15DE6C40": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "fargateAssetImageTestDefaultTestDeployAssert15DE6C40.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "fargateAssetImageTest/DefaultTest/DeployAssert"
     }
   }
 }

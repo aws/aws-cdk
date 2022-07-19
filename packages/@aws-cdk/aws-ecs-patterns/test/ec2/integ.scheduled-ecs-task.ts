@@ -2,7 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
-
+import * as integ from '@aws-cdk/integ-tests';
 import { ScheduledEc2Task } from '../../lib';
 
 const app = new cdk.App();
@@ -35,5 +35,10 @@ class EventStack extends cdk.Stack {
   }
 }
 
-new EventStack(app, 'aws-ecs-integ-ecs');
+const myStack = new EventStack(app, 'aws-ecs-integ-ecs');
+
+new integ.IntegTest(app, 'scheduledEc2TaskTest', {
+  testCases: [myStack],
+});
+
 app.synth();

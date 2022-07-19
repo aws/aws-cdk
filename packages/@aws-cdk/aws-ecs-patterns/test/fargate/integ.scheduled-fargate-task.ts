@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
-
+import * as integ from '@aws-cdk/integ-tests';
 import { ScheduledFargateTask } from '../../lib';
 
 const app = new cdk.App();
@@ -30,5 +30,10 @@ class EventStack extends cdk.Stack {
   }
 }
 
-new EventStack(app, 'aws-fargate-integ');
+const myStack = new EventStack(app, 'aws-fargate-integ');
+
+new integ.IntegTest(app, 'publicQueueProcessingFargateServiceTest', {
+  testCases: [myStack],
+});
+
 app.synth();
