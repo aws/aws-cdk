@@ -111,7 +111,6 @@ export interface Ec2EnvironmentProps {
   /**
    * The image ID used for creating an Amazon EC2 environment.
    *
-   * Valid values are: AMAZON_LINUX_2, and UBUNTU_18_04
    */
   readonly imageId: ImageId
 }
