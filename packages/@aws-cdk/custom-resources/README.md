@@ -18,7 +18,17 @@ handles the event (e.g. creates a resource) and sends back a response to CloudFo
 
 The `@aws-cdk/custom-resources.Provider` construct is a "mini-framework" for
 implementing providers for AWS CloudFormation custom resources. The framework offers a high-level API which makes it easier to implement robust
-and powerful custom resources and includes the following capabilities:
+and powerful custom resources. If you are looking to implement a custom resource provider, we recommend
+you use this module unless you have good reasons not to. For an overview of different provider types you
+could be using, see the [Custom Resource Providers section in the core library documentation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#custom-resource-providers).
+
+> **N.B.**: if you use the provider framework in this module you will write AWS Lambda Functions that look a lot like, but aren't exactly the same as the Lambda Functions you would write if you wrote CloudFormation Custom Resources directly, without this framework.
+>
+> Specifically, to report success or failure, have your Lambda Function exit in the right way: return data for success, or throw an
+> exception for failure. *Do not* post the success or failure of your custom resource to an HTTPS URL as the CloudFormation
+> documentation tells you to do.
+
+The framework has the following capabilities:
 
 * Handles responses to AWS CloudFormation and protects against blocked
   deployments
@@ -84,6 +94,9 @@ def on_delete(event):
   print("delete resource %s" % physical_id)
   # ...
 ```
+
+> When writing your handlers, there are a couple of non-obvious corner cases you need to
+> pay attention to. See the [important cases to handle](#important-cases-to-handle) section for more information.
 
 Users may also provide an additional handler called `isComplete`, for cases
 where the lifecycle operation cannot be completed immediately. The
