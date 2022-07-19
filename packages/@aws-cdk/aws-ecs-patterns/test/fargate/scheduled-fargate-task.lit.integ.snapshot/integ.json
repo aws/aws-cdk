@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.scheduled-fargate-task.lit": {
+    "publicQueueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [
         "aws-fargate-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
