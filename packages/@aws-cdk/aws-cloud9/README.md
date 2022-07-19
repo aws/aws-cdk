@@ -42,13 +42,14 @@ EC2 Environments are defined with `Ec2Environment`. To create an EC2 environment
 ```ts
 // create a cloud9 ec2 environment in a new VPC
 const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 3});
-new cloud9.Ec2Environment(this, 'Cloud9Env', { vpc });
+new cloud9.Ec2Environment(this, 'Cloud9Env', { vpc, imageId: cloud9.ImageId.AMAZON_LINUX_2, });
 
 // or create the cloud9 environment in the default VPC with specific instanceType
 const defaultVpc = ec2.Vpc.fromLookup(this, 'DefaultVPC', { isDefault: true });
 new cloud9.Ec2Environment(this, 'Cloud9Env2', {
   vpc: defaultVpc,
   instanceType: new ec2.InstanceType('t3.large'),
+  imageId: cloud9.ImageId.AMAZON_LINUX_2,
 });
 
 // or specify in a different subnetSelection 
@@ -57,10 +58,24 @@ const c9env = new cloud9.Ec2Environment(this, 'Cloud9Env3', {
   subnetSelection: {
     subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
   },
+  imageId: cloud9.ImageId.AMAZON_LINUX_2,
 });
 
 // print the Cloud9 IDE URL in the output
 new CfnOutput(this, 'URL', { value: c9env.ideUrl });
+```
+
+## Specifying EC2 AMI
+
+Use `imageId` to specify the EC2 AMI image to be used:
+
+```ts
+const defaultVpc = ec2.Vpc.fromLookup(this, 'DefaultVPC', { isDefault: true });
+new cloud9.Ec2Environment(this, 'Cloud9Env2', {
+  vpc: defaultVpc,
+  instanceType: new ec2.InstanceType('t3.large'),
+  imageId: cloud9.ImageId.UBUNTU_18_04,
+});
 ```
 
 ## Cloning Repositories
@@ -86,5 +101,6 @@ new cloud9.Ec2Environment(this, 'C9Env', {
     cloud9.CloneRepository.fromCodeCommit(repoNew, '/src/new-repo'),
     cloud9.CloneRepository.fromCodeCommit(repoExisting, '/src/existing-repo'),
   ],
+  imageId: cloud9.ImageId.AMAZON_LINUX_2,
 });
 ```

@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "ImageIdInteg/DefaultTest": {
+      "stacks": [
+        "cloud9-imageid-integ"
+      ],
+      "assertionStack": "ImageIdIntegDefaultTestDeployAssert7D293EEE"
+    }
+  }
+}

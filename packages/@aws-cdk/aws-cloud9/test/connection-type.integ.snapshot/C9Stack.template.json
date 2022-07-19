@@ -361,6 +361,7 @@
    "Type": "AWS::Cloud9::EnvironmentEC2",
    "Properties": {
     "ConnectionType": "CONNECT_SSM",
+    "ImageId": "amazonlinux-2-x86_64",
     "InstanceType": "t2.micro",
     "Repositories": [
      {

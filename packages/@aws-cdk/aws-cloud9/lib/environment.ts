@@ -29,13 +29,27 @@ export interface IEc2Environment extends cdk.IResource {
  */
 export enum ConnectionType {
   /**
-   * Conect through SSH
+   * Connect through SSH
    */
   CONNECT_SSH = 'CONNECT_SSH',
   /**
    * Connect through AWS Systems Manager
    */
   CONNECT_SSM = 'CONNECT_SSM'
+}
+
+/**
+ * The image ID used for creating an Amazon EC2 environment.
+ */
+export enum ImageId {
+  /**
+   * Create using Amazon Linux 2
+   */
+  AMAZON_LINUX_2 = 'amazonlinux-2-x86_64',
+  /**
+   * Create using Ubunut 18.04
+   */
+  UBUNTU_18_04 = 'ubuntu-18.04-x86_64'
 }
 
 /**
@@ -93,6 +107,12 @@ export interface Ec2EnvironmentProps {
    * @default - CONNECT_SSH
    */
   readonly connectionType?: ConnectionType
+
+  /**
+   * The image ID used for creating an Amazon EC2 environment.
+   *
+   */
+  readonly imageId: ImageId
 }
 
 /**
@@ -152,6 +172,10 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
       throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection');
     }
 
+    if (!props.imageId) {
+      throw new Error('No imageId specified, please specify imageId');
+    }
+
     const vpcSubnets = props.subnetSelection ?? { subnetType: ec2.SubnetType.PUBLIC };
     const c9env = new CfnEnvironmentEC2(this, 'Resource', {
       name: props.ec2EnvironmentName,
@@ -163,6 +187,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
         pathComponent: r.pathComponent,
       })) : undefined,
       connectionType: props.connectionType ?? ConnectionType.CONNECT_SSH,
+      imageId: props.imageId,
     });
     this.environmentId = c9env.ref;
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();
