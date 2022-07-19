@@ -70,8 +70,6 @@ new CfnOutput(this, 'URL', { value: c9env.ideUrl });
 Use `imageId` to specify the EC2 AMI image to be used:
 
 ```ts
-import * as cloud9 from '@aws-cdk/aws-cloud9';
-
 const defaultVpc = ec2.Vpc.fromLookup(this, 'DefaultVPC', { isDefault: true });
 new cloud9.Ec2Environment(this, 'Cloud9Env2', {
   vpc: defaultVpc,
