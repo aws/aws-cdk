@@ -45,7 +45,6 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   context[cxapi.BUNDLING_STACKS] = bundlingStacks;
 
   debug('context:', context);
-  env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
 
   const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
   const contextLocation = path.join(contextDir, 'context-temp.json');
