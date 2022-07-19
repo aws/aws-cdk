@@ -43,10 +43,6 @@ export enum ConnectionType {
  */
 export enum ImageId {
   /**
-   * Create using Amazon Linux 1
-   */
-  AMAZON_LINUX_1 = 'amazonlinux-1-x86_64',
-  /**
    * Create using Amazon Linux 2
    */
   AMAZON_LINUX_2 = 'amazonlinux-2-x86_64',
@@ -115,7 +111,7 @@ export interface Ec2EnvironmentProps {
   /**
    * The image ID used for creating an Amazon EC2 environment.
    *
-   * Valid values are: AMAZON_LINUX, AMAZON_LINUX_2, and UBUNTU_18_04
+   * Valid values are: AMAZON_LINUX_2, and UBUNTU_18_04
    */
   readonly imageId: ImageId
 }
