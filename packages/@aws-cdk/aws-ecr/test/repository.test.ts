@@ -701,5 +701,23 @@ describe('repository', () => {
         repositoryName: 'a//a-a',
       })).toThrow(/must follow the specified pattern/);
     });
+
+    test('return value addToResourcePolicy', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const policyStmt = new iam.PolicyStatement({
+        actions: ['*'],
+        principals: [new iam.AnyPrincipal()],
+      });
+      const policyText = '{"Statement": [{"Action": "*", "Effect": "Allow", "Principal": {"AWS": "*"}}], "Version": "2012-10-17"}';
+
+      // WHEN
+      const artifact = new ecr.Repository(stack, 'Repo1').addToResourcePolicy(policyStmt);
+
+      // THEN
+      expect(stack.resolve(artifact.statementAdded)).toEqual(true);
+      expect(stack.resolve(artifact.policyDependable)).toEqual(JSON.parse(policyText));
+
+    });
   });
 });
