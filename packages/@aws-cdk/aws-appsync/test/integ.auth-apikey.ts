@@ -29,7 +29,7 @@ const api = new GraphqlApi(stack, 'Api', {
       authorizationType: AuthorizationType.API_KEY,
       apiKeyConfig: {
         // Generate a timestamp that's 365 days ahead, use atTimestamp so integ test doesn't fail
-        expires: Expiration.atTimestamp(1658053715000),
+        expires: Expiration.atTimestamp(1689711694000),
       },
     },
   },
