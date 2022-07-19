@@ -705,19 +705,39 @@ describe('repository', () => {
     test('return value addToResourcePolicy', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const policyStmt = new iam.PolicyStatement({
+      const policyStmt1 = new iam.PolicyStatement({
         actions: ['*'],
         principals: [new iam.AnyPrincipal()],
       });
-      const policyText = '{"Statement": [{"Action": "*", "Effect": "Allow", "Principal": {"AWS": "*"}}], "Version": "2012-10-17"}';
+      const policyStmt2 = new iam.PolicyStatement({
+        effect: iam.Effect.DENY,
+        actions: ['ecr:BatchGetImage', 'ecr:GetDownloadUrlForLayer'],
+        principals: [new iam.AnyPrincipal()],
+      });
+      const policyText1 = '{"Statement": [{"Action": "*", "Effect": "Allow", "Principal": {"AWS": "*"}}], "Version": "2012-10-17"}';
+      const policyText2 = `{"Statement": [
+        {"Action": "*", "Effect": "Allow", "Principal": {"AWS": "*"}},
+        {"Action": ["ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer"], "Effect": "Deny", "Principal": {"AWS": "*"}}
+      ], "Version": "2012-10-17"}`;
 
       // WHEN
-      const artifact = new ecr.Repository(stack, 'Repo1').addToResourcePolicy(policyStmt);
+      const artifact1 = new ecr.Repository(stack, 'Repo1').addToResourcePolicy(policyStmt1);
+      const repo = new ecr.Repository(stack, 'Repo2');
+      repo.addToResourcePolicy(policyStmt1);
+      const artifact2 =repo.addToResourcePolicy(policyStmt2);
 
       // THEN
-      expect(stack.resolve(artifact.statementAdded)).toEqual(true);
-      expect(stack.resolve(artifact.policyDependable)).toEqual(JSON.parse(policyText));
+      expect(stack.resolve(artifact1.statementAdded)).toEqual(true);
+      expect(stack.resolve(artifact1.policyDependable)).toEqual(JSON.parse(policyText1));
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        RepositoryPolicyText: JSON.parse(policyText1),
+      });
 
+      expect(stack.resolve(artifact2.statementAdded)).toEqual(true);
+      expect(stack.resolve(artifact2.policyDependable)).toEqual(JSON.parse(policyText2));
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        RepositoryPolicyText: JSON.parse(policyText2),
+      });
     });
   });
 });
