@@ -138,6 +138,7 @@ describe('When Application Load Balancer', () => {
           name: 'lb',
           domainName: 'api.example.com',
           domainZone: zone,
+          idleTimeout: Duration.seconds(1000),
           publicLoadBalancer: false,
           listeners: [
             {

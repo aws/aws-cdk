@@ -383,6 +383,12 @@
     }
    }
   },
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "example.com."
+   }
+  },
   "ClusterEB0386A7": {
    "Type": "AWS::ECS::Cluster"
   },
@@ -408,7 +414,7 @@
     }
    }
   },
-  "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegmyServiceLBSecurityGroupFA544FE5327686553555411E4C": {
+  "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegmyServicelbSecurityGroup3AE0D1673276865535F3D481F7": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "IpProtocol": "tcp",
@@ -422,7 +428,7 @@
     },
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "myServiceLBSecurityGroupFE0ED608",
+      "myServicelbSecurityGroup97C897CA",
       "GroupId"
      ]
     },
@@ -871,7 +877,7 @@
     "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
    ]
   },
-  "myServiceLB168895E1": {
+  "myServicelb360A9ADD": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
     "LoadBalancerAttributes": [
@@ -881,14 +887,14 @@
      },
      {
       "Key": "idle_timeout.timeout_seconds",
-      "Value": "60"
+      "Value": "400"
      }
     ],
     "Scheme": "internet-facing",
     "SecurityGroups": [
      {
       "Fn::GetAtt": [
-       "myServiceLBSecurityGroupFE0ED608",
+       "myServicelbSecurityGroup97C897CA",
        "GroupId"
       ]
      }
@@ -908,17 +914,17 @@
     "VpcPublicSubnet2DefaultRoute97F91067"
    ]
   },
-  "myServiceLBSecurityGroupFE0ED608": {
+  "myServicelbSecurityGroup97C897CA": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatically created Security Group for ELB awsecsintegmyServiceLB1F7A535D",
+    "GroupDescription": "Automatically created Security Group for ELB awsecsintegmyServicelb8B06FF8F",
     "SecurityGroupIngress": [
      {
       "CidrIp": "0.0.0.0/0",
-      "Description": "Allow from anyone on port 80",
-      "FromPort": 80,
+      "Description": "Allow from anyone on port 443",
+      "FromPort": 443,
       "IpProtocol": "tcp",
-      "ToPort": 80
+      "ToPort": 443
      }
     ],
     "VpcId": {
@@ -926,12 +932,12 @@
     }
    }
   },
-  "myServiceLBSecurityGrouptoawsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E64823276865535D7AE55C8": {
+  "myServicelbSecurityGrouptoawsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E6482327686553538B6E8FC": {
    "Type": "AWS::EC2::SecurityGroupEgress",
    "Properties": {
     "GroupId": {
      "Fn::GetAtt": [
-      "myServiceLBSecurityGroupFE0ED608",
+      "myServicelbSecurityGroup97C897CA",
       "GroupId"
      ]
     },
@@ -947,25 +953,31 @@
     "ToPort": 65535
    }
   },
-  "myServiceLBPublicListenerC78AE8A0": {
+  "myServicelblistener1D7944F2": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
    "Properties": {
     "DefaultActions": [
      {
       "TargetGroupArn": {
-       "Ref": "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0"
+       "Ref": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
       },
       "Type": "forward"
      }
     ],
     "LoadBalancerArn": {
-     "Ref": "myServiceLB168895E1"
+     "Ref": "myServicelb360A9ADD"
     },
-    "Port": 80,
-    "Protocol": "HTTP"
+    "Certificates": [
+     {
+      "CertificateArn": "helloworld"
+     }
+    ],
+    "Port": 443,
+    "Protocol": "HTTPS",
+    "SslPolicy": "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
    }
   },
-  "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0": {
+  "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "Port": 80,
@@ -982,7 +994,7 @@
     }
    }
   },
-  "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5": {
+  "myServicelblistenerECSTargetGroupweb90Group4AA47881": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "Port": 80,
@@ -999,13 +1011,13 @@
     }
    }
   },
-  "myServiceLBPublicListenerECSTargetGroupweb90Rule0CAA997D": {
+  "myServicelblistenerECSTargetGroupweb90Rule68215E8D": {
    "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
    "Properties": {
     "Actions": [
      {
       "TargetGroupArn": {
-       "Ref": "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5"
+       "Ref": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
       },
       "Type": "forward"
      }
@@ -1021,9 +1033,41 @@
      }
     ],
     "ListenerArn": {
-     "Ref": "myServiceLBPublicListenerC78AE8A0"
+     "Ref": "myServicelblistener1D7944F2"
     },
     "Priority": 10
+   }
+  },
+  "myServiceDNSlb1E167074": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "api.example.com.",
+    "Type": "A",
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::Join": [
+       "",
+       [
+        "dualstack.",
+        {
+         "Fn::GetAtt": [
+          "myServicelb360A9ADD",
+          "DNSName"
+         ]
+        }
+       ]
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "myServicelb360A9ADD",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    }
    }
   },
   "myServiceTaskDefTaskRole1C1DE6CC": {
@@ -1197,14 +1241,14 @@
       "ContainerName": "web",
       "ContainerPort": 80,
       "TargetGroupArn": {
-       "Ref": "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0"
+       "Ref": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
       }
      },
      {
       "ContainerName": "web",
       "ContainerPort": 90,
       "TargetGroupArn": {
-       "Ref": "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5"
+       "Ref": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
       }
      }
     ],
@@ -1214,10 +1258,10 @@
     }
    },
    "DependsOn": [
-    "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0",
-    "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5",
-    "myServiceLBPublicListenerECSTargetGroupweb90Rule0CAA997D",
-    "myServiceLBPublicListenerC78AE8A0"
+    "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4",
+    "myServicelblistenerECSTargetGroupweb90Group4AA47881",
+    "myServicelblistenerECSTargetGroupweb90Rule68215E8D",
+    "myServicelblistener1D7944F2"
    ]
   }
  },
@@ -1228,25 +1272,22 @@
   }
  },
  "Outputs": {
-  "myServiceLoadBalancerDNS3A083E9F": {
+  "myServiceLoadBalancerDNSlbDE816AD2": {
    "Value": {
     "Fn::GetAtt": [
-     "myServiceLB168895E1",
+     "myServicelb360A9ADD",
      "DNSName"
     ]
    }
   },
-  "myServiceServiceURL1258C56B": {
+  "myServiceServiceURLlbhttps4348F098": {
    "Value": {
     "Fn::Join": [
      "",
      [
-      "http://",
+      "https://",
       {
-       "Fn::GetAtt": [
-        "myServiceLB168895E1",
-        "DNSName"
-       ]
+       "Ref": "myServiceDNSlb1E167074"
       }
      ]
     ]

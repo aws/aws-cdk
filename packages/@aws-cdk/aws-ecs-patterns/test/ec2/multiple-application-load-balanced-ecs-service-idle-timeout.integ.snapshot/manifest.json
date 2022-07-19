@@ -153,6 +153,12 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/aws-ecs-integ/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
         "/aws-ecs-integ/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -165,10 +171,10 @@
             "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A"
           }
         ],
-        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegmyServiceLBSecurityGroupFA544FE5:32768-65535": [
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegmyServicelbSecurityGroup3AE0D167:32768-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegmyServiceLBSecurityGroupFA544FE5327686553555411E4C"
+            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegmyServicelbSecurityGroup3AE0D1673276865535F3D481F7"
           }
         ],
         "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceRole/Resource": [
@@ -261,58 +267,64 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-ecs-integ/myService/LB/Resource": [
+        "/aws-ecs-integ/myService/lb/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLB168895E1"
+            "data": "myServicelb360A9ADD"
           }
         ],
-        "/aws-ecs-integ/myService/LB/SecurityGroup/Resource": [
+        "/aws-ecs-integ/myService/lb/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBSecurityGroupFE0ED608"
+            "data": "myServicelbSecurityGroup97C897CA"
           }
         ],
-        "/aws-ecs-integ/myService/LB/SecurityGroup/to awsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E6482:32768-65535": [
+        "/aws-ecs-integ/myService/lb/SecurityGroup/to awsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E6482:32768-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBSecurityGrouptoawsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E64823276865535D7AE55C8"
+            "data": "myServicelbSecurityGrouptoawsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E6482327686553538B6E8FC"
           }
         ],
-        "/aws-ecs-integ/myService/LB/PublicListener/Resource": [
+        "/aws-ecs-integ/myService/lb/listener/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBPublicListenerC78AE8A0"
+            "data": "myServicelblistener1D7944F2"
           }
         ],
-        "/aws-ecs-integ/myService/LB/PublicListener/ECSTargetGroupweb80Group/Resource": [
+        "/aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb80Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0"
+            "data": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
           }
         ],
-        "/aws-ecs-integ/myService/LB/PublicListener/ECSTargetGroupweb90Group/Resource": [
+        "/aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb90Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5"
+            "data": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
           }
         ],
-        "/aws-ecs-integ/myService/LB/PublicListener/ECSTargetGroupweb90Rule/Resource": [
+        "/aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb90Rule/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBPublicListenerECSTargetGroupweb90Rule0CAA997D"
+            "data": "myServicelblistenerECSTargetGroupweb90Rule68215E8D"
           }
         ],
-        "/aws-ecs-integ/myService/LoadBalancerDNS": [
+        "/aws-ecs-integ/myService/DNSlb/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLoadBalancerDNS3A083E9F"
+            "data": "myServiceDNSlb1E167074"
           }
         ],
-        "/aws-ecs-integ/myService/ServiceURL": [
+        "/aws-ecs-integ/myService/LoadBalancerDNSlb": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceServiceURL1258C56B"
+            "data": "myServiceLoadBalancerDNSlbDE816AD2"
+          }
+        ],
+        "/aws-ecs-integ/myService/ServiceURLlbhttps": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceServiceURLlbhttps4348F098"
           }
         ],
         "/aws-ecs-integ/myService/TaskDef/TaskRole/Resource": [

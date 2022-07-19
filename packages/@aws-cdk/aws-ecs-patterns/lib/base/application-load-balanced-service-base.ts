@@ -434,6 +434,11 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
 
     const internetFacing = props.publicLoadBalancer ?? true;
 
+    if (props.idleTimeout) {
+      if (props.idleTimeout > Duration.seconds(4000)) {
+        throw new Error( 'IdleTime cannot exceed 4000 seconds');
+      }
+    }
     const lbProps = {
       vpc: this.cluster.vpc,
       loadBalancerName: props.loadBalancerName,

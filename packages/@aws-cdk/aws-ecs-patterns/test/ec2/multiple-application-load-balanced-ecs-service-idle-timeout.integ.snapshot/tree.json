@@ -659,6 +659,30 @@
               "version": "0.0.0"
             }
           },
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "aws-ecs-integ/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "example.com."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
           "Cluster": {
             "id": "Cluster",
             "path": "aws-ecs-integ/Cluster",
@@ -713,9 +737,9 @@
                           "version": "0.0.0"
                         }
                       },
-                      "from awsecsintegmyServiceLBSecurityGroupFA544FE5:32768-65535": {
-                        "id": "from awsecsintegmyServiceLBSecurityGroupFA544FE5:32768-65535",
-                        "path": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegmyServiceLBSecurityGroupFA544FE5:32768-65535",
+                      "from awsecsintegmyServicelbSecurityGroup3AE0D167:32768-65535": {
+                        "id": "from awsecsintegmyServicelbSecurityGroup3AE0D167:32768-65535",
+                        "path": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegmyServicelbSecurityGroup3AE0D167:32768-65535",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                           "aws:cdk:cloudformation:props": {
@@ -730,7 +754,7 @@
                             },
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "myServiceLBSecurityGroupFE0ED608",
+                                "myServicelbSecurityGroup97C897CA",
                                 "GroupId"
                               ]
                             },
@@ -1420,17 +1444,25 @@
               "version": "0.0.0"
             }
           },
+          "Cert": {
+            "id": "Cert",
+            "path": "aws-ecs-integ/Cert",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
           "myService": {
             "id": "myService",
             "path": "aws-ecs-integ/myService",
             "children": {
-              "LB": {
-                "id": "LB",
-                "path": "aws-ecs-integ/myService/LB",
+              "lb": {
+                "id": "lb",
+                "path": "aws-ecs-integ/myService/lb",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ/myService/LB/Resource",
+                    "path": "aws-ecs-integ/myService/lb/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
                       "aws:cdk:cloudformation:props": {
@@ -1441,14 +1473,14 @@
                           },
                           {
                             "key": "idle_timeout.timeout_seconds",
-                            "value": "60"
+                            "value": "400"
                           }
                         ],
                         "scheme": "internet-facing",
                         "securityGroups": [
                           {
                             "Fn::GetAtt": [
-                              "myServiceLBSecurityGroupFE0ED608",
+                              "myServicelbSecurityGroup97C897CA",
                               "GroupId"
                             ]
                           }
@@ -1471,22 +1503,22 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-ecs-integ/myService/LB/SecurityGroup",
+                    "path": "aws-ecs-integ/myService/lb/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ/myService/LB/SecurityGroup/Resource",
+                        "path": "aws-ecs-integ/myService/lb/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
-                            "groupDescription": "Automatically created Security Group for ELB awsecsintegmyServiceLB1F7A535D",
+                            "groupDescription": "Automatically created Security Group for ELB awsecsintegmyServicelb8B06FF8F",
                             "securityGroupIngress": [
                               {
                                 "cidrIp": "0.0.0.0/0",
                                 "ipProtocol": "tcp",
-                                "fromPort": 80,
-                                "toPort": 80,
-                                "description": "Allow from anyone on port 80"
+                                "fromPort": 443,
+                                "toPort": 443,
+                                "description": "Allow from anyone on port 443"
                               }
                             ],
                             "vpcId": {
@@ -1501,13 +1533,13 @@
                       },
                       "to awsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E6482:32768-65535": {
                         "id": "to awsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E6482:32768-65535",
-                        "path": "aws-ecs-integ/myService/LB/SecurityGroup/to awsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E6482:32768-65535",
+                        "path": "aws-ecs-integ/myService/lb/SecurityGroup/to awsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E6482:32768-65535",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupEgress",
                           "aws:cdk:cloudformation:props": {
                             "groupId": {
                               "Fn::GetAtt": [
-                                "myServiceLBSecurityGroupFE0ED608",
+                                "myServicelbSecurityGroup97C897CA",
                                 "GroupId"
                               ]
                             },
@@ -1534,13 +1566,13 @@
                       "version": "0.0.0"
                     }
                   },
-                  "PublicListener": {
-                    "id": "PublicListener",
-                    "path": "aws-ecs-integ/myService/LB/PublicListener",
+                  "listener": {
+                    "id": "listener",
+                    "path": "aws-ecs-integ/myService/lb/listener",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ/myService/LB/PublicListener/Resource",
+                        "path": "aws-ecs-integ/myService/lb/listener/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
                           "aws:cdk:cloudformation:props": {
@@ -1548,15 +1580,21 @@
                               {
                                 "type": "forward",
                                 "targetGroupArn": {
-                                  "Ref": "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0"
+                                  "Ref": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
                                 }
                               }
                             ],
                             "loadBalancerArn": {
-                              "Ref": "myServiceLB168895E1"
+                              "Ref": "myServicelb360A9ADD"
                             },
-                            "port": 80,
-                            "protocol": "HTTP"
+                            "certificates": [
+                              {
+                                "certificateArn": "helloworld"
+                              }
+                            ],
+                            "port": 443,
+                            "protocol": "HTTPS",
+                            "sslPolicy": "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
                           }
                         },
                         "constructInfo": {
@@ -1566,11 +1604,11 @@
                       },
                       "ECSTargetGroupweb80Group": {
                         "id": "ECSTargetGroupweb80Group",
-                        "path": "aws-ecs-integ/myService/LB/PublicListener/ECSTargetGroupweb80Group",
+                        "path": "aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb80Group",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-integ/myService/LB/PublicListener/ECSTargetGroupweb80Group/Resource",
+                            "path": "aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb80Group/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                               "aws:cdk:cloudformation:props": {
@@ -1601,11 +1639,11 @@
                       },
                       "ECSTargetGroupweb90Group": {
                         "id": "ECSTargetGroupweb90Group",
-                        "path": "aws-ecs-integ/myService/LB/PublicListener/ECSTargetGroupweb90Group",
+                        "path": "aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb90Group",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-integ/myService/LB/PublicListener/ECSTargetGroupweb90Group/Resource",
+                            "path": "aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb90Group/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                               "aws:cdk:cloudformation:props": {
@@ -1636,11 +1674,11 @@
                       },
                       "ECSTargetGroupweb90Rule": {
                         "id": "ECSTargetGroupweb90Rule",
-                        "path": "aws-ecs-integ/myService/LB/PublicListener/ECSTargetGroupweb90Rule",
+                        "path": "aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb90Rule",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-integ/myService/LB/PublicListener/ECSTargetGroupweb90Rule/Resource",
+                            "path": "aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb90Rule/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::ListenerRule",
                               "aws:cdk:cloudformation:props": {
@@ -1648,7 +1686,7 @@
                                   {
                                     "type": "forward",
                                     "targetGroupArn": {
-                                      "Ref": "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5"
+                                      "Ref": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
                                     }
                                   }
                                 ],
@@ -1663,7 +1701,7 @@
                                   }
                                 ],
                                 "listenerArn": {
-                                  "Ref": "myServiceLBPublicListenerC78AE8A0"
+                                  "Ref": "myServicelblistener1D7944F2"
                                 },
                                 "priority": 10
                               }
@@ -1691,17 +1729,67 @@
                   "version": "0.0.0"
                 }
               },
-              "LoadBalancerDNS": {
-                "id": "LoadBalancerDNS",
-                "path": "aws-ecs-integ/myService/LoadBalancerDNS",
+              "DNSlb": {
+                "id": "DNSlb",
+                "path": "aws-ecs-integ/myService/DNSlb",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ/myService/DNSlb/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                      "aws:cdk:cloudformation:props": {
+                        "name": "api.example.com.",
+                        "type": "A",
+                        "aliasTarget": {
+                          "hostedZoneId": {
+                            "Fn::GetAtt": [
+                              "myServicelb360A9ADD",
+                              "CanonicalHostedZoneID"
+                            ]
+                          },
+                          "dnsName": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "dualstack.",
+                                {
+                                  "Fn::GetAtt": [
+                                    "myServicelb360A9ADD",
+                                    "DNSName"
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        },
+                        "hostedZoneId": {
+                          "Ref": "HostedZoneDB99F866"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-route53.ARecord",
+                  "version": "0.0.0"
+                }
+              },
+              "LoadBalancerDNSlb": {
+                "id": "LoadBalancerDNSlb",
+                "path": "aws-ecs-integ/myService/LoadBalancerDNSlb",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "ServiceURL": {
-                "id": "ServiceURL",
-                "path": "aws-ecs-integ/myService/ServiceURL",
+              "ServiceURLlbhttps": {
+                "id": "ServiceURLlbhttps",
+                "path": "aws-ecs-integ/myService/ServiceURLlbhttps",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
@@ -2000,14 +2088,14 @@
                         "loadBalancers": [
                           {
                             "targetGroupArn": {
-                              "Ref": "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0"
+                              "Ref": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
                             },
                             "containerName": "web",
                             "containerPort": 80
                           },
                           {
                             "targetGroupArn": {
-                              "Ref": "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5"
+                              "Ref": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
                             },
                             "containerName": "web",
                             "containerPort": 90
