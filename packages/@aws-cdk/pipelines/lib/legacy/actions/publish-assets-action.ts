@@ -125,7 +125,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
     const installCommand = `npm install -g cdk-assets${installSuffix}`;
 
     const buildSpec = codebuild.BuildSpec.fromObject({
-      version: '0.2',
+      version: 0.2,
       phases: {
         install: {
           commands: props.preInstallCommands ? [...props.preInstallCommands, installCommand] : installCommand,

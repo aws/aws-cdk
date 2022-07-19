@@ -706,7 +706,7 @@
                                   "ProjectName": {
                                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"da8c1ee6d645a5802d25355fec94a3f22a961102b74ac3846898d6b14e3a2c30\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"7051f67bb0f13f26f3c3fba3349a542103d16180e3e58fc7dde4c60036ff60c5\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {

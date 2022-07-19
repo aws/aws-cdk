@@ -574,7 +574,7 @@ behavior('can supply pre-install scripts to asset upload', (suite) => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       assetPublishingCodeBuildDefaults: {
         partialBuildSpec: cb.BuildSpec.fromObject({
-          version: '0.2',
+          version: 0.2,
           phases: {
             install: {
               commands: [

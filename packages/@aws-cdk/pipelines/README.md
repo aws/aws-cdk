@@ -713,7 +713,7 @@ new pipelines.CodeBuildStep('Synth', {
 
   // Control parts of the BuildSpec other than the regular 'build' and 'install' commands
   partialBuildSpec: codebuild.BuildSpec.fromObject({
-    version: '0.2',
+    version: 0.2,
     // ...
   }),
 
@@ -762,7 +762,7 @@ new pipelines.CodePipeline(this, 'Pipeline', {
   codeBuildDefaults: {
     // Prepend commands and configuration to all projects
     partialBuildSpec: codebuild.BuildSpec.fromObject({
-      version: '0.2',
+      version: 0.2,
       // ...
     }),
 

@@ -750,7 +750,7 @@ export class CodePipeline extends PipelineBase {
       : [];
     const typeBasedDockerCommands = dockerCommands.length > 0 ? {
       partialBuildSpec: cb.BuildSpec.fromObject({
-        version: '0.2',
+        version: 0.2,
         phases: {
           pre_build: {
             commands: dockerCommands,

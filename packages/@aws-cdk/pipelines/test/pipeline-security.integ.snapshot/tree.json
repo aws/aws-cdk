@@ -733,7 +733,7 @@
                                   "ProjectName": {
                                     "Ref": "TestPipelineBuildSynthCdkBuildProject755D4B01"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"fade37e243023bb2c0d6730c10a2c61567fbe168675a7c5e26a8810aadc7e513\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"c802238a1829fd12a1e4ae4561779b92591cc0c6466ac5ae045d73821ef4f0c5\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {

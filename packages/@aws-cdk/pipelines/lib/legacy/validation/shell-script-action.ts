@@ -200,7 +200,7 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
       securityGroups: this.props.securityGroups,
       subnetSelection: this.props.subnetSelection,
       buildSpec: codebuild.BuildSpec.fromObject({
-        version: '0.2',
+        version: 0.2,
         phases: {
           build: {
             commands: [

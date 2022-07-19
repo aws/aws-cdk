@@ -248,7 +248,7 @@ export class CodeBuildStep extends ShellStep {
     this.exportedVarsRendered = true;
 
     const varsBuildSpec = this.exportedVariables.size > 0 ? codebuild.BuildSpec.fromObject({
-      version: '0.2',
+      version: 0.2,
       env: {
         'exported-variables': Array.from(this.exportedVariables),
       },

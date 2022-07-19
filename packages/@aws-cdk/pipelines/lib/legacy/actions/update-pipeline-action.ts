@@ -90,7 +90,7 @@ export class UpdatePipelineAction extends Construct implements codepipeline.IAct
 
     const stackIdentifier = props.pipelineStackHierarchicalId ?? props.pipelineStackName;
     const buildSpec = codebuild.BuildSpec.fromObject({
-      version: '0.2',
+      version: 0.2,
       phases: {
         install: {
           commands: [

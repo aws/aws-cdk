@@ -221,7 +221,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     ];
 
     const buildSpecHere = codebuild.BuildSpec.fromObject({
-      version: '0.2',
+      version: 0.2,
       phases: {
         install: (installCommands.length ?? 0) > 0 ? { commands: installCommands } : undefined,
         build: this.props.commands.length > 0 ? { commands: this.props.commands } : undefined,

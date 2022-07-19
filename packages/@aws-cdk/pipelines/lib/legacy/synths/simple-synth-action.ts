@@ -346,7 +346,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       : ec2.OperatingSystemType.LINUX;
 
     const buildSpec = codebuild.BuildSpec.fromObject({
-      version: '0.2',
+      version: 0.2,
       phases: {
         pre_build: {
           commands: filterEmpty([
