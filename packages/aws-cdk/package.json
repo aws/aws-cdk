@@ -23,7 +23,8 @@
     "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh",
     "gen": "./generate.sh",
     "build+extract": "yarn build",
-    "build+test+extract": "yarn build+test"
+    "build+test+extract": "yarn build+test",
+    "attributions:update": "yarn node-bundle validate --entrypoint lib/index.ts --dont-attribute \"^@aws-cdk/|^cdk-assets|^cdk-cli-wrapper$\" --fix"
   },
   "cdk-package": {
     "bundle": {
