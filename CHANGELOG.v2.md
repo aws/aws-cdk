@@ -21,14 +21,9 @@ All notable changes to this project will be documented in this file. See [standa
 * **aws-s3-assets:** support asset url with two extension name like tar.gz ([#20874](https://github.com/aws/aws-cdk/issues/20874)) ([673b0d1](https://github.com/aws/aws-cdk/commit/673b0d162b1c8b3ad6d4b3518bdf12bf9702c4de)), closes [#12699](https://github.com/aws/aws-cdk/issues/12699)
 * **cfn-include:** preserve unrecognized resource attributes ([#19920](https://github.com/aws/aws-cdk/issues/19920)) ([f7f23a7](https://github.com/aws/aws-cdk/commit/f7f23a7f418aa2e4c694c008f3d8895a8f74101b))
 * **cli:** CLI timeout fetching notices prints "unreachable" branch error message ([#20308](https://github.com/aws/aws-cdk/issues/20308)) ([7c4cd96](https://github.com/aws/aws-cdk/commit/7c4cd96dfeea8d4eec5fa140c6fcf026a482756f)), closes [#20069](https://github.com/aws/aws-cdk/issues/20069) [/github.com/aws/aws-cdk/blob/fd306ee05cfa7ebaa8d997007500d89d62868897/packages/aws-cdk/lib/notices.ts#L148-L154](https://github.com/aws//github.com/aws/aws-cdk/blob/fd306ee05cfa7ebaa8d997007500d89d62868897/packages/aws-cdk/lib/notices.ts/issues/L148-L154)
-* **cli:** pin geonamescache dependency to 1.3 (backport [#21152](https://github.com/aws/aws-cdk/issues/21152)) ([#21157](https://github.com/aws/aws-cdk/issues/21157)) ([4bdd4fb](https://github.com/aws/aws-cdk/commit/4bdd4fb6465d839344ec5d6ee4a5d67ef0de6a82))
 * **core:** CustomResourceProvider assets are staged in node_modules ([#20953](https://github.com/aws/aws-cdk/issues/20953)) ([901b225](https://github.com/aws/aws-cdk/commit/901b225f170555e766d4763d57c11b4a03b75ed3))
 * integration test for appsync apikey auth fails with out of bound API key expiration ([#21198](https://github.com/aws/aws-cdk/issues/21198)) ([37a44d7](https://github.com/aws/aws-cdk/commit/37a44d7a86e1e63c186bb81d90ec359f2a1633f4))
 
-
-### Reverts
-
-* **core:** revert "fix(core): use node.path in skip bundling check for consistency with cdk deploy CLI" ([#21174](https://github.com/aws/aws-cdk/issues/21174)) ([07cfe77](https://github.com/aws/aws-cdk/commit/07cfe773bf24a4186f94b59a44bc889220e7a353)), closes [#19950](https://github.com/aws/aws-cdk/issues/19950)
 
 ## [2.32.1](https://github.com/aws/aws-cdk/compare/v2.32.0...v2.32.1) (2022-07-15)
 
