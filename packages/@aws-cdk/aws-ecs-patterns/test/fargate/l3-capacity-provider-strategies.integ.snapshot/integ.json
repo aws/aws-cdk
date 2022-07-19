@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "fargate/integ.l3-capacity-provider-strategies": {
+      "stacks": [
+        "aws-ecs-integ-lb-fargate"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

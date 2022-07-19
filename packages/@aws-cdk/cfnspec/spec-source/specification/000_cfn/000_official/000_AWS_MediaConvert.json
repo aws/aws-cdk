@@ -1,5 +1,5 @@
 {
-  "$version": "79.0.0",
+  "$version": "81.0.0",
   "PropertyTypes": {
     "AWS::MediaConvert::JobTemplate.AccelerationSettings": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconvert-jobtemplate-accelerationsettings.html",

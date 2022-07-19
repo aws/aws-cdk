@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs/test/ec2/integ.secret-json-field": {
+    "integ.secret-json-field": {
       "stacks": [
         "aws-ecs-integ-secret-json-field"
       ],

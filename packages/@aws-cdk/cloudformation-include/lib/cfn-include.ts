@@ -595,20 +595,6 @@ export class CfnInclude extends core.CfnElement {
       return ret;
     }
 
-    const resourceAttributes: any = this.template.Resources[logicalId];
-
-    // fail early for resource attributes we don't support yet
-    const knownAttributes = [
-      'Condition', 'DependsOn', 'Description', 'Metadata', 'Properties', 'Type', 'Version',
-      'CreationPolicy', 'DeletionPolicy', 'UpdatePolicy', 'UpdateReplacePolicy',
-    ];
-    for (const attribute of Object.keys(resourceAttributes)) {
-      if (!knownAttributes.includes(attribute)) {
-        throw new Error(`The '${attribute}' resource attribute is not supported by cloudformation-include yet. ` +
-          'Either remove it from the template, or use the CdkInclude class from the core package instead.');
-      }
-    }
-
     const self = this;
     const finder: cfn_parse.ICfnFinder = {
       findCondition(conditionName: string): core.CfnCondition | undefined {
@@ -639,6 +625,7 @@ export class CfnInclude extends core.CfnElement {
       parameters: this.parametersToReplace,
     });
 
+    const resourceAttributes: any = this.template.Resources[logicalId];
     let l1Instance: core.CfnResource;
     if (this.nestedStacksToInclude[logicalId]) {
       l1Instance = this.createNestedStack(logicalId, cfnParser);
@@ -667,6 +654,18 @@ export class CfnInclude extends core.CfnElement {
 
     this.overrideLogicalIdIfNeeded(l1Instance, logicalId);
     this.resources[logicalId] = l1Instance;
+
+    // handle any unknown attributes using overrides
+    const knownAttributes = [
+      'Condition', 'DependsOn', 'Description', 'Metadata', 'Properties', 'Type', 'Version',
+      'CreationPolicy', 'DeletionPolicy', 'UpdatePolicy', 'UpdateReplacePolicy',
+    ];
+    for (const [attrName, attrValue] of Object.entries(resourceAttributes)) {
+      if (!knownAttributes.includes(attrName)) {
+        l1Instance.addOverride(attrName, cfnParser.parseValue(attrValue));
+      }
+    }
+
     return l1Instance;
   }
 

@@ -1821,6 +1821,28 @@ test('device tracking is configured correctly', () => {
   });
 });
 
+test('keep original attrs is configured correctly', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {
+    signInAliases: { username: true },
+    autoVerify: { email: true, phone: true },
+    keepOriginal: {
+      email: true,
+      phone: true,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserAttributeUpdateSettings: {
+      AttributesRequireVerificationBeforeUpdate: ['email', 'phone_number'],
+    },
+  });
+});
+
 test('grant', () => {
   // GIVEN
   const stack = new Stack();

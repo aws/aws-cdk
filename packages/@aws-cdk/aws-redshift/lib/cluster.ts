@@ -335,6 +335,15 @@ export interface ClusterProps {
    * @default - Elastic resize type
    */
   readonly classicResizing?: boolean
+
+  /**
+   * The Elastic IP (EIP) address for the cluster.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-clusters-vpc.html
+   *
+   * @default - No Elastic IP
+   */
+  readonly elasticIp?: string
 }
 
 /**
@@ -499,6 +508,7 @@ export class Cluster extends ClusterBase {
       kmsKeyId: props.encryptionKey?.keyId,
       encrypted: props.encrypted ?? true,
       classic: props.classicResizing,
+      elasticIp: props.elasticIp,
     });
 
     cluster.applyRemovalPolicy(removalPolicy, {

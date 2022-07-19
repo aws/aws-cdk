@@ -85,7 +85,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.99",
+    "@types/aws-lambda": "^8.10.101",
     "@types/jest": "^27.5.2"
   },
   "dependencies": {

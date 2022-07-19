@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-events-targets/test/kinesis-firehose/integ.kinesis-firehose-stream": {
+    "integ.kinesis-firehose-stream": {
       "stacks": [
         "aws-cdk-firehose-event-target"
       ],

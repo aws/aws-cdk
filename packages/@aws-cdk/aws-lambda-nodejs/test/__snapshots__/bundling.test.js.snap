@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`esbuild bundling with esbuild options 1`] = `
-"(() => {
+"\\"use strict\\";
+(() => {
   // test/integ-handlers/define.ts
   function handler() {
     return [

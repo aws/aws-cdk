@@ -1732,7 +1732,7 @@ export class DatabaseInstanceEngine {
     return new OracleSe1InstanceEngine(props.version);
   }
 
-  /** Creates a new Oracle Standard Edition 1 instance engine. */
+  /** Creates a new Oracle Standard Edition 2 instance engine. */
   public static oracleSe2(props: OracleSe2InstanceEngineProps): IInstanceEngine {
     return new OracleSe2InstanceEngine(props.version);
   }

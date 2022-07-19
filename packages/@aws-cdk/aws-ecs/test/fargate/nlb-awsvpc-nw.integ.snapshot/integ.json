@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs/test/fargate/integ.nlb-awsvpc-nw": {
+    "integ.nlb-awsvpc-nw": {
       "stacks": [
         "aws-ecs-integ"
       ],

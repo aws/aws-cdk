@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-events-targets/test/lambda/integ.events": {
+    "integ.events": {
       "stacks": [
         "lambda-events"
       ],

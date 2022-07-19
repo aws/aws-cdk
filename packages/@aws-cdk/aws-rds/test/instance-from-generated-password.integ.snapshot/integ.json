@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-rds/test/integ.instance-from-generated-password": {
+    "integ.instance-from-generated-password": {
       "stacks": [
         "aws-cdk-rds-fixed-username"
       ],

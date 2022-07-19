@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecr/test/integ.basic": {
+    "integ.basic": {
       "stacks": [
         "aws-ecr-integ-stack"
       ],

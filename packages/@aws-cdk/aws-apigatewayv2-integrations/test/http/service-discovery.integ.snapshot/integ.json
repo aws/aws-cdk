@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-apigatewayv2-integrations/test/http/integ.service-discovery": {
+    "integ.service-discovery": {
       "stacks": [
         "integ-service-discovery-integration"
       ],

@@ -62,11 +62,11 @@ jobs:
           # Upgrade dependencies at repository root
           ncu --upgrade --filter=@types/node,@types/fs-extra --target=minor
           ncu --upgrade --filter=typescript --target=patch
-          ncu --upgrade --reject=@types/node,@types/fs-extra,constructs,typescript,lerna --target=minor
+          ncu --upgrade --reject=@types/node,@types/prettier,@types/fs-extra,constructs,typescript,lerna --target=minor
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
+          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/prettier,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
       - name: Run "yarn install"
@@ -119,7 +119,8 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           # Git commit details
-          branch: automation/yarn-upgrade
+          branch: automation/yarn-upgrade-v1
+          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
             chore: npm-check-updates && yarn upgrade
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.

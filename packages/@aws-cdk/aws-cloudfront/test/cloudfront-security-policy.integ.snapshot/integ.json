@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cloudfront/test/integ.cloudfront-security-policy": {
+    "integ.cloudfront-security-policy": {
       "stacks": [
         "aws-cdk-cloudfront-custom"
       ],

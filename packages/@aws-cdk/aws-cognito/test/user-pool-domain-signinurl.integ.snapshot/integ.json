@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cognito/test/integ.user-pool-domain-signinurl": {
+    "integ.user-pool-domain-signinurl": {
       "stacks": [
         "integ-user-pool-domain-signinurl"
       ],

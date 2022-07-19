@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-config/test/integ.scoped-rule": {
+    "integ.scoped-rule": {
       "stacks": [
         "aws-cdk-config-rule-scoped-integ"
       ],

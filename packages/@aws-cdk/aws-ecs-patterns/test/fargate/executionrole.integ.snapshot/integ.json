@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs-patterns/test/fargate/integ.executionrole": {
+    "integ.executionrole": {
       "stacks": [
         "aws-ecs-integ"
       ],

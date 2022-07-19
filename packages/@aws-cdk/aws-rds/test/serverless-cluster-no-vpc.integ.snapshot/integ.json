@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-rds/test/integ.serverless-cluster-no-vpc": {
+    "integ.serverless-cluster-no-vpc": {
       "stacks": [
         "aws-cdk-sls-cluster-no-vpc-integ"
       ],

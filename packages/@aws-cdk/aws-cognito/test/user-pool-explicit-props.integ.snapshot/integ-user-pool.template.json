@@ -767,6 +767,9 @@
      "email",
      "phone_number"
     ],
+    "UserAttributeUpdateSettings": {
+     "AttributesRequireVerificationBeforeUpdate": ["email", "phone_number"]
+    },
     "EmailVerificationMessage": "verification email body from the integ test. Code is {####}.",
     "EmailVerificationSubject": "verification email subject from the integ test",
     "LambdaConfig": {

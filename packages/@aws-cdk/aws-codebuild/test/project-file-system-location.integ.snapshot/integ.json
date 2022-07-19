@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-codebuild/test/integ.project-file-system-location": {
+    "integ.project-file-system-location": {
       "stacks": [
         "aws-cdk-codebuild-file-system-locations"
       ],

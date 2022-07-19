@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs/test/fargate/integ.exec-command": {
+    "integ.exec-command": {
       "stacks": [
         "aws-ecs-integ-exec-command"
       ],
