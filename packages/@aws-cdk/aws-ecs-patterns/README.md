@@ -590,7 +590,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 });
 ```
 
-### Set capacityProviderStrategies for QueueProcessingEc2Service
+### Set capacityProviderStrategies for QueueProcessingFargateService
 
 ```ts
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
