@@ -1137,10 +1137,6 @@
                           {
                             "key": "deletion_protection.enabled",
                             "value": "false"
-                          },
-                          {
-                            "key": "idle_timeout.timeout_seconds",
-                            "value": "60"
                           }
                         ],
                         "scheme": "internet-facing",

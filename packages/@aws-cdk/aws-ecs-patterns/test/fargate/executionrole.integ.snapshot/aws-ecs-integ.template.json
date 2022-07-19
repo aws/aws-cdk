@@ -442,10 +442,6 @@
      {
       "Key": "deletion_protection.enabled",
       "Value": "false"
-     },
-     {
-      "Key": "idle_timeout.timeout_seconds",
-      "Value": "60"
      }
     ],
     "Scheme": "internet-facing",

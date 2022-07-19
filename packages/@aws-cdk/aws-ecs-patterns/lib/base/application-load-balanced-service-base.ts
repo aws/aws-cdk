@@ -443,7 +443,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       vpc: this.cluster.vpc,
       loadBalancerName: props.loadBalancerName,
       internetFacing,
-      idleTimeout: props.idleTimeout ?? Duration.seconds(60),
+      idleTimeout: props.idleTimeout ?? undefined,
     };
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);

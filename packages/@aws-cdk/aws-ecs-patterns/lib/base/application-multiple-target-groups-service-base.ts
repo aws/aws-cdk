@@ -114,8 +114,6 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
    * @default - false
    */
   readonly enableExecuteCommand?: boolean;
-
-
 }
 
 /**
@@ -590,7 +588,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,
-      idleTimeout: idleTimeout ?? Duration.seconds(60),
+      idleTimeout: idleTimeout ?? undefined,
     };
 
     return new ApplicationLoadBalancer(this, name, lbProps);
