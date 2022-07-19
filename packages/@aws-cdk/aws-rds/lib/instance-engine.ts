@@ -1183,7 +1183,17 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2021_01_R2 = OracleEngineVersion.of('19.0.0.0.ru-2021-01.rur-2021-01.r2', '19');
   /** Version "19.0.0.0.ru-2021-01.rur-2021-04.r1". */
   public static readonly VER_19_0_0_0_2021_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-04.rur-2021-04.r1', '19');
+  /** Version "19.0.0.0.ru-2021-07.rur-2021-07.r1". */
+  public static readonly VER_19_0_0_0_2021_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-07.rur-2021-07.r1', '19');
+  /** Version "19.0.0.0.ru-2021-10.rur-2021-10.r1". */
+  public static readonly VER_19_0_0_0_2021_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-10.rur-2021-10.r1', '19');
+  /** Version "19.0.0.0.ru-2022-01.rur-2022-01.r1". */
+  public static readonly VER_19_0_0_0_2022_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-01.rur-2022-01.r1', '19');
 
+  /** Version "21" (only a major version, without a specific minor version). */
+  public static readonly VER_21 = OracleEngineVersion.of('21', '21');
+  /** Version "21.0.0.0.ru-2022-01.rur-2022-01.r1". */
+  public static readonly VER_21_0_0_0_2022_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-01.rur-2022-01.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
@@ -1335,6 +1345,27 @@ class OracleSe2InstanceEngine extends OracleInstanceEngineBase {
 }
 
 /**
+ * Properties for Oracle Standard Edition 2 (CDB) instance engines.
+ * Used in {@link DatabaseInstanceEngine.oracleSe2Cdb}.
+ */
+export interface OracleSe2CdbInstanceEngineProps extends OracleInstanceEngineProps {
+}
+
+class OracleSe2CdbInstanceEngine extends OracleInstanceEngineBase {
+  constructor(version?: OracleEngineVersion) {
+    super({
+      engineType: 'oracle-se2-cdb',
+      version: version
+        ? {
+          fullVersion: version.oracleFullVersion,
+          majorVersion: version.oracleMajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
  * Properties for Oracle Enterprise Edition instance engines.
  * Used in {@link DatabaseInstanceEngine.oracleEe}.
  */
@@ -1345,6 +1376,27 @@ class OracleEeInstanceEngine extends OracleInstanceEngineBase {
   constructor(version?: OracleEngineVersion) {
     super({
       engineType: 'oracle-ee',
+      version: version
+        ? {
+          fullVersion: version.oracleFullVersion,
+          majorVersion: version.oracleMajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
+ * Properties for Oracle Enterprise Edition (CDB) instance engines.
+ * Used in {@link DatabaseInstanceEngine.oracleEeCdb}.
+ */
+export interface OracleEeCdbInstanceEngineProps extends OracleInstanceEngineProps {
+}
+
+class OracleEeCdbInstanceEngine extends OracleInstanceEngineBase {
+  constructor(version?: OracleEngineVersion) {
+    super({
+      engineType: 'oracle-ee-cdb',
       version: version
         ? {
           fullVersion: version.oracleFullVersion,
@@ -1737,9 +1789,19 @@ export class DatabaseInstanceEngine {
     return new OracleSe2InstanceEngine(props.version);
   }
 
+  /** Creates a new Oracle Standard Edition 2 (CDB) instance engine. */
+  public static oracleSe2Cdb(props: OracleSe2CdbInstanceEngineProps): IInstanceEngine {
+    return new OracleSe2CdbInstanceEngine(props.version);
+  }
+
   /** Creates a new Oracle Enterprise Edition instance engine. */
   public static oracleEe(props: OracleEeInstanceEngineProps): IInstanceEngine {
     return new OracleEeInstanceEngine(props.version);
+  }
+
+  /** Creates a new Oracle Enterprise Edition (CDB) instance engine. */
+  public static oracleEeCdb(props: OracleEeCdbInstanceEngineProps): IInstanceEngine {
+    return new OracleEeCdbInstanceEngine(props.version);
   }
 
   /** Creates a new SQL Server Standard Edition instance engine. */
