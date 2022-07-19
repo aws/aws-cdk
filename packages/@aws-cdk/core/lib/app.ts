@@ -143,17 +143,10 @@ export class App extends Stage {
       this.node.setContext(k, v);
     }
 
-    const context = this.readContextFromTempFile();
+    const location = process.env[cxapi.CONTEXT_LOCATION_ENV];
+    const context = location != null ? fs.readJSONSync(location) : {};
     for (const [k, v] of Object.entries(context)) {
       this.node.setContext(k, v);
-    }
-  }
-
-  private readContextFromTempFile() {
-    try {
-      return fs.readJSONSync(cxapi.CONTEXT_LOCATION_ENV);
-    } catch (e) {
-      return {};
     }
   }
 }
