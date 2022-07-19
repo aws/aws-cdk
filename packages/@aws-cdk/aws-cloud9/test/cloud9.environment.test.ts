@@ -133,7 +133,6 @@ test.each([
 });
 
 test.each([
-  [ImageId.AMAZON_LINUX_1, 'amazonlinux-1-x86_64'],
   [ImageId.AMAZON_LINUX_2, 'amazonlinux-2-x86_64'],
   [ImageId.UBUNTU_18_04, 'ubuntu-18.04-x86_64'],
 ])('has image ID property (%s)', (imageId, expected) => {

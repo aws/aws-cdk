@@ -1,11 +1,12 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
-import * as constructs from 'constructs';
+import { Stack, App, StackProps, CfnOutput } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
+import { Construct } from 'constructs';
 import * as cloud9 from '../lib';
 import { ImageId } from '../lib';
 
-export class Cloud9Env extends cdk.Stack {
-  constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
+class Cloud9Env extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'VPC', {
@@ -18,11 +19,15 @@ export class Cloud9Env extends cdk.Stack {
       vpc,
       imageId: ImageId.AMAZON_LINUX_2,
     });
-    new cdk.CfnOutput(this, 'URL', { value: c9env.ideUrl });
-    new cdk.CfnOutput(this, 'ARN', { value: c9env.ec2EnvironmentArn });
+    new CfnOutput(this, 'URL', { value: c9env.ideUrl });
+    new CfnOutput(this, 'ARN', { value: c9env.ec2EnvironmentArn });
   }
 }
 
-const app = new cdk.App();
+const app = new App();
 
-new Cloud9Env(app, 'C9Stack');
+new integ.IntegTest(app, 'ImageIdInteg', {
+  testCases: [new Cloud9Env(app, 'cloud9-imageid-integ')],
+});
+
+app.synth();
