@@ -46,6 +46,15 @@ async function defaultInvokeFunction(req: AWS.Lambda.InvocationRequest): Promise
   return lambda.invoke(req).promise();
 }
 
+async function defaultGetFunction(req: AWS.Lambda.GetFunctionRequest): Promise<AWS.Lambda.GetFunctionResponse> {
+  if (!lambda) {
+    lambda = new AWS.Lambda(awsSdkConfig);
+  }
+
+  return lambda.getFunction(req).promise();
+}
+
 export let startExecution = defaultStartExecution;
 export let invokeFunction = defaultInvokeFunction;
+export let getFunction = defaultGetFunction;
 export let httpRequest = defaultHttpRequest;

@@ -3,7 +3,7 @@
 import { IsCompleteResponse, OnEventResponse } from '../types';
 import * as cfnResponse from './cfn-response';
 import * as consts from './consts';
-import { invokeFunction, startExecution } from './outbound';
+import { invokeFunction, startExecution, getFunction } from './outbound';
 import { getEnv, log } from './util';
 
 // use consts for handler names to compiler-enforce the coupling with construction code.
@@ -115,9 +115,18 @@ async function invokeUserFunction(functionArnEnv: string, payload: any, retryOpt
 
   log('user function response:', resp, typeof(resp));
 
+  // parse function name from arn
+  // arn:${Partition}:lambda:${Region}:${Account}:function:${FunctionName}
+  const arn = functionArn.split(':');
+  const functionName = arn[arn.length - 1];
+
   const jsonPayload = parseJsonPayload(resp.Payload);
   if (resp.FunctionError) {
-    if (resp.FunctionError.includes('Lambda is initializing your function')) {
+    const getFunctionResponse = await getFunction({
+      FunctionName: functionName,
+    });
+
+    if (getFunctionResponse.Configuration?.State === 'Inactive' || getFunctionResponse.Configuration?.State === 'Pending') {
       const newDelay = retryOptions ? retryOptions.delay * 2 : DEFAULT_DELAY;
       const newTotalDelay = (retryOptions ? retryOptions.totalDelay : 0) + newDelay;
 
@@ -137,11 +146,6 @@ async function invokeUserFunction(functionArnEnv: string, payload: any, retryOpt
     log('user function threw an error:', resp.FunctionError);
 
     const errorMessage = jsonPayload.errorMessage || 'error';
-
-    // parse function name from arn
-    // arn:${Partition}:lambda:${Region}:${Account}:function:${FunctionName}
-    const arn = functionArn.split(':');
-    const functionName = arn[arn.length - 1];
 
     // append a reference to the log group.
     const message = [
