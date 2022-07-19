@@ -123,6 +123,124 @@ testLegacyBehavior('ApplicationLoadBalancedFargateService desiredCount can be un
   });
 });
 
+test('ApplicationLoadBalancedEc2Service multiple capacity provider strategies are set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider2', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup2', {
+      vpc,
+      instanceType: new ec2.InstanceType('t3.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  // WHEN
+  new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 1024,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
+    capacityProviderStrategies: [
+      {
+        capacityProvider: 'AutoScalingGroupProvider1',
+        base: 1,
+        weight: 1,
+      },
+      {
+        capacityProvider: 'AutoScalingGroupProvider2',
+        base: 0,
+        weight: 2,
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    CapacityProviderStrategy: Match.arrayEquals([
+      {
+        Base: 1,
+        CapacityProvider: 'AutoScalingGroupProvider1',
+        Weight: 1,
+      },
+      {
+        Base: 0,
+        CapacityProvider: 'AutoScalingGroupProvider2',
+        Weight: 2,
+      },
+    ]),
+  });
+});
+
+test('NetworkLoadBalancedEc2Service multiple capacity provider strategies are set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider2', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup2', {
+      vpc,
+      instanceType: new ec2.InstanceType('t3.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  // WHEN
+  new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 1024,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
+    capacityProviderStrategies: [
+      {
+        capacityProvider: 'AutoScalingGroupProvider1',
+        base: 1,
+        weight: 1,
+      },
+      {
+        capacityProvider: 'AutoScalingGroupProvider2',
+        base: 0,
+        weight: 2,
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    CapacityProviderStrategy: Match.arrayEquals([
+      {
+        Base: 1,
+        CapacityProvider: 'AutoScalingGroupProvider1',
+        Weight: 1,
+      },
+      {
+        Base: 0,
+        CapacityProvider: 'AutoScalingGroupProvider2',
+        Weight: 2,
+      },
+    ]),
+  });
+});
+
 testLegacyBehavior('NetworkLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
   const stack = new cdk.Stack(app);
