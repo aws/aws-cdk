@@ -4,7 +4,7 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnCapabilities, Duration, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
@@ -12,6 +12,7 @@ import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsa
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
+import { CachedFnSub } from '../private/cached-fnsub';
 import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
@@ -293,16 +294,12 @@ export class CodePipeline extends PipelineBase {
   private readonly selfMutation: boolean;
   private _myCxAsmRoot?: string;
   private readonly dockerCredentials: DockerCredential[];
+  private readonly cachedFnSub = new CachedFnSub();
 
   /**
    * Asset roles shared for publishing
    */
-  private readonly assetCodeBuildRoles: Record<string, iam.IRole> = {};
-
-  /**
-   * Per asset type, the target role ARNs that need to be assumed
-   */
-  private readonly assetPublishingRoles: Record<string, Set<string>> = {};
+  private readonly assetCodeBuildRoles: Map<AssetType, AssetSingletonRole> = new Map();
 
   /**
    * This is set to the very first artifact produced in the pipeline
@@ -361,6 +358,9 @@ export class CodePipeline extends PipelineBase {
       }
       if (this.props.crossAccountKeys !== undefined) {
         throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
+      if (this.props.reuseCrossRegionSupportStacks !== undefined) {
+        throw new Error('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
       }
 
       this._pipeline = this.props.codePipeline;
@@ -678,14 +678,12 @@ export class CodePipeline extends PipelineBase {
       throw new Error('All assets in a single publishing step must be of the same type');
     }
 
-    const publishingRoles = this.assetPublishingRoles[assetType] = (this.assetPublishingRoles[assetType] ?? new Set());
-    for (const asset of assets) {
-      if (asset.assetPublishingRoleArn) {
-        publishingRoles.add(asset.assetPublishingRoleArn);
-      }
-    }
-
     const role = this.obtainAssetCodeBuildRole(assets[0].assetType);
+
+    for (const roleArn of assets.flatMap(a => a.assetPublishingRoleArn ? [a.assetPublishingRoleArn] : [])) {
+      // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
+      role.addAssumeRole(this.cachedFnSub.fnSub(roleArn));
+    };
 
     // The base commands that need to be run
     const script = new CodeBuildStep(node.id, {
@@ -824,9 +822,10 @@ export class CodePipeline extends PipelineBase {
    * Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
    * Generates one role per asset type to separate file and Docker/image-based permissions.
    */
-  private obtainAssetCodeBuildRole(assetType: AssetType): iam.IRole {
-    if (this.assetCodeBuildRoles[assetType]) {
-      return this.assetCodeBuildRoles[assetType];
+  private obtainAssetCodeBuildRole(assetType: AssetType): AssetSingletonRole {
+    const existing = this.assetCodeBuildRoles.get(assetType);
+    if (existing) {
+      return existing;
     }
 
     const stack = Stack.of(this);
@@ -840,22 +839,15 @@ export class CodePipeline extends PipelineBase {
       ),
     });
 
-    // Publishing role access
-    // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
-    // Lazy-evaluated so all asset publishing roles are included.
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      resources: Lazy.list({ produce: () => Array.from(this.assetPublishingRoles[assetType] ?? []).map(arn => Fn.sub(arn)) }),
-    }));
-
     // Grant pull access for any ECR registries and secrets that exist
     if (assetType === AssetType.DOCKER_IMAGE) {
       this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
     }
 
-    this.assetCodeBuildRoles[assetType] = assetRole;
+    this.assetCodeBuildRoles.set(assetType, assetRole);
     return assetRole;
   }
+
 }
 
 function dockerUsageFromCodeBuild(cbt: CodeBuildProjectType): DockerCredentialUsage | undefined {

@@ -170,6 +170,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       circuitBreaker: props.circuitBreaker,
       vpcSubnets: props.taskSubnets,
       enableExecuteCommand: props.enableExecuteCommand,
+      capacityProviderStrategies: props.capacityProviderStrategies,
     });
     this.addServiceAsTarget(this.service);
   }

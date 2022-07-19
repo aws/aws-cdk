@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-route53-targets/test/integ.api-gateway-domain-name": {
+    "integ.api-gateway-domain-name": {
       "stacks": [
         "aws-cdk-apigw-alias-integ"
       ],
