@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { IAlias, IFunction, IVersion } from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -120,7 +121,7 @@ export class LambdaInvoke extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: this.props.lambdaFunction.resourceArnsForGrantInvoke,
+        resources: this.determineResourceArnsForGrantInvoke(props.lambdaFunction),
         actions: ['lambda:InvokeFunction'],
       }),
     ];
@@ -161,6 +162,35 @@ export class LambdaInvoke extends sfn.TaskStateBase {
       };
     }
   }
+
+  /**
+   * Determine the ARN(s) to put into the resource field of the generated
+   * IAM policy based on the type of the provided lambda function.
+   *
+   * When invoking Lambda Versions, we need to grant permissions to all
+   * qualifiers. Otherwise in-flight StepFunction executions will fail with
+   * due to missing permissions. This is because a change of the referenced
+   * Version will cause the Policy to remove permissions for the previous
+   * Version - which is currently in-flight.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/17515
+   */
+  private determineResourceArnsForGrantInvoke(lambdaFunction: IFunction): string[] {
+    if (isVersion(lambdaFunction)) {
+      return lambdaFunction.lambda.resourceArnsForGrantInvoke;
+    }
+
+    return lambdaFunction.resourceArnsForGrantInvoke;
+  }
+}
+
+/**
+ * Type guard to determine if a given `IFunction` implements IVersion
+ */
+function isVersion(lambdaFunction: IFunction | IAlias | IVersion): lambdaFunction is IVersion {
+  return !(lambdaFunction as IAlias).aliasName
+      && (lambdaFunction as IVersion).lambda
+      && Boolean((lambdaFunction as IVersion).version);
 }
 
 /**
