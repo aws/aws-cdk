@@ -207,10 +207,10 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-ecs-integ/FirstCapacityProvier/FirstCapacityProvier": [
+        "/aws-ecs-integ/FirstCapacityProvider/FirstCapacityProvider": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstCapacityProvierD92F5AC4"
+            "data": "FirstCapacityProvider4F40D887"
           }
         ],
         "/aws-ecs-integ/SecondAutoScalingGroup/InstanceSecurityGroup/Resource": [
@@ -249,10 +249,10 @@
             "data": "SecondAutoScalingGroupASG6483DDB2"
           }
         ],
-        "/aws-ecs-integ/SecondCapacityProvier/SecondCapacityProvier": [
+        "/aws-ecs-integ/SecondCapacityProvider/SecondCapacityProvider": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondCapacityProvierADE5DA56"
+            "data": "SecondCapacityProvider85378C3E"
           }
         ],
         "/aws-ecs-integ/myService/LB/Resource": [
@@ -326,9 +326,36 @@
             "type": "aws:cdk:logicalId",
             "data": "myServiceB0B6FAA0"
           }
+        ],
+        "FirstCapacityProvierD92F5AC4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstCapacityProvierD92F5AC4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SecondCapacityProvierADE5DA56": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondCapacityProvierADE5DA56",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-ecs-integ"
+    },
+    "specialListenerEc2TestDefaultTestDeployAssert872505C2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "specialListenerEc2TestDefaultTestDeployAssert872505C2.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "specialListenerEc2Test/DefaultTest/DeployAssert"
     }
   }
 }

@@ -391,10 +391,10 @@
    "Properties": {
     "CapacityProviders": [
      {
-      "Ref": "FirstCapacityProvierD92F5AC4"
+      "Ref": "FirstCapacityProvider4F40D887"
      },
      {
-      "Ref": "SecondCapacityProvierADE5DA56"
+      "Ref": "SecondCapacityProvider85378C3E"
      }
     ],
     "Cluster": {
@@ -595,7 +595,7 @@
     }
    }
   },
-  "FirstCapacityProvierD92F5AC4": {
+  "FirstCapacityProvider4F40D887": {
    "Type": "AWS::ECS::CapacityProvider",
    "Properties": {
     "AutoScalingGroupProvider": {
@@ -803,7 +803,7 @@
     }
    }
   },
-  "SecondCapacityProvierADE5DA56": {
+  "SecondCapacityProvider85378C3E": {
    "Type": "AWS::ECS::CapacityProvider",
    "Properties": {
     "AutoScalingGroupProvider": {
@@ -1038,14 +1038,14 @@
      {
       "Base": 1,
       "CapacityProvider": {
-       "Ref": "FirstCapacityProvierD92F5AC4"
+       "Ref": "FirstCapacityProvider4F40D887"
       },
       "Weight": 1
      },
      {
       "Base": 0,
       "CapacityProvider": {
-       "Ref": "SecondCapacityProvierADE5DA56"
+       "Ref": "SecondCapacityProvider85378C3E"
       },
       "Weight": 2
      }

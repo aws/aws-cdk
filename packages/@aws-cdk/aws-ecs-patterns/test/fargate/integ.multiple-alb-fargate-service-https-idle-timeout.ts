@@ -6,7 +6,6 @@ import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 
-
 import { ApplicationMultipleTargetGroupsFargateService } from '../../lib';
 
 const app = new App();

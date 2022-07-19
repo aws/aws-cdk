@@ -2,6 +2,7 @@ import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { InstanceType, Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 
 import { NetworkLoadBalancedEc2Service } from '../../lib';
 
@@ -47,6 +48,10 @@ new NetworkLoadBalancedEc2Service(stack, 'myService', {
       weight: 2,
     },
   ],
+});
+
+new integ.IntegTest(app, 'networkLbEcsTest', {
+  testCases: [stack],
 });
 
 app.synth();

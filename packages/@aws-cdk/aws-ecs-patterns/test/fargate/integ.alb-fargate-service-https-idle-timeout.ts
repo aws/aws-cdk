@@ -5,7 +5,6 @@ import * as route53 from '@aws-cdk/aws-route53';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 
-
 import { ApplicationLoadBalancedFargateService } from '../../lib';
 
 const app = new App();

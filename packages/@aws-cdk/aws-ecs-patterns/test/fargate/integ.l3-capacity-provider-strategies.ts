@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as ecsPatterns from '../../lib';
 
 const app = new cdk.App();
@@ -11,7 +12,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 cluster.enableFargateCapacityProviders();
 
-// Create ALB service with capacity provider storategies
+// Create ALB service with capacity provider strategies
 new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'ALBFargateService', {
   cluster,
   memoryLimitMiB: 1024,
@@ -33,7 +34,7 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'ALBFargateService'
   ],
 });
 
-// Create NLB service with capacity provider storategies
+// Create NLB service with capacity provider strategies
 new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
   cluster,
   memoryLimitMiB: 1024,
@@ -53,6 +54,10 @@ new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
       weight: 2,
     },
   ],
+});
+
+new integ.IntegTest(app, 'NetworkLoadBalancedFargateTest', {
+  testCases: [stack],
 });
 
 app.synth();
