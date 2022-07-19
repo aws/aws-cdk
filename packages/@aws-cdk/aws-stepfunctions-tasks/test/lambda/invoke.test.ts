@@ -1,3 +1,4 @@
+import { Match, Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -390,5 +391,91 @@ describe('LambdaInvoke', () => {
         integrationPattern: sfn.IntegrationPattern.RUN_JOB,
       });
     }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,WAIT_FOR_TASK_TOKEN. Received: RUN_JOB/);
+  });
+
+  describe('TaskPolicy Resources', () => {
+
+    test('invoke a Function', () => {
+      // WHEN
+      const task = new LambdaInvoke(stack, 'Task', {
+        lambdaFunction,
+      });
+      new sfn.StateMachine(stack, 'SM', {
+        definition: task,
+      });
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Alias', 0);
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Version', 0);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: Match.objectLike({
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: [Match.anyValue(), Match.anyValue()],
+            },
+          ],
+        }),
+      });
+    });
+
+    test('invoke an Alias', () => {
+      // WHEN
+      const alias = lambdaFunction.addAlias('test');
+      const task = new LambdaInvoke(stack, 'Task', {
+        lambdaFunction: alias,
+      });
+      new sfn.StateMachine(stack, 'SM', {
+        definition: task,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
+        Name: 'test',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: Match.objectLike({
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: {
+                Ref: Match.anyValue(),
+              },
+            },
+          ],
+        }),
+      });
+    });
+
+    test('invoke a Version', () => {
+      // WHEN
+      const version = lambdaFunction.currentVersion;
+      const task = new LambdaInvoke(stack, 'Task', {
+        lambdaFunction: version,
+      });
+      new sfn.StateMachine(stack, 'SM', {
+        definition: task,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: Match.objectLike({
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: [Match.anyValue(), Match.anyValue()],
+            },
+          ],
+        }),
+      });
+    });
   });
 });
