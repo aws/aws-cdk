@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "StepFunctionsInvokeLambdaQualifiersTest/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-tasks-lambda-invoke-integ"
+      ],
+      "assertionStack": "StepFunctionsInvokeLambdaQualifiersTestDefaultTestDeployAssert57F7A2BF"
+    }
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-stepfunctions-tasks-lambda-invoke-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-tasks-lambda-invoke-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/submitJobLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "submitJobLambdaServiceRole4D897ABD"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/submitJobLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "submitJobLambdaEFB00F3C"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/submitJobLambda/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "submitJobLambdaCurrentVersionC751A4B121e776736cfe6b8b23a046fa837cb34d"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/checkJobStateLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "checkJobStateLambdaServiceRoleB8B57B65"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/checkJobStateLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "checkJobStateLambda4618B7B7"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/checkJobStateLambda/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "checkJobStateLambdaCurrentVersion7E54C1E7faaca3d64de2b71130611d5d83972ae1"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/checkJobStateLambda/AliasIntegTest/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "checkJobStateLambdaAliasIntegTestF2DEAA78"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/stateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stateMachineArn"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-tasks-lambda-invoke-integ"
+    },
+    "StepFunctionsInvokeLambdaQualifiersTestDefaultTestDeployAssert57F7A2BF": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "StepFunctionsInvokeLambdaQualifiersTestDefaultTestDeployAssert57F7A2BF.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "StepFunctionsInvokeLambdaQualifiersTest/DefaultTest/DeployAssert"
+    }
+  }
+}
