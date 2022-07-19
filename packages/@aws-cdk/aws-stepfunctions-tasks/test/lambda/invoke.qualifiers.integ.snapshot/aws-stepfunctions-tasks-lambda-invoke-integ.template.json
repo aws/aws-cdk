@@ -166,10 +166,27 @@
        "Effect": "Allow",
        "Resource": [
         {
-         "Ref": "checkJobStateLambdaAliasIntegTestF2DEAA78"
+         "Fn::GetAtt": [
+          "submitJobLambdaEFB00F3C",
+          "Arn"
+         ]
         },
         {
-         "Ref": "submitJobLambdaCurrentVersionC751A4B121e776736cfe6b8b23a046fa837cb34d"
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "submitJobLambdaEFB00F3C",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Ref": "checkJobStateLambdaAliasIntegTestF2DEAA78"
         }
        ]
       }

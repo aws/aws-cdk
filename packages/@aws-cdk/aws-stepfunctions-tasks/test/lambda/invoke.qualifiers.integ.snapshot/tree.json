@@ -129,7 +129,7 @@
             "id": "Invoke Handler",
             "path": "aws-stepfunctions-tasks-lambda-invoke-integ/Invoke Handler",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.LambdaInvoke",
+              "fqn": "@aws-cdk/aws-stepfunctions.TaskStateBase",
               "version": "0.0.0"
             }
           },
@@ -287,7 +287,7 @@
             "id": "Check the job state",
             "path": "aws-stepfunctions-tasks-lambda-invoke-integ/Check the job state",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.LambdaInvoke",
+              "fqn": "@aws-cdk/aws-stepfunctions.TaskStateBase",
               "version": "0.0.0"
             }
           },
@@ -373,10 +373,27 @@
                                   "Effect": "Allow",
                                   "Resource": [
                                     {
-                                      "Ref": "checkJobStateLambdaAliasIntegTestF2DEAA78"
+                                      "Fn::GetAtt": [
+                                        "submitJobLambdaEFB00F3C",
+                                        "Arn"
+                                      ]
                                     },
                                     {
-                                      "Ref": "submitJobLambdaCurrentVersionC751A4B121e776736cfe6b8b23a046fa837cb34d"
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "submitJobLambdaEFB00F3C",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Ref": "checkJobStateLambdaAliasIntegTestF2DEAA78"
                                     }
                                   ]
                                 }
