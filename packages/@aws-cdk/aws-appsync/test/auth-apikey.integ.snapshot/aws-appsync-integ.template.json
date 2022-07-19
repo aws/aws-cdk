@@ -27,8 +27,7 @@
       "ApiF70053CD",
       "ApiId"
      ]
-    },
-    "Expires": 1689711694
+    }
    },
    "DependsOn": [
     "ApiSchema510EECD7"
