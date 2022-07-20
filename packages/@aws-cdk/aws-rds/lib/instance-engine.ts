@@ -1692,12 +1692,28 @@ export class DatabaseInstanceEngine {
   public static readonly ORACLE_EE: IInstanceEngine = new OracleEeInstanceEngine();
 
   /**
+   * The unversioned 'oracle-ee-cdb' instance engine.
+   *
+   * NOTE: using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link oracleEeCdb()} method
+   */
+  public static readonly ORACLE_EE_CDB: IInstanceEngine = new OracleEeCdbInstanceEngine();
+
+  /**
    * The unversioned 'oracle-se2' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link oracleSe2()} method
    */
   public static readonly ORACLE_SE2: IInstanceEngine = new OracleSe2InstanceEngine();
+
+  /**
+   * The unversioned 'oracle-se2-cdb' instance engine.
+   *
+   * NOTE: using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link oracleSe2Cdb()} method
+   */
+  public static readonly ORACLE_SE2_CDB: IInstanceEngine = new OracleSe2CdbInstanceEngine();
 
   /**
    * The unversioned 'oracle-se1' instance engine.
