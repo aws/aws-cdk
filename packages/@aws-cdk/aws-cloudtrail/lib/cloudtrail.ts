@@ -1,3 +1,4 @@
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -311,7 +312,7 @@ export class Trail extends Resource {
    * When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.
    * Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.
    *
-   * This method adds an Event Selector for filtering events that match either S3 or Lambda function operations.
+   * This method adds an Event Selector for filtering events that match S3, Lambda function, or DynamoDB operations.
    *
    * Data events: These events provide insight into the resource operations performed on or within a resource.
    * These are also known as data plane operations.
@@ -391,6 +392,33 @@ export class Trail extends Resource {
    */
   public logAllS3DataEvents(options: AddEventSelectorOptions = {}) {
     return this.addEventSelector(DataResourceType.S3_OBJECT, [`arn:${this.stack.partition}:s3:::`], options);
+  }
+
+  /**
+   * When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.
+   * Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.
+   *
+   * This method adds a DynamoDB Data Event Selector for filtering events that match DynamoDB Table operations.
+   *
+   * Data events: These events provide insight into the resource operations performed on or within a resource.
+   * These are also known as data plane operations.
+   *
+   * @param tables the list of DynamoDB tables whose data events should be logged (maximum 250 entries).
+   * @param options the options to configure logging of management and data events.
+   */
+  public addDynamoDBEventSelector(tables: dynamodb.ITable[], options: AddEventSelectorOptions = {}) {
+    if (tables.length === 0) { return; }
+    const dataResourceValues = tables.map((t) => t.tableArn);
+    return this.addEventSelector(DataResourceType.DYNAMODB_TABLE, dataResourceValues, options);
+  }
+
+  /**
+   * Log all DynamoDB data events for all objects for all buckets in the account.
+   * @see https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html
+   * @default false
+   */
+  public logAllDynamoDBDataEvents(options: AddEventSelectorOptions = {}) {
+    return this.addEventSelector(DataResourceType.DYNAMODB_TABLE, [`arn:${this.stack.partition}:dynamodb`], options);
   }
 
   /**
@@ -476,6 +504,11 @@ export enum DataResourceType {
    * Data resource type for S3 objects
    */
   S3_OBJECT = 'AWS::S3::Object',
+
+  /**
+   * Data resource type for DynamoDB tables
+   */
+  DYNAMODB_TABLE = 'AWS::DynamoDB::Table',
 }
 
 interface EventSelector {

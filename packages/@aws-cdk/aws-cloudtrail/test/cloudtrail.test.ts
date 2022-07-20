@@ -1,4 +1,5 @@
 import { Match, Template } from '@aws-cdk/assertions';
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -615,6 +616,63 @@ describe('cloudtrail', () => {
                           Ref: 'AWS::Partition',
                         },
                         ':lambda',
+                      ],
+                    ],
+                  },
+                ],
+              }],
+            },
+          ],
+        });
+      });
+
+      test('for DynamoDB table data event', () => {
+        const stack = getTestStack();
+        const table = new dynamodb.Table(stack, 'Table', {
+          partitionKey: {
+            name: 'id',
+            type: dynamodb.AttributeType.STRING,
+          },
+        });
+
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
+        cloudTrail.addDynamoDBEventSelector([table]);
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              DataResources: [{
+                Type: 'AWS::DynamoDB::Table',
+                Values: [{
+                  'Fn::GetAtt': ['TableCD117FA1', 'Arn'],
+                }],
+              }],
+            },
+          ],
+        });
+      });
+
+      test('for all DynamoDB table data events', () => {
+        const stack = getTestStack();
+
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
+        cloudTrail.logAllDynamoDBDataEvents();
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              DataResources: [{
+                Type: 'AWS::DynamoDB::Table',
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':dynamodb',
                       ],
                     ],
                   },

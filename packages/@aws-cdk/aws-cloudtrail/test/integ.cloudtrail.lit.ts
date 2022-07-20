@@ -1,3 +1,4 @@
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
@@ -17,11 +18,15 @@ const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
   handler: 'hello.handler',
   code: lambda.Code.fromInline('exports.handler = {}'),
 });
+const table = new dynamodb.Table(stack, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+});
 
 const trail = new cloudtrail.Trail(stack, 'Trail', {
   snsTopic: topic,
 });
 trail.addLambdaEventSelector([lambdaFunction]);
 trail.addS3EventSelector([{ bucket }]);
+trail.addDynamoDBEventSelector([table]);
 
 app.synth();
