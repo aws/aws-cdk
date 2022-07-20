@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, IDependable } from 'constructs';
 import { SubscriptionOptions } from './subscription';
 import { ITopic } from './topic-base';
 
@@ -24,6 +24,15 @@ export interface TopicSubscriptionConfig extends SubscriptionOptions {
    * subscribing to.
    */
   readonly subscriberId: string;
+
+  /**
+   * The resources that need to be created before the subscription can be safely created.
+   * For example for SQS subscription, the subscription needs to have a dependency on the SQS queue policy
+   * in order for the subscription to successfully deliver messages.
+   *
+   * @default - empty list
+   */
+  readonly subscriptionDependencies?: IDependable[];
 }
 
 /**

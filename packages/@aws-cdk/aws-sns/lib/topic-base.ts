@@ -80,8 +80,8 @@ export abstract class TopicBase extends Resource implements ITopic {
   /**
    * Subscribe some endpoint to this topic
    */
-  public addSubscription(subscription: ITopicSubscription): Subscription {
-    const subscriptionConfig = subscription.bind(this);
+  public addSubscription(topicSubscription: ITopicSubscription): Subscription {
+    const subscriptionConfig = topicSubscription.bind(this);
 
     const scope = subscriptionConfig.subscriberScope || this;
     let id = subscriptionConfig.subscriberId;
@@ -95,10 +95,17 @@ export abstract class TopicBase extends Resource implements ITopic {
       throw new Error(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`);
     }
 
-    return new Subscription(scope, id, {
+    const subscription = new Subscription(scope, id, {
       topic: this,
       ...subscriptionConfig,
     });
+
+    // Add dependencies for the subscription
+    subscriptionConfig.subscriptionDependencies?.forEach(subscriptionDependency => {
+      subscription.node.addDependency(subscriptionDependency);
+    });
+  
+    return subscription;
   }
 
   /**

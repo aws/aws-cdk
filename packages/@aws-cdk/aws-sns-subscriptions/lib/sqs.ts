@@ -3,7 +3,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { ArnFormat, FeatureFlags, Names, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { Construct, IDependable } from 'constructs';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -40,14 +40,20 @@ export class SqsSubscription implements sns.ITopicSubscription {
 
     // add a statement to the queue resource policy which allows this topic
     // to send messages to the queue.
-    this.queue.addToResourcePolicy(new iam.PolicyStatement({
+    const queuePolicyDependable = this.queue.addToResourcePolicy(new iam.PolicyStatement({
       resources: [this.queue.queueArn],
       actions: ['sqs:SendMessage'],
       principals: [snsServicePrincipal],
       conditions: {
         ArnEquals: { 'aws:SourceArn': topic.topicArn },
       },
-    }));
+    })).policyDependable;
+
+    // Add the subscription policy as a dependency for the subscription
+    const subscriptionDependencies: IDependable[] = [];
+    if (queuePolicyDependable) {
+      subscriptionDependencies.push(queuePolicyDependable);
+    }
 
     // if the queue is encrypted, add a statement to the key resource policy
     // which allows this topic to decrypt KMS keys
@@ -77,6 +83,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
       filterPolicy: this.props.filterPolicy,
       region: this.regionFromArn(topic),
       deadLetterQueue: this.props.deadLetterQueue,
+      subscriptionDependencies,
     };
   }
 

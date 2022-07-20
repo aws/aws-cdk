@@ -53,6 +53,7 @@
     },
     "MyQueueawscdksnssqsMyTopic9361DEA223429051": {
       "Type": "AWS::SNS::Subscription",
+      "DependsOn" : "MyQueuePolicy6BBEDDAC",
       "Properties": {
         "Protocol": "sqs",
         "TopicArn": {
