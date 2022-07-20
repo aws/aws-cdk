@@ -82,7 +82,7 @@
     "constructs": "^10.0.0",
     "make-runnable": "^1.3.10",
     "mockery": "^2.1.0",
-    "nock": "^13.2.8",
+    "nock": "^13.2.9",
     "@aws-cdk/pkglint": "0.0.0",
     "sinon": "^9.2.4",
     "ts-jest": "^27.1.5",

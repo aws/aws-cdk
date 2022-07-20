@@ -64,7 +64,7 @@ export interface ClusterProps {
   /**
    * If true CloudWatch Container Insights will be enabled for the cluster
    *
-   * @default - Container Insights will be disabled for this cluser.
+   * @default - Container Insights will be disabled for this cluster.
    */
   readonly containerInsights?: boolean;
 
