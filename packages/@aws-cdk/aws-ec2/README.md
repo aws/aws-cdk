@@ -529,11 +529,14 @@ the connection specifier:
 ec2.Port.tcp(80)
 ec2.Port.tcpRange(60000, 65535)
 ec2.Port.allTcp()
+ec2.Port.allIcmp()
+ec2.Port.allIcmpV6()
 ec2.Port.allTraffic()
 ```
 
-> NOTE: This set is not complete yet; for example, there is no library support for ICMP at the moment.
-> However, you can write your own classes to implement those.
+> NOTE: Not all protocols have corresponding helper methods. In the absence of a helper method,
+> you can instantiate `Port` yourself with your own settings. You are also welcome to contribute
+> new helper methods.
 
 ### Default Ports
 
