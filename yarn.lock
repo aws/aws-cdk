@@ -2639,9 +2639,9 @@ aws-sdk-mock@5.6.0:
     traverse "^0.6.6"
 
 aws-sdk@^2.1093.0, aws-sdk@^2.596.0, aws-sdk@^2.848.0, aws-sdk@^2.928.0:
-  version "2.1177.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1177.0.tgz#b6f377df30d0ef5d9f7b464b0b57baa26d0baaf3"
-  integrity sha512-0Ui7hBofMom6F9N4em357NzsUt0pXDLuuUS1Ojf7Vu7S/LjVjB5zwmY7L4H5wuf5KDOjSmNX8/zG6QfGGc5X/w==
+  version "2.1178.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1178.0.tgz#b0f4b67494e7009427cd7059a3d908d333633fdb"
+  integrity sha512-ZsFuVbTp9aakAIZ7lTJspuCzSw5VRIDF0bUmSZmE2tc/X/haTu/TrMeWgwPjyLkQtdhfjChCyI71V+ADqFkjsA==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -3042,10 +3042,10 @@ cdk8s-plus-21@^1.0.0-beta.186:
   dependencies:
     minimatch "^3.1.2"
 
-cdk8s@^1.6.59:
-  version "1.6.59"
-  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-1.6.59.tgz#08903198144768a2459623dcd5163fd513cda603"
-  integrity sha512-Ls425OUwYJq5QpQ/JWKW8Fyz/Y6GZGIMfCu750cCmklvvVXDMlAL8k8tcyWiQKGsfetGdppMpj0fh1j3yuUz4Q==
+cdk8s@^1.6.60:
+  version "1.6.60"
+  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-1.6.60.tgz#a430a23d6cb637dd999cdd79ce65818403e44787"
+  integrity sha512-nZFFFn2X8SM3OfBZc1grW42O/FA0Lvs31kZ9rqilXA1Co7IpZ260876ZA6Nkm5kZmgcKBiautIHtAubZvpK6sQ==
   dependencies:
     fast-json-patch "^3.1.1"
     follow-redirects "^1.15.1"
@@ -3389,9 +3389,9 @@ console-control-strings@^1.0.0, console-control-strings@^1.1.0, console-control-
   integrity sha512-ty/fTekppD2fIwRvnZAVdeOiGd1c7YXEixbgJTNzqcxJWKQnjJ/V1bNEEE6hygpM3WjwHFUVK6HTjWSzV4a8sQ==
 
 constructs@^3.3.69:
-  version "3.4.43"
-  resolved "https://registry.npmjs.org/constructs/-/constructs-3.4.43.tgz#85c1faf04c703652fb4f4776d501899842b4494d"
-  integrity sha512-ieNjy0VDXNbDNgmDNwmLcYoS8bESDbksMRMWVY3xHwbZUpVHdQKTYT4DKBSPbGq2ZgzEcmItrqpbpN1U0hRs2w==
+  version "3.4.44"
+  resolved "https://registry.npmjs.org/constructs/-/constructs-3.4.44.tgz#84e22c5170ef23b0481d341389efdfb7665c88e9"
+  integrity sha512-05UKLy9nINPY814yFU5I77v2Jz8rPOFLDLERvrTvy7SsjnITPwmlfF7MwMacv1iJ2QSGn0a7RHKGFlFaonP7SA==
 
 conventional-changelog-angular@^5.0.12:
   version "5.0.13"
@@ -4104,9 +4104,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.4.188:
-  version "1.4.194"
-  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.194.tgz#2f83fcec5067907044a3d502ac7c3efb1fe6430b"
-  integrity sha512-ola5UH0xAP1oYY0FFUsPvwtucEzCQHucXnT7PQ1zjHJMccZhCDktEugI++JUR3YuIs7Ff7afz+OVEhVAIMhLAQ==
+  version "1.4.195"
+  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.195.tgz#139b2d95a42a3f17df217589723a1deac71d1473"
+  integrity sha512-vefjEh0sk871xNmR5whJf9TEngX+KTKS3hOHpjoMpauKkwlGwtMz1H8IaIjAT/GNnX0TbGwAdmVoXCAzXf+PPg==
 
 emittery@^0.8.1:
   version "0.8.1"
@@ -7388,9 +7388,9 @@ make-error@1.x, make-error@^1.1.1:
   integrity sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==
 
 make-fetch-happen@^10.0.3, make-fetch-happen@^10.0.6:
-  version "10.1.8"
-  resolved "https://registry.npmjs.org/make-fetch-happen/-/make-fetch-happen-10.1.8.tgz#3b6e93dd8d8fdb76c0d7bf32e617f37c3108435a"
-  integrity sha512-0ASJbG12Au6+N5I84W+8FhGS6iM8MyzvZady+zaQAu+6IOaESFzCLLD0AR1sAFF3Jufi8bxm586ABN6hWd3k7g==
+  version "10.2.0"
+  resolved "https://registry.npmjs.org/make-fetch-happen/-/make-fetch-happen-10.2.0.tgz#0bde3914f2f82750b5d48c6d2294d2c74f985e5b"
+  integrity sha512-OnEfCLofQVJ5zgKwGk55GaqosqKjaR6khQlJY3dBAA+hM25Bc5CmX5rKUfVut+rYA3uidA7zb7AvcglU87rPRg==
   dependencies:
     agentkeepalive "^4.2.1"
     cacache "^16.1.0"
@@ -7880,10 +7880,10 @@ nise@^5.1.0:
     just-extend "^4.0.2"
     path-to-regexp "^1.7.0"
 
-nock@^13.2.8:
-  version "13.2.8"
-  resolved "https://registry.npmjs.org/nock/-/nock-13.2.8.tgz#e2043ccaa8e285508274575e090a7fe1e46b90f1"
-  integrity sha512-JT42FrXfQRpfyL4cnbBEJdf4nmBpVP0yoCcSBr+xkT8Q1y3pgtaCKHGAAOIFcEJ3O3t0QbVAmid0S0f2bj3Wpg==
+nock@^13.2.9:
+  version "13.2.9"
+  resolved "https://registry.npmjs.org/nock/-/nock-13.2.9.tgz#4faf6c28175d36044da4cfa68e33e5a15086ad4c"
+  integrity sha512-1+XfJNYF1cjGB+TKMWi29eZ0b82QOvQs2YoLNzbpWGqFMtRQHTa57osqdGj4FrFPgkO4D4AZinzUJR9VvW3QUA==
   dependencies:
     debug "^4.1.0"
     json-stringify-safe "^5.0.1"
@@ -8936,10 +8936,10 @@ progress@^2.0.0, progress@^2.0.3:
   resolved "https://registry.npmjs.org/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-projen@^0.59.1:
-  version "0.59.1"
-  resolved "https://registry.npmjs.org/projen/-/projen-0.59.1.tgz#f73267bf283d13710a0758f13e9ab9dfd1d09397"
-  integrity sha512-JlDMO+mgNvVg/4akbu+YvAQXh7wXy1eyPwGSaFmW12hEY+6oU6fBln9nc8cfqW1SKNPO2betLMDb6C0nPHfY/A==
+projen@^0.59.3:
+  version "0.59.3"
+  resolved "https://registry.npmjs.org/projen/-/projen-0.59.3.tgz#e449c13ecfaebde23fd16ee6cff007d8f8db349d"
+  integrity sha512-7gPJuva0tj/BYc8C9DUw4AGm4AzssKdO73I/+hbOOWNAlcvdS6AL82jDvmePrAnRgHREVRTkatCVzQGtParQvQ==
   dependencies:
     "@iarna/toml" "^2.2.5"
     case "^1.6.3"
