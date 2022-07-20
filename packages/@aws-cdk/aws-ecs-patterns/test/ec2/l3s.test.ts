@@ -499,6 +499,8 @@ test('test Fargate loadbalanced construct', () => {
   // WHEN
   new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
     cluster,
+    cpu: 1024,
+    memoryLimitMiB: 2048,
     taskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('test'),
       environment: {
