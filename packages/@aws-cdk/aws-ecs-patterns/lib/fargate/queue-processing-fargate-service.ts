@@ -121,7 +121,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     super(scope, id, props);
 
     const cpu = props.cpu || 256;
-    const memoryLimitMiB = props.memoryLimitMiB || 512
+    const memoryLimitMiB = props.memoryLimitMiB || 512;
 
     // Create a Task Definition for the container to start
     this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {

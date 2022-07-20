@@ -530,7 +530,7 @@ test('test Fargate loadbalanced construct', () => {
             Value: 'test environment variable 2 value',
           },
         ],
-        Image: "test",
+        Image: 'test',
         LogConfiguration: {
           LogDriver: 'awslogs',
           Options: {

@@ -112,7 +112,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     } else if (props.scheduledFargateTaskImageOptions) {
       const taskImageOptions = props.scheduledFargateTaskImageOptions;
       const cpu = taskImageOptions.cpu || 256;
-      const memoryLimitMiB = taskImageOptions.memoryLimitMiB || 512
+      const memoryLimitMiB = taskImageOptions.memoryLimitMiB || 512;
 
       this.taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
         memoryLimitMiB,
