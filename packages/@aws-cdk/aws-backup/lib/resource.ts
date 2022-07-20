@@ -5,10 +5,6 @@ import * as rds from '@aws-cdk/aws-rds';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * An operation that is applied to a key-value pair
  */
@@ -103,6 +99,21 @@ export class BackupResource {
   }
 
   /**
+   * A RDS database cluter
+   */
+  public static fromRdsDatabaseCluster(cluster: rds.IDatabaseCluster) {
+    const stack = Stack.of(cluster);
+    return BackupResource.fromArn(`arn:${stack.partition}:rds:${stack.region}:${stack.account}:cluster:${cluster.clusterIdentifier}`);
+  }
+
+  /**
+   * An Aurora database instance
+   */
+  public static fromRdsServerlessCluster(cluster: rds.IServerlessCluster) {
+    return BackupResource.fromArn(cluster.clusterArn);
+  }
+
+  /**
    * A list of ARNs or match patterns such as
    * `arn:aws:ec2:us-east-1:123456789012:volume/*`
    */
@@ -134,11 +145,11 @@ export class BackupResource {
   /**
    * A construct
    */
-  public readonly construct?: CoreConstruct;
+  public readonly construct?: Construct;
 
   constructor(resource?: string, tagCondition?: TagCondition, construct?: Construct) {
     this.resource = resource;
     this.tagCondition = tagCondition;
-    this.construct = construct as CoreConstruct;
+    this.construct = construct;
   }
 }

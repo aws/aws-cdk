@@ -8,6 +8,7 @@ import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, NetworkLoadBalancer, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
@@ -71,9 +72,9 @@ test('test ECS loadbalanced construct', () => {
   });
 });
 
-test('ApplicationLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', () => {
+testLegacyBehavior('ApplicationLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -100,9 +101,9 @@ test('ApplicationLoadBalancedEc2Service desiredCount can be undefined when featu
   });
 });
 
-test('ApplicationLoadBalancedFargateService desiredCount can be undefined when feature flag is set', () => {
+testLegacyBehavior('ApplicationLoadBalancedFargateService desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -121,9 +122,127 @@ test('ApplicationLoadBalancedFargateService desiredCount can be undefined when f
   });
 });
 
-test('NetworkLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', () => {
+test('ApplicationLoadBalancedEc2Service multiple capacity provider strategies are set', () => {
   // GIVEN
   const stack = new cdk.Stack();
+
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider2', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup2', {
+      vpc,
+      instanceType: new ec2.InstanceType('t3.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  // WHEN
+  new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 1024,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
+    capacityProviderStrategies: [
+      {
+        capacityProvider: 'AutoScalingGroupProvider1',
+        base: 1,
+        weight: 1,
+      },
+      {
+        capacityProvider: 'AutoScalingGroupProvider2',
+        base: 0,
+        weight: 2,
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    CapacityProviderStrategy: Match.arrayEquals([
+      {
+        Base: 1,
+        CapacityProvider: 'AutoScalingGroupProvider1',
+        Weight: 1,
+      },
+      {
+        Base: 0,
+        CapacityProvider: 'AutoScalingGroupProvider2',
+        Weight: 2,
+      },
+    ]),
+  });
+});
+
+test('NetworkLoadBalancedEc2Service multiple capacity provider strategies are set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider2', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup2', {
+      vpc,
+      instanceType: new ec2.InstanceType('t3.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  // WHEN
+  new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 1024,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
+    capacityProviderStrategies: [
+      {
+        capacityProvider: 'AutoScalingGroupProvider1',
+        base: 1,
+        weight: 1,
+      },
+      {
+        capacityProvider: 'AutoScalingGroupProvider2',
+        base: 0,
+        weight: 2,
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    CapacityProviderStrategy: Match.arrayEquals([
+      {
+        Base: 1,
+        CapacityProvider: 'AutoScalingGroupProvider1',
+        Weight: 1,
+      },
+      {
+        Base: 0,
+        CapacityProvider: 'AutoScalingGroupProvider2',
+        Weight: 2,
+      },
+    ]),
+  });
+});
+
+testLegacyBehavior('NetworkLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
+  // GIVEN
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -150,9 +269,9 @@ test('NetworkLoadBalancedEc2Service desiredCount can be undefined when feature f
   });
 });
 
-test('NetworkLoadBalancedFargateService desiredCount can be undefined when feature flag is set', () => {
+testLegacyBehavior('NetworkLoadBalancedFargateService desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -514,7 +633,6 @@ test('test Fargate loadbalanced construct with TLS', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'FARGATE',
   });
 
@@ -576,7 +694,6 @@ test('test Fargateloadbalanced construct with TLS and default certificate', () =
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'FARGATE',
   });
 

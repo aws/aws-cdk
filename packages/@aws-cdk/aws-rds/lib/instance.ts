@@ -715,6 +715,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     }
 
     const maybeLowercasedInstanceId = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
+    && !Token.isUnresolved(props.instanceIdentifier)
       ? props.instanceIdentifier?.toLowerCase()
       : props.instanceIdentifier;
 
@@ -812,7 +813,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   readonly timezone?: string;
 
   /**
-   * The allocated storage size, specified in gigabytes (GB).
+   * The allocated storage size, specified in gibibytes (GiB).
    *
    * @default 100
    */

@@ -65,7 +65,7 @@ export interface LogOptions {
   /**
    * Determines whether execution data is included in your log.
    *
-   * @default true
+   * @default false
    */
   readonly includeExecutionData?: boolean;
 
@@ -145,6 +145,19 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     return new Import(scope, id, {
       environmentFromArn: stateMachineArn,
     });
+  }
+
+  /**
+   * Import a state machine via resource name
+   */
+  public static fromStateMachineName(scope: Construct, id: string, stateMachineName: string): IStateMachine {
+    const stateMachineArn = Stack.of(scope).formatArn({
+      service: 'states',
+      resource: 'stateMachine',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: stateMachineName,
+    });
+    return this.fromStateMachineArn(scope, id, stateMachineArn);
   }
 
   public abstract readonly stateMachineArn: string;

@@ -35,6 +35,7 @@ describe('external task definition', () => {
           ),
         }),
         family: 'ecs-tasks',
+        networkMode: ecs.NetworkMode.HOST,
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
@@ -49,7 +50,7 @@ describe('external task definition', () => {
           ],
         },
         Family: 'ecs-tasks',
-        NetworkMode: ecs.NetworkMode.BRIDGE,
+        NetworkMode: 'host',
         RequiresCompatibilities: [
           'EXTERNAL',
         ],
@@ -60,6 +61,18 @@ describe('external task definition', () => {
           ],
         },
       });
+    });
+
+    test('error when an invalid networkmode is set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // THEN
+      expect(() => {
+        new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef', {
+          networkMode: ecs.NetworkMode.AWS_VPC,
+        });
+      }).toThrow('External tasks can only have Bridge, Host or None network mode, got: awsvpc');
     });
 
     test('correctly sets containers', () => {
@@ -218,35 +231,9 @@ describe('external task definition', () => {
                     },
                     ':s3:::',
                     {
-                      Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                      'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
                     },
-                    '/',
-                    {
-                      'Fn::Select': [
-                        0,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                    {
-                      'Fn::Select': [
-                        1,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
+                    '/872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d.env',
                   ],
                 ],
               },

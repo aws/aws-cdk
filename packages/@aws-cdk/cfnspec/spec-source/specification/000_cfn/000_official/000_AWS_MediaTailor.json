@@ -1,5 +1,5 @@
 {
-  "$version": "66.1.0",
+  "$version": "81.0.0",
   "PropertyTypes": {
     "AWS::MediaTailor::PlaybackConfiguration.AdMarkerPassthrough": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediatailor-playbackconfiguration-admarkerpassthrough.html",
@@ -63,17 +63,34 @@
         }
       }
     },
-    "AWS::MediaTailor::PlaybackConfiguration.DashConfigurationForPut": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediatailor-playbackconfiguration-dashconfigurationforput.html",
+    "AWS::MediaTailor::PlaybackConfiguration.DashConfiguration": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediatailor-playbackconfiguration-dashconfiguration.html",
       "Properties": {
+        "ManifestEndpointPrefix": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediatailor-playbackconfiguration-dashconfiguration.html#cfn-mediatailor-playbackconfiguration-dashconfiguration-manifestendpointprefix",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "MpdLocation": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediatailor-playbackconfiguration-dashconfigurationforput.html#cfn-mediatailor-playbackconfiguration-dashconfigurationforput-mpdlocation",
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediatailor-playbackconfiguration-dashconfiguration.html#cfn-mediatailor-playbackconfiguration-dashconfiguration-mpdlocation",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
         },
         "OriginManifestType": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediatailor-playbackconfiguration-dashconfigurationforput.html#cfn-mediatailor-playbackconfiguration-dashconfigurationforput-originmanifesttype",
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediatailor-playbackconfiguration-dashconfiguration.html#cfn-mediatailor-playbackconfiguration-dashconfiguration-originmanifesttype",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::MediaTailor::PlaybackConfiguration.HlsConfiguration": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediatailor-playbackconfiguration-hlsconfiguration.html",
+      "Properties": {
+        "ManifestEndpointPrefix": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediatailor-playbackconfiguration-hlsconfiguration.html#cfn-mediatailor-playbackconfiguration-hlsconfiguration-manifestendpointprefix",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -111,6 +128,23 @@
   },
   "ResourceTypes": {
     "AWS::MediaTailor::PlaybackConfiguration": {
+      "Attributes": {
+        "DashConfiguration.ManifestEndpointPrefix": {
+          "PrimitiveType": "String"
+        },
+        "HlsConfiguration.ManifestEndpointPrefix": {
+          "PrimitiveType": "String"
+        },
+        "PlaybackConfigurationArn": {
+          "PrimitiveType": "String"
+        },
+        "PlaybackEndpointPrefix": {
+          "PrimitiveType": "String"
+        },
+        "SessionInitializationEndpointPrefix": {
+          "PrimitiveType": "String"
+        }
+      },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediatailor-playbackconfiguration.html",
       "Properties": {
         "AdDecisionServerUrl": {
@@ -147,7 +181,7 @@
         "DashConfiguration": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediatailor-playbackconfiguration.html#cfn-mediatailor-playbackconfiguration-dashconfiguration",
           "Required": false,
-          "Type": "DashConfigurationForPut",
+          "Type": "DashConfiguration",
           "UpdateType": "Mutable"
         },
         "LivePreRollConfiguration": {
@@ -171,12 +205,6 @@
         "PersonalizationThresholdSeconds": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediatailor-playbackconfiguration.html#cfn-mediatailor-playbackconfiguration-personalizationthresholdseconds",
           "PrimitiveType": "Integer",
-          "Required": false,
-          "UpdateType": "Mutable"
-        },
-        "SessionInitializationEndpointPrefix": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediatailor-playbackconfiguration.html#cfn-mediatailor-playbackconfiguration-sessioninitializationendpointprefix",
-          "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
         },

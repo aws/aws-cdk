@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration, Token, ContextProvider, Arn, ArnFormat } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct, Construct } from 'constructs';
+import { Construct } from 'constructs';
 import { Alias } from './alias';
 import { KeyLookupOptions } from './key-lookup';
 import { CfnKey } from './kms.generated';
@@ -94,6 +94,12 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private readonly aliases: Alias[] = [];
 
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    this.node.addValidation({ validate: () => this.policy?.validateForResourcePolicy() ?? [] });
+  }
+
   /**
    * Defines a new alias for the key.
    */
@@ -123,12 +129,6 @@ abstract class KeyBase extends Resource implements IKey {
 
     this.policy.addStatements(statement);
     return { statementAdded: true, policyDependable: this.policy };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**
@@ -208,26 +208,18 @@ abstract class KeyBase extends Resource implements IKey {
     }
     // this logic should only apply to newly created
     // (= not imported) resources
-    if (!this.principalIsANewlyCreatedResource(grantPrincipal)) {
+    if (!Resource.isOwnedResource(grantPrincipal)) {
       return undefined;
     }
-    // return undefined;
     const keyStack = Stack.of(this);
     const granteeStack = Stack.of(grantPrincipal);
     if (keyStack === granteeStack) {
       return undefined;
     }
+
     return granteeStack.dependencies.includes(keyStack)
       ? granteeStack.account
       : undefined;
-  }
-
-  private principalIsANewlyCreatedResource(principal: IConstruct): boolean {
-    // yes, this sucks
-    // this is just a temporary stopgap to stem the bleeding while we work on a proper fix
-    return principal instanceof iam.Role ||
-      principal instanceof iam.User ||
-      principal instanceof iam.Group;
   }
 
   private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {

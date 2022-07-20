@@ -104,7 +104,12 @@
       "ImageRepositoryType": "ECR"
      }
     },
-    "InstanceConfiguration": {}
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    }
    }
   },
   "Service2AccessRole759CA73D": {
@@ -211,7 +216,12 @@
       "ImageRepositoryType": "ECR"
      }
     },
-    "InstanceConfiguration": {}
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    }
    }
   }
  },
