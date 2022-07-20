@@ -104,7 +104,7 @@ export abstract class TopicBase extends Resource implements ITopic {
     subscriptionConfig.subscriptionDependencies?.forEach(subscriptionDependency => {
       subscription.node.addDependency(subscriptionDependency);
     });
-  
+
     return subscription;
   }
 
