@@ -200,12 +200,6 @@ export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
  * Props to create a new instance of RestApi
  */
 export interface RestApiProps extends RestApiOptions {
-  /**
-   * A description of the purpose of this API Gateway RestApi resource.
-   *
-   * @default - No description.
-   */
-  readonly description?: string;
 
   /**
    * The list of binary media mime-types that are supported by the RestApi
