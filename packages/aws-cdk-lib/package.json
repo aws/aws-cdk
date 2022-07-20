@@ -22,9 +22,9 @@
     "build+test+package": "yarn build+test && yarn package",
     "watch": "cdk-watch",
     "compat": "cdk-compat",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract --compress-tablet",
-    "build+extract": "yarn build && yarn rosetta:extract --compress-tablet",
-    "build+test+extract": "yarn build+test && yarn rosetta:extract --compress-tablet"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "awslint": {
     "exclude": [
