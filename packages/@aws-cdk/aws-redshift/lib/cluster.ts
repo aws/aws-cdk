@@ -302,7 +302,7 @@ export interface ClusterProps {
   readonly loggingBucket?: s3.IBucket
 
   /**
-   * Prefix used for logging
+   * Prefix used for logging. Required if {@link ClusterProps.loggingBucket} is set.
    *
    * @default - no prefix
    */
@@ -473,6 +473,10 @@ export class Cluster extends ClusterBase {
 
     this.singleUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
+
+    if (props.loggingBucket && !props.loggingKeyPrefix) {
+      throw new Error('Cannot set loggingBucket without including an loggingKeyPrefix!');
+    }
 
     let loggingProperties;
     if (props.loggingBucket) {
