@@ -1068,9 +1068,12 @@ export class OracleLegacyEngineVersion {
 }
 
 /**
- * The versions for the Oracle instance engines
- * (those returned by {@link DatabaseInstanceEngine.oracleSe2} and
- * {@link DatabaseInstanceEngine.oracleEe}).
+ * The versions for the Oracle instance engines.
+ * Those returned by the following list.
+ * - {@link DatabaseInstanceEngine.oracleSe2}
+ * - {@link DatabaseInstanceEngine.oracleSe2Cdb}
+ * - {@link DatabaseInstanceEngine.oracleEe}
+ * - {@link DatabaseInstanceEngine.oracleEeCdb}.
  */
 export class OracleEngineVersion {
   /** Version "12.1" (only a major version, without a specific minor version). */
