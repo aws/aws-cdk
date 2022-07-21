@@ -23,7 +23,6 @@ import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
-import { validateTags } from './util/tags';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -228,7 +227,8 @@ async function parseCommandLineArguments() {
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false })
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
-      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false }))
+      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
+      .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
@@ -239,6 +239,7 @@ async function parseCommandLineArguments() {
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
+      .option('force', { alias: 'f', desc: 'Ignore missing key error', type: 'boolean', default: false })
       .option('clear', { desc: 'Clear all context', type: 'boolean' }))
     .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) => yargs
       .option('browser', {
@@ -417,8 +418,9 @@ async function initCommandLine() {
           strict: args.strict,
           contextLines: args.contextLines,
           securityOnly: args.securityOnly,
-          fail: args.fail || !enableDiffNoFail,
+          fail: args.fail != null ? args.fail : !enableDiffNoFail,
           stream: args.ci ? process.stdout : undefined,
+          compareAgainstProcessedTemplate: args.processed,
         });
 
       case 'bootstrap':
@@ -435,7 +437,7 @@ async function initCommandLine() {
           force: argv.force,
           toolkitStackName: toolkitStackName,
           execute: args.execute,
-          tags: validateTags(configuration.settings.get(['tags'])),
+          tags: configuration.settings.get(['tags']),
           terminationProtection: args.terminationProtection,
           parameters: {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
@@ -465,7 +467,7 @@ async function initCommandLine() {
           notificationArns: args.notificationArns,
           requireApproval: configuration.settings.get(['requireApproval']),
           reuseAssets: args['build-exclude'],
-          tags: validateTags(configuration.settings.get(['tags'])),
+          tags: configuration.settings.get(['tags']),
           execute: args.execute,
           changeSetName: args.changeSetName,
           force: args.force,

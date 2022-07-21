@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ec2/test/integ.reserved-private-subnet": {
+    "integ.reserved-private-subnet": {
       "stacks": [
         "aws-cdk-ec2-vpc-endpoint"
       ],

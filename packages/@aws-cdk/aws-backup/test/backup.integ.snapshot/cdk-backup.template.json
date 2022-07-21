@@ -31,7 +31,10 @@
   "Vault23237E5B": {
    "Type": "AWS::Backup::BackupVault",
    "Properties": {
-    "BackupVaultName": "cdkbackupVaultC2A6D3CB"
+    "BackupVaultName": "cdkbackupVaultC2A6D3CB",
+    "LockConfiguration": {
+     "MinRetentionDays": 5
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

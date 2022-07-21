@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-servicediscovery/test/integ.service-with-cname-record.lit": {
+    "integ.service-with-cname-record.lit": {
       "stacks": [
         "aws-servicediscovery-integ"
       ],
