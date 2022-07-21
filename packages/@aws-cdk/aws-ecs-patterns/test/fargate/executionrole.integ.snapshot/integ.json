@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.executionrole": {
+    "executionRoleAlbFargateTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "executionRoleAlbFargateTestDefaultTestDeployAssert4C0F3ED3"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

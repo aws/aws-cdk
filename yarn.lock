@@ -2639,9 +2639,9 @@ aws-sdk-mock@5.6.0:
     traverse "^0.6.6"
 
 aws-sdk@^2.1093.0, aws-sdk@^2.596.0, aws-sdk@^2.848.0, aws-sdk@^2.928.0:
-  version "2.1176.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1176.0.tgz#f3524433a60857a8fcd21722251f2b1f19d72008"
-  integrity sha512-jinSKjACYHIkkz0UlFwQXwz8HAHZIeJg5wOnZoMTKU3/WM6Vh26hZJJ6XkwDAfBmyWp3V9qFdQoSAiO8SeXKjw==
+  version "2.1178.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1178.0.tgz#b0f4b67494e7009427cd7059a3d908d333633fdb"
+  integrity sha512-ZsFuVbTp9aakAIZ7lTJspuCzSw5VRIDF0bUmSZmE2tc/X/haTu/TrMeWgwPjyLkQtdhfjChCyI71V+ADqFkjsA==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -3043,10 +3043,10 @@ cdk8s-plus-21@^2.0.0-beta.12:
     minimatch "^3.1.2"
     safe-stable-stringify "*"
 
-cdk8s@^2.3.58:
-  version "2.3.58"
-  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.3.58.tgz#3031c77cc0be1bf05bfb5701a578afc6829ab8c3"
-  integrity sha512-IFprDU3LAE8w8w4Lej9st44Cdbp+vdwIw+5sGx/X+ALrjjBZ6T0OomD5fZci9E5pP16xVnNprzOVo+BS9AKl7w==
+cdk8s@^2.3.60:
+  version "2.3.60"
+  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.3.60.tgz#74c0898a7b45d9b2b047921074dbd8655af87a86"
+  integrity sha512-lj67EXK+81U/8IzwBIPLmVfspbaknjQJOk/TC3wefNEXzt+rcNiBxS3K6Ssgm0DStQpq5RoqwLB56uWBldI6PQ==
   dependencies:
     fast-json-patch "^3.1.1"
     follow-redirects "^1.15.1"
@@ -3390,9 +3390,9 @@ console-control-strings@^1.0.0, console-control-strings@^1.1.0, console-control-
   integrity sha512-ty/fTekppD2fIwRvnZAVdeOiGd1c7YXEixbgJTNzqcxJWKQnjJ/V1bNEEE6hygpM3WjwHFUVK6HTjWSzV4a8sQ==
 
 constructs@^10.0.0:
-  version "10.1.49"
-  resolved "https://registry.npmjs.org/constructs/-/constructs-10.1.49.tgz#75b6e3f1441ee974452919547d6ea80ea3234044"
-  integrity sha512-dvJW6ErIlk1qAYbVFzD+S7Efhl+rqXIEDvnzyYde/nzRT2E9uj6EXA+kky8xWBVFDrHukR8+6+QEDo0bXRFfCQ==
+  version "10.1.51"
+  resolved "https://registry.npmjs.org/constructs/-/constructs-10.1.51.tgz#00998b141c8f5995fff42c8b4fd027937ad33862"
+  integrity sha512-/WIzI5G0bF2i7ggLYmR0RX3irjWPipoeS57jtI1uhs6CoiPIFx1Rxnu1BpMXqcnIGmaDDxwlykU9h+lcORbM3w==
 
 conventional-changelog-angular@^5.0.12:
   version "5.0.13"
@@ -4105,9 +4105,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.4.188:
-  version "1.4.192"
-  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.192.tgz#fac050058b3e0713b401a1088cc579e14c2ab165"
-  integrity sha512-8nCXyIQY9An88NXAp+PuPy5h3/w5ZY7Iu2lag65Q0XREprcat5F8gKhoHsBUnQcFuCRnmevpR8yEBYRU3d2HDw==
+  version "1.4.195"
+  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.195.tgz#139b2d95a42a3f17df217589723a1deac71d1473"
+  integrity sha512-vefjEh0sk871xNmR5whJf9TEngX+KTKS3hOHpjoMpauKkwlGwtMz1H8IaIjAT/GNnX0TbGwAdmVoXCAzXf+PPg==
 
 emittery@^0.8.1:
   version "0.8.1"
@@ -7389,9 +7389,9 @@ make-error@1.x, make-error@^1.1.1:
   integrity sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==
 
 make-fetch-happen@^10.0.3, make-fetch-happen@^10.0.6:
-  version "10.1.8"
-  resolved "https://registry.npmjs.org/make-fetch-happen/-/make-fetch-happen-10.1.8.tgz#3b6e93dd8d8fdb76c0d7bf32e617f37c3108435a"
-  integrity sha512-0ASJbG12Au6+N5I84W+8FhGS6iM8MyzvZady+zaQAu+6IOaESFzCLLD0AR1sAFF3Jufi8bxm586ABN6hWd3k7g==
+  version "10.2.0"
+  resolved "https://registry.npmjs.org/make-fetch-happen/-/make-fetch-happen-10.2.0.tgz#0bde3914f2f82750b5d48c6d2294d2c74f985e5b"
+  integrity sha512-OnEfCLofQVJ5zgKwGk55GaqosqKjaR6khQlJY3dBAA+hM25Bc5CmX5rKUfVut+rYA3uidA7zb7AvcglU87rPRg==
   dependencies:
     agentkeepalive "^4.2.1"
     cacache "^16.1.0"
@@ -7881,10 +7881,10 @@ nise@^5.1.0:
     just-extend "^4.0.2"
     path-to-regexp "^1.7.0"
 
-nock@^13.2.8:
-  version "13.2.8"
-  resolved "https://registry.npmjs.org/nock/-/nock-13.2.8.tgz#e2043ccaa8e285508274575e090a7fe1e46b90f1"
-  integrity sha512-JT42FrXfQRpfyL4cnbBEJdf4nmBpVP0yoCcSBr+xkT8Q1y3pgtaCKHGAAOIFcEJ3O3t0QbVAmid0S0f2bj3Wpg==
+nock@^13.2.9:
+  version "13.2.9"
+  resolved "https://registry.npmjs.org/nock/-/nock-13.2.9.tgz#4faf6c28175d36044da4cfa68e33e5a15086ad4c"
+  integrity sha512-1+XfJNYF1cjGB+TKMWi29eZ0b82QOvQs2YoLNzbpWGqFMtRQHTa57osqdGj4FrFPgkO4D4AZinzUJR9VvW3QUA==
   dependencies:
     debug "^4.1.0"
     json-stringify-safe "^5.0.1"
@@ -8178,9 +8178,9 @@ npm-registry-fetch@^11.0.0:
     npm-package-arg "^8.0.0"
 
 npm-registry-fetch@^13.0.1:
-  version "13.2.0"
-  resolved "https://registry.npmjs.org/npm-registry-fetch/-/npm-registry-fetch-13.2.0.tgz#8ba2e801bee45b6dfa428367ab42b7d8dea3bfce"
-  integrity sha512-NEKnK02Co31+cnDtnAvEdq9xn6E9yKPK/aOHXZieVbw/qVOcFd7su6kviZjImYoszjM2GykMfGMiyyPUQjUkag==
+  version "13.3.0"
+  resolved "https://registry.npmjs.org/npm-registry-fetch/-/npm-registry-fetch-13.3.0.tgz#0ce10fa4a699a1e70685ecf41bbfb4150d74231b"
+  integrity sha512-10LJQ/1+VhKrZjIuY9I/+gQTvumqqlgnsCufoXETHAPFTS3+M+Z5CFhZRDHGavmJ6rOye3UvNga88vl8n1r6gg==
   dependencies:
     make-fetch-happen "^10.0.6"
     minipass "^3.1.6"
@@ -8937,10 +8937,10 @@ progress@^2.0.0, progress@^2.0.3:
   resolved "https://registry.npmjs.org/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-projen@^0.58.35:
-  version "0.58.35"
-  resolved "https://registry.npmjs.org/projen/-/projen-0.58.35.tgz#8fe9765a811b132b432fb986db07965b713cf062"
-  integrity sha512-1GfMIi/AQOisEFNd+II/BfepExcV/ERHreb8EBTs23t5GnPdBKzLOrD5vHasVJ+EC1uYjxIAJcqqShfrXLTNtg==
+projen@^0.59.3:
+  version "0.59.3"
+  resolved "https://registry.npmjs.org/projen/-/projen-0.59.3.tgz#e449c13ecfaebde23fd16ee6cff007d8f8db349d"
+  integrity sha512-7gPJuva0tj/BYc8C9DUw4AGm4AzssKdO73I/+hbOOWNAlcvdS6AL82jDvmePrAnRgHREVRTkatCVzQGtParQvQ==
   dependencies:
     "@iarna/toml" "^2.2.5"
     case "^1.6.3"
