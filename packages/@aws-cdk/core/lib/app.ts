@@ -144,7 +144,7 @@ export class App extends Stage {
     }
 
 
-    const context = this.readContextFromTempFile() ?? this.readContextFromEnvironment() ?? {}
+    const context = this.readContextFromTempFile() ?? this.readContextFromEnvironment() ?? {};
     for (const [k, v] of Object.entries(context)) {
       this.node.setContext(k, v);
     }

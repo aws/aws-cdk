@@ -118,6 +118,17 @@ describe('app', () => {
     expect(prog.node.tryGetContext('key2')).toEqual('val2');
   });
 
+  test('context can be passed through CDK_CONTEXT', async () => {
+    process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
+      key1: 'val1',
+      key2: 'val2',
+    });
+
+    const prog = new App();
+    expect(prog.node.tryGetContext('key1')).toEqual('val1');
+    expect(prog.node.tryGetContext('key2')).toEqual('val2');
+  });
+
   test('context passed through CDK_CONTEXT_LOCATION has precedence', async () => {
     const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
     const contextLocation = path.join(contextDir, 'context-temp.json');
@@ -126,10 +137,16 @@ describe('app', () => {
       key2: 'val2',
     });
     process.env[cxapi.CONTEXT_LOCATION_ENV] = contextLocation;
+
+    process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
+      key1: 'val3',
+      key2: 'val4',
+    });
+
     const prog = new App({
       context: {
-        key1: 'val3',
-        key2: 'val4',
+        key1: 'val5',
+        key2: 'val6',
       },
     });
     expect(prog.node.tryGetContext('key1')).toEqual('val1');
