@@ -42,6 +42,33 @@ describe('User Pool Client', () => {
     expect(() => client2.userPoolClientName).toThrow(/available only if specified on the UserPoolClient during initialization/);
   });
 
+  // eslint-disable-next-line jest/no-focused-tests
+  test.only('client with secret', ()=>{
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    const clientWithSecret = new UserPoolClient(stack, 'clientWithSecret', {
+      userPool: pool,
+      generateSecret: true,
+    });
+
+    const clientWithoutSecret1 = new UserPoolClient(stack, 'clientWithoutSecret1', {
+      userPool: pool,
+      generateSecret: false,
+    });
+    const clientWithoutSecret2 = new UserPoolClient(stack, 'clientWithoutSecret2', {
+      userPool: pool,
+      generateSecret: undefined,
+    });
+
+    // THEN
+    expect(clientWithSecret.userPoolClientSecret).toBeDefined();
+    expect(clientWithoutSecret1.userPoolClientSecret).toBeUndefined();
+    expect(clientWithoutSecret2.userPoolClientSecret).toBeUndefined();
+  });
+
   test('import', () => {
     // GIVEN
     const stack = new Stack();

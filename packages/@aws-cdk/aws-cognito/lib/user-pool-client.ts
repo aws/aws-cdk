@@ -1,4 +1,5 @@
-import { IResource, Resource, Duration } from '@aws-cdk/core';
+import { IResource, Resource, Duration, Stack } from '@aws-cdk/core';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
@@ -321,6 +322,12 @@ export interface IUserPoolClient extends IResource {
    * @attribute
    */
   readonly userPoolClientId: string;
+
+  /**
+   * The generated client secret. Only available if the "generateSecret" props is set to true
+   * @attribute
+   */
+  readonly userPoolClientSecret?: string;
 }
 
 /**
@@ -339,6 +346,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   public readonly userPoolClientId: string;
+  public readonly userPoolClientSecret?: string;
+
   /**
    * The OAuth flows enabled for this client.
    */
@@ -394,6 +403,31 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
     this.userPoolClientId = resource.ref;
     this._userPoolClientName = props.userPoolClientName;
+
+    if (props.generateSecret) {
+      const describeCognitoUserPoolClient = new AwsCustomResource(
+        this,
+        'DescribeCognitoUserPoolClient',
+        {
+          resourceType: 'Custom::DescribeCognitoUserPoolClient',
+          onCreate: {
+            region: Stack.of(this).region,
+            service: 'CognitoIdentityServiceProvider',
+            action: 'describeUserPoolClient',
+            parameters: {
+              UserPoolId: props.userPool.userPoolId,
+              ClientId: this.userPoolClientId,
+            },
+            physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
+          },
+          policy: AwsCustomResourcePolicy.fromSdkCalls({
+            resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+          }),
+        },
+      );
+
+      this.userPoolClientSecret = describeCognitoUserPoolClient.getResponseField('UserPoolClient.ClientSecret');
+    }
   }
 
   /**
