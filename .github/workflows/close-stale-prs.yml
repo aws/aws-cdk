@@ -16,7 +16,7 @@ jobs:
           response-days: 7
 
           # Optional
-          important-checks-regex: AutoBuildProject89A8053A
+          important-checks-regex: AutoBuildv2Project1C6BFA3F
           warn-message: This PR has been in the STATE state for 3 weeks, and looks abandoned. To keep this PR from being closed, please continue work on it. If not, it will automatically be closed in a week.
           close-message: This PR has been deemed to be abandoned, and will be automatically closed. Please create a new PR for these changes if you think this decision has been made in error.
           skip-labels: contribution/core
