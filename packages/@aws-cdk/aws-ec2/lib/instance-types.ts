@@ -129,6 +129,16 @@ export enum InstanceClass {
   R5 = 'r5',
 
   /**
+   * Memory optimized instances based on AMD EPYC, 6th generation
+   */
+  MEMORY6_AMD = 'memory6-amd',
+
+  /**
+   * Memory optimized instances based on AMD EPYC, 6th generation
+   */
+  R6A = 'r6a',
+
+  /**
    * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
    */
   MEMORY6_INTEL = 'memory6-intel',
@@ -1046,6 +1056,8 @@ export class InstanceType {
       [InstanceClass.R4]: 'r4',
       [InstanceClass.MEMORY5]: 'r5',
       [InstanceClass.R5]: 'r5',
+      [InstanceClass.MEMORY6_AMD]: 'r6a',
+      [InstanceClass.R6A]: 'r6a',
       [InstanceClass.MEMORY6_INTEL]: 'r6i',
       [InstanceClass.R6I]: 'r6i',
       [InstanceClass.MEMORY6_INTEL_NVME_DRIVE]: 'r6id',
