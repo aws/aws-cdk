@@ -1,11 +1,69 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Lazy, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import * as lambda from '../lib';
+import { Alias, Architecture, IAlias, IVersion } from '../lib';
 
 describe('alias', () => {
+  describe('fromAliasAttributes', () => {
+    let stack: Stack;
+    let alias: IAlias;
+    let role: Role;
+    let version: IVersion;
+
+    beforeEach(() => {
+      stack = new Stack();
+      role = new Role(stack, 'SomeRole', {
+        assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      });
+      const func = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
+        functionArn: 'arn:aws:lambda:region:account-id:function:function-name',
+        architecture: Architecture.ARM_64,
+        timeout: Duration.minutes(5),
+        role: role,
+      });
+      version = lambda.Version.fromVersionAttributes(stack, 'Version', {
+        lambda: func,
+        version: 'version',
+      });
+      alias = Alias.fromAliasAttributes(stack, 'alias', {
+        aliasName: 'alias',
+        aliasVersion: version,
+      });
+    });
+
+    test('sets arn correctly', () => {
+      expect(alias.functionArn).toBe('arn:aws:lambda:region:account-id:function:function-name:alias');
+    });
+
+    test('sets name correctly', () => {
+      expect(alias.functionName).toBe('function-name:alias');
+    });
+
+    test('sets version correctly', () => {
+      expect(alias.version).toBe(version);
+    });
+
+    test('sets alias name correctly', () => {
+      expect(alias.aliasName).toBe('alias');
+    });
+
+    test('sets role correctly', () => {
+      expect(alias.role).toBe(role);
+    });
+
+    test('sets timeout correctly', () => {
+      expect(alias.timeout).toEqual(Duration.minutes(5));
+    });
+
+    test('sets architecture correctly', () => {
+      expect(alias.architecture).toBe(Architecture.ARM_64);
+    });
+  });
+
   testDeprecated('version and aliases', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {

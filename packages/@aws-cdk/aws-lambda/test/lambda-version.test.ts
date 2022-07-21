@@ -1,7 +1,10 @@
 import { Template } from '@aws-cdk/assertions';
+import * as iam from '@aws-cdk/aws-iam';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import * as lambda from '../lib';
+import { Architecture } from '../lib';
 
 describe('lambda version', () => {
   test('can import a Lambda version by ARN', () => {
@@ -24,6 +27,57 @@ describe('lambda version', () => {
           Value: 'function-name:version',
         },
       },
+    });
+  });
+
+  describe('fromVersionAttributes', () => {
+    let stack: cdk.Stack;
+    let func: lambda.IFunction;
+    let version: lambda.IVersion;
+    let role: iam.Role;
+    beforeEach(() => {
+      stack = new cdk.Stack();
+      role = new iam.Role(stack, 'SomeRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+      func = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
+        functionArn: 'arn:aws:lambda:region:account-id:function:function-name',
+        architecture: Architecture.ARM_64,
+        timeout: Duration.minutes(5),
+        role: role,
+      });
+      version = lambda.Version.fromVersionAttributes(stack, 'Version', {
+        lambda: func,
+        version: 'version',
+      });
+    });
+
+    test('sets arn correctly', () => {
+      expect(version.functionArn).toBe('arn:aws:lambda:region:account-id:function:function-name:version');
+    });
+
+    test('sets version correctly', () => {
+      expect(version.version).toBe('version');
+    });
+
+    test('sets lambda correctly', () => {
+      expect(version.lambda).toBe(func);
+    });
+
+    test('sets name correctly', () => {
+      expect(version.functionName).toBe('function-name:version');
+    });
+
+    test('sets role correctly', () => {
+      expect(version.role).toBe(role);
+    });
+
+    test('sets architecture correctly', () => {
+      expect(version.architecture).toBe(Architecture.ARM_64);
+    });
+
+    test('sets timeout correctly', () => {
+      expect(version.timeout).toEqual(Duration.minutes(5));
     });
   });
 
@@ -57,6 +111,25 @@ describe('lambda version', () => {
       MaximumEventAgeInSeconds: 3600,
       MaximumRetryAttempts: 0,
     });
+  });
+
+  test('creating a version propagates lambda timeout prop', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('foo'),
+      timeout: Duration.minutes(5),
+    });
+
+    // WHEN
+    const version = new lambda.Version(stack, 'Version', {
+      lambda: fn,
+    });
+
+    // THEN
+    expect(version.timeout).toEqual(Duration.minutes(5));
   });
 
   test('throws when calling configureAsyncInvoke on already configured version', () => {

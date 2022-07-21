@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
+import { Duration, Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
 import { Architecture } from './architecture';
@@ -132,6 +132,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly grantPrincipal = lambda.grantPrincipal;
       public readonly role = lambda.role;
       public readonly architecture = lambda.architecture;
+      public readonly timeout = lambda.timeout;
 
       protected readonly qualifier = version;
       protected readonly canCreatePermissions = this._isStackAccount();
@@ -159,6 +160,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly grantPrincipal = attrs.lambda.grantPrincipal;
       public readonly role = attrs.lambda.role;
       public readonly architecture = attrs.lambda.architecture;
+      public readonly timeout = attrs.lambda.timeout;
 
       protected readonly qualifier = attrs.version;
       protected readonly canCreatePermissions = this._isStackAccount();
@@ -182,6 +184,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public readonly functionArn: string;
   public readonly functionName: string;
   public readonly architecture: Architecture;
+  public readonly timeout?: Duration;
 
   protected readonly qualifier: string;
   protected readonly canCreatePermissions = true;
@@ -191,6 +194,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
     this.lambda = props.lambda;
     this.architecture = props.lambda.architecture;
+    this.timeout = props.lambda.timeout;
 
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,

@@ -12,11 +12,12 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { Aspects, Lazy, Size } from '@aws-cdk/core';
+import { Aspects, Duration, Lazy, Size } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
+import { Architecture } from '../lib';
 import { calculateFunctionHash } from '../lib/function-hash';
 
 describe('function', () => {
@@ -456,6 +457,35 @@ describe('function', () => {
 
       test("the function's account is taken from the ARN", () => {
         expect(func.env.account).toBe('222222222222');
+      });
+    });
+
+    describe('sets imported props correctly', () => {
+      let func: lambda.IFunction;
+      let role: iam.Role;
+
+      beforeEach(() => {
+        role = new iam.Role(stack, 'SomeRole', {
+          assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+        func = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
+          functionArn: 'arn:aws:lambda:stack-region:111111111111:function:function-name',
+          architecture: Architecture.ARM_64,
+          role: role,
+          timeout: Duration.minutes(5),
+        });
+      });
+
+      test("the function's timeout is set correctly", () => {
+        expect(func.timeout).toEqual(Duration.minutes(5));
+      });
+
+      test("the function's architecture is set correctly", () => {
+        expect(func.architecture).toBe(Architecture.ARM_64);
+      });
+
+      test("the function's role is set correctly", () => {
+        expect(func.role).toBe(role);
       });
     });
   });

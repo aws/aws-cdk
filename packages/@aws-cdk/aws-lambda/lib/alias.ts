@@ -1,7 +1,7 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat } from '@aws-cdk/core';
+import { ArnFormat, Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
@@ -99,6 +99,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       public readonly grantPrincipal = attrs.aliasVersion.grantPrincipal;
       public readonly role = attrs.aliasVersion.role;
       public readonly architecture = attrs.aliasVersion.lambda.architecture;
+      public readonly timeout = attrs.aliasVersion.lambda.timeout;
 
       protected readonly canCreatePermissions = this._isStackAccount();
       protected readonly qualifier = attrs.aliasName;
@@ -123,6 +124,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
   public readonly lambda: IFunction;
 
   public readonly architecture: Architecture;
+
+  public readonly timeout?: Duration;
 
   public readonly version: IVersion;
 
@@ -150,6 +153,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     this.aliasName = this.physicalName;
     this.version = props.version;
     this.architecture = this.lambda.architecture;
+    this.timeout = this.lambda.timeout;
 
     const alias = new CfnAlias(this, 'Resource', {
       name: this.aliasName,

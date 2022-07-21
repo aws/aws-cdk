@@ -242,6 +242,23 @@ describe('singleton lambda', () => {
     expect(singleton.runtime).toStrictEqual(lambda.Runtime.PYTHON_3_9);
   });
 
+  test('timeout is correctly returned', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.PYTHON_3_9,
+      handler: 'index.hello',
+      timeout: cdk.Duration.minutes(5),
+    });
+
+    // THEN
+    expect(singleton.timeout).toStrictEqual(cdk.Duration.minutes(5));
+  });
+
   testDeprecated('current version of a singleton function', () => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -2,7 +2,7 @@ import { createHash } from 'crypto';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, ArnFormat, IResource, Resource, Token } from '@aws-cdk/core';
+import { Annotations, ArnFormat, Duration, IResource, Resource, Token } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { AliasOptions } from './alias';
 import { Architecture } from './architecture';
@@ -64,6 +64,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * The system architectures compatible with this lambda function.
    */
   readonly architecture: Architecture;
+
+  /**
+   * The timeout configured for this lambda.
+   */
+  readonly timeout?: Duration;
 
   /**
    * The ARN(s) to put into the resource field of the generated IAM policy for grantInvoke().
@@ -220,6 +225,16 @@ export interface FunctionAttributes {
    * @default - Architecture.X86_64
    */
   readonly architecture?: Architecture;
+
+  /**
+   * The timeout configured for this lambda. (this is an optional attribute and defaults to undefined).
+   * Setting this property allows CDK to do compile-time checks related to timeouts. For example, in case
+   * of adding SQS Queue as event source it will allow CDK to check that Queue visibility timeout is larger
+   * than Lambda function timeout.
+   *
+   * @default - undefined
+   */
+  readonly timeout?: Duration;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction, ec2.IClientVpnConnectionHandler {
@@ -254,6 +269,11 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * The architecture of this Lambda Function.
    */
   public abstract readonly architecture: Architecture;
+
+  /**
+   * The timeout configured for this lambda.
+   */
+  public abstract readonly timeout?: Duration;
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -742,6 +762,10 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public get architecture() {
     return this.lambda.architecture;
+  }
+
+  public get timeout() {
+    return this.lambda.timeout;
   }
 
   public get grantPrincipal() {
