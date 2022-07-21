@@ -143,11 +143,22 @@ export class App extends Stage {
       this.node.setContext(k, v);
     }
 
-    const location = process.env[cxapi.CONTEXT_LOCATION_ENV];
-    const context = location != null ? fs.readJSONSync(location) : {};
+
+    const context = this.readContextFromTempFile() ?? this.readContextFromEnvironment() ?? {}
     for (const [k, v] of Object.entries(context)) {
       this.node.setContext(k, v);
     }
+  }
+
+  private readContextFromTempFile() {
+    const location = process.env[cxapi.CONTEXT_LOCATION_ENV];
+    return location != null ? fs.readJSONSync(location) : null;
+  }
+
+  // for backward compatibility with old versions of the CLI
+  private readContextFromEnvironment() {
+    const contextJson = process.env[cxapi.CONTEXT_ENV];
+    return contextJson ? JSON.parse(contextJson) : null;
   }
 }
 

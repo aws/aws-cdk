@@ -2,6 +2,7 @@
 // to be specified both through the CDK_OUTDIR environment variable and the through
 // aws:cdk:outdir context.
 export const OUTDIR_ENV = 'CDK_OUTDIR';
+export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 
 /**
  * The name of the temporary file where the context is stored.
