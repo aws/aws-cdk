@@ -269,6 +269,7 @@ export class Queue extends QueueBase {
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
       public readonly fifo: boolean = this.determineFifo();
+      public readonly visibilityTimeout = attrs.visibilityTimeout;
 
       protected readonly autoCreatePolicy = false;
 
@@ -325,6 +326,11 @@ export class Queue extends QueueBase {
    */
   public readonly deadLetterQueue?: DeadLetterQueue;
 
+  /**
+   * Timeout of processing a single message.
+   */
+  public readonly visibilityTimeout?: Duration;
+
   protected readonly autoCreatePolicy = true;
 
   constructor(scope: Construct, id: string, props: QueueProps = {}) {
@@ -367,6 +373,7 @@ export class Queue extends QueueBase {
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
     this.deadLetterQueue = props.deadLetterQueue;
+    this.visibilityTimeout = props.visibilityTimeout ?? Duration.seconds(30);
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
       let encryption = props.encryption || QueueEncryption.UNENCRYPTED;

@@ -27,6 +27,13 @@ test('default properties', () => {
   });
 });
 
+test('sets timeout prop to default value if not passed', () => {
+  const stack = new Stack();
+  const q = new sqs.Queue(stack, 'Queue');
+
+  expect(q.visibilityTimeout).toEqual(Duration.seconds(30));
+});
+
 test('with a dead letter queue', () => {
   const stack = new Stack();
   const dlq = new sqs.Queue(stack, 'DLQ');
@@ -156,7 +163,7 @@ test('addToPolicy will automatically create a policy for this queue', () => {
 });
 
 describe('export and import', () => {
-  test('importing works correctly', () => {
+  test('importing from Arn works correctly', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -174,7 +181,7 @@ describe('export and import', () => {
     expect(stack.resolve(imports.queueName)).toEqual('queue1');
   });
 
-  test('importing fifo and standard queues are detected correctly', () => {
+  test('importing fifo and standard queues from Arn are detected correctly', () => {
     const stack = new Stack();
     const stdQueue = sqs.Queue.fromQueueArn(stack, 'StdQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
     const fifoQueue = sqs.Queue.fromQueueArn(stack, 'FifoQueue', 'arn:aws:sqs:us-east-1:123456789012:queue2.fifo');
@@ -274,6 +281,20 @@ describe('export and import', () => {
       ['', ['https://sqs.us-west-2.', { Ref: 'AWS::URLSuffix' }, '/123456789012/queue1']],
     });
     expect(stack.resolve(imports.queueName)).toEqual('queue1');
+  });
+
+  test('importing correctly sets visibility timeout if passed', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const imports = sqs.Queue.fromQueueAttributes(stack, 'Imported', {
+      queueArn: 'arn:aws:sqs:region:account:queue',
+      visibilityTimeout: Duration.minutes(5),
+    });
+
+    // THEN
+    expect(imports.visibilityTimeout).toEqual(Duration.minutes(5));
   });
 });
 

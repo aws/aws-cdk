@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { IResource, Resource, ResourceProps } from '@aws-cdk/core';
+import { Duration, IResource, Resource, ResourceProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { QueuePolicy } from './policy';
 
@@ -35,6 +35,11 @@ export interface IQueue extends IResource {
    * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
    */
   readonly fifo: boolean;
+
+  /**
+   * Timeout of processing a single message.
+   */
+  readonly visibilityTimeout?: Duration;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -125,6 +130,11 @@ export abstract class QueueBase extends Resource implements IQueue {
    * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
    */
   public abstract readonly fifo: boolean;
+
+  /**
+   * Timeout of processing a single message.
+   */
+  public abstract readonly visibilityTimeout?: Duration;
 
   /**
    * Controls automatic creation of policy objects.
@@ -285,4 +295,14 @@ export interface QueueAttributes {
    * @default - if fifo is not specified, the property will be determined based on the queue name (not possible for FIFO queues imported from a token)
    */
   readonly fifo?: boolean;
+
+  /**
+   * Timeout of processing a single message.
+   *
+   * Setting this value enables CDK to use visibilityTimeout value at compile time to check constraints where relevant.
+   * For example, when adding SQS Queue as event source to Lambda function, CDK can validate that Queue visibility timeout is larger than Lambda function timeout.
+   *
+   * @default - If visibilityTimeout is not specified, it will remain undefined and won't be validated
+   */
+  readonly visibilityTimeout?: Duration;
 }
