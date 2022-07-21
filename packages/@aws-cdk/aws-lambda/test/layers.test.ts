@@ -39,14 +39,26 @@ describe('layers', () => {
     });
 
     // WHEN
-    layer.addPermission('GrantUsage-123456789012', { accountId: '123456789012' });
-    layer.addPermission('GrantUsage-o-123456', { accountId: '*', organizationId: 'o-123456' });
+    const accountPermission = layer.addPermission('GrantUsage-123456789012', { accountId: '123456789012' });
+    const orgPermission = layer.addPermission('GrantUsage-o-123456', { accountId: '*', organizationId: 'o-123456' });
 
     // THEN
+    expect(accountPermission).toMatchObject({
+      action: 'lambda:GetLayerVersion',
+      layerVersionArn: layer.layerVersionArn,
+      principal: '123456789012',
+    });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
       LayerVersionArn: stack.resolve(layer.layerVersionArn),
       Principal: '123456789012',
+    });
+
+    expect(orgPermission).toMatchObject({
+      action: 'lambda:GetLayerVersion',
+      layerVersionArn: layer.layerVersionArn,
+      principal: '*',
+      organizationId: 'o-123456',
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
