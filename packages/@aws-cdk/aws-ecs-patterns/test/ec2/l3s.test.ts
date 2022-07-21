@@ -10,6 +10,7 @@ import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
 
@@ -802,6 +803,26 @@ test('errors when setting HTTPS protocol but not domain name', () => {
       protocol: ApplicationProtocol.HTTPS,
     });
   }).toThrow();
+});
+
+test('errors when idleTimeout is over 4000 seconds', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // THEN
+  expect(() => {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      domainName: 'api.example.com',
+      protocol: ApplicationProtocol.HTTPS,
+      idleTimeout: Duration.seconds(5000),
+    });
+  }).toThrowError();
 });
 
 test('test Fargate loadbalanced construct with optional log driver input', () => {
