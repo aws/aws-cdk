@@ -653,6 +653,73 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
 });
 ```
 
+### Select idleTimeout for ApplicationMultipleTargetGroupsFargateService
+
+```ts
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
+import { InstanceType } from '@aws-cdk/aws-ec2';
+import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
+import { ApplicationProtocol, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { PublicHostedZone } from '@aws-cdk/aws-route53';
+const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
+const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGroupsFargateService(this, 'myService', {
+  cluster: new ecs.Cluster(this, 'EcsCluster', { vpc }),
+  memoryLimitMiB: 256,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  enableExecuteCommand: true,
+  loadBalancers: [
+    {g
+      name: 'lb',
+      idleTimeout: Duration.seconds(400),
+      domainName: 'api.example.com',
+      domainZone: new PublicHostedZone(this, 'HostedZone', { zoneName: 'example.com' }),
+      listeners: [
+        {
+          name: 'listener',
+          protocol: ApplicationProtocol.HTTPS,
+          certificate: Certificate.fromCertificateArn(this, 'Cert', 'helloworld'),
+          sslPolicy: SslPolicy.TLS12_EXT,
+        },
+      ],
+    },
+    {
+      name: 'lb2',
+      idleTimeout: Duration.seconds(120),
+      domainName: 'frontend.com',
+      domainZone: new PublicHostedZone(this, 'HostedZone', { zoneName: 'frontend.com' }),
+      listeners: [
+        {
+          name: 'listener2',
+          protocol: ApplicationProtocol.HTTPS,
+          certificate: Certificate.fromCertificateArn(this, 'Cert2', 'helloworld'),
+          sslPolicy: SslPolicy.TLS12_EXT,
+        },
+      ],
+    },
+  ],
+  targetGroups: [
+    {
+      containerPort: 80,
+      listener: 'listener',
+    },
+    {
+      containerPort: 90,
+      pathPattern: 'a/b/c',
+      priority: 10,
+      listener: 'listener',
+    },
+        {
+      containerPort: 443,
+      pathPattern: 'a/b/c',
+      priority: 10,
+      listener: 'listener2',
+    },
+  ],
+});
+```
+
 ### Set PlatformVersion for ScheduledFargateTask
 
 ```ts
