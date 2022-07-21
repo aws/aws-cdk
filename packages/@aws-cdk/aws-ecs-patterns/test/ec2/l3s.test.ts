@@ -544,8 +544,8 @@ test('test Fargate loadbalanced construct', () => {
         Memory: 2048,
       }),
     ],
-    Cpu: 1024,
-    Memory: 2048,
+    Cpu: '1024',
+    Memory: '2048',
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
