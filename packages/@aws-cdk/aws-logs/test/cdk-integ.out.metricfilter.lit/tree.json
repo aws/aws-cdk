@@ -1,0 +1,89 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
+        }
+      },
+      "aws-cdk-metricfilter-integ": {
+        "id": "aws-cdk-metricfilter-integ",
+        "path": "aws-cdk-metricfilter-integ",
+        "children": {
+          "LogGroup": {
+            "id": "LogGroup",
+            "path": "aws-cdk-metricfilter-integ/LogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-metricfilter-integ/LogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
+          "MetricFilter": {
+            "id": "MetricFilter",
+            "path": "aws-cdk-metricfilter-integ/MetricFilter",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-metricfilter-integ/MetricFilter/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::MetricFilter",
+                  "aws:cdk:cloudformation:props": {
+                    "filterPattern": "{ $.latency = \"*\" }",
+                    "logGroupName": {
+                      "Ref": "LogGroupF5B46931"
+                    },
+                    "metricTransformations": [
+                      {
+                        "metricNamespace": "MyApp",
+                        "metricName": "Latency",
+                        "metricValue": "$.latency"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnMetricFilter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.MetricFilter",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
