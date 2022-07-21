@@ -102,8 +102,6 @@ demoDS.createResolver({
   typeName: 'Query',
   fieldName: 'getDemosConsistent',
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(true),
-  //requestMappingTemplate: appsync.MappingTemplate.dynamoDbGetItem('id', 'id', true),
-  //requestMappingTemplate: appsync.MappingTemplate.dynamoDbQuery(KeyCondition.eq('order', 'order'), 'orderIndex', true),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
 });
 ```
