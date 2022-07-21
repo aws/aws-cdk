@@ -203,7 +203,6 @@ const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
 
 ### AutoScaling
 
-
 The `autoScaleInstanceCount` method on the `IEndpointProductionVariant` interface can be used to
 enable Application Auto Scaling for the production variant:
 
