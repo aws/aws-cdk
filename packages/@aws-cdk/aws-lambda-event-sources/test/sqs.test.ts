@@ -1,6 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
@@ -106,6 +107,20 @@ describe('SQSEventSource', () => {
     });
 
 
+  });
+
+  test('fails if queue visibility timeout is smaller than lambda timeout', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn', {
+      timeout: Duration.seconds(5),
+    });
+    const q = new sqs.Queue(stack, 'Q', {
+      visibilityTimeout: fn.timeout?.minus(Duration.seconds(1)),
+    });
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q))).toThrow(/Queue visibility timeout \(given 4 seconds\) must be larger than Lambda function timeout \(given 5 seconds\)\./);
   });
 
   test('fails if batch size is < 1', () => {

@@ -67,6 +67,10 @@ export class SqsEventSource implements lambda.IEventSource {
   }
 
   public bind(target: lambda.IFunction) {
+    if (this.queue.visibilityTimeout && target.timeout && this.queue.visibilityTimeout.toSeconds() <= target.timeout.toSeconds()) {
+      throw new Error(`Queue visibility timeout (given ${this.queue.visibilityTimeout.toSeconds()} seconds) must be larger than Lambda function timeout (given ${target.timeout.toSeconds()} seconds).`);
+    }
+
     const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${Names.nodeUniqueId(this.queue.node)}`, {
       batchSize: this.props.batchSize,
       maxBatchingWindow: this.props.maxBatchingWindow,
