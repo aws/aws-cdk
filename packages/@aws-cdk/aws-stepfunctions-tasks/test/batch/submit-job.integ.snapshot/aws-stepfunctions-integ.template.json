@@ -670,6 +670,20 @@
    "Properties": {
     "Type": "container",
     "ContainerProperties": {
+     "Environment": [
+      {
+       "Name": "AWS_REGION",
+       "Value": {
+        "Ref": "AWS::Region"
+       }
+      },
+      {
+       "Name": "AWS_ACCOUNT",
+       "Value": {
+        "Ref": "AWS::AccountId"
+       }
+      }
+     ],
      "Image": {
       "Fn::Join": [
        "",
