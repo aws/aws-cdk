@@ -5,7 +5,6 @@ import * as cdk from '@aws-cdk/core';
 import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { RetentionDays } from './log-group';
-//import { LogDeletionPolicy } from './log-deletion-policy';
 
 /**
  * Construction properties for a LogRetention.
@@ -56,11 +55,11 @@ export enum LogDeletionPolicy {
    * This is the default log deletion policy. It means that when the resource is
    * removed from the app, the log will retain.
    */
-  RETAINLOG = 'retainLog',
+  RETAIN = 'retain',
   /**
    * This uses the 'destroyLog' DeletionPolicy, which will destroy the log when the stack is deleted.
    */
-  DESTROYLOG = 'destroyLog',
+  DESTROY = 'destroy',
 }
 
 /**
@@ -115,7 +114,7 @@ export class LogRetention extends Construct {
           base: retryOptions.base?.toMilliseconds(),
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
-        LogDeletionPolicy: props.logDeletionPolicy ? props.logDeletionPolicy : LogDeletionPolicy.RETAINLOG,
+        LogDeletionPolicy: props.logDeletionPolicy ? props.logDeletionPolicy : LogDeletionPolicy.RETAIN,
       },
     });
 
@@ -168,7 +167,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
     });
     // Duplicate statements will be deduplicated by `PolicyDocument`
     role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
+      actions: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy', 'logs:DeleteLogGroup'],
       // We need '*' here because we will also put a retention policy on
       // the log group of the provider function. Referencing its name
       // creates a CF circular dependency.
