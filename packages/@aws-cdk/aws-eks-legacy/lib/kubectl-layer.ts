@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { CfnResource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 const KUBECTL_APP_ARN = 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl';
@@ -20,7 +20,7 @@ export interface KubectlLayerProps {
  *
  * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
  */
-export class KubectlLayer extends Resource implements lambda.ILayerVersion {
+export class KubectlLayer extends lambda.LayerVersionBase {
 
   /**
    * Gets or create a singleton instance of this construct.
@@ -67,9 +67,5 @@ export class KubectlLayer extends Resource implements lambda.ILayerVersion {
     });
 
     this.layerVersionArn = Token.asString(resource.getAtt('Outputs.LayerVersionArn'));
-  }
-
-  public addPermission(_id: string, _permission: lambda.LayerVersionPermission): void {
-    return;
   }
 }

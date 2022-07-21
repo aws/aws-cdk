@@ -90,9 +90,9 @@ export interface ILayerVersion extends IResource {
 }
 
 /**
- * A reference to a Lambda Layer version.
+ * An abstract implementation of ILayerVersion as a Resource with default addPermission behaviour.
  */
-abstract class LayerVersionBase extends Resource implements ILayerVersion {
+export abstract class LayerVersionBase extends Resource implements ILayerVersion {
   public abstract readonly layerVersionArn: string;
   public abstract readonly compatibleRuntimes?: Runtime[];
 
