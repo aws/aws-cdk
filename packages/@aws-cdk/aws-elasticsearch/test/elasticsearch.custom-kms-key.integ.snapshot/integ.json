@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-elasticsearch/test/integ.elasticsearch.custom-kms-key": {
+    "integ.elasticsearch.custom-kms-key": {
       "stacks": [
         "cdk-integ-elasticsearch-custom-kms-key"
       ],

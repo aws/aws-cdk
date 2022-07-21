@@ -1,5 +1,5 @@
 {
-  "$version": "79.0.0",
+  "$version": "81.0.0",
   "PropertyTypes": {
     "AWS::Athena::WorkGroup.EncryptionConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-encryptionconfiguration.html",

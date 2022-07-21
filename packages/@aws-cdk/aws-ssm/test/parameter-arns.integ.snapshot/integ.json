@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ssm/test/integ.parameter-arns": {
+    "integ.parameter-arns": {
       "stacks": [
         "integ-parameter-arns"
       ],

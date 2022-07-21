@@ -67,6 +67,7 @@ lambdaDS.createResolver({
   requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(requestPayload('addPost', { withArgs: true })),
   responseMappingTemplate,
 });
+
 lambdaDS.createResolver({
   typeName: 'Post',
   fieldName: 'relatedPosts',
@@ -74,5 +75,12 @@ lambdaDS.createResolver({
   responseMappingTemplate,
 });
 
+lambdaDS.createResolver({
+  typeName: 'Post',
+  fieldName: 'relatedPostsMaxBatchSize',
+  requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(requestPayload('relatedPostsMaxBatchSize', { withSource: true }), 'BatchInvoke'),
+  responseMappingTemplate,
+  maxBatchSize: 2,
+});
 
 app.synth();
