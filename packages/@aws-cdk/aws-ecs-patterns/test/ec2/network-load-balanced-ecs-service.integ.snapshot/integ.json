@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "ec2/integ.network-load-balanced-ecs-service": {
+    "networkLoadBalancedEc2ServiceTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "networkLoadBalancedEc2ServiceTestDefaultTestDeployAssert34DAD7DE"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
