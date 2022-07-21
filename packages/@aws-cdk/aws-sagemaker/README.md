@@ -43,32 +43,22 @@ import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
 ## Model
 
-By creating a model, you tell Amazon SageMaker where it can find the model components. This includes
-the S3 path where the model artifacts are stored and the Docker registry path for the image that
-contains the inference code. The `ContainerDefinition` interface encapsulates both the specification
-of model inference code as a `ContainerImage` and an optional set of artifacts as `ModelData`.
+In machine learning, a model is used to make predictions, or inferences. A deployable model in
+SageMaker consists of inference code and model artifacts. Model artifacts are the results of model
+training by using a machine learning algorithm. The inference code must be packaged in a Docker
+container and stored in Amazon ECR. You can either package the model artifacts in the same container
+as the inference code, or store them in Amazon S3. As model artifacts may change each time a new
+model is trained (while the inference code may remain static), artifact separation in S3 may act as
+a natural decoupling point for your application.
 
-### Container Images
+When instantiating the `Model` construct, you tell Amazon SageMaker where it can find these model
+components. The `ContainerDefinition` interface encapsulates both the specification of model
+inference code as a `ContainerImage` and an optional set of separate artifacts as `ModelData`.
 
-Inference code can be stored in the Amazon EC2 Container Registry (Amazon ECR), which is specified
-via `ContainerDefinition`'s `image` property which accepts a class that extends the `ContainerImage`
-abstract base class.
+### Single Container Model
 
-#### `EcrImage`
-
-Reference an image available within ECR:
-
-```typescript
-import * as ecr from '@aws-cdk/aws-ecr';
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
-
-const repository = ecr.Repository.fromRepositoryName(this, 'Repository', 'repo');
-const image = sagemaker.ContainerImage.fromEcrRepository(repository, 'tag');
-```
-
-#### `AssetImage`
-
-Reference a local directory containing a Dockerfile:
+In the event that a single container is sufficient for your inference use-case, you can define a
+single-container model:
 
 ```typescript
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
@@ -77,49 +67,8 @@ import * as path from 'path';
 const image = sagemaker.ContainerImage.fromAsset(this, 'Image', {
   directory: path.join('path', 'to', 'Dockerfile', 'directory')
 });
-```
-
-### Model Artifacts
-
-Models are often associated with model artifacts, which are specified via the `modelData` property
-which accepts a class that extends the `ModelData` abstract base class. The default is to have no
-model artifacts associated with a model.
-
-#### `S3ModelData`
-
-Reference an S3 bucket and object key as the artifacts for a model:
-
-```typescript
-import * as s3 from '@aws-cdk/aws-s3';
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
-
-const bucket = new s3.Bucket(this, 'MyBucket');
-const modelData = sagemaker.ModelData.fromBucket(bucket, 'path/to/artifact/file.tar.gz');
-```
-
-#### `AssetModelData`
-
-Reference local model data:
-
-```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
-import * as path from 'path';
-
 const modelData = sagemaker.ModelData.fromAsset(this, 'ModelData',
   path.join('path', 'to', 'artifact', 'file.tar.gz'));
-```
-
-### `Model`
-
-The `Model` construct associates container images with their optional model data.
-
-#### Single Container Model
-
-In the event that a single container is sufficient for your inference use-case, you can define a
-single-container model:
-
-```typescript fixture=with-assets
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
 const model = new sagemaker.Model(this, 'PrimaryContainerModel', {
   container: {
@@ -129,7 +78,7 @@ const model = new sagemaker.Model(this, 'PrimaryContainerModel', {
 });
 ```
 
-#### Inference Pipeline Model
+### Inference Pipeline Model
 
 An inference pipeline is an Amazon SageMaker model that is composed of a linear sequence of two to
 five containers that process requests for inferences on data. You use an inference pipeline to
@@ -151,6 +100,67 @@ const model = new sagemaker.Model(this, 'InferencePipelineModel', {
     { image: image3, modelData: modelData3 }
   ],
 });
+```
+
+### Container Images
+
+Inference code can be stored in the Amazon EC2 Container Registry (Amazon ECR), which is specified
+via `ContainerDefinition`'s `image` property which accepts a class that extends the `ContainerImage`
+abstract base class.
+
+#### Asset Image
+
+Reference a local directory containing a Dockerfile:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as path from 'path';
+
+const image = sagemaker.ContainerImage.fromAsset(this, 'Image', {
+  directory: path.join('path', 'to', 'Dockerfile', 'directory')
+});
+```
+
+#### ECR Image
+
+Reference an image available within ECR:
+
+```typescript
+import * as ecr from '@aws-cdk/aws-ecr';
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
+
+const repository = ecr.Repository.fromRepositoryName(this, 'Repository', 'repo');
+const image = sagemaker.ContainerImage.fromEcrRepository(repository, 'tag');
+```
+
+### Model Artifacts
+
+If you choose to decouple your model artifacts from your inference code, the artifacts can be
+specified via the `modelData` property which accepts a class that extends the `ModelData` abstract
+base class. The default is to have no model artifacts associated with a model.
+
+#### Asset Model Data
+
+Reference local model data:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as path from 'path';
+
+const modelData = sagemaker.ModelData.fromAsset(this, 'ModelData',
+  path.join('path', 'to', 'artifact', 'file.tar.gz'));
+```
+
+#### S3 Model Data
+
+Reference an S3 bucket and object key as the artifacts for a model:
+
+```typescript
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
+
+const bucket = new s3.Bucket(this, 'MyBucket');
+const modelData = sagemaker.ModelData.fromBucket(bucket, 'path/to/artifact/file.tar.gz');
 ```
 
 ## Model Hosting
