@@ -231,6 +231,36 @@
             "data": "batchspotcomputeenv2CE4DFD9"
           }
         ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource-Security-Group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2ResourceSecurityGroupBEA8DDD5"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Ecs-Instance-Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2EcsInstanceRoleEE146754"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Instance-Profile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2InstanceProfileC5A36CBC"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource-Service-Instance-Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2ResourceServiceInstanceRole41CADAC1"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2E12D5CBC"
+          }
+        ],
         "/batch-stack/batch-job-queue/Resource": [
           {
             "type": "aws:cdk:logicalId",
