@@ -1,4 +1,5 @@
 # VSCode extension
+.DS_Store
 
 # Store launch config in repo but not settings
 .vscode/settings.json
