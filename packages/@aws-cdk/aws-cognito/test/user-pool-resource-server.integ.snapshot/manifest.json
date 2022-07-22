@@ -15,20 +15,6 @@
         "validateOnSynth": false
       },
       "metadata": {
-        "/integ-user-pool-resource-server": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
-              "id": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
-              "packaging": "zip",
-              "sourceHash": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
-              "s3BucketParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A",
-              "s3KeyParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5",
-              "artifactHashParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC"
-            }
-          }
-        ],
         "/integ-user-pool-resource-server/myuserpool/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -47,48 +33,6 @@
             "data": "myuserpoolclientC5FA41EC"
           }
         ],
-        "/integ-user-pool-resource-server/myuserpool/client/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyFAAD57F1"
-          }
-        ],
-        "/integ-user-pool-resource-server/myuserpool/client/DescribeCognitoUserPoolClient/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myuserpoolclientDescribeCognitoUserPoolClient662FE3FB"
-          }
-        ],
-        "/integ-user-pool-resource-server/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-          }
-        ],
-        "/integ-user-pool-resource-server/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
-          }
-        ],
-        "/integ-user-pool-resource-server/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A"
-          }
-        ],
-        "/integ-user-pool-resource-server/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5"
-          }
-        ],
-        "/integ-user-pool-resource-server/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC"
-          }
-        ],
         "/integ-user-pool-resource-server/pool-id": [
           {
             "type": "aws:cdk:logicalId",
@@ -99,6 +43,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "clientid"
+          }
+        ],
+        "myuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyFAAD57F1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyFAAD57F1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myuserpoolclientDescribeCognitoUserPoolClient662FE3FB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolclientDescribeCognitoUserPoolClient662FE3FB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AWS679f53fac002430cb0da5b7982bd22872D164C4C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

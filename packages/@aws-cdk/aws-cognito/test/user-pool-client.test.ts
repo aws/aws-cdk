@@ -65,8 +65,12 @@ describe('User Pool Client', () => {
 
     // THEN
     expect(clientWithSecret.userPoolClientSecret).toBeDefined();
-    expect(clientWithoutSecret1.userPoolClientSecret).toBeUndefined();
-    expect(clientWithoutSecret2.userPoolClientSecret).toBeUndefined();
+
+    // Make sure getter returns the same secret regardless if it's called one or many times
+    expect(clientWithSecret.userPoolClientSecret === clientWithSecret.userPoolClientSecret).toBeTruthy();
+
+    expect(() => clientWithoutSecret1.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if the "generateSecret" prop is set to true/);
+    expect(() => clientWithoutSecret2.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if the "generateSecret" prop is set to true/);
   });
 
   test('import', () => {
