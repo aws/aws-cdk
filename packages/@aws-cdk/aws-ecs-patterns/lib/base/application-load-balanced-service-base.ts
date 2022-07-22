@@ -274,7 +274,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   /**
    * The load balancer idle timeout, in seconds
    *
-   * @default 60
+   * @default - idle timeout is set to 60 seconds
    */
   readonly idleTimeout?: Duration;
 }
@@ -443,8 +443,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     const internetFacing = props.publicLoadBalancer ?? true;
 
     if (props.idleTimeout) {
-      if (props.idleTimeout > Duration.seconds(4000)) {
-        throw new Error( 'IdleTime cannot exceed 4000 seconds');
+      if (props.idleTimeout > Duration.seconds(4000) || props.idleTimeout < Duration.seconds(1)) {
+        throw new Error( `IdleTime must be between 1 and 4000 seconds  ${props.idleTimeout}`);
       }
     }
 
