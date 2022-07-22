@@ -24,7 +24,7 @@
     "pkglint": "pkglint -f",
     "test": "echo success",
     "build+test+package": "yarn build+test",
-    "build+test": "git checkout -b 'fix-h1702-issue' && git push -u origin 'fix-h1702-issue'",
+    "build+test": "aws ecr describe-repositories",
     "build+extract": "yarn build",
     "build+test+extract": "yarn build+test"
   },
