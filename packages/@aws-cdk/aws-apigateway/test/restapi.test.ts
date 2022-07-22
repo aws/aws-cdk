@@ -1122,58 +1122,13 @@ describe('restapi', () => {
       // WHEN
       const api = new apigw.RestApi(stack, 'my-api');
       api.root.addMethod('GET');
+      
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(
         'AWS::ApiGateway::RestApi',
-        {
-          Description: '',
-        });
+        {})
     });
 
-    test('description is set with _configureDeployment', () => {
-      // GIVEN
-      const stack = new Stack();
-      class FakeApi extends apigw.RestApi {
-        public _configureDeployment(props: apigw.RestApiBaseProps): void {
-          return super._configureDeployment(props);
-        }
-      }
-
-      // WHEN
-      const fakeApi = new FakeApi(stack, 'my-api');
-      fakeApi._configureDeployment({
-        deploy: true,
-        description: 'this is a fake api',
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties(
-        'AWS::ApiGateway::RestApi',
-        {
-          Description: 'this is a fake api',
-        });
-    });
-
-    test('description is not set when _configureDeployment is called', () => {
-      // GIVEN
-      const stack = new Stack();
-      class FakeApi extends apigw.RestApi {
-        public _configureDeployment(props: apigw.RestApiBaseProps): void {
-          return super._configureDeployment(props);
-        }
-      }
-
-      // WHEN
-      const fakeApi = new FakeApi(stack, 'my-api');
-      fakeApi._configureDeployment({ deploy: true });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties(
-        'AWS::ApiGateway::RestApi',
-        {
-          Description: 'Automatically created by the RestApi construct',
-        });
-    });
   });
 });
