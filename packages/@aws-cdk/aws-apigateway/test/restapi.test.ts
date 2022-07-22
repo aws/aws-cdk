@@ -1123,12 +1123,10 @@ describe('restapi', () => {
       const api = new apigw.RestApi(stack, 'my-api');
       api.root.addMethod('GET');
       
-
       // THEN
       Template.fromStack(stack).hasResourceProperties(
-        'AWS::ApiGateway::RestApi',
-        {})
+        'AWS::ApiGateway::RestApi',{
+        });
     });
-
   });
 });
