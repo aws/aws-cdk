@@ -1,9 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as ecs from '../../lib';
 
+const app = new cdk.App();
 
 class EcsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -32,17 +32,7 @@ class EcsStack extends cdk.Stack {
     });
   }
 }
-const app = new cdk.App();
 
-const ecsStack = new EcsStack(app, 'aws-cdk-ecs-integration-test-stack');
+new EcsStack(app, 'aws-cdk-ecs-integration-test-stack');
 
-const testCase = new IntegTest(app, 'PlacementStrategies', {
-  testCases: [ecsStack],
-});
-
-const template = testCase.assertions.awsApiCall('Cloudformation', 'getTemplate', {
-  StackName: ecsStack.stackName,
-});
-
-template.expect(ExpectedResult.stringLikeRegexp('/PlacementStrategies:\s*- Field: CPU\s*Type: binpack\s*- Field: MEMORY\s*Type: binpack/'));
 app.synth();
