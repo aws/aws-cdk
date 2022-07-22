@@ -334,6 +334,7 @@ export interface IUserPoolClient extends IResource {
  * Define a UserPool App Client
  */
 export class UserPoolClient extends Resource implements IUserPoolClient {
+
   /**
    * Import a user pool client given its id.
    */
@@ -346,7 +347,9 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   public readonly userPoolClientId: string;
-  public readonly userPoolClientSecret?: string;
+
+  private _generateSecret: boolean | undefined;
+  private readonly userPool: IUserPool;
 
   /**
    * The OAuth flows enabled for this client.
@@ -383,6 +386,9 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       }
     }
 
+    this._generateSecret = props.generateSecret;
+    this.userPool = props.userPool;
+
     const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.userPoolClientName,
       generateSecret: props.generateSecret,
@@ -403,31 +409,6 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
     this.userPoolClientId = resource.ref;
     this._userPoolClientName = props.userPoolClientName;
-
-    if (props.generateSecret) {
-      const describeCognitoUserPoolClient = new AwsCustomResource(
-        this,
-        'DescribeCognitoUserPoolClient',
-        {
-          resourceType: 'Custom::DescribeCognitoUserPoolClient',
-          onCreate: {
-            region: Stack.of(this).region,
-            service: 'CognitoIdentityServiceProvider',
-            action: 'describeUserPoolClient',
-            parameters: {
-              UserPoolId: props.userPool.userPoolId,
-              ClientId: this.userPoolClientId,
-            },
-            physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
-          },
-          policy: AwsCustomResourcePolicy.fromSdkCalls({
-            resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-          }),
-        },
-      );
-
-      this.userPoolClientSecret = describeCognitoUserPoolClient.getResponseField('UserPoolClient.ClientSecret');
-    }
   }
 
   /**
@@ -439,6 +420,37 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       throw new Error('userPoolClientName is available only if specified on the UserPoolClient during initialization');
     }
     return this._userPoolClientName;
+  }
+
+  public get userPoolClientSecret(): string | undefined {
+    if (!this._generateSecret) {
+      throw new Error(
+        'userPoolClientSecret is available only if the "generateSecret" prop is set to true',
+      );
+    }
+    const existingCustomResource = this.node.tryFindChild('DescribeCognitoUserPoolClient') as AwsCustomResource | undefined;
+    const describeCognitoUserPoolClient = existingCustomResource ?? new AwsCustomResource(
+      this,
+      'DescribeCognitoUserPoolClient',
+      {
+        resourceType: 'Custom::DescribeCognitoUserPoolClient',
+        onCreate: {
+          region: Stack.of(this).region,
+          service: 'CognitoIdentityServiceProvider',
+          action: 'describeUserPoolClient',
+          parameters: {
+            UserPoolId: this.userPool.userPoolId,
+            ClientId: this.userPoolClientId,
+          },
+          physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
+        },
+        policy: AwsCustomResourcePolicy.fromSdkCalls({
+          resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+        }),
+      },
+    );
+
+    return describeCognitoUserPoolClient.getResponseField('UserPoolClient.ClientSecret');
   }
 
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {

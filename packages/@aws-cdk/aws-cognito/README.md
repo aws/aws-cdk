@@ -754,6 +754,7 @@ const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
 // Allows you to pass the generated secret to other pieces of infrastructure
 const secret = userPoolClient.userPoolClientSecret;
 ```
+
 ### Resource Servers
 
 A resource server is a server for access-protected resources. It handles authenticated requests from an app that has an
