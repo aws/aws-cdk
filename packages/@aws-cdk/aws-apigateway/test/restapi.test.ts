@@ -1096,4 +1096,21 @@ describe('restapi', () => {
       DisableExecuteApiEndpoint: true,
     });
   });
+
+  test('"disableExecuteApiEndpoint" can disable the default execute-api endpoint for SpecRestApi', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'my-api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      disableExecuteApiEndpoint: true,
+    });
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      DisableExecuteApiEndpoint: true,
+    });
+  });
 });
