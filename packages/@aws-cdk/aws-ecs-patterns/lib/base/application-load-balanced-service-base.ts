@@ -274,7 +274,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   /**
    * The load balancer idle timeout, in seconds
    *
-   * @default - idle timeout is set to 60 seconds
+   * @default - CloudFormation sets idle timeout to 60 seconds
    */
   readonly idleTimeout?: Duration;
 }
