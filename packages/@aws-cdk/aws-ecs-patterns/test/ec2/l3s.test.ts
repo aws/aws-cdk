@@ -817,12 +817,73 @@ test('errors when idleTimeout is over 4000 seconds', () => {
       cluster,
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        logDriver: new ecs.AwsLogDriver({
+          streamPrefix: 'TestStream',
+        }),
       },
-      domainName: 'api.example.com',
-      protocol: ApplicationProtocol.HTTPS,
       idleTimeout: Duration.seconds(5000),
+      desiredCount: 2,
     });
   }).toThrowError();
+});
+
+test('errors when idleTimeout is under 1 seconds', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // THEN
+  expect(() => {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        logDriver: new ecs.AwsLogDriver({
+          streamPrefix: 'TestStream',
+        }),
+      },
+      idleTimeout: Duration.seconds(0),
+      desiredCount: 2,
+    });
+  }).toThrowError();
+});
+
+test('passes when idleTimeout is between 1 and 4000 seconds', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // THEN
+  expect(() => {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        logDriver: new ecs.AwsLogDriver({
+          streamPrefix: 'TestStream',
+        }),
+      },
+      idleTimeout: Duration.seconds(120),
+      desiredCount: 2,
+    });
+  }).toBeTruthy();
 });
 
 test('test Fargate loadbalanced construct with optional log driver input', () => {
