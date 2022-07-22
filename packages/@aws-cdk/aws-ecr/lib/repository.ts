@@ -561,7 +561,7 @@ export class Repository extends RepositoryBase {
       this.policyDocument = new iam.PolicyDocument();
     }
     this.policyDocument.addStatements(statement);
-    return { statementAdded: false, policyDependable: this.policyDocument };
+    return { statementAdded: true, policyDependable: this.policyDocument };
   }
 
   /**
