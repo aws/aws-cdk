@@ -19,13 +19,13 @@
     "cdk-lint": "bin/cdk-lint"
   },
   "scripts": {
-    "build": "tsc -b && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && chmod +x bin/cdk-lint && pkglint && eslint . --ext=.ts",
+    "build": "!tsc -b && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && chmod +x bin/cdk-lint && pkglint && eslint . --ext=.ts",
     "watch": "tsc -b -w",
     "pkglint": "pkglint -f",
     "test": "echo success",
-    "build+test+package": "yarn build+test",
-    "build+test": "yarn build && yarn test",
-    "build+extract": "yarn build",
+    "build+test+package": "!yarn build+test",
+    "build+test": "!yarn build && yarn test",
+    "build+extract": "!yarn build",
     "build+test+extract": "yarn build+test"
   },
   "author": {
