@@ -31,7 +31,9 @@ export async function loadPatchSet(sourceDirectory: string, relativeTo = process
     const fullFile = path.join(sourceDirectory, file);
     const relName = path.relative(relativeTo, fullFile);
 
-    if ((await fs.stat(fullFile)).isDirectory()) {
+    if (file.startsWith('.')) {
+      // Nothing, ignore
+    } else if ((await fs.stat(fullFile)).isDirectory()) {
       ret[relName] = {
         type: 'set',
         sources: await loadPatchSet(fullFile, sourceDirectory),

@@ -126,6 +126,7 @@ export abstract class IntegRunner {
 
   protected _destructiveChanges?: DestructiveChange[];
   private legacyContext?: Record<string, any>;
+  protected isLegacyTest?: boolean;
 
   constructor(options: IntegRunnerOptions) {
     this.test = options.test;
@@ -203,7 +204,7 @@ export abstract class IntegRunner {
     } catch (e) {
       const testCases = LegacyIntegTestSuite.fromLegacy({
         cdk: this.cdk,
-        testName: this.testName,
+        testName: this.test.normalizedTestName,
         integSourceFilePath: this.test.fileName,
         listOptions: {
           ...this.defaultArgs,
@@ -214,6 +215,7 @@ export abstract class IntegRunner {
         },
       });
       this.legacyContext = LegacyIntegTestSuite.getPragmaContext(this.test.fileName);
+      this.isLegacyTest = true;
       return testCases;
     }
   }

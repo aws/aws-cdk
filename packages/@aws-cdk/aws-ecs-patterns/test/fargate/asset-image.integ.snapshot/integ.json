@@ -1,14 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs-patterns/test/fargate/integ.asset-image": {
+    "fargateAssetImageTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "fargateAssetImageTestDefaultTestDeployAssert15DE6C40"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

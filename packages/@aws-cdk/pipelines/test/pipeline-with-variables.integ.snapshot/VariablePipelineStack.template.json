@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb.zip"
+     "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -778,6 +778,43 @@
      "Statement": [
       {
        "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TestCacheBucketA6BDC126",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TestCacheBucketA6BDC126",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
         "logs:CreateLogGroup",
         "logs:CreateLogStream",
         "logs:PutLogEvents"
@@ -932,7 +969,20 @@
      "Type": "CODEPIPELINE"
     },
     "Cache": {
-     "Type": "NO_CACHE"
+     "Location": {
+      "Fn::Join": [
+       "/",
+       [
+        {
+         "Ref": "TestCacheBucketA6BDC126"
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      ]
+     },
+     "Type": "S3"
     },
     "Description": "Pipeline step VariablePipelineStack/Pipeline/MyWave/Produce",
     "EncryptionKey": "alias/aws/s3"
@@ -960,6 +1010,43 @@
    "Properties": {
     "PolicyDocument": {
      "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TestCacheBucketA6BDC126",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TestCacheBucketA6BDC126",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
       {
        "Action": [
         "logs:CreateLogGroup",
@@ -1116,7 +1203,20 @@
      "Type": "CODEPIPELINE"
     },
     "Cache": {
-     "Type": "NO_CACHE"
+     "Location": {
+      "Fn::Join": [
+       "/",
+       [
+        {
+         "Ref": "TestCacheBucketA6BDC126"
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      ]
+     },
+     "Type": "S3"
     },
     "Description": "Pipeline step VariablePipelineStack/Pipeline/MyWave/Consume",
     "EncryptionKey": "alias/aws/s3"
@@ -1202,6 +1302,11 @@
      }
     ]
    }
+  },
+  "TestCacheBucketA6BDC126": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {

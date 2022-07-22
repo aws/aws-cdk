@@ -74,7 +74,7 @@ Here are the main differences:
   Application/Network Load Balancers. Only the AWS log driver is supported.
   Many host features are not supported such as adding kernel capabilities
   and mounting host devices/volumes inside the container.
-- **AWS ECSAnywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure owned by the customer. Only Bridge networking mode is supported. Does not support autoscaling, load balancing, cloudmap or attachment of volumes.
+- **AWS ECSAnywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure owned by the customer. Bridge, Host and None networking modes are supported. Does not support autoscaling, load balancing, cloudmap or attachment of volumes.
 
 For more information on Amazon EC2 vs AWS Fargate, networking and ECS Anywhere see the AWS Documentation:
 [AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html),
@@ -166,6 +166,36 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   instanceType: new ec2.InstanceType('t2.micro'),
 });
 ```
+
+To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(this, 'ASG-LaunchTemplate', {
+  instanceType: new ec2.InstanceType('t3.medium'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  userData: ec2.UserData.forLinux(),
+});
+
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  mixedInstancesPolicy: {
+    instancesDistribution: {
+      onDemandPercentageAboveBaseCapacity: 50,
+    },
+    launchTemplate: launchTemplate,
+  },
+});
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
+  autoScalingGroup,
+  machineImageType: ecs.MachineImageType.AMAZON_LINUX_2,
+});
+
+cluster.addAsgCapacityProvider(capacityProvider);
+```
+
 
 ### Bottlerocket
 
@@ -387,6 +417,20 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
   networkMode: ecs.NetworkMode.AWS_VPC,
   compatibility: ecs.Compatibility.EC2_AND_FARGATE,
 });
+```
+
+To grant a principal permission to run your `TaskDefinition`, you can use the `TaskDefinition.grantRun()` method:
+
+```ts
+declare const role: iam.IGrantable;
+const taskDef = new ecs.TaskDefinition(stack, 'TaskDef', {
+  cpu: '512',
+  memoryMiB: '512',
+  compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+});
+
+// Gives role required permissions to run taskDef
+taskDef.grantRun(role);
 ```
 
 ### Images

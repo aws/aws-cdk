@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -231,6 +231,36 @@
             "data": "batchspotcomputeenv2CE4DFD9"
           }
         ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource-Security-Group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2ResourceSecurityGroupBEA8DDD5"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Ecs-Instance-Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2EcsInstanceRoleEE146754"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Instance-Profile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2InstanceProfileC5A36CBC"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource-Service-Instance-Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2ResourceServiceInstanceRole41CADAC1"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2E12D5CBC"
+          }
+        ],
         "/batch-stack/batch-job-queue/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -285,6 +315,12 @@
             "data": "batchjobrepo4C508C51"
           }
         ],
+        "/batch-stack/batch-secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchsecret7CD5E4C6"
+          }
+        ],
         "/batch-stack/batch-job-def-from-ecr/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -301,6 +337,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "executionroleD9A39BE6"
+          }
+        ],
+        "/batch-stack/execution-role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "executionroleDefaultPolicy497F11A3"
           }
         ],
         "/batch-stack/batch-job-def-fargate/Resource": [

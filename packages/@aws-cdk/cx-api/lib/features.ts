@@ -31,9 +31,16 @@
 export const ENABLE_STACK_NAME_DUPLICATES_CONTEXT = '@aws-cdk/core:enableStackNameDuplicates';
 
 /**
- * IF this is set, `cdk diff` will always exit with 0.
+ * Determines what status code `cdk diff` should return when the specified stack
+ * differs from the deployed stack or the local CloudFormation template:
  *
- * Use `cdk diff --fail` to exit with 1 if there's a diff.
+ *  * aws-cdk:enableDiffNoFail=true => status code == 0
+ *  * aws-cdk:enableDiffNoFail=false => status code == 1
+ *
+ * You can override this behavior with the --fail flag:
+ *
+ *  * --fail => status code == 1
+ *  * --no-fail => status code == 0
  */
 export const ENABLE_DIFF_NO_FAIL_CONTEXT = 'aws-cdk:enableDiffNoFail';
 /** @deprecated use `ENABLE_DIFF_NO_FAIL_CONTEXT` */
@@ -246,6 +253,54 @@ export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueIm
 export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
 
 /**
+ * Makes sure we do not allow snapshot removal policy on resources that do not support it.
+ * If supplied on an unsupported resource, CloudFormation ignores the policy altogether.
+ * This flag will reduce confusion and unexpected loss of data when erroneously supplying
+ * the snapshot removal policy.
+ *
+ * [PERMANENT]
+ */
+export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotRemovalPolicy';
+
+/**
+ * Enable this feature flag to have CodePipeline generate a unique cross account key alias name using the stack name.
+ *
+ * Previously, when creating multiple pipelines with similar naming conventions and when crossAccountKeys is true,
+ * the KMS key alias name created for these pipelines may be the same due to how the uniqueId is generated.
+ *
+ * This new implementation creates a stack safe resource name for the alias using the stack name instead of the stack ID.
+ */
+export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName';
+
+/**
+ * Enable this feature flag to create an S3 bucket policy by default in cases where
+ * an AWS service would automatically create the Policy if one does not exist.
+ *
+ * For example, in order to send VPC flow logs to an S3 bucket, there is a specific Bucket Policy
+ * that needs to be attached to the bucket. If you create the bucket without a policy and then add the
+ * bucket as the flow log destination, the service will automatically create the bucket policy with the
+ * necessary permissions. If you were to then try and add your own bucket policy CloudFormation will throw
+ * and error indicating that a bucket policy already exists.
+ *
+ * In cases where we know what the required policy is we can go ahead and create the policy so we can
+ * remain in control of it.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3
+ */
+export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLoggingPolicy';
+
+/**
+* Enable this feature flag to restrict the decryption of a SQS queue, which is subscribed to a SNS topic, to
+* only the topic which it is subscribed to and not the whole SNS service of an account.
+*
+* Previously the decryption was only restricted to the SNS service principal. To make the SQS subscription more
+* secure, it is a good practice to restrict the decryption further and only allow the connected SNS topic to decryption
+* the subscribed queue.
+*
+*/
+export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -273,6 +328,10 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
   [CHECK_SECRET_USAGE]: true,
   [IAM_MINIMIZE_POLICIES]: true,
+  [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true,
+  [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
+  [S3_CREATE_DEFAULT_LOGGING_POLICY]: true,
+  [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
 };
 
 /**

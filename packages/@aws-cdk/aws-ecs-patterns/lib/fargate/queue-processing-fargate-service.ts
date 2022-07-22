@@ -159,6 +159,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       assignPublicIp: props.assignPublicIp,
       circuitBreaker: props.circuitBreaker,
       capacityProviderStrategies: props.capacityProviderStrategies,
+      enableExecuteCommand: props.enableExecuteCommand,
     });
 
     this.configureAutoscalingForService(this.service);

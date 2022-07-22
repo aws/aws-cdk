@@ -2,10 +2,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import * as fse from 'fs-extra';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
 import { Duration } from '../duration';
+import { FileSystem } from '../fs';
 import { Lazy } from '../lazy';
 import { Size } from '../size';
 import { Stack } from '../stack';
@@ -99,7 +101,7 @@ export enum CustomResourceProviderRuntime {
    *
    * @deprecated Use {@link NODEJS_14_X}
    */
-  NODEJS_12 = 'nodejs12.x',
+  NODEJS_12 = 'deprecated_nodejs12.x',
 
   /**
    * Node.js 14.x
@@ -118,11 +120,12 @@ export enum CustomResourceProviderRuntime {
  * This is a provider for `CustomResource` constructs, backed by an AWS Lambda
  * Function. It only supports NodeJS runtimes.
  *
- * **This is not a generic custom resource provider class**. It is specifically
- * intended to be used only by constructs in the AWS CDK Construct Library, and
- * only exists here because of reverse dependency issues (for example, it cannot
- * use `iam.PolicyStatement` objects, since the `iam` library already depends on
- * the CDK `core` library and we cannot have cyclic dependencies).
+ * > **Application builders do not need to use this provider type**. This is not
+ * > a generic custom resource provider class. It is specifically
+ * > intended to be used only by constructs in the AWS CDK Construct Library, and
+ * > only exists here because of reverse dependency issues (for example, it cannot
+ * > use `iam.PolicyStatement` objects, since the `iam` library already depends on
+ * > the CDK `core` library and we cannot have cyclic dependencies).
  *
  * If you are not writing constructs for the AWS Construct Library, you should
  * use the `Provider` class in the `custom-resources` module instead, which has
@@ -200,16 +203,17 @@ export class CustomResourceProvider extends Construct {
 
     const stack = Stack.of(scope);
 
-    // copy the entry point to the code directory
-    fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(props.codeDirectory, `${ENTRYPOINT_FILENAME}.js`));
-
     // verify we have an index file there
     if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {
       throw new Error(`cannot find ${props.codeDirectory}/index.js`);
     }
 
+    const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
+    fse.copySync(props.codeDirectory, stagingDirectory);
+    fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
+
     const staging = new AssetStaging(this, 'Staging', {
-      sourcePath: props.codeDirectory,
+      sourcePath: stagingDirectory,
     });
 
     const assetFileName = staging.relativeStagedPath(stack);
@@ -255,7 +259,7 @@ export class CustomResourceProvider extends Construct {
         MemorySize: memory.toMebibytes(),
         Handler: `${ENTRYPOINT_FILENAME}.handler`,
         Role: role.getAtt('Arn'),
-        Runtime: props.runtime,
+        Runtime: customResourceProviderRuntimeToString(props.runtime),
         Environment: this.renderEnvironmentVariables(props.environment),
         Description: props.description ?? undefined,
       },
@@ -285,7 +289,7 @@ export class CustomResourceProvider extends Construct {
    * myProvider.addToRolePolicy({
    *   Effect: 'Allow',
    *   Action: 's3:GetObject',
-   *   Resources: '*',
+   *   Resource: '*',
    * });
    */
   public addToRolePolicy(statement: any): void {
@@ -327,5 +331,17 @@ export class CustomResourceProvider extends Construct {
     }
 
     return { Variables: variables };
+  }
+}
+
+function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime): string {
+  switch (x) {
+    case CustomResourceProviderRuntime.NODEJS_12:
+    case CustomResourceProviderRuntime.NODEJS_12_X:
+      return 'nodejs12.x';
+    case CustomResourceProviderRuntime.NODEJS_14_X:
+      return 'nodejs14.x';
+    case CustomResourceProviderRuntime.NODEJS_16_X:
+      return 'nodejs16.x';
   }
 }

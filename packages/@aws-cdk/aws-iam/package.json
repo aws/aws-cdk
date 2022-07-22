@@ -85,7 +85,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.99",
+    "@types/aws-lambda": "^8.10.101",
     "@types/jest": "^27.5.2",
     "@types/sinon": "^9.0.11",
     "jest": "^27.5.1",
@@ -109,6 +109,7 @@
   "awslint": {
     "exclude": [
       "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
+      "from-signature:@aws-cdk/aws-iam.Role.fromRoleName",
       "from-method:@aws-cdk/aws-iam.AccessKey",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
       "props-physical-name:@aws-cdk/aws-iam.OpenIdConnectProviderProps",

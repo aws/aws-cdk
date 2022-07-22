@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-route53resolver/test/integ.firewall": {
+    "integ.firewall": {
       "stacks": [
         "cdk-route53-resolver-firewall"
       ],

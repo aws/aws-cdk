@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Annotations } from './annotations';
 import { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 /* eslint-disable import/order */
@@ -13,6 +14,7 @@ import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { TagManager } from './tag-manager';
 import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
+import { FeatureFlags } from './feature-flags';
 
 export interface CfnResourceProps {
   /**
@@ -108,7 +110,12 @@ export class CfnResource extends CfnRefElement {
    * to be replaced.
    *
    * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
-   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
+   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`). In some
+   * cases, a snapshot can be taken of the resource prior to deletion
+   * (`RemovalPolicy.SNAPSHOT`). A list of resources that support this policy
+   * can be found in the following link:
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html#aws-attribute-deletionpolicy-options
    */
   public applyRemovalPolicy(policy: RemovalPolicy | undefined, options: RemovalPolicyOptions = {}) {
     policy = policy || options.default || RemovalPolicy.RETAIN;
@@ -125,6 +132,27 @@ export class CfnResource extends CfnRefElement {
         break;
 
       case RemovalPolicy.SNAPSHOT:
+        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+        const snapshottableResourceTypes = [
+          'AWS::EC2::Volume',
+          'AWS::ElastiCache::CacheCluster',
+          'AWS::ElastiCache::ReplicationGroup',
+          'AWS::Neptune::DBCluster',
+          'AWS::RDS::DBCluster',
+          'AWS::RDS::DBInstance',
+          'AWS::Redshift::Cluster',
+        ];
+
+        // error if flag is set, warn if flag is not
+        const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(this.cfnResourceType);
+        if (problematicSnapshotPolicy) {
+          if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
+            throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
+          } else {
+            Annotations.of(this).addWarning(`${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
+          }
+        }
+
         deletionPolicy = CfnDeletionPolicy.SNAPSHOT;
         break;
 
@@ -403,12 +431,25 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
+   * Deprecated
+   * @deprecated use `updatedProperties`
+   *
    * Return properties modified after initiation
    *
    * Resources that expose mutable properties should override this function to
    * collect and return the properties object for this resource.
    */
   protected get updatedProperites(): { [key: string]: any } {
+    return this.updatedProperties;
+  }
+
+  /**
+   * Return properties modified after initiation
+   *
+   * Resources that expose mutable properties should override this function to
+   * collect and return the properties object for this resource.
+   */
+  protected get updatedProperties(): { [key: string]: any } {
     return this._cfnProperties;
   }
 

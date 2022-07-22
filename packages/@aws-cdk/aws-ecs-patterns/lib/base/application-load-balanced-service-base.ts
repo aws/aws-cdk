@@ -2,7 +2,7 @@ import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-c
 import { IVpc } from '@aws-cdk/aws-ec2';
 import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
-  ICluster, LogDriver, PropagatedTagSource, Secret,
+  ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
 } from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
@@ -89,7 +89,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default - No certificate associated with the load balancer, if using
    * the HTTP protocol. For HTTPS, a DNS-validated certificate will be
-   * created for the load balancer's specified domain name.
+   * created for the load balancer's specified domain name if a domain name
+   * and domain zone are specified.
    */
   readonly certificate?: ICertificate;
 
@@ -105,8 +106,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   /**
    * The protocol for connections from clients to the load balancer.
    * The load balancer port is determined from the protocol (port 80 for
-   * HTTP, port 443 for HTTPS).  A domain name and zone must be also be
-   * specified if using HTTPS.
+   * HTTP, port 443 for HTTPS).  If HTTPS, either a certificate or domain
+   * name and domain zone must also be specified.
    *
    * @default HTTP. If a certificate is specified, the protocol will be
    * set by default to HTTPS.
@@ -248,12 +249,26 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly circuitBreaker?: DeploymentCircuitBreaker;
 
   /**
+   * A list of Capacity Provider strategies used to place a service.
+   *
+   * @default - undefined
+   *
+   */
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+  /**
    * Name of the load balancer
    *
    * @default - Automatically generated name.
    */
   readonly loadBalancerName?: string;
 
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {

@@ -150,8 +150,10 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       cloudMapOptions: props.cloudMapOptions,
       deploymentController: props.deploymentController,
       circuitBreaker: props.circuitBreaker,
+      enableExecuteCommand: props.enableExecuteCommand,
       placementConstraints: props.placementConstraints,
       placementStrategies: props.placementStrategies,
+      capacityProviderStrategies: props.capacityProviderStrategies,
     });
     this.addServiceAsTarget(this.service);
   }
