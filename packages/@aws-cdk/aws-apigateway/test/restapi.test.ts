@@ -1112,8 +1112,7 @@ describe('restapi', () => {
         'AWS::ApiGateway::RestApi',
         {
           Description: 'My API',
-        }
-      );
+        });
     });
 
     test('description is not set', () => {
@@ -1129,8 +1128,7 @@ describe('restapi', () => {
         'AWS::ApiGateway::RestApi',
         {
           Description: '',
-        }
-      );
+        });
     });
 
     test('description is set with _configureDeployment', () => {
@@ -1154,8 +1152,7 @@ describe('restapi', () => {
         'AWS::ApiGateway::RestApi',
         {
           Description: 'this is a fake api',
-        }
-      );
+        });
     });
 
     test('description is not set when _configureDeployment is called', () => {
@@ -1176,8 +1173,7 @@ describe('restapi', () => {
         'AWS::ApiGateway::RestApi',
         {
           Description: 'Automatically created by the RestApi construct',
-        }
-      );
+        });
     });
   });
 });
