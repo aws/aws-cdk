@@ -919,6 +919,17 @@ describe('stack', () => {
     expect(stack.stackName).toEqual('ProdStackD5279B22');
   });
 
+  test('generated stack names will not exceed 128 characters', () => {
+    // WHEN
+    const root = new App();
+    const app = new Construct(root, 'ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackName' + 'z'.repeat(60));
+    const stack = new Stack(app, 'ThisNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheAppNameStack');
+
+    // THEN
+    expect(stack.stackName.length).toEqual(128);
+    expect(stack.stackName).toEqual('ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStaceryLongButItWillOnlyBeTooLongWhenCombinedWithTheAppNameStack864CC1D3');
+  });
+
   test('stack construct id does not go through stack name validation if there is an explicit stack name', () => {
     // GIVEN
     const app = new App();

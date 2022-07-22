@@ -204,7 +204,7 @@ export abstract class IntegRunner {
     } catch (e) {
       const testCases = LegacyIntegTestSuite.fromLegacy({
         cdk: this.cdk,
-        testName: this.testName,
+        testName: this.test.normalizedTestName,
         integSourceFilePath: this.test.fileName,
         listOptions: {
           ...this.defaultArgs,
