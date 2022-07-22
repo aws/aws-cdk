@@ -350,6 +350,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   private _generateSecret: boolean | undefined;
   private readonly userPool: IUserPool;
+  private _describeCognitoUserPoolClientSecret?: string;
 
   /**
    * The OAuth flows enabled for this client.
@@ -428,29 +429,33 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
         'userPoolClientSecret is available only if the "generateSecret" prop is set to true',
       );
     }
-    const existingCustomResource = this.node.tryFindChild('DescribeCognitoUserPoolClient') as AwsCustomResource | undefined;
-    const describeCognitoUserPoolClient = existingCustomResource ?? new AwsCustomResource(
-      this,
-      'DescribeCognitoUserPoolClient',
-      {
-        resourceType: 'Custom::DescribeCognitoUserPoolClient',
-        onCreate: {
-          region: Stack.of(this).region,
-          service: 'CognitoIdentityServiceProvider',
-          action: 'describeUserPoolClient',
-          parameters: {
-            UserPoolId: this.userPool.userPoolId,
-            ClientId: this.userPoolClientId,
-          },
-          physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
-        },
-        policy: AwsCustomResourcePolicy.fromSdkCalls({
-          resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-        }),
-      },
-    );
 
-    return describeCognitoUserPoolClient.getResponseField('UserPoolClient.ClientSecret');
+    // Create the Custom Resource that assists in resolving the User Pool Client secret
+    // just once, no matter how many times this method is called
+    if (!this._describeCognitoUserPoolClientSecret) {
+      this._describeCognitoUserPoolClientSecret = new AwsCustomResource(
+        this,
+        'DescribeCognitoUserPoolClient',
+        {
+          resourceType: 'Custom::DescribeCognitoUserPoolClient',
+          onCreate: {
+            region: Stack.of(this).region,
+            service: 'CognitoIdentityServiceProvider',
+            action: 'describeUserPoolClient',
+            parameters: {
+              UserPoolId: this.userPool.userPoolId,
+              ClientId: this.userPoolClientId,
+            },
+            physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
+          },
+          policy: AwsCustomResourcePolicy.fromSdkCalls({
+            resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+          }),
+        },
+      ).getResponseField('UserPoolClient.ClientSecret');
+    }
+
+    return this._describeCognitoUserPoolClientSecret;
   }
 
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
