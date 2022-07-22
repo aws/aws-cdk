@@ -444,7 +444,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
 
     if (props.idleTimeout) {
       if (props.idleTimeout > Duration.seconds(4000) || props.idleTimeout < Duration.seconds(1)) {
-        throw new Error( `IdleTime must be between 1 and 4000 seconds  ${props.idleTimeout}`);
+        throw new Error( 'IdleTime must be between 1 and 4000 seconds');
       }
     }
 
