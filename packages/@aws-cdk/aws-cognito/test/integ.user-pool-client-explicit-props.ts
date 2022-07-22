@@ -1,4 +1,4 @@
-import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { OAuthScope, UserPool, ClientAttributes, StringAttribute } from '../lib';
 
 const app = new App();
@@ -12,7 +12,7 @@ const userpool = new UserPool(stack, 'myuserpool', {
   },
 });
 
-userpool.addClient('myuserpoolclient', {
+const client = userpool.addClient('myuserpoolclient', {
   userPoolClientName: 'myuserpoolclient',
   authFlows: {
     adminUserPassword: true,
@@ -56,4 +56,8 @@ userpool.addClient('myuserpoolclient', {
       timezone: true,
       website: true,
     }).withCustomAttributes('attribute_one', 'attribute_two'),
+});
+
+new CfnOutput(client, 'CfnOutput', {
+  value: client.userPoolClientSecret as string,
 });
