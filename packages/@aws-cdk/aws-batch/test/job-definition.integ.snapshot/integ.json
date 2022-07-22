@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "IntegTest-BatchDefaultEnvVarsStack/DefaultTest": {
+      "stacks": [
+        "BatchDefaultEnvVarsStack"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "IntegTestBatchDefaultEnvVarsStackDefaultTestDeployAssertC15EFFF2"
+    }
+  }
+}
