@@ -279,7 +279,6 @@ env:
            {"area":"@aws-cdk/pipelines","keywords":["pipelines","cdk-pipelines","sourceaction","synthaction"],"labels":["@aws-cdk/pipelines"],"assignees":["rix0rrr"]},
            {"area":"@aws-cdk/region-info","keywords":["region-info"],"labels":["@aws-cdk/region-info"],"assignees":["kaizencc"]},
            {"area":"aws-cdk-lib","keywords":["aws-cdk-lib","cdk-v2","v2","ubergen"],"labels":["aws-cdk-lib"],"assignees":["madeline-k"],"enableGlobalAffixes":false},
-           {"area":"monocdk","keywords":["monocdk","monocdk-experiment"],"labels":["monocdk"],"assignees":["madeline-k"],"enableGlobalAffixes":false},
            {"area":"@aws-cdk/yaml-cfn","keywords":["aws-yaml-cfn","yaml-cfn"],"labels":["@aws-cdk/aws-yaml-cfn"],"assignees":["kaizencc"]},
            {"area":"@aws-cdk/aws-lightsail","keywords":["lightsail","aws-lightsail"],"labels":["@aws-cdk/aws-lightsail"],"assignees":["corymhall"]},
            {"area":"@aws-cdk/aws-aps","keywords":["aps","aws-aps","prometheus"],"labels":["@aws-cdk/aws-aps"],"assignees":["corymhall"]},

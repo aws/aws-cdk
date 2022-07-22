@@ -13,8 +13,8 @@ phases:
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
 
-      # Packing the mono-libraries (monocdk & aws-cdk-lib) can cause
-      # memory errors. Increasing this value allows our build to more consistently succeed
+      # Packing the aws-cdk-lib can cause memory errors.
+      # Increasing this value allows our build to more consistently succeed
       - /sbin/sysctl -w vm.max_map_count=2251954
   pre_build:
     commands:

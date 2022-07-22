@@ -89,9 +89,6 @@ node ${scriptdir}/create-missing-libraries.js || {
     exit 1
 }
 
-# update monocdk dep list
-(cd ${scriptdir}/../../../monocdk && yarn gen || true)
-
 # append old changelog after new and replace as the last step because otherwise we will not be idempotent
 _changelog_contents=$(cat CHANGELOG.md.new)
 if [ -n "${_changelog_contents}" ]; then

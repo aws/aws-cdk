@@ -53,26 +53,9 @@ export class DescriptionIsRequired extends ValidationRule {
  */
 export class PublishConfigTagIsRequired extends ValidationRule {
   public readonly name = 'package-info/publish-config-tag';
-
-  // The list of packages that are publicly published in both v1 and v2.
-  private readonly SHARED_PACKAGES = [
-    '@aws-cdk/assert',
-    '@aws-cdk/cloud-assembly-schema',
-    '@aws-cdk/cloudformation-diff',
-    '@aws-cdk/cx-api',
-    '@aws-cdk/region-info',
-    'aws-cdk',
-    'awslint',
-    'cdk-assets',
-  ];
-
   public validate(pkg: PackageJson): void {
     if (pkg.json.private) { return; }
-
-    // v1 packages that are v1-only (e.g., `@aws-cdk/aws-s3`) are always published as `latest`.
-    // Packages that are published with the same namespace to both v1 and v2 are published as `latest-1` on v1 and `latest` on v2.
-    // All v2-only packages are just `latest`.
-    const defaultPublishTag = (cdkMajorVersion() === 2 || !this.SHARED_PACKAGES.includes(pkg.packageName)) ? 'latest' : 'latest-1';
+    const defaultPublishTag = 'latest';
 
     if (pkg.json.publishConfig?.tag !== defaultPublishTag) {
       pkg.report({
@@ -93,17 +76,12 @@ export class PublishConfigTagIsRequired extends ValidationRule {
  * publishing it.
  */
 export class CdkOutMustBeNpmIgnored extends ValidationRule {
-
   public readonly name = 'package-info/npm-ignore-cdk-out';
-
   public validate(pkg: PackageJson): void {
-
     const npmIgnorePath = path.join(pkg.packageRoot, '.npmignore');
 
     if (fs.existsSync(npmIgnorePath)) {
-
       const npmIgnore = fs.readFileSync(npmIgnorePath);
-
       if (!npmIgnore.includes('**/cdk.out')) {
         pkg.report({
           ruleName: this.name,
@@ -187,7 +165,7 @@ export class ThirdPartyAttributions extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
 
-    const alwaysCheck = ['monocdk', 'aws-cdk-lib'];
+    const alwaysCheck = ['aws-cdk-lib'];
     if (pkg.json.private && !alwaysCheck.includes(pkg.json.name)) {
       return;
     }
@@ -634,27 +612,27 @@ export class JSIIProjectReferences extends ValidationRule {
       this.name,
       pkg,
       'jsii.projectReferences',
-      pkg.json.name !== 'monocdk' && pkg.json.name !== 'aws-cdk-lib',
+      pkg.json.name !== 'aws-cdk-lib',
     );
   }
 }
 
-export class NoPeerDependenciesMonocdk extends ValidationRule {
-  public readonly name = 'monocdk/no-peer';
-  private readonly allowedPeer = ['constructs'];
-  private readonly modules = ['monocdk', 'aws-cdk-lib'];
+export class NoPeerDependenciesAwsCdkLib extends ValidationRule {
+  public readonly name = 'aws-cdk-lib/no-peer';
+  private readonly allowedPeer = 'constructs';
+  private readonly module = 'aws-cdk-lib';
 
   public validate(pkg: PackageJson): void {
-    if (!this.modules.includes(pkg.packageName)) {
+    if (this.module !== pkg.packageName) {
       return;
     }
 
-    const peers = Object.keys(pkg.peerDependencies).filter(peer => !this.allowedPeer.includes(peer));
-    if (peers.length > 0) {
+    const peerDependencies = Object.keys(pkg.peerDependencies).filter(peer => peer !== this.allowedPeer);
+    if (peerDependencies.length > 0) {
       pkg.report({
         ruleName: this.name,
         message: `Adding a peer dependency to the monolithic package ${pkg.packageName} is a breaking change, and thus not allowed.
-         Added ${peers.join(' ')}`,
+         Added ${peerDependencies.join(' ')}`,
       });
     }
   }
@@ -664,13 +642,9 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
  * Validates that the same version of `constructs` is used wherever a dependency
  * is specified, so that they must all be udpated at the same time (through an
  * update to this rule).
- *
- * Note: v1 and v2 use different versions respectively.
  */
 export class ConstructsVersion extends ValidationRule {
-  public static readonly VERSION = cdkMajorVersion() === 2
-    ? '^10.0.0'
-    : '^3.3.69';
+  public static readonly VERSION = '^10.0.0';
 
   public readonly name = 'deps/constructs';
 
@@ -735,7 +709,7 @@ export class JSIIPythonTarget extends ValidationRule {
 
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
-    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', `Framework :: AWS CDK :: ${cdkMajorVersion()}`]);
+    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', 'Framework :: AWS CDK :: 2']);
   }
 }
 
@@ -1169,11 +1143,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    if (cdkMajorVersion() === 2) {
-      expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
-    } else {
-      expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
-    }
+    expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
   }
 }
 
@@ -1643,26 +1613,24 @@ export class UbergenPackageVisibility extends ValidationRule {
   ];
 
   public validate(pkg: PackageJson): void {
-    if (cdkMajorVersion() === 2) {
-      // Only alpha packages and packages in the publicPackages list should be "public". Everything else should be private.
-      if (this.v2PublicPackages.includes(pkg.json.name) && pkg.json.private === true) {
-        pkg.report({
-          ruleName: this.name,
-          message: 'Package must be public',
-          fix: () => {
-            delete pkg.json.private;
-          },
-        });
-      } else if (!this.v2PublicPackages.includes(pkg.json.name) && pkg.json.private !== true && !pkg.packageName.endsWith('-alpha')) {
-        pkg.report({
-          ruleName: this.name,
-          message: 'Package must not be public',
-          fix: () => {
-            delete pkg.json.private;
-            pkg.json.private = true;
-          },
-        });
-      }
+    // Only alpha packages and packages in the publicPackages list should be "public". Everything else should be private.
+    if (this.v2PublicPackages.includes(pkg.json.name) && pkg.json.private === true) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Package must be public',
+        fix: () => {
+          delete pkg.json.private;
+        },
+      });
+    } else if (!this.v2PublicPackages.includes(pkg.json.name) && pkg.json.private !== true && !pkg.packageName.endsWith('-alpha')) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Package must not be public',
+        fix: () => {
+          delete pkg.json.private;
+          pkg.json.private = true;
+        },
+      });
     }
   }
 }
@@ -1774,8 +1742,6 @@ export class CdkCliV2MissesMainAndTypes extends ValidationRule {
   public validate(pkg: PackageJson): void {
     // this rule only applies to the CLI
     if (pkg.json.name !== 'aws-cdk') { return; }
-    // this only applies to V2
-    if (cdkMajorVersion() === 1) { return; }
 
     if (pkg.json.main || pkg.json.types) {
       pkg.report({
@@ -1855,12 +1821,6 @@ function toRegExp(str: string): RegExp {
 
 function readBannerFile(file: string): string {
   return fs.readFileSync(path.join(__dirname, 'banners', file), { encoding: 'utf-8' }).trim();
-}
-
-function cdkMajorVersion(): number {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const releaseJson = require(`${monoRepoRoot()}/release.json`);
-  return releaseJson.majorVersion as number;
 }
 
 /**

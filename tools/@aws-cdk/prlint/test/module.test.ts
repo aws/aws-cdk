@@ -16,12 +16,10 @@ describe('findModulePath', () => {
     expect(relative(findModulePath('lambda'))).toEqual('packages/@aws-cdk/aws-lambda');
     expect(relative(findModulePath('s3'))).toEqual('packages/@aws-cdk/aws-s3');
     expect(relative(findModulePath('cdk-build-tools'))).toEqual('tools/@aws-cdk/cdk-build-tools');
+    expect(relative(findModulePath('assert'))).toEqual('packages/@aws-cdk/assert');
   });
 
   test('multiple fuzzy matches', () => {
-    // also matches 'packages/@monocdk-experiment/assert'
-    expect(relative(findModulePath('assert'))).toEqual('packages/@aws-cdk/assert');
-
     // also matches 'packages/aws-cdk' and 'tools/eslint-plugin-cdk'
     expect(relative(findModulePath('cdk'))).toEqual('packages/cdk');
   });
