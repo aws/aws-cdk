@@ -25,7 +25,15 @@ const CRLF = `${CR}${LF}`;
  * @param fileOrDirectory The directory or file to fingerprint
  * @param options Fingerprinting options
  */
-export function fingerprint(fileOrDirectory: string, options: FingerprintOptions = { }) {
+export function fingerprint(fileOrDirectory: string, inputOptions: FingerprintOptions = { }) {
+  const options = { ...inputOptions };
+
+  if (inputOptions.fingerprintByFileStatThreshold === undefined) {
+    options.fingerprintByFileStatThreshold = 16 * 1024 * 1024;
+  } else if (!options.fingerprintByFileStatThreshold) {
+    options.fingerprintByFileStatThreshold = undefined;
+  }
+
   const hash = crypto.createHash('sha256');
   _hashField(hash, 'options.extra', options.extraHash || '');
   const follow = options.follow || SymlinkFollowMode.EXTERNAL;
@@ -72,7 +80,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
         _hashField(hash, `link:${hashComponent}`, linkTarget);
       }
     } else if (stat.isFile()) {
-      _hashField(hash, `file:${hashComponent}`, contentFingerprint(realPath));
+      _hashField(hash, `file:${hashComponent}`, contentFingerprint(realPath, options));
     } else if (stat.isDirectory()) {
       for (const item of fs.readdirSync(realPath).sort()) {
         _processFileOrDirectory(path.join(symbolicPath, item), false, path.join(realPath, item));
@@ -83,8 +91,18 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   }
 }
 
-export function contentFingerprint(file: string): string {
+export function contentFingerprint(file: string, options: FingerprintOptions): string {
   const hash = crypto.createHash('sha256');
+  const stats = fs.statSync(file);
+
+  if (options.fingerprintByFileStatThreshold !== undefined && stats.size >= options.fingerprintByFileStatThreshold) {
+    hash.update(JSON.stringify({ mtime: stats.mtime, size: stats.size, inode: stats.ino }));
+
+    // Ensure that the hash does not collide between the stat-based mode and
+    // content-based mode, by prepending a prefix to the returned digest.
+    return 's-' + hash.digest('hex');
+  }
+
   const buffer = Buffer.alloc(BUFFER_SIZE);
   // eslint-disable-next-line no-bitwise
   const fd = fs.openSync(file, fs.constants.O_DSYNC | fs.constants.O_RDONLY | fs.constants.O_SYNC);

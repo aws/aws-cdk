@@ -112,6 +112,20 @@ interface ExtraHashOptions {
  * Options related to calculating source hash.
  */
 export interface FingerprintOptions extends CopyOptions, ExtraHashOptions {
+  /**
+   * To avoid spending excessive time hashing large files, this option requests
+   * that files larger than this size be hashed based on their file stats
+   * (inode, size, and mtime) instead of contents. This can provide a large
+   * speedup when including large assets, but risks false negatives (if
+   * identical files have different content hashes). Additionally, line-ending
+   * normalization will be disabled above this threshold.
+   *
+   * Set this threshold to false to use content-based hashing for all files,
+   * regardless of size.
+   *
+   * @default 16777216
+   */
+  readonly fingerprintByFileStatThreshold?: number | false
 }
 
 /**

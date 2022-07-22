@@ -33,6 +33,18 @@ export const ANALYTICS_REPORTING_ENABLED_CONTEXT = 'aws:cdk:version-reporting';
 export const DISABLE_ASSET_STAGING_CONTEXT = 'aws:cdk:disable-asset-staging';
 
 /**
+ * Sets a threshold at which asset staging fingerprints will use file stats
+ * (inode, size, and mtime) instead of file contents. This can speed up asset
+ * staging significantly, but risks reducing cache hit rate and potentially
+ * uploading the same asset multiple times, if identical assets are staged from
+ * different files.
+ *
+ * By default, this is enabled for files larger than a certain size (currently 16MB).
+ * To disable this feature entirely, set this context key to `false`.
+ */
+export const ASSET_STAGING_FILE_STAT_FINGERPRINT_THRESHOLD = 'aws:cdk:file-stat-fingerprint-threshold';
+
+/**
  * If this context key is set, the CDK will stage assets under the specified
  * directory. Otherwise, assets will not be staged.
  * Omits stack traces from construct metadata entries.

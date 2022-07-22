@@ -167,8 +167,8 @@ describe('fs fingerprint', () => {
       const crlfStat = fs.statSync(crlf);
 
       // WHEN
-      const crlfHash = contentFingerprint(crlf);
-      const lfHash = contentFingerprint(lf);
+      const crlfHash = contentFingerprint(crlf, {});
+      const lfHash = contentFingerprint(lf, {});
 
       // THEN
       expect(crlfStat.size).not.toEqual(lfStat.size); // Difference in size due to different line endings
@@ -176,6 +176,58 @@ describe('fs fingerprint', () => {
 
       fs.unlinkSync(crlf);
 
+    });
+  });
+
+  describe('inode-fingerprinting', () => {
+    const largeString = ' '.repeat(16 * 1024 * 1024);
+    const smallString = ' '.repeat(16 * 1024 * 1024 - 1);
+
+    const largefile1 = path.join(__dirname, 'inode-fp.1');
+    const largefile2 = path.join(__dirname, 'inode-fp.2');
+    fs.writeFileSync(largefile1, largeString);
+    fs.writeFileSync(largefile2, largeString);
+
+    const smallfile1 = path.join(__dirname, 'inode-fp.3');
+    const smallfile2 = path.join(__dirname, 'inode-fp.4');
+    fs.writeFileSync(smallfile1, smallString);
+    fs.writeFileSync(smallfile2, smallString);
+
+    test('uses inode fingerprinting for large files', () => {
+      const hash1 = FileSystem.fingerprint(largefile1, {});
+      const hash2 = FileSystem.fingerprint(largefile2, {});
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    test('uses content fingerprinting for small files', () => {
+      const hash1 = FileSystem.fingerprint(smallfile1, {});
+      const hash2 = FileSystem.fingerprint(smallfile2, {});
+      expect(hash1).toEqual(hash2);
+    });
+
+    test('reducing thresholds', () => {
+      const hash1 = FileSystem.fingerprint(smallfile1, { fingerprintByFileStatThreshold: 1 });
+      const hash2 = FileSystem.fingerprint(smallfile2, { fingerprintByFileStatThreshold: 1 });
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    test('increasing thresholds', () => {
+      const hash1 = FileSystem.fingerprint(largefile1, { fingerprintByFileStatThreshold: 16 * 1024 * 1024 + 1 });
+      const hash2 = FileSystem.fingerprint(largefile2, { fingerprintByFileStatThreshold: 16 * 1024 * 1024 + 1 });
+      expect(hash1).toEqual(hash2);
+    });
+
+    test('disabling entirely', () => {
+      const hash1 = FileSystem.fingerprint(largefile1, { fingerprintByFileStatThreshold: false });
+      const hash2 = FileSystem.fingerprint(largefile2, { fingerprintByFileStatThreshold: false });
+      expect(hash1).toEqual(hash2);
+    });
+
+    afterAll(() => {
+      fs.unlinkSync(largefile1);
+      fs.unlinkSync(largefile2);
+      fs.unlinkSync(smallfile1);
+      fs.unlinkSync(smallfile2);
     });
   });
 

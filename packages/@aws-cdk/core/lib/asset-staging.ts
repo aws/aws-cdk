@@ -159,7 +159,10 @@ export class AssetStaging extends Construct {
     super(scope, id);
 
     this.sourcePath = path.resolve(props.sourcePath);
-    this.fingerprintOptions = props;
+    this.fingerprintOptions = {
+      fingerprintByFileStatThreshold: this.fileStatFingerprintThreshold,
+      ...props,
+    };
 
     if (!fs.existsSync(this.sourcePath)) {
       throw new Error(`Cannot find asset at ${this.sourcePath}`);
@@ -352,6 +355,10 @@ export class AssetStaging extends Construct {
    */
   private get stagingDisabled() {
     return !!this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+  }
+
+  private get fileStatFingerprintThreshold(): number | undefined {
+    return this.node.tryGetContext(cxapi.ASSET_STAGING_FILE_STAT_FINGERPRINT_THRESHOLD);
   }
 
   /**
