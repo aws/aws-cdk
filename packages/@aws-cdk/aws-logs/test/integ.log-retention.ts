@@ -1,5 +1,5 @@
 import { App, Stack, StackProps } from '@aws-cdk/core';
-//import { IntegTest } from '@aws-cdk/integ-tests';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { LogRetention, RetentionDays, LogDeletionPolicy } from '../lib';
 
 class LogRetentionIntegStack extends Stack {
@@ -15,6 +15,6 @@ class LogRetentionIntegStack extends Stack {
 }
 
 const app = new App();
-new LogRetentionIntegStack(app, 'aws-cdk-log-retention-integ');
+const stack = new LogRetentionIntegStack(app, 'aws-cdk-log-retention-integ');
 app.synth();
-//new IntegTest(app, 'LogRetentionInteg', { testCases: [stack] });
+new IntegTest(app, 'LogRetentionInteg', { testCases: [stack] });
