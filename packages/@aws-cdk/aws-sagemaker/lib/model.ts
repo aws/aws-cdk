@@ -52,14 +52,14 @@ export interface ModelAttributes {
   /**
    * The IAM execution role associated with this model.
    *
-   * @default When not provided, any role-related operations will no-op.
+   * @default - When not provided, any role-related operations will no-op.
    */
   readonly role?: iam.IRole;
 
   /**
    * The security groups for this model, if in a VPC.
    *
-   * @default When not provided, the connections to/from this model cannot be managed.
+   * @default - When not provided, the connections to/from this model cannot be managed.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 }
@@ -124,21 +124,21 @@ export interface ContainerDefinition {
   /**
    * A map of environment variables to pass into the container.
    *
-   * @default none
+   * @default - none
    */
   readonly environment?: {[key: string]: string};
 
   /**
    * Hostname of the container.
    *
-   * @default none
+   * @default - none
    */
   readonly containerHostname?: string;
 
   /**
    * S3 path to the model artifacts.
    *
-   * @default none
+   * @default - none
    */
   readonly modelData?: ModelData;
 }
@@ -151,14 +151,14 @@ export interface ModelProps {
   /**
    * The IAM role that the Amazon SageMaker service assumes.
    *
-   * @default a new IAM role will be created.
+   * @default - a new IAM role will be created.
    */
   readonly role?: iam.IRole;
 
   /**
    * Name of the SageMaker Model.
    *
-   * @default AWS CloudFormation generates a unique physical ID and uses that ID for the model's
+   * @default - AWS CloudFormation generates a unique physical ID and uses that ID for the model's
    * name.
    */
   readonly modelName?: string;
@@ -166,14 +166,14 @@ export interface ModelProps {
   /**
    * The VPC to deploy the endpoint to.
    *
-   * @default none
+   * @default - none
    */
   readonly vpc?: ec2.IVpc;
 
   /**
    * The VPC subnets to deploy the endpoints.
    *
-   * @default none
+   * @default - none
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -181,7 +181,7 @@ export interface ModelProps {
    * The security groups to associate to the Model. If no security groups are provided and 'vpc' is
    * configured, one security group will be created automatically.
    *
-   * @default A security group will be automatically created if 'vpc' is supplied
+   * @default - A security group will be automatically created if 'vpc' is supplied
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -195,7 +195,7 @@ export interface ModelProps {
   /**
    * Specifies additional containers for an inference pipeline.
    *
-   * @default none
+   * @default - none
    */
   readonly extraContainers?: ContainerDefinition[];
 

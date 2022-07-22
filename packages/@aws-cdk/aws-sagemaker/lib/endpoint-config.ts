@@ -32,7 +32,7 @@ export interface ProductionVariantProps {
    * The size of the Elastic Inference (EI) instance to use for the production variant. EI instances
    * provide on-demand GPU computing for inference.
    *
-   * @default none
+   * @default - none
    */
   readonly acceleratorType?: AcceleratorType;
   /**
@@ -52,7 +52,7 @@ export interface ProductionVariantProps {
   /**
    * Instance type of the production variant.
    *
-   * @default ml.t2.medium instance type.
+   * @default - ml.t2.medium instance type.
    */
   readonly instanceType?: ec2.InstanceType;
   /**
@@ -73,7 +73,7 @@ export interface ProductionVariant {
    * The size of the Elastic Inference (EI) instance to use for the production variant. EI instances
    * provide on-demand GPU computing for inference.
    *
-   * @default none
+   * @default - none
    */
   readonly acceleratorType?: AcceleratorType;
   /**
@@ -112,7 +112,7 @@ export interface EndpointConfigProps {
   /**
    * Name of the endpoint configuration.
    *
-   * @default AWS CloudFormation generates a unique physical ID and uses that ID for the endpoint
+   * @default - AWS CloudFormation generates a unique physical ID and uses that ID for the endpoint
    * configuration's name.
    */
   readonly endpointConfigName?: string;
@@ -120,7 +120,7 @@ export interface EndpointConfigProps {
   /**
    * Optional KMS encryption key associated with this stream.
    *
-   * @default none
+   * @default - none
    */
   readonly encryptionKey?: kms.IKey;
 
@@ -132,7 +132,7 @@ export interface EndpointConfigProps {
   /**
    * An optional list of extra ProductionVariantProps objects.
    *
-   * @default none
+   * @default - none
    */
   readonly extraProductionVariants?: ProductionVariantProps[];
 }
