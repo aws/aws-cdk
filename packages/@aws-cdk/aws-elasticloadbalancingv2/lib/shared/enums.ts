@@ -98,9 +98,16 @@ export enum ApplicationProtocolVersion {
  */
 export enum SslPolicy {
   /**
-   * The recommended security policy
+   * The recommended security policy for TLS listeners.
+   * This is the default policy for listeners created using the AWS Management Console
    */
-  RECOMMENDED_2021 = 'ELBSecurityPolicy-TLS13-1-2-2021-06',
+  RECOMMENDED_TLS = 'ELBSecurityPolicy-TLS13-1-2-2021-06',
+
+  /**
+   * The recommended policy for http listeners.
+   * This is the default security policy for listeners created using the AWS CLI
+   */
+  RECOMMENDED = 'ELBSecurityPolicy-2016-08',
 
   /**
    * TLS1.2 and 1.3
@@ -131,17 +138,6 @@ export enum SslPolicy {
    * TLS1.3 only
    */
   TLS13_13 = 'ELBSecurityPolicy-TLS13-1-3-2021-06',
-
-  /**
-   * The recommended security policy
-   * @deprecated - use RECOMMENDED_2021 for the current recommended policy, or RECOMMENDED_2016 for the legacy recommended policy
-   */
-  RECOMMENDED = 'deprecated_ELBSecurityPolicy-2016-08',
-
-  /**
-   * The legacy recommended security policy
-   */
-  RECOMMENDED_2016 = 'ELBSecurityPolicy-2016-08',
 
   /**
    * Strong foward secrecy ciphers and TLV1.2 only (2020 edition).
