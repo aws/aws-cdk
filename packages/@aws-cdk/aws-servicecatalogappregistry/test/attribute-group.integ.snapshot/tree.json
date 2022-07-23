@@ -54,7 +54,7 @@
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {
                     "name": "RAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831A",
-                    "allowExternalPrincipals": true,
+                    "allowExternalPrincipals": false,
                     "permissionArns": [
                       "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly"
                     ],

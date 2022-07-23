@@ -90,7 +90,7 @@
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {
                     "name": "RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2",
-                    "allowExternalPrincipals": true,
+                    "allowExternalPrincipals": false,
                     "permissionArns": [
                       "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
                     ],

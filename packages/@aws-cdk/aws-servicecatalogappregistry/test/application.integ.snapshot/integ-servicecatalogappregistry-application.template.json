@@ -43,7 +43,7 @@
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
     "Name": "RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2",
-    "AllowExternalPrincipals": true,
+    "AllowExternalPrincipals": false,
     "PermissionArns": [
      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
     ],

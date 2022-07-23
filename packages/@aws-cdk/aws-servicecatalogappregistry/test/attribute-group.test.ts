@@ -198,7 +198,7 @@ describe('Attribute Group', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
-        AllowExternalPrincipals: true,
+        AllowExternalPrincipals: false,
         Name: 'RAMShareMyAttributeGroup',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
@@ -212,7 +212,7 @@ describe('Attribute Group', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
-        AllowExternalPrincipals: true,
+        AllowExternalPrincipals: false,
         Name: 'RAMShareMyAttributeGroup',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
@@ -228,7 +228,7 @@ describe('Attribute Group', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
-        AllowExternalPrincipals: true,
+        AllowExternalPrincipals: false,
         Name: 'RAMShareMyAttributeGroup',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
@@ -244,24 +244,9 @@ describe('Attribute Group', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
-        AllowExternalPrincipals: true,
-        Name: 'RAMShareMyAttributeGroup',
-        Principals: ['arn:aws:iam::123456789012:user/myUser'],
-        ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
-      });
-    });
-
-    test('share attribute group with organization, do not allow external principals', () => {
-      attributeGroup.shareResource({
-        allowExternalPrincipals: false,
-        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
         Name: 'RAMShareMyAttributeGroup',
-        Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
       });
@@ -274,7 +259,7 @@ describe('Attribute Group', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
-        AllowExternalPrincipals: true,
+        AllowExternalPrincipals: false,
         Name: 'RAMShareMyAttributeGroup',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
@@ -289,7 +274,7 @@ describe('Attribute Group', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
-        AllowExternalPrincipals: true,
+        AllowExternalPrincipals: false,
         Name: 'RAMShareMyAttributeGroup',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],

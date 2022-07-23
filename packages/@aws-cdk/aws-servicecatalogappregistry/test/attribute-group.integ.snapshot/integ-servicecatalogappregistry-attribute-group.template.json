@@ -23,7 +23,7 @@
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
     "Name": "RAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831A",
-    "AllowExternalPrincipals": true,
+    "AllowExternalPrincipals": false,
     "PermissionArns": [
      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly"
     ],

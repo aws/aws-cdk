@@ -21,15 +21,6 @@ export enum SharePermission {
  */
 export interface ShareOptions {
   /**
-   * When set to true, this allows sharing of applications and attribute groups
-   * with accounts outside of your AWS Organization. When set to false, sharing
-   * is restricted to only accounts and principals which belong to the organization.
-   *
-   * @default true
-   */
-  readonly allowExternalPrincipals?: boolean;
-
-  /**
    * A list of AWS accounts that the application will be shared with.
    *
    * @default - No accounts specified for share

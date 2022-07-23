@@ -63,7 +63,7 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
     const shareName = `RAMShare${Names.uniqueResourceName(this, {})}`;
     new CfnResourceShare(this, shareName, {
       name: shareName,
-      allowExternalPrincipals: shareOptions.allowExternalPrincipals ?? true,
+      allowExternalPrincipals: false,
       principals: principals,
       resourceArns: [this.attributeGroupArn],
       permissionArns: [this.getAttributeGroupSharePermissionARN(shareOptions)],

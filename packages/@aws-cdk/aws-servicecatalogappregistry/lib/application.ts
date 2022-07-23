@@ -109,7 +109,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
     const shareName = `RAMShare${Names.uniqueResourceName(this, {})}`;
     new CfnResourceShare(this, shareName, {
       name: shareName,
-      allowExternalPrincipals: shareOptions.allowExternalPrincipals ?? true,
+      allowExternalPrincipals: false,
       principals: principals,
       resourceArns: [this.applicationArn],
       permissionArns: [this.getApplicationSharePermissionARN(shareOptions)],
