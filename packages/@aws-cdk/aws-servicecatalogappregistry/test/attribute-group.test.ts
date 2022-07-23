@@ -202,6 +202,7 @@ describe('Attribute Group', () => {
         Name: 'RAMShareMyAttributeGroup',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
       });
     });
 
@@ -215,6 +216,7 @@ describe('Attribute Group', () => {
         Name: 'RAMShareMyAttributeGroup',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
       });
     });
 
@@ -230,6 +232,7 @@ describe('Attribute Group', () => {
         Name: 'RAMShareMyAttributeGroup',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
       });
     });
 
@@ -245,6 +248,7 @@ describe('Attribute Group', () => {
         Name: 'RAMShareMyAttributeGroup',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
       });
     });
 
@@ -259,6 +263,37 @@ describe('Attribute Group', () => {
         Name: 'RAMShareMyAttributeGroup',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
+      });
+    });
+
+    test('share attribute group with organization, give explicit read only access to the attribute group', () => {
+      attributeGroup.shareResource({
+        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        sharePermission: appreg.SharePermission.READ_ONLY,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: true,
+        Name: 'RAMShareMyAttributeGroup',
+        Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
+      });
+    });
+
+    test('share attribute group with organization, give access to mutate attribute groups', () => {
+      attributeGroup.shareResource({
+        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        sharePermission: appreg.SharePermission.ALLOW_ACCESS,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: true,
+        Name: 'RAMShareMyAttributeGroup',
+        Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupAllowAssociation'],
       });
     });
   });

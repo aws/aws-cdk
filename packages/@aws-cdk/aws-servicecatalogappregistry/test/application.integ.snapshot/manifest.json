@@ -50,15 +50,6 @@
             "type": "aws:cdk:logicalId",
             "data": "MyRoleF48FFE04"
           }
-        ],
-        "TestApplicationRAMShareb83647b4f06a5A88B554": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestApplicationRAMShareb83647b4f06a5A88B554",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "integ-servicecatalogappregistry-application"

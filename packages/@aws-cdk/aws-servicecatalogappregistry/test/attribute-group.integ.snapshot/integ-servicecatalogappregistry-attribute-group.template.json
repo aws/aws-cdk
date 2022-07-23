@@ -24,6 +24,9 @@
    "Properties": {
     "Name": "RAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831A",
     "AllowExternalPrincipals": true,
+    "PermissionArns": [
+     "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly"
+    ],
     "Principals": [
      {
       "Fn::GetAtt": [

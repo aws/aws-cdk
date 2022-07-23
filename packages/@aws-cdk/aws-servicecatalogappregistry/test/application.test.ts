@@ -243,6 +243,7 @@ describe('Application', () => {
         Name: 'RAMShareMyApplication',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
       });
     });
 
@@ -256,6 +257,7 @@ describe('Application', () => {
         Name: 'RAMShareMyApplication',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
       });
     });
 
@@ -271,6 +273,7 @@ describe('Application', () => {
         Name: 'RAMShareMyApplication',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
       });
     });
 
@@ -286,6 +289,7 @@ describe('Application', () => {
         Name: 'RAMShareMyApplication',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
       });
     });
 
@@ -300,6 +304,36 @@ describe('Application', () => {
         Name: 'RAMShareMyApplication',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+      });
+    });
+
+    test('share application with organization, give explicit read only access to an application', () => {
+      application.shareResource({
+        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        sharePermission: appreg.SharePermission.READ_ONLY,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        Name: 'RAMShareMyApplication',
+        Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+      });
+    });
+
+    test('share application with organization, allow access to associate resources and attribute group with an application', () => {
+      application.shareResource({
+        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        sharePermission: appreg.SharePermission.ALLOW_ACCESS,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: true,
+        Name: 'RAMShareMyApplication',
+        Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation'],
       });
     });
   });

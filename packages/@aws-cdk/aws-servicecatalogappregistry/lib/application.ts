@@ -3,9 +3,12 @@ import * as cdk from '@aws-cdk/core';
 import { Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAttributeGroup } from './attribute-group';
-import { getPrincipalsforSharing, hashValues, ShareOptions } from './common';
+import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { InputValidator } from './private/validation';
 import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from './servicecatalogappregistry.generated';
+
+const APPLICATION_READ_ONLY_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly';
+const APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation';
 
 /**
  * A Service Catalog AppRegistry Application.
@@ -109,6 +112,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
       allowExternalPrincipals: shareOptions.allowExternalPrincipals ?? true,
       principals: principals,
       resourceArns: [this.applicationArn],
+      permissionArns: [this.getApplicationSharePermissionARN(shareOptions)],
     });
   }
 
@@ -116,6 +120,21 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
    * Create a unique id
    */
   protected abstract generateUniqueHash(resourceAddress: string): string;
+
+  /**
+   * Get the correct permission ARN based on the SharePermission
+   */
+  private getApplicationSharePermissionARN(shareOptions: ShareOptions): string {
+    switch (shareOptions.sharePermission) {
+      case SharePermission.ALLOW_ACCESS:
+        return APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN;
+      case SharePermission.READ_ONLY:
+        return APPLICATION_READ_ONLY_RAM_PERMISSION_ARN;
+
+      default:
+        return shareOptions.sharePermission ?? APPLICATION_READ_ONLY_RAM_PERMISSION_ARN;
+    }
+  }
 }
 
 /**

@@ -44,6 +44,9 @@
    "Properties": {
     "Name": "RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2",
     "AllowExternalPrincipals": true,
+    "PermissionArns": [
+     "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
+    ],
     "Principals": [
      {
       "Fn::GetAtt": [

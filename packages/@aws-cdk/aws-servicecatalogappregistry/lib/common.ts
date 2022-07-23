@@ -2,6 +2,21 @@ import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 
 /**
+ * Supported permissions for sharing applications or attribute groups with principals using AWS RAM.
+ */
+export enum SharePermission {
+  /**
+   * Allows principals in the share to only view the application or attribute group.
+   */
+  READ_ONLY,
+
+  /**
+   * Allows principals in the share to associate resources and attribute groups with applications.
+   */
+  ALLOW_ACCESS,
+};
+
+/**
  * The options that are passed into a share of an Application or Attribute Group.
  */
 export interface ShareOptions {
@@ -34,6 +49,13 @@ export interface ShareOptions {
    * @default - No IAM roles specified for share
    */
   readonly roles?: iam.IRole[];
+
+  /**
+   * An option to manage access to the application or attribute group.
+   *
+   * @default - Principals will be assigned read only permissions on the application or attribute group.
+   */
+  readonly sharePermission?: SharePermission | string;
 
   /**
    * A list of AWS IAM users that the application will be shared with.

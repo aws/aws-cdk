@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.51"
         }
       },
       "integ-servicecatalogappregistry-application": {
@@ -91,6 +91,9 @@
                   "aws:cdk:cloudformation:props": {
                     "name": "RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2",
                     "allowExternalPrincipals": true,
+                    "permissionArns": [
+                      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
+                    ],
                     "principals": [
                       {
                         "Fn::GetAtt": [

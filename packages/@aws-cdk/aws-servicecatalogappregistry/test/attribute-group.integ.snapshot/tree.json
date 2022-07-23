@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.51"
         }
       },
       "integ-servicecatalogappregistry-attribute-group": {
@@ -55,6 +55,9 @@
                   "aws:cdk:cloudformation:props": {
                     "name": "RAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831A",
                     "allowExternalPrincipals": true,
+                    "permissionArns": [
+                      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly"
+                    ],
                     "principals": [
                       {
                         "Fn::GetAtt": [
