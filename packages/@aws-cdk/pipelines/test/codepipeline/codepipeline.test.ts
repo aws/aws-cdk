@@ -1,10 +1,12 @@
 import { Template, Annotations, Match } from '@aws-cdk/assertions';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import { Pipeline } from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
+import { CodePipeline } from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp } from '../testhelpers';
 
 let app: TestApp;
@@ -177,6 +179,51 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
         },
       ],
     },
+  });
+});
+
+test('CodePipeline supports use of existing role', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const repo = new ccommit.Repository(pipelineStack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+
+  new CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    }),
+    role: new iam.Role(pipelineStack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+      roleName: 'MyCustomPipelineRole',
+    }),
+  });
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'codepipeline.amazonaws.com',
+          },
+        },
+      ],
+    },
+    RoleName: 'MyCustomPipelineRole',
+  });
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    RoleArn: { 'Fn::GetAtt': ['CustomRole6D8E6809', 'Arn'] },
   });
 });
 
