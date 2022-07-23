@@ -26,6 +26,7 @@ describe('log retention', () => {
             'Action': [
               'logs:PutRetentionPolicy',
               'logs:DeleteRetentionPolicy',
+              'logs:DeleteLogGroup',
             ],
             'Effect': 'Allow',
             'Resource': '*',
@@ -78,6 +79,7 @@ describe('log retention', () => {
             'Action': [
               'logs:PutRetentionPolicy',
               'logs:DeleteRetentionPolicy',
+              'logs:DeleteLogGroup',
             ],
             'Effect': 'Allow',
             'Resource': '*',
