@@ -16,5 +16,5 @@ class LogRetentionIntegStack extends Stack {
 
 const app = new App();
 const stack = new LogRetentionIntegStack(app, 'aws-cdk-log-retention-integ');
-app.synth();
 new IntegTest(app, 'LogRetentionInteg', { testCases: [stack] });
+app.synth();

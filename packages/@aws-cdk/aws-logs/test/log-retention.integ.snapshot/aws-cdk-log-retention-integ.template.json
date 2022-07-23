@@ -52,9 +52,9 @@
      "Statement": [
       {
        "Action": [
-        "logs:PutRetentionPolicy",
+        "logs:DeleteLogGroup",
         "logs:DeleteRetentionPolicy",
-        "logs:DeleteLogGroup"
+        "logs:PutRetentionPolicy"
        ],
        "Effect": "Allow",
        "Resource": "*"
@@ -77,9 +77,41 @@
     "Runtime": "nodejs14.x",
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+      "Ref": "AssetParametersdf62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11S3Bucket492C35F8"
      },
-     "S3Key": "df62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11.zip"
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersdf62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11S3VersionKeyF33C7AB4"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersdf62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11S3VersionKeyF33C7AB4"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
     },
     "Role": {
      "Fn::GetAtt": [
@@ -95,37 +127,17 @@
   }
  },
  "Parameters": {
-  "BootstrapVersion": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/hnb659fds/version",
-   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
-  }
- },
- "Rules": {
-  "CheckBootstrapVersion": {
-   "Assertions": [
-    {
-     "Assert": {
-      "Fn::Not": [
-       {
-        "Fn::Contains": [
-         [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5"
-         ],
-         {
-          "Ref": "BootstrapVersion"
-         }
-        ]
-       }
-      ]
-     },
-     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
-    }
-   ]
+  "AssetParametersdf62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11S3Bucket492C35F8": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"df62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11\""
+  },
+  "AssetParametersdf62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11S3VersionKeyF33C7AB4": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"df62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11\""
+  },
+  "AssetParametersdf62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11ArtifactHash20A7B1BF": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"df62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11\""
   }
  }
 }
