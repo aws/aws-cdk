@@ -288,23 +288,7 @@ MQTT message to DynamoDB using the DynamoDBv2 action.
 ```ts
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
-const tablePartitionKey: dynamodb.Attribute = {
-  name: 'hashKey',
-  type: dynamodb.AttributeType.STRING,
-};
-
-const tableSortKey: dynamodb.Attribute = {
-  name: 'sortKey',
-  type: dynamodb.AttributeType.NUMBER,
-};
-
-const table = new dynamodb.Table(this, 'MyTable', {
-  tableName: 'MyTable',
-  readCapacity: 1,
-  writeCapacity: 1,
-  partitionKey: tablePartitionKey,
-  sortKey: tableSortKey,
-});
+declare const table: dynamodb.Table;
 
 const topicRule = new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323(
