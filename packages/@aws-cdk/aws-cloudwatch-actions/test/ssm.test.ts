@@ -46,7 +46,7 @@ test('can use ssm with critical severity and performance category as alarm actio
 });
 
 
-test('can use ssm with meduim severity and no category as alarm action', () => {
+test('can use ssm with medium severity and no category as alarm action', () => {
   // GIVEN
   const stack = new Stack();
   const alarm = new cloudwatch.Alarm(stack, 'Alarm', {
@@ -85,6 +85,25 @@ test('can use ssm with meduim severity and no category as alarm action', () => {
         ],
       },
     ],
+  });
+});
+
+test('can use SSM Incident as alarm action', () => {
+  // GIVEN
+  const stack = new Stack();
+  const alarm = new cloudwatch.Alarm(stack, 'Alarm', {
+    metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Test' }),
+    evaluationPeriods: 3,
+    threshold: 100,
+  });
+
+  // WHEN
+  const responsePlanArn = 'arn:aws:ssm-incidents::123456789012:response-plan/ResponsePlanName';
+  alarm.addAlarmAction(new actions.SsmIncidentAction(responsePlanArn));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    AlarmActions: [responsePlanArn],
   });
 });
 
