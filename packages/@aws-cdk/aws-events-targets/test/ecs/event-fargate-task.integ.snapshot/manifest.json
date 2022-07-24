@@ -121,7 +121,10 @@
         "/aws-ecs-integ-fargate/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570"
+            "data": "TaskDef54694570",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-fargate/TaskDef/TheContainer/LogGroup/Resource": [

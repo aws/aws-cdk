@@ -10,9 +10,8 @@ import { singletonActionRole } from './private/role';
 export interface DynamoDBv2PutItemActionProps extends CommonActionProps {
 }
 
-
 /**
- * The action to put the record from an MQTT message to the Kinesis Data Firehose stream.
+ * The action to put the record from an MQTT message to the DynamoDB table.
  */
 export class DynamoDBv2PutItemAction implements iot.IAction {
   private readonly role?: iam.IRole;

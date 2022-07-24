@@ -566,7 +566,7 @@ describe('default properties', () => {
         reportBuildStatus: false,
         webhookFilters: [
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andTagIsNot('stable'),
-          codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED).andBaseBranchIs('master'),
+          codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED).andBaseBranchIs('main'),
         ],
       }),
     });
@@ -593,7 +593,7 @@ describe('default properties', () => {
           ],
           [
             { Type: 'EVENT', Pattern: 'PULL_REQUEST_REOPENED' },
-            { Type: 'BASE_REF', Pattern: 'refs/heads/master' },
+            { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
           ],
         ],
       },
@@ -612,7 +612,7 @@ describe('default properties', () => {
         webhook: true,
         reportBuildStatus: false,
         webhookFilters: [
-          pushFilterGroup.andBranchIs('master'),
+          pushFilterGroup.andBranchIs('main'),
           pushFilterGroup.andBranchIs('develop'),
           pushFilterGroup.andFilePathIs('ReadMe.md'),
         ],
@@ -635,7 +635,7 @@ describe('default properties', () => {
         FilterGroups: [
           [
             { Type: 'EVENT', Pattern: 'PUSH' },
-            { Type: 'HEAD_REF', Pattern: 'refs/heads/master' },
+            { Type: 'HEAD_REF', Pattern: 'refs/heads/main' },
           ],
           [
             { Type: 'EVENT', Pattern: 'PUSH' },

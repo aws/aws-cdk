@@ -16,4 +16,12 @@
 scriptdir=$(cd $(dirname $0) && pwd)
 cd ${scriptdir}/..
 
-find . -name '*.js' ! -name '.eslintrc.js' ! -path '*node_modules*' | xargs npx esbuild --sourcemap --platform=node --format=cjs --minify-whitespace --minify-syntax --tsconfig=tsconfig.json --allow-overwrite --outdir=.
+find . -name '*.js' ! -name '.eslintrc.js' ! -path '*node_modules*' | xargs npx esbuild \
+  --sourcemap \
+  --platform=node \
+  --format=cjs \
+  --minify-whitespace \
+  --minify-syntax \
+  --tsconfig=tsconfig.json \
+  --allow-overwrite \
+  --outdir=.

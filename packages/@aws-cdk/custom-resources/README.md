@@ -103,6 +103,16 @@ def is_complete(event, context):
   return { 'IsComplete': is_ready }
 ```
 
+> **Security Note**: the Custom Resource Provider Framework will write the value of `ResponseURL`,
+> which is a pre-signed S3 URL used to report the success or failure of the Custom Resource execution
+> back to CloudFormation, in a readable form to the AWS Step Functions execution history.
+>
+> Anybody who can list and read AWS StepFunction executions in your account will be able to write
+> a fake response to this URL and make your CloudFormation deployments fail.
+>
+> Do not use this library if your threat model requires that you cannot trust actors who are able
+> to list StepFunction executions in your account.
+
 ### Handling Lifecycle Events: onEvent
 
 The user-defined `onEvent` AWS Lambda function is invoked whenever a resource
@@ -299,8 +309,8 @@ This module includes a few examples for custom resource implementations:
 
 Provisions an object in an S3 bucket with textual contents. See the source code
 for the
-[construct](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
-[handler](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
+[construct](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
+[handler](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
 
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.

@@ -14,7 +14,6 @@ function asyncTest(cb: () => Promise<void>): () => void {
       expect(() => {
         if (error) { throw error; }
       }).not.toThrow();
-
     }
   };
 }
@@ -47,14 +46,14 @@ describe('fn', () => {
 
     test('Fn.split', () => {
       expect(Fn.split(':', 'hello:world:yeah')).toEqual(['hello', 'world', 'yeah']);
-
     });
   });
+
   describe('FnParseDomainName', () => {
     test('parse domain name from resolved url', () => {
       expect(Fn.parseDomainName('https://test.com/')).toEqual('test.com');
-
     });
+
     test('parse domain name on token', () => {
       const stack = new Stack();
       const url = Fn.join('//', [
@@ -65,14 +64,14 @@ describe('fn', () => {
         ]),
       ]);
       expect(Fn.parseDomainName(stack.resolve(url))).toEqual('test.com');
-
     });
   });
+
   describe('FnJoin', () => {
     test('rejects empty list of arguments to join', () => {
       expect(() => Fn.join('.', [])).toThrow();
-
     });
+
     test('collapse nested FnJoins even if they contain tokens', () => {
       const stack = new Stack();
 
@@ -90,9 +89,8 @@ describe('fn', () => {
             'cd',
           ]],
       });
-
-
     });
+
     test('resolves to the value if only one value is joined', asyncTest(async () => {
       const stack = new Stack();
       fc.assert(
@@ -103,6 +101,7 @@ describe('fn', () => {
         { verbose: true },
       );
     }));
+
     test('pre-concatenates string literals', asyncTest(async () => {
       const stack = new Stack();
       fc.assert(
@@ -113,6 +112,7 @@ describe('fn', () => {
         { verbose: true },
       );
     }));
+
     test('pre-concatenates around tokens', asyncTest(async () => {
       const stack = new Stack();
       fc.assert(
@@ -125,6 +125,7 @@ describe('fn', () => {
         { verbose: true, seed: 1539874645005, path: '0:0:0:0:0:0:0:0:0' },
       );
     }));
+
     test('flattens joins nested under joins with same delimiter', asyncTest(async () => {
       const stack = new Stack();
       fc.assert(
@@ -140,6 +141,7 @@ describe('fn', () => {
         { verbose: true },
       );
     }));
+
     test('does not flatten joins nested under joins with different delimiter', asyncTest(async () => {
       const stack = new Stack();
       fc.assert(
@@ -160,6 +162,7 @@ describe('fn', () => {
         { verbose: true },
       );
     }));
+
     test('Fn::EachMemberIn', asyncTest(async () => {
       const stack = new Stack();
       const eachMemberIn = Fn.conditionEachMemberIn(
@@ -188,20 +191,19 @@ describe('fn', () => {
       // THEN
       const template = app.synth().getStackByName('Stack2').template;
 
-      expect(template).toEqual({
-        Outputs: {
-          Stack1Id: {
-            Value: {
-              'Fn::Join': [' = ', [
-                'Stack1Id',
-                { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
-              ]],
-            },
+      expect(template?.Outputs).toEqual({
+        Stack1Id: {
+          Value: {
+            'Fn::Join': [' = ', [
+              'Stack1Id',
+              { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
+            ]],
           },
         },
       });
     }));
   });
+
   describe('Ref', () => {
     test('returns a reference given a logical name', () => {
       const stack = new Stack();
@@ -211,6 +213,7 @@ describe('fn', () => {
 
     });
   });
+
   test('nested Fn::Join with list token', () => {
     const stack = new Stack();
     const inner = Fn.join(',', Token.asList({ NotReallyList: true }));
@@ -224,7 +227,6 @@ describe('fn', () => {
         ],
       ],
     });
-
   });
 });
 
