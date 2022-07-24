@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-eks-legacy/test/integ.eks-cluster.lit": {
+    "integ.eks-cluster.lit": {
       "stacks": [
         "eks-integ-test-basic"
       ],

@@ -321,6 +321,12 @@
             "data": "myServiceTaskDefTaskRole1C1DE6CC"
           }
         ],
+        "/aws-ecs-integ/myService/TaskDef/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefTaskRoleDefaultPolicyD48473C0"
+          }
+        ],
         "/aws-ecs-integ/myService/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -353,6 +359,15 @@
         ]
       },
       "displayName": "aws-ecs-integ"
+    },
+    "applicationMultipleTargetGroupsEc2ServiceTestDefaultTestDeployAssert1194B50F": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "applicationMultipleTargetGroupsEc2ServiceTestDefaultTestDeployAssert1194B50F.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest/DeployAssert"
     }
   }
 }
