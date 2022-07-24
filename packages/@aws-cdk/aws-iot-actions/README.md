@@ -314,5 +314,4 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
     new actions.DynamoDBv2PutItemAction(table)
   ],
 });
-
 ```
