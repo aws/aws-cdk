@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cloudfront-origins/test/integ.s3-origin": {
+    "integ.s3-origin": {
       "stacks": [
         "cloudfront-s3-origin"
       ],

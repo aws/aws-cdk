@@ -1,0 +1,285 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
+        }
+      },
+      "lambda-event-source-kinesis-at-timestamp": {
+        "id": "lambda-event-source-kinesis-at-timestamp",
+        "path": "lambda-event-source-kinesis-at-timestamp",
+        "children": {
+          "F": {
+            "id": "F",
+            "path": "lambda-event-source-kinesis-at-timestamp/F",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "lambda-event-source-kinesis-at-timestamp/F/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-event-source-kinesis-at-timestamp/F/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "lambda-event-source-kinesis-at-timestamp/F/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "lambda-event-source-kinesis-at-timestamp/F/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "kinesis:DescribeStream",
+                                    "kinesis:DescribeStreamSummary",
+                                    "kinesis:GetRecords",
+                                    "kinesis:GetShardIterator",
+                                    "kinesis:ListShards",
+                                    "kinesis:ListStreams",
+                                    "kinesis:SubscribeToShard"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "S509448A1",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "FServiceRoleDefaultPolicy17A19BFA",
+                            "roles": [
+                              {
+                                "Ref": "FServiceRole3AC82EE1"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-event-source-kinesis-at-timestamp/F/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    return { event };\n}"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "FServiceRole3AC82EE1",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "KinesisEventSource:lambdaeventsourcekinesisattimestampSC3A1FFA3": {
+                "id": "KinesisEventSource:lambdaeventsourcekinesisattimestampSC3A1FFA3",
+                "path": "lambda-event-source-kinesis-at-timestamp/F/KinesisEventSource:lambdaeventsourcekinesisattimestampSC3A1FFA3",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-event-source-kinesis-at-timestamp/F/KinesisEventSource:lambdaeventsourcekinesisattimestampSC3A1FFA3/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "functionName": {
+                          "Ref": "FC4345940"
+                        },
+                        "batchSize": 100,
+                        "eventSourceArn": {
+                          "Fn::GetAtt": [
+                            "S509448A1",
+                            "Arn"
+                          ]
+                        },
+                        "startingPosition": "AT_TIMESTAMP",
+                        "startingPositionTimestamp": 1655237653
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.CfnEventSourceMapping",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.EventSourceMapping",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "S": {
+            "id": "S",
+            "path": "lambda-event-source-kinesis-at-timestamp/S",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-event-source-kinesis-at-timestamp/S/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Kinesis::Stream",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionPeriodHours": 24,
+                    "shardCount": 1,
+                    "streamEncryption": {
+                      "Fn::If": [
+                        "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+                        {
+                          "Ref": "AWS::NoValue"
+                        },
+                        {
+                          "EncryptionType": "KMS",
+                          "KeyId": "alias/aws/kinesis"
+                        }
+                      ]
+                    },
+                    "streamModeDetails": {
+                      "streamMode": "PROVISIONED"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-kinesis.CfnStream",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kinesis.Stream",
+              "version": "0.0.0"
+            }
+          },
+          "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+            "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "path": "lambda-event-source-kinesis-at-timestamp/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnCondition",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "AtTimestamp": {
+        "id": "AtTimestamp",
+        "path": "AtTimestamp",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "AtTimestamp/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "AtTimestamp/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.33"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "AtTimestamp/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
