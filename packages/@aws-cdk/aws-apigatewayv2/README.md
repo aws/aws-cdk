@@ -42,6 +42,7 @@ Higher level constructs for Websocket APIs | ![Experimental](https://img.shields
 - [WebSocket API](#websocket-api)
   - [Manage Connections Permission](#manage-connections-permission)
   - [Managing access to WebSocket APIs](#managing-access-to-websocket-apis)
+- [OpenAPI Definition](#openapi-definition)
 
 ## Introduction
 
@@ -447,3 +448,33 @@ const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi',{
 });
 ```
 
+## OpenAPI Definition
+
+CDK supports creating an HTTP API by importing an OpenAPI definition file. It currently supports OpenAPI v2.0 and OpenAPI
+v3.0 definition files. Read more about [Configuring a REST API using
+OpenAPI](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html).
+
+The following code creates an HTTP API using an external OpenAPI definition JSON file -
+
+```ts
+declare const integration: apigateway.Integration;
+
+const api = new apigwv2.SpecHttpApi(this, 'books-api', {
+  apiDefinition: apigwv2.ApiDefinition.fromAsset('path-to-file.json')
+});
+```
+
+**Note:** Deployment will fail if a Resource of the same name is already defined in the Open API specification.
+
+**Note:** Any default properties configured, such as `defaultIntegration`, `defaultMethodOptions`, etc. will only be
+applied to Resources and Methods defined in the CDK, and not the ones defined in the spec. Use the [API Gateway
+extensions to OpenAPI](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html)
+to configure these.
+
+There are a number of limitations in using OpenAPI definitions in API Gateway. Read the [Amazon API Gateway important
+notes for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-rest-apis)
+for more details.
+
+**Note:** When starting off with an OpenAPI definition using `SpecHttpApi`, it is not possible to configure some
+properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
+of these properties and potential confusion.
