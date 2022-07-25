@@ -308,6 +308,19 @@ class ConditionalResourceStack extends cdk.Stack {
   }
 }
 
+class BundlingStage extends cdk.Stage {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+    const stack = new cdk.Stack(this, 'BundlingStack');
+
+    new lambda.Function(stack, 'Handler', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_16_X,
+    });
+  }
+}
+
 class SomeStage extends cdk.Stage {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -392,6 +405,8 @@ switch (stackSet) {
     new BuiltinLambdaStack(app, `${stackPrefix}-builtin-lambda-function`);
 
     new ImportableStack(app, `${stackPrefix}-importable-stack`);
+
+    new BundlingStage(app, `${stackPrefix}-bundling-stage`);
     break;
 
   case 'stage-using-context':
