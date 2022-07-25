@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-autoscaling/test/integ.external-role": {
+    "integ.external-role": {
       "stacks": [
         "integ-iam-external-role"
       ],

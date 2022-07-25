@@ -1,6 +1,6 @@
 The aws-cdk package includes the following third-party software/licensing:
 
-** @jsii/check-node@1.60.1 - https://www.npmjs.com/package/@jsii/check-node/v/1.60.1 | Apache-2.0
+** @jsii/check-node@1.62.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.62.0 | Apache-2.0
 jsii
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -268,7 +268,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1151.0 - https://www.npmjs.com/package/aws-sdk/v/2.1151.0 | Apache-2.0
+** aws-sdk@2.1178.0 - https://www.npmjs.com/package/aws-sdk/v/2.1178.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -1554,6 +1554,10 @@ PERFORMANCE OF THIS SOFTWARE.
 
 ----------------
 
+** ip@2.0.0 - https://www.npmjs.com/package/ip/v/2.0.0 | MIT
+
+----------------
+
 ** is-binary-path@2.1.0 - https://www.npmjs.com/package/is-binary-path/v/2.1.0 | MIT
 MIT License
 
@@ -2565,7 +2569,7 @@ IN THE SOFTWARE.
 
 ----------------
 
-** readdir-glob@1.1.1 - https://www.npmjs.com/package/readdir-glob/v/1.1.1 | Apache-2.0
+** readdir-glob@1.1.2 - https://www.npmjs.com/package/readdir-glob/v/1.1.2 | Apache-2.0
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -3029,7 +3033,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** socks@2.6.2 - https://www.npmjs.com/package/socks/v/2.6.2 | MIT
+** socks@2.7.0 - https://www.npmjs.com/package/socks/v/2.7.0 | MIT
 The MIT License (MIT)
 
 Copyright (c) 2013 Josh Glazebrook
@@ -3528,7 +3532,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** vm2@3.9.9 - https://www.npmjs.com/package/vm2/v/3.9.9 | MIT
+** vm2@3.9.10 - https://www.npmjs.com/package/vm2/v/3.9.10 | MIT
 
 ----------------
 
