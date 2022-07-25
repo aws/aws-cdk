@@ -106,7 +106,12 @@
       {
        "Action": "cognito-idp:DescribeUserPoolClient",
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": {
+        "Fn::GetAtt": [
+         "myuserpool01998219",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
