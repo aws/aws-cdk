@@ -258,6 +258,10 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_2_40 = MariaDbEngineVersion.of('10.2.40', '10.2');
   /** Version "10.2.41". */
   public static readonly VER_10_2_41 = MariaDbEngineVersion.of('10.2.41', '10.2');
+  /** Version "10.2.43". */
+  public static readonly VER_10_2_43 = MariaDbEngineVersion.of('10.2.43', '10.2');
+  /** Version "10.2.44". */
+  public static readonly VER_10_2_44 = MariaDbEngineVersion.of('10.2.44', '10.2');
 
   /** Version "10.3" (only a major version, without a specific minor version). */
   public static readonly VER_10_3 = MariaDbEngineVersion.of('10.3', '10.3');
@@ -275,6 +279,10 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_3_31 = MariaDbEngineVersion.of('10.3.31', '10.3');
   /** Version "10.3.32". */
   public static readonly VER_10_3_32 = MariaDbEngineVersion.of('10.3.32', '10.3');
+  /** Version "10.3.34". */
+  public static readonly VER_10_3_34 = MariaDbEngineVersion.of('10.3.34', '10.3');
+  /** Version "10.3.35". */
+  public static readonly VER_10_3_35 = MariaDbEngineVersion.of('10.3.35', '10.3');
 
   /** Version "10.4" (only a major version, without a specific minor version). */
   public static readonly VER_10_4 = MariaDbEngineVersion.of('10.4', '10.4');
@@ -288,6 +296,10 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_4_21 = MariaDbEngineVersion.of('10.4.21', '10.4');
   /** Version "10.4.22". */
   public static readonly VER_10_4_22 = MariaDbEngineVersion.of('10.4.22', '10.4');
+  /** Version "10.4.24". */
+  public static readonly VER_10_4_24 = MariaDbEngineVersion.of('10.4.24', '10.4');
+  /** Version "10.4.25". */
+  public static readonly VER_10_4_25 = MariaDbEngineVersion.of('10.4.25', '10.4');
 
   /** Version "10.5" (only a major version, without a specific minor version). */
   public static readonly VER_10_5 = MariaDbEngineVersion.of('10.5', '10.5');
@@ -299,6 +311,19 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_12 = MariaDbEngineVersion.of('10.5.12', '10.5');
   /** Version "10.5.13". */
   public static readonly VER_10_5_13 = MariaDbEngineVersion.of('10.5.13', '10.5');
+  /** Version "10.5.15". */
+  public static readonly VER_10_5_15 = MariaDbEngineVersion.of('10.5.15', '10.5');
+  /** Version "10.5.16". */
+  public static readonly VER_10_5_16 = MariaDbEngineVersion.of('10.5.16', '10.5');
+
+  /** Version "10.6" (only a major version, without a specific minor version). */
+  public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
+  /** Version "10.6.5". */
+  public static readonly VER_10_6_5 = MariaDbEngineVersion.of('10.6.5', '10.6');
+  /** Version "10.6.7". */
+  public static readonly VER_10_6_7 = MariaDbEngineVersion.of('10.6.7', '10.6');
+  /** Version "10.6.8". */
+  public static readonly VER_10_6_8 = MariaDbEngineVersion.of('10.6.8', '10.6');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
