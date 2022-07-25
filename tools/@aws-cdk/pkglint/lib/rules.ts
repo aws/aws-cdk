@@ -1709,8 +1709,8 @@ export class NoExperimentalDependents extends ValidationRule {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const stability = require(`${dep}/package.json`).stability;
-      if (stability === 'experimental') {
+      const maturity = require(`${dep}/package.json`).maturity;
+      if (maturity === 'experimental') {
         if (this.excludedDependencies.get(pkg.packageName)?.includes(dep)) {
           return;
         }
