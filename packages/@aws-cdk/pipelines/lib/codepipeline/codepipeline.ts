@@ -369,6 +369,9 @@ export class CodePipeline extends PipelineBase {
       if (this.props.reuseCrossRegionSupportStacks !== undefined) {
         throw new Error('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (this.props.role !== undefined) {
+        throw new Error('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
 
       this._pipeline = this.props.codePipeline;
     } else {

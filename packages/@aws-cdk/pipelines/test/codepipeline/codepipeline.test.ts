@@ -4,6 +4,7 @@ import { Pipeline } from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
@@ -89,6 +90,15 @@ describe('Providing codePipeline parameter and prop(s) of codePipeline parameter
     expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
       reuseCrossRegionSupportStacks: true,
     }).create()).toThrowError('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+  test('Providing codePipeline parameter and role parameter should throw error', () => {
+    const stack = new Stack(app, 'Stack');
+
+    expect(() => new CodePipelinePropsCheckTest(stack, 'CodePipeline', {
+      role: new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      }),
+    }).create()).toThrowError('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
   });
 });
 
@@ -288,6 +298,7 @@ interface CodePipelineStackProps extends cdk.StackProps {
   pipelineName?: string;
   crossAccountKeys?: boolean;
   reuseCrossRegionSupportStacks?: boolean;
+  role?: iam.IRole;
 }
 
 class CodePipelinePropsCheckTest extends cdk.Stack {
@@ -315,6 +326,13 @@ class CodePipelinePropsCheckTest extends cdk.Stack {
       new cdkp.CodePipeline(this, 'CodePipeline3', {
         reuseCrossRegionSupportStacks: this.cProps.reuseCrossRegionSupportStacks,
         codePipeline: new Pipeline(this, 'Pipline3'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.role !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline4', {
+        role: this.cProps.role,
+        codePipeline: new Pipeline(this, 'Pipline4'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
       }).buildPipeline();
     }
