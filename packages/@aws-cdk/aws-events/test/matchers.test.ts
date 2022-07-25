@@ -51,4 +51,13 @@ describe(Matchers, () => {
     // Invalid
     expect(() => Matchers.cidr('a.b.c/31').toEventBridgeMatcher()).toThrow(/Invalid IP address range/);
   });
+
+  test('anyOf', () => {
+    expect(Matchers.anyOf(Matchers.equal(0), Matchers.equal(1)).toEventBridgeMatcher()).toEqual([
+      { numeric: ['=', 0] },
+      { numeric: ['=', 1] },
+    ]);
+
+    expect(() => Matchers.anyOf().toEventBridgeMatcher()).toThrow(/must be non-empty lists/);
+  });
 });

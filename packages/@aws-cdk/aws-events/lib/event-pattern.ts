@@ -168,7 +168,11 @@ class NumericMatcher implements IMatcher {
 }
 
 class AnyOfMatcher implements IMatcher {
-  constructor(private readonly matchers: IMatcher[]) {}
+  constructor(private readonly matchers: IMatcher[]) {
+    if (matchers.length === 0) {
+      throw new Error('anyOf matchers must be non-empty lists');
+    }
+  }
 
   toEventBridgeMatcher(): any[] {
     return this.matchers.flatMap(m => m.toEventBridgeMatcher());
@@ -274,7 +278,7 @@ export class Matchers {
 
   /**
    * Matches numbers inside a closed numeric interval. Equivalent to:
-   * 
+   *
    *    Matchers.numeric(Matchers.greaterThanOrEqual(lower), Matchers.lessThanOrEqual(upper))
    *
    * @param lower Lower bound (inclusive)
@@ -285,9 +289,7 @@ export class Matchers {
   }
 
   /**
-   * Matches a number that satisfy all the provided matchers. This normally
-   * used when you want to match a numeric interval, which can be inclusive or
-   * exclusive on either side.
+   * Matches a number that satisfy all the provided matchers.
    */
   static numeric(...matchers: INumericMatcher[]): IMatcher {
     return new NumericMatcher(matchers);
