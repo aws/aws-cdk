@@ -11,6 +11,7 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { GarbageCollector } from './api/garbage-collector';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
@@ -547,6 +548,22 @@ export class CdkToolkit {
   public async garbageCollect(environment: string, dryRun: boolean) {
     // eslint-disable-next-line no-console
     console.log(environment, dryRun);
+
+    const splitEnv = environment.split('/');
+    // eslint-disable-next-line no-console
+    console.log(splitEnv);
+    const resolvedEnvironment: cxapi.Environment = {
+      name: 'garbage env',
+      account: splitEnv[2],
+      region: splitEnv[3],
+    };
+
+    const gc = new GarbageCollector({
+      dryRun,
+      resolvedEnvironment,
+      sdkProvider: this.props.sdkProvider,
+    });
+    await gc.collect();
   }
 
   /**
