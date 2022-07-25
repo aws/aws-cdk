@@ -96,43 +96,12 @@ class AnythingButPrefixMatcher implements IMatcher {
   }
 }
 
-class LessThanMatcher implements INumericMatcher {
-  constructor(private readonly value: number) { }
+type ComparisonOperator = '>' | '>=' | '<' | '<=' | '=';
+class ComparisonMatcher implements INumericMatcher {
+  constructor(private readonly operator: ComparisonOperator, private readonly value: number) { }
 
-  toEventBridgeMatcher() {
-    return [{ numeric: ['<', this.value] }];
-  }
-}
-
-class LessThanOrEqualMatcher implements INumericMatcher {
-  constructor(private readonly value: number) { }
-
-  toEventBridgeMatcher() {
-    return [{ numeric: ['<=', this.value] }];
-  }
-}
-
-class GreaterThanMatcher implements INumericMatcher {
-  constructor(private readonly value: number) { }
-
-  toEventBridgeMatcher() {
-    return [{ numeric: ['>', this.value] }];
-  }
-}
-
-class GreaterThanOrEqualMatcher implements INumericMatcher {
-  constructor(private readonly value: number) { }
-
-  toEventBridgeMatcher() {
-    return [{ numeric: ['>=', this.value] }];
-  }
-}
-
-class EqualMatcher implements INumericMatcher {
-  constructor(private readonly value: number) { }
-
-  toEventBridgeMatcher() {
-    return [{ numeric: ['=', this.value] }];
+  toEventBridgeMatcher(): any[] {
+    return [{ numeric: [this.operator, this.value] }];
   }
 }
 
@@ -244,36 +213,36 @@ export class Matchers {
   /**
    * Matches numbers less than the provided value
    */
-  static lessThan(value: number): IMatcher {
-    return new LessThanMatcher(value);
+  static lessThan(value: number): INumericMatcher {
+    return new ComparisonMatcher('<', value);
   }
 
   /**
    * Matches numbers greater than or equal to the provided value
    */
-  static lessThanOrEqual(value: number): IMatcher {
-    return new LessThanOrEqualMatcher(value);
+  static lessThanOrEqual(value: number): INumericMatcher {
+    return new ComparisonMatcher('<=', value);
   }
 
   /**
    * Matches numbers greater than the provided value
    */
-  static greaterThan(value: number): IMatcher {
-    return new GreaterThanMatcher(value);
+  static greaterThan(value: number): INumericMatcher {
+    return new ComparisonMatcher('>', value);
   }
 
   /**
    * Matches numbers greater than or equal to the provided value
    */
-  static greaterThanOrEqual(value: number): IMatcher {
-    return new GreaterThanOrEqualMatcher(value);
+  static greaterThanOrEqual(value: number): INumericMatcher {
+    return new ComparisonMatcher('>=', value);
   }
 
   /**
    * Matches numbers equal to the provided value
    */
-  static equal(value: number): IMatcher {
-    return new EqualMatcher(value);
+  static equal(value: number): INumericMatcher {
+    return new ComparisonMatcher('=', value);
   }
 
   /**
