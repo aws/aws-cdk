@@ -285,6 +285,7 @@
    "Properties": {
     "ContainerDefinitions": [
      {
+      "Cpu": 256,
       "Environment": [
        {
         "Name": "TRIGGER",
@@ -323,6 +324,7 @@
         }
        }
       },
+      "Memory": 512,
       "Name": "ScheduledContainer"
      }
     ],
