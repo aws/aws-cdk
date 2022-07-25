@@ -107,6 +107,8 @@ async function isLambdaFunctionCodeOnlyChange(
   const propertyUpdates = change.propertyUpdates;
   let code: LambdaFunctionCode | undefined = undefined;
   let tags: LambdaFunctionTags | undefined = undefined;
+  let description: string | undefined = undefined;
+  let environment: { [key: string]: string } | undefined = undefined;
 
   for (const updatedPropName in propertyUpdates) {
     const updatedProp = propertyUpdates[updatedPropName];
@@ -175,12 +177,19 @@ async function isLambdaFunctionCodeOnlyChange(
           tags = { tagUpdates };
         }
         break;
+      case 'Description':
+        description = updatedProp.newValue;
+        break;
+      case 'Environment':
+        environment = updatedProp.newValue;
+        break;
       default:
         return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
   }
 
-  return code || tags ? { code, tags } : ChangeHotswapImpact.IRRELEVANT;
+  const configurations = description || environment ? { description, environment } : undefined;
+  return code || tags || configurations ? { code, tags, configurations } : ChangeHotswapImpact.IRRELEVANT;
 }
 
 interface CfnDiffTagValue {
@@ -203,9 +212,15 @@ interface LambdaFunctionTags {
   readonly tagUpdates: { [tag : string] : string | TagDeletion };
 }
 
+interface LambdaFunctionConfigurations {
+  readonly description?: string;
+  readonly environment?: { [key: string]: string };
+}
+
 interface LambdaFunctionChange {
   readonly code?: LambdaFunctionCode;
   readonly tags?: LambdaFunctionTags;
+  readonly configurations?: LambdaFunctionConfigurations;
 }
 
 interface LambdaFunctionResource {
@@ -235,16 +250,32 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     const resource = this.lambdaFunctionResource.resource;
     const operations: Promise<any>[] = [];
 
-    if (resource.code !== undefined) {
-      const updateFunctionCodeResponse = await lambda.updateFunctionCode({
-        FunctionName: this.lambdaFunctionResource.physicalName,
-        S3Bucket: resource.code.s3Bucket,
-        S3Key: resource.code.s3Key,
-        ImageUri: resource.code.imageUri,
-        ZipFile: resource.code.functionCodeZip,
-      }).promise();
+    if (resource.code !== undefined || resource.configurations !== undefined) {
+      if (resource.code !== undefined) {
+        const updateFunctionCodeResponse = await lambda.updateFunctionCode({
+          FunctionName: this.lambdaFunctionResource.physicalName,
+          S3Bucket: resource.code.s3Bucket,
+          S3Key: resource.code.s3Key,
+          ImageUri: resource.code.imageUri,
+          ZipFile: resource.code.functionCodeZip,
+        }).promise();
 
-      await this.waitForLambdasCodeUpdateToFinish(updateFunctionCodeResponse, lambda);
+        await this.waitForLambdasPropertiesUpdateToFinish(updateFunctionCodeResponse, lambda);
+      }
+
+      if (resource.configurations !== undefined) {
+        const updateRequest: AWS.Lambda.UpdateFunctionConfigurationRequest = {
+          FunctionName: this.lambdaFunctionResource.physicalName,
+        };
+        if (resource.configurations.description !== undefined) {
+          updateRequest.Description = resource.configurations.description;
+        }
+        if (resource.configurations.environment !== undefined) {
+          updateRequest.Environment = resource.configurations.environment;
+        }
+        const updateFunctionCodeResponse = await lambda.updateFunctionConfiguration(updateRequest).promise();
+        await this.waitForLambdasPropertiesUpdateToFinish(updateFunctionCodeResponse, lambda);
+      }
 
       // only if the code changed is there any point in publishing a new Version
       if (this.lambdaFunctionResource.publishVersion) {
@@ -308,7 +339,9 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
    * or very slowly. For example, Zip based functions _not_ in a VPC can take ~1 second whereas VPC
    * or Container functions can take ~25 seconds (and 'idle' VPC functions can take minutes).
    */
-  private async waitForLambdasCodeUpdateToFinish(currentFunctionConfiguration: AWS.Lambda.FunctionConfiguration, lambda: AWS.Lambda): Promise<void> {
+  private async waitForLambdasPropertiesUpdateToFinish(
+    currentFunctionConfiguration: AWS.Lambda.FunctionConfiguration, lambda: AWS.Lambda,
+  ): Promise<void> {
     const functionIsInVpcOrUsesDockerForCode = currentFunctionConfiguration.VpcConfig?.VpcId ||
         currentFunctionConfiguration.PackageType === 'Image';
 
@@ -318,8 +351,8 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     const delaySeconds = functionIsInVpcOrUsesDockerForCode ? 5 : 1;
 
     // configure a custom waiter to wait for the function update to complete
-    (lambda as any).api.waiters.updateFunctionCodeToFinish = {
-      name: 'UpdateFunctionCodeToFinish',
+    (lambda as any).api.waiters.updateFunctionPropertiesToFinish = {
+      name: 'UpdateFunctionPropertiesToFinish',
       operation: 'getFunction',
       // equates to 1 minute for zip function not in a VPC and
       // 5 minutes for container functions or function in a VPC
@@ -341,8 +374,8 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
       ],
     };
 
-    const updateFunctionCodeWaiter = new (AWS as any).ResourceWaiter(lambda, 'updateFunctionCodeToFinish');
-    await updateFunctionCodeWaiter.wait({
+    const updateFunctionPropertiesWaiter = new (AWS as any).ResourceWaiter(lambda, 'updateFunctionPropertiesToFinish');
+    await updateFunctionPropertiesWaiter.wait({
       FunctionName: this.lambdaFunctionResource.physicalName,
     }).promise();
   }
