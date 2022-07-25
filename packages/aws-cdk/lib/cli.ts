@@ -232,6 +232,8 @@ async function parseCommandLineArguments() {
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
+    .command('gc [ENVIRONMENT]', 'Garbage collects assets', (yargs: Argv) => yargs
+      .option('dry-run', { type: 'boolean', desc: 'List assets instead of garbage collecting them', default: false }))
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: Argv) => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
@@ -524,6 +526,12 @@ async function initCommandLine() {
           roleArn: args.roleArn,
           ci: args.ci,
         });
+
+      case 'gc':
+        return cli.garbageCollect(
+          args.ENVIRONMENT,
+          args['dry-run'],
+        );
 
       case 'synthesize':
       case 'synth':

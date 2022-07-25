@@ -544,6 +544,11 @@ export class CdkToolkit {
     return undefined;
   }
 
+  public async garbageCollect(environment: string, dryRun: boolean) {
+    // eslint-disable-next-line no-console
+    console.log(environment, dryRun);
+  }
+
   /**
    * Bootstrap the CDK Toolkit stack in the accounts used by the specified stack(s).
    *
