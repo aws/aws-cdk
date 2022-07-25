@@ -1,0 +1,224 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.51"
+        }
+      },
+      "RuleStack": {
+        "id": "RuleStack",
+        "path": "RuleStack",
+        "children": {
+          "MyRule": {
+            "id": "MyRule",
+            "path": "RuleStack/MyRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "RuleStack/MyRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "account": [
+                        "account1",
+                        "account2"
+                      ],
+                      "detail": {
+                        "foo": [
+                          1,
+                          2
+                        ],
+                        "strings": [
+                          "foo",
+                          "bar"
+                        ],
+                        "rangeMatcher": [
+                          {
+                            "numeric": [
+                              ">=",
+                              -1,
+                              "<=",
+                              1
+                            ]
+                          }
+                        ],
+                        "stringMatcher": [
+                          "I am just a string"
+                        ],
+                        "prefixMatcher": [
+                          {
+                            "prefix": "aws."
+                          }
+                        ],
+                        "ipAddress": [
+                          {
+                            "cidr": "192.0.2.0/24"
+                          }
+                        ],
+                        "shouldExist": [
+                          {
+                            "exists": true
+                          }
+                        ],
+                        "shouldNotExist": [
+                          {
+                            "exists": false
+                          }
+                        ],
+                        "numbers": [
+                          {
+                            "numeric": [
+                              ">",
+                              0,
+                              "<",
+                              5
+                            ]
+                          }
+                        ],
+                        "topLevel": {
+                          "deeper": [
+                            {
+                              "numeric": [
+                                "=",
+                                42
+                              ]
+                            }
+                          ],
+                          "oneMoreLevel": {
+                            "deepest": [
+                              {
+                                "numeric": [
+                                  "<=",
+                                  -1
+                                ]
+                              },
+                              {
+                                "numeric": [
+                                  ">=",
+                                  1
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "state": [
+                          {
+                            "anything-but": [
+                              "initializing"
+                            ]
+                          }
+                        ],
+                        "limit": [
+                          {
+                            "anything-but": [
+                              100,
+                              200,
+                              300
+                            ]
+                          }
+                        ],
+                        "notPrefixedBy": [
+                          {
+                            "anything-but": {
+                              "prefix": "sensitive-"
+                            }
+                          }
+                        ]
+                      },
+                      "detail-type": [
+                        "detailType1"
+                      ],
+                      "id": [
+                        "id1",
+                        "id2"
+                      ],
+                      "region": [
+                        "region1",
+                        "region2",
+                        "region3"
+                      ],
+                      "resources": [
+                        "r1"
+                      ],
+                      "source": [
+                        "src1",
+                        "src2"
+                      ],
+                      "time": [
+                        "t1"
+                      ],
+                      "version": [
+                        "0"
+                      ]
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.Rule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "IntegTest-BatchDefaultEnvVarsStack": {
+        "id": "IntegTest-BatchDefaultEnvVarsStack",
+        "path": "IntegTest-BatchDefaultEnvVarsStack",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.51"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
