@@ -3,7 +3,7 @@ import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
-import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
+import { EventBus, EventField, IRule, IRuleTarget, Matchers, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 /* eslint-disable quote-props */
@@ -125,6 +125,23 @@ describe('rule', () => {
         account: ['account1', 'account2'],
         detail: {
           foo: [1, 2],
+          strings: ['foo', 'bar'],
+          rangeMatcher: Matchers.interval(-1, 1),
+          stringMatcher: Matchers.exactString('I am just a string'),
+          prefixMatcher: Matchers.prefix('aws.'),
+          ipAddress: Matchers.ipAddressRange('192.0.2.0/24'),
+          shouldExist: Matchers.exists(),
+          shouldNotExist: Matchers.doesNotExist(),
+          numbers: Matchers.numeric(Matchers.greaterThan(0), Matchers.lessThan(5)),
+          topLevel: {
+            deeper: Matchers.equal(42),
+            oneMoreLevel: {
+              deepest: Matchers.anyOf(Matchers.lessThanOrEqual(-1), Matchers.greaterThanOrEqual(1)),
+            },
+          },
+          state: Matchers.anythingBut('initializing'),
+          limit: Matchers.anythingBut(100, 200, 300),
+          notPrefixedBy: Matchers.anythingButPrefix('sensitive-'),
         },
         detailType: ['detailType1'],
         id: ['id1', 'id2'],
@@ -143,7 +160,26 @@ describe('rule', () => {
           'Properties': {
             'EventPattern': {
               account: ['account1', 'account2'],
-              detail: { foo: [1, 2] },
+              detail: {
+                foo: [1, 2],
+                strings: ['foo', 'bar'],
+                rangeMatcher: [{ numeric: ['>=', -1, '<=', 1] }],
+                stringMatcher: ['I am just a string'],
+                prefixMatcher: [{ prefix: 'aws.' }],
+                ipAddress: [{ cidr: '192.0.2.0/24' }],
+                shouldExist: [{ exists: true }],
+                shouldNotExist: [{ exists: false }],
+                numbers: [{ numeric: ['>', 0, '<', 5] }],
+                topLevel: {
+                  deeper: [{ numeric: ['=', 42] }],
+                  oneMoreLevel: {
+                    deepest: [{ numeric: ['<=', -1] }, { numeric: ['>=', 1] }],
+                  },
+                },
+                state: [{ 'anything-but': ['initializing'] }],
+                limit: [{ 'anything-but': [100, 200, 300] }],
+                notPrefixedBy: [{ 'anything-but': { 'prefix': 'sensitive-' } }],
+              },
               'detail-type': ['detailType1'],
               id: ['id1', 'id2'],
               region: ['region1', 'region2', 'region3'],
