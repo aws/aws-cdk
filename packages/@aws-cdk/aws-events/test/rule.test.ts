@@ -142,6 +142,7 @@ describe('rule', () => {
           state: Matchers.anythingBut('initializing'),
           limit: Matchers.anythingBut(100, 200, 300),
           notPrefixedBy: Matchers.anythingButPrefix('sensitive-'),
+          bar: undefined,
         },
         detailType: ['detailType1'],
         id: ['id1', 'id2'],

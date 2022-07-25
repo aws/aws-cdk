@@ -85,11 +85,11 @@ function normalizeNames(pattern: EventPattern): {[key: string]: any} {
  * except with the matchers converted to the final format, expected by EventBridge.
  */
 function resolvePatterns(obj: any): any {
-  if (obj.toEventBridgeMatcher) {
+  if (obj?.toEventBridgeMatcher) {
     return obj.toEventBridgeMatcher();
   }
 
-  if (Array.isArray(obj) || typeof(obj) !== 'object') {
+  if (Array.isArray(obj) || typeof(obj) !== 'object' || obj == null) {
     return obj;
   }
 
