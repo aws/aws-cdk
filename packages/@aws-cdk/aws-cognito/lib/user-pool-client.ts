@@ -350,7 +350,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   private _generateSecret: boolean | undefined;
   private readonly userPool: IUserPool;
-  private _describeCognitoUserPoolClientSecret?: string;
+  private _userPoolClientSecret?: string;
 
   /**
    * The OAuth flows enabled for this client.
@@ -432,8 +432,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
     // Create the Custom Resource that assists in resolving the User Pool Client secret
     // just once, no matter how many times this method is called
-    if (!this._describeCognitoUserPoolClientSecret) {
-      this._describeCognitoUserPoolClientSecret = new AwsCustomResource(
+    if (!this._userPoolClientSecret) {
+      this._userPoolClientSecret = new AwsCustomResource(
         this,
         'DescribeCognitoUserPoolClient',
         {
@@ -449,13 +449,13 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
             physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
           },
           policy: AwsCustomResourcePolicy.fromSdkCalls({
-            resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+            resources: [this.userPool.userPoolArn],
           }),
         },
       ).getResponseField('UserPoolClient.ClientSecret');
     }
 
-    return this._describeCognitoUserPoolClientSecret;
+    return this._userPoolClientSecret;
   }
 
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
