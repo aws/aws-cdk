@@ -56,7 +56,7 @@ export class GarbageCollector {
       return response.NextToken;
     });
 
-    console.log(stackNames.length);
+    console.log('num stacks:', stackNames.length);
 
     // TODO: gracefully fail this
     for (const stack of stackNames) {
@@ -68,11 +68,12 @@ export class GarbageCollector {
       templateHashes?.forEach(this.hashes.add, this.hashes);
     }
 
-    console.log(this.hashes);
+    console.log('num hashes:', this.hashes.size);
   }
 
   private async collectIsolatedObjects(sdk: ISDK, bucket: string) {
     const s3 = sdk.s3();
+    const isolatedObjects: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await s3.listObjectsV2({
         Bucket: bucket,
@@ -80,13 +81,15 @@ export class GarbageCollector {
       }).promise();
       response.Contents?.forEach((obj) => {
         const hash = getHash(obj.Key ?? '');
-        console.log(hash);
-        if (this.hashes.has(hash)) {
-          console.log('IN USE');
+        if (!this.hashes.has(hash)) {
+          isolatedObjects.push(hash);
         }
       });
       return response.NextContinuationToken;
     });
+
+    console.log(isolatedObjects);
+    console.log('num isolated', isolatedObjects.length);
 
     function getHash(file: string) {
       return path.basename(file, path.extname(file));
