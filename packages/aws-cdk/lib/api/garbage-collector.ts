@@ -45,6 +45,7 @@ export class GarbageCollector {
     console.log(bucket, repos);
 
     await this.collectIsolatedObjects(sdk, bucket);
+    await this.collectIsolatedRepos(sdk, repos);
   }
 
   private async collectHashes(sdk: ISDK) {
@@ -94,6 +95,43 @@ export class GarbageCollector {
     function getHash(file: string) {
       return path.basename(file, path.extname(file));
     }
+  }
+
+  private async collectIsolatedRepos(sdk: ISDK, repos: string[]) {
+    const ecr = sdk.ecr();
+    const isolatedImages: string[] = [];
+    for (const repo of repos) {
+      await paginateSdkCall(async (nextToken) => {
+        const response = await ecr.listImages({
+          repositoryName: repo,
+          nextToken: nextToken,
+        }).promise();
+        const images: Record<string, string[]> = {};
+        for (const image of response.imageIds ?? []) {
+          if (!image.imageDigest || !image.imageTag) { continue; }
+          if (!images[image.imageDigest]) {
+            images[image.imageDigest] = [];
+          }
+          images[image.imageDigest].push(image.imageTag);
+        }
+        // make sure all tags of an image are isolated
+        for (const tags of Object.values(images)) {
+          let del = true;
+          for (const tag of tags) {
+            if (this.hashes.has(tag)) {
+              del = false;
+            }
+          }
+          if (del) {
+            isolatedImages.push(tags[0]);
+          }
+        }
+        return response.nextToken;
+      });
+    }
+
+    console.log(isolatedImages);
+    console.log('num isolated', isolatedImages.length);
   }
 
   private async getBootstrapBucket(sdk: ISDK) {
