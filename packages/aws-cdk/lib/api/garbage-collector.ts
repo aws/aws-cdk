@@ -38,14 +38,31 @@ export class GarbageCollector {
   }
 
   public async garbageCollect() {
+    const totalStart = Date.now();
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
+    console.log('Collecting Hashes');
+    let start = Date.now();
     await this.collectHashes(sdk);
+    console.log('Finished collecting hashes: ', formatTime(start), ' seconds');
+    console.log('Getting bootstrap bucket');
+    start = Date.now();
     const bucket = await this.getBootstrapBucket(sdk);
+    console.log('Got bootstrap bucket:', formatTime(start), 'seconds');
+    console.log('Getting bootstrap repositories');
+    start = Date.now();
     const repos = await this.getBootstrapRepositories(sdk);
+    console.log('Got bootstrapped repositories:', formatTime(start), 'seconds');
     console.log(bucket, repos);
 
+    console.log('Collecting isolated objects');
+    start = Date.now();
     await this.collectIsolatedObjects(sdk, bucket);
-    await this.collectIsolatedRepos(sdk, repos);
+    console.log('Collected isolated buckets:', formatTime(start), 'seconds');
+    console.log('Collecting isolated images');
+    start = Date.now();
+    await this.collectIsolatedImages(sdk, repos);
+    console.log('Collected isolated images:', formatTime(start), 'seconds');
+    console.log('Total Garbage Collection time:', formatTime(totalStart), 'seconds');
   }
 
   private async collectHashes(sdk: ISDK) {
@@ -97,7 +114,7 @@ export class GarbageCollector {
     }
   }
 
-  private async collectIsolatedRepos(sdk: ISDK, repos: string[]) {
+  private async collectIsolatedImages(sdk: ISDK, repos: string[]) {
     const ecr = sdk.ecr();
     const isolatedImages: string[] = [];
     for (const repo of repos) {
@@ -107,6 +124,7 @@ export class GarbageCollector {
           nextToken: nextToken,
         }).promise();
         const images: Record<string, string[]> = {};
+        // map unique image digest to (possibly multiple) tags
         for (const image of response.imageIds ?? []) {
           if (!image.imageDigest || !image.imageTag) { continue; }
           if (!images[image.imageDigest]) {
@@ -173,4 +191,8 @@ async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | unde
       finished = true;
     }
   }
+}
+
+function formatTime(start: number): number {
+  return (Date.now() - start) / 1000;
 }
