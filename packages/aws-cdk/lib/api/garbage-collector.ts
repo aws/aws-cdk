@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { ECR } from 'aws-sdk';
 import { ISDK, SdkProvider } from './aws-auth';
@@ -42,6 +43,8 @@ export class GarbageCollector {
     const bucket = await this.getBootstrapBucket(sdk);
     const repos = await this.getBootstrapRepositories(sdk);
     console.log(bucket, repos);
+
+    await this.collectIsolatedObjects(sdk, bucket);
   }
 
   private async collectHashes(sdk: ISDK) {
@@ -68,9 +71,27 @@ export class GarbageCollector {
     console.log(this.hashes);
   }
 
-  // private async collectIsolatedObjects(sdk: ISDK, bucket: string) {
+  private async collectIsolatedObjects(sdk: ISDK, bucket: string) {
+    const s3 = sdk.s3();
+    await paginateSdkCall(async (nextToken) => {
+      const response = await s3.listObjectsV2({
+        Bucket: bucket,
+        ContinuationToken: nextToken,
+      }).promise();
+      response.Contents?.forEach((obj) => {
+        const hash = getHash(obj.Key ?? '');
+        console.log(hash);
+        if (this.hashes.has(hash)) {
+          console.log('IN USE');
+        }
+      });
+      return response.NextContinuationToken;
+    });
 
-  // }
+    function getHash(file: string) {
+      return path.basename(file, path.extname(file));
+    }
+  }
 
   private async getBootstrapBucket(sdk: ISDK) {
     // maybe use tags like for ecr
