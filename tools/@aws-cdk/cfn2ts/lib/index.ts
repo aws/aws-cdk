@@ -15,10 +15,14 @@ export default async function(scopes: string | string[], outPath: string, option
     if (Object.keys(spec.ResourceTypes).length === 0) {
       throw new Error(`No resource was found for scope ${scope}`);
     }
+
     const name = packageName(scope);
     const affix = computeAffix(scope, scopes);
 
-    const generator = new CodeGenerator(name, spec, affix, options);
+    const generator = new CodeGenerator(name, spec, affix, {
+      ...options,
+      resourceProviderSchema: cfnSpec.kinesisStreamResourceProviderSchema(),
+    });
     generator.emitCode();
     await generator.save(outPath);
 

@@ -26,6 +26,20 @@ export interface CodeGeneratorOptions {
    * @default '@aws-cdk/core'
    */
   readonly coreImport?: string;
+
+  /**
+   * What level of constructs to generate.
+   *
+   * @default 1
+   */
+  readonly level?: number;
+
+  /**
+   * resource provider schema - uluru
+   *
+   * @default undefined
+   */
+  readonly resourceProviderSchema?: any;
 }
 
 /**
@@ -35,6 +49,8 @@ export default class CodeGenerator {
   public readonly outputFile: string;
 
   private code = new CodeMaker();
+  private level: number;
+  private readonly resourceProviderSchema?: any;
 
   /**
    * Creates the code generator.
@@ -42,7 +58,9 @@ export default class CodeGenerator {
    * @param spec     CloudFormation resource specification
    */
   constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string, options: CodeGeneratorOptions = {}) {
-    this.outputFile = `${moduleName}.generated.ts`;
+    this.level = options.level ?? 1;
+    this.resourceProviderSchema = options.resourceProviderSchema;
+    this.outputFile = this.level === 2 ? `${moduleName}.l2.generated.ts` : `${moduleName}.generated.ts`;
     this.code.openFile(this.outputFile);
     const coreImport = options.coreImport ?? '@aws-cdk/core';
 
@@ -65,6 +83,20 @@ export default class CodeGenerator {
   }
 
   public emitCode(): void {
+    if (this.level === 1) {
+      this.emitL1Code();
+      return;
+    }
+    this.emitL2Code();
+  }
+
+  private emitL2Code(): void {
+    this.code.line('I am writing an L2 for you');
+    // keys: sourceUrl,handlers,typeName,readOnlyProperties,description,createOnlyProperties,additionalProperties,primaryIdentifier,definitions,properties
+    this.code.line(`${Object.keys(this.resourceProviderSchema)}`);
+  }
+
+  private emitL1Code(): void {
     for (const name of Object.keys(this.spec.ResourceTypes).sort()) {
       const resourceType = this.spec.ResourceTypes[name];
 

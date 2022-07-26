@@ -13,6 +13,14 @@ export function specification(): schema.Specification {
 }
 
 /**
+ * The Resource Provider Schema for AWS::Kinesis::Stream.
+ */
+export function kinesisStreamResourceProviderSchema(): Object {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require('../spec-source/specification/000_cfn/000_official/000_AWS_Kinesis_Stream_ProviderSchema.json');
+}
+
+/**
  * The complete AWS CloudFormation Resource specification, having any CDK patches and enhancements included in it.
  */
 export function docs(): schema.CloudFormationDocsFile {
