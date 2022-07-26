@@ -57,7 +57,12 @@ export default class CodeGenerator {
    * @param moduleName the name of the module (used to determine the file name).
    * @param spec     CloudFormation resource specification
    */
-  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string, options: CodeGeneratorOptions = {}) {
+  constructor(
+    private readonly moduleName: string,
+    private readonly spec: schema.Specification,
+    private readonly affix: string,
+    options: CodeGeneratorOptions = {},
+  ) {
     this.level = options.level ?? 1;
     this.resourceProviderSchema = options.resourceProviderSchema;
     this.outputFile = this.level === 2 ? `${moduleName}.l2.generated.ts` : `${moduleName}.generated.ts`;
@@ -94,24 +99,25 @@ export default class CodeGenerator {
     // keys: sourceUrl,handlers,typeName,readOnlyProperties,description,createOnlyProperties,additionalProperties,primaryIdentifier,definitions,properties
 
     // imports
+    this.code.line(`import { CfnStream } from './${this.moduleName}.generated';`);
 
     // interface
-    const name = this.resourceProviderSchema.typeName.split(':').slice(-1)[0];
-    const interfaceName = `I${name}`;
+    const name = SpecName.parse(this.resourceProviderSchema.typeName);
+    const interfaceName = `I${name.resourceName}`;
     this.code.openBlock(`export interface ${interfaceName}`);
     this.code.closeBlock();
 
     // construct props
-    this.code.openBlock(`export interface ${name}Props`);
+    this.code.openBlock(`export interface ${name.resourceName}Props`);
     this.code.closeBlock();
 
     // abstract base class
-    const baseClassName = `${name}Base`;
-    this.code.openBlock(`abstract class ${baseClassName} extends ${CORE}.Resource implements ${interfaceName}`);
+    const baseClassName = `${name.resourceName}Base`;
+    this.code.openBlock(`abstract class ${baseClassName} extends ${CORE}.Resource implements ${name.resourceName}`);
     this.code.closeBlock();
 
     // concrete class
-    this.code.openBlock(`export class ${name} extends ${baseClassName}`);
+    this.code.openBlock(`export class ${name.resourceName} extends ${baseClassName}`);
     this.code.closeBlock();
   }
 
