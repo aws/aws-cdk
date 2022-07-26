@@ -35,15 +35,13 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     ChangeBatch: {
       Changes: [{
         Action: 'DELETE',
-        ResourceRecordSet: {
+        ResourceRecordSet: removeUndefinedAndEmpty({
           Name: existingRecord.Name,
           Type: existingRecord.Type,
-          // changeResourceRecordSets does not correctly handle undefined values
-          // https://github.com/aws/aws-sdk-js/issues/3506
-          ...existingRecord.TTL ? { TTL: existingRecord.TTL } : {},
-          ...existingRecord.AliasTarget ? { AliasTarget: existingRecord.AliasTarget } : {},
-          ...existingRecord.ResourceRecords ? { ResourceRecords: existingRecord.ResourceRecords } : {},
-        },
+          TTL: existingRecord.TTL,
+          AliasTarget: existingRecord.AliasTarget,
+          ResourceRecords: existingRecord.ResourceRecords,
+        }),
       }],
     },
   }).promise();
@@ -53,4 +51,18 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   return {
     PhysicalResourceId: `${existingRecord.Name}-${existingRecord.Type}`,
   };
+}
+
+// https://github.com/aws/aws-sdk-js/issues/3411
+// https://github.com/aws/aws-sdk-js/issues/3506
+function removeUndefinedAndEmpty<T>(obj: T): T {
+  const ret: { [key: string]: any } = {};
+
+  for (const [k, v] of Object.entries(obj)) {
+    if (v && (!Array.isArray(v) || v.length !== 0)) {
+      ret[k] = v;
+    }
+  }
+
+  return ret as T;
 }

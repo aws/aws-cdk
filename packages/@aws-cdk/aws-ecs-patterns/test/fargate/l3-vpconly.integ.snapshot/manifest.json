@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -317,6 +317,15 @@
         ]
       },
       "displayName": "aws-ecs-integ-l3-vpconly"
+    },
+    "vpcOnlyFargateTestDefaultTestDeployAssertEB558D64": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "vpcOnlyFargateTestDefaultTestDeployAssertEB558D64.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "vpcOnlyFargateTest/DefaultTest/DeployAssert"
     }
   }
 }

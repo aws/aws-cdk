@@ -70,13 +70,41 @@ describe('Batch Compute Environment', () => {
         });
       });
     });
-
     test('should deny if creating a managed environment with no provided compute resource props', () => {
       // THEN
       throws(() => {
         // WHEN
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
           managed: true,
+        });
+      });
+    });
+    test('should fail setting launch template with name and id', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            launchTemplate: {
+              launchTemplateName: 'test-template-name',
+              launchTemplateId: 'test-template-id',
+            },
+          },
+        });
+      });
+    });
+    test('should fail setting launch template missing both template name or id', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            launchTemplate: {},
+          },
         });
       });
     });

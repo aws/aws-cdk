@@ -1,5 +1,5 @@
 {
-  "$version": "76.0.0",
+  "$version": "81.1.0",
   "PropertyTypes": {
     "AWS::ApplicationInsights::Application.Alarm": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-alarm.html",
@@ -409,6 +409,12 @@
           "ItemType": "CustomComponent",
           "Required": false,
           "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "GroupingType": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-groupingtype",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "LogPatternSets": {
