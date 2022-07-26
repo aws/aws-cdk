@@ -215,14 +215,6 @@
                       "fqn": "@aws-cdk/custom-resources.AwsCustomResource",
                       "version": "0.0.0"
                     }
-                  },
-                  "CfnOutput": {
-                    "id": "CfnOutput",
-                    "path": "integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/CfnOutput",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnOutput",
-                      "version": "0.0.0"
-                    }
                   }
                 },
                 "constructInfo": {
@@ -423,6 +415,35 @@
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.1.51"
+            }
+          },
+          "Secret": {
+            "id": "Secret",
+            "path": "integ-user-pool-client-explicit-props/Secret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-pool-client-explicit-props/Secret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "secretString": {
+                      "Fn::GetAtt": [
+                        "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientEA733B32",
+                        "UserPoolClient.ClientSecret"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
             }
           }
         },

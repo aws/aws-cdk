@@ -250,16 +250,19 @@
    "DependsOn": [
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
-  }
- },
- "Outputs": {
-  "myuserpoolmyuserpoolclientCfnOutputFFB2C81E": {
-   "Value": {
-    "Fn::GetAtt": [
-     "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientEA733B32",
-     "UserPoolClient.ClientSecret"
-    ]
-   }
+  },
+  "SecretA720EF05": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "SecretString": {
+     "Fn::GetAtt": [
+      "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientEA733B32",
+      "UserPoolClient.ClientSecret"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
