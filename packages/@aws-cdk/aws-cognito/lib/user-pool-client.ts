@@ -1,4 +1,4 @@
-import { IResource, Resource, Duration, Stack } from '@aws-cdk/core';
+import { IResource, Resource, Duration, Stack, SecretValue } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
@@ -327,7 +327,7 @@ export interface IUserPoolClient extends IResource {
    * The generated client secret. Only available if the "generateSecret" props is set to true
    * @attribute
    */
-  readonly userPoolClientSecret?: string;
+  readonly userPoolClientSecret?: SecretValue;
 }
 
 /**
@@ -350,7 +350,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   private _generateSecret: boolean | undefined;
   private readonly userPool: IUserPool;
-  private _userPoolClientSecret?: string;
+  private _userPoolClientSecret?: SecretValue;
 
   /**
    * The OAuth flows enabled for this client.
@@ -423,7 +423,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     return this._userPoolClientName;
   }
 
-  public get userPoolClientSecret(): string | undefined {
+  public get userPoolClientSecret(): SecretValue | undefined {
     if (!this._generateSecret) {
       throw new Error(
         'userPoolClientSecret is available only if the "generateSecret" prop is set to true',
@@ -433,7 +433,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     // Create the Custom Resource that assists in resolving the User Pool Client secret
     // just once, no matter how many times this method is called
     if (!this._userPoolClientSecret) {
-      this._userPoolClientSecret = new AwsCustomResource(
+      this._userPoolClientSecret = SecretValue.resourceAttribute(new AwsCustomResource(
         this,
         'DescribeCognitoUserPoolClient',
         {
@@ -452,7 +452,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
             resources: [this.userPool.userPoolArn],
           }),
         },
-      ).getResponseField('UserPoolClient.ClientSecret');
+      ).getResponseField('UserPoolClient.ClientSecret'));
     }
 
     return this._userPoolClientSecret;

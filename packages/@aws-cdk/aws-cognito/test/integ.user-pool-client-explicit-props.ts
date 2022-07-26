@@ -1,5 +1,6 @@
-import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, ClientAttributes, StringAttribute } from '../lib';
+import { Secret } from '@aws-cdk/aws-secretsmanager';
+import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { ClientAttributes, OAuthScope, StringAttribute, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool-client-explicit-props');
@@ -58,6 +59,6 @@ const client = userpool.addClient('myuserpoolclient', {
     }).withCustomAttributes('attribute_one', 'attribute_two'),
 });
 
-new CfnOutput(client, 'CfnOutput', {
-  value: client.userPoolClientSecret as string,
+new Secret(stack, 'Secret', {
+  secretStringValue: client.userPoolClientSecret,
 });
