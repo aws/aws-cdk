@@ -28,6 +28,7 @@
   - [IAM Authorizers](#iam-authorizers)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda Authorizer](#lambda-authorizer)
+  - [IAM Authorizers](#iam-authorizer)
 
 ## Introduction
 
@@ -252,6 +253,34 @@ const integration = new WebSocketLambdaIntegration(
 new apigwv2.WebSocketApi(this, 'WebSocketApi', {
   connectRouteOptions: {
     integration,
+    authorizer,
+  },
+});
+```
+
+### IAM Authorizer
+
+IAM authorizers can be used to allow identity-based access to your WebSocket API.
+
+```ts
+import { WebSocketIamAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+
+// This function handles your connect route
+declare const connectHandler: lambda.Function;
+
+// This function handles your WebSocket requests
+declare const handler: lambda.Function;
+
+const authorizer = new WebSocketIamAuthorizer();
+
+const integration = new WebSocketLambdaIntegration(
+  'Integration',
+  handler,
+);
+
+new apigwv2.WebSocketApi(this, 'WebSocketApi', {
+  connectRouteOptions: {
+    connectHandler,
     authorizer,
   },
 });
