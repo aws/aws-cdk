@@ -152,13 +152,13 @@ export class App extends Stage {
 
   private readContextFromTempFile() {
     const location = process.env[cxapi.CONTEXT_LOCATION_ENV];
-    return location != null ? fs.readJSONSync(location) : null;
+    return location != null ? fs.readJSONSync(location) : undefined;
   }
 
   // for backward compatibility with old versions of the CLI
   private readContextFromEnvironment() {
     const contextJson = process.env[cxapi.CONTEXT_ENV];
-    return contextJson ? JSON.parse(contextJson) : null;
+    return contextJson ? JSON.parse(contextJson) : undefined;
   }
 }
 
