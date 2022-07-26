@@ -56,6 +56,7 @@ export interface FirelensOptions {
    * Custom configuration file, s3 or file.
    * Both configFileType and configFileValue must be used together
    * to define a custom configuration source.
+   *
    * @default - determined by checking configFileValue with S3 ARN.
    */
   readonly configFileType?: FirelensConfigFileType;
@@ -64,6 +65,7 @@ export interface FirelensOptions {
    * Custom configuration file, S3 ARN or a file path
    * Both configFileType and configFileValue must be used together
    * to define a custom configuration source.
+   *
    * @default - no config file value
    */
   readonly configFileValue?: string;
@@ -223,7 +225,7 @@ export class FirelensLogRouter extends ContainerDefinition {
       const hasConfig = (options.configFileValue !== undefined);
       const enableECSLogMetadata = options.enableECSLogMetadata || options.enableECSLogMetadata === undefined;
       const configFileType = (options.configFileType === undefined || options.configFileType === FirelensConfigFileType.S3) &&
-      (cdk.Token.isUnresolved(options.configFileValue) || /arn:aws[a-zA-Z-]*:s3:::.+/.test(options.configFileValue || ''))
+        (cdk.Token.isUnresolved(options.configFileValue) || /arn:aws[a-zA-Z-]*:s3:::.+/.test(options.configFileValue || ''))
         ? FirelensConfigFileType.S3 : FirelensConfigFileType.FILE;
 
       this.firelensConfig = {
@@ -254,7 +256,6 @@ export class FirelensLogRouter extends ContainerDefinition {
           }));
         }
       }
-
     } else {
       this.firelensConfig = props.firelensConfig;
     }

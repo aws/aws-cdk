@@ -351,7 +351,6 @@ describe('firelens log driver', () => {
       });
     });
 
-    // test added for: https://github.com/aws/aws-for-fluent-bit/issues/352
     test('firelens config options are fully optional', () => {
       // GIVEN
       td.addFirelensLogRouter('log_router', {
