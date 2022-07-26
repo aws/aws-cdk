@@ -563,7 +563,7 @@ export class CdkToolkit {
       resolvedEnvironment,
       sdkProvider: this.props.sdkProvider,
     });
-    await gc.collect();
+    await gc.garbageCollect();
   }
 
   /**

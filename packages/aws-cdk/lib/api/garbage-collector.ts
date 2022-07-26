@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import * as cxapi from '@aws-cdk/cx-api';
+import { ECR } from 'aws-sdk';
 import { ISDK, SdkProvider } from './aws-auth';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
@@ -35,21 +36,22 @@ export class GarbageCollector {
   public constructor(private readonly props: GarbageCollectorProps) {
   }
 
-  public async collect() {
+  public async garbageCollect() {
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
+    await this.collectHashes(sdk);
+    const bucket = await this.getBootstrapBucket(sdk);
+    const repos = await this.getBootstrapRepositories(sdk);
+    console.log(bucket, repos);
+  }
 
+  private async collectHashes(sdk: ISDK) {
     const cfn = sdk.cloudFormation();
-    let nextToken: string | undefined;
-    let finished = false;
     const stackNames: string[] = [];
-    while (!finished) {
+    await paginateSdkCall(async (nextToken) => {
       const response = await cfn.listStacks({ NextToken: nextToken }).promise();
       stackNames.push(...(response.StackSummaries ?? []).map(s => s.StackId ?? s.StackName));
-      nextToken = response.NextToken;
-      if (nextToken === undefined) {
-        finished = true;
-      }
-    }
+      return response.NextToken;
+    });
 
     console.log(stackNames.length);
 
@@ -64,12 +66,11 @@ export class GarbageCollector {
     }
 
     console.log(this.hashes);
-
-    const bucket = await this.getBootstrapBucket(sdk);
-    const ecrs = await this.getBootstrapRepositories(sdk);
-    console.log(bucket);
-    console.log(ecrs);
   }
+
+  // private async collectIsolatedObjects(sdk: ISDK, bucket: string) {
+
+  // }
 
   private async getBootstrapBucket(sdk: ISDK) {
     // maybe use tags like for ecr
@@ -79,7 +80,12 @@ export class GarbageCollector {
 
   private async getBootstrapRepositories(sdk: ISDK) {
     const ecr = sdk.ecr();
-    const repos = (await ecr.describeRepositories().promise()).repositories;
+    let repos: ECR.RepositoryList = [];
+    await paginateSdkCall(async (nextToken) => {
+      const response = await ecr.describeRepositories({ nextToken: nextToken }).promise();
+      repos = response.repositories ?? [];
+      return response.nextToken;
+    });
     const bootstrappedRepos: string[] = [];
     for (const repo of repos ?? []) {
       if (!repo.repositoryArn || !repo.repositoryName) { continue; }
@@ -93,5 +99,16 @@ export class GarbageCollector {
       }
     }
     return bootstrappedRepos;
+  }
+}
+
+async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | undefined>) {
+  let finished = false;
+  let nextToken: string | undefined;
+  while (!finished) {
+    nextToken = await cb(nextToken);
+    if (nextToken === undefined) {
+      finished = true;
+    }
   }
 }
