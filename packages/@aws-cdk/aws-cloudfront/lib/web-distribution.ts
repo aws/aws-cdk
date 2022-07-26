@@ -818,18 +818,6 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         ? `${props.comment.slice(0, 128 - 3)}...`
         : props.comment;
 
-    let distributionConfig: CfnDistribution.DistributionConfigProperty = {
-      comment: trimmedComment,
-      enabled: props.enabled ?? true,
-      defaultRootObject: props.defaultRootObject ?? 'index.html',
-      httpVersion: props.httpVersion || HttpVersion.HTTP2,
-      priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
-      ipv6Enabled: props.enableIpV6 ?? true,
-      // eslint-disable-next-line max-len
-      customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
-      webAclId: props.webACLId,
-    };
-
     const behaviors: BehaviorWithOrigin[] = [];
 
     const origins: CfnDistribution.OriginProperty[] = [];
@@ -885,6 +873,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         throw new Error(`Origin ${origin.domainName} is missing either S3OriginConfig or CustomOriginConfig. At least 1 must be specified.`);
       }
     });
+
     const originGroupsDistConfig =
       originGroups.length > 0
         ? {
@@ -892,18 +881,11 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
           quantity: originGroups.length,
         }
         : undefined;
-    distributionConfig = {
-      ...distributionConfig,
-      origins,
-      originGroups: originGroupsDistConfig,
-    };
 
     const defaultBehaviors = behaviors.filter(behavior => behavior.isDefaultBehavior);
     if (defaultBehaviors.length !== 1) {
       throw new Error('There can only be one default behavior across all sources. [ One default behavior per distribution ].');
     }
-
-    distributionConfig = { ...distributionConfig, defaultCacheBehavior: this.toBehavior(defaultBehaviors[0], props.viewerProtocolPolicy) };
 
     const otherBehaviors: CfnDistribution.CacheBehaviorProperty[] = [];
     for (const behavior of behaviors.filter(b => !b.isDefaultBehavior)) {
@@ -913,7 +895,23 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       otherBehaviors.push(this.toBehavior(behavior, props.viewerProtocolPolicy) as CfnDistribution.CacheBehaviorProperty);
     }
 
-    distributionConfig = { ...distributionConfig, cacheBehaviors: otherBehaviors.length > 0 ? otherBehaviors : undefined };
+    let distributionConfig: CfnDistribution.DistributionConfigProperty = {
+      comment: trimmedComment,
+      enabled: props.enabled ?? true,
+      defaultRootObject: props.defaultRootObject ?? 'index.html',
+      httpVersion: props.httpVersion || HttpVersion.HTTP2,
+      priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
+      ipv6Enabled: props.enableIpV6 ?? true,
+      // eslint-disable-next-line max-len
+      customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
+      webAclId: props.webACLId,
+
+      origins,
+      originGroups: originGroupsDistConfig,
+
+      defaultCacheBehavior: this.toBehavior(defaultBehaviors[0], props.viewerProtocolPolicy),
+      cacheBehaviors: otherBehaviors.length > 0 ? otherBehaviors : undefined,
+    };
 
     if (props.aliasConfiguration && props.viewerCertificate) {
       throw new Error([
