@@ -91,9 +91,28 @@ export default class CodeGenerator {
   }
 
   private emitL2Code(): void {
-    this.code.line('I am writing an L2 for you');
     // keys: sourceUrl,handlers,typeName,readOnlyProperties,description,createOnlyProperties,additionalProperties,primaryIdentifier,definitions,properties
-    this.code.line(`${Object.keys(this.resourceProviderSchema)}`);
+
+    // imports
+
+    // interface
+    const name = this.resourceProviderSchema.typeName.split(':').slice(-1)[0];
+    const interfaceName = `I${name}`;
+    this.code.openBlock(`export interface ${interfaceName}`);
+    this.code.closeBlock();
+
+    // construct props
+    this.code.openBlock(`export interface ${name}Props`);
+    this.code.closeBlock();
+
+    // abstract base class
+    const baseClassName = `${name}Base`;
+    this.code.openBlock(`abstract class ${baseClassName} extends ${CORE}.Resource implements ${interfaceName}`);
+    this.code.closeBlock();
+
+    // concrete class
+    this.code.openBlock(`export class ${name} extends ${baseClassName}`);
+    this.code.closeBlock();
   }
 
   private emitL1Code(): void {
