@@ -12,9 +12,11 @@ interface GarbageCollectorProps {
    * If this property is set, then instead of garbage collecting, we will
    * print the isolated asset hashes.
    */
-  dryRun: boolean;
+  readonly dryRun: boolean;
 
-  type: 'ecr' | 's3' | 'all';
+  readonly type: 'ecr' | 's3' | 'all';
+
+  readonly inIsolationFor: number;
 
   /**
    * The environment to deploy this stack in
@@ -22,7 +24,7 @@ interface GarbageCollectorProps {
    * The environment on the stack artifact may be unresolved, this one
    * must be resolved.
    */
-  resolvedEnvironment: cxapi.Environment;
+  readonly resolvedEnvironment: cxapi.Environment;
 
   /**
     * SDK provider (seeded with default credentials)
@@ -36,7 +38,7 @@ interface GarbageCollectorProps {
     * - Publish legacy assets.
     * - Upload large CloudFormation templates to the staging bucket.
     */
-  sdkProvider: SdkProvider;
+  readonly sdkProvider: SdkProvider;
 }
 
 export class GarbageCollector {

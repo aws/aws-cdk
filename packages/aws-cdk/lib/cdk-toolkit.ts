@@ -545,9 +545,9 @@ export class CdkToolkit {
     return undefined;
   }
 
-  public async garbageCollect(environment: string, dryRun: boolean, type: 'ecr' | 's3' | 'all') {
+  public async garbageCollect(environment: string, dryRun: boolean, type: 'ecr' | 's3' | 'all', inIsolationFor: number) {
     // eslint-disable-next-line no-console
-    console.log(environment, dryRun, type);
+    console.log(environment, dryRun, type, inIsolationFor);
 
     const splitEnv = environment.split('/');
     const resolvedEnvironment: cxapi.Environment = {
@@ -559,6 +559,7 @@ export class CdkToolkit {
     const gc = new GarbageCollector({
       dryRun,
       type,
+      inIsolationFor,
       resolvedEnvironment,
       sdkProvider: this.props.sdkProvider,
     });
