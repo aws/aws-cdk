@@ -51,7 +51,7 @@ function displayCdkEnvironmentVariables() {
   print('ℹ️ CDK environment variables:');
   let healthy = true;
   for (const key of keys.sort()) {
-    if (key === cxapi.CONTEXT_ENV || key === cxapi.CONTEXT_LOCATION_ENV || key === cxapi.OUTDIR_ENV) {
+    if (key === cxapi.CONTEXT_ENV || key === cxapi.OUTDIR_ENV) {
       print(`  - ${chalk.red(key)} = ${chalk.green(process.env[key]!)} (⚠️ reserved for use by the CDK toolkit)`);
       healthy = false;
     } else {
