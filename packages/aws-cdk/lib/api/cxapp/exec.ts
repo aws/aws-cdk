@@ -92,7 +92,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   const assembly = createAssembly(outdir);
 
-  fs.removeSync(path.basename(contextLocation));
+  fs.removeSync(path.dirname(contextLocation));
 
   return assembly;
 
