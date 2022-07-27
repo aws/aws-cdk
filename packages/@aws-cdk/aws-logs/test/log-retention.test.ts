@@ -3,7 +3,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { LogRetention, RetentionDays } from '../lib';
+import { LogDeletionPolicy, LogRetention, RetentionDays } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -56,6 +56,56 @@ describe('log retention', () => {
       },
       'LogGroupName': 'group',
       'RetentionInDays': 30,
+    });
+  });
+
+  test('set the logDeletionPlicy to DESTROY', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_DAY,
+      logDeletionPolicy: LogDeletionPolicy.DESTROY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      'ServiceToken': {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      'LogGroupName': 'group',
+      'RetentionInDays': 1,
+      'LogDeletionPolicy': 'destroy',
+    });
+  });
+
+  test('set the logDeletionPlicy to RETAIN', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_DAY,
+      logDeletionPolicy: LogDeletionPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      'ServiceToken': {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      'LogGroupName': 'group',
+      'RetentionInDays': 1,
+      'LogDeletionPolicy': 'retain',
     });
   });
 
