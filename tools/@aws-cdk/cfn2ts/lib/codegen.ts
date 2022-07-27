@@ -97,27 +97,77 @@ export default class CodeGenerator {
 
   private emitL2Code(): void {
     // keys: sourceUrl,handlers,typeName,readOnlyProperties,description,createOnlyProperties,additionalProperties,primaryIdentifier,definitions,properties
+    const specName = SpecName.parse(this.resourceProviderSchema.typeName);
+    const resourceName = specName.resourceName;
+    const resourceNameLower = resourceName.toLowerCase();
+    const packageName = genspec.packageName(specName);
 
     // imports
-    this.code.line(`import { CfnStream } from './${this.moduleName}.generated';`);
+    // TODO: make this work for v1 and v2.
+    this.code.line("import * as iam from '@aws-cdk/aws-iam';");
+    this.code.line(`import { Cfn${resourceName} } from './${this.moduleName}.generated';`);
 
     // interface
-    const name = SpecName.parse(this.resourceProviderSchema.typeName);
-    const interfaceName = `I${name.resourceName}`;
-    this.code.openBlock(`export interface ${interfaceName}`);
+    const iName = new genspec.CodeName(packageName, '', `I${resourceName}`, specName);
+    this.code.openBlock(`export interface ${iName.className} extends ${CORE}.IResource`);
+    // extend IGrantable as well if there is a role property
+    this.code.line('/**');
+    this.code.line(` * The ARN of the ${resourceNameLower}.`);
+    this.code.line(' */');
+    this.code.line(`readonly ${resourceNameLower}Arn: string;`);
+    this.code.line('/**');
+    this.code.line(` * The name of the ${resourceNameLower}.`);
+    this.code.line(' */');
+    this.code.line(`readonly ${resourceNameLower}Name: string;`);
+
+    Object.keys(this.resourceProviderSchema.handlers).forEach((handlerName) => {
+      this.code.line(`grant${this.code.toPascalCase(handlerName)}(grantee: iam.IGrantable): iam.Grant;`);
+    });
     this.code.closeBlock();
 
     // construct props
-    this.code.openBlock(`export interface ${name.resourceName}Props`);
+    const propsName = new genspec.CodeName(packageName, '', `${resourceName}Props`, specName);
+    this.code.openBlock(`export interface ${propsName.className}`);
+    this.code.line(`readonly ${resourceNameLower}Name?: string;`);
+    // add all the required L1 props
+    this.resourceProviderSchema.required?.forEach((requiredProp: string) => {
+      this.code.line(`readonly ${this.code.toCamelCase(requiredProp)}: any;`);
+    });
     this.code.closeBlock();
 
     // abstract base class
-    const baseClassName = `${name.resourceName}Base`;
-    this.code.openBlock(`abstract class ${baseClassName} extends ${CORE}.Resource implements ${name.resourceName}`);
+    const baseClassName = `${resourceName}Base`;
+    this.code.openBlock(`abstract class ${baseClassName} extends ${CORE}.Resource implements ${iName.className}`);
+    this.code.line(`public abstract readonly ${resourceNameLower}Arn: string;`);
+    this.code.line(`public abstract readonly ${resourceNameLower}Name: string;`);
+    // grant
+    this.code.openBlock('public grant(grantee: iam.IGrantable, ...actions: string[])');
+    this.code.line(`return iam.Grant.addToPrincipal({grantee, actions, resourceArns: [this.${resourceNameLower}Arn], scope: this })`);
+    this.code.closeBlock();
+    // specific grants
+    Object.keys(this.resourceProviderSchema.handlers).forEach((handlerName) => {
+      this.code.openBlock(`public grant${this.code.toPascalCase(handlerName)}(grantee: iam.IGrantable)`);
+      this.code.line(`return this.grant(grantee, '${this.resourceProviderSchema.handlers[handlerName].permissions.join("','")}');`);
+      this.code.closeBlock();
+    });
     this.code.closeBlock();
 
     // concrete class
-    this.code.openBlock(`export class ${name.resourceName} extends ${baseClassName}`);
+    this.code.openBlock(`export class ${specName.resourceName} extends ${baseClassName}`);
+    // fromXXX functions
+    // TODO
+
+    // constructor
+    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string, props: ${propsName.className})`);
+    // super constructor
+    this.code.line(`super(scope, id, { physicalName: props.${resourceNameLower}Name })`);
+    // Create the resource
+    this.code.line(`new Cfn${specName.resourceName}(this, 'Resource', {`);
+    
+    this.code.line('});');
+    //set resourceArn and resourceName
+
+    this.code.closeBlock();
     this.code.closeBlock();
   }
 
