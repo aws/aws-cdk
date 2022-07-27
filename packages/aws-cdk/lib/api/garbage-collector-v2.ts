@@ -11,24 +11,12 @@ interface GarbageCollectorProps {
   /**
    * If this property is set, then instead of garbage collecting, we will
    * print the isolated asset hashes.
-   *
-   * @default false
    */
   readonly dryRun: boolean;
 
-  /**
-   * The type of asset to garbage collect.
-   *
-   * @default 'all'
-   */
   readonly type: 'ecr' | 's3' | 'all';
 
-  /**
-   * The days an asset must be in isolation before being actually deleted.
-   *
-   * @default 30
-   */
-  readonly days: number;
+  readonly inIsolationFor: number;
 
   /**
    * The environment to deploy this stack in
@@ -53,18 +41,18 @@ interface GarbageCollectorProps {
   readonly sdkProvider: SdkProvider;
 }
 
-export class GarbageCollector {
-  private hashes: Set<string> = new Set();
+export class GarbageCollectorV2 {
+  private templates: string = '';
   public constructor(private readonly props: GarbageCollectorProps) {
   }
 
   public async garbageCollect() {
     const totalStart = Date.now();
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
-    console.log('Collecting Hashes');
+    console.log('Collecting Templates');
     let start = Date.now();
-    await this.collectHashes(sdk);
-    console.log('Finished collecting hashes: ', formatTime(start), ' seconds');
+    await this.getTemplates(sdk);
+    console.log('Finished collecting templates: ', formatTime(start), ' seconds');
 
     if (this.props.type === 's3' || this.props.type === 'all') {
       console.log('Getting bootstrap bucket');
@@ -72,10 +60,17 @@ export class GarbageCollector {
       const bucket = await this.getBootstrapBucket(sdk);
       console.log('Got bootstrap bucket:', formatTime(start), 'seconds');
 
-      console.log('Collecting isolated objects');
+      console.log('Collecting object hashes');
       start = Date.now();
-      const isolatedObjects = await this.collectIsolatedObjects(sdk, bucket);
-      console.log('Collected isolated buckets:', formatTime(start), 'seconds');
+      const objects = await this.collectObjectHashes(sdk, bucket);
+      console.log('Collected object hashes:', formatTime(start), 'seconds');
+
+      console.log('Listing isolated objects');
+      start = Date.now();
+      const isolatedObjects = this.listIsolatedObjects(objects);
+      console.log('Listed isolated objects:', formatTime(start), 'seconds');
+      console.log(isolatedObjects);
+      console.log(isolatedObjects.length);
 
       if (!this.props.dryRun) {
         console.log('Tagging isolated objects');
@@ -113,7 +108,11 @@ export class GarbageCollector {
     console.log('Total Garbage Collection time:', formatTime(totalStart), 'seconds');
   }
 
-  private async collectHashes(sdk: ISDK) {
+  private listIsolatedObjects(objects: string[]) {
+    return objects.filter((obj) => !this.templates.includes(getHash(obj)));
+  }
+
+  private async getTemplates(sdk: ISDK) {
     const cfn = sdk.cloudFormation();
     const stackNames: string[] = [];
     await paginateSdkCall(async (nextToken) => {
@@ -125,16 +124,16 @@ export class GarbageCollector {
     console.log('num stacks:', stackNames.length);
 
     // TODO: gracefully fail this
+    const templates = [];
     for (const stack of stackNames) {
       const template = await cfn.getTemplate({
         StackName: stack,
       }).promise();
 
-      const templateHashes = template.TemplateBody?.match(/[a-f0-9]{64}/g);
-      templateHashes?.forEach(this.hashes.add, this.hashes);
+      templates.push(template.TemplateBody ?? '');
     }
 
-    console.log('num hashes:', this.hashes.size);
+    this.templates = templates.join('');
   }
 
   private async getBootstrapBucket(sdk: ISDK) {
@@ -143,27 +142,24 @@ export class GarbageCollector {
     return info.bucketName;
   }
 
-  private async collectIsolatedObjects(sdk: ISDK, bucket: string) {
+  private async collectObjectHashes(sdk: ISDK, bucket: string) {
     const s3 = sdk.s3();
-    const isolatedObjects: string[] = [];
+    const objectHashes: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await s3.listObjectsV2({
         Bucket: bucket,
         ContinuationToken: nextToken,
       }).promise();
       response.Contents?.forEach((obj) => {
-        const hash = getHash(obj.Key ?? '');
-        if (!this.hashes.has(hash)) {
-          isolatedObjects.push(obj.Key ?? '');
-        }
+        objectHashes.push(obj.Key ?? '');
       });
       return response.NextContinuationToken;
     });
 
-    console.log(isolatedObjects);
-    console.log('num isolated', isolatedObjects.length);
+    console.log(objectHashes);
+    console.log('num isolated', objectHashes.length);
 
-    return isolatedObjects;
+    return objectHashes;
   }
 
   private async tagIsolatedObjects(sdk: ISDK, bucket: string, objects: string[]) {
@@ -250,7 +246,7 @@ export class GarbageCollector {
       for (const [digest, tags] of Object.entries(images)) {
         let del = true;
         for (const tag of tags) {
-          if (this.hashes.has(tag)) {
+          if (this.templates.includes(tag)) {
             del = false;
           }
         }
@@ -333,8 +329,8 @@ export class GarbageCollector {
   private canBeSafelyDeleted(time: number): boolean {
     // divide 1000 for seconds, another 60 for minutes, another 60 for hours, 24 for days
     const daysElapsed = (Date.now() - time) / (1000 * 60 * 60 * 24);
-    console.log(daysElapsed, this.props.days);
-    return daysElapsed > this.props.days;
+    console.log(daysElapsed, this.props.inIsolationFor);
+    return daysElapsed > this.props.inIsolationFor;
   }
 }
 
