@@ -6,8 +6,8 @@ github:
 image: jsii/superchain:1-buster-slim
 
 tasks:
-  - init: yarn build --skip-test --no-bail --skip-prereqs --skip-compat
+  - init: yarn install && ./scripts/foreach.sh yarn build
 
 vscode:
   extensions:
-    - dbaeumer.vscode-eslint@2.1.20
+    - dbaeumer.vscode-eslint

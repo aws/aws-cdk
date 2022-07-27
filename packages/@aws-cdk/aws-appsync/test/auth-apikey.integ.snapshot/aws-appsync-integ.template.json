@@ -27,8 +27,7 @@
       "ApiF70053CD",
       "ApiId"
      ]
-    },
-    "Expires": 1658053715
+    }
    },
    "DependsOn": [
     "ApiSchema510EECD7"
@@ -135,7 +134,7 @@
     "TypeName": "Query",
     "DataSourceName": "testDataSource",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [

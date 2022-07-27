@@ -267,8 +267,15 @@ export class PrincipalWithConditions extends PrincipalAdapter {
    * Add a condition to the principal
    */
   public addCondition(key: string, value: Condition) {
+    validateConditionObject(value);
+
     const existingValue = this.additionalConditions[key];
-    this.additionalConditions[key] = existingValue ? { ...existingValue, ...value } : value;
+    if (!existingValue) {
+      this.additionalConditions[key] = value;
+    }
+    validateConditionObject(existingValue);
+
+    this.additionalConditions[key] = { ...existingValue, ...value };
   }
 
   /**
@@ -334,6 +341,9 @@ export class PrincipalWithConditions extends PrincipalAdapter {
       if (cdk.Token.isUnresolved(condition) || cdk.Token.isUnresolved(existing)) {
         throw new Error(`multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
       }
+
+      validateConditionObject(existing);
+      validateConditionObject(condition);
 
       mergedConditions[operator] = { ...existing, ...condition };
     });
@@ -911,5 +921,19 @@ class ServicePrincipalToken implements cdk.IResolvable {
    */
   public toJSON() {
     return `<${this.service}>`;
+  }
+}
+
+/**
+ * Validate that the given value is a valid Condition object
+ *
+ * The type of `Condition` should have been different, but it's too late for that.
+ *
+ * Also, the IAM library relies on being able to pass in a `CfnJson` instance for
+ * a `Condition`.
+ */
+export function validateConditionObject(x: unknown): asserts x is Record<string, unknown> {
+  if (!x || typeof x !== 'object' || Array.isArray(x)) {
+    throw new Error('A Condition should be represented as a map of operator to value');
   }
 }

@@ -167,6 +167,36 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(this, 'ASG-LaunchTemplate', {
+  instanceType: new ec2.InstanceType('t3.medium'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  userData: ec2.UserData.forLinux(),
+});
+
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  mixedInstancesPolicy: {
+    instancesDistribution: {
+      onDemandPercentageAboveBaseCapacity: 50,
+    },
+    launchTemplate: launchTemplate,
+  },
+});
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
+  autoScalingGroup,
+  machineImageType: ecs.MachineImageType.AMAZON_LINUX_2,
+});
+
+cluster.addAsgCapacityProvider(capacityProvider);
+```
+
+
 ### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open source operating system that is
@@ -387,6 +417,20 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
   networkMode: ecs.NetworkMode.AWS_VPC,
   compatibility: ecs.Compatibility.EC2_AND_FARGATE,
 });
+```
+
+To grant a principal permission to run your `TaskDefinition`, you can use the `TaskDefinition.grantRun()` method:
+
+```ts
+declare const role: iam.IGrantable;
+const taskDef = new ecs.TaskDefinition(stack, 'TaskDef', {
+  cpu: '512',
+  memoryMiB: '512',
+  compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+});
+
+// Gives role required permissions to run taskDef
+taskDef.grantRun(role);
 ```
 
 ### Images

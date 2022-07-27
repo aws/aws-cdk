@@ -1,5 +1,5 @@
 {
-  "$version": "75.0.0",
+  "$version": "81.0.0",
   "PropertyTypes": {
     "AWS::FMS::Policy.IEMap": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-iemap.html",
