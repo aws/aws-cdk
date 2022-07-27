@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
-import { ECR } from 'aws-sdk';
+import { ECR, S3 } from 'aws-sdk';
 import { ISDK, SdkProvider } from './aws-auth';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
@@ -185,10 +185,18 @@ export class GarbageCollector {
       } else {
         console.log('already tagged', response.TagSet[0].Value);
         if (this.canBeSafelyDeleted(Number(tagDate))) {
-          console.log('CAN BE SAFELY DELETED');
+          console.log('Deleting', obj);
+          await this.deleteObject(s3, bucket, obj);
         }
       }
     }
+  }
+
+  private async deleteObject(s3: S3, bucket: string, key: string) {
+    await s3.deleteObject({
+      Bucket: bucket,
+      Key: key,
+    }).promise();
   }
 
   /* ECR methods */
@@ -227,7 +235,7 @@ export class GarbageCollector {
       // map unique image digest to (possibly multiple) tags
       const images = imageMap(response.imageIds ?? []);
       // make sure all tags of an image are isolated
-      for (const tags of Object.values(images)) {
+      for (const [digest, tags] of Object.entries(images)) {
         let del = true;
         for (const tag of tags) {
           if (this.hashes.has(tag)) {
@@ -235,7 +243,7 @@ export class GarbageCollector {
           }
         }
         if (del) {
-          isolatedImages.push(tags[0]);
+          isolatedImages.push(digest);
         }
       }
       return response.nextToken;
@@ -250,7 +258,7 @@ export class GarbageCollector {
   private async tagIsolatedImages(sdk: ISDK, repo: string, images: string[]) {
     const ecr = sdk.ecr();
     const imageIds: ECR.ImageIdentifierList = [];
-    images.forEach((i) => imageIds.push({ imageTag: i }));
+    images.forEach((i) => imageIds.push({ imageDigest: i }));
     const response = await ecr.batchGetImage({
       repositoryName: repo,
       imageIds,
@@ -285,7 +293,8 @@ export class GarbageCollector {
       } else {
         console.log('image already tagged', tagDate);
         if (this.canBeSafelyDeleted(Number(tagDate))) {
-          console.log('IMAGE CAN BE SAFELY DELETED');
+          console.log('Deleting', digest);
+          await this.deleteImage(ecr, repo, digest);
         }
       }
     }
@@ -298,6 +307,15 @@ export class GarbageCollector {
         imageTag: `${ISOLATED_TAG}-${Date.now().toString()}`,
       }).promise();
     }
+  }
+
+  private async deleteImage(ecr: ECR, repo: string, digest: string) {
+    await ecr.batchDeleteImage({
+      repositoryName: repo,
+      imageIds: [{
+        imageDigest: digest,
+      }],
+    }).promise();
   }
 
   private canBeSafelyDeleted(time: number): boolean {
