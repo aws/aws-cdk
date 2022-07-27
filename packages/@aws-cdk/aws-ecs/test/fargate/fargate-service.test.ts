@@ -9,8 +9,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
+import { App } from '@aws-cdk/core';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
@@ -2110,78 +2110,74 @@ describe('fargate service', () => {
     });
 
     describe('fromFargateServiceArn tokenized ARN', () => {
-      testLegacyBehavior(
-        'when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format',
-        cdk.App,
-        (customApp) => {
-          // GIVEN
-          const stack = new cdk.Stack(customApp);
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
 
-          // WHEN
-          const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', new cdk.CfnParameter(stack, 'ARN').valueAsString);
+        // WHEN
+        const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', new cdk.CfnParameter(stack, 'ARN').valueAsString);
 
-          // THEN
-          expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
-          expect(stack.resolve(service.serviceName)).toEqual({
-            'Fn::Select': [
-              1,
-              {
-                'Fn::Split': [
-                  '/',
-                  {
-                    'Fn::Select': [
-                      5,
-                      {
-                        'Fn::Split': [
-                          ':',
-                          { Ref: 'ARN' },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          });
-        },
-      );
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
+        expect(stack.resolve(service.serviceName)).toEqual({
+          'Fn::Select': [
+            1,
+            {
+              'Fn::Split': [
+                '/',
+                {
+                  'Fn::Select': [
+                    5,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        { Ref: 'ARN' },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+      });
 
-      testFutureBehavior(
-        'when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is enabled, use new ARN format',
-        { [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true },
-        cdk.App,
-        (customApp) => {
-          // GIVEN
-          const stack = new cdk.Stack(customApp);
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is enabled, use new ARN format', () => {
+        // GIVEN
+        const app = new App({
+          context: {
+            [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true,
+          },
+        });
+        const stack = new cdk.Stack(app);
 
-          // WHEN
-          const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', new cdk.CfnParameter(stack, 'ARN').valueAsString);
+        // WHEN
+        const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', new cdk.CfnParameter(stack, 'ARN').valueAsString);
 
-          // THEN
-          expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
-          expect(stack.resolve(service.serviceName)).toEqual({
-            'Fn::Select': [
-              2,
-              {
-                'Fn::Split': [
-                  '/',
-                  {
-                    'Fn::Select': [
-                      5,
-                      {
-                        'Fn::Split': [
-                          ':',
-                          { Ref: 'ARN' },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          });
-        },
-      );
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
+        expect(stack.resolve(service.serviceName)).toEqual({
+          'Fn::Select': [
+            2,
+            {
+              'Fn::Split': [
+                '/',
+                {
+                  'Fn::Select': [
+                    5,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        { Ref: 'ARN' },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+      });
     }),
 
     test('with serviceArn old format', () => {
@@ -2224,176 +2220,170 @@ describe('fargate service', () => {
     });
 
     describe('with serviceArn tokenized ARN', () => {
-      testLegacyBehavior(
-        'when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format',
-        cdk.App,
-        (customApp) => {
-          // GIVEN
-          const stack = new cdk.Stack(customApp);
-          const cluster = new ecs.Cluster(stack, 'EcsCluster');
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
-          // WHEN
-          const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
-            serviceArn: new cdk.CfnParameter(stack, 'ARN').valueAsString,
-            cluster,
-          });
+        // WHEN
+        const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+          serviceArn: new cdk.CfnParameter(stack, 'ARN').valueAsString,
+          cluster,
+        });
 
-          // THEN
-          expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
-          expect(stack.resolve(service.serviceName)).toEqual({
-            'Fn::Select': [
-              1,
-              {
-                'Fn::Split': [
-                  '/',
-                  {
-                    'Fn::Select': [
-                      5,
-                      {
-                        'Fn::Split': [
-                          ':',
-                          { Ref: 'ARN' },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          });
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
+        expect(stack.resolve(service.serviceName)).toEqual({
+          'Fn::Select': [
+            1,
+            {
+              'Fn::Split': [
+                '/',
+                {
+                  'Fn::Select': [
+                    5,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        { Ref: 'ARN' },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
 
-          expect(stack.resolve(service.env.account)).toEqual({
-            'Fn::Select': [
-              4,
-              {
-                'Fn::Split': [
-                  ':',
-                  { Ref: 'ARN' },
-                ],
-              },
-            ],
-          });
-          expect(stack.resolve(service.env.region)).toEqual({
-            'Fn::Select': [
-              3,
-              {
-                'Fn::Split': [
-                  ':',
-                  { Ref: 'ARN' },
-                ],
-              },
-            ],
-          });
-        },
-      );
+        expect(stack.resolve(service.env.account)).toEqual({
+          'Fn::Select': [
+            4,
+            {
+              'Fn::Split': [
+                ':',
+                { Ref: 'ARN' },
+              ],
+            },
+          ],
+        });
+        expect(stack.resolve(service.env.region)).toEqual({
+          'Fn::Select': [
+            3,
+            {
+              'Fn::Split': [
+                ':',
+                { Ref: 'ARN' },
+              ],
+            },
+          ],
+        });
+      });
 
-      testFutureBehavior(
-        'when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is enabled, use new ARN format',
-        { [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true },
-        cdk.App,
-        (customApp) => {
-          // GIVEN
-          const stack = new cdk.Stack(customApp);
-          const cluster = new ecs.Cluster(stack, 'EcsCluster');
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is enabled, use new ARN format', () => {
+        // GIVEN
+        const app = new App({
+          context: {
+            [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true,
+          },
+        });
+        const stack = new cdk.Stack(app);
+        const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
-          // WHEN
-          const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
-            serviceArn: new cdk.CfnParameter(stack, 'ARN').valueAsString,
-            cluster,
-          });
+        // WHEN
+        const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+          serviceArn: new cdk.CfnParameter(stack, 'ARN').valueAsString,
+          cluster,
+        });
 
-          // THEN
-          expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
-          expect(stack.resolve(service.serviceName)).toEqual({
-            'Fn::Select': [
-              2,
-              {
-                'Fn::Split': [
-                  '/',
-                  {
-                    'Fn::Select': [
-                      5,
-                      {
-                        'Fn::Split': [
-                          ':',
-                          { Ref: 'ARN' },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          });
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
+        expect(stack.resolve(service.serviceName)).toEqual({
+          'Fn::Select': [
+            2,
+            {
+              'Fn::Split': [
+                '/',
+                {
+                  'Fn::Select': [
+                    5,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        { Ref: 'ARN' },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
 
-          expect(stack.resolve(service.env.account)).toEqual({
-            'Fn::Select': [
-              4,
-              {
-                'Fn::Split': [
-                  ':',
-                  { Ref: 'ARN' },
-                ],
-              },
-            ],
-          });
-          expect(stack.resolve(service.env.region)).toEqual({
-            'Fn::Select': [
-              3,
-              {
-                'Fn::Split': [
-                  ':',
-                  { Ref: 'ARN' },
-                ],
-              },
-            ],
-          });
-        },
-      );
+        expect(stack.resolve(service.env.account)).toEqual({
+          'Fn::Select': [
+            4,
+            {
+              'Fn::Split': [
+                ':',
+                { Ref: 'ARN' },
+              ],
+            },
+          ],
+        });
+        expect(stack.resolve(service.env.region)).toEqual({
+          'Fn::Select': [
+            3,
+            {
+              'Fn::Split': [
+                ':',
+                { Ref: 'ARN' },
+              ],
+            },
+          ],
+        });
+      });
     });
 
     describe('with serviceName', () => {
-      testLegacyBehavior(
-        'when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format',
-        cdk.App,
-        (customApp) => {
-          // GIVEN
-          const stack = new cdk.Stack(customApp);
-          const pseudo = new cdk.ScopedAws(stack);
-          const cluster = new ecs.Cluster(stack, 'EcsCluster');
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const pseudo = new cdk.ScopedAws(stack);
+        const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
-          // WHEN
-          const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
-            serviceName: 'my-http-service',
-            cluster,
-          });
+        // WHEN
+        const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+          serviceName: 'my-http-service',
+          cluster,
+        });
 
-          // THEN
-          expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
-          expect(service.serviceName).toEqual('my-http-service');
-        },
-      );
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
+        expect(service.serviceName).toEqual('my-http-service');
+      });
 
-      testFutureBehavior(
-        'when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is enabled, use new ARN format',
-        { [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true },
-        cdk.App,
-        (customApp) => {
-          const stack = new cdk.Stack(customApp);
-          const pseudo = new cdk.ScopedAws(stack);
-          const cluster = new ecs.Cluster(stack, 'EcsCluster');
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is enabled, use new ARN format', () => {
+        // GIVEN
+        const app = new App({
+          context: {
+            [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true,
+          },
+        });
 
-          // WHEN
-          const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
-            serviceName: 'my-http-service',
-            cluster,
-          });
+        const stack = new cdk.Stack(app);
+        const pseudo = new cdk.ScopedAws(stack);
+        const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
-          // THEN
-          expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/${cluster.clusterName}/my-http-service`));
-          expect(service.serviceName).toEqual('my-http-service');
-        },
-      );
+        // WHEN
+        const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+          serviceName: 'my-http-service',
+          cluster,
+        });
+
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/${cluster.clusterName}/my-http-service`));
+        expect(service.serviceName).toEqual('my-http-service');
+      });
     });
 
     test('with circuit breaker', () => {
