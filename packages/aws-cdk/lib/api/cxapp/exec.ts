@@ -1,4 +1,5 @@
 import * as childProcess from 'child_process';
+import * as os from 'os';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -44,7 +45,11 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   context[cxapi.BUNDLING_STACKS] = bundlingStacks;
 
   debug('context:', context);
-  env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
+
+  const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
+  const contextLocation = path.join(contextDir, 'context-temp.json');
+  fs.writeJSONSync(contextLocation, context);
+  env[cxapi.CONTEXT_LOCATION_ENV] = contextLocation;
 
   const build = config.settings.get(['build']);
   if (build) {
@@ -85,7 +90,11 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   await exec(commandLine.join(' '));
 
-  return createAssembly(outdir);
+  const assembly = createAssembly(outdir);
+
+  fs.removeSync(path.dirname(contextLocation));
+
+  return assembly;
 
   function createAssembly(appDir: string) {
     try {
