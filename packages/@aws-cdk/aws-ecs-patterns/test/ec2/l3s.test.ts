@@ -500,6 +500,8 @@ test('test Fargate loadbalanced construct', () => {
   // WHEN
   new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
     cluster,
+    cpu: 1024,
+    memoryLimitMiB: 2048,
     taskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('test'),
       environment: {
@@ -516,6 +518,11 @@ test('test Fargate loadbalanced construct', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       Match.objectLike({
+        Cpu: 1024,
+        DockerLabels: {
+          label1: 'labelValue1',
+          label2: 'labelValue2',
+        },
         Environment: [
           {
             Name: 'TEST_ENVIRONMENT_VARIABLE1',
@@ -526,6 +533,7 @@ test('test Fargate loadbalanced construct', () => {
             Value: 'test environment variable 2 value',
           },
         ],
+        Image: 'test',
         LogConfiguration: {
           LogDriver: 'awslogs',
           Options: {
@@ -534,12 +542,11 @@ test('test Fargate loadbalanced construct', () => {
             'awslogs-region': { Ref: 'AWS::Region' },
           },
         },
-        DockerLabels: {
-          label1: 'labelValue1',
-          label2: 'labelValue2',
-        },
+        Memory: 2048,
       }),
     ],
+    Cpu: '1024',
+    Memory: '2048',
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
