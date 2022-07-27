@@ -125,6 +125,12 @@ export class GarbageCollector {
     console.log('num hashes:', this.hashes.size);
   }
 
+  private async getBootstrapBucket(sdk: ISDK) {
+    // maybe use tags like for ecr
+    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, undefined);
+    return info.bucketName;
+  }
+
   private async collectIsolatedObjects(sdk: ISDK, bucket: string) {
     const s3 = sdk.s3();
     const isolatedObjects: string[] = [];
@@ -146,6 +152,68 @@ export class GarbageCollector {
     console.log('num isolated', isolatedObjects.length);
 
     return isolatedObjects;
+  }
+
+  private async tagIsolatedObjects(sdk: ISDK, bucket: string, objects: string[]) {
+    const s3 = sdk.s3();
+    for (const obj of objects) {
+      // check if the object has been tagged in a previous gc run
+      const response = await s3.getObjectTagging({
+        Bucket: bucket,
+        Key: obj,
+      }).promise();
+      let alreadyTagged = false;
+      let tagDate = '';
+      for (const tag of response.TagSet) {
+        if (tag.Key === ISOLATED_TAG) {
+          alreadyTagged = true;
+          tagDate = tag.Value;
+        }
+      }
+      // tag new objects with the current date
+      if (!alreadyTagged) {
+        await s3.putObjectTagging({
+          Bucket: bucket,
+          Key: obj,
+          Tagging: {
+            TagSet: [{
+              Key: ISOLATED_TAG,
+              Value: Date.now().toString(),
+            }],
+          },
+        }).promise();
+      } else {
+        console.log('already tagged', response.TagSet[0].Value);
+        if (this.canBeSafelyDeleted(Number(tagDate))) {
+          console.log('CAN BE SAFELY DELETED');
+        }
+      }
+    }
+  }
+
+  /* ECR methods */
+
+  private async getBootstrapRepositories(sdk: ISDK) {
+    const ecr = sdk.ecr();
+    let repos: ECR.RepositoryList = [];
+    await paginateSdkCall(async (nextToken) => {
+      const response = await ecr.describeRepositories({ nextToken: nextToken }).promise();
+      repos = response.repositories ?? [];
+      return response.nextToken;
+    });
+    const bootstrappedRepos: string[] = [];
+    for (const repo of repos ?? []) {
+      if (!repo.repositoryArn || !repo.repositoryName) { continue; }
+      const tags = await ecr.listTagsForResource({
+        resourceArn: repo.repositoryArn,
+      }).promise();
+      for (const tag of tags.tags ?? []) {
+        if (tag.Key === 'awscdk:asset' && tag.Value === 'true') {
+          bootstrappedRepos.push(repo.repositoryName);
+        }
+      }
+    }
+    return bootstrappedRepos;
   }
 
   private async collectIsolatedImages(sdk: ISDK, repo: string) {
@@ -179,67 +247,6 @@ export class GarbageCollector {
     return isolatedImages;
   }
 
-  private async getBootstrapBucket(sdk: ISDK) {
-    // maybe use tags like for ecr
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, undefined);
-    return info.bucketName;
-  }
-
-  private async getBootstrapRepositories(sdk: ISDK) {
-    const ecr = sdk.ecr();
-    let repos: ECR.RepositoryList = [];
-    await paginateSdkCall(async (nextToken) => {
-      const response = await ecr.describeRepositories({ nextToken: nextToken }).promise();
-      repos = response.repositories ?? [];
-      return response.nextToken;
-    });
-    const bootstrappedRepos: string[] = [];
-    for (const repo of repos ?? []) {
-      if (!repo.repositoryArn || !repo.repositoryName) { continue; }
-      const tags = await ecr.listTagsForResource({
-        resourceArn: repo.repositoryArn,
-      }).promise();
-      for (const tag of tags.tags ?? []) {
-        if (tag.Key === 'awscdk:asset' && tag.Value === 'true') {
-          bootstrappedRepos.push(repo.repositoryName);
-        }
-      }
-    }
-    return bootstrappedRepos;
-  }
-
-  private async tagIsolatedObjects(sdk: ISDK, bucket: string, objects: string[]) {
-    const s3 = sdk.s3();
-    for (const obj of objects) {
-      // check if the object has been tagged in a previous gc run
-      const response = await s3.getObjectTagging({
-        Bucket: bucket,
-        Key: obj,
-      }).promise();
-      let alreadyTagged = false;
-      for (const tag of response.TagSet) {
-        if (tag.Key === ISOLATED_TAG) {
-          alreadyTagged = true;
-        }
-      }
-      // tag new objects with the current date
-      if (!alreadyTagged) {
-        await s3.putObjectTagging({
-          Bucket: bucket,
-          Key: obj,
-          Tagging: {
-            TagSet: [{
-              Key: ISOLATED_TAG,
-              Value: Date.now().toString(),
-            }],
-          },
-        }).promise();
-      } else {
-        console.log('already tagged', response.TagSet[0].Value);
-      }
-    }
-  }
-
   private async tagIsolatedImages(sdk: ISDK, repo: string, images: string[]) {
     const ecr = sdk.ecr();
     const imageIds: ECR.ImageIdentifierList = [];
@@ -266,17 +273,20 @@ export class GarbageCollector {
     const filteredImages = [];
     for (const [digest, tags] of Object.entries(imagesMapToTags)) {
       let alreadyTagged = false;
-      let oldTag = '';
+      let tagDate = '';
       for (const tag of tags) {
         if (tag.startsWith(ISOLATED_TAG)) {
           alreadyTagged = true;
-          oldTag = tag;
+          tagDate = tag.slice(16);
         }
       }
       if (!alreadyTagged) {
         filteredImages.push(digest);
       } else {
-        console.log('image already tagged', oldTag);
+        console.log('image already tagged', tagDate);
+        if (this.canBeSafelyDeleted(Number(tagDate))) {
+          console.log('IMAGE CAN BE SAFELY DELETED');
+        }
       }
     }
 
@@ -288,6 +298,13 @@ export class GarbageCollector {
         imageTag: `${ISOLATED_TAG}-${Date.now().toString()}`,
       }).promise();
     }
+  }
+
+  private canBeSafelyDeleted(time: number): boolean {
+    // divide 1000 for seconds, another 60 for minutes, another 60 for hours, 24 for days
+    const daysElapsed = (Date.now() - time) / (1000 * 60 * 60 * 24);
+    console.log(daysElapsed, this.props.inIsolationFor);
+    return daysElapsed > this.props.inIsolationFor;
   }
 }
 
