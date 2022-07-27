@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import * as fs from 'fs-extra';
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
 import { TreeMetadata } from './private/tree-metadata';
 import { Stage } from './stage';
@@ -142,15 +143,22 @@ export class App extends Stage {
       this.node.setContext(k, v);
     }
 
-    // read from environment
-    const contextJson = process.env[cxapi.CONTEXT_ENV];
-    const contextFromEnvironment = contextJson
-      ? JSON.parse(contextJson)
-      : { };
 
-    for (const [k, v] of Object.entries(contextFromEnvironment)) {
+    const context = this.readContextFromTempFile() ?? this.readContextFromEnvironment() ?? {};
+    for (const [k, v] of Object.entries(context)) {
       this.node.setContext(k, v);
     }
+  }
+
+  private readContextFromTempFile() {
+    const location = process.env[cxapi.CONTEXT_LOCATION_ENV];
+    return location != null ? fs.readJSONSync(location) : undefined;
+  }
+
+  // for backward compatibility with old versions of the CLI
+  private readContextFromEnvironment() {
+    const contextJson = process.env[cxapi.CONTEXT_ENV];
+    return contextJson ? JSON.parse(contextJson) : undefined;
   }
 }
 
