@@ -545,13 +545,11 @@ export class CdkToolkit {
     return undefined;
   }
 
-  public async garbageCollect(environment: string, dryRun: boolean) {
+  public async garbageCollect(environment: string, dryRun: boolean, type: 'ecr' | 's3' | 'all') {
     // eslint-disable-next-line no-console
-    console.log(environment, dryRun);
+    console.log(environment, dryRun, type);
 
     const splitEnv = environment.split('/');
-    // eslint-disable-next-line no-console
-    console.log(splitEnv);
     const resolvedEnvironment: cxapi.Environment = {
       name: 'garbage env',
       account: splitEnv[2],
@@ -560,6 +558,7 @@ export class CdkToolkit {
 
     const gc = new GarbageCollector({
       dryRun,
+      type,
       resolvedEnvironment,
       sdkProvider: this.props.sdkProvider,
     });
