@@ -32,7 +32,7 @@ export interface ShareOptions {
    *
    * @default - No AWS Organizations or OUs specified for share
    */
-  readonly organizations?: string[];
+  readonly organizationArns?: string[];
 
   /**
    * A list of AWS IAM roles that the application will be shared with.
@@ -73,7 +73,7 @@ export function hashValues(...values: string[]): string {
 export function getPrincipalsforSharing(options: ShareOptions): string[] {
   const principals = [
     ...options.accounts ?? [],
-    ...options.organizations ?? [],
+    ...options.organizationArns ?? [],
     ...options.users ? options.users.map(user => user.userArn) : [],
     ...options.roles ? options.roles.map(role => role.roleArn) : [],
   ];

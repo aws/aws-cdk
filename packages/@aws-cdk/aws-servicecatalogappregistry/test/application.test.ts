@@ -235,7 +235,7 @@ describe('Application', () => {
 
     test('share application with an organization', () => {
       application.shareResource({
-        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
@@ -295,7 +295,7 @@ describe('Application', () => {
 
     test('share application with organization, give explicit read only access to an application', () => {
       application.shareResource({
-        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.READ_ONLY,
       });
 
@@ -310,7 +310,7 @@ describe('Application', () => {
 
     test('share application with organization, allow access to associate resources and attribute group with an application', () => {
       application.shareResource({
-        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.ALLOW_ACCESS,
       });
 

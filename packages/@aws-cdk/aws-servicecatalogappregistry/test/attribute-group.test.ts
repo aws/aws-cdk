@@ -194,7 +194,7 @@ describe('Attribute Group', () => {
 
     test('share attribute group with an organization', () => {
       attributeGroup.shareResource({
-        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
@@ -254,7 +254,7 @@ describe('Attribute Group', () => {
 
     test('share attribute group with organization, give explicit read only access to the attribute group', () => {
       attributeGroup.shareResource({
-        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.READ_ONLY,
       });
 
@@ -269,7 +269,7 @@ describe('Attribute Group', () => {
 
     test('share attribute group with organization, give access to mutate attribute groups', () => {
       attributeGroup.shareResource({
-        organizations: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.ALLOW_ACCESS,
       });
 

@@ -138,19 +138,20 @@ declare const myRole: iam.IRole;
 declare const myUser: iam.IUser;
 application.shareResource({
   accounts: ['123456789012'],
-  organizations: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
+  organizationArns: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
   roles: [myRole],
-  users: [myUser]
+  users: [myUser],
 });
 ```
 
-E.g., sharing an application with multiple accounts:
+E.g., sharing an application with multiple accounts and allowing the accounts to associate resources to the application.
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 declare const application: appreg.Application;
 application.shareResource({
   accounts: ['123456789012', '234567890123'],
+  sharePermission: appreg.SharePermission.ALLOW_ACCESS,
 });
 ```
 
@@ -163,18 +164,19 @@ declare const myRole: iam.IRole;
 declare const myUser: iam.IUser;
 attributeGroup.shareResource({
   accounts: ['123456789012'],
-  organizations: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
+  organizationArns: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
   roles: [myRole],
-  users: [myUser]
+  users: [myUser],
 });
 ```
 
-E.g., sharing an attribute group with multiple accounts:
+E.g., sharing an application with multiple accounts and allowing the accounts to associate applications to the attribute group.
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
 attributeGroup.shareResource({
   accounts: ['123456789012', '234567890123'],
+  sharePermission: appreg.SharePermission.ALLOW_ACCESS,
 });
 ```
