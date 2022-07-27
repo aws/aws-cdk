@@ -373,20 +373,40 @@ export class GarbageCollector {
       } else {
         console.log('image already tagged', tagDate);
         if (this.canBeSafelyDeleted(Number(tagDate))) {
+          const size = await this.getImageSize(ecr, repo, digest);
+          this.deletedImages.amount += 1;
+          this.deletedImages.size += size;
           console.log('Deleting', digest);
           await this.deleteImage(ecr, repo, digest);
+        } else {
+          const size = await this.getImageSize(ecr, repo, digest);
+          this.alreadyTaggedImages.amount += 1;
+          this.alreadyTaggedImages.size += size;
         }
       }
     }
 
     // tag images with current date
     for (const imageDigest of filteredImages) {
+      const size = await this.getImageSize(ecr, repo, imageDigest);
+      this.taggedImages.amount += 1;
+      this.taggedImages.size += size;
       await ecr.putImage({
         repositoryName: repo,
         imageManifest: imagesMapToManifest[imageDigest],
         imageTag: `${ISOLATED_TAG}-${Date.now().toString()}`,
       }).promise();
     }
+  }
+
+  private async getImageSize(ecr: ECR, repo: string, digest: string) {
+    const response = await ecr.describeImages({
+      repositoryName: repo,
+      imageIds: [{
+        imageDigest: digest,
+      }],
+    }).promise();
+    return response.imageDetails![0].imageSizeInBytes ?? 0;
   }
 
   private async deleteImage(ecr: ECR, repo: string, digest: string) {
@@ -401,7 +421,6 @@ export class GarbageCollector {
   private canBeSafelyDeleted(time: number): boolean {
     // divide 1000 for seconds, another 60 for minutes, another 60 for hours, 24 for days
     const daysElapsed = (Date.now() - time) / (1000 * 60 * 60 * 24);
-    console.log(daysElapsed, this.props.days);
     return daysElapsed > this.props.days;
   }
 }
