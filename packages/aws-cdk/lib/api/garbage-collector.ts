@@ -53,9 +53,44 @@ interface GarbageCollectorProps {
   readonly sdkProvider: SdkProvider;
 }
 
+interface AssetInfo {
+  size: number;
+  amount: number;
+}
+
 export class GarbageCollector {
-  private hashes: Set<string> = new Set();
+  private readonly hashes: Set<string> = new Set();
+  private taggedObjects: AssetInfo = {
+    size: 0,
+    amount: 0,
+  };
+  private deletedObjects: AssetInfo = {
+    size: 0,
+    amount: 0,
+  };
+  private alreadyTaggedObjects: AssetInfo = {
+    size: 0,
+    amount: 0,
+  };
+  private taggedImages: AssetInfo = {
+    size: 0,
+    amount: 0,
+  };
+  private deletedImages: AssetInfo = {
+    size: 0,
+    amount: 0,
+  };
+  private alreadyTaggedImages: AssetInfo = {
+    size: 0,
+    amount: 0,
+  };
+
+  private s3: boolean;
+  private ecr: boolean;
+
   public constructor(private readonly props: GarbageCollectorProps) {
+    this.s3 = this.props.type === 's3' || this.props.type === 'all';
+    this.ecr = this.props.type === 'ecr' || this.props.type === 'all';
   }
 
   public async garbageCollect() {
@@ -66,7 +101,7 @@ export class GarbageCollector {
     await this.collectHashes(sdk);
     console.log('Finished collecting hashes: ', formatTime(start), ' seconds');
 
-    if (this.props.type === 's3' || this.props.type === 'all') {
+    if (this.s3) {
       console.log('Getting bootstrap bucket');
       start = Date.now();
       const bucket = await this.getBootstrapBucket(sdk);
@@ -87,7 +122,7 @@ export class GarbageCollector {
       }
     }
 
-    if (this.props.type === 'ecr' || this.props.type === 'all') {
+    if (this.ecr) {
       console.log('Getting bootstrap repositories');
       start = Date.now();
       const repos = await this.getBootstrapRepositories(sdk);
@@ -111,6 +146,17 @@ export class GarbageCollector {
     }
 
     console.log('Total Garbage Collection time:', formatTime(totalStart), 'seconds');
+    if (this.s3) {
+      console.log(`${this.taggedObjects.amount} s3 assets were tagged in this run of cdk gc, for a total of ${toMb(this.taggedObjects.size)} MB`);
+      console.log(`${this.alreadyTaggedObjects.amount} s3 assets were already tagged in previous runs, for a total of ${toMb(this.alreadyTaggedObjects.size)} MB`);
+      console.log(`${this.deletedObjects.amount} s3 assets were deleted in this run of cdk gc, for a total of ${toMb(this.deletedObjects.size)} MB`);
+    }
+
+    if (this.ecr) {
+      console.log(`${this.taggedImages.amount} ecr assets were tagged in this run of cdk gc, for a total of ${toMb(this.taggedImages.size)} MB`);
+      console.log(`${this.alreadyTaggedImages.amount} ecr assets were already tagged in previous runs, for a total of ${toMb(this.alreadyTaggedImages.size)} MB`);
+      console.log(`${this.deletedImages.amount} ecr assets were deleted in this run of cdk gc, for a total of ${toMb(this.deletedImages.size)} MB`);
+    }
   }
 
   private async collectHashes(sdk: ISDK) {
@@ -166,6 +212,15 @@ export class GarbageCollector {
     return isolatedObjects;
   }
 
+  private async getObjectSize(s3: S3, bucket: string, key: string) {
+    const objectAttrs = await s3.getObjectAttributes({
+      Bucket: bucket,
+      Key: key,
+      ObjectAttributes: ['ObjectSize'],
+    }).promise();
+    return objectAttrs.ObjectSize ?? 0;
+  }
+
   private async tagIsolatedObjects(sdk: ISDK, bucket: string, objects: string[]) {
     const s3 = sdk.s3();
     for (const obj of objects) {
@@ -184,6 +239,10 @@ export class GarbageCollector {
       }
       // tag new objects with the current date
       if (!alreadyTagged) {
+        const size = await this.getObjectSize(s3, bucket, obj);
+        this.taggedObjects.amount += 1;
+        this.taggedObjects.size += size;
+
         await s3.putObjectTagging({
           Bucket: bucket,
           Key: obj,
@@ -196,7 +255,16 @@ export class GarbageCollector {
         }).promise();
       } else {
         console.log('already tagged', response.TagSet[0].Value);
+
+        const size = await this.getObjectSize(s3, bucket, obj);
+        this.alreadyTaggedObjects.amount += 1;
+        this.alreadyTaggedObjects.size += size;
+
         if (this.canBeSafelyDeleted(Number(tagDate))) {
+          const toBeDeletedSize = await this.getObjectSize(s3, bucket, obj);
+          this.deletedObjects.amount += 1;
+          this.deletedObjects.size += toBeDeletedSize;
+
           console.log('Deleting', obj);
           await this.deleteObject(s3, bucket, obj);
         }
@@ -355,6 +423,10 @@ function getHash(file: string) {
 
 function formatTime(start: number): number {
   return (Date.now() - start) / 1000;
+}
+
+function toMb(bytes: number): number {
+  return bytes / 1000000;
 }
 
 function imageMap(imageIds: ECR.ImageIdentifierList) {
