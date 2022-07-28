@@ -9,52 +9,19 @@ describe('Kinesis data streams', () => {
   test('default stream', () => {
     const stack = new Stack();
 
-    new Stream(stack, 'MyStream');
+    new Stream(stack, 'MyStream', {
+      streamName: 'test',
+    });
 
     Template.fromStack(stack).templateMatches({
       Resources: {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
-            RetentionPeriodHours: 24,
-            StreamEncryption: {
-              'Fn::If': [
-                'AwsCdkKinesisEncryptedStreamsUnsupportedRegions',
-                {
-                  Ref: 'AWS::NoValue',
-                },
-                {
-                  EncryptionType: 'KMS',
-                  KeyId: 'alias/aws/kinesis',
-                },
-              ],
-            },
+            Name: 'test',
           },
         },
       },
-      Conditions: {
-        AwsCdkKinesisEncryptedStreamsUnsupportedRegions: {
-          'Fn::Or': [
-            {
-              'Fn::Equals': [
-                {
-                  Ref: 'AWS::Region',
-                },
-                'cn-north-1',
-              ],
-            },
-            {
-              'Fn::Equals': [
-                {
-                  Ref: 'AWS::Region',
-                },
-                'cn-northwest-1',
-              ],
-            },
-          ],
-        },
-      },
     });
-  }),
+  });
 });
