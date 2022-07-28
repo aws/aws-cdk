@@ -51,6 +51,7 @@ export default class CodeGenerator {
   private code = new CodeMaker();
   private level: number;
   private readonly resourceProviderSchema?: any;
+  private readonly coreImport: string;
 
   /**
    * Creates the code generator.
@@ -67,7 +68,7 @@ export default class CodeGenerator {
     this.resourceProviderSchema = options.resourceProviderSchema;
     this.outputFile = this.level === 2 ? `${moduleName}.l2.generated.ts` : `${moduleName}.generated.ts`;
     this.code.openFile(this.outputFile);
-    const coreImport = options.coreImport ?? '@aws-cdk/core';
+    this.coreImport = options.coreImport ?? '@aws-cdk/core';
 
     const meta = {
       generated: new Date(),
@@ -82,9 +83,7 @@ export default class CodeGenerator {
     this.code.line('/* eslint-disable max-len */ // This is generated code - line lengths are difficult to control');
     this.code.line();
     this.code.line(`import * as ${CONSTRUCTS} from 'constructs';`);
-    this.code.line(`import * as ${CORE} from '${coreImport}';`);
-    // import cfn-parse from an embedded folder inside @core, since it is not part of the public API of the module
-    this.code.line(`import * as ${CFN_PARSE} from '${coreImport}/${coreImport === '.' ? '' : 'lib/'}helpers-internal';`);
+    this.code.line(`import * as ${CORE} from '${this.coreImport}';`);
   }
 
   public emitCode(): void {
@@ -162,7 +161,7 @@ export default class CodeGenerator {
     this.code.line(`private readonly resource: Cfn${resourceName};`);
 
     // constructor
-    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string, props: ${propsName.className})`);
+    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string, props: ${propsName.className} = {})`);
     // super constructor
     this.code.line(`super(scope, id, { physicalName: props.${resourceNameLower}Name })`);
     // Create the resource
@@ -181,6 +180,8 @@ export default class CodeGenerator {
   }
 
   private emitL1Code(): void {
+    // import cfn-parse from an embedded folder inside @core, since it is not part of the public API of the module
+    this.code.line(`import * as ${CFN_PARSE} from '${this.coreImport}/${this.coreImport === '.' ? '' : 'lib/'}helpers-internal';`);
     for (const name of Object.keys(this.spec.ResourceTypes).sort()) {
       const resourceType = this.spec.ResourceTypes[name];
 
