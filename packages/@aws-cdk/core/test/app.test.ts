@@ -104,14 +104,14 @@ describe('app', () => {
     });
   });
 
-  test('context can be passed through CDK_CONTEXT_LOCATION', async () => {
+  test('context can be passed through CONTEXT_OVERFLOW_LOCATION_ENV', async () => {
     const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
-    const contextLocation = path.join(contextDir, 'context-temp.json');
-    fs.writeJSONSync(contextLocation, {
+    const overflow = path.join(contextDir, 'overflow.json');
+    fs.writeJSONSync(overflow, {
       key1: 'val1',
       key2: 'val2',
     });
-    process.env[cxapi.CONTEXT_LOCATION_ENV] = contextLocation;
+    process.env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV] = overflow;
 
     const prog = new App();
     expect(prog.node.tryGetContext('key1')).toEqual('val1');
@@ -129,18 +129,18 @@ describe('app', () => {
     expect(prog.node.tryGetContext('key2')).toEqual('val2');
   });
 
-  test('context passed through CDK_CONTEXT_LOCATION has precedence', async () => {
+  test('context passed through CONTEXT_OVERFLOW_LOCATION_ENV is merged with the context passed through CONTEXT_ENV', async () => {
     const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
     const contextLocation = path.join(contextDir, 'context-temp.json');
     fs.writeJSONSync(contextLocation, {
       key1: 'val1',
       key2: 'val2',
     });
-    process.env[cxapi.CONTEXT_LOCATION_ENV] = contextLocation;
+    process.env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV] = contextLocation;
 
     process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
-      key1: 'val3',
-      key2: 'val4',
+      key3: 'val3',
+      key4: 'val4',
     });
 
     const prog = new App({
@@ -151,6 +151,8 @@ describe('app', () => {
     });
     expect(prog.node.tryGetContext('key1')).toEqual('val1');
     expect(prog.node.tryGetContext('key2')).toEqual('val2');
+    expect(prog.node.tryGetContext('key3')).toEqual('val3');
+    expect(prog.node.tryGetContext('key4')).toEqual('val4');
   });
 
   test('context from the command line can be used when creating the stack', () => {
