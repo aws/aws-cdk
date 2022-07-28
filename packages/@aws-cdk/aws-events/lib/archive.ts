@@ -64,7 +64,7 @@ export class Archive extends Resource {
   constructor(scope: Construct, id: string, props: ArchiveProps) {
     super(scope, id, { physicalName: props.archiveName });
 
-    let archive = new CfnArchive(this, 'Default', {
+    let archive = new CfnArchive(this, 'Archive', {
       sourceArn: props.sourceEventBus.eventBusArn,
       description: props.description,
       eventPattern: renderEventPattern(props.eventPattern),
@@ -74,5 +74,6 @@ export class Archive extends Resource {
 
     this.archiveArn = archive.attrArn;
     this.archiveName = archive.attrArchiveName;
+    this.node.defaultChild = archive;
   }
 }
