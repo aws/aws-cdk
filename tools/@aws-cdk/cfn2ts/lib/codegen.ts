@@ -154,19 +154,28 @@ export default class CodeGenerator {
 
     // concrete class
     this.code.openBlock(`export class ${specName.resourceName} extends ${baseClassName}`);
-    // fromXXX functions
-    // TODO
+    // TODO: fromXXX functions
+
+    this.code.line(`public readonly ${resourceNameLower}Arn: string;`);
+    this.code.line(`public readonly ${resourceNameLower}Name: string;`);
+
+    this.code.line(`private readonly resource: Cfn${resourceName};`);
 
     // constructor
     this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string, props: ${propsName.className})`);
     // super constructor
     this.code.line(`super(scope, id, { physicalName: props.${resourceNameLower}Name })`);
     // Create the resource
-    this.code.line(`new Cfn${specName.resourceName}(this, 'Resource', {`);
-    
+    this.code.line(`this.resource = new Cfn${resourceName}(this, 'Resource', {`);
+    this.code.line('    name: this.physicalName');
     this.code.line('});');
     //set resourceArn and resourceName
-
+    this.code.line(`this.${resourceNameLower}Arn = this.getResourceArnAttribute(this.resource.attrArn, {
+            service: '${packageName}',
+            resource: '${resourceNameLower}',
+            resourceName: this.physicalName,
+        });`);
+    this.code.line(`this.${resourceNameLower}Name = this.getResourceNameAttribute(this.resource.ref);`);
     this.code.closeBlock();
     this.code.closeBlock();
   }
