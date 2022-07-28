@@ -64,7 +64,6 @@
       "Arn"
      ]
     },
-    "Description": "version-hash:1786de9fc1bc4cb2fd5b64d612628c6f",
     "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
@@ -85,7 +84,7 @@
     }
    }
   },
-  "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629": {
+  "MyLambdaCurrentVersionE7A382CC1786de9fc1bc4cb2fd5b64d612628c6f": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -101,7 +100,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629",
+      "MyLambdaCurrentVersionE7A382CC1786de9fc1bc4cb2fd5b64d612628c6f",
       "Version"
      ]
     },
@@ -123,9 +122,16 @@
    "Properties": {
     "AuthType": "NONE",
     "TargetFunctionArn": {
-     "Ref": "Alias325C5727"
-    }
-   }
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Qualifier": "prod"
+   },
+   "DependsOn": [
+    "Alias325C5727"
+   ]
   },
   "Aliasinvokefunctionurl4CA9917B": {
    "Type": "AWS::Lambda::Permission",

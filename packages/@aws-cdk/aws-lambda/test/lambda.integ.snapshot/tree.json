@@ -209,7 +209,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629",
+                        "MyLambdaCurrentVersionE7A382CC1786de9fc1bc4cb2fd5b64d612628c6f",
                         "Version"
                       ]
                     },
@@ -259,8 +259,12 @@
                       "aws:cdk:cloudformation:props": {
                         "authType": "NONE",
                         "targetFunctionArn": {
-                          "Ref": "Alias325C5727"
-                        }
+                          "Fn::GetAtt": [
+                            "MyLambdaCCE802FB",
+                            "Arn"
+                          ]
+                        },
+                        "qualifier": "prod"
                       }
                     },
                     "constructInfo": {
