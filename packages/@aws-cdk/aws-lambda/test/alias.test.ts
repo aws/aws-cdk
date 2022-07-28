@@ -639,8 +639,9 @@ describe('alias', () => {
       handler: 'index.hello',
       runtime: lambda.Runtime.NODEJS_10_X,
     });
+    const aliasName = 'prod';
     const alias = new lambda.Alias(stack, 'Alias', {
-      aliasName: 'prod',
+      aliasName,
       version: fn.currentVersion,
     });
 
@@ -648,10 +649,12 @@ describe('alias', () => {
     alias.addFunctionUrl();
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
-      AuthType: 'AWS_IAM',
-      TargetFunctionArn: {
-        Ref: 'Alias325C5727',
+    Template.fromStack(stack).hasResource('AWS::Lambda::Url', {
+      DependsOn: ['Alias325C5727'],
+      Properties: {
+        AuthType: 'AWS_IAM',
+        TargetFunctionArn: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+        Qualifier: aliasName,
       },
     });
   });
