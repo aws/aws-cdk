@@ -64,6 +64,7 @@
       "Arn"
      ]
     },
+    "Description": "version-hash:1786de9fc1bc4cb2fd5b64d612628c6f",
     "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
