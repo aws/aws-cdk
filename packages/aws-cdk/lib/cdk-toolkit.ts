@@ -559,7 +559,7 @@ export class CdkToolkit {
     const gc = new GarbageCollector({
       dryRun,
       type,
-      days: days,
+      isolationDays: days,
       resolvedEnvironment,
       sdkProvider: this.props.sdkProvider,
     });

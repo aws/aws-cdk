@@ -1,12 +1,16 @@
 /* eslint-disable no-console */
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
-import { ECR, S3 } from 'aws-sdk';
+import { CloudFormation, ECR, S3 } from 'aws-sdk';
 import { ISDK, SdkProvider } from './aws-auth';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
 
 const ISOLATED_TAG = 'awscdk.isolated';
+
+/**
+ * Props for the Garbage Collector
+ */
 interface GarbageCollectorProps {
   /**
    * If this property is set, then instead of garbage collecting, we will
@@ -21,14 +25,14 @@ interface GarbageCollectorProps {
    *
    * @default 'all'
    */
-  readonly type: 'ecr' | 's3' | 'all';
+  readonly type: 's3' | 'ecr' | 'all';
 
   /**
    * The days an asset must be in isolation before being actually deleted.
    *
    * @default 30
    */
-  readonly days: number;
+  readonly isolationDays: number;
 
   /**
    * The environment to deploy this stack in
@@ -41,14 +45,7 @@ interface GarbageCollectorProps {
   /**
     * SDK provider (seeded with default credentials)
     *
-    * Will exclusively be used to assume publishing credentials (which must
-    * start out from current credentials regardless of whether we've assumed an
-    * action role to touch the stack or not).
-    *
-    * Used for the following purposes:
-    *
-    * - Publish legacy assets.
-    * - Upload large CloudFormation templates to the staging bucket.
+    * Will be used to make SDK calls to CloudFormation, S3, and ECR.
     */
   readonly sdkProvider: SdkProvider;
 }
@@ -95,10 +92,14 @@ export class GarbageCollector {
 
   public async garbageCollect() {
     const totalStart = Date.now();
+
+    // set up the sdks used in garbage collection
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
+    const { cfn, s3, ecr } = this.setUpSDKs(sdk);
+
     console.log('Collecting Hashes');
     let start = Date.now();
-    await this.collectHashes(sdk);
+    await this.collectHashes(cfn);
     console.log('Finished collecting hashes: ', formatTime(start), ' seconds');
 
     if (this.s3) {
@@ -109,13 +110,13 @@ export class GarbageCollector {
 
       console.log('Collecting isolated objects');
       start = Date.now();
-      const isolatedObjects = await this.collectIsolatedObjects(sdk, bucket);
+      const isolatedObjects = await this.collectIsolatedObjects(s3, bucket);
       console.log('Collected isolated buckets:', formatTime(start), 'seconds');
 
       if (!this.props.dryRun) {
         console.log('Tagging isolated objects');
         start = Date.now();
-        await this.tagIsolatedObjects(sdk, bucket, isolatedObjects);
+        await this.tagIsolatedObjects(s3, bucket, isolatedObjects);
         console.log('Tagged isolated buckets:', formatTime(start), 'seconds');
       } else {
         console.log('dry run was set, so skipping object tagging');
@@ -125,19 +126,19 @@ export class GarbageCollector {
     if (this.ecr) {
       console.log('Getting bootstrap repositories');
       start = Date.now();
-      const repos = await this.getBootstrapRepositories(sdk);
+      const repos = await this.getBootstrapRepositories(ecr);
       console.log('Got bootstrapped repositories:', formatTime(start), 'seconds');
 
       for (const repo of repos) {
         console.log(`Collecting isolated images in ${repo}`);
         start = Date.now();
-        const isolatedImages = await this.collectIsolatedImages(sdk, repo);
+        const isolatedImages = await this.collectIsolatedImages(ecr, repo);
         console.log(`Collected isolated images in ${repo}:`, formatTime(start), 'seconds');
 
         if (!this.props.dryRun) {
           console.log(`Tagging isolated images in ${repo}`);
           start = Date.now();
-          await this.tagIsolatedImages(sdk, repo, isolatedImages);
+          await this.tagIsolatedImages(ecr, repo, isolatedImages);
           console.log(`Tagged isolated images in ${repo}:`, formatTime(start), 'seconds');
         } else {
           console.log('dry run was set, so skipping image tagging');
@@ -146,21 +147,35 @@ export class GarbageCollector {
     }
 
     console.log('Total Garbage Collection time:', formatTime(totalStart), 'seconds');
-    if (this.s3) {
+    this.writeResults();
+  }
+
+  private setUpSDKs(sdk: ISDK) {
+    const cfn = sdk.cloudFormation();
+    const s3 = sdk.s3();
+    const ecr = sdk.ecr();
+    return {
+      cfn,
+      s3,
+      ecr,
+    };
+  }
+
+  private writeResults() {
+    if (!this.props.dryRun && this.s3) {
       console.log(`${this.taggedObjects.amount} s3 assets were tagged in this run of cdk gc, for a total of ${toMb(this.taggedObjects.size)} MB`);
       console.log(`${this.alreadyTaggedObjects.amount} s3 assets were already tagged in previous runs, for a total of ${toMb(this.alreadyTaggedObjects.size)} MB`);
       console.log(`${this.deletedObjects.amount} s3 assets were deleted in this run of cdk gc, for a total of ${toMb(this.deletedObjects.size)} MB`);
     }
 
-    if (this.ecr) {
+    if (!this.props.dryRun && this.ecr) {
       console.log(`${this.taggedImages.amount} ecr assets were tagged in this run of cdk gc, for a total of ${toMb(this.taggedImages.size)} MB`);
       console.log(`${this.alreadyTaggedImages.amount} ecr assets were already tagged in previous runs, for a total of ${toMb(this.alreadyTaggedImages.size)} MB`);
       console.log(`${this.deletedImages.amount} ecr assets were deleted in this run of cdk gc, for a total of ${toMb(this.deletedImages.size)} MB`);
     }
   }
 
-  private async collectHashes(sdk: ISDK) {
-    const cfn = sdk.cloudFormation();
+  private async collectHashes(cfn: CloudFormation) {
     const stackNames: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await cfn.listStacks({ NextToken: nextToken }).promise();
@@ -168,9 +183,8 @@ export class GarbageCollector {
       return response.NextToken;
     });
 
-    console.log('num stacks:', stackNames.length);
+    console.log(`Parsing through ${stackNames.length} stacks`);
 
-    // TODO: gracefully fail this
     for (const stack of stackNames) {
       const template = await cfn.getTemplate({
         StackName: stack,
@@ -180,17 +194,15 @@ export class GarbageCollector {
       templateHashes?.forEach(this.hashes.add, this.hashes);
     }
 
-    console.log('num hashes:', this.hashes.size);
+    console.log(`Found ${this.hashes.size} unique hashes`);
   }
 
   private async getBootstrapBucket(sdk: ISDK) {
-    // maybe use tags like for ecr
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, undefined);
     return info.bucketName;
   }
 
-  private async collectIsolatedObjects(sdk: ISDK, bucket: string) {
-    const s3 = sdk.s3();
+  private async collectIsolatedObjects(s3: S3, bucket: string) {
     const isolatedObjects: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await s3.listObjectsV2({
@@ -221,8 +233,7 @@ export class GarbageCollector {
     return objectAttrs.ObjectSize ?? 0;
   }
 
-  private async tagIsolatedObjects(sdk: ISDK, bucket: string, objects: string[]) {
-    const s3 = sdk.s3();
+  private async tagIsolatedObjects(s3: S3, bucket: string, objects: string[]) {
     for (const obj of objects) {
       // check if the object has been tagged in a previous gc run
       const response = await s3.getObjectTagging({
@@ -281,8 +292,7 @@ export class GarbageCollector {
 
   /* ECR methods */
 
-  private async getBootstrapRepositories(sdk: ISDK) {
-    const ecr = sdk.ecr();
+  private async getBootstrapRepositories(ecr: ECR) {
     let repos: ECR.RepositoryList = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await ecr.describeRepositories({ nextToken: nextToken }).promise();
@@ -304,8 +314,7 @@ export class GarbageCollector {
     return bootstrappedRepos;
   }
 
-  private async collectIsolatedImages(sdk: ISDK, repo: string) {
-    const ecr = sdk.ecr();
+  private async collectIsolatedImages(ecr: ECR, repo: string) {
     const isolatedImages: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await ecr.listImages({
@@ -335,8 +344,7 @@ export class GarbageCollector {
     return isolatedImages;
   }
 
-  private async tagIsolatedImages(sdk: ISDK, repo: string, images: string[]) {
-    const ecr = sdk.ecr();
+  private async tagIsolatedImages(ecr: ECR, repo: string, images: string[]) {
     const imageIds: ECR.ImageIdentifierList = [];
     images.forEach((i) => imageIds.push({ imageDigest: i }));
     const response = await ecr.batchGetImage({
@@ -421,7 +429,7 @@ export class GarbageCollector {
   private canBeSafelyDeleted(time: number): boolean {
     // divide 1000 for seconds, another 60 for minutes, another 60 for hours, 24 for days
     const daysElapsed = (Date.now() - time) / (1000 * 60 * 60 * 24);
-    return daysElapsed > this.props.days;
+    return daysElapsed > this.props.isolationDays;
   }
 }
 
@@ -459,10 +467,3 @@ function imageMap(imageIds: ECR.ImageIdentifierList) {
   }
   return images;
 }
-
-// function addToObject<T>(key: string, val: T, obj: Record<string, T[]>) {
-//   if (!obj[key]) {
-//     obj[key] = [];
-//   }
-//   obj[key].push(val);
-// }
