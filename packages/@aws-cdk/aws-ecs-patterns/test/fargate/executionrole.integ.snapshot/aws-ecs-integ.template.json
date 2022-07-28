@@ -564,6 +564,7 @@
    "Properties": {
     "ContainerDefinitions": [
      {
+      "Cpu": 512,
       "Essential": true,
       "Image": "amazon/amazon-ecs-sample",
       "LogConfiguration": {
@@ -578,6 +579,7 @@
         }
        }
       },
+      "Memory": 1024,
       "Name": "web",
       "PortMappings": [
        {

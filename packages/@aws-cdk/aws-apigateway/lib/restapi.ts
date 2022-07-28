@@ -180,6 +180,13 @@ export interface RestApiBaseProps {
    * @default false
    */
   readonly disableExecuteApiEndpoint?: boolean;
+
+  /**
+   * A description of the RestApi construct.
+   *
+   * @default - 'Automatically created by the RestApi construct'
+   */
+  readonly description?: string;
 }
 
 /**
@@ -193,12 +200,6 @@ export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
  * Props to create a new instance of RestApi
  */
 export interface RestApiProps extends RestApiOptions {
-  /**
-   * A description of the purpose of this API Gateway RestApi resource.
-   *
-   * @default - No description.
-   */
-  readonly description?: string;
 
   /**
    * The list of binary media mime-types that are supported by the RestApi
@@ -554,7 +555,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     if (deploy) {
 
       this._latestDeployment = new Deployment(this, 'Deployment', {
-        description: 'Automatically created by the RestApi construct',
+        description: props.description? props.description :'Automatically created by the RestApi construct',
         api: this,
         retainDeployments: props.retainDeployments,
       });

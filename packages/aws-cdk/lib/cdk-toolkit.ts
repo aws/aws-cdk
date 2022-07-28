@@ -20,6 +20,7 @@ import { data, debug, error, highlight, print, success, warning } from './loggin
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
+import { validateSnsTopicArn } from './util/validate-notification-arn';
 
 export interface CdkToolkitProps {
 
@@ -125,6 +126,14 @@ export class CdkToolkit {
   public async deploy(options: DeployOptions) {
     if (options.watch) {
       return this.watch(options);
+    }
+
+    if (options.notificationArns) {
+      options.notificationArns.map( arn => {
+        if (!validateSnsTopicArn(arn)) {
+          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
+        }
+      });
     }
 
     const startSynthTime = new Date().getTime();

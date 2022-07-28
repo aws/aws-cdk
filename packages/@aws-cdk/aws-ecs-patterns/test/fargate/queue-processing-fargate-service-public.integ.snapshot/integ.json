@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.queue-processing-fargate-service-public": {
+    "publicQueueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [
         "aws-ecs-patterns-queue-public"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

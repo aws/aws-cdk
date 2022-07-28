@@ -1,0 +1,24 @@
+{
+ "Resources": {
+  "LogGroupF5B46931": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "QueryDefinition4190BC36": {
+   "Type": "AWS::Logs::QueryDefinition",
+   "Properties": {
+    "Name": "QueryDefinition",
+    "QueryString": "fields @timestamp, @message | parse @message \"[*] *\" as loggingType, loggingMessage | filter loggingType = \"ERROR\" | sort @timestamp desc | limit 20 | display loggingMessage",
+    "LogGroupNames": [
+     {
+      "Ref": "LogGroupF5B46931"
+     }
+    ]
+   }
+  }
+ }
+}

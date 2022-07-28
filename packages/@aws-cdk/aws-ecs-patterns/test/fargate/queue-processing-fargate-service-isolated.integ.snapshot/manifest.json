@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -241,10 +241,7 @@
         "/aws-ecs-patterns-queue-isolated/IsolatedQueueService/QueueProcessingTaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IsolatedQueueServiceQueueProcessingTaskDef0F0CE105",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "IsolatedQueueServiceQueueProcessingTaskDef0F0CE105"
           }
         ],
         "/aws-ecs-patterns-queue-isolated/IsolatedQueueService/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource": [
@@ -315,6 +312,15 @@
         ]
       },
       "displayName": "aws-ecs-patterns-queue-isolated"
+    },
+    "isolatedQueueProcessingFargateServiceTestDefaultTestDeployAssert0132317A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "isolatedQueueProcessingFargateServiceTestDefaultTestDeployAssert0132317A.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "isolatedQueueProcessingFargateServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

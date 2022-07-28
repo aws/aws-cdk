@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.49"
         }
       },
       "aws-ecs-integ": {
@@ -1240,7 +1240,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.33"
+                      "version": "10.1.49"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -2035,6 +2035,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "applicationMultipleTargetGroupsEc2ServiceTest": {
+        "id": "applicationMultipleTargetGroupsEc2ServiceTest",
+        "path": "applicationMultipleTargetGroupsEc2ServiceTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.49"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

@@ -607,7 +607,7 @@ const capacityProvider = new ecs.AsgCapacityProvider(this, 'provider', {
 });
 cluster.addAsgCapacityProvider(capacityProvider);
 
-const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+const queueProcessingEc2Service = new ecsPatterns.QueueProcessingEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),

@@ -1659,6 +1659,20 @@
    "Properties": {
     "Type": "container",
     "ContainerProperties": {
+     "Environment": [
+      {
+       "Name": "AWS_REGION",
+       "Value": {
+        "Ref": "AWS::Region"
+       }
+      },
+      {
+       "Name": "AWS_ACCOUNT",
+       "Value": {
+        "Ref": "AWS::AccountId"
+       }
+      }
+     ],
      "Image": {
       "Fn::Join": [
        "",
@@ -1735,6 +1749,20 @@
    "Properties": {
     "Type": "container",
     "ContainerProperties": {
+     "Environment": [
+      {
+       "Name": "AWS_REGION",
+       "Value": {
+        "Ref": "AWS::Region"
+       }
+      },
+      {
+       "Name": "AWS_ACCOUNT",
+       "Value": {
+        "Ref": "AWS::AccountId"
+       }
+      }
+     ],
      "Image": "docker/whalesay",
      "Privileged": false,
      "ReadonlyRootFilesystem": false,
@@ -1806,6 +1834,20 @@
    "Properties": {
     "Type": "container",
     "ContainerProperties": {
+     "Environment": [
+      {
+       "Name": "AWS_REGION",
+       "Value": {
+        "Ref": "AWS::Region"
+       }
+      },
+      {
+       "Name": "AWS_ACCOUNT",
+       "Value": {
+        "Ref": "AWS::AccountId"
+       }
+      }
+     ],
      "ExecutionRoleArn": {
       "Fn::GetAtt": [
        "executionroleD9A39BE6",

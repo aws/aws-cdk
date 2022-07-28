@@ -1,0 +1,67 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-event-source-kinesis-at-timestamp": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-kinesis-at-timestamp.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-event-source-kinesis-at-timestamp/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/lambda-event-source-kinesis-at-timestamp/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
+          }
+        ],
+        "/lambda-event-source-kinesis-at-timestamp/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/lambda-event-source-kinesis-at-timestamp/F/KinesisEventSource:lambdaeventsourcekinesisattimestampSC3A1FFA3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FKinesisEventSourcelambdaeventsourcekinesisattimestampSC3A1FFA33781E60D"
+          }
+        ],
+        "/lambda-event-source-kinesis-at-timestamp/S/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S509448A1"
+          }
+        ],
+        "/lambda-event-source-kinesis-at-timestamp/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-kinesis-at-timestamp"
+    },
+    "AtTimestampDefaultTestDeployAssert8000E9DC": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AtTimestampDefaultTestDeployAssert8000E9DC.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "AtTimestamp/DefaultTest/DeployAssert"
+    }
+  }
+}

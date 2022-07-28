@@ -57,6 +57,16 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 }
 
 /**
+ * Escape a shell argument for the current shell
+ */
+export function escape(x: string) {
+  if (process.platform === 'win32') {
+    return windowsEscape(x);
+  }
+  return posixEscape(x);
+}
+
+/**
  * Render the given command line as a string
  *
  * Probably missing some cases but giving it a good effort.

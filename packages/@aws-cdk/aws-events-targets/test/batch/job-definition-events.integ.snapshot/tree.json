@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
         }
       },
       "batch-events": {
@@ -157,6 +157,20 @@
                   "aws:cdk:cloudformation:props": {
                     "type": "container",
                     "containerProperties": {
+                      "environment": [
+                        {
+                          "name": "AWS_REGION",
+                          "value": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        {
+                          "name": "AWS_ACCOUNT",
+                          "value": {
+                            "Ref": "AWS::AccountId"
+                          }
+                        }
+                      ],
                       "image": "test-repo",
                       "privileged": false,
                       "readonlyRootFilesystem": false,

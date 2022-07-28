@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.33"
         }
       },
       "code-first-schema": {
@@ -236,7 +236,7 @@
                         "typeName": "Query",
                         "dataSourceName": "planets",
                         "kind": "UNIT",
-                        "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
+                        "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
                         "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },

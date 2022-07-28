@@ -41,6 +41,9 @@ async function main(args: string[]) {
   // Write out
   log('Writing');
   for (const [svcName, svcSpec] of Object.entries(byService)) {
+    const successTarget = path.join(outDir, `000_${svcName}.json`);
+    const rejectedTarget = path.join(outDir, `.000_${svcName}.rejected.json`);
+
     const errors = !process.env.NO_VALIDATE ? CfnSpecValidator.validate(svcSpec) : [];
     if (errors.length === 0) {
       // Change 'ResourceSpecificationVersion' to '$version', otherwise they will all conflict
@@ -50,13 +53,26 @@ async function main(args: string[]) {
         $version: svcSpec.ResourceSpecificationVersion,
       };
 
-      await writeSorted(path.join(outDir, `000_${svcName}.json`), toWrite);
+      await writeSorted(successTarget, toWrite);
+      await ensureGone(rejectedTarget);
     } else {
       console.warn('='.repeat(70));
       console.warn(' '.repeat(Math.floor(35 - svcName.length / 2)) + svcName);
       console.warn('='.repeat(70));
       for (const error of errors) {
         console.warn(formatErrorInContext(error));
+      }
+
+      await writeSorted(rejectedTarget, svcSpec);
+
+      // Make sure that the success file exists. If not, the initial import of a
+      // new service failed.
+      if (!await fs.pathExists(successTarget)) {
+        await writeSorted(successTarget, {
+          PropertyTypes: {},
+          ResourceTypes: {},
+          $version: '0.0.0',
+        });
       }
     }
   }
@@ -73,6 +89,15 @@ async function main(args: string[]) {
       };
     }
     return byService[svcName];
+  }
+}
+
+async function ensureGone(fileName: string) {
+  try {
+    await fs.unlink(fileName);
+  } catch (e) {
+    if (e.code === 'ENOENT') { return; }
+    throw e;
   }
 }
 

@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.multiple-application-load-balanced-ecs-service": {
+    "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "applicationMultipleTargetGroupsEc2ServiceTestDefaultTestDeployAssert1194B50F"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

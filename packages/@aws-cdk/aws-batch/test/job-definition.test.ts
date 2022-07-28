@@ -91,6 +91,18 @@ describe('Batch Job Definition', () => {
             Name: 'foo',
             Value: 'bar',
           },
+          {
+            Name: 'AWS_REGION',
+            Value: {
+              Ref: 'AWS::Region',
+            },
+          },
+          {
+            Name: 'AWS_ACCOUNT',
+            Value: {
+              Ref: 'AWS::AccountId',
+            },
+          },
         ],
         Secrets: [
           {
@@ -183,6 +195,18 @@ describe('Batch Job Definition', () => {
           {
             Name: 'foo',
             Value: 'bar',
+          },
+          {
+            Name: 'AWS_REGION',
+            Value: {
+              Ref: 'AWS::Region',
+            },
+          },
+          {
+            Name: 'AWS_ACCOUNT',
+            Value: {
+              Ref: 'AWS::AccountId',
+            },
           },
         ],
         Secrets: [

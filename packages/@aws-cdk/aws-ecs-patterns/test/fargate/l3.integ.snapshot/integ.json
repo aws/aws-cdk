@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.l3": {
+    "l3FargateTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-lb-fargate"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "l3FargateTestDefaultTestDeployAssert3391A20B"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

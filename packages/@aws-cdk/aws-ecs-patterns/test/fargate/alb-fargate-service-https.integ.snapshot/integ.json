@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.alb-fargate-service-https": {
+    "albFargateServiceTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-alb-fg-https"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "albFargateServiceTestDefaultTestDeployAssert11CD2C41"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

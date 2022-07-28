@@ -123,9 +123,16 @@
    "Properties": {
     "AuthType": "NONE",
     "TargetFunctionArn": {
-     "Ref": "Alias325C5727"
-    }
-   }
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Qualifier": "prod"
+   },
+   "DependsOn": [
+    "Alias325C5727"
+   ]
   },
   "Aliasinvokefunctionurl4CA9917B": {
    "Type": "AWS::Lambda::Permission",

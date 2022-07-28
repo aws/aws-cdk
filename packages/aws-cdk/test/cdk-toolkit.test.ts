@@ -457,7 +457,10 @@ describe('deploy', () => {
 
     test('with sns notification arns', async () => {
       // GIVEN
-      const notificationArns = ['arn:aws:sns:::cfn-notifications', 'arn:aws:sns:::my-cool-topic'];
+      const notificationArns = [
+        'arn:aws:sns:us-east-2:444455556666:MyTopic',
+        'arn:aws:sns:eu-west-1:111155556666:my-great-topic',
+      ];
       const toolkit = new CdkToolkit({
         cloudExecutable,
         configuration: cloudExecutable.configuration,
@@ -475,8 +478,30 @@ describe('deploy', () => {
       });
     });
 
-    test('globless bootstrap uses environment without question', async () => {
+    test('fail with incorrect sns notification arns', async () => {
       // GIVEN
+      const notificationArns = ['arn:::cfn-my-cool-topic'];
+      const toolkit = new CdkToolkit({
+        cloudExecutable,
+        configuration: cloudExecutable.configuration,
+        sdkProvider: cloudExecutable.sdkProvider,
+        cloudFormation: new FakeCloudFormation({
+          'Test-Stack-A': { Foo: 'Bar' },
+        }, notificationArns),
+      });
+
+      // WHEN
+      await expect(() =>
+        toolkit.deploy({
+          selector: { patterns: ['Test-Stack-A'] },
+          notificationArns,
+        }),
+      ).rejects.toThrow('Notification arn arn:::cfn-my-cool-topic is not a valid arn for an SNS topic');
+
+    });
+
+    test('globless bootstrap uses environment without question', async () => {
+    // GIVEN
       const toolkit = defaultToolkitSetup();
 
       // WHEN

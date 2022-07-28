@@ -28,12 +28,26 @@ input PaymentInput {
 type Query @aws_api_key {
   getServiceVersion: ServiceVersion
   getCustomers: [Customer]
+  getCustomersNotConsistent: [Customer]
+  getCustomersConsistent: [Customer]
   getCustomer(id: String): Customer
+  getCustomerNotConsistent(id: String): Customer
+  getCustomerConsistent(id: String): Customer
   getCustomerOrdersEq(customer: String): Order
   getCustomerOrdersLt(customer: String): Order
   getCustomerOrdersLe(customer: String): Order
   getCustomerOrdersGt(customer: String): Order
   getCustomerOrdersGe(customer: String): Order
+  getCustomerOrdersNotConsistentEq(customer: String): Order
+  getCustomerOrdersNotConsistentLt(customer: String): Order
+  getCustomerOrdersNotConsistentLe(customer: String): Order
+  getCustomerOrdersNotConsistentGt(customer: String): Order
+  getCustomerOrdersNotConsistentGe(customer: String): Order
+  getCustomerOrdersConsistentEq(customer: String): Order
+  getCustomerOrdersConsistentLt(customer: String): Order
+  getCustomerOrdersConsistentLe(customer: String): Order
+  getCustomerOrdersConsistentGt(customer: String): Order
+  getCustomerOrdersConsistentGe(customer: String): Order
   getCustomerOrdersFilter(customer: String, order: String): Order
   getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order
   getOrderCustomersEq(order: String): [Customer]
@@ -41,9 +55,20 @@ type Query @aws_api_key {
   getOrderCustomersLe(order: String): [Customer]
   getOrderCustomersGt(order: String): [Customer]
   getOrderCustomersGe(order: String): [Customer]
+  getOrderCustomersNotConsistentEq(order: String): [Customer]
+  getOrderCustomersNotConsistentLt(order: String): [Customer]
+  getOrderCustomersNotConsistentLe(order: String): [Customer]
+  getOrderCustomersNotConsistentGt(order: String): [Customer]
+  getOrderCustomersNotConsistentGe(order: String): [Customer]
+  getOrderCustomersConsistentEq(order: String): [Customer]
+  getOrderCustomersConsistentLt(order: String): [Customer]
+  getOrderCustomersConsistentLe(order: String): [Customer]
+  getOrderCustomersConsistentGt(order: String): [Customer]
+  getOrderCustomersConsistentGe(order: String): [Customer]
   getOrderCustomersFilter(order: String, customer: String): [Customer]
   getOrderCustomersBetween(order: String, customer1: String, customer2: String): [Customer]
   getPayment(id: String): Payment
+  getPaymentConsistent(id: String): Payment
 }
 
 input FirstOrderInput {

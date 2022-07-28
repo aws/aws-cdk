@@ -1,7 +1,7 @@
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
-
+import * as integ from '@aws-cdk/integ-tests';
 import { NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
 const app = new App();
@@ -44,6 +44,10 @@ new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
       listener: 'listener2',
     },
   ],
+});
+
+new integ.IntegTest(app, 'networkMultipleTargetGroupsFargateServiceTest', {
+  testCases: [stack],
 });
 
 app.synth();
