@@ -42,7 +42,7 @@
         "/aws-cdk-lambda-1/MyLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC1786de9fc1bc4cb2fd5b64d612628c6f",
+            "data": "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
