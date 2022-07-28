@@ -476,11 +476,11 @@ export class JobDefinition extends Resource implements IJobDefinition {
     this.jobDefinitionName = this.getResourceNameAttribute(jobDef.ref);
   }
 
-  private deserializeEnvVariables(env?: { [name: string]: string }): CfnJobDefinition.EnvironmentProperty[] | undefined {
+  private deserializeEnvVariables(env?: { [name: string]: string }): CfnJobDefinition.EnvironmentProperty[] {
     const vars = new Array<CfnJobDefinition.EnvironmentProperty>();
 
     if (env === undefined) {
-      return undefined;
+      return vars;
     }
 
     Object.keys(env).map((name: string) => {
@@ -519,9 +519,27 @@ export class JobDefinition extends Resource implements IJobDefinition {
       return undefined;
     }
 
+    // If the AWS_*** environment variables are not explicitly set to the container, infer them from the current environment.
+    // This makes the usage of tools like AWS SDK inside the container frictionless
+
+    const environment = this.deserializeEnvVariables(container.environment);
+
+    if (!environment.find((x) => x.name === 'AWS_REGION')) {
+      environment.push({
+        name: 'AWS_REGION',
+        value: Stack.of(this).region,
+      });
+    }
+    if (!environment.find((x) => x.name === 'AWS_ACCOUNT')) {
+      environment.push({
+        name: 'AWS_ACCOUNT',
+        value: Stack.of(this).account,
+      });
+    }
+
     return {
       command: container.command,
-      environment: this.deserializeEnvVariables(container.environment),
+      environment,
       secrets: container.secrets
         ? Object.entries(container.secrets).map(([key, value]) => {
           return {
