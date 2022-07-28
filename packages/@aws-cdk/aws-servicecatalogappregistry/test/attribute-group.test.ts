@@ -188,12 +188,12 @@ describe('Attribute Group', () => {
 
     test('fails for sharing attribute group without principals', () => {
       expect(() => {
-        attributeGroup.shareResource({});
+        attributeGroup.shareAttributeGroup({});
       }).toThrow(/An entity must be provided for the share/);
     });
 
     test('share attribute group with an organization', () => {
-      attributeGroup.shareResource({
+      attributeGroup.shareAttributeGroup({
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
       });
 
@@ -207,7 +207,7 @@ describe('Attribute Group', () => {
     });
 
     test('share attribute group with an account', () => {
-      attributeGroup.shareResource({
+      attributeGroup.shareAttributeGroup({
         accounts: ['123456789012'],
       });
 
@@ -223,7 +223,7 @@ describe('Attribute Group', () => {
     test('share attribute group with an IAM role', () => {
       const myRole = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/myRole');
 
-      attributeGroup.shareResource({
+      attributeGroup.shareAttributeGroup({
         roles: [myRole],
       });
 
@@ -239,7 +239,7 @@ describe('Attribute Group', () => {
     test('share attribute group with an IAM user', () => {
       const myUser = iam.User.fromUserArn(stack, 'MyUser', 'arn:aws:iam::123456789012:user/myUser');
 
-      attributeGroup.shareResource({
+      attributeGroup.shareAttributeGroup({
         users: [myUser],
       });
 
@@ -253,7 +253,7 @@ describe('Attribute Group', () => {
     });
 
     test('share attribute group with organization, give explicit read only access to the attribute group', () => {
-      attributeGroup.shareResource({
+      attributeGroup.shareAttributeGroup({
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.READ_ONLY,
       });
@@ -268,7 +268,7 @@ describe('Attribute Group', () => {
     });
 
     test('share attribute group with organization, give access to mutate attribute groups', () => {
-      attributeGroup.shareResource({
+      attributeGroup.shareAttributeGroup({
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.ALLOW_ACCESS,
       });

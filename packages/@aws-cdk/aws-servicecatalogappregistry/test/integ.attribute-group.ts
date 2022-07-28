@@ -27,7 +27,7 @@ const myRole = new iam.Role(stack, 'MyRole', {
 const mySecondRole = new iam.Role(stack, 'MySecondRole', {
   assumedBy: new iam.AccountPrincipal(stack.account),
 });
-attributeGroup.shareResource({
+attributeGroup.shareAttributeGroup({
   roles: [myRole, mySecondRole],
 });
 

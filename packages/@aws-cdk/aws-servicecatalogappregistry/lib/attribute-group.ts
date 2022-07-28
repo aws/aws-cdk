@@ -29,7 +29,7 @@ export interface IAttributeGroup extends cdk.IResource {
    * Share the attribute group resource with other IAM entities, accounts, or OUs.
    * @param shareOptions The options for the share.
    */
-  shareResource(shareOptions: ShareOptions): void;
+  shareAttributeGroup(shareOptions: ShareOptions): void;
 }
 
 /**
@@ -58,7 +58,7 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
   public abstract readonly attributeGroupArn: string;
   public abstract readonly attributeGroupId: string;
 
-  public shareResource(shareOptions: ShareOptions): void {
+  public shareAttributeGroup(shareOptions: ShareOptions): void {
     const principals = getPrincipalsforSharing(shareOptions);
     const shareName = `RAMShare${Names.uniqueResourceName(this, {})}`;
     new CfnResourceShare(this, shareName, {
