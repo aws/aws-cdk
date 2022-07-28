@@ -149,7 +149,7 @@ export interface IExampleResource extends
  *
  * Notice that the class is not exported - it's not part of the public API of this module!
  */
-abstract class ExampleResourceBase extends core.Resource implements IExampleResource {
+export abstract class ExampleResourceBase extends core.Resource implements IExampleResource {
   // these stay abstract at this level
   public abstract readonly exampleResourceArn: string;
   public abstract readonly exampleResourceName: string;

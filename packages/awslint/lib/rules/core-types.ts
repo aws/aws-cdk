@@ -71,6 +71,18 @@ export class CoreTypes {
   }
 
   /**
+   * @returns true if `classType` represents an Abstract Base Class and extends core.Resource
+   */
+  public static isAbstractBaseClass(classType: reflect.ClassType) {
+    if (!classType.abstract) {
+      return false;
+    }
+    const baseResource = classType.system.findClass(CoreTypesFqn.Resource);
+
+    return classType.extends(baseResource);
+  }
+
+  /**
    * @returns true if `classType` represents an AWS resource (i.e. extends `cdk.Resource`).
    */
   public static isResourceClass(classType: reflect.ClassType) {

@@ -1,3 +1,4 @@
+import * as camelCase from 'camelcase';
 import * as reflect from 'jsii-reflect';
 import { Linter, MethodSignatureParameterExpectation } from '../linter';
 import { CoreTypes } from './core-types';
@@ -182,6 +183,28 @@ constructLinter.add({
     if (!e.ctx.interfaceType) { return; }
     const interfaceBase = e.ctx.sys.findInterface(e.ctx.core.constructInterface.fqn);
     e.assert(e.ctx.interfaceType.extends(interfaceBase), e.ctx.interfaceType.fqn);
+  },
+});
+
+constructLinter.add({
+  code: 'construct-interface-has-name-member',
+  message: 'construct interface must have a name member of format <ConstructName>Name',
+  eval: e => {
+    if (!e.ctx.interfaceType) { return; }
+    const interfaceProperties = e.ctx.interfaceType.getProperties();
+    const interfaceNameProperty = camelCase(`${e.ctx.classType.name}Name`);
+    e.assert(interfaceProperties[interfaceNameProperty]?.name === interfaceNameProperty, e.ctx.interfaceType.fqn);
+  },
+});
+
+constructLinter.add({
+  code: 'construct-interface-has-arn-member',
+  message: 'construct interface must have an arn member of format <ConstructName>Arn',
+  eval: e => {
+    if (!e.ctx.interfaceType) { return; }
+    const interfaceProperties = e.ctx.interfaceType.getProperties();
+    const interfaceArnProperty = camelCase(`${e.ctx.classType.name}Arn`);
+    e.assert(interfaceProperties[interfaceArnProperty]?.name === interfaceArnProperty, e.ctx.interfaceType.fqn);
   },
 });
 

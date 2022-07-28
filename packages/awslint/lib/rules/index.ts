@@ -1,4 +1,6 @@
 import { AggregateLinter } from '../linter';
+import { abstractBaseLinter } from './abstract';
+import { allClassesScopeLinter } from './all-classes';
 import { apiLinter } from './api';
 import { attributesLinter } from './attributes';
 import { cfnResourceLinter } from './cfn-resource';
@@ -29,4 +31,6 @@ export const ALL_RULES_LINTER = new AggregateLinter(
   durationsLinter,
   publicStaticPropertiesLinter,
   docsLinter,
+  abstractBaseLinter,
+  allClassesScopeLinter,
 );
