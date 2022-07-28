@@ -101,14 +101,18 @@ export default class CodeGenerator {
     const resourceNameLower = resourceName.toLowerCase();
     const packageName = genspec.packageName(specName);
 
+    const interfaceName = `I${resourceName}`;
+    const propsName = `${resourceName}Props`;
+    const abstractBaseClassName = `${resourceName}Base`;
+    const concreteClassName = `${resourceName}`;
+
     // imports
     // TODO: make this work for v1 and v2.
     this.code.line("import * as iam from '@aws-cdk/aws-iam';");
     this.code.line(`import { Cfn${resourceName} } from './${this.moduleName}.generated';`);
 
     // interface
-    const iName = new genspec.CodeName(packageName, '', `I${resourceName}`, specName);
-    this.code.openBlock(`export interface ${iName.className} extends ${CORE}.IResource`);
+    this.code.openBlock(`export interface ${interfaceName} extends ${CORE}.IResource`);
     // extend IGrantable as well if there is a role property
     this.code.line('/**');
     this.code.line(` * The ARN of the ${resourceNameLower}.`);
@@ -125,8 +129,7 @@ export default class CodeGenerator {
     this.code.closeBlock();
 
     // construct props
-    const propsName = new genspec.CodeName(packageName, '', `${resourceName}Props`, specName);
-    this.code.openBlock(`export interface ${propsName.className}`);
+    this.code.openBlock(`export interface ${propsName}`);
     this.code.line(`readonly ${resourceNameLower}Name?: string;`);
     // add all the required L1 props
     this.resourceProviderSchema.required?.forEach((requiredProp: string) => {
@@ -135,8 +138,7 @@ export default class CodeGenerator {
     this.code.closeBlock();
 
     // abstract base class
-    const baseClassName = `${resourceName}Base`;
-    this.code.openBlock(`abstract class ${baseClassName} extends ${CORE}.Resource implements ${iName.className}`);
+    this.code.openBlock(`abstract class ${abstractBaseClassName} extends ${CORE}.Resource implements ${interfaceName}`);
     this.code.line(`public abstract readonly ${resourceNameLower}Arn: string;`);
     this.code.line(`public abstract readonly ${resourceNameLower}Name: string;`);
     // grant
@@ -152,7 +154,7 @@ export default class CodeGenerator {
     this.code.closeBlock();
 
     // concrete class
-    this.code.openBlock(`export class ${specName.resourceName} extends ${baseClassName}`);
+    this.code.openBlock(`export class ${concreteClassName} extends ${abstractBaseClassName}`);
     // TODO: fromXXX functions
 
     this.code.line(`public readonly ${resourceNameLower}Arn: string;`);
@@ -161,14 +163,14 @@ export default class CodeGenerator {
     this.code.line(`private readonly resource: Cfn${resourceName};`);
 
     // constructor
-    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string, props: ${propsName.className} = {})`);
+    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string, props: ${propsName} = {})`);
     // super constructor
     this.code.line(`super(scope, id, { physicalName: props.${resourceNameLower}Name })`);
     // Create the resource
     this.code.line(`this.resource = new Cfn${resourceName}(this, 'Resource', {`);
     this.code.line('    name: this.physicalName');
     this.code.line('});');
-    //set resourceArn and resourceName
+    // set resourceArn and resourceName
     this.code.line(`this.${resourceNameLower}Arn = this.getResourceArnAttribute(this.resource.attrArn, {
             service: '${packageName}',
             resource: '${resourceNameLower}',
