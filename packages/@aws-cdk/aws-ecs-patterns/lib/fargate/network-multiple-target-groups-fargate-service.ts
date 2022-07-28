@@ -134,9 +134,11 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
-        logging: this.logDriver,
+        cpu: props.cpu,
+        memoryLimitMiB: props.memoryLimitMiB,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
+        logging: this.logDriver,
         dockerLabels: taskImageOptions.dockerLabels,
       });
       if (taskImageOptions.containerPorts) {
