@@ -124,7 +124,6 @@ describe('fs fingerprint', () => {
       // THEN
       expect(original).not.toEqual(afterChange);
       expect(afterRevert).toEqual(original);
-
     });
 
     test('does not change with the contents of un-followed symlink referent', () => {
@@ -176,6 +175,51 @@ describe('fs fingerprint', () => {
 
       fs.unlinkSync(crlf);
 
+    });
+  });
+
+  // The fingerprint cache is only enabled for node v12 and higher as older
+  // versions can have false positive inode comparisons due to floating point
+  // rounding error.
+  const describe_nodev12 = Number(process.versions.node.split('.')[0]) < 12 ? describe.skip : describe;
+  describe_nodev12('fingerprint cache', () => {
+    const testString = 'hello world';
+    const testFile = path.join(__dirname, 'inode-fp.1');
+    // This always-false ternary is just to help typescript infer the type properly
+    let openSyncSpy = false ? jest.spyOn(fs, 'openSync') : undefined;
+
+    // Create a very large test file
+    beforeAll(() => {
+      const file = fs.openSync(testFile, 'w');
+      fs.writeSync(file, testString);
+      fs.closeSync(file);
+      openSyncSpy = jest.spyOn(fs, 'openSync');
+    });
+
+    afterAll(() => {
+      fs.unlinkSync(testFile);
+      openSyncSpy?.mockRestore();
+    });
+
+    test('caches fingerprint results', () => {
+      const hash1 = FileSystem.fingerprint(testFile, {});
+      const hash2 = FileSystem.fingerprint(testFile, {});
+
+      expect(hash1).toEqual(hash2);
+      expect(openSyncSpy).toHaveBeenCalledTimes(1);
+    });
+
+    test('considers mtime', () => {
+      const hash1 = FileSystem.fingerprint(testFile, {});
+
+      const file = fs.openSync(testFile, 'r+');
+      fs.writeSync(file, 'foobar');
+      fs.closeSync(file);
+
+      const hash2 = FileSystem.fingerprint(testFile, {});
+
+      expect(hash1).not.toEqual(hash2);
+      expect(openSyncSpy).toHaveBeenCalledTimes(3);
     });
   });
 
