@@ -103,17 +103,8 @@ export function contentFingerprint(file: string): string {
   // Note that even if we do get a inode collision somehow, it's unlikely that
   // both mtime and size would have a false-positive as well.
 
-  // Note: Node introduced statSync's bigint argument around Node 12. We check
-  // here to make sure that we're using node 12 or higher and bypass the cache
-  // otherwise.
-
-  if (Number(process.versions.node.split('.')[0]) < 12) {
-    return contentFingerprintMiss(file);
-  }
-
   // We also must suppress typescript typechecks as we are using a version of
   // @types/node that only supports node 10 declarations.
-  // @ts-ignore
   const stats = fs.statSync(file, { bigint: true });
   const cacheKey = JSON.stringify({
     mtime_unix: stats.mtime.toUTCString(),
