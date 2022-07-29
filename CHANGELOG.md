@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.166.1](https://github.com/aws/aws-cdk/compare/v1.166.0...v1.166.1) (2022-07-29)
+
+
+### Bug Fixes
+
+* Revert to `jsii-pacmak@1.62.0` as dynamic runtime type-checking it introduced for Python results in incorrect code being produced.
+
 ## [1.166.0](https://github.com/aws/aws-cdk/compare/v1.165.0...v1.166.0) (2022-07-28)
 
 
