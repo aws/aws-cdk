@@ -135,7 +135,8 @@ def get_chart_from_oci(tmpdir, release, repository = None, version = None):
             output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, shell=True)
             logger.info(output)
 
-            return os.path.join(tmpdir, release)
+            chart_name = repository.rsplit("/", 1)[1]
+            return os.path.join(tmpdir, chart_name)
         except subprocess.CalledProcessError as exc:
             output = exc.output
             if b'Broken pipe' in output:
