@@ -452,7 +452,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       vpc: this.cluster.vpc,
       loadBalancerName: props.loadBalancerName,
       internetFacing,
-      idleTimeout: props.idleTimeout ?? undefined,
+      idleTimeout: props.idleTimeout,
     };
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
