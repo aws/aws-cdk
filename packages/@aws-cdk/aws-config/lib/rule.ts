@@ -784,6 +784,16 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EC2_IMDSV2_CHECK = 'EC2_IMDSV2_CHECK';
   /**
+   * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running the oldest supported version.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-oldest-supported-version.html
+   */
+  public static readonly EKS_CLUSTER_OLDEST_SUPPORTED_VERSION = 'EKS_CLUSTER_OLDEST_SUPPORTED_VERSION';
+  /**
+    * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
+    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
+    */
+  public static readonly EKS_CLUSTER_SUPPORTED_VERSION = 'EKS_CLUSTER_SUPPORTED_VERSION';
+  /**
    * Checks whether Amazon Elastic Kubernetes Service (Amazon EKS) endpoint is not publicly accessible.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-endpoint-no-public-access.html
    */
@@ -1322,6 +1332,8 @@ export class ResourceType {
   public static readonly EC2_VPC_ENDPOINT_SERVICE = new ResourceType('AWS::EC2::VPCEndpointService');
   /** EC2 VPC peering connection */
   public static readonly EC2_VPC_PEERING_CONNECTION = new ResourceType('AWS::EC2::VPCPeeringConnection');
+  /** Amazon Elastic Kubernetes Service cluster */
+  public static readonly EKS_CLUSTER = new ResourceType('AWS::EKS::Cluster');
   /** Amazon ElasticSearch domain */
   public static readonly ELASTICSEARCH_DOMAIN = new ResourceType('AWS::Elasticsearch::Domain');
   /** Amazon QLDB ledger */
