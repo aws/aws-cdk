@@ -116,8 +116,8 @@ export function contentFingerprint(file: string): string {
   // @ts-ignore
   const stats = fs.statSync(file, { bigint: true });
   const cacheKey = JSON.stringify({
-    mtime_unix: stats.mtime.getUTCDate(),
-    mtime_ms: stats.mtime.getUTCMilliseconds(),
+    mtime_unix: stats.mtime.toUTCString(),
+    mtime_ms: stats.mtimeMs.toString(),
     inode: stats.ino.toString(),
     size: stats.size.toString(),
   });
