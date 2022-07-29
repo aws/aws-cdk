@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.166.1](https://github.com/aws/aws-cdk/compare/v1.166.0...v1.166.1) (2022-07-29)
+
+
+### Bug Fixes
+
+* Revert to `jsii-pacmak@1.62.0` as dynamic runtime type-checking it introduced for Python results in incorrect code being produced.
+
+## [1.166.0](https://github.com/aws/aws-cdk/compare/v1.165.0...v1.166.0) (2022-07-28)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v81.1.0 ([#21308](https://github.com/aws/aws-cdk/issues/21308)) ([2443310](https://github.com/aws/aws-cdk/commit/2443310cd799b4b0758de403a63657ed98ff3ec2))
+
+
+### Bug Fixes
+
+* **aws-lambda:** FunctionUrl incorrectly uses Alias ARNs ([#21351](https://github.com/aws/aws-cdk/issues/21351)) ([9f34d60](https://github.com/aws/aws-cdk/commit/9f34d6018abcc9e2b73da4466e921624099a9949))
+
 ## [1.165.0](https://github.com/aws/aws-cdk/compare/v1.164.0...v1.165.0) (2022-07-19)
 
 
