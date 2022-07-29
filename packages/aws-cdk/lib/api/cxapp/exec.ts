@@ -251,6 +251,8 @@ function contextOverflowCleanup(location: string | undefined, assembly: cxapi.Cl
         || fqn === '@aws-cdk/core.App'; // v1
     });
 
+    // We're dealing with an old version of the framework here. It is unaware of the temporary
+    // file, which means that it will ignore the context overflow.
     if (frameworkDoesNotSupportContextOverflow) {
       warning('Part of the context could not be sent to the application. Please update the AWS CDK library to the latest version.');
     }
