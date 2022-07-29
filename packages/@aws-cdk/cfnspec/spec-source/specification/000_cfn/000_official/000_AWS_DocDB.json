@@ -1,5 +1,5 @@
 {
-  "$version": "79.0.0",
+  "$version": "81.1.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::DocDB::DBCluster": {
