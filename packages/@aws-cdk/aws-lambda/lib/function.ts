@@ -680,6 +680,8 @@ export class Function extends FunctionBase {
     if (props.vpc) {
       // Policy that will have ENI creation permissions
       managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+    } else if (props.vpcSubnets) {
+      throw new Error("'vpc' must be specified with 'vpcSubnets' in order to place the Function's interfaces in a VPC");
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
