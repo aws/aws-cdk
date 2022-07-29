@@ -1124,6 +1124,7 @@
                           {
                             "essential": true,
                             "image": "amazon/amazon-ecs-sample",
+                            "memory": 512,
                             "name": "web",
                             "portMappings": [
                               {
