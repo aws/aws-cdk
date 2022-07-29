@@ -67,7 +67,7 @@
     "@types/jest": "^27.5.2",
     "@types/minimatch": "^3.0.5",
     "@types/mockery": "^1.4.30",
-    "@types/node": "^10.17.60",
+    "@types/node": "^14.18.22",
     "@types/promptly": "^3.0.2",
     "@types/semver": "^7.3.10",
     "@types/sinon": "^9.0.11",

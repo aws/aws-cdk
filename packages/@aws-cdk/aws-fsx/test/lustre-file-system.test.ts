@@ -3,7 +3,7 @@ import { Template } from '@aws-cdk/assertions';
 import { ISubnet, Port, SecurityGroup, Subnet, Vpc } from '@aws-cdk/aws-ec2';
 import { Key } from '@aws-cdk/aws-kms';
 import { Aws, Stack, Token } from '@aws-cdk/core';
-import { LustreConfiguration, LustreDeploymentType, LustreFileSystem, LustreMaintenanceTime, Weekday } from '../lib';
+import { LustreConfiguration, LustreDeploymentType, LustreAutoImportPolicy, LustreFileSystem, LustreMaintenanceTime, Weekday } from '../lib';
 
 describe('FSx for Lustre File System', () => {
   let lustreConfiguration: LustreConfiguration;
@@ -278,6 +278,75 @@ describe('FSx for Lustre File System', () => {
             vpcSubnet,
           });
         }).toThrowError('Cannot define an export path without also defining an import path');
+      });
+    });
+
+    describe('autoImportPolicy', () => {
+      test('autoImportPath unsupported with PERSISTENT_2', () => {
+        const importPath = 's3://import-bucket/import-prefix';
+
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_2,
+          autoImportPolicy: LustreAutoImportPolicy.NEW_CHANGED_DELETED,
+          importPath,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFilesystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrowError('autoImportPolicy is not supported with PERSISTENT_2 deployments');
+      });
+
+      test('autoImportPath requires importPath', () => {
+
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          autoImportPolicy: LustreAutoImportPolicy.NEW_CHANGED_DELETED,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFilesystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrowError('autoImportPolicy requires importPath to be defined');
+      });
+    });
+
+    describe('autoImportPolicy', () => {
+      test.each([
+        LustreAutoImportPolicy.NONE,
+        LustreAutoImportPolicy.NEW,
+        LustreAutoImportPolicy.NEW_CHANGED,
+        LustreAutoImportPolicy.NEW_CHANGED_DELETED,
+      ])('valid autoImportPolicy', (autoImportPolicy: LustreAutoImportPolicy) => {
+        const importPath = 's3://import-bucket/import-path';
+
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          importPath,
+          autoImportPolicy,
+        };
+
+        new LustreFileSystem(stack, 'FsxFileSystem', {
+          lustreConfiguration,
+          storageCapacityGiB: storageCapacity,
+          vpc,
+          vpcSubnet,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+          LustreConfiguration: {
+            AutoImportPolicy: autoImportPolicy,
+            DeploymentType: LustreDeploymentType.PERSISTENT_1,
+          },
+        });
       });
     });
 
