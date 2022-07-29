@@ -143,6 +143,7 @@ export class App extends Stage {
       this.node.setContext(k, v);
     }
 
+    // reconstructing the context from the two possible sources:
     const context = {
       ...this.readContextFromEnvironment(),
       ...this.readContextFromTempFile(),
@@ -158,7 +159,6 @@ export class App extends Stage {
     return location ? fs.readJSONSync(location) : {};
   }
 
-  // for backward compatibility with old versions of the CLI
   private readContextFromEnvironment() {
     const contextJson = process.env[cxapi.CONTEXT_ENV];
     return contextJson ? JSON.parse(contextJson) : {};
