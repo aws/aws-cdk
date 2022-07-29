@@ -4,8 +4,10 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import { debug } from '../../logging';
+import * as semver from 'semver';
+import { debug, warning } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
+import { loadTree, some } from '../../tree';
 import { splitBySize } from '../../util/objects';
 import { versionNumber } from '../../version';
 import { SdkProvider } from '../aws-auth';
@@ -104,9 +106,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   const assembly = createAssembly(outdir);
 
-  if (contextOverflowLocation) {
-    fs.removeSync(path.dirname(contextOverflowLocation));
-  }
+  contextOverflowCleanup(contextOverflowLocation, assembly);
 
   return assembly;
 
@@ -237,4 +237,22 @@ async function guessExecutable(commandLine: string[]) {
     }
   }
   return commandLine;
+}
+
+function contextOverflowCleanup(location: string | undefined, assembly: cxapi.CloudAssembly) {
+  if (location) {
+    fs.removeSync(path.dirname(location));
+
+    const tree = loadTree(assembly);
+    const frameworkDoesNotSupportContextOverflow = some(tree, node => {
+      const fqn = node.constructInfo?.fqn;
+      const version = node.constructInfo?.version;
+      return (fqn === 'aws-cdk-lib.App' && version != null && semver.lte(version, '2.33.0'))
+        || fqn === '@aws-cdk/core.App'; // v1
+    });
+
+    if (frameworkDoesNotSupportContextOverflow) {
+      warning('Part of the context could not be sent to the application. Please update the AWS CDK library to the latest version.');
+    }
+  }
 }
