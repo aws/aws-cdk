@@ -893,6 +893,40 @@ test('passes when idleTimeout is between 1 and 4000 seconds', () => {
   }).toBeTruthy();
 });
 
+test('idletime is undefined when not set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // WHEN
+  new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+    cluster,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      enableLogging: false,
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+      },
+      logDriver: new ecs.AwsLogDriver({
+        streamPrefix: 'TestStream',
+      }),
+    },
+    desiredCount: 2,
+  });
+
+  // THEN - stack contains default LoadBalancer Attributes
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    LoadBalancerAttributes: [
+      {
+        Key: 'deletion_protection.enabled',
+        Value: 'false',
+      },
+    ],
+  });
+});
+
 test('test Fargate loadbalanced construct with optional log driver input', () => {
   // GIVEN
   const stack = new cdk.Stack();
