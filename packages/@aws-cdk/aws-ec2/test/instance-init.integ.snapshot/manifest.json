@@ -220,15 +220,6 @@
             "type": "aws:cdk:logicalId",
             "data": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bArtifactHash088925E9"
           }
-        ],
-        "Instance255F352650a37ff6312184aaf": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Instance255F352650a37ff6312184aaf",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "integ-init"
