@@ -118,7 +118,7 @@ export interface LustreConfiguration {
   readonly autoImportPolicy?: LustreAutoImportPolicy;
 
   /**
-   *  Sets the data compression configuration for the file system. `DataCompressionType` can have the following values:
+   * Sets the data compression configuration for the file system.
    * For more information, see [Lustre data compression](https://docs.aws.amazon.com/fsx/latest/LustreGuide/data-compression.html) in the *Amazon FSx for Lustre User Guide* .
    *
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-lustreconfiguration.html#cfn-fsx-filesystem-lustreconfiguration-datacompressiontype
