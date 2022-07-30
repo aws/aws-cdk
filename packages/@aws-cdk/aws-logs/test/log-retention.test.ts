@@ -26,10 +26,36 @@ describe('log retention', () => {
             'Action': [
               'logs:PutRetentionPolicy',
               'logs:DeleteRetentionPolicy',
-              'logs:DeleteLogGroup',
             ],
             'Effect': 'Allow',
             'Resource': '*',
+          },
+          {
+            'Action': [
+                'logs:DeleteLogGroup',
+                'logs:DeleteLogStream'
+              ],
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition'
+                    },
+                    ':logs:',
+                    {
+                      'Ref': 'AWS::Region'
+                    },
+                    ':',
+                    {
+                      'Ref': 'AWS::AccountId'
+                    },
+                    ':log-group:group:*'
+                  ]
+                ]
+              }
           },
         ],
         'Version': '2012-10-17',
@@ -129,11 +155,37 @@ describe('log retention', () => {
             'Action': [
               'logs:PutRetentionPolicy',
               'logs:DeleteRetentionPolicy',
-              'logs:DeleteLogGroup',
             ],
             'Effect': 'Allow',
             'Resource': '*',
           },
+          {
+            'Action': [
+              'logs:DeleteLogGroup',
+              'logs:DeleteLogStream'
+            ],
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition'
+                  },
+                  ':logs:',
+                  {
+                    'Ref': 'AWS::Region'
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId'
+                  },
+                  ':log-group:group:*'
+                ]
+              ]
+            }
+          }
         ],
         'Version': '2012-10-17',
       },

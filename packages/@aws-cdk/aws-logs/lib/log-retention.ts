@@ -167,11 +167,22 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
     });
     // Duplicate statements will be deduplicated by `PolicyDocument`
     role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy', 'logs:DeleteLogGroup'],
+      actions: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
       // We need '*' here because we will also put a retention policy on
       // the log group of the provider function. Referencing its name
       // creates a CF circular dependency.
       resources: ['*'],
+    }));
+
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['logs:DeleteLogGroup', 'logs:DeleteLogStream'],
+      //Only allow deleting the specific log group.
+      resources: [cdk.Stack.of(this).formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        resourceName: props.logGroupName+':*',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })],
     }));
 
     // Lambda function
