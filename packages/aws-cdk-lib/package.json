@@ -359,9 +359,9 @@
     "@aws-cdk/triggers": "0.0.0",
     "@aws-cdk/ubergen": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/node": "^10.17.60",
+    "@types/node": "^14.18.22",
     "constructs": "^10.0.0",
-    "esbuild": "^0.14.49",
+    "esbuild": "^0.14.50",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"

@@ -334,7 +334,7 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
       Type: 'ECS',
     },
     PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
-    PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
+    PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
