@@ -366,6 +366,32 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
 });
 ```
 
+### Set capacityProviderStrategies for ApplicationLoadBalancedFargateService
+
+```ts
+declare const cluster: ecs.Cluster;
+cluster.enableFargateCapacityProviders();
+
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  capacityProviderStrategies: [
+    {
+      capacityProvider: 'FARGATE_SPOT',
+      weight: 2,
+      base: 0,
+    },
+    {
+      capacityProvider: 'FARGATE',
+      weight: 1,
+      base: 1,
+    },
+  ],
+});
+```
+
 ### Add Schedule-Based Auto-Scaling to an ApplicationLoadBalancedFargateService
 
 ```ts
@@ -581,7 +607,7 @@ const capacityProvider = new ecs.AsgCapacityProvider(this, 'provider', {
 });
 cluster.addAsgCapacityProvider(capacityProvider);
 
-const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+const queueProcessingEc2Service = new ecsPatterns.QueueProcessingEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
@@ -608,6 +634,22 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   taskSubnets: {
     subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
   },
+});
+```
+
+### Select idleTimeout for ApplicationLoadBalancedFargateService
+
+```ts
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  idleTimeout: Duration.seconds(120),
 });
 ```
 
@@ -741,7 +783,7 @@ AWS Fargate. Enable ECS Exec, by setting `enableExecuteCommand` to `true`.
 
 ECS Exec is supported by all Services i.e. `ApplicationLoadBalanced(Fargate|Ec2)Service`, `ApplicationMultipleTargetGroups(Fargate|Ec2)Service`, `NetworkLoadBalanced(Fargate|Ec2)Service`, `NetworkMultipleTargetGroups(Fargate|Ec2)Service`, `QueueProcessing(Fargate|Ec2)Service`. It is not supported for `ScheduledTask`s.
 
-Read more about ECS Exec in the [ECS Developer Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html). 
+Read more about ECS Exec in the [ECS Developer Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html).
 
 Example:
 
