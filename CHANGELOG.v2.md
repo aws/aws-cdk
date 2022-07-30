@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.34.2](https://github.com/aws/aws-cdk/compare/v2.34.1...v2.34.2) (2022-07-29)
+
+### Bug Fixes
+
+* **cli:** context value type conversion causing parse failures ([21381](https://github.com/aws/aws-cdk/issues/21381))
+
+## [2.34.1](https://github.com/aws/aws-cdk/compare/v2.34.0...v2.34.1) (2022-07-29)
+
+### Bug Fixes
+
+* Revert to `jsii-pacmak@1.62.0` as dynamic runtime type-checking it introduced for Python results in incorrect code being produced.
+
+## [2.34.0](https://github.com/aws/aws-cdk/compare/v2.33.0...v2.34.0) (2022-07-28)
+
+
+### Features
+
+* **api-gateway:** allow configuration of deployment description ([#21207](https://github.com/aws/aws-cdk/issues/21207)) ([03fc2bd](https://github.com/aws/aws-cdk/commit/03fc2bdbff5b3678e02b1017c575a681d5b9f786))
+* **cfnspec:** cloudformation spec v81.1.0 ([#21307](https://github.com/aws/aws-cdk/issues/21307)) ([1f91112](https://github.com/aws/aws-cdk/commit/1f9111249b3955286dd42aa0c647ec0bdace12d9))
+* **cli:** cannot pass objects and numbers as context arguments  ([#20068](https://github.com/aws/aws-cdk/issues/20068)) ([ec2d68a](https://github.com/aws/aws-cdk/commit/ec2d68a933342bd1ce0601ab25e677806e1ec4bd))
+* **ec2:** add R6A instances ([#21257](https://github.com/aws/aws-cdk/issues/21257)) ([f66f94e](https://github.com/aws/aws-cdk/commit/f66f94e9201b9c9d5e0f1b713a6f30194b323b28))
+* **ecs:** add function to grant run permissions to task definition ([#21241](https://github.com/aws/aws-cdk/issues/21241)) ([d7ac3bb](https://github.com/aws/aws-cdk/commit/d7ac3bb1dbe56e6268c74f5853420296596d5793)), closes [#20281](https://github.com/aws/aws-cdk/issues/20281)
+* **lambda-event-sources:** add AT_TIMESTAMP event source mapping starting position ([#20741](https://github.com/aws/aws-cdk/issues/20741)) ([76e0768](https://github.com/aws/aws-cdk/commit/76e0768f6d69b555925bb3c016861f517a01ecae))
+
+
+### Bug Fixes
+
+* **aws-lambda:** FunctionUrl incorrectly uses Alias ARNs ([#21353](https://github.com/aws/aws-cdk/issues/21353)) ([2904d2a](https://github.com/aws/aws-cdk/commit/2904d2a53c2fe7d19e5839fc3fe6c9e94e7971c9))
+* **bootstrap:** remove image scanning configuration ([#21342](https://github.com/aws/aws-cdk/issues/21342)) ([2d26916](https://github.com/aws/aws-cdk/commit/2d269165b56c3fb19a75138be9109ca7a44137ac))
+* **cli:** add validation of --notification-arns structure ([#21270](https://github.com/aws/aws-cdk/issues/21270)) ([6d157d1](https://github.com/aws/aws-cdk/commit/6d157d1292978ad2fc4cd3fcabe874091a2cf856)), closes [#20806](https://github.com/aws/aws-cdk/issues/20806)
+* **ecr:** Repository.addToResourcePolicy returns incorrect result ([#21137](https://github.com/aws/aws-cdk/issues/21137)) ([5435215](https://github.com/aws/aws-cdk/commit/54352150da814fd3c6c347d102b8b30b340a156d))
+* **ecs:** firelens configFileValue is unnecessarily required ([#20636](https://github.com/aws/aws-cdk/issues/20636)) ([b79b2e4](https://github.com/aws/aws-cdk/commit/b79b2e4702c77a56f24e516702e7f69d59d9284f))
+* **ecs-patterns:** memory limit is not set at the container level ([#21201](https://github.com/aws/aws-cdk/issues/21201)) ([f2098b7](https://github.com/aws/aws-cdk/commit/f2098b727534f90323f9571bcded7390710eb48f))
+* **pkglint:** allow dependencies on L1 only modules ([#21208](https://github.com/aws/aws-cdk/issues/21208)) ([f16fd69](https://github.com/aws/aws-cdk/commit/f16fd69f51b817f7715d007992af24fc87ca2201))
+
 ## [2.33.0](https://github.com/aws/aws-cdk/compare/v2.32.1...v2.33.0) (2022-07-19)
 
 
