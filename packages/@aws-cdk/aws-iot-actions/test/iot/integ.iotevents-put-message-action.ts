@@ -1,12 +1,8 @@
-/**
- * Stack verification steps:
- * * aws iot-data publish --topic device/mydevice/data --qos 1 --payload (echo '[{"payload":{"deviceId":"001"}},{"payload":{"deviceId":"002"}}]' | base64) --region us-east-1
- */
 import * as iot from '@aws-cdk/aws-iot';
 import * as iotevents from '@aws-cdk/aws-iotevents';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { IntegTest } from '@aws-cdk/integ-tests';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import * as actions from '../../lib';
 
 class TestStack extends cdk.Stack {
@@ -48,6 +44,32 @@ class TestStack extends cdk.Stack {
   }
 }
 
+// App
 const app = new cdk.App();
 const stack = new TestStack(app, 'iotevents-put-message-action-test-stack');
-new IntegTest(app, 'iotevents', { testCases: [stack] });
+const integ = new IntegTest(app, 'iotevents', { testCases: [stack] });
+
+// WHEN
+const apiCallOfPublish = integ.assertions.awsApiCall('IotData', 'publish', {
+  topic: 'device/my-device/data',
+  payload: JSON.stringify([
+    { payload: { deviceId: '001' } },
+    { payload: { deviceId: '002' } },
+  ]),
+});
+
+const apiCallOfListDetectors = integ.assertions.awsApiCall('IoteventsData', 'listDetectors', {
+  detectorModelName: stack.detectorModelName,
+});
+
+apiCallOfListDetectors.node.addDependency(apiCallOfPublish);
+
+// THEN
+apiCallOfListDetectors.expect(ExpectedResult.objectLike({
+  detectorSummaries: [
+    ExpectedResult.objectLike({ keyValue: '001' }),
+    ExpectedResult.objectLike({ keyValue: '002' }),
+  ],
+}));
+
+app.synth();
