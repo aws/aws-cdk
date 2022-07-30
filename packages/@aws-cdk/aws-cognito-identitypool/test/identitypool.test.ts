@@ -443,7 +443,7 @@ describe('role mappings', () => {
         providerUrl: IdentityPoolProviderUrl.userPool(providerUrl),
         useToken: true,
       }],
-    })).toThrowError('mappingKey must be provided when providerUrl.value is an unresolved token');
+    })).toThrowError('mappingKey must be provided when providerUrl.value is a token');
   });
 
   test('mappingKey respected when identity provider is a token', () => {
