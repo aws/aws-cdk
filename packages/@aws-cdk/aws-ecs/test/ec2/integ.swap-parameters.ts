@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as ecs from '../../lib';
 import { LinuxParameters } from '../../lib';
 
@@ -37,6 +38,10 @@ new ecs.ContainerDefinition(stack, 'Container', {
 new ecs.Ec2Service(stack, 'Service', {
   cluster,
   taskDefinition,
+});
+
+new integ.IntegTest(app, 'SwapParametersTest', {
+  testCases: [stack],
 });
 
 app.synth();
