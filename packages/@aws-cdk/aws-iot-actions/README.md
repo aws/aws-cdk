@@ -31,6 +31,7 @@ Currently supported are:
 - Put records to Kinesis Data Firehose stream
 - Send messages to SQS queues
 - Publish messages on SNS topics
+- Put messages IoT Events input
 
 ## Republish a message to another MQTT topic
 
@@ -274,6 +275,29 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
   actions: [
     new actions.SnsTopicAction(topic, {
       messageFormat: actions.SnsActionMessageFormat.JSON, // optional property, default is SnsActionMessageFormat.RAW
+    }),
+  ],
+});
+```
+
+## Put messages IoT Events input
+
+The code snippet below creates an AWS IoT Rule that put messages
+to an IoT Events input when it is triggered:
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+const input = new iotevents.Input(this, 'MyInput', {
+  attributeJsonPaths: ['payload.temperature', 'payload.transactionId'],
+});
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT * FROM 'device/+/data'",
+  ),
+  actions: [
+    new actions.IotEventsPutMessageAction(input, {
+      batchMode: true, // optional property, default is 'false'
+      messageId: '${payload.transactionId}', // optional property, default is a new UUID
     }),
   ],
 });
