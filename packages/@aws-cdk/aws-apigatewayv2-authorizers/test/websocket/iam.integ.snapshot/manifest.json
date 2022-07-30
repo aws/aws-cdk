@@ -15,6 +15,30 @@
         "validateOnSynth": false
       },
       "metadata": {
+        "/IntegApiGatewayV2Iam/User/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "User00B015A1"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/UserAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserAccessEC42ADF7"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/auth-function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "authfunctionServiceRoleFCB72198"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/auth-function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "authfunction96361832"
+          }
+        ],
         "/IntegApiGatewayV2Iam/WebSocketApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -39,16 +63,28 @@
             "data": "WebSocketApiconnectRoute846149DD"
           }
         ],
-        "/IntegApiGatewayV2Iam/auth-function/ServiceRole/Resource": [
+        "/IntegApiGatewayV2Iam/AllowInvoke/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "authfunctionServiceRoleFCB72198"
+            "data": "AllowInvoke767865EA"
           }
         ],
-        "/IntegApiGatewayV2Iam/auth-function/Resource": [
+        "/IntegApiGatewayV2Iam/TESTACCESSKEYID": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "authfunction96361832"
+            "data": "TESTACCESSKEYID"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/TESTSECRETACCESSKEY": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TESTSECRETACCESSKEY"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/TESTREGION": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TESTREGION"
           }
         ]
       },

@@ -9,13 +9,144 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.51"
+          "version": "10.1.58"
         }
       },
       "IntegApiGatewayV2Iam": {
         "id": "IntegApiGatewayV2Iam",
         "path": "IntegApiGatewayV2Iam",
         "children": {
+          "User": {
+            "id": "User",
+            "path": "IntegApiGatewayV2Iam/User",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IntegApiGatewayV2Iam/User/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "UserAccess": {
+            "id": "UserAccess",
+            "path": "IntegApiGatewayV2Iam/UserAccess",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IntegApiGatewayV2Iam/UserAccess/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::AccessKey",
+                  "aws:cdk:cloudformation:props": {
+                    "userName": {
+                      "Ref": "User00B015A1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnAccessKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.AccessKey",
+              "version": "0.0.0"
+            }
+          },
+          "auth-function": {
+            "id": "auth-function",
+            "path": "IntegApiGatewayV2Iam/auth-function",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "IntegApiGatewayV2Iam/auth-function/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegApiGatewayV2Iam/auth-function/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "IntegApiGatewayV2Iam/auth-function/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = () => {return true}"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "authfunctionServiceRoleFCB72198",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
           "WebSocketApi": {
             "id": "WebSocketApi",
             "path": "IntegApiGatewayV2Iam/WebSocketApi",
@@ -176,34 +307,22 @@
               "version": "0.0.0"
             }
           },
-          "auth-function": {
-            "id": "auth-function",
-            "path": "IntegApiGatewayV2Iam/auth-function",
+          "AllowInvoke": {
+            "id": "AllowInvoke",
+            "path": "IntegApiGatewayV2Iam/AllowInvoke",
             "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "IntegApiGatewayV2Iam/auth-function/ServiceRole",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "IntegApiGatewayV2Iam/auth-function/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
+              "Resource": {
+                "id": "Resource",
+                "path": "IntegApiGatewayV2Iam/AllowInvoke/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "execute-api:Invoke",
+                          "Effect": "Allow",
+                          "Resource": {
                             "Fn::Join": [
                               "",
                               [
@@ -211,51 +330,65 @@
                                 {
                                   "Ref": "AWS::Partition"
                                 },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                ":execute-api:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":",
+                                {
+                                  "Ref": "AWS::AccountId"
+                                },
+                                ":",
+                                {
+                                  "Ref": "WebSocketApi34BCF99B"
+                                }
                               ]
                             ]
                           }
-                        ]
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policyName": "AllowInvoke767865EA",
+                    "users": [
+                      {
+                        "Ref": "User00B015A1"
                       }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
-                    }
+                    ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "IntegApiGatewayV2Iam/auth-function/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "zipFile": "exports.handler = () => {return true}"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "authfunctionServiceRoleFCB72198",
-                        "Arn"
-                      ]
-                    },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "@aws-cdk/aws-iam.Policy",
+              "version": "0.0.0"
+            }
+          },
+          "TESTACCESSKEYID": {
+            "id": "TESTACCESSKEYID",
+            "path": "IntegApiGatewayV2Iam/TESTACCESSKEYID",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "TESTSECRETACCESSKEY": {
+            "id": "TESTSECRETACCESSKEY",
+            "path": "IntegApiGatewayV2Iam/TESTSECRETACCESSKEY",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "TESTREGION": {
+            "id": "TESTREGION",
+            "path": "IntegApiGatewayV2Iam/TESTREGION",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"
             }
           }
@@ -278,7 +411,7 @@
                 "path": "ApiGatewayV2WebSocketIamTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.51"
+                  "version": "10.1.58"
                 }
               },
               "DeployAssert": {

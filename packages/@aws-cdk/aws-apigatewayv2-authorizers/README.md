@@ -264,24 +264,17 @@ IAM authorizers can be used to allow identity-based access to your WebSocket API
 
 ```ts
 import { WebSocketIamAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
 // This function handles your connect route
 declare const connectHandler: lambda.Function;
 
-// This function handles your WebSocket requests
-declare const handler: lambda.Function;
+const webSocketApi = new apigwv2.WebSocketApi(this, 'WebSocketApi');
 
-const authorizer = new WebSocketIamAuthorizer();
-
-const integration = new WebSocketLambdaIntegration(
-  'Integration',
-  handler,
-);
-
-new apigwv2.WebSocketApi(this, 'WebSocketApi', {
-  connectRouteOptions: {
-    connectHandler,
-    authorizer,
-  },
+webSocketApi.addRoute('$connect', {
+  integration: new WebSocketLambdaIntegration('Integration', connectHandler),
+  authorizer: new WebSocketIamAuthorizer()
 });
+
+
 ```

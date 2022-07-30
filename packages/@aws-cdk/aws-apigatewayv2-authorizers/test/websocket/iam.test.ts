@@ -7,7 +7,6 @@ import { WebSocketIamAuthorizer } from '../../lib';
 
 describe('WebSocketLambdaAuthorizer', () => {
   test('default', () => {
-    // GIVEN
     const stack = new Stack();
 
     const handler = new Function(stack, 'auth-function', {
@@ -19,23 +18,12 @@ describe('WebSocketLambdaAuthorizer', () => {
 
     const authorizer = new WebSocketIamAuthorizer();
 
-    // WHEN
     new WebSocketApi(stack, 'WebSocketApi', {
       connectRouteOptions: {
         integration,
         authorizer,
       },
     });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties(
-      'AWS::ApiGatewayV2::Authorizer',
-      {
-        Name: 'default-authorizer',
-        AuthorizerType: 'REQUEST',
-        IdentitySource: ['route.request.header.Authorization'],
-      },
-    );
 
     Template.fromStack(stack).hasResourceProperties(
       'AWS::ApiGatewayV2::Route',
