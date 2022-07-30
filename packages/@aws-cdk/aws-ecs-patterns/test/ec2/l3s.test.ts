@@ -10,6 +10,7 @@ import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
 
@@ -499,6 +500,8 @@ test('test Fargate loadbalanced construct', () => {
   // WHEN
   new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
     cluster,
+    cpu: 1024,
+    memoryLimitMiB: 2048,
     taskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('test'),
       environment: {
@@ -515,6 +518,11 @@ test('test Fargate loadbalanced construct', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       Match.objectLike({
+        Cpu: 1024,
+        DockerLabels: {
+          label1: 'labelValue1',
+          label2: 'labelValue2',
+        },
         Environment: [
           {
             Name: 'TEST_ENVIRONMENT_VARIABLE1',
@@ -525,6 +533,7 @@ test('test Fargate loadbalanced construct', () => {
             Value: 'test environment variable 2 value',
           },
         ],
+        Image: 'test',
         LogConfiguration: {
           LogDriver: 'awslogs',
           Options: {
@@ -533,12 +542,11 @@ test('test Fargate loadbalanced construct', () => {
             'awslogs-region': { Ref: 'AWS::Region' },
           },
         },
-        DockerLabels: {
-          label1: 'labelValue1',
-          label2: 'labelValue2',
-        },
+        Memory: 2048,
       }),
     ],
+    Cpu: '1024',
+    Memory: '2048',
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -802,6 +810,121 @@ test('errors when setting HTTPS protocol but not domain name', () => {
       protocol: ApplicationProtocol.HTTPS,
     });
   }).toThrow();
+});
+
+test('errors when idleTimeout is over 4000 seconds', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // THEN
+  expect(() => {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        logDriver: new ecs.AwsLogDriver({
+          streamPrefix: 'TestStream',
+        }),
+      },
+      idleTimeout: Duration.seconds(5000),
+      desiredCount: 2,
+    });
+  }).toThrowError();
+});
+
+test('errors when idleTimeout is under 1 seconds', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // THEN
+  expect(() => {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        logDriver: new ecs.AwsLogDriver({
+          streamPrefix: 'TestStream',
+        }),
+      },
+      idleTimeout: Duration.seconds(0),
+      desiredCount: 2,
+    });
+  }).toThrowError();
+});
+
+test('passes when idleTimeout is between 1 and 4000 seconds', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // THEN
+  expect(() => {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        logDriver: new ecs.AwsLogDriver({
+          streamPrefix: 'TestStream',
+        }),
+      },
+      idleTimeout: Duration.seconds(120),
+      desiredCount: 2,
+    });
+  }).toBeTruthy();
+});
+
+test('idletime is undefined when not set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // WHEN
+  new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+    cluster,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      enableLogging: false,
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+      },
+      logDriver: new ecs.AwsLogDriver({
+        streamPrefix: 'TestStream',
+      }),
+    },
+    desiredCount: 2,
+  });
+
+  // THEN - stack contains default LoadBalancer Attributes
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    LoadBalancerAttributes: [
+      {
+        Key: 'deletion_protection.enabled',
+        Value: 'false',
+      },
+    ],
+  });
 });
 
 test('test Fargate loadbalanced construct with optional log driver input', () => {
