@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Cache } from '../private/cache';
 import { IgnoreStrategy } from './ignore';
 import { FingerprintOptions, IgnoreMode, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
@@ -12,6 +13,17 @@ const CTRL_ETX = '\x03';
 const CR = '\r';
 const LF = '\n';
 const CRLF = `${CR}${LF}`;
+
+const fingerprintCache = new Cache<string>();
+
+/**
+ * Files are fingerprinted only the first time they are encountered, to save
+ * time hashing large files. This function clears this cache, should it be
+ * necessary for some reason.
+ */
+export function clearLargeFileFingerprintCache() {
+  fingerprintCache.clear();
+}
 
 /**
  * Produces fingerprint based on the contents of a single file or an entire directory tree.
@@ -84,6 +96,27 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
 }
 
 export function contentFingerprint(file: string): string {
+  // On windows it's particularly important to pass bigint: true to ensure that
+  // floating-point inaccuracies don't result in false matches. ( see
+  // https://github.com/nodejs/node/issues/12115#issuecomment-438741212 )
+  //
+  // Note that even if we do get a inode collision somehow, it's unlikely that
+  // both mtime and size would have a false-positive as well.
+
+  // We also must suppress typescript typechecks as we are using a version of
+  // @types/node that only supports node 10 declarations.
+  const stats = fs.statSync(file, { bigint: true });
+  const cacheKey = JSON.stringify({
+    mtime_unix: stats.mtime.toUTCString(),
+    mtime_ms: stats.mtimeMs.toString(),
+    inode: stats.ino.toString(),
+    size: stats.size.toString(),
+  });
+
+  return fingerprintCache.obtain(cacheKey, () => contentFingerprintMiss(file));
+}
+
+function contentFingerprintMiss(file: string): string {
   const hash = crypto.createHash('sha256');
   const buffer = Buffer.alloc(BUFFER_SIZE);
   // eslint-disable-next-line no-bitwise

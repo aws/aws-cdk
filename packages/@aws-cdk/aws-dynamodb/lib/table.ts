@@ -188,7 +188,7 @@ export interface TableOptions extends SchemaOptions {
    *
    * This property cannot be set if `encryption` and/or `encryptionKey` is set.
    *
-   * @default - server-side encryption is enabled with an AWS owned customer master key
+   * @default - The table is encrypted with an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    *
    * @deprecated This property is deprecated. In order to obtain the same behavior as
    * enabling this, set the `encryption` property to `TableEncryption.AWS_MANAGED` instead.
@@ -213,7 +213,7 @@ export interface TableOptions extends SchemaOptions {
    * > using CDKv1, make sure the feature flag
    * > `@aws-cdk/aws-kms:defaultKeyPolicies` is set to `true` in your `cdk.json`.
    *
-   * @default - server-side encryption is enabled with an AWS owned customer master key
+   * @default - The table is encrypted with an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    */
   readonly encryption?: TableEncryption;
 
@@ -224,6 +224,8 @@ export interface TableOptions extends SchemaOptions {
    *
    * @default - If `encryption` is set to `TableEncryption.CUSTOMER_MANAGED` and this
    * property is undefined, a new KMS key will be created and associated with this table.
+   * If `encryption` and this property are both undefined, then the table is encrypted with
+   * an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    */
   readonly encryptionKey?: kms.IKey;
 

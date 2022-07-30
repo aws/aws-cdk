@@ -25,22 +25,22 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
   return new Promise<string>((resolve, reject) => {
     if (options.input) {
-      child.stdin.write(options.input);
-      child.stdin.end();
+      child.stdin!.write(options.input);
+      child.stdin!.end();
     }
 
     const stdout = new Array<any>();
     const stderr = new Array<any>();
 
     // Both write to stdout and collect
-    child.stdout.on('data', chunk => {
+    child.stdout!.on('data', chunk => {
       if (!options.quiet) {
         process.stdout.write(chunk);
       }
       stdout.push(chunk);
     });
 
-    child.stderr.on('data', chunk => {
+    child.stderr!.on('data', chunk => {
       if (!options.quiet) {
         process.stderr.write(chunk);
       }
@@ -50,12 +50,12 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
     child.once('error', reject);
 
-    child.once('close', code => {
+    child.once('close', (code, signal) => {
       if (code === 0) {
         resolve(Buffer.concat(stdout).toString('utf-8'));
       } else {
         const out = Buffer.concat(stderr).toString('utf-8').trim();
-        reject(new ProcessFailed(code, `${renderCommandLine(command)} exited with error code ${code}: ${out}`));
+        reject(new ProcessFailed(code, signal, `${renderCommandLine(command)} exited with ${code != null ? 'error code' : 'signal'} ${code ?? signal}: ${out}`));
       }
     });
   });
@@ -64,7 +64,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 class ProcessFailed extends Error {
   public readonly code = 'PROCESS_FAILED';
 
-  constructor(public readonly exitCode: number, message: string) {
+  constructor(public readonly exitCode: number | null, public readonly signal: NodeJS.Signals | null, message: string) {
     super(message);
   }
 }
