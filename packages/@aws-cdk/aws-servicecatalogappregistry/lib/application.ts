@@ -28,18 +28,21 @@ export interface IApplication extends cdk.IResource {
 
   /**
    * Associate thisapplication with an attribute group.
+   *
    * @param attributeGroup AppRegistry attribute group
    */
   associateAttributeGroup(attributeGroup: IAttributeGroup): void;
 
   /**
    * Associate this application with a CloudFormation stack.
+   *
    * @param stack a CFN stack
    */
   associateStack(stack: cdk.Stack): void;
 
   /**
    * Share this application with other IAM entities, accounts, or OUs.
+   *
    * @param shareOptions The options for the share.
    */
   shareApplication(shareOptions: ShareOptions): void;
@@ -102,6 +105,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   /**
    * Share an application with accounts, organizations and OUs, and IAM roles and users.
    * The application will become available to end users within those principals.
+   *
    * @param shareOptions The options for the share.
    */
   public shareApplication(shareOptions: ShareOptions): void {
@@ -145,7 +149,9 @@ export class Application extends ApplicationBase {
    * Imports an Application construct that represents an external application.
    *
    * @param scope The parent creating construct (usually `this`).
+   *
    * @param id The construct's name.
+   *
    * @param applicationArn the Amazon Resource Name of the existing AppRegistry Application
    */
   public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {

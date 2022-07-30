@@ -67,6 +67,7 @@ export function hashValues(...values: string[]): string {
 
 /**
  * Reformats share targets into a collapsed list necessary for handler.
+ *
  * @param options The share target options
  * @returns flat list of target ARNs
  */

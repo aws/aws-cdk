@@ -27,6 +27,7 @@ export interface IAttributeGroup extends cdk.IResource {
 
   /**
    * Share the attribute group resource with other IAM entities, accounts, or OUs.
+   *
    * @param shareOptions The options for the share.
    */
   shareAttributeGroup(shareOptions: ShareOptions): void;
@@ -94,7 +95,9 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
    * Imports an attribute group construct that represents an external attribute group.
    *
    * @param scope The parent creating construct (usually `this`).
+   *
    * @param id The construct's name.
+   *
    * @param attributeGroupArn the Amazon Resource Name of the existing AppRegistry attribute group
    */
   public static fromAttributeGroupArn(scope: Construct, id: string, attributeGroupArn: string): IAttributeGroup {
