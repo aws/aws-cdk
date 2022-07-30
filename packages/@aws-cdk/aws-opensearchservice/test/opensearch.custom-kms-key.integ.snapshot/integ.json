@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-opensearchservice/test/integ.opensearch.custom-kms-key": {
+    "integ.opensearch.custom-kms-key": {
       "stacks": [
         "cdk-integ-opensearch-custom-kms-key"
       ],

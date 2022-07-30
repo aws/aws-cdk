@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.34.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.34.0-alpha.0...v2.34.1-alpha.0) (2022-07-29)
+
+### Bug Fixes
+
+* Revert to `jsii-pacmak@1.62.0` as dynamic runtime type-checking it introduced for Python results in incorrect code being produced.
+
+
+## [2.34.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.33.0-alpha.0...v2.34.0-alpha.0) (2022-07-28)
+
+
+### Features
+
+* **appsync:** support for read consistency during DynamoDB reads ([#20793](https://github.com/aws/aws-cdk/issues/20793)) ([0b911ef](https://github.com/aws/aws-cdk/commit/0b911efd75c02bb6117d6e32c0112f58da5192b7))
+* **batch:** add default AWS_ACCOUNT and AWS_REGION to Batch container, if they are not explicitly set ([#21041](https://github.com/aws/aws-cdk/issues/21041)) ([eed854e](https://github.com/aws/aws-cdk/commit/eed854ed4be6b76abc909721d6baa14140681dcc))
+
+## [2.33.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.32.1-alpha.0...v2.33.0-alpha.0) (2022-07-19)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cloud9:** The imageId parameter is now required and deployments will fail without it
+
+### Features
+
+* **cloud9:** support imageid when creating cloud9 environment ([#21194](https://github.com/aws/aws-cdk/issues/21194)) ([dcf3eb3](https://github.com/aws/aws-cdk/commit/dcf3eb3ab65eb84c59b61fb08b6436d94c55d7e5))
+* **redshift:** adds elasticIp parameter to redshift cluster ([#21085](https://github.com/aws/aws-cdk/issues/21085)) ([c88030f](https://github.com/aws/aws-cdk/commit/c88030f39b38965f33d221f1bb28331a3277ae96)), closes [#19191](https://github.com/aws/aws-cdk/issues/19191)
+
+## [2.32.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.32.0-alpha.0...v2.32.1-alpha.0) (2022-07-15)
+
+## [2.32.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.31.2-alpha.0...v2.32.0-alpha.0) (2022-07-14)
+
+
+### Features
+
+* **appsync:** set max batch size when using batch invoke  ([#20995](https://github.com/aws/aws-cdk/issues/20995)) ([69d25a6](https://github.com/aws/aws-cdk/commit/69d25a6f26f03c6589b350803431de23fe598ae0)), closes [#20467](https://github.com/aws/aws-cdk/issues/20467)
+* **batch:** add launchTemplateId in LaunchTemplateSpecification ([#20184](https://github.com/aws/aws-cdk/issues/20184)) ([269b8d0](https://github.com/aws/aws-cdk/commit/269b8d0ca737a1bad6736a2d5ed234602cd8f469)), closes [#20163](https://github.com/aws/aws-cdk/issues/20163)
+* **glue:** enable partition filtering on tables ([#21081](https://github.com/aws/aws-cdk/issues/21081)) ([bf35048](https://github.com/aws/aws-cdk/commit/bf35048cc5f907c7226f60aa8b3b4b8b500d2bc0)), closes [#20825](https://github.com/aws/aws-cdk/issues/20825)
+* **integ-tests:** expose adding IAM policies to the assertion provider ([#20769](https://github.com/aws/aws-cdk/issues/20769)) ([c2f40b7](https://github.com/aws/aws-cdk/commit/c2f40b7c97b822f258f953b572ba2e7a99403f89))
+* **neptune:** add engine version 1.1.1.0 ([#21079](https://github.com/aws/aws-cdk/issues/21079)) ([a113816](https://github.com/aws/aws-cdk/commit/a1138161ca295ad4a81fe32b51beb82438653144)), closes [#20869](https://github.com/aws/aws-cdk/issues/20869)
+* **redshift:** adds classic or elastic resize type option ([#21084](https://github.com/aws/aws-cdk/issues/21084)) ([b5e9c1a](https://github.com/aws/aws-cdk/commit/b5e9c1a99be6898c544f91781ceb4ee1d371a03e)), closes [#19430](https://github.com/aws/aws-cdk/issues/19430)
+
+
+### Bug Fixes
+
+* **appsync:** domain name api association fails when domain name creation is in the same stack ([#20173](https://github.com/aws/aws-cdk/issues/20173)) ([c1495f0](https://github.com/aws/aws-cdk/commit/c1495f0b700cedc04b556844397048ee41a7d891)), closes [#18395](https://github.com/aws/aws-cdk/issues/18395)
+* **integ-runner:** test names change depending on the discovery directory ([#21093](https://github.com/aws/aws-cdk/issues/21093)) ([d38f78c](https://github.com/aws/aws-cdk/commit/d38f78c3fc9ba37b3a1033dabe89cd60dfd81b8f))
+
+## [2.31.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.31.1-alpha.0...v2.31.2-alpha.0) (2022-07-13)
+
+## [2.31.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.31.0-alpha.0...v2.31.1-alpha.0) (2022-07-08)
+
 ## [2.31.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.30.0-alpha.0...v2.31.0-alpha.0) (2022-07-06)
 
 

@@ -561,7 +561,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * The ARN will be formatted as follows:
    *
-   *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
+   *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
    *
    * The required ARN pieces that are omitted will be taken from the stack that
    * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
@@ -1315,7 +1315,7 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  */
 function makeStackName(components: string[]) {
   if (components.length === 1) { return components[0]; }
-  return makeUniqueId(components);
+  return makeUniqueResourceName(components, { maxLength: 128 });
 }
 
 function getCreateExportsScope(stack: Stack) {
@@ -1388,4 +1388,5 @@ import { Token, Tokenization } from './token';
 import { referenceNestedStackValueInParent } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
+import { makeUniqueResourceName } from './private/unique-resource-name';
 

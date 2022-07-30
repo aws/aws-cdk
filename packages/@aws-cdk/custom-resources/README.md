@@ -18,7 +18,17 @@ handles the event (e.g. creates a resource) and sends back a response to CloudFo
 
 The `@aws-cdk/custom-resources.Provider` construct is a "mini-framework" for
 implementing providers for AWS CloudFormation custom resources. The framework offers a high-level API which makes it easier to implement robust
-and powerful custom resources and includes the following capabilities:
+and powerful custom resources. If you are looking to implement a custom resource provider, we recommend
+you use this module unless you have good reasons not to. For an overview of different provider types you
+could be using, see the [Custom Resource Providers section in the core library documentation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#custom-resource-providers).
+
+> **N.B.**: if you use the provider framework in this module you will write AWS Lambda Functions that look a lot like, but aren't exactly the same as the Lambda Functions you would write if you wrote CloudFormation Custom Resources directly, without this framework.
+>
+> Specifically, to report success or failure, have your Lambda Function exit in the right way: return data for success, or throw an
+> exception for failure. *Do not* post the success or failure of your custom resource to an HTTPS URL as the CloudFormation
+> documentation tells you to do.
+
+The framework has the following capabilities:
 
 * Handles responses to AWS CloudFormation and protects against blocked
   deployments
@@ -84,6 +94,9 @@ def on_delete(event):
   print("delete resource %s" % physical_id)
   # ...
 ```
+
+> When writing your handlers, there are a couple of non-obvious corner cases you need to
+> pay attention to. See the [important cases to handle](#important-cases-to-handle) section for more information.
 
 Users may also provide an additional handler called `isComplete`, for cases
 where the lifecycle operation cannot be completed immediately. The
@@ -546,33 +559,6 @@ Note that even if you restrict the output of your custom resource you can still 
 path in `PhysicalResourceId.fromResponse()`.
 
 ### Custom Resource Examples
-
-#### Verify a domain with SES
-
-```ts
-import * as route53 from '@aws-cdk/aws-route53';
-
-const verifyDomainIdentity = new cr.AwsCustomResource(this, 'VerifyDomainIdentity', {
-  onCreate: {
-    service: 'SES',
-    action: 'verifyDomainIdentity',
-    parameters: {
-      Domain: 'example.com',
-    },
-    physicalResourceId: cr.PhysicalResourceId.fromResponse('VerificationToken'), // Use the token returned by the call as physical id
-  },
-  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-  }),
-});
-
-declare const zone: route53.HostedZone;
-new route53.TxtRecord(this, 'SESVerificationRecord', {
-  zone,
-  recordName: `_amazonses.example.com`,
-  values: [verifyDomainIdentity.getResponseField('VerificationToken')],
-});
-```
 
 #### Get the latest version of a secure SSM parameter
 

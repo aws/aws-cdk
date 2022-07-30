@@ -4,10 +4,11 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { App, CfnParameter, Duration, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as subs from '../lib';
 
 /* eslint-disable quote-props */
-
+const restrictSqsDescryption = { [cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true };
 let stack: Stack;
 let topic: sns.Topic;
 
@@ -1039,6 +1040,156 @@ test('encrypted queue subscription', () => {
         },
       },
     },
+  });
+});
+
+describe('Restrict sqs decryption feature flag', () => {
+  test('Restrict decryption of sqs to sns service principal', () => {
+    const stackUnderTest = new Stack(
+      new App(),
+    );
+    const topicUnderTest = new sns.Topic(stackUnderTest, 'MyTopic', {
+      topicName: 'topicName',
+      displayName: 'displayName',
+    });
+    const key = new kms.Key(stackUnderTest, 'MyKey', {
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    const queue = new sqs.Queue(stackUnderTest, 'MyQueue', {
+      encryptionMasterKey: key,
+    });
+
+    topicUnderTest.addSubscription(new subs.SqsSubscription(queue));
+
+    Template.fromStack(stackUnderTest).templateMatches({
+      'Resources': {
+        'MyKey6AB29FA6': {
+          'Type': 'AWS::KMS::Key',
+          'Properties': {
+            'KeyPolicy': {
+              'Statement': [
+                {
+                  'Action': 'kms:*',
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'AWS': {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            'Ref': 'AWS::Partition',
+                          },
+                          ':iam::',
+                          {
+                            'Ref': 'AWS::AccountId',
+                          },
+                          ':root',
+                        ],
+                      ],
+                    },
+                  },
+                  'Resource': '*',
+                },
+                {
+                  'Action': [
+                    'kms:Decrypt',
+                    'kms:GenerateDataKey',
+                  ],
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'Service': 'sns.amazonaws.com',
+                  },
+                  'Resource': '*',
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
+  });
+  test('Restrict decryption of sqs to sns topic', () => {
+    const stackUnderTest = new Stack(
+      new App({
+        context: restrictSqsDescryption,
+      }),
+    );
+    const topicUnderTest = new sns.Topic(stackUnderTest, 'MyTopic', {
+      topicName: 'topicName',
+      displayName: 'displayName',
+    });
+    const key = new kms.Key(stackUnderTest, 'MyKey', {
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    const queue = new sqs.Queue(stackUnderTest, 'MyQueue', {
+      encryptionMasterKey: key,
+    });
+
+    topicUnderTest.addSubscription(new subs.SqsSubscription(queue));
+
+    Template.fromStack(stackUnderTest).templateMatches({
+      'Resources': {
+        'MyKey6AB29FA6': {
+          'Type': 'AWS::KMS::Key',
+          'Properties': {
+            'KeyPolicy': {
+              'Statement': [
+                {
+                  'Action': 'kms:*',
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'AWS': {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            'Ref': 'AWS::Partition',
+                          },
+                          ':iam::',
+                          {
+                            'Ref': 'AWS::AccountId',
+                          },
+                          ':root',
+                        ],
+                      ],
+                    },
+                  },
+                  'Resource': '*',
+                },
+                {
+                  'Action': [
+                    'kms:Decrypt',
+                    'kms:GenerateDataKey',
+                  ],
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'Service': 'sns.amazonaws.com',
+                  },
+                  'Resource': '*',
+                  'Condition': {
+                    'ArnEquals': {
+                      'aws:SourceArn': {
+                        'Ref': 'MyTopic86869434',
+                      },
+                    },
+                  },
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
   });
 });
 
