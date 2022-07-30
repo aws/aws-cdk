@@ -189,7 +189,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
       } else {
         const providerUrl = prop.providerUrl.value;
         if (Token.isUnresolved(providerUrl)) {
-          throw new Error('mappingKey must be provided when providerUrl.value is an unresolved token');
+          throw new Error('mappingKey must be provided when providerUrl.value is a token');
         }
         mappingKey = providerUrl;
       }
