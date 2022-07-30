@@ -1,0 +1,70 @@
+{
+  "version": "19.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-sns-event-target": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-sns-event-target.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-sns-event-target/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicPolicy12A5EC17"
+          }
+        ],
+        "/aws-cdk-sns-event-target/EveryMinute/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EveryMinute2BBCEA8F"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueE6CA6235"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueuePolicy6BBEDDAC"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyQueue/awscdksnseventtargetMyTopicB7575CD8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueawscdksnseventtargetMyTopicB7575CD87304D383"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyDeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueueD997968A"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyDeadLetterQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueuePolicyCC35D52C"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-sns-event-target"
+    }
+  }
+}

@@ -77,6 +77,8 @@ const demoTable = new dynamodb.Table(this, 'DemoTable', {
 const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 
 // Resolver for the Query "getDemos" that scans the DynamoDb table and returns the entire list.
+// Resolver Mapping Template Reference:
+// https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-dynamodb.html
 demoDS.createResolver({
   typeName: 'Query',
   fieldName: 'getDemos',
@@ -94,7 +96,17 @@ demoDS.createResolver({
   ),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
+
+//To enable DynamoDB read consistency with the `MappingTemplate`:
+demoDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getDemosConsistent',
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(true),
+  responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
+});
 ```
+
+
 
 ### Aurora Serverless
 
@@ -240,18 +252,19 @@ httpDs.createResolver({
 });
 ```
 
-### Elasticsearch
+### Amazon OpenSearch Service
 
-AppSync has builtin support for Elasticsearch from domains that are provisioned
-through your AWS account. You can use AppSync resolvers to perform GraphQL operations
-such as queries, mutations, and subscriptions.
+AppSync has builtin support for Amazon OpenSearch Service (successor to Amazon
+Elasticsearch Service) from domains that are provisioned through your AWS account. You can
+use AppSync resolvers to perform GraphQL operations such as queries, mutations, and
+subscriptions.
 
 ```ts
-import * as es from '@aws-cdk/aws-elasticsearch';
+import * as opensearch from '@aws-cdk/aws-opensearchservice';
 
 const user = new iam.User(this, 'User');
-const domain = new es.Domain(this, 'Domain', {
-  version: es.ElasticsearchVersion.V7_1,
+const domain = new opensearch.Domain(this, 'Domain', {
+  version: opensearch.EngineVersion.OPENSEARCH_1_2,
   removalPolicy: RemovalPolicy.DESTROY,
   fineGrainedAccessControl: { masterUserArn: user.userArn },
   encryptionAtRest: { enabled: true },
@@ -260,7 +273,7 @@ const domain = new es.Domain(this, 'Domain', {
 });
 
 declare const api: appsync.GraphqlApi;
-const ds = api.addElasticsearchDataSource('ds', domain);
+const ds = api.addOpenSearchDataSource('ds', domain);
 
 ds.createResolver({
   typeName: 'Query',
@@ -281,6 +294,43 @@ ds.createResolver({
     $utils.toJson($entry.get("_source"))
     #end
   ]`),
+});
+```
+
+## Custom Domain Names
+
+For many use cases you may want to associate a custom domain name with your
+GraphQL API. This can be done during the API creation.
+
+```ts
+import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as route53 from '@aws-cdk/aws-route53';
+
+const myDomainName = 'api.example.com';
+const certificate = new acm.Certificate(this, 'cert', { domainName: myDomainName });
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'myApi',
+  domainName: {
+    certificate,
+    domainName: myDomainName,
+  },
+});
+
+// hosted zone and route53 features
+declare const hostedZoneId: string;
+declare const zoneName = 'example.com';
+
+// hosted zone for adding appsync domain
+const zone = route53.HostedZone.fromHostedZoneAttributes(this, `HostedZone`, {
+  hostedZoneId,
+  zoneName,
+});
+
+// create a cname to the appsync domain. will map to something like xxxx.cloudfront.net
+new route53.CnameRecord(this, `CnameApiRecord`, {
+  recordName: 'api',
+  zone,
+  domainName: myDomainName,
 });
 ```
 

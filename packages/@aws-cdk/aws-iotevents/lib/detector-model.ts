@@ -21,13 +21,14 @@ export interface IDetectorModel extends IResource {
  */
 export enum EventEvaluation {
   /**
-   * When setting to SERIAL, variables are updated and event conditions are evaluated in the order
-   * that the events are defined.
-   */
-  BATCH = 'BATCH',
-  /**
    * When setting to BATCH, variables within a state are updated and events within a state are
    * performed only after all event conditions are evaluated.
+   */
+  BATCH = 'BATCH',
+
+  /**
+   * When setting to SERIAL, variables are updated and event conditions are evaluated in the order
+   * that the events are defined.
    */
   SERIAL = 'SERIAL',
 }
@@ -123,7 +124,7 @@ export class DetectorModel extends Resource implements IDetectorModel {
       key: props.detectorKey,
       detectorModelDefinition: {
         initialStateName: props.initialState.stateName,
-        states: [props.initialState._toStateJson()],
+        states: props.initialState._collectStateJsons(this, { role }, new Set<State>()),
       },
       roleArn: role.roleArn,
     });

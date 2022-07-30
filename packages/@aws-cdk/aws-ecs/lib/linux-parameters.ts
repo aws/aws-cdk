@@ -2,10 +2,6 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnTaskDefinition } from './ecs.generated';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * The properties for defining Linux-specific options that are applied to the container.
  */
@@ -54,7 +50,7 @@ export interface LinuxParametersProps {
 /**
  * Linux-specific options that are applied to the container.
  */
-export class LinuxParameters extends CoreConstruct {
+export class LinuxParameters extends Construct {
   /**
    * Whether the init process is enabled
    */

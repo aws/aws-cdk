@@ -76,11 +76,12 @@ const origin = new origins.LoadBalancerV2Origin(loadBalancer, {
   connectionAttempts: 3,
   connectionTimeout: Duration.seconds(5),
   readTimeout: Duration.seconds(45),
+  keepaliveTimeout: Duration.seconds(45),
   protocolPolicy: cloudfront.OriginProtocolPolicy.MATCH_VIEWER,
 });
 ```
 
-Note that the `readTimeout` property can extend its value over 60 seconds only if a limit increase request for CloudFront origin response timeout
+Note that the `readTimeout` and `keepaliveTimeout` properties can extend their values over 60 seconds only if a limit increase request for CloudFront origin response timeout
 quota has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time. Consider that this value is
 still limited to a maximum value of 180 seconds, which is a hard limit for that quota.
 
@@ -117,3 +118,17 @@ new cloudfront.Distribution(this, 'myDist', {
   },
 });
 ```
+
+## From an API Gateway REST API
+
+Origins can be created from an API Gateway REST API. It is recommended to use a
+[regional API](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html) in this case.
+
+```ts
+declare const api: apigateway.RestApi;
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.RestApiOrigin(api) },
+});
+```
+
+The origin path will automatically be set as the stage name.

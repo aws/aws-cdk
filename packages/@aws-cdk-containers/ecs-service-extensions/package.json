@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk-containers/ecs-service-extensions",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library that helps you build ECS services using simple extensions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,7 +15,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -37,12 +38,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.5.2",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/aws-autoscaling": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
-    "jest": "^27.4.7",
+    "jest": "^27.5.1",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/assertions": "0.0.0"
   },
@@ -72,7 +73,7 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -101,10 +102,10 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "awscdkio": {
     "announce": false

@@ -57,6 +57,45 @@ organize their deployments with. If you want to vend a reusable construct,
 define it as a subclasses of `Construct`: the consumers of your construct
 will decide where to place it in their own stacks.
 
+## Stack Synthesizers
+
+Each Stack has a *synthesizer*, an object that determines how and where
+the Stack should be synthesized and deployed. The synthesizer controls
+aspects like:
+
+- How does the stack reference assets? (Either through CloudFormation
+  parameters the CLI supplies, or because the Stack knows a predefined
+  location where assets will be uploaded).
+- What roles are used to deploy the stack? These can be bootstrapped
+  roles, roles created in some other way, or just the CLI's current
+  credentials.
+
+The following synthesizers are available:
+
+- `DefaultStackSynthesizer`: recommended. Uses predefined asset locations and
+  roles created by the modern bootstrap template. Access control is done by
+  controlling who can assume the deploy role. This is the default stack
+  synthesizer in CDKv2.
+- `LegacyStackSynthesizer`: Uses CloudFormation parameters to communicate
+  asset locations, and the CLI's current permissions to deploy stacks. The
+  is the default stack synthesizer in CDKv1.
+- `CliCredentialsStackSynthesizer`: Uses predefined asset locations, and the
+  CLI's current permissions.
+
+Each of these synthesizers takes configuration arguments. To configure
+a stack with a synthesizer, pass it as one of its properties:
+
+```ts
+new MyStack(app, 'MyStack', {
+  synthesizer: new DefaultStackSynthesizer({
+    fileAssetsBucketName: 'my-orgs-asset-bucket',
+  }),
+});
+```
+
+For more information on bootstrapping accounts and customizing synthesis,
+see [Bootstrapping in the CDK Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
+
 ## Nested Stacks
 
 [Nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) are stacks created as part of other stacks. You create a nested stack within another stack by using the `NestedStack` construct.
@@ -222,12 +261,27 @@ const secret = SecretValue.secretsManager('secretId', {
 Using AWS Secrets Manager is the recommended way to reference secrets in a CDK app.
 `SecretValue` also supports the following secret sources:
 
- - `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
- - `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM
+- `SecretValue.unsafePlainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
+- `SecretValue.secretsManager(secret)`: refers to a secret stored in Secrets Manager
+- `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM
  Parameter Store. If you don't specify the exact version, AWS CloudFormation uses the latest
  version of the parameter.
- - `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
- - `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+- `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
+- `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+- `SecretValue.resourceAttribute(attr)`: refers to a secret returned from a CloudFormation resource creation.
+
+`SecretValue`s should only be passed to constructs that accept properties of type
+`SecretValue`. These constructs are written to ensure your secrets will not be
+exposed where they shouldn't be. If you try to use a `SecretValue` in a
+different location, an error about unsafe secret usage will be thrown at
+synthesis time.
+
+If you rotate the secret's value in Secrets Manager, you must also change at
+least one property on the resource where you are using the secret, to force
+CloudFormation to re-read the secret.
+
+`SecretValue.ssmSecure()` is only supported for a limited set of resources.
+[Click here for a list of supported resources and properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#template-parameters-dynamic-patterns-resources).
 
 ## ARN manipulation
 
@@ -330,7 +384,17 @@ Custom Resources are CloudFormation resources that are implemented by arbitrary
 user code. They can do arbitrary lookups or modifications during a
 CloudFormation deployment.
 
-To define a custom resource, use the `CustomResource` construct:
+Custom resources are backed by *custom resource providers*. Commonly, these are
+Lambda Functions that are deployed in the same deployment as the one that
+defines the custom resource itself, but they can also be backed by Lambda
+Functions deployed previously, or code responding to SNS Topic events running on
+EC2 instances in a completely different account. For more information on custom
+resource providers, see the next section.
+
+Once you have a provider, each definition of a `CustomResource` construct
+represents one invocation. A single provider can be used for the implementation
+of arbitrarily many custom resource definitions. A single definition looks like
+this:
 
 ```ts
 new CustomResource(this, 'MyMagicalResource', {
@@ -359,8 +423,8 @@ various provider types (ordered from low-level to high-level):
 |----------------------------------------------------------------------|:------------:|:--------------:|:------------------------:|:---------------:|:--------:|:---------:|
 | [sns.Topic](#amazon-sns-topic)                                       | Self-managed | Manual         | Manual                   | Unlimited       | Any      | Depends   |
 | [lambda.Function](#aws-lambda-function)                              | AWS Lambda   | Manual         | Manual                   | 15min           | Any      | Small     |
-| [core.CustomResourceProvider](#the-corecustomresourceprovider-class) | Lambda       | Auto           | Auto                     | 15min           | Node.js  | Small     |
-| [custom-resources.Provider](#the-custom-resource-provider-framework) | Lambda       | Auto           | Auto                     | Unlimited Async | Any      | Large     |
+| [core.CustomResourceProvider](#the-corecustomresourceprovider-class) | AWS Lambda   | Auto           | Auto                     | 15min           | Node.js  | Small     |
+| [custom-resources.Provider](#the-custom-resource-provider-framework) | AWS Lambda   | Auto           | Auto                     | Unlimited Async | Any      | Large     |
 
 Legend:
 
@@ -404,6 +468,12 @@ is sent to the SNS topic. Users must process these notifications (e.g. through a
 fleet of worker hosts) and submit success/failure responses to the
 CloudFormation service.
 
+> You only need to use this type of provider if your custom resource cannot run on AWS Lambda, for reasons other than the 15
+> minute timeout. If you are considering using this type of provider because you want to write a custom resource provider that may need
+> to wait for more than 15 minutes for the API calls to stabilize, have a look at the [`custom-resources`](#the-custom-resource-provider-framework) module first.
+>
+> Refer to the [CloudFormation Custom Resource documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html) for information on the contract your custom resource needs to adhere to.
+
 Set `serviceToken` to `topic.topicArn`  in order to use this provider:
 
 ```ts
@@ -420,6 +490,10 @@ An AWS lambda function is called *directly* by CloudFormation for all resource
 events. The handler must take care of explicitly submitting a success/failure
 response to the CloudFormation service and handle various error cases.
 
+> **We do not recommend you use this provider type.** The CDK has wrappers around Lambda Functions that make them easier to work with.
+>
+> If you do want to use this provider, refer to the [CloudFormation Custom Resource documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html) for information on the contract your custom resource needs to adhere to.
+
 Set `serviceToken` to `lambda.functionArn` to use this provider:
 
 ```ts
@@ -434,11 +508,16 @@ new CustomResource(this, 'MyResource', {
 
 The class [`@aws-cdk/core.CustomResourceProvider`] offers a basic low-level
 framework designed to implement simple and slim custom resource providers. It
-currently only supports Node.js-based user handlers, and it does not have
+currently only supports Node.js-based user handlers, represents permissions as raw
+JSON blobs instead of `iam.PolicyStatement` objects, and it does not have
 support for asynchronous waiting (handler cannot exceed the 15min lambda
 timeout).
 
 [`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
+
+> **As an application builder, we do not recommend you use this provider type.** This provider exists purely for custom resources that are part of the AWS Construct Library.
+>
+> The [`custom-resources`](#the-custom-resource-provider-framework) provider is more convenient to work with and more fully-featured.
 
 The provider has a built-in singleton method which uses the resource type as a
 stack-unique identifier and returns the service token:
@@ -446,7 +525,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -541,7 +620,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -571,13 +650,30 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
 });
 
 const roleArn = provider.roleArn;
 ```
 
 This role ARN can then be used in resource-based IAM policies.
+
+To add IAM policy statements to this role, use `addToRolePolicy()`:
+
+```ts
+const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
+  codeDirectory: `${__dirname}/my-handler`,
+  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+});
+provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: 's3:GetObject',
+  Resource: '*',
+})
+```
+
+Note that `addToRolePolicy()` uses direct IAM JSON policy blobs, *not* a
+`iam.PolicyStatement` object like you will see in the rest of the CDK.
 
 #### The Custom Resource Provider Framework
 
@@ -923,6 +1019,16 @@ const stack = new Stack(app, 'StackName', {
 ```
 
 By default, termination protection is disabled.
+
+### Description
+
+You can add a description of the stack in the same way as `StackProps`.
+
+```ts
+const stack = new Stack(app, 'StackName', {
+  description: 'This is a description.',
+});
+```
 
 ### CfnJson
 

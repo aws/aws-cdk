@@ -784,6 +784,16 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EC2_IMDSV2_CHECK = 'EC2_IMDSV2_CHECK';
   /**
+   * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running the oldest supported version.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-oldest-supported-version.html
+   */
+  public static readonly EKS_CLUSTER_OLDEST_SUPPORTED_VERSION = 'EKS_CLUSTER_OLDEST_SUPPORTED_VERSION';
+  /**
+    * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
+    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
+    */
+  public static readonly EKS_CLUSTER_SUPPORTED_VERSION = 'EKS_CLUSTER_SUPPORTED_VERSION';
+  /**
    * Checks whether Amazon Elastic Kubernetes Service (Amazon EKS) endpoint is not publicly accessible.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-endpoint-no-public-access.html
    */
@@ -1137,6 +1147,13 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS = 'S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS';
   /**
+   * Checks if Amazon Simple Storage Service (Amazon S3) buckets are publicly accessible. This rule is
+   * NON_COMPLIANT if an Amazon S3 bucket is not listed in the excludedPublicBuckets parameter and bucket level
+   * settings are public.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-level-public-access-prohibited.html
+   */
+  public static readonly S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED = 'S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED';
+  /**
    * Checks that the Amazon Simple Storage Service bucket policy does not allow
    * blocked bucket-level and object-level actions on resources in the bucket
    * for principals from other AWS accounts.
@@ -1315,6 +1332,8 @@ export class ResourceType {
   public static readonly EC2_VPC_ENDPOINT_SERVICE = new ResourceType('AWS::EC2::VPCEndpointService');
   /** EC2 VPC peering connection */
   public static readonly EC2_VPC_PEERING_CONNECTION = new ResourceType('AWS::EC2::VPCPeeringConnection');
+  /** Amazon Elastic Kubernetes Service cluster */
+  public static readonly EKS_CLUSTER = new ResourceType('AWS::EKS::Cluster');
   /** Amazon ElasticSearch domain */
   public static readonly ELASTICSEARCH_DOMAIN = new ResourceType('AWS::Elasticsearch::Domain');
   /** Amazon QLDB ledger */

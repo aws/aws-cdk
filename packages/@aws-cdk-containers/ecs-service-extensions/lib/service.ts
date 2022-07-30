@@ -1,14 +1,10 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IEnvironment } from './environment';
 import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
 import { ServiceDescription } from './service-description';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * connectToProps will have all the extra parameters which are required for connecting services.
@@ -149,7 +145,7 @@ export class Service extends Construct {
    */
   private urls: Record<string, string> = {};
 
-  private readonly scope: cdk.Construct;
+  private readonly scope: Construct;
 
   constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);

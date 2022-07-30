@@ -6,6 +6,7 @@ import { Token } from '@aws-cdk/core';
 import { RequestContext } from '.';
 import { IntegrationConfig, IntegrationOptions, PassthroughBehavior } from '../integration';
 import { Method } from '../method';
+import { Model } from '../model';
 import { AwsIntegration } from './aws';
 /**
  * Options when configuring Step Functions synchronous integration with Rest API
@@ -68,6 +69,20 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    * @default false
    */
   readonly headers?: boolean;
+
+  /**
+   * If the whole authorizer object, including custom context values should be in the execution input. The execution input will include a new key `authorizer`:
+   *
+   * {
+   *   "body": {},
+   *   "authorizer": {
+   *     "key": "value"
+   *   }
+   * }
+   *
+   * @default false
+   */
+  readonly authorizer?: boolean;
 }
 
 /**
@@ -80,6 +95,7 @@ export class StepFunctionsIntegration {
    * @example
    *
    *    const stateMachine = new stepfunctions.StateMachine(this, 'MyStateMachine', {
+   *       stateMachineType: stepfunctions.StateMachineType.EXPRESS,
    *       definition: stepfunctions.Chain.start(new stepfunctions.Pass(this, 'Pass')),
    *    });
    *
@@ -113,9 +129,11 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
 
   public bind(method: Method): IntegrationConfig {
     const bindResult = super.bind(method);
-    const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    this.stateMachine.grantExecution(principal, 'states:StartSyncExecution');
+    const credentialsRole = bindResult.options?.credentialsRole ?? new iam.Role(method, 'StartSyncExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+    });
+    this.stateMachine.grantStartSyncExecution(credentialsRole);
 
     let stateMachineName;
 
@@ -138,8 +156,17 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
     if (stateMachineName !== undefined && !Token.isUnresolved(stateMachineName)) {
       deploymentToken = JSON.stringify({ stateMachineName });
     }
+
+    for (const methodResponse of METHOD_RESPONSES) {
+      method.addMethodResponse(methodResponse);
+    }
+
     return {
       ...bindResult,
+      options: {
+        ...bindResult.options,
+        credentialsRole,
+      },
       deploymentToken,
     };
   }
@@ -186,10 +213,10 @@ function integrationResponse() {
         /* eslint-disable */
         'application/json': [
           '#set($inputRoot = $input.path(\'$\'))',
-          '#if($input.path(\'$.status\').toString().equals("FAILED"))', 
-            '#set($context.responseOverride.status = 500)', 
+          '#if($input.path(\'$.status\').toString().equals("FAILED"))',
+            '#set($context.responseOverride.status = 500)',
             '{',
-              '"error": "$input.path(\'$.error\')"',
+              '"error": "$input.path(\'$.error\')",',
               '"cause": "$input.path(\'$.cause\')"',
             '}',
           '#else',
@@ -241,6 +268,7 @@ function templateString(
   const includeHeader = options.headers?? false;
   const includeQueryString = options.querystring?? true;
   const includePath = options.path?? true;
+  const includeAuthorizer = options.authorizer ?? false;
 
   if (options.requestContext && Object.keys(options.requestContext).length > 0) {
     requestContextStr = requestContext(options.requestContext);
@@ -251,6 +279,7 @@ function templateString(
   templateStr = templateStr.replace('%INCLUDE_HEADERS%', String(includeHeader));
   templateStr = templateStr.replace('%INCLUDE_QUERYSTRING%', String(includeQueryString));
   templateStr = templateStr.replace('%INCLUDE_PATH%', String(includePath));
+  templateStr = templateStr.replace('%INCLUDE_AUTHORIZER%', String(includeAuthorizer));
   templateStr = templateStr.replace('%REQUESTCONTEXT%', requestContextStr);
 
   return templateStr;
@@ -286,3 +315,27 @@ function requestContext(requestContextObj: RequestContext | undefined): string {
   const replaceWith = '@@';
   return contextAsString.split(doublequotes).join(replaceWith);
 }
+
+/**
+ * Method response model for each HTTP code response
+ */
+const METHOD_RESPONSES = [
+  {
+    statusCode: '200',
+    responseModels: {
+      'application/json': Model.EMPTY_MODEL,
+    },
+  },
+  {
+    statusCode: '400',
+    responseModels: {
+      'application/json': Model.ERROR_MODEL,
+    },
+  },
+  {
+    statusCode: '500',
+    responseModels: {
+      'application/json': Model.ERROR_MODEL,
+    },
+  },
+];

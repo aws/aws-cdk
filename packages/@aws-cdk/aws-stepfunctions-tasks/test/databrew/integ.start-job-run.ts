@@ -15,7 +15,7 @@ class GlueDataBrewJobStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
-    const region = process.env.CDK_DEPLOY_REGION || process.env.CDK_DEFAULT_REGION;
+    const region = this.region;
 
     const outputBucket = new s3.Bucket(this, 'JobOutputBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,

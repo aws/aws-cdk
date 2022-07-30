@@ -91,7 +91,7 @@ export interface EventSourceMappingOptions {
    * Valid Range: Minimum value of 1. Maximum value of 10000.
    *
    * @default - Amazon Kinesis, Amazon DynamoDB, and Amazon MSK is 100 records.
-   * Both the default and maximum for Amazon SQS are 10 messages.
+   * The default for Amazon SQS is 10 messages. For standard SQS queues, the maximum is 10,000. For FIFO SQS queues, the maximum is 10.
    */
   readonly batchSize?: number;
 
@@ -122,9 +122,16 @@ export interface EventSourceMappingOptions {
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
    *
-   * @default - Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.
+   * @default - no starting position
    */
   readonly startingPosition?: StartingPosition;
+
+  /**
+   * The time from which to start reading, in Unix time seconds.
+   *
+   * @default - no timestamp
+   */
+  readonly startingPositionTimestamp?: number;
 
   /**
    * Allow functions to return partially successful responses for a batch of records.
@@ -299,6 +306,13 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`);
     }
 
+    if (props.startingPosition === StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
+      throw new Error('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+    }
+
+    if (props.startingPosition !== StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
+      throw new Error('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+    }
 
     let destinationConfig;
 
@@ -321,6 +335,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
+      startingPositionTimestamp: props.startingPositionTimestamp,
       functionResponseTypes: props.reportBatchItemFailures ? ['ReportBatchItemFailures'] : undefined,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
@@ -351,4 +366,11 @@ export enum StartingPosition {
    * always read the most recent data in the shard
    */
   LATEST = 'LATEST',
+
+  /**
+   * Start reading from a position defined by a time stamp.
+   * Only supported for Amazon Kinesis streams, otherwise an error will occur.
+   * If supplied, `startingPositionTimestamp` must also be set.
+   */
+  AT_TIMESTAMP = 'AT_TIMESTAMP',
 }

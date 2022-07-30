@@ -1,0 +1,145 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
+        }
+      },
+      "integ-servicecatalogappregistry-application": {
+        "id": "integ-servicecatalogappregistry-application",
+        "path": "integ-servicecatalogappregistry-application",
+        "children": {
+          "TestApplication": {
+            "id": "TestApplication",
+            "path": "integ-servicecatalogappregistry-application/TestApplication",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "myApplicationtest",
+                    "description": "my application description"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnApplication",
+                  "version": "0.0.0"
+                }
+              },
+              "ResourceAssociationd232b63e52a8": {
+                "id": "ResourceAssociationd232b63e52a8",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/ResourceAssociationd232b63e52a8",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "application": {
+                      "Fn::GetAtt": [
+                        "TestApplication2FBC585F",
+                        "Id"
+                      ]
+                    },
+                    "resource": {
+                      "Ref": "AWS::StackId"
+                    },
+                    "resourceType": "CFN_STACK"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnResourceAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "AttributeGroupAssociation4ba7f5842818": {
+                "id": "AttributeGroupAssociation4ba7f5842818",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/AttributeGroupAssociation4ba7f5842818",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "application": {
+                      "Fn::GetAtt": [
+                        "TestApplication2FBC585F",
+                        "Id"
+                      ]
+                    },
+                    "attributeGroup": {
+                      "Fn::GetAtt": [
+                        "TestAttributeGroupB1CB284F",
+                        "Id"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnAttributeGroupAssociation",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry.Application",
+              "version": "0.0.0"
+            }
+          },
+          "TestAttributeGroup": {
+            "id": "TestAttributeGroup",
+            "path": "integ-servicecatalogappregistry-application/TestAttributeGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalogappregistry-application/TestAttributeGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "attributes": {
+                      "stage": "alpha",
+                      "teamMembers": [
+                        "markI",
+                        "markII",
+                        "markIII"
+                      ],
+                      "public": false,
+                      "publishYear": 2021,
+                      "plannedRoadMap": {
+                        "alpha": "some time",
+                        "beta": "another time",
+                        "gamma": "penultimate time",
+                        "release": "go time"
+                      }
+                    },
+                    "name": "myAttributeGroupTest",
+                    "description": "my attribute group description"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnAttributeGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry.AttributeGroup",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -8,9 +8,12 @@ import * as cloudtrail from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-cloudtrail');
 
-const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy.DESTROY });
+const bucket = new s3.Bucket(stack, 'Bucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
 const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'hello.handler',
   code: lambda.Code.fromInline('exports.handler = {}'),
 });
@@ -18,7 +21,11 @@ const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
 // using exctecy the same code as inside the cloudtrail class to produce the supplied bucket and policy
 const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 
-const Trailbucket = new s3.Bucket(stack, 'S3', { encryption: s3.BucketEncryption.UNENCRYPTED });
+const Trailbucket = new s3.Bucket(stack, 'S3', {
+  encryption: s3.BucketEncryption.UNENCRYPTED,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
 
 Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
   resources: [Trailbucket.bucketArn],

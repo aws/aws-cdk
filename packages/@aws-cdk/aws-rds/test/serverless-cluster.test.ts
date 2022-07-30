@@ -1,10 +1,10 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret } from '../lib';
+import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret, SubnetGroup } from '../lib';
 
 describe('serverless cluster', () => {
   test('can create a Serverless Cluster with Aurora Postgres database engine', () => {
@@ -18,7 +18,7 @@ describe('serverless cluster', () => {
       vpc,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
     });
@@ -27,6 +27,7 @@ describe('serverless cluster', () => {
     Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-postgresql',
+        CopyTagsToSnapshot: true,
         DBClusterParameterGroupName: 'default.aurora-postgresql10',
         DBSubnetGroupName: {
           Ref: 'ServerlessDatabaseSubnets5643CD76',
@@ -64,34 +65,25 @@ describe('serverless cluster', () => {
     Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-mysql',
+        CopyTagsToSnapshot: true,
         DBClusterParameterGroupName: 'default.aurora-mysql5.7',
         DBSubnetGroupName: {
           Ref: 'ServerlessDatabaseSubnets5643CD76',
         },
         EngineMode: 'serverless',
         MasterUsername: {
-          'Fn::Join': [
-            '',
-            [
-              '{{resolve:secretsmanager:',
-              {
-                Ref: 'ServerlessDatabaseSecret1C9BF4F1',
-              },
-              ':SecretString:username::}}',
-            ],
-          ],
+          'Fn::Join': ['', [
+            '{{resolve:secretsmanager:',
+            { Ref: 'ServerlessDatabaseSecret1C9BF4F1' },
+            ':SecretString:username::}}',
+          ]],
         },
         MasterUserPassword: {
-          'Fn::Join': [
-            '',
-            [
-              '{{resolve:secretsmanager:',
-              {
-                Ref: 'ServerlessDatabaseSecret1C9BF4F1',
-              },
-              ':SecretString:password::}}',
-            ],
-          ],
+          'Fn::Join': ['', [
+            '{{resolve:secretsmanager:',
+            { Ref: 'ServerlessDatabaseSecret1C9BF4F1' },
+            ':SecretString:password::}}',
+          ]],
         },
         StorageEncrypted: true,
         VpcSecurityGroupIds: [
@@ -131,28 +123,18 @@ describe('serverless cluster', () => {
       EngineMode: 'serverless',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'DatabaseSecret3B817195',
-            },
-            ':SecretString:username::}}',
-          ],
-        ],
+        'Fn::Join': ['', [
+          '{{resolve:secretsmanager:',
+          { Ref: 'DatabaseSecret3B817195' },
+          ':SecretString:username::}}',
+        ]],
       },
       MasterUserPassword: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'DatabaseSecret3B817195',
-            },
-            ':SecretString:password::}}',
-          ],
-        ],
+        'Fn::Join': ['', [
+          '{{resolve:secretsmanager:',
+          { Ref: 'DatabaseSecret3B817195' },
+          ':SecretString:password::}}',
+        ]],
       },
       VpcSecurityGroupIds: ['SecurityGroupId12345'],
     });
@@ -192,28 +174,18 @@ describe('serverless cluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       MasterUsername: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'DatabaseSecret3B817195',
-            },
-            ':SecretString:username::}}',
-          ],
-        ],
+        'Fn::Join': ['', [
+          '{{resolve:secretsmanager:',
+          { Ref: 'DatabaseSecret3B817195' },
+          ':SecretString:username::}}',
+        ]],
       },
       MasterUserPassword: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'DatabaseSecret3B817195',
-            },
-            ':SecretString:password::}}',
-          ],
-        ],
+        'Fn::Join': ['', [
+          '{{resolve:secretsmanager:',
+          { Ref: 'DatabaseSecret3B817195' },
+          ':SecretString:password::}}',
+        ]],
       },
     });
 
@@ -351,7 +323,7 @@ describe('serverless cluster', () => {
     expect(cluster.clusterReadEndpoint.socketAddress).toEqual('reader-address:3306');
   });
 
-  test('throws when trying to add rotation to a serverless cluster without secret', () => {
+  test('throws when trying to add single-user rotation to a serverless cluster without secret', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -361,7 +333,7 @@ describe('serverless cluster', () => {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       vpc,
     });
@@ -385,6 +357,39 @@ describe('serverless cluster', () => {
 
     // THEN
     expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation was already added to this cluster/);
+  });
+
+  test('throws when trying to add single-user rotation to a serverless cluster without VPC', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+    });
+
+    // THEN
+    expect(() => {
+      cluster.addRotationSingleUser();
+    }).toThrow(/Cannot add single user rotation for a cluster without VPC/);
+  });
+
+  test('throws when trying to add multi-user rotation to a serverless cluster without VPC', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secret = new DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+    });
+
+    // WHEN
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+    });
+
+    // THEN
+    expect(() => {
+      cluster.addRotationMultiUser('someId', { secret });
+    }).toThrow(/Cannot add multi user rotation for a cluster without VPC/);
   });
 
   test('can set deletion protection', () => {
@@ -612,15 +617,12 @@ describe('serverless cluster', () => {
 
     // THEN
     expect(stack.resolve(cluster.clusterArn)).toEqual({
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':rds:us-test-1:12345:cluster:',
-          { Ref: 'DatabaseB269D8BB' },
-        ],
-      ],
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':rds:us-test-1:12345:cluster:',
+        { Ref: 'DatabaseB269D8BB' },
+      ]],
     });
   });
 
@@ -803,6 +805,137 @@ describe('serverless cluster', () => {
       DBClusterIdentifier: clusterIdentifier,
     });
   });
+
+  test('can create a Serverless cluster without VPC', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      Engine: 'aurora-mysql',
+      EngineMode: 'serverless',
+      DbSubnetGroupName: Match.absent(),
+      VpcSecurityGroupIds: [],
+    });
+  });
+
+  test('cannot create a Serverless cluster without VPC but specifying a security group', () => {
+    // GIVEN
+    const stack = testStack();
+    const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'SecurityGroupId12345');
+
+    // THEN
+    expect(() => new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      securityGroups: [sg],
+    })).toThrow(/A VPC is required to use securityGroups in ServerlessCluster. Please add a VPC or remove securityGroups/);
+  });
+
+  test('cannot create a Serverless cluster without VPC but specifying a subnet group', () => {
+    // GIVEN
+    const stack = testStack();
+    const SubnetGroupName = 'SubnetGroupId12345';
+    const subnetGroup = SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup12345', SubnetGroupName);
+
+    // THEN
+    expect(() => new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      subnetGroup,
+    })).toThrow(/A VPC is required to use subnetGroup in ServerlessCluster. Please add a VPC or remove subnetGroup/);
+  });
+
+  test('cannot create a Serverless cluster without VPC but specifying VPC subnets', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    const vpcSubnets = {
+      subnetName: 'AVpcSubnet',
+    };
+
+    // THEN
+    expect(() => new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpcSubnets,
+    })).toThrow(/A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets/);
+  });
+
+  test('can call exportValue on endpoint.port', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      credentials: { username: 'admin' },
+      vpc,
+    });
+
+    // WHEN
+    stack.exportValue(cluster.clusterEndpoint.port);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasOutput('ExportsOutputFnGetAttDatabaseB269D8BBEndpointPort3ACB3F51', {
+      Value: { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+      Export: { Name: 'Default:ExportsOutputFnGetAttDatabaseB269D8BBEndpointPort3ACB3F51' },
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot default', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: true,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot disabled', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      copyTagsToSnapshot: false,
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: false,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot enabled', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      copyTagsToSnapshot: true,
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: true,
+    });
+  });
+
 });
 
 function testStack(app?: cdk.App, id?: string): cdk.Stack {

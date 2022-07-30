@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
@@ -180,6 +180,13 @@ export interface RestApiBaseProps {
    * @default false
    */
   readonly disableExecuteApiEndpoint?: boolean;
+
+  /**
+   * A description of the RestApi construct.
+   *
+   * @default - 'Automatically created by the RestApi construct'
+   */
+  readonly description?: string;
 }
 
 /**
@@ -193,12 +200,6 @@ export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
  * Props to create a new instance of RestApi
  */
 export interface RestApiProps extends RestApiOptions {
-  /**
-   * A description of the purpose of this API Gateway RestApi resource.
-   *
-   * @default - No description.
-   */
-  readonly description?: string;
 
   /**
    * The list of binary media mime-types that are supported by the RestApi
@@ -322,8 +323,11 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   protected cloudWatchAccount?: CfnAccount;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
-    super(scope, id);
-    this.restApiName = props.restApiName ?? id;
+    const restApiName = props.restApiName ?? id;
+    super(scope, id, {
+      physicalName: restApiName,
+    });
+    this.restApiName = restApiName;
 
     Object.defineProperty(this, RESTAPI_SYMBOL, { value: true });
   }
@@ -365,7 +369,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   public arnForExecuteApi(method: string = '*', path: string = '/*', stage: string = '*') {
-    if (!path.startsWith('/')) {
+    if (!Token.isUnresolved(path) && !path.startsWith('/')) {
       throw new Error(`"path" must begin with a "/": '${path}'`);
     }
 
@@ -551,7 +555,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     if (deploy) {
 
       this._latestDeployment = new Deployment(this, 'Deployment', {
-        description: 'Automatically created by the RestApi construct',
+        description: props.description? props.description :'Automatically created by the RestApi construct',
         api: this,
         retainDeployments: props.retainDeployments,
       });
@@ -736,7 +740,7 @@ export class RestApi extends RestApiBase {
     super(scope, id, props);
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: this.restApiName,
+      name: this.physicalName,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
@@ -763,6 +767,8 @@ export class RestApi extends RestApiBase {
 
     this.root = new RootResource(this, props, resource.attrRootResourceId);
     this.restApiRootResourceId = resource.attrRootResourceId;
+
+    this.node.addValidation({ validate: () => this.validateRestApi() });
   }
 
   /**
@@ -828,7 +834,7 @@ export class RestApi extends RestApiBase {
   /**
    * Performs validation of the REST API.
    */
-  protected validate() {
+  private validateRestApi() {
     if (this.methods.length === 0) {
       return ["The REST API doesn't contain any methods"];
     }

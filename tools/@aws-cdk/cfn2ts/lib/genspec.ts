@@ -9,6 +9,7 @@ import * as util from './util';
 
 const RESOURCE_CLASS_PREFIX = 'Cfn';
 
+export const CONSTRUCTS_NAMESPACE = 'constructs';
 export const CORE_NAMESPACE = 'cdk';
 export const CFN_PARSE_NAMESPACE = 'cfn_parse';
 
@@ -234,6 +235,12 @@ export function cloudFormationToScriptName(name: string): string {
     name = 'objectAccess';
   }
 
+  // GuardDuty contains a property named "Equals", which isn't a jsii-compliant name as it
+  // conflicts with standard Java/C# object methods.
+  if (name === 'Equals') {
+    name = 'equalTo';
+  }
+
   const ret = codemaker.toCamelCase(name);
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -241,7 +248,7 @@ export function cloudFormationToScriptName(name: string): string {
 
   for (const suffix of Object.keys(suffixes)) {
     if (name.endsWith(suffix)) {
-      return ret.substr(0, ret.length - suffix.length) + suffixes[suffix];
+      return ret.slice(0, -suffix.length) + suffixes[suffix];
     }
   }
 
@@ -271,7 +278,7 @@ export function isPrimitive(type: CodeName): boolean {
 
 function specTypeToCodeType(resourceContext: CodeName, type: string): CodeName {
   if (type.endsWith('[]')) {
-    const itemType = specTypeToCodeType(resourceContext, type.substr(0, type.length - 2));
+    const itemType = specTypeToCodeType(resourceContext, type.slice(0, -2));
     return CodeName.forPrimitive(`${itemType.className}[]`);
   }
   if (schema.isPrimitiveType(type)) {
@@ -357,7 +364,7 @@ export function typeDispatch<T>(resourceContext: CodeName, spec: schema.Property
       if (schema.isMapOfListsOfPrimitivesProperty(spec)) {
         // remove the '[]' from the type
         const baseType = itemTypes[0].className;
-        const itemType = CodeName.forPrimitive(baseType.substr(0, baseType.length - 2));
+        const itemType = CodeName.forPrimitive(baseType.slice(0, -2));
         return visitor.visitMapOfLists(itemType);
       }
       if (itemTypes.length > 1) {

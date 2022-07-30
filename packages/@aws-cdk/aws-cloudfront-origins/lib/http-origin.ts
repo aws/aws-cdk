@@ -1,5 +1,6 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as cdk from '@aws-cdk/core';
+import { validateSecondsInRangeOrUndefined } from './private/utils';
 
 /**
  * Properties for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.
@@ -46,7 +47,10 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
 
   /**
    * Specifies how long, in seconds, CloudFront persists its connection to the origin.
-   * The valid range is from 1 to 60 seconds, inclusive.
+   * The valid range is from 1 to 180 seconds, inclusive.
+   *
+   * Note that values over 60 seconds are possible only after a limit increase request for the origin response timeout quota
+   * has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time.
    *
    * @default Duration.seconds(5)
    */
@@ -62,7 +66,7 @@ export class HttpOrigin extends cloudfront.OriginBase {
     super(domainName, props);
 
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
-    validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 60, props.keepaliveTimeout);
+    validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
@@ -74,16 +78,5 @@ export class HttpOrigin extends cloudfront.OriginBase {
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
     };
-  }
-}
-
-/**
- * Throws an error if a duration is defined and not an integer number of seconds within a range.
- */
-function validateSecondsInRangeOrUndefined(name: string, min: number, max: number, duration?: cdk.Duration) {
-  if (duration === undefined) { return; }
-  const value = duration.toSeconds();
-  if (!Number.isInteger(value) || value < min || value > max) {
-    throw new Error(`${name}: Must be an int between ${min} and ${max} seconds (inclusive); received ${value}.`);
   }
 }

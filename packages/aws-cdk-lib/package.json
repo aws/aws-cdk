@@ -1,6 +1,5 @@
 {
   "name": "aws-cdk-lib",
-  "private": "true",
   "version": "0.0.0",
   "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
@@ -10,8 +9,8 @@
     "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/aws-cdk-lib"
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "scripts": {
     "gen": "ubergen",
     "build": "cdk-build",
@@ -67,7 +66,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.Lib",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk",
@@ -109,10 +108,10 @@
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
     "ignore": "^5.2.0",
-    "jsonschema": "^1.4.0",
-    "minimatch": "^3.0.4",
+    "jsonschema": "^1.4.1",
+    "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
-    "semver": "^7.3.5",
+    "semver": "^7.3.7",
     "yaml": "1.10.2"
   },
   "devDependencies": {
@@ -147,6 +146,7 @@
     "@aws-cdk/aws-autoscalingplans": "0.0.0",
     "@aws-cdk/aws-backup": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/aws-billingconductor": "0.0.0",
     "@aws-cdk/aws-budgets": "0.0.0",
     "@aws-cdk/aws-cassandra": "0.0.0",
     "@aws-cdk/aws-ce": "0.0.0",
@@ -204,6 +204,7 @@
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-emr": "0.0.0",
     "@aws-cdk/aws-emrcontainers": "0.0.0",
+    "@aws-cdk/aws-emrserverless": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
@@ -233,9 +234,11 @@
     "@aws-cdk/aws-iotanalytics": "0.0.0",
     "@aws-cdk/aws-iotcoredeviceadvisor": "0.0.0",
     "@aws-cdk/aws-iotevents": "0.0.0",
+    "@aws-cdk/aws-iotevents-actions": "0.0.0",
     "@aws-cdk/aws-iotfleethub": "0.0.0",
     "@aws-cdk/aws-iotsitewise": "0.0.0",
     "@aws-cdk/aws-iotthingsgraph": "0.0.0",
+    "@aws-cdk/aws-iottwinmaker": "0.0.0",
     "@aws-cdk/aws-iotwireless": "0.0.0",
     "@aws-cdk/aws-ivs": "0.0.0",
     "@aws-cdk/aws-kafkaconnect": "0.0.0",
@@ -271,6 +274,7 @@
     "@aws-cdk/aws-medialive": "0.0.0",
     "@aws-cdk/aws-mediapackage": "0.0.0",
     "@aws-cdk/aws-mediastore": "0.0.0",
+    "@aws-cdk/aws-mediatailor": "0.0.0",
     "@aws-cdk/aws-memorydb": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-mwaa": "0.0.0",
@@ -282,6 +286,7 @@
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
     "@aws-cdk/aws-panorama": "0.0.0",
+    "@aws-cdk/aws-personalize": "0.0.0",
     "@aws-cdk/aws-pinpoint": "0.0.0",
     "@aws-cdk/aws-pinpointemail": "0.0.0",
     "@aws-cdk/aws-qldb": "0.0.0",
@@ -289,6 +294,7 @@
     "@aws-cdk/aws-ram": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-redshift": "0.0.0",
+    "@aws-cdk/aws-redshiftserverless": "0.0.0",
     "@aws-cdk/aws-refactorspaces": "0.0.0",
     "@aws-cdk/aws-rekognition": "0.0.0",
     "@aws-cdk/aws-resiliencehub": "0.0.0",
@@ -330,6 +336,7 @@
     "@aws-cdk/aws-synthetics": "0.0.0",
     "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
+    "@aws-cdk/aws-voiceid": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
@@ -342,27 +349,29 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
+    "@aws-cdk/triggers": "0.0.0",
     "@aws-cdk/ubergen": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/node": "^10.17.60",
-    "constructs": "^3.3.69",
-    "esbuild": "^0.14.18",
+    "@types/node": "^14.18.22",
+    "constructs": "^10.0.0",
+    "esbuild": "^0.14.50",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
   },
   "peerDependencies": {
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "keywords": [
     "aws",
@@ -383,6 +392,7 @@
     "./.jsii": "./.jsii",
     "./.warnings.jsii.js": "./.warnings.jsii.js",
     "./alexa-ask": "./alexa-ask/index.js",
+    "./assertions/lib/helpers-internal": "./assertions/lib/helpers-internal/index.js",
     "./assertions": "./assertions/index.js",
     "./assets": "./assets/index.js",
     "./aws-accessanalyzer": "./aws-accessanalyzer/index.js",
@@ -410,6 +420,7 @@
     "./aws-autoscalingplans": "./aws-autoscalingplans/index.js",
     "./aws-backup": "./aws-backup/index.js",
     "./aws-batch": "./aws-batch/index.js",
+    "./aws-billingconductor": "./aws-billingconductor/index.js",
     "./aws-budgets": "./aws-budgets/index.js",
     "./aws-cassandra": "./aws-cassandra/index.js",
     "./aws-ce": "./aws-ce/index.js",
@@ -465,6 +476,7 @@
     "./aws-elasticsearch": "./aws-elasticsearch/index.js",
     "./aws-emr": "./aws-emr/index.js",
     "./aws-emrcontainers": "./aws-emrcontainers/index.js",
+    "./aws-emrserverless": "./aws-emrserverless/index.js",
     "./aws-events": "./aws-events/index.js",
     "./aws-events-targets": "./aws-events-targets/index.js",
     "./aws-eventschemas": "./aws-eventschemas/index.js",
@@ -496,8 +508,10 @@
     "./aws-iotfleethub": "./aws-iotfleethub/index.js",
     "./aws-iotsitewise": "./aws-iotsitewise/index.js",
     "./aws-iotthingsgraph": "./aws-iotthingsgraph/index.js",
+    "./aws-iottwinmaker": "./aws-iottwinmaker/index.js",
     "./aws-iotwireless": "./aws-iotwireless/index.js",
     "./aws-ivs": "./aws-ivs/index.js",
+    "./aws-kafkaconnect": "./aws-kafkaconnect/index.js",
     "./aws-kendra": "./aws-kendra/index.js",
     "./aws-kinesis": "./aws-kinesis/index.js",
     "./aws-kinesisanalytics": "./aws-kinesisanalytics/index.js",
@@ -526,6 +540,7 @@
     "./aws-medialive": "./aws-medialive/index.js",
     "./aws-mediapackage": "./aws-mediapackage/index.js",
     "./aws-mediastore": "./aws-mediastore/index.js",
+    "./aws-mediatailor": "./aws-mediatailor/index.js",
     "./aws-memorydb": "./aws-memorydb/index.js",
     "./aws-msk": "./aws-msk/index.js",
     "./aws-mwaa": "./aws-mwaa/index.js",
@@ -537,6 +552,7 @@
     "./aws-opsworks": "./aws-opsworks/index.js",
     "./aws-opsworkscm": "./aws-opsworkscm/index.js",
     "./aws-panorama": "./aws-panorama/index.js",
+    "./aws-personalize": "./aws-personalize/index.js",
     "./aws-pinpoint": "./aws-pinpoint/index.js",
     "./aws-pinpointemail": "./aws-pinpointemail/index.js",
     "./aws-qldb": "./aws-qldb/index.js",
@@ -544,6 +560,7 @@
     "./aws-ram": "./aws-ram/index.js",
     "./aws-rds": "./aws-rds/index.js",
     "./aws-redshift": "./aws-redshift/index.js",
+    "./aws-redshiftserverless": "./aws-redshiftserverless/index.js",
     "./aws-refactorspaces": "./aws-refactorspaces/index.js",
     "./aws-rekognition": "./aws-rekognition/index.js",
     "./aws-resiliencehub": "./aws-resiliencehub/index.js",
@@ -585,6 +602,7 @@
     "./aws-synthetics": "./aws-synthetics/index.js",
     "./aws-timestream": "./aws-timestream/index.js",
     "./aws-transfer": "./aws-transfer/index.js",
+    "./aws-voiceid": "./aws-voiceid/index.js",
     "./aws-waf": "./aws-waf/index.js",
     "./aws-wafregional": "./aws-wafregional/index.js",
     "./aws-wafv2": "./aws-wafv2/index.js",
@@ -593,6 +611,7 @@
     "./aws-xray": "./aws-xray/index.js",
     "./cloud-assembly-schema": "./cloud-assembly-schema/index.js",
     "./cloudformation-include": "./cloudformation-include/index.js",
+    "./core/lib/helpers-internal": "./core/lib/helpers-internal/index.js",
     "./custom-resources": "./custom-resources/index.js",
     "./cx-api": "./cx-api/index.js",
     "./lambda-layer-awscli": "./lambda-layer-awscli/index.js",
@@ -603,7 +622,11 @@
     "./pipelines/.jsii": "./pipelines/.jsii",
     "./pipelines/.warnings.jsii.js": "./pipelines/.warnings.jsii.js",
     "./pipelines/lib/helpers-internal": "./pipelines/lib/helpers-internal/index.js",
-    "./region-info": "./region-info/index.js"
+    "./region-info": "./region-info/index.js",
+    "./triggers": "./triggers/index.js"
   },
-  "preferredCdkCliVersion": "2"
+  "preferredCdkCliVersion": "2",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

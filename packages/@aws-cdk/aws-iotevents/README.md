@@ -46,20 +46,56 @@ The following example creates an AWS IoT Events detector model to your stack.
 The detector model need a reference to at least one AWS IoT Events input.
 AWS IoT Events inputs enable the detector to get MQTT payload values from IoT Core rules.
 
+You can define built-in actions to use a timer or set a variable, or send data to other AWS resources.
+See also [@aws-cdk/aws-iotevents-actions](https://docs.aws.amazon.com/cdk/api/v1/docs/aws-iotevents-actions-readme.html) for other actions.
+
 ```ts
 import * as iotevents from '@aws-cdk/aws-iotevents';
+import * as actions from '@aws-cdk/aws-iotevents-actions';
+import * as lambda from '@aws-cdk/aws-lambda';
+
+declare const func: lambda.IFunction;
 
 const input = new iotevents.Input(this, 'MyInput', {
   inputName: 'my_input', // optional
   attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
 });
 
-const onlineState = new iotevents.State({
-  stateName: 'online',
+const warmState = new iotevents.State({
+  stateName: 'warm',
   onEnter: [{
-    eventName: 'test-event',
+    eventName: 'test-enter-event',
     condition: iotevents.Expression.currentInput(input),
+    actions: [new actions.LambdaInvokeAction(func)], // optional
   }],
+  onInput: [{ // optional
+    eventName: 'test-input-event',
+    actions: [new actions.LambdaInvokeAction(func)],
+  }],
+  onExit: [{ // optional
+    eventName: 'test-exit-event',
+    actions: [new actions.LambdaInvokeAction(func)],
+  }],
+});
+const coldState = new iotevents.State({
+  stateName: 'cold',
+});
+
+// transit to coldState when temperature is less than 15
+warmState.transitionTo(coldState, {
+  eventName: 'to_coldState', // optional property, default by combining the names of the States
+  when: iotevents.Expression.lt(
+    iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+    iotevents.Expression.fromString('15'),
+  ),
+  executing: [new actions.LambdaInvokeAction(func)], // optional
+});
+// transit to warmState when temperature is greater than or equal to 15
+coldState.transitionTo(warmState, {
+  when: iotevents.Expression.gte(
+    iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+    iotevents.Expression.fromString('15'),
+  ),
 });
 
 new iotevents.DetectorModel(this, 'MyDetectorModel', {
@@ -67,7 +103,7 @@ new iotevents.DetectorModel(this, 'MyDetectorModel', {
   description: 'test-detector-model-description', // optional property, default is none
   evaluationMethod: iotevents.EventEvaluation.SERIAL, // optional property, default is iotevents.EventEvaluation.BATCH
   detectorKey: 'payload.deviceId', // optional property, default is none and single detector instance will be created and all inputs will be routed to it
-  initialState: onlineState,
+  initialState: warmState,
 });
 ```
 

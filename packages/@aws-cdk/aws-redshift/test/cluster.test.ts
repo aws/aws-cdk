@@ -19,7 +19,7 @@ test('check that instantiation works', () => {
   new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
   });
@@ -69,7 +69,7 @@ test('can create a cluster with imported vpc and security group', () => {
   new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
     securityGroups: [sg],
@@ -344,7 +344,7 @@ test('throws when trying to add rotation to a cluster without secret', () => {
   const cluster = new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
   });
@@ -420,6 +420,106 @@ test('default child returns a CfnCluster', () => {
   });
 
   expect(cluster.node.defaultChild).toBeInstanceOf(CfnCluster);
+});
+
+test.each([
+  ['elastic', false],
+  ['classic', true],
+])('resize type (%s)', (_, classicResizing) => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    classicResizing,
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+    Properties: {
+      AllowVersionUpgrade: true,
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      ClusterType: 'multi-node',
+      AutomatedSnapshotRetentionPeriod: 1,
+      Encrypted: true,
+      NumberOfNodes: 2,
+      NodeType: 'dc2.large',
+      DBName: 'default_db',
+      PubliclyAccessible: false,
+      ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] }],
+      Classic: classicResizing,
+    },
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
+test('resize type not set', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+    Properties: {
+      AllowVersionUpgrade: true,
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      ClusterType: 'multi-node',
+      AutomatedSnapshotRetentionPeriod: 1,
+      Encrypted: true,
+      NumberOfNodes: 2,
+      NodeType: 'dc2.large',
+      DBName: 'default_db',
+      PubliclyAccessible: false,
+      ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] }],
+    },
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
+test('elastic ip address', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    vpc,
+    elasticIp: '1.3.3.7',
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+    Properties: {
+      AllowVersionUpgrade: true,
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      ClusterType: 'multi-node',
+      AutomatedSnapshotRetentionPeriod: 1,
+      Encrypted: true,
+      NumberOfNodes: 2,
+      NodeType: 'dc2.large',
+      DBName: 'default_db',
+      PubliclyAccessible: false,
+      ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] }],
+      ElasticIp: '1.3.3.7',
+    },
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
 });
 
 function testStack() {

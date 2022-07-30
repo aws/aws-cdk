@@ -1,6 +1,7 @@
 {
   "name": "monocdk",
   "version": "0.0.0",
+  "private": true,
   "description": "An experiment to bundle the entire CDK into a single module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -61,7 +62,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.MonoCDK",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
         "versionSuffix": "-devpreview"
       },
       "java": {
@@ -106,10 +107,10 @@
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
     "ignore": "^5.2.0",
-    "jsonschema": "^1.4.0",
-    "minimatch": "^3.0.4",
+    "jsonschema": "^1.4.1",
+    "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
-    "semver": "^7.3.5",
+    "semver": "^7.3.7",
     "yaml": "1.10.2"
   },
   "devDependencies": {
@@ -144,6 +145,7 @@
     "@aws-cdk/aws-autoscalingplans": "0.0.0",
     "@aws-cdk/aws-backup": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/aws-billingconductor": "0.0.0",
     "@aws-cdk/aws-budgets": "0.0.0",
     "@aws-cdk/aws-cassandra": "0.0.0",
     "@aws-cdk/aws-ce": "0.0.0",
@@ -201,6 +203,7 @@
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-emr": "0.0.0",
     "@aws-cdk/aws-emrcontainers": "0.0.0",
+    "@aws-cdk/aws-emrserverless": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
@@ -230,9 +233,11 @@
     "@aws-cdk/aws-iotanalytics": "0.0.0",
     "@aws-cdk/aws-iotcoredeviceadvisor": "0.0.0",
     "@aws-cdk/aws-iotevents": "0.0.0",
+    "@aws-cdk/aws-iotevents-actions": "0.0.0",
     "@aws-cdk/aws-iotfleethub": "0.0.0",
     "@aws-cdk/aws-iotsitewise": "0.0.0",
     "@aws-cdk/aws-iotthingsgraph": "0.0.0",
+    "@aws-cdk/aws-iottwinmaker": "0.0.0",
     "@aws-cdk/aws-iotwireless": "0.0.0",
     "@aws-cdk/aws-ivs": "0.0.0",
     "@aws-cdk/aws-kafkaconnect": "0.0.0",
@@ -268,6 +273,7 @@
     "@aws-cdk/aws-medialive": "0.0.0",
     "@aws-cdk/aws-mediapackage": "0.0.0",
     "@aws-cdk/aws-mediastore": "0.0.0",
+    "@aws-cdk/aws-mediatailor": "0.0.0",
     "@aws-cdk/aws-memorydb": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-mwaa": "0.0.0",
@@ -279,6 +285,7 @@
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
     "@aws-cdk/aws-panorama": "0.0.0",
+    "@aws-cdk/aws-personalize": "0.0.0",
     "@aws-cdk/aws-pinpoint": "0.0.0",
     "@aws-cdk/aws-pinpointemail": "0.0.0",
     "@aws-cdk/aws-qldb": "0.0.0",
@@ -286,6 +293,7 @@
     "@aws-cdk/aws-ram": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-redshift": "0.0.0",
+    "@aws-cdk/aws-redshiftserverless": "0.0.0",
     "@aws-cdk/aws-refactorspaces": "0.0.0",
     "@aws-cdk/aws-rekognition": "0.0.0",
     "@aws-cdk/aws-resiliencehub": "0.0.0",
@@ -327,6 +335,7 @@
     "@aws-cdk/aws-synthetics": "0.0.0",
     "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
+    "@aws-cdk/aws-voiceid": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
@@ -339,27 +348,29 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
+    "@aws-cdk/triggers": "0.0.0",
     "@aws-cdk/ubergen": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/node": "^10.17.60",
-    "constructs": "^3.3.69",
+    "@types/node": "^14.18.22",
+    "constructs": "^10.0.0",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
   },
   "peerDependencies": {
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "keywords": [
     "aws",
@@ -370,7 +381,7 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   },
   "preferredCdkCliVersion": "1"
 }

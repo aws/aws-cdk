@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as batch from '../lib/';
 
@@ -62,6 +63,22 @@ new batch.JobQueue(stack, 'batch-job-queue', {
       }),
       order: 3,
     },
+    {
+      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-demand-compute-env-launch-template-2', {
+        managed: true,
+        computeResources: {
+          type: batch.ComputeResourceType.ON_DEMAND,
+          vpc,
+          launchTemplate: {
+            launchTemplateId: launchTemplate.ref as string,
+          },
+          computeResourcesTags: {
+            'compute-env-tag': '123XYZ',
+          },
+        },
+      }),
+      order: 4,
+    },
   ],
 });
 
@@ -93,6 +110,7 @@ new batch.JobQueue(stack, 'batch-job-fargate-queue', {
 });
 
 const repo = new ecr.Repository(stack, 'batch-job-repo');
+const secret = new secretsmanager.Secret(stack, 'batch-secret');
 
 new batch.JobDefinition(stack, 'batch-job-def-from-ecr', {
   container: {
@@ -115,5 +133,8 @@ new batch.JobDefinition(stack, 'batch-job-def-fargate', {
   container: {
     image: ecs.ContainerImage.fromRegistry('docker/whalesay'),
     executionRole,
+    secrets: {
+      SECRET: ecs.Secret.fromSecretsManager(secret),
+    },
   },
 });

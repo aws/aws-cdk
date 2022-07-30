@@ -1,14 +1,16 @@
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { assertBound } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
-import { IStackSynthesizer } from './types';
+import { IStackSynthesizer, ISynthesisSession } from './types';
 
 /**
- * Deployment environment for a nested stack
+ * Synthesizer for a nested stack
  *
- * Interoperates with the StackSynthesizer of the parent stack.
+ * Forwards all calls to the parent stack's synthesizer.
+ *
+ * This synthesizer is automatically used for `NestedStack` constructs.
+ * App builder do not need to use this class directly.
  */
 export class NestedStackSynthesizer extends StackSynthesizer {
   private stack?: Stack;

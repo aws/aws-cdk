@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "autoCreateNlbFargateTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-l3-autocreate"
+      ],
+      "assertionStack": "autoCreateNlbFargateTestDefaultTestDeployAssertD6693011"
+    }
+  }
+}

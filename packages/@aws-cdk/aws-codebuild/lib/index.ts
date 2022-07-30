@@ -11,6 +11,7 @@ export * from './build-spec';
 export * from './file-location';
 export * from './linux-gpu-build-image';
 export * from './untrusted-code-boundary-policy';
+export * from './linux-arm-build-image';
 
 // AWS::CodeBuild CloudFormation Resources:
 export * from './codebuild.generated';

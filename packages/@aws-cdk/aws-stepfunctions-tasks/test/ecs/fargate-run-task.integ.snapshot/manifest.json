@@ -1,0 +1,248 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-sfn-tasks-ecs-fargate-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-sfn-tasks-ecs-fargate-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-sfn-tasks-ecs-fargate-integ": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "repositoryName": "aws-cdk/assets",
+              "imageTag": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
+              "id": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
+              "packaging": "container-image",
+              "path": "asset.7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
+              "sourceHash": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateCluster7CCD5F93"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpc377E8024"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1RouteTable1D7FA747"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1RouteTableAssociation80F1442F"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1DefaultRoute80086690"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1EIPF91909D0"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1NATGateway5202D86A"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2Subnet24C0F9D8"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2RouteTable1493C5D6"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2RouteTableAssociation3EFA74DC"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2DefaultRoute8E847CD2"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2EIPBBB24774"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2NATGatewayFFEC8ED2"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet1RouteTable21B3CEAE"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet1RouteTableAssociation78F6E213"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet1DefaultRoute0438DCBA"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet2Subnet307CEE57"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet2RouteTable7B7F9678"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet2RouteTableAssociation3A46964C"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet2DefaultRoute35FDD29D"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcIGW827638CB"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcVPCGW38717255"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRole1EDB4A67"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDef54694570",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/TaskDef/TheContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTheContainerLogGroupD94C8EF5"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefExecutionRoleB4775C97"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefExecutionRoleDefaultPolicy0DBB737A"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/FargateTask/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTaskSecurityGroup0BBB27CB"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/stateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stateMachineArn"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-fargate-integ/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ]
+      },
+      "displayName": "aws-sfn-tasks-ecs-fargate-integ"
+    }
+  }
+}

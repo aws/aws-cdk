@@ -54,6 +54,10 @@ export class EngineVersion {
    * Neptune engine version 1.1.0.0
    */
   public static readonly V1_1_0_0 = new EngineVersion('1.1.0.0');
+  /**
+   * Neptune engine version 1.1.1.0
+   */
+  public static readonly V1_1_1_0 = new EngineVersion('1.1.1.0');
 
   /**
    * Constructor for specifying a custom engine version
@@ -435,7 +439,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     super(scope, id);
 
     this.vpc = props.vpc;
-    this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE };
+    this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT };
 
     // Determine the subnet(s) to deploy the Neptune cluster to
     const { subnetIds, internetConnectivityEstablished } = this.vpc.selectSubnets(this.vpcSubnets);

@@ -1,0 +1,94 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-http-proxy": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-http-proxy.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-http-proxy/AlwaysSuccess/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlwaysSuccessServiceRole6DB8C2F6"
+          }
+        ],
+        "/integ-http-proxy/AlwaysSuccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlwaysSuccess099EAB05"
+          }
+        ],
+        "/integ-http-proxy/LambdaProxyApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaProxyApi67594471"
+          }
+        ],
+        "/integ-http-proxy/LambdaProxyApi/DefaultRoute/DefaultIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaProxyApiDefaultRouteDefaultIntegrationAE9908C8"
+          }
+        ],
+        "/integ-http-proxy/LambdaProxyApi/DefaultRoute/DefaultIntegration-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaProxyApiDefaultRouteDefaultIntegrationPermission39F587FC"
+          }
+        ],
+        "/integ-http-proxy/LambdaProxyApi/DefaultRoute/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaProxyApiDefaultRoute1EB30A46"
+          }
+        ],
+        "/integ-http-proxy/LambdaProxyApi/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaProxyApiDefaultStage07C38681"
+          }
+        ],
+        "/integ-http-proxy/HttpProxyApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProxyApiD0217C67"
+          }
+        ],
+        "/integ-http-proxy/HttpProxyApi/DefaultRoute/DefaultIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProxyApiDefaultRouteDefaultIntegration95D23B0D"
+          }
+        ],
+        "/integ-http-proxy/HttpProxyApi/DefaultRoute/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProxyApiDefaultRoute8AF66B5C"
+          }
+        ],
+        "/integ-http-proxy/HttpProxyApi/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProxyApiDefaultStageA88F9DE3"
+          }
+        ],
+        "/integ-http-proxy/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Endpoint"
+          }
+        ]
+      },
+      "displayName": "integ-http-proxy"
+    }
+  }
+}

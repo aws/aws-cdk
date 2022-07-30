@@ -41,7 +41,7 @@ describe('rule', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -202,7 +202,7 @@ describe('rule', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // THEN
@@ -219,7 +219,7 @@ describe('rule', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // THEN
@@ -238,7 +238,7 @@ describe('rule', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -261,6 +261,40 @@ describe('rule', () => {
         'detail-type': [
           'Config Rules Compliance Change',
         ],
+      },
+    });
+  });
+
+  test('Add EKS Cluster check to ManagedRule', () => {
+    // GIVEN
+    const stack1 = new cdk.Stack();
+    const stack2 = new cdk.Stack();
+
+    // WHEN
+    new config.ManagedRule(stack1, 'RuleEksClusterOldest', {
+      identifier: config.ManagedRuleIdentifiers.EKS_CLUSTER_OLDEST_SUPPORTED_VERSION,
+      ruleScope: config.RuleScope.fromResource(config.ResourceType.EKS_CLUSTER),
+    });
+    new config.ManagedRule(stack2, 'RuleEksClusterVersion', {
+      identifier: config.ManagedRuleIdentifiers.EKS_CLUSTER_SUPPORTED_VERSION,
+      ruleScope: config.RuleScope.fromResources([config.ResourceType.EKS_CLUSTER]),
+    });
+
+    // THEN
+    Template.fromStack(stack1).hasResourceProperties('AWS::Config::ConfigRule', {
+      Source: {
+        SourceIdentifier: 'EKS_CLUSTER_OLDEST_SUPPORTED_VERSION',
+      },
+      Scope: {
+        ComplianceResourceTypes: ['AWS::EKS::Cluster'],
+      },
+    });
+    Template.fromStack(stack2).hasResourceProperties('AWS::Config::ConfigRule', {
+      Source: {
+        SourceIdentifier: 'EKS_CLUSTER_SUPPORTED_VERSION',
+      },
+      Scope: {
+        ComplianceResourceTypes: ['AWS::EKS::Cluster'],
       },
     });
   });

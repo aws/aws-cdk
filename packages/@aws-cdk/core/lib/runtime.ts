@@ -1,4 +1,4 @@
-import { Construct } from './construct-compat';
+import { Construct } from 'constructs';
 
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS
@@ -137,7 +137,7 @@ export class ValidationResult {
     if (!this.isSuccess) {
       let message = this.errorTree();
       // The first letter will be lowercase, so uppercase it for a nicer error message
-      message = message.substr(0, 1).toUpperCase() + message.substr(1);
+      message = message.slice(0, 1).toUpperCase() + message.slice(1);
       throw new CfnSynthesisError(message);
     }
   }
@@ -382,7 +382,7 @@ function isCloudFormationIntrinsic(x: any) {
   const keys = Object.keys(x);
   if (keys.length !== 1) { return false; }
 
-  return keys[0] === 'Ref' || keys[0].substr(0, 4) === 'Fn::';
+  return keys[0] === 'Ref' || keys[0].slice(0, 4) === 'Fn::';
 }
 
 /**

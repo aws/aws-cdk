@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-lambda",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,14 +18,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Lambda",
         "packageId": "Amazon.CDK.AWS.Lambda",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-lambda",
         "module": "aws_cdk.aws_lambda",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -47,7 +48,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -84,15 +85,16 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.92",
-    "@types/jest": "^27.4.0",
-    "@types/lodash": "^4.14.178",
-    "jest": "^27.4.7",
+    "@types/aws-lambda": "^8.10.101",
+    "@types/jest": "^27.5.2",
+    "@types/lodash": "^4.14.182",
+    "jest": "^27.5.1",
     "lodash": "^4.17.21"
   },
   "dependencies": {
@@ -110,11 +112,12 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-signer": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -132,14 +135,15 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-signer": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "awslint": {
     "exclude": [
@@ -183,7 +187,9 @@
       "docs-public-apis:@aws-cdk/aws-lambda.ResourceBindOptions",
       "docs-public-apis:@aws-cdk/aws-lambda.VersionAttributes",
       "props-physical-name:@aws-cdk/aws-lambda.EventInvokeConfigProps",
-      "props-physical-name:@aws-cdk/aws-lambda.CodeSigningConfigProps"
+      "props-physical-name:@aws-cdk/aws-lambda.CodeSigningConfigProps",
+      "props-physical-name:@aws-cdk/aws-lambda.FunctionUrlProps",
+      "from-method:@aws-cdk/aws-lambda.FunctionUrl"
     ]
   },
   "stability": "stable",

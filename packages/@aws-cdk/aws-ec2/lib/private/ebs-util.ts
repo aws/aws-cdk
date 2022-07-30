@@ -1,10 +1,7 @@
 import { Annotations } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnInstance, CfnLaunchTemplate } from '../ec2.generated';
 import { BlockDevice, EbsDeviceVolumeType } from '../volume';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 export function instanceBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnInstance.BlockDeviceMappingProperty[] {
   return synthesizeBlockDeviceMappings<CfnInstance.BlockDeviceMappingProperty, object>(construct, blockDevices, {});
@@ -31,11 +28,11 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
       const { iops, volumeType, kmsKey, ...rest } = ebs;
 
       if (!iops) {
-        if (volumeType === EbsDeviceVolumeType.IO1) {
-          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
+        if (volumeType === EbsDeviceVolumeType.IO1 || volumeType === EbsDeviceVolumeType.IO2) {
+          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2');
         }
-      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        Annotations.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      } else if (volumeType !== EbsDeviceVolumeType.IO1 && volumeType !== EbsDeviceVolumeType.IO2 && volumeType !== EbsDeviceVolumeType.GP3) {
+        Annotations.of(construct).addWarning('iops will be ignored without volumeType: IO1, IO2, or GP3');
       }
 
       /**

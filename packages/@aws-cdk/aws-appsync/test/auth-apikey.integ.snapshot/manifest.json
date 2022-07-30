@@ -1,0 +1,76 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-appsync-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-appsync-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-appsync-integ/Api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiF70053CD"
+          }
+        ],
+        "/aws-appsync-integ/Api/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiSchema510EECD7"
+          }
+        ],
+        "/aws-appsync-integ/Api/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiDefaultApiKeyF991C37B"
+          }
+        ],
+        "/aws-appsync-integ/Api/testDataSource/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApitestDataSourceServiceRoleACBC3F3D"
+          }
+        ],
+        "/aws-appsync-integ/Api/testDataSource/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApitestDataSourceServiceRoleDefaultPolicy897CD912"
+          }
+        ],
+        "/aws-appsync-integ/Api/testDataSource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApitestDataSource96AE54D5"
+          }
+        ],
+        "/aws-appsync-integ/Api/testDataSource/QuerygetTestsResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApitestDataSourceQuerygetTestsResolverA3BBB672"
+          }
+        ],
+        "/aws-appsync-integ/Api/testDataSource/MutationaddTestResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApitestDataSourceMutationaddTestResolver36203D6B"
+          }
+        ],
+        "/aws-appsync-integ/TestTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestTable5769773A"
+          }
+        ]
+      },
+      "displayName": "aws-appsync-integ"
+    }
+  }
+}

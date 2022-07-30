@@ -202,13 +202,26 @@ Resources:
   ContainerAssetsRepository:
     Type: AWS::ECR::Repository
     Properties:
-      ImageScanningConfiguration:
-        ScanOnPush: true
+      ImageTagMutability: IMMUTABLE
       RepositoryName:
         Fn::If:
           - HasCustomContainerAssetsRepositoryName
           - Fn::Sub: "${ContainerAssetsRepositoryName}"
           - Fn::Sub: cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+          # Necessary for Lambda container images
+          # https://docs.aws.amazon.com/lambda/latest/dg/configuration-images.html#configuration-images-permissions
+          - Sid: LambdaECRImageRetrievalPolicy
+            Effect: Allow
+            Principal: { Service: "lambda.amazonaws.com" }
+            Action:
+              - ecr:BatchGetImage
+              - ecr:GetDownloadUrlForLayer
+            Condition:
+              StringLike:
+                "aws:sourceArn": { "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*" }
   FilePublishingRole:
     Type: AWS::IAM::Role
     Properties:
@@ -439,6 +452,8 @@ Resources:
                   - cloudformation:DeleteStack
                   - cloudformation:UpdateTerminationProtection
                   - sts:GetCallerIdentity
+                  # `cdk import`
+                  - cloudformation:GetTemplateSummary
                 Resource: "*"
                 Effect: Allow
               - Sid: CliStagingBucket
@@ -493,7 +508,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '10'
+      Value: '14'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

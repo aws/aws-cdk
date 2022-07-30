@@ -1,0 +1,142 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-pipeline-event-target": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-pipeline-event-target.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-pipeline-event-target/MyPipeline/ArtifactsBucketEncryptionKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineArtifactsBucketEncryptionKeyAlias9D4F8C59"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineArtifactsBucket727923DD"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineArtifactsBucketPolicyDFDA675B"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineRoleC0D47CA4"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineRoleDefaultPolicy34F09EFA"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineAED38ECF"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/Source/CodeCommitSource/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineSourceCodeCommitSourceCodePipelineActionRole0B6D0F4F"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/Source/CodeCommitSource/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineSourceCodeCommitSourceCodePipelineActionRoleDefaultPolicyE6664925"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/Source/CodeCommitSource/OnActionStateChange/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineSourceCodeCommitSourceOnActionStateChangeDCAF781A"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/Source/OnSourceStateChange/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineSourceOnSourceStateChange6DEE3A75"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/Build/CodeBuildAction/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineBuildCodeBuildActionCodePipelineActionRole3185ADC7"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/Build/CodeBuildAction/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineBuildCodeBuildActionCodePipelineActionRoleDefaultPolicy96378DF6"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyPipeline/OnPipelineStateChange/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineOnPipelineStateChangeA017E4B1"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/CodeCommitRepo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodeCommitRepoDC6A41F9"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/BuildProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildProjectRoleAA92C755"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/BuildProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildProjectRoleDefaultPolicy3E9F248C"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/BuildProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildProject097C5DB7"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/aws-cdk-pipeline-event-target/MyTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicPolicy12A5EC17"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-pipeline-event-target"
+    }
+  }
+}

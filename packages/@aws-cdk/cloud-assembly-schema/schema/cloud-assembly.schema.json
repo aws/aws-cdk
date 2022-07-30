@@ -226,6 +226,14 @@
                     "description": "Path to the Dockerfile (relative to the directory). (Default - no file is passed)",
                     "type": "string"
                 },
+                "networkMode": {
+                    "description": "Networking mode for the RUN commands during build. (Default - no networking mode specified)",
+                    "type": "string"
+                },
+                "platform": {
+                    "description": "Platform to build for. _Requires Docker Buildx_. (Default - current machine platform)",
+                    "type": "string"
+                },
                 "id": {
                     "description": "Logical identifier for the asset",
                     "type": "string"

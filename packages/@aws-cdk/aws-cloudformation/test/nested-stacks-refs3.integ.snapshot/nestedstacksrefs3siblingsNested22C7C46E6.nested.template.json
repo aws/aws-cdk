@@ -1,0 +1,35 @@
+{
+ "Resources": {
+  "ConsumerTopic6F402371": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": {
+     "Fn::Join": [
+      "",
+      [
+       "Consuming ",
+       {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "-",
+           {
+            "Ref": "referencetonestedstacksrefs3siblingsNested1NestedStackNested1NestedStackResourceE58B6825Outputsnestedstacksrefs3siblingsNested1MyTopic12458558TopicName"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "referencetonestedstacksrefs3siblingsNested1NestedStackNested1NestedStackResourceE58B6825Outputsnestedstacksrefs3siblingsNested1MyTopic12458558TopicName": {
+   "Type": "String"
+  }
+ }
+}

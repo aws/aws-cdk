@@ -17,7 +17,7 @@ function functionWithInsightsVersion(
     functionName: id,
     code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     architecture,
     insightsVersion,
   });
@@ -97,7 +97,7 @@ describe('lambda-insights', () => {
           {
             Ref: 'AWS::Region',
           },
-          '1_0_98_0_x86_64',
+          '1x0x98x0xx86x64',
         ],
       }],
     });
@@ -117,20 +117,20 @@ describe('lambda-insights', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       FunctionName: 'MyLambda1',
       Layers: [{
-        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1_0_98_0_x86_64'],
+        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x98x0xx86x64'],
       }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       FunctionName: 'MyLambda2',
       Layers: [{
-        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1_0_98_0_x86_64'],
+        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x98x0xx86x64'],
       }],
     });
 
     Template.fromStack(stack).hasMapping('CloudwatchlambdainsightsversionMap', {
       'af-south-1': {
-        '1_0_98_0_x86_64': 'arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:8',
+        '1x0x98x0xx86x64': 'arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:8',
       },
     });
 
@@ -218,21 +218,21 @@ describe('lambda-insights', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       FunctionName: 'MyLambda1',
       Layers: [{
-        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1_0_119_0_x86_64'],
+        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x119x0xx86x64'],
       }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       FunctionName: 'MyLambda2',
       Layers: [{
-        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1_0_119_0_arm64'],
+        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x119x0xarm64'],
       }],
     });
 
     Template.fromStack(stack).hasMapping('CloudwatchlambdainsightsversionMap', {
       'ap-south-1': {
-        '1_0_119_0_x86_64': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:16',
-        '1_0_119_0_arm64': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension-Arm64:1',
+        '1x0x119x0xx86x64': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:16',
+        '1x0x119x0xarm64': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension-Arm64:1',
       },
     });
 

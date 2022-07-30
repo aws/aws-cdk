@@ -5,6 +5,7 @@
   "scripts": {
     "update": "cdk-build && /bin/bash build-tools/update.sh && /bin/bash build-tools/update-cfnlint.sh",
     "update-metrics": "/bin/bash build-tools/update-metrics.sh",
+    "rejected": "node build-tools/report-issues.js spec-source/specification/000_cfn/000_official/ rejected",
     "build": "cdk-build && node build-tools/build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
@@ -32,12 +33,12 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.0",
-    "@types/md5": "^2.3.1",
+    "@types/jest": "^27.5.2",
+    "@types/md5": "^2.3.2",
     "fast-json-patch": "^2.2.1",
-    "jest": "^27.4.7",
-    "json-diff": "^0.7.1",
-    "sort-json": "^2.0.0"
+    "jest": "^27.5.1",
+    "json-diff": "^0.9.0",
+    "sort-json": "^2.0.1"
   },
   "dependencies": {
     "fs-extra": "^9.1.0",

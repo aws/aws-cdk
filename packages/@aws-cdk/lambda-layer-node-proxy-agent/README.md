@@ -23,4 +23,4 @@ declare const fn: lambda.Function;
 fn.addLayers(new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer'));
 ```
 
-[`proxy-agent`](https://www.npmjs.com/package/proxy-agent) will be installed under `/opt/nodejs/node_modules`.
+[`proxy-agent`](https://www.npmjs.com/package/proxy-agent) will be installed under `/nodejs/node_modules`.

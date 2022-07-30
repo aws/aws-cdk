@@ -1,9 +1,8 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { addStackArtifactToAssembly } from './_shared';
-import { IStackSynthesizer } from './types';
+import { IStackSynthesizer, ISynthesisSession } from './types';
 
 /**
  * Base class for implementing an IStackSynthesizer
@@ -46,7 +45,6 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
     stack._synthesizeTemplate(session);
   }
-
 
   /**
    * Write the stack artifact to the session

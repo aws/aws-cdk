@@ -1,7 +1,9 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { SdkProvider } from '../api';
-import { replaceEnvPlaceholders } from '../api/cloudformation-deployments';
+import { PluginHost } from '../api/plugin';
+import { ContextProviderPlugin } from '../api/plugin/context-provider-plugin';
+import { replaceEnvPlaceholders } from '../api/util/placeholders';
 import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 import { AmiContextProviderPlugin } from './ami';
@@ -10,7 +12,6 @@ import { EndpointServiceAZContextProviderPlugin } from './endpoint-service-avail
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
 import { KeyContextProviderPlugin } from './keys';
 import { LoadBalancerContextProviderPlugin, LoadBalancerListenerContextProviderPlugin } from './load-balancers';
-import { ContextProviderPlugin } from './provider';
 import { SecurityGroupContextProviderPlugin } from './security-groups';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
@@ -35,10 +36,20 @@ export async function provideContextValues(
       ? `${PLUGIN_PROVIDER_PREFIX}:${(missingContext.props as cxschema.PluginContextQuery).pluginName}`
       : missingContext.provider;
 
-    const factory = availableContextProviders[providerName];
-    if (!factory) {
-      // eslint-disable-next-line max-len
-      throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
+    let factory;
+    if (providerName.startsWith(`${PLUGIN_PROVIDER_PREFIX}:`)) {
+      const plugin = PluginHost.instance.contextProviderPlugins[providerName.substring(PLUGIN_PROVIDER_PREFIX.length + 1)];
+      if (!plugin) {
+        // eslint-disable-next-line max-len
+        throw new Error(`Unrecognized plugin context provider name: ${missingContext.provider}.`);
+      }
+      factory = () => plugin;
+    } else {
+      factory = availableContextProviders[providerName];
+      if (!factory) {
+        // eslint-disable-next-line max-len
+        throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
+      }
     }
 
     const provider = factory(sdk);

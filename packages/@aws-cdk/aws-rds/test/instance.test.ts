@@ -246,6 +246,52 @@ describe('instance', () => {
     });
   });
 
+  test('instance with inline parameter group', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
+      vpc,
+      parameters: {
+        locks: '100',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'DatabaseParameterGroup2A921026',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
+      Family: 'sqlserver-ee-11.0',
+      Parameters: {
+        locks: '100',
+      },
+    });
+  });
+
+  test('instance with inline parameter group and parameterGroup arg fails', () => {
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({
+        version: rds.SqlServerEngineVersion.VER_11,
+      }),
+      parameters: {
+        key: 'value',
+      },
+    });
+
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
+        vpc,
+        parameters: {
+          locks: '100',
+        },
+        parameterGroup,
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
+  });
+
   test('can specify subnet type', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({
@@ -357,7 +403,7 @@ describe('instance', () => {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
-        credentials: rds.SnapshotCredentials.fromPassword(cdk.SecretValue.plainText('mysecretpassword')),
+        credentials: rds.SnapshotCredentials.fromPassword(cdk.SecretValue.unsafePlainText('mysecretpassword')),
       });
 
       // TODO - Expect this to be broken
@@ -459,7 +505,7 @@ describe('instance', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -751,14 +797,17 @@ describe('instance', () => {
     });
   });
 
-  test('addRotationSingleUser() with options', () => {
+  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
     // GIVEN
-    const vpcWithIsolated = new ec2.Vpc(stack, 'Vpc', {
-      subnetConfiguration: [
-        { name: 'public', subnetType: ec2.SubnetType.PUBLIC },
-        { name: 'private', subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
-        { name: 'isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
-      ],
+    const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-id',
+      availabilityZones: ['az1'],
+      publicSubnetIds: ['public-subnet-id-1', 'public-subnet-id-2'],
+      publicSubnetNames: ['public-subnet-name-1', 'public-subnet-name-2'],
+      privateSubnetIds: ['private-subnet-id-1', 'private-subnet-id-2'],
+      privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
+      isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
+      isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
     });
 
     // WHEN
@@ -793,25 +842,64 @@ describe('instance', () => {
             { Ref: 'AWS::URLSuffix' },
           ]],
         },
-        functionName: 'DatabaseRotationSingleUser458A45BE',
-        vpcSubnetIds: {
-          'Fn::Join': ['', [
-            { Ref: 'VpcprivateSubnet1SubnetCEAD3716' },
-            ',',
-            { Ref: 'VpcprivateSubnet2Subnet2DE7549C' },
-          ]],
-        },
-        vpcSecurityGroupIds: {
-          'Fn::GetAtt': [
-            'DatabaseRotationSingleUserSecurityGroupAC6E0E73',
-            'GroupId',
-          ],
-        },
+        vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
         excludeCharacters: '°_@',
       },
     });
   });
 
+  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
+    // GIVEN
+    const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-id',
+      availabilityZones: ['az1'],
+      publicSubnetIds: ['public-subnet-id-1', 'public-subnet-id-2'],
+      publicSubnetNames: ['public-subnet-name-1', 'public-subnet-name-2'],
+      privateSubnetIds: ['private-subnet-id-1', 'private-subnet-id-2'],
+      privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
+      isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
+      isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const userSecret = new rds.DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_10 }),
+      vpc: vpcWithIsolated,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    });
+
+    // Rotation in private subnet (internet via NAT)
+    instance.addRotationMultiUser('user', {
+      secret: userSecret.attach(instance),
+      automaticallyAfter: cdk.Duration.days(15),
+      excludeCharacters: '°_@',
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        AutomaticallyAfterDays: 15,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
+        excludeCharacters: '°_@',
+      },
+    });
+  });
 
   test('addRotationSingleUser() with VPC interface endpoint', () => {
     // GIVEN
@@ -869,7 +957,7 @@ describe('instance', () => {
   test('throws when trying to add rotation to an instance without secret', () => {
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
-      credentials: rds.Credentials.fromUsername('syscdk', { password: cdk.SecretValue.plainText('tooshort') }),
+      credentials: rds.Credentials.fromUsername('syscdk', { password: cdk.SecretValue.unsafePlainText('tooshort') }),
       vpc,
     });
 
@@ -1431,7 +1519,7 @@ describe('instance', () => {
       }),
       vpc,
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       },
       publiclyAccessible: true,
     });
@@ -1569,6 +1657,31 @@ describe('instance', () => {
       Port: {
         Ref: 'Port',
       },
+    });
+  });
+
+  test('engine is specified for read replica using domain', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13 });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      instanceType,
+      vpc,
+      domain: 'my-domain',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      SourceDBInstanceIdentifier: Match.anyValue(),
+      Engine: 'postgres',
     });
   });
 });

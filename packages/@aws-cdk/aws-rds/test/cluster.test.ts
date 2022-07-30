@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -10,6 +10,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
+  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour,
 } from '../lib';
 
 describe('cluster', () => {
@@ -23,7 +24,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -81,7 +82,7 @@ describe('cluster', () => {
       instances: 1,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -121,6 +122,36 @@ describe('cluster', () => {
     });
   });
 
+  test('can create a cluster with ROLLING instance update behaviour', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 5,
+      instanceProps: {
+        vpc,
+      },
+      instanceUpdateBehaviour: InstanceUpdateBehaviour.ROLLING,
+    });
+
+    // THEN
+    const instanceResources = Template.fromStack(stack).findResources('AWS::RDS::DBInstance');
+    const instances = Object.keys(instanceResources);
+    const instanceDependencies = Object.values(instanceResources)
+      .map(properties => (properties.DependsOn as string[]).filter(dependency => instances.includes(dependency)));
+    // check that there are only required dependencies to form a chain of dependant instances
+    for (const dependencies of instanceDependencies) {
+      expect(dependencies.length).toBeLessThanOrEqual(1);
+    }
+    // check that all but one instance are a dependency of another instance
+    const dependantInstances = instanceDependencies.flat();
+    expect(dependantInstances).toHaveLength(instances.length - 1);
+    expect(instances.filter(it => !dependantInstances.includes(it))).toHaveLength(1);
+  });
+
   test('can create a cluster with imported vpc and security group', () => {
     // GIVEN
     const stack = testStack();
@@ -135,7 +166,7 @@ describe('cluster', () => {
       instances: 1,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -171,7 +202,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -320,6 +351,112 @@ describe('cluster', () => {
         Ref: 'ParameterGroup5E32DECB',
       },
     });
+  });
+
+  test('cluster with inline parameter group', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      parameters: {
+        locks: '100',
+      },
+      instanceProps: {
+        vpc,
+        parameters: {
+          locks: '200',
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: {
+        Ref: 'DatabaseParameterGroup2A921026',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
+      Family: 'aurora5.6',
+      Parameters: {
+        locks: '100',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'DatabaseInstanceParameterGroup6968C5BF',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
+      Family: 'aurora5.6',
+      Parameters: {
+        locks: '200',
+      },
+    });
+  });
+
+  test('cluster with inline parameter group and parameterGroup arg fails', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseInstanceEngine.sqlServerEe({
+        version: SqlServerEngineVersion.VER_11,
+      }),
+      parameters: {
+        locks: '50',
+      },
+    });
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        parameters: {
+          locks: '100',
+        },
+        parameterGroup,
+        instanceProps: {
+          vpc,
+          parameters: {
+            locks: '200',
+          },
+        },
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
+  });
+
+  test('instance with inline parameter group and parameterGroup arg fails', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseInstanceEngine.sqlServerEe({
+        version: SqlServerEngineVersion.VER_11,
+      }),
+      parameters: {
+        locks: '50',
+      },
+    });
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        parameters: {
+          locks: '100',
+        },
+        instanceProps: {
+          vpc,
+          parameterGroup,
+          parameters: {
+            locks: '200',
+          },
+        },
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
   });
 
   describe('performance insights', () => {
@@ -600,7 +737,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_5_7_12 }),
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         vpc,
@@ -781,15 +918,18 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationSingleUser() with options', () => {
+  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpcWithIsolated = new ec2.Vpc(stack, 'Vpc', {
-      subnetConfiguration: [
-        { name: 'public', subnetType: ec2.SubnetType.PUBLIC },
-        { name: 'private', subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
-        { name: 'isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
-      ],
+    const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-id',
+      availabilityZones: ['az1'],
+      publicSubnetIds: ['public-subnet-id-1', 'public-subnet-id-2'],
+      publicSubnetNames: ['public-subnet-name-1', 'public-subnet-name-2'],
+      privateSubnetIds: ['private-subnet-id-1', 'private-subnet-id-2'],
+      privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
+      isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
+      isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
     });
 
     // WHEN
@@ -827,25 +967,68 @@ describe('cluster', () => {
             { Ref: 'AWS::URLSuffix' },
           ]],
         },
-        functionName: 'DatabaseRotationSingleUser458A45BE',
-        vpcSubnetIds: {
-          'Fn::Join': ['', [
-            { Ref: 'VpcprivateSubnet1SubnetCEAD3716' },
-            ',',
-            { Ref: 'VpcprivateSubnet2Subnet2DE7549C' },
-          ]],
-        },
-        vpcSecurityGroupIds: {
-          'Fn::GetAtt': [
-            'DatabaseRotationSingleUserSecurityGroupAC6E0E73',
-            'GroupId',
-          ],
-        },
+        vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
         excludeCharacters: '°_@',
       },
     });
   });
 
+  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-id',
+      availabilityZones: ['az1'],
+      publicSubnetIds: ['public-subnet-id-1', 'public-subnet-id-2'],
+      publicSubnetNames: ['public-subnet-name-1', 'public-subnet-name-2'],
+      privateSubnetIds: ['private-subnet-id-1', 'private-subnet-id-2'],
+      privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
+      isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
+      isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc: vpcWithIsolated,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      },
+    });
+
+    // Rotation in private subnet (internet via NAT)
+    cluster.addRotationMultiUser('user', {
+      secret: userSecret.attach(cluster),
+      automaticallyAfter: cdk.Duration.days(15),
+      excludeCharacters: '°_@',
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        AutomaticallyAfterDays: 15,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
+        excludeCharacters: '°_@',
+      },
+    });
+  });
 
   test('addRotationSingleUser() with VPC interface endpoint', () => {
     // GIVEN
@@ -912,7 +1095,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -921,7 +1104,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(() => cluster.addRotationSingleUser()).toThrow(/without secret/);
+    expect(() => cluster.addRotationSingleUser()).toThrow(/without a secret/);
   });
 
   test('throws when trying to add single user rotation multiple times', () => {
@@ -1600,6 +1783,33 @@ describe('cluster', () => {
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBClusterParameterGroup', 0);
   });
 
+  test('MySQL cluster in version 8.0 uses aws_default_s3_role as a Parameter for S3 import/export, instead of aurora_load/select_from_s3_role', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      instanceProps: { vpc },
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_01_0 }),
+      s3ImportBuckets: [new s3.Bucket(stack, 'ImportBucket')],
+      s3ExportBuckets: [new s3.Bucket(stack, 'ExportBucket')],
+    });
+
+    const assert = Template.fromStack(stack);
+    assert.hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
+      Family: 'aurora-mysql8.0',
+      Parameters: {
+        aws_default_s3_role: {
+          'Fn::GetAtt': ['DatabaseS3ImportRole377BC9C0', 'Arn'],
+        },
+        aurora_load_from_s3_role: Match.absent(),
+        aurora_select_into_s3_role: Match.absent(),
+      },
+    });
+    assert.resourceCountIs('AWS::IAM::Role', 1);
+  });
+
   test('throws when s3ExportRole and s3ExportBuckets properties are both specified', () => {
     // GIVEN
     const stack = testStack();
@@ -1662,7 +1872,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -1687,7 +1897,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -1730,7 +1940,7 @@ describe('cluster', () => {
         engine: DatabaseClusterEngine.AURORA,
         credentials: {
           username: 'admin',
-          password: cdk.SecretValue.plainText('tooshort'),
+          password: cdk.SecretValue.unsafePlainText('tooshort'),
         },
         instanceProps: {
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -1751,7 +1961,7 @@ describe('cluster', () => {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -1817,6 +2027,7 @@ describe('cluster', () => {
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         SnapshotIdentifier: 'mySnapshot',
         EnableIAMDatabaseAuthentication: true,
+        CopyTagsToSnapshot: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
@@ -1843,6 +2054,216 @@ describe('cluster', () => {
           ':',
           { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
         ]],
+      },
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Database', Match.stringLikeRegexp('Generated credentials will not be applied to cluster'));
+  });
+
+  test('can generate a new snapshot password', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: SnapshotCredentials.fromGeneratedSecret('admin', {
+        excludeCharacters: '"@/\\',
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      MasterUsername: Match.absent(),
+      MasterUserPassword: {
+        'Fn::Join': ['', [
+          '{{resolve:secretsmanager:',
+          { Ref: 'DatabaseSnapshotSecret2B5748BB8ee0a797cad8a68dbeb85f8698cdb5bb' },
+          ':SecretString:password::}}',
+        ]],
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      Description: {
+        'Fn::Join': ['', ['Generated by the CDK for stack: ', { Ref: 'AWS::StackName' }]],
+      },
+      GenerateSecretString: {
+        ExcludeCharacters: '\"@/\\',
+        GenerateStringKey: 'password',
+        PasswordLength: 30,
+        SecretStringTemplate: '{"username":"admin"}',
+      },
+    });
+  });
+
+  test('fromGeneratedSecret with replica regions', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: SnapshotCredentials.fromGeneratedSecret('admin', {
+        replicaRegions: [{ region: 'eu-west-1' }],
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      ReplicaRegions: [
+        {
+          Region: 'eu-west-1',
+        },
+      ],
+    });
+  });
+
+  test('throws if generating a new password without a username', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    expect(() => new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: { generatePassword: true },
+    })).toThrow(/`snapshotCredentials` `username` must be specified when `generatePassword` is set to true/);
+  });
+
+  test('can set a new snapshot password from an existing Secret', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const secret = new DatabaseSecret(stack, 'DBSecret', {
+      username: 'admin',
+      encryptionKey: new kms.Key(stack, 'PasswordKey'),
+    });
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: SnapshotCredentials.fromSecret(secret),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      MasterUsername: Match.absent(),
+      MasterUserPassword: {
+        'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'DBSecretD58955BC' }, ':SecretString:password::}}']],
+      },
+    });
+  });
+
+  test('create a cluster from a snapshot with encrypted storage', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      storageEncryptionKey: kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:us-east-1:456:key/my-key'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      KmsKeyId: 'arn:aws:kms:us-east-1:456:key/my-key',
+      StorageEncrypted: true,
+    });
+  });
+
+  test('create a cluster from a snapshot with single user secret rotation', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+    });
+  });
+
+  test('throws when trying to add single user rotation multiple times on cluster from snapshot', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser();
+
+    // THEN
+    expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation was already added to this cluster/);
+  });
+
+  test('create a cluster from a snapshot with multi user secret rotation', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // WHEN
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+    cluster.addRotationMultiUser('user', { secret: userSecret.attach(cluster) });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'UserSecretAttachment16ACBE6D',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseuserECD1FB0C',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        masterSecretArn: {
+          Ref: 'DatabaseSecretAttachmentE5D1B020',
+        },
       },
     });
   });
@@ -2006,7 +2427,7 @@ describe('cluster', () => {
       instanceProps: {
         vpc,
         vpcSubnets: {
-          subnetType: ec2.SubnetType.PRIVATE,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
         },
         publiclyAccessible: true,
       },

@@ -245,7 +245,7 @@ test('selecting correct vpcSubnets', () => {
         name: 'Public',
       },
       {
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         cidrMask: 20,
         name: 'ISOLATED',
       },
@@ -258,7 +258,7 @@ test('selecting correct vpcSubnets', () => {
       image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
     },
     taskSubnets: {
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     },
   });
   // THEN
@@ -1045,5 +1045,124 @@ test('test Network load balanced service with docker labels defined', () => {
         },
       }),
     ],
+  });
+});
+
+test('Passing in token for desiredCount will not throw error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  const param = new cdk.CfnParameter(stack, 'prammm', {
+    type: 'Number',
+    default: 1,
+  });
+
+  // WHEN
+  const service = new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+    cluster,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+    },
+    desiredCount: param.valueAsNumber,
+  });
+
+  // THEN
+  expect(() => {
+    service.internalDesiredCount;
+  }).toBeTruthy;
+});
+
+test('ApplicationLoadBalancedFargateService multiple capacity provider strategies are set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.enableFargateCapacityProviders();
+
+  // WHEN
+  new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 1024,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
+    capacityProviderStrategies: [
+      {
+        capacityProvider: 'FARGATE',
+        base: 1,
+        weight: 1,
+      },
+      {
+        capacityProvider: 'FARGATE_SPOT',
+        base: 0,
+        weight: 2,
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    CapacityProviderStrategy: Match.arrayEquals([
+      {
+        Base: 1,
+        CapacityProvider: 'FARGATE',
+        Weight: 1,
+      },
+      {
+        Base: 0,
+        CapacityProvider: 'FARGATE_SPOT',
+        Weight: 2,
+      },
+    ]),
+  });
+});
+
+
+test('NetworkLoadBalancedFargateService multiple capacity provider strategies are set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.enableFargateCapacityProviders();
+
+  // WHEN
+  new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 1024,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
+    capacityProviderStrategies: [
+      {
+        capacityProvider: 'FARGATE',
+        base: 1,
+        weight: 1,
+      },
+      {
+        capacityProvider: 'FARGATE_SPOT',
+        base: 0,
+        weight: 2,
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    CapacityProviderStrategy: Match.arrayEquals([
+      {
+        Base: 1,
+        CapacityProvider: 'FARGATE',
+        Weight: 1,
+      },
+      {
+        Base: 0,
+        CapacityProvider: 'FARGATE_SPOT',
+        Weight: 2,
+      },
+    ]),
   });
 });

@@ -29,3 +29,6 @@ jest.config.js
 
 # Don't include lambda node_modules. These are installed at build time.
 lib/cluster-resource-handler/node_modules
+
+**/*.integ.snapshot
+**/*.integ.snapshot

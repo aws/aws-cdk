@@ -1,0 +1,103 @@
+{
+  "name": "@aws-cdk/integ-runner",
+  "description": "CDK Integration Testing Tool",
+  "version": "0.0.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "bin": {
+    "integ-runner": "bin/integ-runner"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
+  },
+  "cdk-package": {
+    "bundle": {
+      "entryPoints": [
+        "lib/index.js",
+        "lib/workers/extract/index.js"
+      ],
+      "externals": {
+        "dependencies": [
+          "aws-cdk"
+        ]
+      },
+      "allowedLicenses": [
+        "Apache-2.0",
+        "MIT",
+        "BSD-3-Clause",
+        "ISC",
+        "BSD-2-Clause",
+        "0BSD"
+      ],
+      "dontAttribute": "^@aws-cdk/|^cdk-assets$|^cdk-cli-wrapper$",
+      "test": "bin/integ-runner --version"
+    }
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@types/mock-fs": "^4.13.1",
+    "mock-fs": "^4.14.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/fs-extra": "^8.1.2",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^14.18.22",
+    "@types/workerpool": "^6.1.0",
+    "@types/yargs": "^15.0.14",
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/cloudformation-diff": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "cdk-assets": "0.0.0",
+    "cdk-cli-wrapper": "0.0.0",
+    "aws-cdk": "0.0.0",
+    "chalk": "^4",
+    "fs-extra": "^9.1.0",
+    "workerpool": "^6.2.1",
+    "yargs": "^16.2.0"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/integ-runner"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "nozem": {
+    "ostools": [
+      "unzip",
+      "diff",
+      "rm"
+    ]
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "private": true
+}

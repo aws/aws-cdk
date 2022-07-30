@@ -202,7 +202,7 @@ describe('GitHub source', () => {
 
     // WHEN
     new codebuild.GitHubSourceCredentials(stack, 'GitHubSourceCredentials', {
-      accessToken: cdk.SecretValue.plainText('my-access-token'),
+      accessToken: cdk.SecretValue.unsafePlainText('my-access-token'),
     });
 
     // THEN
@@ -239,7 +239,7 @@ describe('GitHub Enterprise source', () => {
 
     // WHEN
     new codebuild.GitHubEnterpriseSourceCredentials(stack, 'GitHubEnterpriseSourceCredentials', {
-      accessToken: cdk.SecretValue.plainText('my-access-token'),
+      accessToken: cdk.SecretValue.unsafePlainText('my-access-token'),
     });
 
     // THEN
@@ -277,8 +277,8 @@ describe('BitBucket source', () => {
 
     // WHEN
     new codebuild.BitBucketSourceCredentials(stack, 'BitBucketSourceCredentials', {
-      username: cdk.SecretValue.plainText('my-username'),
-      password: cdk.SecretValue.plainText('password'),
+      username: cdk.SecretValue.unsafePlainText('my-username'),
+      password: cdk.SecretValue.unsafePlainText('password'),
     });
 
     // THEN
@@ -788,6 +788,33 @@ describe('Environment', () => {
             ':s3:::my-bucket/path',
           ]],
         },
+      }),
+    });
+  });
+
+  test.each([
+    ['Standard 6.0', codebuild.LinuxBuildImage.STANDARD_6_0, 'aws/codebuild/standard:6.0'],
+    ['Amazon Linux 4.0', codebuild.LinuxBuildImage.AMAZON_LINUX_2_4, 'aws/codebuild/amazonlinux2-x86_64-standard:4.0'],
+  ])('has build image for %s', (_, buildImage, expected) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket,
+        path: 'path',
+      }),
+      environment: {
+        buildImage: buildImage,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        Image: expected,
       }),
     });
   });

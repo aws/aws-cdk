@@ -1,0 +1,76 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "code-first-schema": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "code-first-schema.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/code-first-schema/code-first-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codefirstapi1A3CC7D2"
+          }
+        ],
+        "/code-first-schema/code-first-api/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codefirstapiSchema148B6CDE"
+          }
+        ],
+        "/code-first-schema/code-first-api/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codefirstapiDefaultApiKey89863A80"
+          }
+        ],
+        "/code-first-schema/code-first-api/planets/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codefirstapiplanetsServiceRole2F4AA8E7"
+          }
+        ],
+        "/code-first-schema/code-first-api/planets/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codefirstapiplanetsServiceRoleDefaultPolicy76FE4F2C"
+          }
+        ],
+        "/code-first-schema/code-first-api/planets/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codefirstapiplanets0F6BB479"
+          }
+        ],
+        "/code-first-schema/code-first-api/QuerygetPlanetsResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codefirstapiQuerygetPlanetsResolver54E13D9A"
+          }
+        ],
+        "/code-first-schema/code-first-api/MutationaddPlanetResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codefirstapiMutationaddPlanetResolver49A375A3"
+          }
+        ],
+        "/code-first-schema/table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "table8235A42E"
+          }
+        ]
+      },
+      "displayName": "code-first-schema"
+    }
+  }
+}

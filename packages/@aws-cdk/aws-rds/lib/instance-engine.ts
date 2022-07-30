@@ -1,12 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IOptionGroup, OptionGroup } from './option-group';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The options passed to {@link IInstanceEngine.bind}.
@@ -492,6 +489,12 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_33 = MysqlEngineVersion.of('5.7.33', '5.7');
   /** Version "5.7.34". */
   public static readonly VER_5_7_34 = MysqlEngineVersion.of('5.7.34', '5.7');
+  /** Version "5.7.35". */
+  public static readonly VER_5_7_35 = MysqlEngineVersion.of('5.7.35', '5.7');
+  /** Version "5.7.36". */
+  public static readonly VER_5_7_36 = MysqlEngineVersion.of('5.7.36', '5.7');
+  /** Version "5.7.37". */
+  public static readonly VER_5_7_37 = MysqlEngineVersion.of('5.7.37', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -517,6 +520,10 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_25 = MysqlEngineVersion.of('8.0.25', '8.0');
   /** Version "8.0.26". */
   public static readonly VER_8_0_26 = MysqlEngineVersion.of('8.0.26', '8.0');
+  /** Version "8.0.27". */
+  public static readonly VER_8_0_27 = MysqlEngineVersion.of('8.0.27', '8.0');
+  /** Version "8.0.28". */
+  public static readonly VER_8_0_28 = MysqlEngineVersion.of('8.0.28', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -841,6 +848,8 @@ export class PostgresEngineVersion {
   public static readonly VER_10_18 = PostgresEngineVersion.of('10.18', '10', { s3Import: true, s3Export: true });
   /** Version "10.19". */
   public static readonly VER_10_19 = PostgresEngineVersion.of('10.19', '10', { s3Import: true, s3Export: true });
+  /** Version "10.20". */
+  public static readonly VER_10_20 = PostgresEngineVersion.of('10.20', '10', { s3Import: true, s3Export: true });
 
   /** Version "11" (only a major version, without a specific minor version). */
   public static readonly VER_11 = PostgresEngineVersion.of('11', '11', { s3Import: true });
@@ -870,6 +879,8 @@ export class PostgresEngineVersion {
   public static readonly VER_11_13 = PostgresEngineVersion.of('11.13', '11', { s3Import: true, s3Export: true });
   /** Version "11.14". */
   public static readonly VER_11_14 = PostgresEngineVersion.of('11.14', '11', { s3Import: true, s3Export: true });
+  /** Version "11.15". */
+  public static readonly VER_11_15 = PostgresEngineVersion.of('11.15', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -889,6 +900,8 @@ export class PostgresEngineVersion {
   public static readonly VER_12_8 = PostgresEngineVersion.of('12.8', '12', { s3Import: true, s3Export: true });
   /** Version "12.9". */
   public static readonly VER_12_9 = PostgresEngineVersion.of('12.9', '12', { s3Import: true, s3Export: true });
+  /** Version "12.10". */
+  public static readonly VER_12_10 = PostgresEngineVersion.of('12.10', '12', { s3Import: true, s3Export: true });
 
   /** Version "13" (only a major version, without a specific minor version). */
   public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true, s3Export: true });
@@ -902,11 +915,15 @@ export class PostgresEngineVersion {
   public static readonly VER_13_4 = PostgresEngineVersion.of('13.4', '13', { s3Import: true, s3Export: true });
   /** Version "13.5". */
   public static readonly VER_13_5 = PostgresEngineVersion.of('13.5', '13', { s3Import: true, s3Export: true });
+  /** Version "13.6". */
+  public static readonly VER_13_6 = PostgresEngineVersion.of('13.6', '13', { s3Import: true, s3Export: true });
 
   /** Version "14" (only a major version, without a specific minor version). */
   public static readonly VER_14 = PostgresEngineVersion.of('14', '14', { s3Import: true, s3Export: true });
   /** Version "14.1". */
   public static readonly VER_14_1 = PostgresEngineVersion.of('14.1', '14', { s3Import: true, s3Export: true });
+  /** Version "14.2". */
+  public static readonly VER_14_2 = PostgresEngineVersion.of('14.2', '14', { s3Import: true, s3Export: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.
@@ -1051,9 +1068,12 @@ export class OracleLegacyEngineVersion {
 }
 
 /**
- * The versions for the Oracle instance engines
- * (those returned by {@link DatabaseInstanceEngine.oracleSe2} and
- * {@link DatabaseInstanceEngine.oracleEe}).
+ * The versions for the Oracle instance engines.
+ * Those returned by the following list.
+ * - {@link DatabaseInstanceEngine.oracleSe2}
+ * - {@link DatabaseInstanceEngine.oracleSe2Cdb}
+ * - {@link DatabaseInstanceEngine.oracleEe}
+ * - {@link DatabaseInstanceEngine.oracleEeCdb}.
  */
 export class OracleEngineVersion {
   /** Version "12.1" (only a major version, without a specific minor version). */
@@ -1166,7 +1186,17 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2021_01_R2 = OracleEngineVersion.of('19.0.0.0.ru-2021-01.rur-2021-01.r2', '19');
   /** Version "19.0.0.0.ru-2021-01.rur-2021-04.r1". */
   public static readonly VER_19_0_0_0_2021_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-04.rur-2021-04.r1', '19');
+  /** Version "19.0.0.0.ru-2021-07.rur-2021-07.r1". */
+  public static readonly VER_19_0_0_0_2021_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-07.rur-2021-07.r1', '19');
+  /** Version "19.0.0.0.ru-2021-10.rur-2021-10.r1". */
+  public static readonly VER_19_0_0_0_2021_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-10.rur-2021-10.r1', '19');
+  /** Version "19.0.0.0.ru-2022-01.rur-2022-01.r1". */
+  public static readonly VER_19_0_0_0_2022_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-01.rur-2022-01.r1', '19');
 
+  /** Version "21" (only a major version, without a specific minor version). */
+  public static readonly VER_21 = OracleEngineVersion.of('21', '21');
+  /** Version "21.0.0.0.ru-2022-01.rur-2022-01.r1". */
+  public static readonly VER_21_0_0_0_2022_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-01.rur-2022-01.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
@@ -1318,6 +1348,27 @@ class OracleSe2InstanceEngine extends OracleInstanceEngineBase {
 }
 
 /**
+ * Properties for Oracle Standard Edition 2 (CDB) instance engines.
+ * Used in {@link DatabaseInstanceEngine.oracleSe2Cdb}.
+ */
+export interface OracleSe2CdbInstanceEngineProps extends OracleInstanceEngineProps {
+}
+
+class OracleSe2CdbInstanceEngine extends OracleInstanceEngineBase {
+  constructor(version?: OracleEngineVersion) {
+    super({
+      engineType: 'oracle-se2-cdb',
+      version: version
+        ? {
+          fullVersion: version.oracleFullVersion,
+          majorVersion: version.oracleMajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
  * Properties for Oracle Enterprise Edition instance engines.
  * Used in {@link DatabaseInstanceEngine.oracleEe}.
  */
@@ -1328,6 +1379,27 @@ class OracleEeInstanceEngine extends OracleInstanceEngineBase {
   constructor(version?: OracleEngineVersion) {
     super({
       engineType: 'oracle-ee',
+      version: version
+        ? {
+          fullVersion: version.oracleFullVersion,
+          majorVersion: version.oracleMajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
+ * Properties for Oracle Enterprise Edition (CDB) instance engines.
+ * Used in {@link DatabaseInstanceEngine.oracleEeCdb}.
+ */
+export interface OracleEeCdbInstanceEngineProps extends OracleInstanceEngineProps {
+}
+
+class OracleEeCdbInstanceEngine extends OracleInstanceEngineBase {
+  constructor(version?: OracleEngineVersion) {
+    super({
+      engineType: 'oracle-ee-cdb',
       version: version
         ? {
           fullVersion: version.oracleFullVersion,
@@ -1623,12 +1695,28 @@ export class DatabaseInstanceEngine {
   public static readonly ORACLE_EE: IInstanceEngine = new OracleEeInstanceEngine();
 
   /**
+   * The unversioned 'oracle-ee-cdb' instance engine.
+   *
+   * NOTE: using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link oracleEeCdb()} method
+   */
+  public static readonly ORACLE_EE_CDB: IInstanceEngine = new OracleEeCdbInstanceEngine();
+
+  /**
    * The unversioned 'oracle-se2' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link oracleSe2()} method
    */
   public static readonly ORACLE_SE2: IInstanceEngine = new OracleSe2InstanceEngine();
+
+  /**
+   * The unversioned 'oracle-se2-cdb' instance engine.
+   *
+   * NOTE: using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link oracleSe2Cdb()} method
+   */
+  public static readonly ORACLE_SE2_CDB: IInstanceEngine = new OracleSe2CdbInstanceEngine();
 
   /**
    * The unversioned 'oracle-se1' instance engine.
@@ -1715,14 +1803,24 @@ export class DatabaseInstanceEngine {
     return new OracleSe1InstanceEngine(props.version);
   }
 
-  /** Creates a new Oracle Standard Edition 1 instance engine. */
+  /** Creates a new Oracle Standard Edition 2 instance engine. */
   public static oracleSe2(props: OracleSe2InstanceEngineProps): IInstanceEngine {
     return new OracleSe2InstanceEngine(props.version);
+  }
+
+  /** Creates a new Oracle Standard Edition 2 (CDB) instance engine. */
+  public static oracleSe2Cdb(props: OracleSe2CdbInstanceEngineProps): IInstanceEngine {
+    return new OracleSe2CdbInstanceEngine(props.version);
   }
 
   /** Creates a new Oracle Enterprise Edition instance engine. */
   public static oracleEe(props: OracleEeInstanceEngineProps): IInstanceEngine {
     return new OracleEeInstanceEngine(props.version);
+  }
+
+  /** Creates a new Oracle Enterprise Edition (CDB) instance engine. */
+  public static oracleEeCdb(props: OracleEeCdbInstanceEngineProps): IInstanceEngine {
+    return new OracleEeCdbInstanceEngine(props.version);
   }
 
   /** Creates a new SQL Server Standard Edition instance engine. */

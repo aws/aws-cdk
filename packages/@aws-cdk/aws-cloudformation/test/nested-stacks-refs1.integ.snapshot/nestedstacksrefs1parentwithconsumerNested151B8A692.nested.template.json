@@ -1,0 +1,20 @@
+{
+ "Resources": {
+  "ConsumerTopic6F402371": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": {
+     "Fn::Join": [
+      "",
+      [
+       "Consumer of ",
+       {
+        "Fn::ImportValue": "nest-stacks-refs1-producer:ExportsOutputFnGetAttMyTopic86869434TopicNameFCC96FA2"
+       }
+      ]
+     ]
+    }
+   }
+  }
+ }
+}

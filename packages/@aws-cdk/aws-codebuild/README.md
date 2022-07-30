@@ -95,7 +95,7 @@ const gitHubSource = codebuild.Source.gitHub({
   webhookFilters: [
     codebuild.FilterGroup
       .inEventOf(codebuild.EventAction.PUSH)
-      .andBranchIs('master')
+      .andBranchIs('main')
       .andCommitMessageIs('the commit message'),
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
@@ -280,11 +280,12 @@ can use the `environment` property to customize the build environment:
 ## Images
 
 The CodeBuild library supports both Linux and Windows images via the
-`LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
+`LinuxBuildImage` (or `LinuxArmBuildImage`), and `WindowsBuildImage` classes, respectively.
 
 You can specify one of the predefined Windows/Linux images by using one
 of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
-`WindowsBuildImage.WINDOWS_BASE_2_0` or `LinuxBuildImage.STANDARD_2_0`.
+`WindowsBuildImage.WINDOWS_BASE_2_0`, `LinuxBuildImage.STANDARD_2_0`, or
+`LinuxArmBuildImage.AMAZON_LINUX_2_ARM`.
 
 Alternatively, you can specify a custom image using one of the static methods on
 `LinuxBuildImage`:
@@ -301,6 +302,10 @@ or one of the corresponding methods on `WindowsBuildImage`:
 * `WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }, imageType])`
 * `WindowsBuildImage.fromEcrRepository(repo[, tag, imageType])`
 * `WindowsBuildImage.fromAsset(parent, id, props, [, imageType])`
+
+or one of the corresponding methods on `LinuxArmBuildImage`:
+
+* `LinuxArmBuildImage.fromEcrRepository(repo[, tag])`
 
 Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`,
 which can be either `WindowsImageType.STANDARD`, the default, or `WindowsImageType.SERVER_2019`:
@@ -488,7 +493,32 @@ const project = new codebuild.Project(this, 'Project', {
 });
 ```
 
-If you do that, you need to grant the project's role permissions to write reports to that report group:
+For a code coverage report, you can specify a report group with the code coverage report group type.
+
+```ts
+declare const source: codebuild.Source;
+
+// create a new ReportGroup
+const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup', {
+    type: codebuild.ReportGroupType.CODE_COVERAGE
+});
+
+const project = new codebuild.Project(this, 'Project', {
+  source,
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+    reports: {
+      [reportGroup.reportGroupArn]: {
+        files: '**/*',
+        'base-directory': 'build/coverage-report.xml',
+        'file-format': 'JACOCOXML'
+      },
+    },
+  }),
+});
+```
+
+If you specify a report group, you need to grant the project's role permissions to write reports to that report group:
 
 ```ts
 declare const project: codebuild.Project;

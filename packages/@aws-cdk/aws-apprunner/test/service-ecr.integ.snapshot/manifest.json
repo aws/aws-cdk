@@ -1,0 +1,83 @@
+{
+  "version": "19.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-apprunner": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-apprunner.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-apprunner": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "repositoryName": "aws-cdk/assets",
+              "imageTag": "77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967",
+              "id": "77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967",
+              "packaging": "container-image",
+              "path": "asset.77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967.assets",
+              "sourceHash": "77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
+            }
+          }
+        ],
+        "/integ-apprunner/Service3/AccessRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service3AccessRole3ACBAAA0"
+          }
+        ],
+        "/integ-apprunner/Service3/AccessRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service3AccessRoleDefaultPolicy57B9744E"
+          }
+        ],
+        "/integ-apprunner/Service3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service342D067F2"
+          }
+        ],
+        "/integ-apprunner/URL3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL3"
+          }
+        ],
+        "/integ-apprunner/Service2/AccessRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service2AccessRole759CA73D"
+          }
+        ],
+        "/integ-apprunner/Service2/AccessRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service2AccessRoleDefaultPolicy08C28479"
+          }
+        ],
+        "/integ-apprunner/Service2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service2AB4D14D8"
+          }
+        ],
+        "/integ-apprunner/URL2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL2"
+          }
+        ]
+      },
+      "displayName": "integ-apprunner"
+    }
+  }
+}
