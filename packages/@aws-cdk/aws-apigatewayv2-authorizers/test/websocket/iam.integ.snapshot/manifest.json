@@ -1,0 +1,67 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "IntegApiGatewayV2Iam": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegApiGatewayV2Iam.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/IntegApiGatewayV2Iam/WebSocketApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketApi34BCF99B"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/WebSocketApi/$connect-Route/WebSocketLambdaIntegration-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketApiconnectRouteWebSocketLambdaIntegrationPermission76CD86C6"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/WebSocketApi/$connect-Route/WebSocketLambdaIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketApiconnectRouteWebSocketLambdaIntegration3D2B13DD"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/WebSocketApi/$connect-Route/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketApiconnectRoute846149DD"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/auth-function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "authfunctionServiceRoleFCB72198"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/auth-function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "authfunction96361832"
+          }
+        ]
+      },
+      "displayName": "IntegApiGatewayV2Iam"
+    },
+    "ApiGatewayV2WebSocketIamTestDefaultTestDeployAssert2B412D7B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApiGatewayV2WebSocketIamTestDefaultTestDeployAssert2B412D7B.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "ApiGatewayV2WebSocketIamTest/DefaultTest/DeployAssert"
+    }
+  }
+}
