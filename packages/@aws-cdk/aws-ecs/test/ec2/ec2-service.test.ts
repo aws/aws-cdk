@@ -1936,7 +1936,7 @@ describe('ec2 service', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
-          Field: 'cpu',
+          Field: 'CPU',
           Type: 'binpack',
         }],
       });
@@ -1967,7 +1967,7 @@ describe('ec2 service', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
-          Field: 'memory',
+          Field: 'MEMORY',
           Type: 'binpack',
         }],
       });
@@ -1998,7 +1998,7 @@ describe('ec2 service', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
-          Field: 'memory',
+          Field: 'MEMORY',
           Type: 'binpack',
         }],
       });
