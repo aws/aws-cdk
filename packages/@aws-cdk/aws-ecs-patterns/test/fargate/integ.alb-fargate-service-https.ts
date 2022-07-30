@@ -3,7 +3,7 @@ import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
 import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as route53 from '@aws-cdk/aws-route53';
 import { App, Stack } from '@aws-cdk/core';
-
+import * as integ from '@aws-cdk/integ-tests';
 import { ApplicationLoadBalancedFargateService } from '../../lib';
 
 const app = new App();
@@ -27,6 +27,10 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
     zoneName: 'example.com.',
   }),
   redirectHTTP: true,
+});
+
+new integ.IntegTest(app, 'albFargateServiceTest', {
+  testCases: [stack],
 });
 
 app.synth();

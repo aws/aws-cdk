@@ -770,6 +770,7 @@
    "Properties": {
     "ContainerDefinitions": [
      {
+      "Cpu": 256,
       "Environment": [
        {
         "Name": "QUEUE_NAME",
@@ -813,6 +814,7 @@
         }
        }
       },
+      "Memory": 512,
       "Name": "QueueProcessingContainer"
      }
     ],
