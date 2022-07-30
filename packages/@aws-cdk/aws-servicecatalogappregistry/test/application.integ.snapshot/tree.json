@@ -83,13 +83,13 @@
                   "version": "0.0.0"
                 }
               },
-              "RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2": {
-                "id": "RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2",
+              "RAMSharead8ba81b8cdd": {
+                "id": "RAMSharead8ba81b8cdd",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/RAMSharead8ba81b8cdd",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {
-                    "name": "RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2",
+                    "name": "RAMSharead8ba81b8cdd",
                     "allowExternalPrincipals": false,
                     "permissionArns": [
                       "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"

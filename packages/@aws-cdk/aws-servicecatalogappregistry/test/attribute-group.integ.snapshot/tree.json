@@ -47,13 +47,13 @@
                   "version": "0.0.0"
                 }
               },
-              "RAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831A": {
-                "id": "RAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831A",
-                "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831A",
+              "RAMSharec67f7d80e5ba": {
+                "id": "RAMSharec67f7d80e5ba",
+                "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMSharec67f7d80e5ba",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {
-                    "name": "RAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831A",
+                    "name": "RAMSharec67f7d80e5ba",
                     "allowExternalPrincipals": false,
                     "permissionArns": [
                       "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly"

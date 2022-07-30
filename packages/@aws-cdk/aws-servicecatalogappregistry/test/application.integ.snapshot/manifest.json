@@ -33,10 +33,10 @@
             "data": "TestApplicationAttributeGroupAssociation4ba7f5842818B8EE1C6F"
           }
         ],
-        "/integ-servicecatalogappregistry-application/TestApplication/RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2": [
+        "/integ-servicecatalogappregistry-application/TestApplication/RAMSharead8ba81b8cdd": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestApplicationRAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB233482C38"
+            "data": "TestApplicationRAMSharead8ba81b8cdd40199FD1"
           }
         ],
         "/integ-servicecatalogappregistry-application/TestAttributeGroup/Resource": [
@@ -49,6 +49,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRoleF48FFE04"
+          }
+        ],
+        "TestApplicationRAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB233482C38": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplicationRAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB233482C38",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

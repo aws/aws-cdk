@@ -21,10 +21,10 @@
             "data": "TestAttributeGroupB1CB284F"
           }
         ],
-        "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831A": [
+        "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMSharec67f7d80e5ba": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestAttributeGroupRAMShareintegservicecatalogappregistryattributegroupTestAttributeGroup7BCD831AA2963D44"
+            "data": "TestAttributeGroupRAMSharec67f7d80e5baA10EFB4E"
           }
         ],
         "/integ-servicecatalogappregistry-attribute-group/MyRole/Resource": [

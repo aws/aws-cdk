@@ -39,10 +39,10 @@
     }
    }
   },
-  "TestApplicationRAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB233482C38": {
+  "TestApplicationRAMSharead8ba81b8cdd40199FD1": {
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
-    "Name": "RAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB2",
+    "Name": "RAMSharead8ba81b8cdd",
     "AllowExternalPrincipals": false,
     "PermissionArns": [
      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
