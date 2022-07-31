@@ -60,9 +60,9 @@ export enum LustreDataCompressionType {
   */
   NONE = 'NONE',
   /**
-  * `LZ4` - Data compression is turned on with the LZ4 algorithm.
+  * `LZ4` - Data compression is turned on with the LZ4 algorithm.  Note: When you turn data compression on for an existing file system, only newly written files are compressed. Existing files are not compressed.
   */
-  LZ4 = 'LZ4'
+  LZ4 = 'LZ4',
 }
 
 /**

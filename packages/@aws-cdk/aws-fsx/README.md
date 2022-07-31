@@ -202,7 +202,7 @@ const lustreConfiguration = {
 }
 ```
 
-Compression is not performed retrospectively on data already in the filesystem.
+When you turn data compression on for an existing file system, only newly written files are compressed.  Existing files are not compressed. For more information, see [Compressing previously written files](https://docs.aws.amazon.com/fsx/latest/LustreGuide/data-compression.html#migrate-compression).```
 
 ## FSx for Windows File Server
 
