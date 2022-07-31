@@ -607,7 +607,7 @@ const capacityProvider = new ecs.AsgCapacityProvider(this, 'provider', {
 });
 cluster.addAsgCapacityProvider(capacityProvider);
 
-const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+const queueProcessingEc2Service = new ecsPatterns.QueueProcessingEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
@@ -634,6 +634,22 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   taskSubnets: {
     subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
   },
+});
+```
+
+### Select idleTimeout for ApplicationLoadBalancedFargateService
+
+```ts
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  idleTimeout: Duration.seconds(120),
 });
 ```
 
