@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
+import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
 
@@ -18,6 +19,8 @@ class EventStack extends cdk.Stack {
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
     });
+
+    const deadLetterQueue = new sqs.Queue(this, 'MyDeadLetterQueue');
 
     /// !show
     // Create a Task Definition for the container to start
@@ -44,6 +47,7 @@ class EventStack extends cdk.Stack {
           { name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' },
         ],
       }],
+      deadLetterQueue,
     }));
     /// !hide
   }
