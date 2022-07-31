@@ -24,8 +24,47 @@ AWS IoT Events can trigger actions when it detects a specified event or transiti
 
 Currently supported are:
 
+- Use timer
 - Set variable to detector instanse
 - Invoke a Lambda function
+
+## Use timer
+
+The code snippet below creates an Action that creates the timer a timer with duration in seconds.
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+import * as actions from '@aws-cdk/aws-iotevents-actions';
+
+declare const input: iotevents.IInput;
+
+const state = new iotevents.State({
+  stateName: 'MyState',
+  onEnter: [{
+    eventName: 'test-event',
+    condition: iotevents.Expression.currentInput(input),
+    actions: [
+      actions: [
+        new actions.SetTimerAction('MyTimer', {
+          duration: cdk.Duration.seconds(60),
+        }),
+      ],
+    ],
+  }],
+});
+```
+
+Also you can set duration by [IoT Events Expression](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) as following:
+
+```ts
+new actions.SetTimerAction('MyTimer', {
+  durationExpression: iotevents.Expression.inputAttribute(input, 'payload.durationSeconds'),
+})
+```
+
+And the timer can be reseted and cleared as below example.
+
+[Using the timer actions example](test/iot/integ.timer-actions.ts).
 
 ## Set variable to detector instanse
 
