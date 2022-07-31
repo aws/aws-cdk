@@ -459,7 +459,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
-    if (!props.authFlows) return undefined;
+    if (!props.authFlows || Object.keys(props.authFlows).length === 0) return undefined;
 
     const authFlows: string[] = [];
     if (props.authFlows.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
@@ -468,13 +468,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
 
     // refreshToken should always be allowed if authFlows are present
-    if (authFlows.length > 0) {
-      authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
-    }
+    authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
 
-    if (authFlows.length === 0) {
-      return undefined;
-    }
     return authFlows;
   }
 
