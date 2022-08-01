@@ -1,9 +1,11 @@
 import * as ecr from '@aws-cdk/aws-ecr';
+import { Platform } from '@aws-cdk/aws-ecr-assets';
 import { Construct } from 'constructs';
 import { AssetImageCode, AssetImageCodeProps, EcrImageCode, EcrImageCodeProps, Code } from './code';
 import { Function, FunctionOptions } from './function';
 import { Handler } from './handler';
 import { Runtime } from './runtime';
+import { Architecture } from "./architecture";
 
 /**
  * Properties to configure a new DockerImageFunction construct.
@@ -41,8 +43,14 @@ export abstract class DockerImageCode {
    */
   public static fromImageAsset(directory: string, props: AssetImageCodeProps = {}): DockerImageCode {
     return {
-      _bind() {
-        return new AssetImageCode(directory, props);
+      _bind(architecture?: Architecture) {
+        return new AssetImageCode(directory, {
+          /**
+           * determine the platform from `architecture`.
+           */
+            ...architecture?.dockerPlatform ? { platform: Platform.custom(architecture.dockerPlatform) } : {},
+          ...props,
+        });
       },
     };
   }
@@ -51,7 +59,7 @@ export abstract class DockerImageCode {
    * Produce a `Code` instance from this `DockerImageCode`.
    * @internal
    */
-  public abstract _bind(): Code;
+  public abstract _bind(architecture?: Architecture): Code;
 }
 
 /**
@@ -63,7 +71,7 @@ export class DockerImageFunction extends Function {
       ...props,
       handler: Handler.FROM_IMAGE,
       runtime: Runtime.FROM_IMAGE,
-      code: props.code._bind(),
+      code: props.code._bind(props.architecture),
     });
   }
 }
