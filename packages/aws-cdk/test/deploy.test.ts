@@ -120,14 +120,17 @@ describe('DeployStacks', () => {
   test.each([
     // Concurrency 1
     { scenario: 'A (error)', concurrency: 1, toDeploy: [{ id: 'A', dependencies: [], displayName: 'A' }], expectedError: 'A', expectedStacks: [] },
-    { scenario: 'A (error), B', concurrency: 1, toDeploy: [{ id: 'A', dependencies: [], displayName: 'A' }, { id: 'B', dependencies: [] }], expectedError: /A/, expectedStacks: [] },
+    { scenario: 'A (error), B', concurrency: 1, toDeploy: [{ id: 'A', dependencies: [], displayName: 'A' }, { id: 'B', dependencies: [] }], expectedError: 'A', expectedStacks: [] },
+    { scenario: 'A, B (error)', concurrency: 1, toDeploy: [{ id: 'A', dependencies: [] }, { id: 'B', dependencies: [], displayName: 'B' }], expectedError: 'B', expectedStacks: ['A'] },
     { scenario: 'A (error) -> B', concurrency: 1, toDeploy: [{ id: 'A', dependencies: [], displayName: 'A' }, { id: 'B', dependencies: [{ id: 'A' }] }], expectedError: 'A', expectedStacks: [] },
+    { scenario: '[unsorted] A (error) -> B', concurrency: 1, toDeploy: [{ id: 'B', dependencies: [{ id: 'A' }] }, { id: 'A', dependencies: [], displayName: 'A' }], expectedError: 'A', expectedStacks: [] },
 
     // Concurrency 2
     { scenario: 'A (error)', concurrency: 2, toDeploy: [{ id: 'A', dependencies: [], displayName: 'A' }], expectedError: 'A', expectedStacks: [] },
-    { scenario: 'A (error), B', concurrency: 2, toDeploy: [{ id: 'A', dependencies: [], displayName: 'A' }, { id: 'B', dependencies: [] }], expectedError: /A/, expectedStacks: ['B'] },
-    { scenario: 'A -> B', concurrency: 2, toDeploy: [{ id: 'A', dependencies: [], displayName: 'A' }, { id: 'B', dependencies: [{ id: 'A' }] }], expectedError: 'A', expectedStacks: [] },
-
+    { scenario: 'A (error), B', concurrency: 2, toDeploy: [{ id: 'A', dependencies: [], displayName: 'A' }, { id: 'B', dependencies: [] }], expectedError: 'A', expectedStacks: ['B'] },
+    { scenario: 'A, B (error)', concurrency: 2, toDeploy: [{ id: 'A', dependencies: [] }, { id: 'B', dependencies: [], displayName: 'B' }], expectedError: 'B', expectedStacks: ['A'] },
+    { scenario: 'A (error) -> B', concurrency: 2, toDeploy: [{ id: 'A', dependencies: [], displayName: 'A' }, { id: 'B', dependencies: [{ id: 'A' }] }], expectedError: 'A', expectedStacks: [] },
+    { scenario: '[unsorted] A (error) -> B', concurrency: 2, toDeploy: [{ id: 'B', dependencies: [{ id: 'A' }] }, { id: 'A', dependencies: [], displayName: 'A' }], expectedError: 'A', expectedStacks: [] },
   ])('Failure - Concurrency: $concurrency - $scenario', async ({ concurrency, expectedError, toDeploy, expectedStacks }) => {
     await expect(deployStacks(toDeploy as unknown as Stack[], { concurrency, deployStack })).rejects.toThrowError(expectedError);
 
