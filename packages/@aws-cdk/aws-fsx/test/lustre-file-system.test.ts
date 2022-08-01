@@ -3,7 +3,7 @@ import { Template } from '@aws-cdk/assertions';
 import { ISubnet, Port, SecurityGroup, Subnet, Vpc } from '@aws-cdk/aws-ec2';
 import { Key } from '@aws-cdk/aws-kms';
 import { Aws, Stack, Token } from '@aws-cdk/core';
-import { LustreConfiguration, LustreDeploymentType, LustreAutoImportPolicy, LustreFileSystem, LustreMaintenanceTime, Weekday } from '../lib';
+import { LustreConfiguration, LustreDeploymentType, LustreAutoImportPolicy, LustreFileSystem, LustreMaintenanceTime, Weekday, LustreDataCompressionType } from '../lib';
 
 describe('FSx for Lustre File System', () => {
   let lustreConfiguration: LustreConfiguration;
@@ -476,6 +476,29 @@ describe('FSx for Lustre File System', () => {
             vpcSubnet,
           });
         }).toThrowError(`The import path "${importPath}" exceeds the maximum length of 900 characters`);
+      });
+    });
+
+    describe('DataCompressionType', () => {
+      test('dataCompressionType enabled', () => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.SCRATCH_2,
+          dataCompressionType: LustreDataCompressionType.LZ4,
+        };
+
+        new LustreFileSystem(stack, 'FsxFileSystem', {
+          lustreConfiguration,
+          storageCapacityGiB: storageCapacity,
+          vpc,
+          vpcSubnet,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+          LustreConfiguration: {
+            DeploymentType: LustreDeploymentType.SCRATCH_2,
+            DataCompressionType: LustreDataCompressionType.LZ4,
+          },
+        });
       });
     });
 
