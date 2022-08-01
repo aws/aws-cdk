@@ -348,7 +348,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   public readonly userPoolClientId: string;
 
-  private _generateSecret: boolean | undefined;
+  private _generateSecret?: boolean;
   private readonly userPool: IUserPool;
   private _userPoolClientSecret?: SecretValue;
 
