@@ -25,7 +25,7 @@ export interface ClusterResourceProps {
   readonly onEventLayer?: lambda.ILayerVersion;
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
   readonly tags?: { [key: string]: string };
-  readonly logging?: { [key: string]: [ { [key: string]: any } ] };
+  readonly logging?: { [key: string]: [ { [key: string]: any }, { [key: string]: any } ] };
 }
 
 /**
