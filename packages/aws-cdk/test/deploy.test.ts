@@ -38,7 +38,7 @@ describe('DeployStacks', () => {
     { scenario: 'A -> B', concurrency: 1, toDeploy: [{ id: 'A', dependencies: [] }, { id: 'B', dependencies: [{ id: 'A' }] }], expected: ['A', 'B'] },
     { scenario: '[unsorted] A -> B', concurrency: 1, toDeploy: [{ id: 'B', dependencies: [{ id: 'A' }] }, { id: 'A', dependencies: [] }], expected: ['A', 'B'] },
     { scenario: 'A -> B -> C', concurrency: 1, toDeploy: [{ id: 'A', dependencies: [] }, { id: 'B', dependencies: [{ id: 'A' }] }, { id: 'C', dependencies: [{ id: 'B' }] }], expected: ['A', 'B', 'C'] },
-    { scenario: '1 - A -> B, A -> C', concurrency: 1, toDeploy: [{ id: 'A', dependencies: [] }, { id: 'B', dependencies: [{ id: 'A' }] }, { id: 'C', dependencies: [{ id: 'A' }] }], expected: ['A', 'B', 'C'] },
+    { scenario: 'A -> B, A -> C', concurrency: 1, toDeploy: [{ id: 'A', dependencies: [] }, { id: 'B', dependencies: [{ id: 'A' }] }, { id: 'C', dependencies: [{ id: 'A' }] }], expected: ['A', 'B', 'C'] },
     {
       scenario: 'A (slow), B',
       concurrency: 1,
