@@ -308,7 +308,7 @@ export interface ApplicationLoadBalancerProps {
   /**
    * The load balancer idle timeout, in seconds
    *
-   * @default 60
+   * @default - CloudFormation sets idle timeout to 60 seconds
    */
   readonly idleTimeout?: Duration;
 }
@@ -575,8 +575,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   private validateLbProps(props: ApplicationLoadBalancerProps[]) {
     for (let prop of props) {
       if (prop.idleTimeout) {
-        if (prop.idleTimeout > Duration.seconds(4000)) {
-          throw new Error( 'IdleTime cannot exceed 4000 seconds');
+        if (prop.idleTimeout > Duration.seconds(4000) || prop.idleTimeout < Duration.seconds(1)) {
+          throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
         }
       }
     }
@@ -588,7 +588,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,
-      idleTimeout: idleTimeout ?? undefined,
+      idleTimeout: idleTimeout,
     };
 
     return new ApplicationLoadBalancer(this, name, lbProps);
