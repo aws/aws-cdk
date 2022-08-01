@@ -1,4 +1,4 @@
-import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IKey } from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
@@ -60,6 +60,25 @@ export interface AutoVerifiedAttrs {
   /**
    * Whether the phone number of the user should be auto verified at sign up.
    * @default - true, if phone is turned on for `signIn`. false, otherwise.
+   */
+  readonly phone?: boolean;
+}
+
+/**
+ * Attributes that will be kept until the user verifies the changed attribute.
+ */
+export interface KeepOriginalAttrs {
+  /**
+   * Whether the email address of the user should remain the original value until the new email address is verified.
+   *
+   * @default - false
+   */
+  readonly email?: boolean;
+
+  /**
+   * Whether the phone number of the user should remain the original value until the new phone number is verified.
+   *
+   * @default - false
    */
   readonly phone?: boolean;
 }
@@ -562,6 +581,14 @@ export interface UserPoolProps {
   readonly autoVerify?: AutoVerifiedAttrs;
 
   /**
+   * Attributes which Cognito will look to handle changes to the value of your users' email address and phone number attributes.
+   * EMAIL and PHONE are the only available options.
+   *
+   * @default - Nothing is kept.
+   */
+  readonly keepOriginal?: KeepOriginalAttrs;
+
+  /**
    * The set of attributes that are required for every user in the user pool.
    * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
    *
@@ -703,6 +730,12 @@ export interface IUserPool extends IResource {
    * Register an identity provider with this user pool.
    */
   registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
+
+  /**
+   * Adds an IAM policy statement associated with this user pool to an
+   * IAM principal's policy.
+   */
+  grant(grantee: IGrantable, ...actions: string[]): Grant;
 }
 
 abstract class UserPoolBase extends Resource implements IUserPool {
@@ -733,6 +766,15 @@ abstract class UserPoolBase extends Resource implements IUserPool {
 
   public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
     this.identityProviders.push(provider);
+  }
+
+  public grant(grantee: IGrantable, ...actions: string[]): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.userPoolArn],
+      scope: this,
+    });
   }
 }
 
@@ -895,6 +937,7 @@ export class UserPool extends UserPoolBase {
       }),
       accountRecoverySetting: this.accountRecovery(props),
       deviceConfiguration: props.deviceTracking,
+      userAttributeUpdateSettings: this.configureUserAttributeChanges(props),
     });
     userPool.applyRemovalPolicy(props.removalPolicy);
 
@@ -1205,6 +1248,26 @@ export class UserPool extends UserPoolBase {
       default:
         throw new Error(`Unsupported AccountRecovery type - ${accountRecovery}`);
     }
+  }
+
+  private configureUserAttributeChanges(props: UserPoolProps): CfnUserPool.UserAttributeUpdateSettingsProperty | undefined {
+    if (!props.keepOriginal) {
+      return undefined;
+    }
+
+    const attributesRequireVerificationBeforeUpdate: string[] = [];
+
+    if (props.keepOriginal.email) {
+      attributesRequireVerificationBeforeUpdate.push(StandardAttributeNames.email);
+    }
+
+    if (props.keepOriginal.phone) {
+      attributesRequireVerificationBeforeUpdate.push(StandardAttributeNames.phoneNumber);
+    }
+
+    return {
+      attributesRequireVerificationBeforeUpdate,
+    };
   }
 }
 

@@ -1,3 +1,4 @@
+import { ClientRequest } from 'http';
 import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -107,12 +108,19 @@ export interface NoticeDataSource {
 export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
     const timeout = 3000;
+    return new Promise((resolve, reject) => {
+      let req: ClientRequest | undefined;
 
-    return new Promise((resolve) => {
-      setTimeout(() => resolve([]), timeout);
+      let timer = setTimeout(() => {
+        if (req) {
+          req.destroy(new Error('Request timed out'));
+        }
+      }, timeout);
+
+      timer.unref();
+
       try {
-        const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
-          { timeout },
+        req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
           res => {
             if (res.statusCode === 200) {
               res.setEncoding('utf8');
@@ -123,29 +131,25 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
               res.on('end', () => {
                 try {
                   const data = JSON.parse(rawData).notices as Notice[];
+                  if (!data) {
+                    throw new Error("'notices' key is missing");
+                  }
+                  debug('Notices refreshed');
                   resolve(data ?? []);
                 } catch (e) {
-                  debug(`Failed to parse notices: ${e}`);
-                  resolve([]);
+                  reject(new Error(`Failed to parse notices: ${e.message}`));
                 }
               });
               res.on('error', e => {
-                debug(`Failed to fetch notices: ${e}`);
-                resolve([]);
+                reject(new Error(`Failed to fetch notices: ${e.message}`));
               });
             } else {
-              debug(`Failed to fetch notices. Status code: ${res.statusCode}`);
-              resolve([]);
+              reject(new Error(`Failed to fetch notices. Status code: ${res.statusCode}`));
             }
           });
-        req.on('error', e => {
-          debug(`Error on request: ${e}`);
-          resolve([]);
-        });
-        req.on('timeout', _ => resolve([]));
+        req.on('error', reject);
       } catch (e) {
-        debug(`HTTPS 'get' call threw an error: ${e}`);
-        resolve([]);
+        reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
       }
     });
   }
@@ -156,7 +160,8 @@ interface CachedNotices {
   notices: Notice[],
 }
 
-const TIME_TO_LIVE = 60 * 60 * 1000; // 1 hour
+const TIME_TO_LIVE_SUCCESS = 60 * 60 * 1000; // 1 hour
+const TIME_TO_LIVE_ERROR = 1 * 60 * 1000; // 1 minute
 
 export class CachedDataSource implements NoticeDataSource {
   constructor(
@@ -171,14 +176,27 @@ export class CachedDataSource implements NoticeDataSource {
     const expiration = cachedData.expiration ?? 0;
 
     if (Date.now() > expiration || this.skipCache) {
-      const freshData = {
-        expiration: Date.now() + TIME_TO_LIVE,
-        notices: await this.dataSource.fetch(),
-      };
+      const freshData = await this.fetchInner();
       await this.save(freshData);
       return freshData.notices;
     } else {
+      debug(`Reading cached notices from ${this.fileName}`);
       return data;
+    }
+  }
+
+  private async fetchInner(): Promise<CachedNotices> {
+    try {
+      return {
+        expiration: Date.now() + TIME_TO_LIVE_SUCCESS,
+        notices: await this.dataSource.fetch(),
+      };
+    } catch (e) {
+      debug(`Could not refresh notices: ${e}`);
+      return {
+        expiration: Date.now() + TIME_TO_LIVE_ERROR,
+        notices: [],
+      };
     }
   }
 

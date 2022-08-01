@@ -2,8 +2,9 @@ on:
   schedule:
     # Cron format: min hr day month dow
     - cron: "0 0 * * *"
+  workflow_dispatch:    
 jobs:
-  rix0rrr/close-stale-prs:
+  close-stale-prs:
     permissions:
       pull-requests: write
     runs-on: ubuntu-latest
@@ -11,12 +12,15 @@ jobs:
       - uses: rix0rrr/close-stale-prs@main
         with:
           # Required
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Must be PROJEN_GITHUB_TOKEN because the default GHA GitHub token will not have permissions to
+          # know whether a user is a MEMBER of the organization or not, so we would not be able to filter PR reviews
+          # appropriately.
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           stale-days: 21
           response-days: 7
 
           # Optional
-          important-checks-regex: AutoBuildProject89A8053A
+          important-checks-regex: AutoBuildv2Project1C6BFA3F
           warn-message: This PR has been in the STATE state for 3 weeks, and looks abandoned. To keep this PR from being closed, please continue work on it. If not, it will automatically be closed in a week.
           close-message: This PR has been deemed to be abandoned, and will be automatically closed. Please create a new PR for these changes if you think this decision has been made in error.
           skip-labels: contribution/core

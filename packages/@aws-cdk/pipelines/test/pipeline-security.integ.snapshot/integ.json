@@ -1,0 +1,16 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ.pipeline-security": {
+      "stacks": [
+        "PipelineSecurityStack"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {
+    "@aws-cdk/core:newStyleStackSynthesis": "true"
+  },
+  "enableLookups": false
+}

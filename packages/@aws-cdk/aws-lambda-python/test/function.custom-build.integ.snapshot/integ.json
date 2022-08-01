@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ.function.custom-build": {
+      "stacks": [
+        "cdk-integ-lambda-custom-build"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": false
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

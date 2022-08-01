@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "aws-cdk-codepipeline-ecr-source": {
@@ -383,14 +383,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               },
               "EventsRole": {
@@ -549,14 +549,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.9"
                 }
               }
             },
@@ -574,11 +574,7 @@
                 "path": "aws-cdk-codepipeline-ecr-source/MyEcrRepo/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
-                  "aws:cdk:cloudformation:props": {
-                    "imageScanningConfiguration": {
-                      "scanOnPush": false
-                    }
-                  }
+                  "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-ecr.CfnRepository",

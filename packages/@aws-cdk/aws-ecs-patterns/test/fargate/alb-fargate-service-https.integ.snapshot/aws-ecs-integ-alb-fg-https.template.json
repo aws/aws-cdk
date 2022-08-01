@@ -587,6 +587,36 @@
     }
    }
   },
+  "myServiceTaskDefTaskRoleDefaultPolicyD48473C0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams",
+        "logs:PutLogEvents",
+        "ssmmessages:CreateControlChannel",
+        "ssmmessages:CreateDataChannel",
+        "ssmmessages:OpenControlChannel",
+        "ssmmessages:OpenDataChannel"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myServiceTaskDefTaskRoleDefaultPolicyD48473C0",
+    "Roles": [
+     {
+      "Ref": "myServiceTaskDefTaskRole1C1DE6CC"
+     }
+    ]
+   }
+  },
   "myServiceTaskDef7FB8322A": {
    "Type": "AWS::ECS::TaskDefinition",
    "Properties": {
@@ -606,6 +636,7 @@
         }
        }
       },
+      "Memory": 512,
       "Name": "web",
       "PortMappings": [
        {
@@ -698,6 +729,7 @@
      "MinimumHealthyPercent": 50
     },
     "EnableECSManagedTags": true,
+    "EnableExecuteCommand": true,
     "HealthCheckGracePeriodSeconds": 60,
     "LaunchType": "FARGATE",
     "LoadBalancers": [

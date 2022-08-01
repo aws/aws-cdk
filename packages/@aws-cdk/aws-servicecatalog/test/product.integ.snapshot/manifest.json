@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "18.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -43,7 +43,7 @@
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "integservicecatalogproductSNSTopicProduct1B8D03934.product.template.json",
+              "path": "integservicecatalogproductSNSTopicProduct3B51CF591.product.template.json",
               "id": "dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f",
               "packaging": "file",
               "sourceHash": "dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f",

@@ -139,7 +139,8 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination',
 });
 ```
 
-This option also enables you to specify multiple bucket deployments for the same destination bucket & prefix,
+This option also enables you to 
+multiple bucket deployments for the same destination bucket & prefix,
 each with its own characteristics. For example, you can set different cache-control headers
 based on file extensions:
 
@@ -259,14 +260,19 @@ new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
 });
 ```
 
-## Memory Limit
+## Size Limits
 
 The default memory limit for the deployment resource is 128MiB. If you need to
-copy larger files, you can use the `memoryLimit` configuration to specify the
+copy larger files, you can use the `memoryLimit` configuration to increase the
 size of the AWS Lambda resource handler.
 
-> NOTE: a new AWS Lambda handler will be created in your stack for each memory
-> limit configuration.
+The default ephemeral storage size for the deployment resource is 512MiB. If you
+need to upload larger files, you may hit this limit. You can use the 
+`ephemeralStorageSize` configuration to increase the storage size of the AWS Lambda
+resource handler.
+
+> NOTE: a new AWS Lambda handler will be created in your stack for each combination
+> of memory and storage size.
 
 ## EFS Support
 
@@ -338,11 +344,11 @@ substituting it when its deployed to the destination with the actual value.
 
 ## Development
 
-The custom resource is implemented in Python 3.6 in order to be able to leverage
-the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
-unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
+The custom resource is implemented in Python 3.7 in order to be able to leverage
+the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
+unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
 
-This package requires Python 3.6 during build time in order to create the custom
+This package requires Python 3.7 during build time in order to create the custom
 resource Lambda bundle and test it. It also relies on a few bash scripts, so
 might be tricky to build on Windows.
 

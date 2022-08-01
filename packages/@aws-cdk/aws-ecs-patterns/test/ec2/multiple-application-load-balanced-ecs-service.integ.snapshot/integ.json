@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ"
+      ],
+      "assertionStack": "applicationMultipleTargetGroupsEc2ServiceTestDefaultTestDeployAssert1194B50F"
+    }
+  }
+}

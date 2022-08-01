@@ -20,11 +20,6 @@ describe('repository', () => {
       Resources: {
         Repo02AC86CF: {
           Type: 'AWS::ECR::Repository',
-          Properties: {
-            ImageScanningConfiguration: {
-              ScanOnPush: false,
-            },
-          },
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
         },
@@ -34,13 +29,20 @@ describe('repository', () => {
 
   test('repository creation with imageScanOnPush', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const noScanStack = new cdk.Stack();
+    const scanStack = new cdk.Stack();
 
     // WHEN
-    new ecr.Repository(stack, 'Repo', { imageScanOnPush: true });
+    new ecr.Repository(noScanStack, 'NoScanRepo', { imageScanOnPush: false });
+    new ecr.Repository(scanStack, 'ScanRepo', { imageScanOnPush: true });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    Template.fromStack(noScanStack).hasResourceProperties('AWS::ECR::Repository', {
+      ImageScanningConfiguration: {
+        ScanOnPush: false,
+      },
+    });
+    Template.fromStack(scanStack).hasResourceProperties('AWS::ECR::Repository', {
       ImageScanningConfiguration: {
         ScanOnPush: true,
       },
@@ -698,6 +700,44 @@ describe('repository', () => {
       expect(() => new ecr.Repository(stack, 'Repo4', {
         repositoryName: 'a//a-a',
       })).toThrow(/must follow the specified pattern/);
+    });
+
+    test('return value addToResourcePolicy', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const policyStmt1 = new iam.PolicyStatement({
+        actions: ['*'],
+        principals: [new iam.AnyPrincipal()],
+      });
+      const policyStmt2 = new iam.PolicyStatement({
+        effect: iam.Effect.DENY,
+        actions: ['ecr:BatchGetImage', 'ecr:GetDownloadUrlForLayer'],
+        principals: [new iam.AnyPrincipal()],
+      });
+      const policyText1 = '{"Statement": [{"Action": "*", "Effect": "Allow", "Principal": {"AWS": "*"}}], "Version": "2012-10-17"}';
+      const policyText2 = `{"Statement": [
+        {"Action": "*", "Effect": "Allow", "Principal": {"AWS": "*"}},
+        {"Action": ["ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer"], "Effect": "Deny", "Principal": {"AWS": "*"}}
+      ], "Version": "2012-10-17"}`;
+
+      // WHEN
+      const artifact1 = new ecr.Repository(stack, 'Repo1').addToResourcePolicy(policyStmt1);
+      const repo = new ecr.Repository(stack, 'Repo2');
+      repo.addToResourcePolicy(policyStmt1);
+      const artifact2 =repo.addToResourcePolicy(policyStmt2);
+
+      // THEN
+      expect(stack.resolve(artifact1.statementAdded)).toEqual(true);
+      expect(stack.resolve(artifact1.policyDependable)).toEqual(JSON.parse(policyText1));
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        RepositoryPolicyText: JSON.parse(policyText1),
+      });
+
+      expect(stack.resolve(artifact2.statementAdded)).toEqual(true);
+      expect(stack.resolve(artifact2.policyDependable)).toEqual(JSON.parse(policyText2));
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        RepositoryPolicyText: JSON.parse(policyText2),
+      });
     });
   });
 });

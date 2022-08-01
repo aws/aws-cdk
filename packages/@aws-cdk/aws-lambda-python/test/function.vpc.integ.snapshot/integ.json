@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ.function.vpc": {
+      "stacks": [
+        "cdk-integ-lambda-python-vpc"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": false
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

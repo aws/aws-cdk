@@ -329,8 +329,12 @@ async function prepareAndExecuteChangeSet(
     Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
     Tags: options.tags,
   }).promise();
+
+  const execute = options.execute ?? true;
+
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
-  const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);
+  // Fetching all pages if we'll execute, so we can have the correct change count when monitoring.
+  const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName, { fetchAll: execute });
 
   // Update termination protection only if it has changed.
   const terminationProtection = stackArtifact.terminationProtection ?? false;
@@ -352,7 +356,6 @@ async function prepareAndExecuteChangeSet(
     return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId! };
   }
 
-  const execute = options.execute === undefined ? true : options.execute;
   if (execute) {
     debug('Initiating execution of changeset %s on stack %s', changeSet.Id, deployName);
 
@@ -370,6 +373,7 @@ async function prepareAndExecuteChangeSet(
       resourcesTotal: cloudFormationStack.exists ? changeSetLength + 1 : changeSetLength,
       progress: options.progress,
       changeSetCreationTime: changeSetDescription.CreationTime,
+      ci: options.ci,
     }).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSet.Id, deployName);
     try {
@@ -494,6 +498,7 @@ export interface DestroyStackOptions {
   roleArn?: string;
   deployName?: string;
   quiet?: boolean;
+  ci?: boolean;
 }
 
 export async function destroyStack(options: DestroyStackOptions) {
@@ -504,7 +509,9 @@ export async function destroyStack(options: DestroyStackOptions) {
   if (!currentStack.exists) {
     return;
   }
-  const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, options.stack).start();
+  const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, options.stack, {
+    ci: options.ci,
+  }).start();
 
   try {
     await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise();

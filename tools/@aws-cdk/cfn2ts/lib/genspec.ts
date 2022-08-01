@@ -9,6 +9,7 @@ import * as util from './util';
 
 const RESOURCE_CLASS_PREFIX = 'Cfn';
 
+export const CONSTRUCTS_NAMESPACE = 'constructs';
 export const CORE_NAMESPACE = 'cdk';
 export const CFN_PARSE_NAMESPACE = 'cfn_parse';
 
@@ -232,6 +233,12 @@ export function cloudFormationToScriptName(name: string): string {
   // For now, hard-coding a replacement property name to something that's frankly better anyway.
   if (name === 'GetObject') {
     name = 'objectAccess';
+  }
+
+  // GuardDuty contains a property named "Equals", which isn't a jsii-compliant name as it
+  // conflicts with standard Java/C# object methods.
+  if (name === 'Equals') {
+    name = 'equalTo';
   }
 
   const ret = codemaker.toCamelCase(name);
