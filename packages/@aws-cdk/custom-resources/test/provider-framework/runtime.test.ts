@@ -17,6 +17,10 @@ const MOCK_ATTRS = { MyAttribute: 'my-mock-attribute' };
 outbound.httpRequest = mocks.httpRequestMock;
 outbound.invokeFunction = mocks.invokeFunctionMock;
 outbound.startExecution = mocks.startExecutionMock;
+outbound.getFunction = mocks.getFunctionMock;
+(setTimeout as any) = jest.fn((callback, _timeout, functionargsEnv, payload, options) => {
+  return callback(functionargsEnv, payload, options);
+});
 
 beforeEach(() => mocks.setup());
 
@@ -345,12 +349,17 @@ describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
   });
 });
 
-test('foo', () => {
+test('foo', async () => {
   // GIVEN
 
   // WHEN
+  await outbound.invokeFunction({
+    FunctionName: mocks.MOCK_INACTIVE_FUNCTION_ARN,
+  });
 
   // THEN
+  // expect the mocked user function to have been called twice (once after getting inactive, and once after getting active)
+  // no errors ofc
 
 });
 

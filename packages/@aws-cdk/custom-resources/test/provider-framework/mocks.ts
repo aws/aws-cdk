@@ -11,6 +11,7 @@ export const MOCK_REQUEST = {
 
 export const MOCK_ON_EVENT_FUNCTION_ARN = 'arn:lambda:user:on:event';
 export const MOCK_IS_COMPLETE_FUNCTION_ARN = 'arn:lambda:user:is:complete';
+export const MOCK_INACTIVE_FUNCTION_ARN = 'arn:lambda:user:is:inactive';
 export const MOCK_SFN_ARN = 'arn:of:state:machine';
 
 export let stringifyPayload = true;
@@ -79,6 +80,9 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
         ret = await isCompleteImplMock(input as AWSCDKAsyncCustomResource.IsCompleteRequest);
         break;
 
+      case MOCK_INACTIVE_FUNCTION_ARN:
+        throw new Error('the lambda is inactive');
+
       default:
         throw new Error('unknown mock function');
     }
@@ -132,5 +136,28 @@ export async function startExecutionMock(req: AWS.StepFunctions.StartExecutionIn
   return {
     executionArn: req.stateMachineArn + '/execution',
     startDate: new Date(),
+  };
+}
+
+let invokeCount = -1;
+export async function getFunctionMock(_req: AWS.Lambda.GetFunctionRequest): Promise<AWS.Lambda.GetFunctionResponse> {
+  invokeCount++;
+  if (invokeCount === 0) {
+    return {
+      Configuration: {
+        State: 'Inactive',
+      },
+    };
+  } else if (invokeCount === 1) {
+    return {
+      Configuration: {
+        State: 'Pending',
+      },
+    };
+  }
+  return {
+    Configuration: {
+      State: 'Active',
+    },
   };
 }
