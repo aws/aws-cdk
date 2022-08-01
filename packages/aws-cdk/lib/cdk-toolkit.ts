@@ -4,7 +4,6 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
-import PQueue from 'p-queue';
 import * as promptly from 'promptly';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 import { SdkProvider } from './api/aws-auth';
@@ -15,6 +14,7 @@ import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+import { deployStacks } from './deploy';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning } from './logging';
@@ -170,11 +170,6 @@ export class CdkToolkit {
     const outputsFile = options.outputsFile;
 
     const concurrency = options.concurrency || 1;
-    const queue = new PQueue({ concurrency });
-    const stacksAwaitingDeploy = stacks.reduce((acc, stack) => ({
-      ...acc, [stack.id]: true,
-    }), {} as Record<string, boolean>);
-
     const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
     if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
       warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
@@ -271,8 +266,6 @@ export class CdkToolkit {
           stackOutputs[stack.stackName] = result.outputs;
         }
 
-        stacksAwaitingDeploy[stack.id] = false;
-
         for (const name of Object.keys(result.outputs).sort()) {
           const value = result.outputs[name];
           print('%s.%s = %s', chalk.cyan(stack.id), chalk.cyan(name), chalk.underline(chalk.cyan(value)));
@@ -303,33 +296,8 @@ export class CdkToolkit {
       print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
     };
 
-    const isStackUnblocked = (stack: cxapi.CloudFormationStackArtifact) =>
-      stack.dependencies
-        .map(({ id }) => id)
-        .filter((id) => !id.endsWith('.assets'))
-        .every((id) => !stacksAwaitingDeploy[id]);
-
-    const stackDeployPromises: Promise<void>[] = [];
-
-    const enqueueStackDeploys = async () => {
-      stacks.forEach(async (stack) => {
-        if (isStackUnblocked(stack)) {
-          // Find current index due to stacks list changing within loop
-          const index = stacks.indexOf(stack);
-          stacks.splice(index, 1);
-
-          stackDeployPromises.push(queue.add(async () => {
-            await deployStack(stack);
-            await enqueueStackDeploys();
-          }));
-        }
-      });
-    };
-
     try {
-      await enqueueStackDeploys();
-      await Promise.all(stackDeployPromises);
-      await queue.onIdle();
+      await deployStacks(stacks, { concurrency, deployStack });
     } catch (e) {
       error('\n ❌ Deployment failed: %s', e);
       throw e;
