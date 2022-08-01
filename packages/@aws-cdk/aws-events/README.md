@@ -109,20 +109,20 @@ const rule = new events.Rule(this, 'rule', {
     detail: {
       object: {
         // Matchers may appear at any level
-        size: Matchers.greaterThan(1024),
+        size: events.Match.greaterThan(1024),
       },
 
       // 'OR' condition
-      'source-storage-class': Matchers.anyOf(
-        Matchers.prefix("GLACIER"), 
-        Matchers.exactString('DEEP_ARCHIVE'),
+      'source-storage-class': events.Match.anyOf(
+        events.Match.prefix("GLACIER"), 
+        events.Match.exactString('DEEP_ARCHIVE'),
       ),
     },
 
     // If you prefer, you can use a low level array of strings, as directly consumed by EventBridge
     source: ['aws.s3'],
 
-    region: Matchers.anythingButPrefix('us-gov'),
+    region: events.Match.anythingButPrefix('us-gov'),
   },
 });
 ```
