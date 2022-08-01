@@ -136,6 +136,18 @@ describe('DeployStacks', () => {
       expectedError: 'A',
       expectedStacks: [],
     },
+    {
+      scenario: 'A -> B, C (error) -> D',
+      concurrency: 1,
+      toDeploy: [
+        { id: 'A', dependencies: [] },
+        { id: 'B', dependencies: [{ id: 'A' }] },
+        { id: 'C', dependencies: [], displayName: 'C', name: 100 },
+        { id: 'D', dependencies: [{ id: 'C' }] },
+      ],
+      expectedError: 'C',
+      expectedStacks: ['A'],
+    },
 
     // Concurrency 2
     { scenario: 'A (error)', concurrency: 2, toDeploy: [{ id: 'A', dependencies: [], displayName: 'A' }], expectedError: 'A', expectedStacks: [] },
@@ -154,6 +166,18 @@ describe('DeployStacks', () => {
       ],
       expectedError: 'A',
       expectedStacks: ['C'],
+    },
+    {
+      scenario: 'A -> B, C (error) -> D',
+      concurrency: 2,
+      toDeploy: [
+        { id: 'A', dependencies: [] },
+        { id: 'B', dependencies: [{ id: 'A' }] },
+        { id: 'C', dependencies: [], displayName: 'C', name: 100 },
+        { id: 'D', dependencies: [{ id: 'C' }] },
+      ],
+      expectedError: 'C',
+      expectedStacks: ['A', 'B'],
     },
   ])('Failure - Concurrency: $concurrency - $scenario', async ({ concurrency, expectedError, toDeploy, expectedStacks }) => {
     await expect(deployStacks(toDeploy as unknown as Stack[], { concurrency, deployStack })).rejects.toThrowError(expectedError);
