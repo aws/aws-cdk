@@ -1361,6 +1361,77 @@ describe('route', () => {
     });
   });
 
+  test('should allow zero weight route', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN
+    router.addRoute('http2', {
+      routeSpec: appmesh.RouteSpec.http2({
+        priority: 50,
+        weightedTargets: [
+          {
+            virtualNode: virtualNode,
+            weight: 0,
+          },
+        ],
+      }),
+    });
+    router.addRoute('http', {
+      routeSpec: appmesh.RouteSpec.http({
+        priority: 10,
+        weightedTargets: [
+          {
+            virtualNode: virtualNode,
+            weight: 0,
+          },
+        ],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+      Spec: {
+        Priority: 50,
+        Http2Route: {
+          Action: {
+            WeightedTargets: [
+              {
+                Weight: 0,
+              },
+            ],
+          },
+        },
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+      Spec: {
+        Priority: 10,
+        HttpRoute: {
+          Action: {
+            WeightedTargets: [
+              {
+                Weight: 0,
+              },
+            ],
+          },
+        },
+      },
+    });
+  });
+
   test('Can import Routes using an ARN', () => {
     const app = new cdk.App();
     // GIVEN
