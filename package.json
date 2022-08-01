@@ -24,7 +24,7 @@
     "graceful-fs": "^4.2.10",
     "jest-junit": "^13.2.0",
     "jsii-diff": "^1.63.0",
-    "jsii-pacmak": "^1.63.0",
+    "jsii-pacmak": "^1.62.0",
     "jsii-reflect": "^1.63.0",
     "jsii-rosetta": "^1.63.0",
     "lerna": "^4.0.0",
@@ -36,7 +36,8 @@
   "resolutions": {
     "colors": "1.4.0",
     "markdown-it": "^12.3.2",
-    "string-width": "^4.2.3"
+    "string-width": "^4.2.3",
+    "jsii-pacmak": "1.62.0"
   },
   "repository": {
     "type": "git",
