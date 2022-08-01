@@ -1,15 +1,15 @@
 {
   "version": "20.0.0",
   "files": {
-    "14bdb67f7676296b9bdb5b121f8aa237cf8df54278388a53a755ffd368499b9b": {
+    "06adf1bf5fb38407db9062bf544139638b8c6ac84c58a3f741f5730bba7509a2": {
       "source": {
-        "path": "aws-ecs-integ.template.json",
+        "path": "AwsCdkFsxLustre.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "14bdb67f7676296b9bdb5b121f8aa237cf8df54278388a53a755ffd368499b9b.json",
+          "objectKey": "06adf1bf5fb38407db9062bf544139638b8c6ac84c58a3f741f5730bba7509a2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
