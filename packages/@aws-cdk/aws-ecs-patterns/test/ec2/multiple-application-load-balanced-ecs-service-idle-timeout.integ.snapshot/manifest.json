@@ -153,52 +153,118 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/aws-ecs-integ/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
         "/aws-ecs-integ/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterEB0386A7"
           }
         ],
-        "/aws-ecs-integ/Cluster/Cluster": [
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Cluster3DA9CCBA"
+            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A"
           }
         ],
-        "/aws-ecs-integ/FirstAutoScalingGroup/InstanceSecurityGroup/Resource": [
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegmyServicelbSecurityGroup3AE0D167:32768-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstAutoScalingGroupInstanceSecurityGroupD970428E"
+            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegmyServicelbSecurityGroup3AE0D1673276865535F3D481F7"
           }
         ],
-        "/aws-ecs-integ/FirstAutoScalingGroup/InstanceRole/Resource": [
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegmyServicelb2SecurityGroup98A4D36A:32768-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstAutoScalingGroupInstanceRoleC3260EBE"
+            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegmyServicelb2SecurityGroup98A4D36A32768655350C2BEE3F"
           }
         ],
-        "/aws-ecs-integ/FirstAutoScalingGroup/InstanceRole/DefaultPolicy/Resource": [
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstAutoScalingGroupInstanceRoleDefaultPolicy4848AEA5"
+            "data": "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
           }
         ],
-        "/aws-ecs-integ/FirstAutoScalingGroup/InstanceProfile": [
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstAutoScalingGroupInstanceProfileA7AB0D44"
+            "data": "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81"
           }
         ],
-        "/aws-ecs-integ/FirstAutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstAutoScalingGroupLaunchConfig324EED6C"
+            "data": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
           }
         ],
-        "/aws-ecs-integ/FirstAutoScalingGroup/ASG": [
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstAutoScalingGroupASG3B34CA43"
+            "data": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+          }
+        ],
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupASG0F98E147"
+          }
+        ],
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1"
+          }
+        ],
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E"
+          }
+        ],
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865"
+          }
+        ],
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awsecsintegClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic2FBAAF9B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic2FBAAF9B4FDC19F0"
+          }
+        ],
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic3B6438EC"
+          }
+        ],
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
+          }
+        ],
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
+          }
+        ],
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5"
+          }
+        ],
+        "/aws-ecs-integ/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHook4A9A4325"
           }
         ],
         "/aws-ecs-integ/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -207,94 +273,136 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-ecs-integ/FirstCapacityProvier/FirstCapacityProvier": [
+        "/aws-ecs-integ/myService/lb/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstCapacityProvierD92F5AC4"
+            "data": "myServicelb360A9ADD"
           }
         ],
-        "/aws-ecs-integ/SecondAutoScalingGroup/InstanceSecurityGroup/Resource": [
+        "/aws-ecs-integ/myService/lb/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondAutoScalingGroupInstanceSecurityGroup4660265D"
+            "data": "myServicelbSecurityGroup97C897CA"
           }
         ],
-        "/aws-ecs-integ/SecondAutoScalingGroup/InstanceRole/Resource": [
+        "/aws-ecs-integ/myService/lb/SecurityGroup/to awsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E6482:32768-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondAutoScalingGroupInstanceRoleB7DE61A1"
+            "data": "myServicelbSecurityGrouptoawsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E6482327686553538B6E8FC"
           }
         ],
-        "/aws-ecs-integ/SecondAutoScalingGroup/InstanceRole/DefaultPolicy/Resource": [
+        "/aws-ecs-integ/myService/lb/listener/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondAutoScalingGroupInstanceRoleDefaultPolicyAAA3BD7D"
+            "data": "myServicelblistener1D7944F2"
           }
         ],
-        "/aws-ecs-integ/SecondAutoScalingGroup/InstanceProfile": [
+        "/aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb80Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondAutoScalingGroupInstanceProfileF37FF7A1"
+            "data": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
           }
         ],
-        "/aws-ecs-integ/SecondAutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb90Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondAutoScalingGroupLaunchConfigB54F15EA"
+            "data": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
           }
         ],
-        "/aws-ecs-integ/SecondAutoScalingGroup/ASG": [
+        "/aws-ecs-integ/myService/lb/listener/ECSTargetGroupweb90Rule/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondAutoScalingGroupASG6483DDB2"
+            "data": "myServicelblistenerECSTargetGroupweb90Rule68215E8D"
           }
         ],
-        "/aws-ecs-integ/SecondCapacityProvier/SecondCapacityProvier": [
+        "/aws-ecs-integ/myService/DNSlb/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondCapacityProvierADE5DA56"
+            "data": "myServiceDNSlb1E167074"
           }
         ],
-        "/aws-ecs-integ/myService/LB/Resource": [
+        "/aws-ecs-integ/myService/LoadBalancerDNSlb": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLB168895E1"
+            "data": "myServiceLoadBalancerDNSlbDE816AD2"
           }
         ],
-        "/aws-ecs-integ/myService/LB/SecurityGroup/Resource": [
+        "/aws-ecs-integ/myService/ServiceURLlbhttps": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBSecurityGroupFE0ED608"
+            "data": "myServiceServiceURLlbhttps4348F098"
           }
         ],
-        "/aws-ecs-integ/myService/LB/PublicListener/Resource": [
+        "/aws-ecs-integ/myService/lb2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBPublicListenerC78AE8A0"
+            "data": "myServicelb2C84C7BCB"
           }
         ],
-        "/aws-ecs-integ/myService/LB/PublicListener/ECSGroup/Resource": [
+        "/aws-ecs-integ/myService/lb2/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBPublicListenerECSGroup17E9BBC1"
+            "data": "myServicelb2SecurityGroupEB00B5B9"
           }
         ],
-        "/aws-ecs-integ/myService/LoadBalancerDNS": [
+        "/aws-ecs-integ/myService/lb2/SecurityGroup/to awsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E6482:32768-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLoadBalancerDNS3A083E9F"
+            "data": "myServicelb2SecurityGrouptoawsecsintegClusterDefaultAutoScalingGroupInstanceSecurityGroupED6E64823276865535FF83B71B"
           }
         ],
-        "/aws-ecs-integ/myService/ServiceURL": [
+        "/aws-ecs-integ/myService/lb2/listener2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceServiceURL1258C56B"
+            "data": "myServicelb2listener2AA6970EB"
+          }
+        ],
+        "/aws-ecs-integ/myService/lb2/listener2/ECSTargetGroupweb443Group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2listener2ECSTargetGroupweb443Group8FAB1268"
+          }
+        ],
+        "/aws-ecs-integ/myService/lb2/listener2/ECSTargetGroupweb80Group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
+          }
+        ],
+        "/aws-ecs-integ/myService/lb2/listener2/ECSTargetGroupweb80Rule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2listener2ECSTargetGroupweb80Rule2490715C"
+          }
+        ],
+        "/aws-ecs-integ/myService/DNSlb2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceDNSlb2811DE909"
+          }
+        ],
+        "/aws-ecs-integ/myService/LoadBalancerDNSlb2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceLoadBalancerDNSlb2DDCE46C8"
+          }
+        ],
+        "/aws-ecs-integ/myService/ServiceURLlb2https": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceServiceURLlb2https8BC76F76"
           }
         ],
         "/aws-ecs-integ/myService/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceTaskDefTaskRole1C1DE6CC"
+          }
+        ],
+        "/aws-ecs-integ/myService/TaskDef/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefTaskRoleDefaultPolicyD48473C0"
           }
         ],
         "/aws-ecs-integ/myService/TaskDef/Resource": [
@@ -330,14 +438,14 @@
       },
       "displayName": "aws-ecs-integ"
     },
-    "applicationLoadBalancedEc2ServiceTestDefaultTestDeployAssert3356477A": {
+    "multiAlbEcsEc2TestDefaultTestDeployAssertE5F6E3B0": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "applicationLoadBalancedEc2ServiceTestDefaultTestDeployAssert3356477A.template.json",
+        "templateFile": "multiAlbEcsEc2TestDefaultTestDeployAssertE5F6E3B0.template.json",
         "validateOnSynth": false
       },
-      "displayName": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert"
+      "displayName": "multiAlbEcsEc2Test/DefaultTest/DeployAssert"
     }
   }
 }
