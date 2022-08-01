@@ -327,7 +327,7 @@ export interface IUserPoolClient extends IResource {
    * The generated client secret. Only available if the "generateSecret" props is set to true
    * @attribute
    */
-  readonly userPoolClientSecret?: SecretValue;
+  readonly userPoolClientSecret: SecretValue;
 }
 
 /**
@@ -341,6 +341,9 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   public static fromUserPoolClientId(scope: Construct, id: string, userPoolClientId: string): IUserPoolClient {
     class Import extends Resource implements IUserPoolClient {
       public readonly userPoolClientId = userPoolClientId;
+      get userPoolClientSecret(): SecretValue {
+        throw new Error('UserPool Client Secret is not available for imported Clients');
+      }
     }
 
     return new Import(scope, id);
