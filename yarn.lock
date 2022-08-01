@@ -650,14 +650,6 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@jsii/check-node@1.62.0":
-  version "1.62.0"
-  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.62.0.tgz#3d3353d37ed1537acdfb63ea3e1506d82adb09b1"
-  integrity sha512-jYmY12Vrz3/0MJ9GTEfIxf4yh/7fsgYmuBp2UQfDLSfx+eaBvOG4xbjvsoa/AvfWF5VU95QqKAJLBDMOQK4z1g==
-  dependencies:
-    chalk "^4.1.2"
-    semver "^7.3.7"
-
 "@jsii/check-node@1.63.2":
   version "1.63.2"
   resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.63.2.tgz#009cd1a00023460634ccdf9680f19409810f204a"
@@ -666,7 +658,7 @@
     chalk "^4.1.2"
     semver "^7.3.7"
 
-"@jsii/spec@1.63.2", "@jsii/spec@^1.59.0", "@jsii/spec@^1.62.0", "@jsii/spec@^1.63.2":
+"@jsii/spec@1.63.2", "@jsii/spec@^1.59.0", "@jsii/spec@^1.63.2":
   version "1.63.2"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.63.2.tgz#36cdde3279ba8e1d212bbcba9b4766b1a3aaab95"
   integrity sha512-zIFZDG/qtQJWa2I7W1cUXExeshr4WSSuMNHWGkJzIn4hFtYv4eQG7cP3gF2ToqAwS2WgsX7fQ7dDrLg0Pzfc2A==
@@ -3250,7 +3242,7 @@ co@^4.6.0:
   resolved "https://registry.npmjs.org/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
   integrity sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==
 
-codemaker@^1.62.0, codemaker@^1.63.2:
+codemaker@^1.63.2:
   version "1.63.2"
   resolved "https://registry.npmjs.org/codemaker/-/codemaker-1.63.2.tgz#135ec2b19af1c21a522526f26f91bc37885cfd4b"
   integrity sha512-cb0fQK8kHE7NVl4V98evbDhEwXsObujJLVGbQJXJ1W9O2c6DTKzJ0hct+NnQqAEaAgll9qUJbWxTsIlSoqLOsQ==
@@ -6792,25 +6784,6 @@ jsii-diff@^1.63.2:
     log4js "^6.6.1"
     yargs "^16.2.0"
 
-jsii-pacmak@1.62.0:
-  version "1.62.0"
-  resolved "https://registry.npmjs.org/jsii-pacmak/-/jsii-pacmak-1.62.0.tgz#f95702c21555e66025a0c73ec43b3108b97d210b"
-  integrity sha512-WL0+QMJHtjaFrDRm8qiBcjUqG/Cio1QJa7up3WCHOFATMAyrpX+cGXA3nfPpTv1xq7nAA7XJgVQv2OIpBR0syQ==
-  dependencies:
-    "@jsii/check-node" "1.62.0"
-    "@jsii/spec" "^1.62.0"
-    clone "^2.1.2"
-    codemaker "^1.62.0"
-    commonmark "^0.30.0"
-    escape-string-regexp "^4.0.0"
-    fs-extra "^10.1.0"
-    jsii-reflect "^1.62.0"
-    jsii-rosetta "^1.62.0"
-    semver "^7.3.7"
-    spdx-license-list "^6.6.0"
-    xmlbuilder "^15.1.1"
-    yargs "^16.2.0"
-
 jsii-pacmak@^1.63.2:
   version "1.63.2"
   resolved "https://registry.npmjs.org/jsii-pacmak/-/jsii-pacmak-1.63.2.tgz#e42f62e2319c12049eafc669730ba0d37be47e81"
@@ -6830,7 +6803,7 @@ jsii-pacmak@^1.63.2:
     xmlbuilder "^15.1.1"
     yargs "^16.2.0"
 
-jsii-reflect@^1.59.0, jsii-reflect@^1.62.0, jsii-reflect@^1.63.2:
+jsii-reflect@^1.59.0, jsii-reflect@^1.63.2:
   version "1.63.2"
   resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.63.2.tgz#1f8d130a1cb5a03b30651543dd52c77eb9f620fe"
   integrity sha512-eawNN/ySYVznYY2ZJYe5FNcSly12KgC8/MBDl4qln3daag3Ts/d7ocfbS9sjFayn4AhBojq1h1DDs8sjoG38Kg==
@@ -6842,7 +6815,7 @@ jsii-reflect@^1.59.0, jsii-reflect@^1.62.0, jsii-reflect@^1.63.2:
     oo-ascii-tree "^1.63.2"
     yargs "^16.2.0"
 
-jsii-rosetta@^1.59.0, jsii-rosetta@^1.62.0, jsii-rosetta@^1.63.2:
+jsii-rosetta@^1.59.0, jsii-rosetta@^1.63.2:
   version "1.63.2"
   resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-1.63.2.tgz#42c1ee7a418392f0dcee8fa89277559871b76117"
   integrity sha512-cBl8uAtNYuWqrwGue2Sr7cdgPhWx/QiAAE70lDec0OtBSNdGq0MUA04GD1/peQw4LPhE+1ikdeyspJYJaTtQgg==
