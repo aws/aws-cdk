@@ -1996,7 +1996,7 @@ class ImportedVpc extends VpcBase {
 
   constructor(scope: Construct, id: string, props: VpcAttributes, isIncomplete: boolean) {
     super(scope, id, {
-      region: props.region ?? undefined,
+      region: props.region,
     });
 
     this.vpcId = props.vpcId;
@@ -2048,7 +2048,7 @@ class LookedUpVpc extends VpcBase {
 
   constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse & { region?: string }, isIncomplete: boolean) {
     super(scope, id, {
-      region: props.region ?? undefined,
+      region: props.region,
     });
 
     this.vpcId = props.vpcId;
