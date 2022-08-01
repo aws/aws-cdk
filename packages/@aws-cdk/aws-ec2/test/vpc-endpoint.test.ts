@@ -795,5 +795,23 @@ describe('vpc endpoint', () => {
       });
 
     });
+
+    test('test batch vpc interface endpoint in us-west-2', () => {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('CodeArtifact API Endpoint', {
+        service: InterfaceVpcEndpointAwsService.BATCH,
+      });
+
+      //THEN
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.batch',
+      });
+
+    });
   });
 });

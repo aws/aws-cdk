@@ -278,6 +278,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODEGURU_REVIEWER",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODEPIPELINE",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CONFIG",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.BATCH",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.EC2",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.EC2_MESSAGES",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.ECR",

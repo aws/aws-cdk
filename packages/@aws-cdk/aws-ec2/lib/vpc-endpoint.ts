@@ -260,6 +260,7 @@ export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
   public static readonly SAGEMAKER_NOTEBOOK = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
   public static readonly ATHENA = new InterfaceVpcEndpointAwsService('athena');
+  public static readonly BATCH = new InterfaceVpcEndpointAwsService('batch');
   public static readonly CLOUDFORMATION = new InterfaceVpcEndpointAwsService('cloudformation');
   public static readonly CLOUDTRAIL = new InterfaceVpcEndpointAwsService('cloudtrail');
   public static readonly CODEARTIFACT_API = new InterfaceVpcEndpointAwsService('codeartifact.api');
