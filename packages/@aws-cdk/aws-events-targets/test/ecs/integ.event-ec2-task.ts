@@ -9,22 +9,26 @@ import * as targets from '../../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-ecs-integ-fargate');
+const stack = new cdk.Stack(app, 'aws-ecs-integ-ecs');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
 
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+cluster.addCapacity('DefaultAutoScalingGroup', {
+  instanceType: new ec2.InstanceType('t2.micro'),
+});
 
 const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
 
 // Create a Task Definition for the container to start
-const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
+  memoryLimitMiB: 256,
   logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' }),
 });
 
-// A rule that describes the event trigger (in this case a scheduled run)
+// An Rule that describes the event trigger (in this case a scheduled run)
 const rule = new events.Rule(stack, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
 });
@@ -43,7 +47,7 @@ rule.addTarget(new targets.EcsTask({
   deadLetterQueue,
 }));
 
-new integ.IntegTest(app, 'EcsFargateTest', {
+new integ.IntegTest(app, 'EcsTest', {
   testCases: [stack],
 });
 
