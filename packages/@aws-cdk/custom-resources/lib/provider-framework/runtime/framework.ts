@@ -13,12 +13,12 @@ export = {
   [consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME]: onTimeout,
 };
 
-const DEFAULT_DELAY = 10_000;
-const MAX_TOTAL_DELAY = 620_000;
+const BASE_SLEEP = 10_000;
+const MAX_TOTAL_SLEEP = 620_000;
 
 interface RetryOptions {
-  delay: number,
-  totalDelay: number,
+  attempt: number,
+  totalSleep: number,
 }
 
 /**
@@ -127,19 +127,20 @@ async function invokeUserFunction(functionArnEnv: string, payload: any, retryOpt
     });
 
     if (getFunctionResponse.Configuration?.State === 'Inactive' || getFunctionResponse.Configuration?.State === 'Pending') {
-      const newDelay = retryOptions ? retryOptions.delay * 2 : DEFAULT_DELAY;
-      const newTotalDelay = (retryOptions ? retryOptions.totalDelay : 0) + newDelay;
+      const currentAttempt = retryOptions?.attempt ?? 1;
+      const newSleep = Math.floor(BASE_SLEEP * Math.pow(2, currentAttempt) * Math.random());
+      const newTotalSleep = (retryOptions ? retryOptions.totalSleep : 0) + newSleep;
 
       // don't spend more than 10 minutes and some change waiting
-      if (newTotalDelay <= MAX_TOTAL_DELAY) {
-        const newRetryOptions = {
-          delay: newDelay,
-          totalDelay: newTotalDelay,
+      if (newTotalSleep <= MAX_TOTAL_SLEEP) {
+        const newRetryOptions: RetryOptions = {
+          attempt: currentAttempt + 1,
+          totalSleep: newTotalSleep,
         };
 
-        log('user function is still being initialized by Lambda, retrying with delay of: ', newDelay);
+        log('user function is still being initialized by Lambda, retrying with delay of: ', newSleep);
 
-        return setTimeout(invokeUserFunction, newDelay, functionArnEnv, payload, newRetryOptions);
+        return setTimeout(invokeUserFunction, newSleep, functionArnEnv, payload, newRetryOptions);
       }
     }
 
