@@ -1,11 +1,11 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import { Platform } from '@aws-cdk/aws-ecr-assets';
 import { Construct } from 'constructs';
+import { Architecture } from './architecture';
 import { AssetImageCode, AssetImageCodeProps, EcrImageCode, EcrImageCodeProps, Code } from './code';
 import { Function, FunctionOptions } from './function';
 import { Handler } from './handler';
 import { Runtime } from './runtime';
-import { Architecture } from "./architecture";
 
 /**
  * Properties to configure a new DockerImageFunction construct.
@@ -48,7 +48,7 @@ export abstract class DockerImageCode {
           /**
            * determine the platform from `architecture`.
            */
-            ...architecture?.dockerPlatform ? { platform: Platform.custom(architecture.dockerPlatform) } : {},
+          ...architecture?.dockerPlatform ? { platform: Platform.custom(architecture.dockerPlatform) } : {},
           ...props,
         });
       },
