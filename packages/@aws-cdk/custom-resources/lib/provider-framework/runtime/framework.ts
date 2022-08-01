@@ -104,6 +104,7 @@ async function onTimeout(timeoutEvent: any) {
 async function invokeUserFunction(functionArnEnv: string, payload: any, retryOptions?: RetryOptions): Promise<any> {
   const functionArn = getEnv(functionArnEnv);
   log(`executing user function ${functionArn} with payload`, payload);
+  console.log('-----=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==--==-=-=-=-=-==-=-==-=-=-=-=-=-=-=-=--=--=-=-==-')
 
   // transient errors such as timeouts, throttling errors (429), and other
   // errors that aren't caused by a bad request (500 series) are retried

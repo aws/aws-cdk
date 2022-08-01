@@ -343,6 +343,14 @@ describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
     // THEN
     expectCloudFormationSuccess();
   });
+});
+
+test('foo', () => {
+  // GIVEN
+
+  // WHEN
+
+  // THEN
 
 });
 
