@@ -333,6 +333,8 @@ new batch.JobDefinition(this, 'batch-job-def-secrets', {
 });
 ```
 
+It is common practice to invoke other AWS services from within AWS Batch jobs (e.g. using the AWS SDK). For this reason, the AWS_ACCOUNT and AWS_REGION environments are always provided by default to the JobDefinition construct with the values inferred from the current context. You can always overwrite them by setting these environment variables explicitly though.
+
 ### Importing an existing Job Definition
 
 #### From ARN

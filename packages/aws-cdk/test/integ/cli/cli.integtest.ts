@@ -61,6 +61,13 @@ integTest('Construct with builtin Lambda function', withDefaultFixture(async (fi
   await fixture.cdkDestroy('builtin-lambda-function');
 }));
 
+// this is to ensure that asset bundling for apps under a stage does not break
+integTest('Stage with bundled Lambda function', withDefaultFixture(async (fixture) => {
+  await fixture.cdkDeploy('bundling-stage/BundlingStack');
+  fixture.log('Setup complete!');
+  await fixture.cdkDestroy('bundling-stage/BundlingStack');
+}));
+
 integTest('Two ways of showing the version', withDefaultFixture(async (fixture) => {
   const version1 = await fixture.cdk(['version'], { verbose: false });
   const version2 = await fixture.cdk(['--version'], { verbose: false });
