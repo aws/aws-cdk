@@ -670,7 +670,7 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGrou
   },
   enableExecuteCommand: true,
   loadBalancers: [
-    {g
+    {
       name: 'lb',
       idleTimeout: Duration.seconds(400),
       domainName: 'api.example.com',
@@ -710,8 +710,12 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGrou
       priority: 10,
       listener: 'listener',
     },
-        {
+    {
       containerPort: 443,
+      listener: 'listener2',
+    },
+    {
+      containerPort: 80,
       pathPattern: 'a/b/c',
       priority: 10,
       listener: 'listener2',
