@@ -42,35 +42,55 @@ describe('User Pool Client', () => {
     expect(() => client2.userPoolClientName).toThrow(/available only if specified on the UserPoolClient during initialization/);
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  test.only('client with secret', ()=>{
-    // GIVEN
-    const stack = new Stack();
-    const pool = new UserPool(stack, 'Pool');
+  describe('Client with secret', ()=>{
 
-    // WHEN
-    const clientWithSecret = new UserPoolClient(stack, 'clientWithSecret', {
-      userPool: pool,
-      generateSecret: true,
+    test('generate secret', ()=>{
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      const clientWithSecret = new UserPoolClient(stack, 'clientWithSecret', {
+        userPool: pool,
+        generateSecret: true,
+      });
+
+      // THEN
+      expect(clientWithSecret.userPoolClientSecret).toBeDefined();
+
+      // Make sure getter returns the same secret regardless if it's called one or many times
+      expect(clientWithSecret.userPoolClientSecret === clientWithSecret.userPoolClientSecret).toBeTruthy();
     });
 
-    const clientWithoutSecret1 = new UserPoolClient(stack, 'clientWithoutSecret1', {
-      userPool: pool,
-      generateSecret: false,
+    test('explicitly disable secret generation', ()=>{
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      const clientWithoutSecret = new UserPoolClient(stack, 'clientWithoutSecret1', {
+        userPool: pool,
+        generateSecret: false,
+      });
+
+      // THEN
+      expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if the "generateSecret" prop is set to true/);
     });
-    const clientWithoutSecret2 = new UserPoolClient(stack, 'clientWithoutSecret2', {
-      userPool: pool,
-      generateSecret: undefined,
+
+    test('lacking secret configuration implicitly disables it', ()=>{
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      const clientWithoutSecret = new UserPoolClient(stack, 'clientWithoutSecret2', {
+        userPool: pool,
+        generateSecret: undefined,
+      });
+
+      // THEN
+      expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if the "generateSecret" prop is set to true/);
     });
-
-    // THEN
-    expect(clientWithSecret.userPoolClientSecret).toBeDefined();
-
-    // Make sure getter returns the same secret regardless if it's called one or many times
-    expect(clientWithSecret.userPoolClientSecret === clientWithSecret.userPoolClientSecret).toBeTruthy();
-
-    expect(() => clientWithoutSecret1.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if the "generateSecret" prop is set to true/);
-    expect(() => clientWithoutSecret2.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if the "generateSecret" prop is set to true/);
   });
 
   test('import', () => {
