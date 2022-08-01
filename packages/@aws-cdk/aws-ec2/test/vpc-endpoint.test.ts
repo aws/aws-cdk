@@ -751,5 +751,29 @@ describe('vpc endpoint', () => {
 
 
     });
+    test('test codeartifact vpc interface endpoint', () => {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('CodeArtifact API Endpoint', {
+        service: InterfaceVpcEndpointAwsService.CODEARTIFACT_API,
+      });
+
+      vpc.addInterfaceEndpoint('CodeArtifact Repositories Endpoint', {
+        service: InterfaceVpcEndpointAwsService.CODEARTIFACT_REPOSITORIES,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.codeartifact.repositories',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.codeartifact.api',
+      });
+
+    });
   });
 });
