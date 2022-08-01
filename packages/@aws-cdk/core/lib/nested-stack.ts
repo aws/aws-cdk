@@ -124,7 +124,7 @@ export class NestedStack extends Stack {
 
     this._parentStack = parentStack;
 
-    const parentScope = new Construct(scope, id + '.NestedStack');
+    const parentScope = new Construct(scope, id + '.Nests');
 
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
@@ -133,7 +133,7 @@ export class NestedStack extends Stack {
 
     this.parameters = props.parameters || {};
 
-    this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
+    this.resource = new CfnStack(parentScope, `${id}`, {
       // This value cannot be cached since it changes during the synthesis phase
       templateUrl: Lazy.uncachedString({ produce: () => this._templateUrl || '<unresolved>' }),
       parameters: Lazy.any({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
