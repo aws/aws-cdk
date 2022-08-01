@@ -91,6 +91,6 @@ describe('archive', () => {
       retention: Duration.days(10),
     });
 
-    expect(archive.node.defaultChild).toBeDefined();
+    expect(archive.node.defaultChild).toBe(archive.node.findChild('Archive'));
   });
 });
