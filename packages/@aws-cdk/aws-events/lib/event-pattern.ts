@@ -3,6 +3,16 @@ import { captureStackTrace, IResolvable, IResolveContext, Token } from '@aws-cdk
 type ComparisonOperator = '>' | '>=' | '<' | '<=' | '=';
 
 /**
+ * Options for how to construct matchers
+ */
+export interface MatchOptions {
+  /**
+   * Whether the list of matchers should be merged into a single matcher
+   */
+  readonly mergeMatchers: boolean;
+}
+
+/**
  * An event pattern matcher
  */
 export class Match implements IResolvable {
@@ -166,17 +176,17 @@ export class Match implements IResolvable {
   }
 
   private static fromObjects(values: any[]): string[] {
-    return new Match(values, false).asList();
+    return new Match(values, { mergeMatchers: false }).asList();
   }
 
   private static fromMergedObjects(values: any[]): string[] {
-    return new Match(values, true).asList();
+    return new Match(values, { mergeMatchers: true }).asList();
   }
 
   public readonly creationStack: string[];
 
   constructor(private readonly matchers: any[],
-    private readonly mergeObjects: boolean = false) {
+    private readonly options: MatchOptions) {
     this.creationStack = captureStackTrace();
   }
 
@@ -186,17 +196,19 @@ export class Match implements IResolvable {
       .map(matcher => context.resolve(matcher))
       .flatMap(x => x);
 
-    if (this.mergeObjects) {
-      // This is the only supported case for merging at the moment.
-      // We can generalize this logic if EventBridge starts supporting more cases in the future.
-      if (!matchers.every(matcher => matcher?.numeric)) {
-        throw new Error('Only numeric matchers can be merged into a single matcher.');
-      }
-
-      return [{ numeric: matchers.flatMap(matcher => matcher.numeric) }];
-    }
-    return matchers;
+    return this.options.mergeMatchers ? this.merge(matchers) : matchers;
   }
+
+  private merge(matchers: any[]): any {
+    // This is the only supported case for merging at the moment.
+    // We can generalize this logic if EventBridge starts supporting more cases in the future.
+    if (!matchers.every(matcher => matcher?.numeric)) {
+      throw new Error('Only numeric matchers can be merged into a single matcher.');
+    }
+
+    return [{ numeric: matchers.flatMap(matcher => matcher.numeric) }];
+  }
+
 
   toString(): string {
     return Token.asString(this);
