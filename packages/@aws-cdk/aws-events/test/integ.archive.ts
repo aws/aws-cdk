@@ -1,4 +1,5 @@
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Archive, CfnArchive, EventBus } from '../lib';
 
 const app = new App();
@@ -14,5 +15,9 @@ const archive = new Archive(stack, 'Archive', {
   },
 });
 (archive.node.defaultChild as CfnArchive).overrideLogicalId('MyCustomArchive');
+
+new IntegTest(app, 'ArchiveTest', {
+  testCases: [stack],
+});
 
 app.synth();
