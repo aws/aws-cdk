@@ -813,5 +813,38 @@ describe('vpc endpoint', () => {
       });
 
     });
+
+    test('test autoscaling vpc interface endpoint in us-west-2', () => {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('Autoscaling API Endpoint', {
+        service: InterfaceVpcEndpointAwsService.AUTOSCALING,
+      });
+
+      vpc.addInterfaceEndpoint('Autoscaling-plan API Endpoint', {
+        service: InterfaceVpcEndpointAwsService.AUTOSCALING_PLANS,
+      });
+
+      vpc.addInterfaceEndpoint('Application-Autoscaling API Endpoint', {
+        service: InterfaceVpcEndpointAwsService.APPLICATION_AUTOSCALING,
+      });
+
+      //THEN
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.autoscaling',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.autoscaling-plans',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.application-autoscaling',
+      });
+    });
   });
 });
