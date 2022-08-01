@@ -143,7 +143,7 @@ const testCase = new IntegTest(app, 'CustomizedDeploymentWorkflow', {
         requireApproval: RequireApproval.NEVER,
         json: true,
       },
-	  },
+    },
     destroy: {
       args: {
         force: true,

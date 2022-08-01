@@ -1,15 +1,15 @@
 {
   "version": "20.0.0",
   "files": {
-    "13516b59b60d6e751339d97de677f580e59df6a814e62325fc725c5becb7b15d": {
+    "c328ab321c3d5fd5f5a82abed4520136f53bd07785ecd2a382c66fc17090bb0d": {
       "source": {
-        "path": "aws-ecs-integ-lb-fargate.template.json",
+        "path": "IntegStack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "13516b59b60d6e751339d97de677f580e59df6a814e62325fc725c5becb7b15d.json",
+          "objectKey": "c328ab321c3d5fd5f5a82abed4520136f53bd07785ecd2a382c66fc17090bb0d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
