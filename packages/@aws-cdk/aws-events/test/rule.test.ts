@@ -3,7 +3,7 @@ import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
-import { EventBus, EventField, IRule, IRuleTarget, Matchers, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
+import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule, Match as m } from '../lib';
 import { Rule } from '../lib/rule';
 
 /* eslint-disable quote-props */
@@ -126,22 +126,22 @@ describe('rule', () => {
         detail: {
           foo: [1, 2],
           strings: ['foo', 'bar'],
-          rangeMatcher: Matchers.interval(-1, 1),
-          stringMatcher: Matchers.exactString('I am just a string'),
-          prefixMatcher: Matchers.prefix('aws.'),
-          ipAddress: Matchers.ipAddressRange('192.0.2.0/24'),
-          shouldExist: Matchers.exists(),
-          shouldNotExist: Matchers.doesNotExist(),
-          numbers: Matchers.numeric(Matchers.greaterThan(0), Matchers.lessThan(5)),
+          rangeMatcher: m.interval(-1, 1),
+          stringMatcher: m.exactString('I am just a string'),
+          prefixMatcher: m.prefix('aws.'),
+          ipAddress: m.ipAddressRange('192.0.2.0/24'),
+          shouldExist: m.exists(),
+          shouldNotExist: m.doesNotExist(),
+          numbers: m.allOf(m.greaterThan(0), m.lessThan(5)),
           topLevel: {
-            deeper: Matchers.equal(42),
+            deeper: m.equal(42),
             oneMoreLevel: {
-              deepest: Matchers.anyOf(Matchers.lessThanOrEqual(-1), Matchers.greaterThanOrEqual(1)),
+              deepest: m.anyOf(m.lessThanOrEqual(-1), m.greaterThanOrEqual(1)),
             },
           },
-          state: Matchers.anythingBut('initializing'),
-          limit: Matchers.anythingBut(100, 200, 300),
-          notPrefixedBy: Matchers.anythingButPrefix('sensitive-'),
+          state: m.anythingBut('initializing'),
+          limit: m.anythingBut(100, 200, 300),
+          notPrefixedBy: m.anythingButPrefix('sensitive-'),
           bar: undefined,
         },
         detailType: ['detailType1'],

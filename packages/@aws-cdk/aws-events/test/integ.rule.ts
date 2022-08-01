@@ -1,6 +1,6 @@
 import { App, Stack } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
-import { Rule, Matchers } from '../lib';
+import { Rule, Match } from '../lib';
 
 const app = new App();
 
@@ -13,22 +13,22 @@ new Rule(stack, 'MyRule', {
     detail: {
       foo: [1, 2],
       strings: ['foo', 'bar'],
-      rangeMatcher: Matchers.interval(-1, 1),
-      stringMatcher: Matchers.exactString('I am just a string'),
-      prefixMatcher: Matchers.prefix('aws.'),
-      ipAddress: Matchers.ipAddressRange('192.0.2.0/24'),
-      shouldExist: Matchers.exists(),
-      shouldNotExist: Matchers.doesNotExist(),
-      numbers: Matchers.numeric(Matchers.greaterThan(0), Matchers.lessThan(5)),
+      rangeMatcher: Match.interval(-1, 1),
+      stringMatcher: Match.exactString('I am just a string'),
+      prefixMatcher: Match.prefix('aws.'),
+      ipAddress: Match.ipAddressRange('192.0.2.0/24'),
+      shouldExist: Match.exists(),
+      shouldNotExist: Match.doesNotExist(),
+      numbers: Match.allOf(Match.greaterThan(0), Match.lessThan(5)),
       topLevel: {
-        deeper: Matchers.equal(42),
+        deeper: Match.equal(42),
         oneMoreLevel: {
-          deepest: Matchers.anyOf(Matchers.lessThanOrEqual(-1), Matchers.greaterThanOrEqual(1)),
+          deepest: Match.anyOf(Match.lessThanOrEqual(-1), Match.greaterThanOrEqual(1)),
         },
       },
-      state: Matchers.anythingBut('initializing'),
-      limit: Matchers.anythingBut(100, 200, 300),
-      notPrefixedBy: Matchers.anythingButPrefix('sensitive-'),
+      state: Match.anythingBut('initializing'),
+      limit: Match.anythingBut(100, 200, 300),
+      notPrefixedBy: Match.anythingButPrefix('sensitive-'),
     },
     detailType: ['detailType1'],
     id: ['id1', 'id2'],

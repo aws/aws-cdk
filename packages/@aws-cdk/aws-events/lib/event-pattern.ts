@@ -1,283 +1,215 @@
-/**
- * An EventBridge pattern matcher
- *
- */
-export interface IMatcher {
-  /**
-   * Produces the final representation, expected by EventBrige.
-   * For example: ["foo"], [{ "prefix": "bar" }], [{ "numeric": [ ">", 0, "<=", 5 ] }] etc
-   */
-  toEventBridgeMatcher(): any[];
-}
-
-/**
- * A matcher for order comparisons with numeric values
- */
-export interface INumericMatcher extends IMatcher {}
-
-class NullValueMatcher implements IMatcher {
-  toEventBridgeMatcher() {
-    return [null];
-  }
-}
-
-class ExistsMatcher implements IMatcher {
-  toEventBridgeMatcher() {
-    return [{ exists: true }];
-  }
-}
-
-class DoesNotExistMatcher implements IMatcher {
-  toEventBridgeMatcher() {
-    return [{ exists: false }];
-  }
-}
-
-class ExactStringMatcher implements IMatcher {
-  constructor(private readonly value: string) { }
-
-  toEventBridgeMatcher() {
-    return [this.value];
-  }
-}
-
-class PrefixMatcher implements IMatcher {
-  constructor(private readonly value: string) { }
-
-  toEventBridgeMatcher() {
-    return [{ prefix: this.value }];
-  }
-}
-
-class CidrMatcher implements IMatcher {
-  constructor(private readonly value: string) {
-    const ipv4Regex = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/igm;
-    const ipv6Regex = /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/igm;
-
-    if (!ipv4Regex.test(value) && !ipv6Regex.test(value)) {
-      throw new Error(`Invalid IP address range: ${value}`);
-    }
-  }
-
-  toEventBridgeMatcher() {
-    return [{ cidr: this.value }];
-  }
-}
-
-class AnythingButMatcher implements IMatcher {
-  constructor(private readonly values: any[]) {
-    if (values.length === 0) {
-      throw new Error('anythingBut matchers must be non-empty lists');
-    }
-
-    if (!(this.allNumbers() || this.allStrings())) {
-      throw new Error(`anythingBut matchers must be lists that contain only strings or only numbers. Got: ${values}`);
-    }
-  }
-
-  toEventBridgeMatcher() {
-    return [{ 'anything-but': this.values }];
-  }
-
-  private allStrings(): boolean {
-    return this.values.every(v => typeof (v) === 'string');
-  }
-
-  private allNumbers(): boolean {
-    return this.values.every(v => typeof (v) === 'number');
-  }
-}
-
-class AnythingButPrefixMatcher implements IMatcher {
-  constructor(private readonly prefix: string) {}
-
-  toEventBridgeMatcher(): any[] {
-    return [{ 'anything-but': { prefix: this.prefix } }];
-  }
-}
+import { captureStackTrace, IResolvable, IResolveContext, Token } from '@aws-cdk/core';
 
 type ComparisonOperator = '>' | '>=' | '<' | '<=' | '=';
-class ComparisonMatcher implements INumericMatcher {
-  constructor(private readonly operator: ComparisonOperator, private readonly value: number) { }
-
-  toEventBridgeMatcher(): any[] {
-    return [{ numeric: [this.operator, this.value] }];
-  }
-}
-
-class IntervalMatcher implements IMatcher {
-  constructor(
-    private readonly lower: number,
-    private readonly uppper: number,
-  ) {
-    if (lower > uppper) {
-      throw new Error(`Invalid interval: [${lower}, ${uppper}]`);
-    }
-  }
-
-  toEventBridgeMatcher() {
-    return [{ numeric: ['>=', this.lower, '<=', this.uppper] }];
-  }
-}
-
-class NumericMatcher implements IMatcher {
-  constructor(private readonly matchers: INumericMatcher[]) {
-    if (matchers.length === 0) {
-      throw new Error('numeric matchers must be non-empty lists');
-    }
-  }
-
-  toEventBridgeMatcher(): any {
-    return [{
-      numeric: this.matchers
-        .flatMap(m => m.toEventBridgeMatcher())
-        .flatMap(m => m.numeric),
-    }];
-  }
-}
-
-class AnyOfMatcher implements IMatcher {
-  constructor(private readonly matchers: IMatcher[]) {
-    if (matchers.length === 0) {
-      throw new Error('anyOf matchers must be non-empty lists');
-    }
-  }
-
-  toEventBridgeMatcher(): any[] {
-    return this.matchers.flatMap(m => m.toEventBridgeMatcher());
-  }
-}
 
 /**
- * A collection of matchers for constructing event patterns
+ * An event pattern matcher
  */
-export class Matchers {
+export class Match implements IResolvable {
   /**
    * Matches a null value in the JSON of the event
    */
-  static nullValue(): IMatcher {
-    return new NullValueMatcher();
+  public static nullValue(): string[] {
+    return this.fromObjects([null]);
   }
 
   /**
- * Matches when the field is absent from the JSON of the event
- */
-  static exists(): IMatcher {
-    return new ExistsMatcher();
+   * Matches when the field is absent from the JSON of the event
+   */
+  public static exists(): string[] {
+    return this.fromObjects([{ exists: true }]);
   }
 
   /**
- * Matches when the field is present in the JSON of the event
- */
-  static doesNotExist(): IMatcher {
-    return new DoesNotExistMatcher();
+   * Matches when the field is present in the JSON of the event
+   */
+  public static doesNotExist(): string[] {
+    return this.fromObjects([{ exists: false }]);
   }
 
   /**
- * Matches a string, exactly, in the JSON of the event
- */
-  static exactString(value: string): IMatcher {
-    return new ExactStringMatcher(value);
+   * Matches a string, exactly, in the JSON of the event
+   */
+  public static exactString(value: string): string [] {
+    return this.fromObjects([value]);
   }
 
   /**
- * Matches strings with the given prefix in the JSON of the event
- */
-  static prefix(value: string): IMatcher {
-    return new PrefixMatcher(value);
+   * Matches strings with the given prefix in the JSON of the event
+   */
+  static prefix(value: string): string[] {
+    return this.fromObjects([{ prefix: value }]);
   }
 
   /**
    * Matches IPv4 and IPv6 network addresses using the Classless Inter-Domain Routing (CIDR) format
    */
-  static cidr(range: string): IMatcher {
-    return new CidrMatcher(range);
+  static cidr(range: string): string[] {
+    const ipv4Regex = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/igm;
+    const ipv6Regex = /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/igm;
+
+    if (!ipv4Regex.test(range) && !ipv6Regex.test(range)) {
+      throw new Error(`Invalid IP address range: ${range}`);
+    }
+
+    return this.fromObjects([{ cidr: range }]);
   }
 
   /**
    * Matches IPv4 and IPv6 network addresses using the Classless Inter-Domain Routing (CIDR) format.
-   * Alias of cidr().
+   * Alias of `cidr()`.
    */
-  static ipAddressRange(range: string): IMatcher {
-    return Matchers.cidr(range);
+  static ipAddressRange(range: string): string[] {
+    return Match.cidr(range);
   }
 
   /**
    * Matches anything except what's provided in the rule. The list of provided values must contain
-   * only strings, only numbers or be a single prefix matcher.
+   * only strings or only numbers.
    */
-  static anythingBut(...values: any[]): IMatcher {
-    return new AnythingButMatcher(values);
-  }
+  static anythingBut(...values: any[]): string[] {
+    if (values.length === 0) {
+      throw new Error('anythingBut matchers must be non-empty lists');
+    }
 
-  /**
-   * Matches numbers less than the provided value
-   */
-  static lessThan(value: number): INumericMatcher {
-    return new ComparisonMatcher('<', value);
-  }
+    const allNumbers = values.every(v => typeof (v) === 'number');
+    const allStrings = values.every(v => typeof (v) === 'string');
 
-  /**
-   * Matches numbers greater than or equal to the provided value
-   */
-  static lessThanOrEqual(value: number): INumericMatcher {
-    return new ComparisonMatcher('<=', value);
-  }
+    if (!(allNumbers || allStrings)) {
+      throw new Error('anythingBut matchers must be lists that contain only strings or only numbers.');
+    }
 
-  /**
-   * Matches numbers greater than the provided value
-   */
-  static greaterThan(value: number): INumericMatcher {
-    return new ComparisonMatcher('>', value);
-  }
-
-  /**
-   * Matches numbers greater than or equal to the provided value
-   */
-  static greaterThanOrEqual(value: number): INumericMatcher {
-    return new ComparisonMatcher('>=', value);
-  }
-
-  /**
-   * Matches numbers equal to the provided value
-   */
-  static equal(value: number): INumericMatcher {
-    return new ComparisonMatcher('=', value);
-  }
-
-  /**
-   * Matches numbers inside a closed numeric interval. Equivalent to:
-   *
-   *    Matchers.numeric(Matchers.greaterThanOrEqual(lower), Matchers.lessThanOrEqual(upper))
-   *
-   * @param lower Lower bound (inclusive)
-   * @param upper Upper bound (inclusive)
-   */
-  static interval(lower: number, upper: number): IMatcher {
-    return new IntervalMatcher(lower, upper);
-  }
-
-  /**
-   * Matches a number that satisfy all the provided matchers.
-   */
-  static numeric(...matchers: INumericMatcher[]): IMatcher {
-    return new NumericMatcher(matchers);
-  }
-
-  /**
-   * Matches an event if any of the provided matchers does.
-   */
-  static anyOf(...matchers: IMatcher[]): IMatcher {
-    return new AnyOfMatcher(matchers);
+    return this.fromObjects([{ 'anything-but': values }]);
   }
 
   /**
    * Matches any string that doesn't start with the given prefix.
    */
-  static anythingButPrefix(prefix: string): IMatcher {
-    return new AnythingButPrefixMatcher(prefix);
+  static anythingButPrefix(prefix: string): string[] {
+    return this.fromObjects([{ 'anything-but': { prefix: prefix } }]);
+  }
+
+  /**
+   * Matches numbers greater than the provided value
+   */
+  public static greaterThan(value: number): string[] {
+    return this.numeric('>', value);
+  }
+
+  /**
+   * Matches numbers greater than, or equal to, the provided value
+   */
+  public static greaterThanOrEqual(value: number): string[] {
+    return this.numeric('>=', value);
+  }
+
+  /**
+   * Matches numbers less than the provided value
+   */
+  public static lessThan(value: number): string[] {
+    return this.numeric('<', value);
+  }
+
+  /**
+   * Matches numbers less than, or equal to, the provided value
+   */
+  public static lessThanOrEqual(value: number): string[] {
+    return this.numeric('<=', value);
+  }
+
+  /**
+   * Matches numbers equal to the provided value
+   */
+  public static equal(value: number): string[] {
+    return this.numeric('=', value);
+  }
+
+  /**
+   * Matches numbers inside a closed numeric interval. Equivalent to:
+   *
+   *    Match.allOf(Match.greaterThanOrEqual(lower), Match.lessThanOrEqual(upper))
+   *
+   * @param lower Lower bound (inclusive)
+   * @param upper Upper bound (inclusive)
+   */
+  static interval(lower: number, upper: number): string[] {
+    if (lower > upper) {
+      throw new Error(`Invalid interval: [${lower}, ${upper}]`);
+    }
+
+    return Match.allOf(Match.greaterThanOrEqual(lower), Match.lessThanOrEqual(upper));
+  }
+
+  /**
+   * Matches an event if any of the provided matchers do. Only numeric matchers are accepted.
+   */
+  public static allOf(...matchers: any[]): string[] {
+    if (matchers.length === 0) {
+      throw new Error('A list of matchers must contain at least one element.');
+    }
+
+    return this.fromMergedObjects(matchers);
+  }
+
+  /**
+   * Matches an event if any of the provided matchers does.
+   */
+  public static anyOf(...matchers: any[]): string[] {
+    if (matchers.length === 0) {
+      throw new Error('A list of matchers must contain at least one element.');
+    }
+    return this.fromObjects(matchers);
+  }
+
+  private static numeric(operator: ComparisonOperator, value: number): string[] {
+    return this.fromObjects([{ numeric: [operator, value] }]);
+  }
+
+  private static fromObjects(values: any[]): string[] {
+    return new Match(values, false).asList();
+  }
+
+  private static fromMergedObjects(values: any[]): string[] {
+    return new Match(values, true).asList();
+  }
+
+  public readonly creationStack: string[];
+
+  constructor(private readonly matchers: any[],
+    private readonly mergeObjects: boolean = false) {
+    this.creationStack = captureStackTrace();
+  }
+
+  resolve(context: IResolveContext): any {
+    // Resolve each of the matchers first and then flatten the resulting list
+    const matchers = this.matchers
+      .map(matcher => context.resolve(matcher))
+      .flatMap(x => x);
+
+    if (this.mergeObjects) {
+      // This is the only supported case for merging at the moment.
+      // We can generalize this logic if EventBridge starts supporting more cases in the future.
+      if (!matchers.every(matcher => matcher?.numeric)) {
+        throw new Error('Only numeric matchers can be merged into a single matcher.');
+      }
+
+      return [{ numeric: matchers.flatMap(matcher => matcher.numeric) }];
+    }
+    return matchers;
+  }
+
+  toString(): string {
+    return Token.asString(this);
+  }
+
+  /**
+   * A representation of this matcher as a list of strings
+   */
+  asList(): string[] {
+    return Token.asList(this);
   }
 }
+
 
 /**
  * Events in Amazon CloudWatch Events are represented as JSON objects. For more
@@ -318,7 +250,7 @@ export interface EventPattern {
    *
    * @default - No filtering on version
    */
-  readonly version?: string[] | IMatcher;
+  readonly version?: string[];
 
   /**
    * A unique value is generated for every event. This can be helpful in
@@ -326,7 +258,7 @@ export interface EventPattern {
    *
    * @default - No filtering on id
    */
-  readonly id?: string[] | IMatcher;
+  readonly id?: string[];
 
   /**
    * Identifies, in combination with the source field, the fields and values
@@ -336,7 +268,7 @@ export interface EventPattern {
    *
    * @default - No filtering on detail type
    */
-  readonly detailType?: string[] | IMatcher;
+  readonly detailType?: string[];
 
   /**
    * Identifies the service that sourced the event. All events sourced from
@@ -351,14 +283,14 @@ export interface EventPattern {
    * @see http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#genref-aws-service-namespaces
    * @default - No filtering on source
    */
-  readonly source?: string[] | IMatcher;
+  readonly source?: string[];
 
   /**
    * The 12-digit number identifying an AWS account.
    *
    * @default - No filtering on account
    */
-  readonly account?: string[] | IMatcher;
+  readonly account?: string[];
 
   /**
    * The event timestamp, which can be specified by the service originating
@@ -368,14 +300,14 @@ export interface EventPattern {
    *
    * @default - No filtering on time
    */
-  readonly time?: string[] | IMatcher;
+  readonly time?: string[];
 
   /**
    * Identifies the AWS region where the event originated.
    *
    * @default - No filtering on region
    */
-  readonly region?: string[] | IMatcher;
+  readonly region?: string[];
 
   /**
    * This JSON array contains ARNs that identify resources that are involved
@@ -389,7 +321,7 @@ export interface EventPattern {
    *
    * @default - No filtering on resource
    */
-  readonly resources?: string[] | IMatcher;
+  readonly resources?: string[];
 
   /**
    * A JSON object, whose content is at the discretion of the service
@@ -397,5 +329,5 @@ export interface EventPattern {
    *
    * @default - No filtering on detail
    */
-  readonly detail?: {[key: string]: any};
+  readonly detail?: { [key: string]: any };
 }

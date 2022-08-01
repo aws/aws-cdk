@@ -1,63 +1,73 @@
-import { Matchers } from '../lib';
+import { App, Stack, Token } from '@aws-cdk/core';
+import { Match } from '../lib';
 
-describe(Matchers, () => {
+describe(Match, () => {
+  const app = new App();
+  const stack = new Stack(app, 'stack');
+
   test('anythingBut', () => {
-    expect(Matchers.anythingBut(1, 2, 3).toEventBridgeMatcher()).toEqual([
+    expect(stack.resolve(Match.anythingBut(1, 2, 3))).toEqual([
       { 'anything-but': [1, 2, 3] },
     ]);
 
-    expect(Matchers.anythingBut('foo', 'bar').toEventBridgeMatcher()).toEqual([
+    expect(stack.resolve(Match.anythingBut('foo', 'bar'))).toEqual([
       { 'anything-but': ['foo', 'bar'] },
     ]);
 
-    expect(() => Matchers.anythingBut(1, 'foo').toEventBridgeMatcher()).toThrowError(/only strings or only numbers/);
-    expect(() => Matchers.anythingBut({ foo: 42 }).toEventBridgeMatcher()).toThrowError(/only strings or only numbers/);
-    expect(() => Matchers.anythingBut().toEventBridgeMatcher()).toThrowError(/must be non-empty lists/);
+    expect(() => stack.resolve(Match.anythingBut(1, 'foo'))).toThrowError(/only strings or only numbers/);
+    expect(() => stack.resolve(Match.anythingBut({ foo: 42 }))).toThrowError(/only strings or only numbers/);
+    expect(() => stack.resolve(Match.anythingBut())).toThrowError(/must be non-empty lists/);
   });
 
   test('anythingButPrefix', () => {
-    expect(Matchers.anythingButPrefix('foo').toEventBridgeMatcher()).toEqual([
+    expect(stack.resolve(Match.anythingButPrefix('foo'))).toEqual([
       { 'anything-but': { prefix: 'foo' } },
     ]);
   });
 
   test('numeric', () => {
-    expect(Matchers.numeric(Matchers.greaterThan(-100), Matchers.lessThanOrEqual(200)).toEventBridgeMatcher()).toEqual([
+    expect(stack.resolve(Match.allOf(Match.greaterThan(-100), Match.lessThanOrEqual(200)))).toEqual([
       { numeric: ['>', -100, '<=', 200] },
     ]);
 
-    expect(() => Matchers.numeric().toEventBridgeMatcher()).toThrowError(/must be non-empty lists/);
+    expect(() => stack.resolve(Match.allOf())).toThrowError(/A list of matchers must contain at least one element/);
   });
 
   test('interval', () => {
-    expect(Matchers.interval(0, 100).toEventBridgeMatcher()).toEqual([
+    expect(stack.resolve(Match.interval(0, 100))).toEqual([
       { numeric: ['>=', 0, '<=', 100] },
     ]);
 
-    expect(() => Matchers.interval(1, 0).toEventBridgeMatcher()).toThrowError('Invalid interval: [1, 0]');
+    expect(() => stack.resolve(Match.interval(1, 0))).toThrowError('Invalid interval: [1, 0]');
   });
 
   test('cidr', () => {
     // IPv4
-    expect(Matchers.cidr('198.51.100.14/24').toEventBridgeMatcher()).toEqual([
+    expect(stack.resolve(Match.cidr('198.51.100.14/24'))).toEqual([
       { cidr: '198.51.100.14/24' },
     ]);
 
     // IPv6
-    expect(Matchers.cidr('2001:db8::/48').toEventBridgeMatcher()).toEqual([
+    expect(stack.resolve(Match.cidr('2001:db8::/48'))).toEqual([
       { cidr: '2001:db8::/48' },
     ]);
 
     // Invalid
-    expect(() => Matchers.cidr('a.b.c/31').toEventBridgeMatcher()).toThrow(/Invalid IP address range/);
+    expect(() => stack.resolve(Match.cidr('a.b.c/31'))).toThrow(/Invalid IP address range/);
   });
 
   test('anyOf', () => {
-    expect(Matchers.anyOf(Matchers.equal(0), Matchers.equal(1)).toEventBridgeMatcher()).toEqual([
+    expect(stack.resolve(Match.anyOf(Match.equal(0), Match.equal(1)))).toEqual([
       { numeric: ['=', 0] },
       { numeric: ['=', 1] },
     ]);
 
-    expect(() => Matchers.anyOf().toEventBridgeMatcher()).toThrow(/must be non-empty lists/);
+    expect(() => stack.resolve(Match.anyOf())).toThrow(/A list of matchers must contain at least one element/);
+  });
+
+  test('factory methods produce the right pattern when the input contains tokens', () => {
+    expect(stack.resolve(Match.greaterThan(Token.asNumber(42)))).toEqual([
+      { numeric: ['>', 42] },
+    ]);
   });
 });

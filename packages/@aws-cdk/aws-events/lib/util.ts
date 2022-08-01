@@ -71,35 +71,19 @@ export function sameEnvDimension(dim1: string, dim2: string) {
  * by changing detailType into detail-type when present.
  */
 export function renderEventPattern(eventPattern: EventPattern): any {
-  return Object.keys(eventPattern).length > 0
-    ? resolvePatterns(normalizeNames(eventPattern))
-    : undefined;
-}
-
-function normalizeNames(pattern: EventPattern): {[key: string]: any} {
-  return mapKeys(pattern, key => key === 'detailType' ? 'detail-type' : key);
-}
-
-/**
- * Transforms the input object into another object with the same structure and values,
- * except with the matchers converted to the final format, expected by EventBridge.
- */
-function resolvePatterns(obj: any): any {
-  if (obj?.toEventBridgeMatcher) {
-    return obj.toEventBridgeMatcher();
+  if (Object.keys(eventPattern).length === 0) {
+    return undefined;
   }
 
-  if (Array.isArray(obj) || typeof(obj) !== 'object' || obj == null) {
-    return obj;
+  // rename 'detailType' to 'detail-type'
+  const out: any = {};
+  for (let key of Object.keys(eventPattern)) {
+    const value = (eventPattern as any)[key];
+    if (key === 'detailType') {
+      key = 'detail-type';
+    }
+    out[key] = value;
   }
 
-  return mapValues(obj, resolvePatterns);
-}
-
-function mapKeys(obj: {[key: string]: any}, fn: ((_: any) => any)): {[key: string]: any} {
-  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [fn(k), v]));
-}
-
-function mapValues(obj: {[key: string]: any}, fn: ((_: any) => any)): {[key: string]: any} {
-  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v)]));
+  return out;
 }
