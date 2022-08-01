@@ -190,6 +190,20 @@ const fs = new fsx.LustreFileSystem(this, "FsxLustreFileSystem", {
 });
 ```
 
+### Compression
+
+By default, transparent compression of data within FSx for Lustre is switched off.  To enable it, add the following to your `lustreConfiguration`:
+
+```ts
+const lustreConfiguration = {
+  // ...
+  dataCompressionType: fsx.LustreDataCompressionType.LZ4,
+  // ...
+}
+```
+
+When you turn data compression on for an existing file system, only newly written files are compressed.  Existing files are not compressed. For more information, see [Compressing previously written files](https://docs.aws.amazon.com/fsx/latest/LustreGuide/data-compression.html#migrate-compression).```
+
 ## FSx for Windows File Server
 
 The L2 construct for the FSx for Windows File Server has not yet been implemented. To instantiate an FSx for Windows
