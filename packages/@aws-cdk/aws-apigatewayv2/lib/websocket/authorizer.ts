@@ -81,17 +81,11 @@ export interface WebSocketAuthorizerAttributes {
  * An authorizer for WebSocket Apis
  * @resource AWS::ApiGatewayV2::Authorizer
  */
-export class WebSocketAuthorizer
-  extends Resource
-  implements IWebSocketAuthorizer {
+export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorizer {
   /**
    * Import an existing WebSocket Authorizer into this CDK app.
    */
-  public static fromWebSocketAuthorizerAttributes(
-    scope: Construct,
-    id: string,
-    attrs: WebSocketAuthorizerAttributes,
-  ): IWebSocketRouteAuthorizer {
+  public static fromWebSocketAuthorizerAttributes(scope: Construct, id: string, attrs: WebSocketAuthorizerAttributes): IWebSocketRouteAuthorizer {
     class Import extends Resource implements IWebSocketRouteAuthorizer {
       public readonly authorizerId = attrs.authorizerId;
       public readonly authorizerType = attrs.authorizerType;
@@ -169,18 +163,14 @@ export interface IWebSocketRouteAuthorizer {
   /**
    * Bind this authorizer to a specified WebSocket route.
    */
-  bind(
-    options: WebSocketRouteAuthorizerBindOptions
-  ): WebSocketRouteAuthorizerConfig;
+  bind(options: WebSocketRouteAuthorizerBindOptions): WebSocketRouteAuthorizerConfig;
 }
 
 /**
  * Explicitly configure no authorizers on specific WebSocket API routes.
  */
 export class WebSocketNoneAuthorizer implements IWebSocketRouteAuthorizer {
-  public bind(
-    _: WebSocketRouteAuthorizerBindOptions,
-  ): WebSocketRouteAuthorizerConfig {
+  public bind(_: WebSocketRouteAuthorizerBindOptions): WebSocketRouteAuthorizerConfig {
     return {
       authorizationType: 'NONE',
     };
