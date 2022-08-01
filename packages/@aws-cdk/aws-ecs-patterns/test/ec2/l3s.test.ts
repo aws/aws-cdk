@@ -984,6 +984,10 @@ test('errors when idleTimeout is over 4000 seconds for multiAlbService', () => {
         },
         {
           containerPort: 443,
+          listener: 'listener2',
+        },
+        {
+          containerPort: 80,
           pathPattern: 'a/b/c',
           priority: 10,
           listener: 'listener2',
@@ -1050,6 +1054,10 @@ test('errors when idleTimeout is under 1 seconds for multiAlbService', () => {
         },
         {
           containerPort: 443,
+          listener: 'listener2',
+        },
+        {
+          containerPort: 80,
           pathPattern: 'a/b/c',
           priority: 10,
           listener: 'listener2',
@@ -1116,6 +1124,10 @@ test('passes when idleTimeout is between 1 and 4000 seconds for multiAlbService'
         },
         {
           containerPort: 443,
+          listener: 'listener2',
+        },
+        {
+          containerPort: 80,
           pathPattern: 'a/b/c',
           priority: 10,
           listener: 'listener2',
@@ -1179,6 +1191,10 @@ test('idletime is undefined when not set for multiAlbService', () => {
       },
       {
         containerPort: 443,
+        listener: 'listener2',
+      },
+      {
+        containerPort: 80,
         pathPattern: 'a/b/c',
         priority: 10,
         listener: 'listener2',

@@ -575,13 +575,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   private validateLbProps(props: ApplicationLoadBalancerProps[]) {
     for (let prop of props) {
       if (prop.idleTimeout) {
-<<<<<<< HEAD
         if (prop.idleTimeout > Duration.seconds(4000) || prop.idleTimeout < Duration.seconds(1)) {
           throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
-=======
-        if (prop.idleTimeout > Duration.seconds(4000)) {
-          throw new Error( 'IdleTime cannot exceed 4000 seconds');
->>>>>>> 996246fc057a354d994c12184d7bf0bc29e03581
         }
       }
     }
@@ -593,11 +588,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,
-<<<<<<< HEAD
       idleTimeout: idleTimeout,
-=======
-      idleTimeout: idleTimeout ?? undefined,
->>>>>>> 996246fc057a354d994c12184d7bf0bc29e03581
     };
 
     return new ApplicationLoadBalancer(this, name, lbProps);
