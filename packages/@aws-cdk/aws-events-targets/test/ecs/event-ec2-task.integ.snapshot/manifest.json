@@ -208,6 +208,18 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/aws-ecs-integ-ecs/MyDeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueueD997968A"
+          }
+        ],
+        "/aws-ecs-integ-ecs/MyDeadLetterQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueuePolicyCC35D52C"
+          }
+        ],
         "/aws-ecs-integ-ecs/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -258,6 +270,15 @@
         ]
       },
       "displayName": "aws-ecs-integ-ecs"
+    },
+    "EcsTestDefaultTestDeployAssert8B2741C4": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EcsTestDefaultTestDeployAssert8B2741C4.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "EcsTest/DefaultTest/DeployAssert"
     }
   }
 }

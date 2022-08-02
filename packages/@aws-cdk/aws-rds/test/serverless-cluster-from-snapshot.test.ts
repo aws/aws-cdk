@@ -20,6 +20,7 @@ describe('serverless cluster from snapshot', () => {
     Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-mysql',
+        CopyTagsToSnapshot: true,
         DBClusterParameterGroupName: 'default.aurora-mysql5.7',
         DBSubnetGroupName: {
           Ref: 'ServerlessDatabaseSubnets5643CD76',

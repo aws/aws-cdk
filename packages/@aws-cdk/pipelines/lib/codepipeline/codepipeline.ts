@@ -207,6 +207,13 @@ export interface CodePipelineProps {
    * @default - true (Use the same support stack for all pipelines in App)
    */
   readonly reuseCrossRegionSupportStacks?: boolean;
+
+  /**
+   * The IAM role to be assumed by this Pipeline
+   *
+   * @default - A new role is created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -362,6 +369,9 @@ export class CodePipeline extends PipelineBase {
       if (this.props.reuseCrossRegionSupportStacks !== undefined) {
         throw new Error('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (this.props.role !== undefined) {
+        throw new Error('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
 
       this._pipeline = this.props.codePipeline;
     } else {
@@ -372,6 +382,7 @@ export class CodePipeline extends PipelineBase {
         // This is necessary to make self-mutation work (deployments are guaranteed
         // to happen only after the builds of the latest pipeline definition).
         restartExecutionOnUpdate: true,
+        role: this.props.role,
       });
     }
 

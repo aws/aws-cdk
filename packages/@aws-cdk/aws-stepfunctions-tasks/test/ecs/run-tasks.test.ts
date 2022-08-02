@@ -414,7 +414,7 @@ test('Running an EC2 Task with placement strategies', () => {
       LaunchType: 'EC2',
       TaskDefinition: 'TD',
       PlacementConstraints: [{ Type: 'memberOf', Expression: 'blieptuut' }],
-      PlacementStrategy: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
+      PlacementStrategy: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
     },
     Resource: {
       'Fn::Join': [

@@ -290,6 +290,10 @@ function parseProps(props: any): aws.EKS.CreateClusterRequest {
     parsed.logging.clusterLogging[0].enabled = parsed.logging.clusterLogging[0].enabled === 'true';
   }
 
+  if (typeof (parsed.logging?.clusterLogging[1].enabled) === 'string') {
+    parsed.logging.clusterLogging[1].enabled = parsed.logging.clusterLogging[1].enabled === 'false';
+  }
+
   return parsed;
 
 }

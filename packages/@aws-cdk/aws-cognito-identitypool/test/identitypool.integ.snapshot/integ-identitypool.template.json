@@ -399,6 +399,20 @@
        "Arn"
       ]
      }
+    },
+    "RoleMappings": {
+     "www.amazon.com": {
+      "AmbiguousRoleResolution": "Deny",
+      "IdentityProvider": "www.amazon.com",
+      "Type":"Token"
+     },
+     "theKey":{
+      "AmbiguousRoleResolution": "Deny",
+      "IdentityProvider": {
+       "Fn::ImportValue": "ProviderUrl"
+      },
+      "Type":"Token"
+     }
     }
    },
    "DependsOn": [

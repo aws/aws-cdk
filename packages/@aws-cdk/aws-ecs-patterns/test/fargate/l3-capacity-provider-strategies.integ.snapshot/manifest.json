@@ -240,10 +240,7 @@
         "/aws-ecs-integ-lb-fargate/ALBFargateService/Service/Service": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ALBFargateService90FDCE10",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ALBFargateService90FDCE10"
           }
         ],
         "/aws-ecs-integ-lb-fargate/ALBFargateService/Service/SecurityGroup/Resource": [
@@ -315,10 +312,7 @@
         "/aws-ecs-integ-lb-fargate/NLBFargateService/Service/Service": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NLBFargateServiceB92AC095",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "NLBFargateServiceB92AC095"
           }
         ],
         "/aws-ecs-integ-lb-fargate/NLBFargateService/Service/SecurityGroup/Resource": [
@@ -329,6 +323,15 @@
         ]
       },
       "displayName": "aws-ecs-integ-lb-fargate"
+    },
+    "l3CapacityProviderStrategiesTestDefaultTestDeployAssertCE3F86E7": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "l3CapacityProviderStrategiesTestDefaultTestDeployAssertCE3F86E7.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "l3CapacityProviderStrategiesTest/DefaultTest/DeployAssert"
     }
   }
 }

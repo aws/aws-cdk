@@ -1,9 +1,9 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.event-ec2-task.lit": {
+    "integ.archive": {
       "stacks": [
-        "aws-ecs-integ-ecs"
+        "IntegStack"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true

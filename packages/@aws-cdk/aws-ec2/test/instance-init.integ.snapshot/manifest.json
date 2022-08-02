@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -194,7 +194,7 @@
         "/integ-init/Instance2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Instance255F352651ad64873f230a4d2"
+            "data": "Instance255F35265555f8bd64fe3316f"
           }
         ],
         "/integ-init/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [

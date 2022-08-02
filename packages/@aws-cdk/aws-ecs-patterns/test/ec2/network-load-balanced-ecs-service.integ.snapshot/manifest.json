@@ -314,24 +314,6 @@
             "type": "aws:cdk:logicalId",
             "data": "myServiceB0B6FAA0"
           }
-        ],
-        "FirstCapacityProvierD92F5AC4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirstCapacityProvierD92F5AC4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SecondCapacityProvierADE5DA56": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SecondCapacityProvierADE5DA56",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-ecs-integ"

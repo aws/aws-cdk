@@ -303,7 +303,7 @@ describeDeprecated('ecs-tasks', () => {
         LaunchType: 'EC2',
         TaskDefinition: { Ref: 'TD49C78F36' },
         PlacementConstraints: [{ Type: 'memberOf', Expression: 'blieptuut' }],
-        PlacementStrategy: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
+        PlacementStrategy: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
       },
       Resource: {
         'Fn::Join': [

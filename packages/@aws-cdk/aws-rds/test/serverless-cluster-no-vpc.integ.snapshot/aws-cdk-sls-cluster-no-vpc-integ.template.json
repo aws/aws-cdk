@@ -4,6 +4,22 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "Engine": "aurora-mysql",
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-mysql5.7",
+    "EngineMode": "serverless",
+    "MasterUsername": "admin",
+    "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
+    "StorageEncrypted": true,
+    "VpcSecurityGroupIds": []
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ServerlessDatabaseWithoutVPCandCopyTags216AC6C7": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "Engine": "aurora-mysql",
+    "CopyTagsToSnapshot": false,
     "DBClusterParameterGroupName": "default.aurora-mysql5.7",
     "EngineMode": "serverless",
     "MasterUsername": "admin",
