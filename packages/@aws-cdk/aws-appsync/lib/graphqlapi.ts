@@ -2,6 +2,7 @@ import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
+import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '@aws-cdk/aws-logs';
 import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
@@ -248,6 +249,13 @@ export interface LogConfig {
    * @default - None
    */
   readonly role?: IRole;
+
+  /**
+  * log retention period
+  *
+  * @default - Use AppSync default
+  */
+  readonly retention?: RetentionDays
 }
 
 /**
@@ -459,6 +467,11 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public readonly apiKey?: string;
 
+  /**
+   * the CloudWatch Log Group for this API
+   */
+  public readonly logGroup: ILogGroup;
+
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
@@ -527,6 +540,16 @@ export class GraphqlApi extends GraphqlApiBase {
       });
     }
 
+    const logGroupName = `/aws/appsync/apis/${this.apiId}`;
+
+    this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
+
+    if (props.logConfig?.retention) {
+      new LogRetention(this, 'LogRetention', {
+        logGroupName: this.logGroup.logGroupName,
+        retention: props.logConfig.retention,
+      });
+    };
   }
 
   /**

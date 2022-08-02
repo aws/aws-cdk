@@ -334,6 +334,16 @@ new route53.CnameRecord(this, `CnameApiRecord`, {
 });
 ```
 
+## Log Group
+
+AppSync automatically create a log group with the name `/aws/appsync/apis/<graphql_api_id>` upon deployment with
+log data set to never expire.
+
+The `logConfig.retention` property can be used to set a different expiration period.
+
+It is possible to obtain the GraphQL API's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
+`GraphqlApi` construct.
+
 ## Schema
 
 Every GraphQL Api needs a schema to define the Api. CDK offers `appsync.Schema`
@@ -427,7 +437,7 @@ new appsync.GraphqlApi(this, 'api', {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.LAMBDA,
       lambdaAuthorizerConfig: {
-        handler: authFunction, 
+        handler: authFunction,
         // can also specify `resultsCacheTtl` and `validationRegex`.
       },
     },
