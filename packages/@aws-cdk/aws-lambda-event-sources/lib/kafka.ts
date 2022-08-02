@@ -94,6 +94,13 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
    * @default AuthenticationMethod.SASL_SCRAM_512_AUTH
    */
   readonly authenticationMethod?: AuthenticationMethod
+
+  /**
+   * Choose the secret key containing the root CA certificate used by your Kafka brokers for TLS encryption.
+   *
+   * @default - none, required if your Kafka brokers use certificates signed by a private CA
+   */
+  readonly encryption?: secretsmanager.Secret;
 }
 
 /**
@@ -229,6 +236,13 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     const sourceAccessConfigurations = [];
     if (this.innerProps.secret !== undefined) {
       sourceAccessConfigurations.push({ type: authType, uri: this.innerProps.secret.secretArn });
+    }
+
+    if (this.innerProps.encryption !== undefined) {
+      sourceAccessConfigurations.push({
+        type: lambda.SourceAccessConfigurationType.SERVER_ROOT_CA_CERTIFICATE,
+        uri: this.innerProps.encryption.secretArn,
+      });
     }
 
     if (this.innerProps.vpcSubnets !== undefined && this.innerProps.securityGroup !== undefined) {
