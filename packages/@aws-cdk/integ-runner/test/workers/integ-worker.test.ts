@@ -64,8 +64,8 @@ describe('test runner', () => {
   test('no snapshot', () => {
     // WHEN
     const test = {
-      fileName: 'test/test-data/integ.integ-test1.js',
-      directory: 'test/test-data',
+      fileName: 'test/test-data/xxxxx.integ-test1.js',
+      discoveryRoot: 'test/test-data',
     };
     integTestWorker({
       tests: [test],
@@ -74,7 +74,7 @@ describe('test runner', () => {
 
     expect(spawnSyncMock).toHaveBeenCalledWith(
       expect.stringMatching(/node/),
-      ['integ.integ-test1.js'],
+      ['xxxxx.integ-test1.js'],
       expect.objectContaining({
         env: expect.objectContaining({
           CDK_INTEG_ACCOUNT: '12345678',
@@ -84,12 +84,12 @@ describe('test runner', () => {
     );
   });
 
-  test('no tests', () => {
+  test('legacy test throws', () => {
 
     // WHEN
     const test = {
-      fileName: 'test/test-data/integ.integ-test2.js',
-      directory: 'test/test-data',
+      fileName: 'test/test-data/xxxxx.integ-test2.js',
+      discoveryRoot: 'test/test-data',
     };
     spawnSyncMock.mockReset();
     jest.spyOn(child_process, 'spawnSync').mockReturnValue({
@@ -100,23 +100,25 @@ describe('test runner', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
+
+    // GIVEN
     const results = integTestWorker({
       tests: [test],
       region: 'us-east-1',
     });
 
     // THEN
-    expect(results[0]).toEqual({
-      fileName: expect.stringMatching(/integ.integ-test2.js$/),
-      directory: 'test/test-data',
-    });
+    expect(results).toEqual([{
+      discoveryRoot: 'test/test-data',
+      fileName: 'test/test-data/xxxxx.integ-test2.js',
+    }]);
   });
 
   test('has snapshot', () => {
     // WHEN
     const test = {
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
+      discoveryRoot: 'test/test-data',
     };
     const results = integTestWorker({
       tests: [test],
@@ -153,8 +155,8 @@ describe('test runner', () => {
   test('deploy failed', () => {
     // WHEN
     const test = {
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
+      discoveryRoot: 'test/test-data',
     };
     jest.spyOn(child_process, 'spawnSync').mockReturnValue({
       status: 1,
@@ -170,8 +172,8 @@ describe('test runner', () => {
     });
 
     expect(results[0]).toEqual({
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
+      discoveryRoot: 'test/test-data',
     });
   });
 });
@@ -180,12 +182,12 @@ describe('parallel worker', () => {
   test('run all integration tests', async () => {
     const tests = [
       {
-        fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
       },
       {
-        fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.another-test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
       },
     ];
     await runIntegrationTests({
@@ -201,17 +203,17 @@ describe('parallel worker', () => {
       'Running in parallel across regions: us-east-1, us-east-2',
     );
     expect(stderrMock.mock.calls[2][0]).toContain(
-      'Running test integ.another-test-with-snapshot.js in us-east-1',
+      'Running test xxxxx.another-test-with-snapshot.js in us-east-1',
     );
     expect(stderrMock.mock.calls[3][0]).toContain(
-      'Running test integ.test-with-snapshot.js in us-east-2',
+      'Running test xxxxx.test-with-snapshot.js in us-east-2',
     );
   });
 
   test('run tests', async () => {
     const tests = [{
-      fileName: 'integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      fileName: 'xxxxx.test-with-snapshot.js',
+      discoveryRoot: 'test/test-data',
     }];
     const results = await runIntegrationTestsInParallel({
       pool,
@@ -220,13 +222,13 @@ describe('parallel worker', () => {
     });
 
     expect(stderrMock.mock.calls[0][0]).toContain(
-      'Running test integ.test-with-snapshot.js in us-east-1',
+      'Running test xxxxx.test-with-snapshot.js in us-east-1',
     );
     expect(results).toEqual({
       failedTests: expect.arrayContaining([
         {
-          fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          fileName: 'xxxxx.test-with-snapshot.js',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -234,7 +236,7 @@ describe('parallel worker', () => {
           duration: expect.anything(),
           region: 'us-east-1',
           tests: {
-            'integ.test-with-snapshot.js': expect.anything(),
+            'xxxxx.test-with-snapshot.js': expect.anything(),
           },
         },
       ]),
@@ -244,20 +246,20 @@ describe('parallel worker', () => {
   test('run multiple tests with profiles', async () => {
     const tests = [
       {
-        fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.another-test-with-snapshot3.js',
+        discoveryRoot: 'test/test-data',
       },
       {
-        fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.another-test-with-snapshot2.js',
+        discoveryRoot: 'test/test-data',
       },
       {
-        fileName: 'integ.another-test-with-snapshot2.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.another-test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
       },
       {
-        fileName: 'integ.another-test-with-snapshot3.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -267,35 +269,35 @@ describe('parallel worker', () => {
       regions: ['us-east-1', 'us-east-2'],
     });
 
-    expect(stderrMock.mock.calls[0][0]).toContain(
-      'Running test integ.another-test-with-snapshot3.js in profile1/us-east-1',
-    );
-    expect(stderrMock.mock.calls[1][0]).toContain(
-      'Running test integ.another-test-with-snapshot2.js in profile1/us-east-2',
+    expect(stderrMock.mock.calls[3][0]).toContain(
+      'Running test xxxxx.another-test-with-snapshot3.js in profile2/us-east-2',
     );
     expect(stderrMock.mock.calls[2][0]).toContain(
-      'Running test integ.another-test-with-snapshot.js in profile2/us-east-1',
+      'Running test xxxxx.another-test-with-snapshot2.js in profile2/us-east-1',
     );
-    expect(stderrMock.mock.calls[3][0]).toContain(
-      'Running test integ.test-with-snapshot.js in profile2/us-east-2',
+    expect(stderrMock.mock.calls[1][0]).toContain(
+      'Running test xxxxx.another-test-with-snapshot.js in profile1/us-east-2',
+    );
+    expect(stderrMock.mock.calls[0][0]).toContain(
+      'Running test xxxxx.test-with-snapshot.js in profile1/us-east-1',
     );
     expect(results).toEqual({
       failedTests: expect.arrayContaining([
         {
-          fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          fileName: 'xxxxx.test-with-snapshot.js',
+          discoveryRoot: 'test/test-data',
         },
         {
-          fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          fileName: 'xxxxx.another-test-with-snapshot.js',
+          discoveryRoot: 'test/test-data',
         },
         {
-          fileName: 'integ.another-test-with-snapshot2.js',
-          directory: 'test/test-data',
+          fileName: 'xxxxx.another-test-with-snapshot2.js',
+          discoveryRoot: 'test/test-data',
         },
         {
-          fileName: 'integ.another-test-with-snapshot3.js',
-          directory: 'test/test-data',
+          fileName: 'xxxxx.another-test-with-snapshot3.js',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -304,7 +306,7 @@ describe('parallel worker', () => {
           region: 'us-east-1',
           profile: 'profile1',
           tests: {
-            'integ.another-test-with-snapshot3.js': expect.any(Number),
+            'xxxxx.test-with-snapshot.js': expect.any(Number),
           },
         },
         {
@@ -312,7 +314,7 @@ describe('parallel worker', () => {
           region: 'us-east-2',
           profile: 'profile1',
           tests: {
-            'integ.another-test-with-snapshot2.js': expect.any(Number),
+            'xxxxx.another-test-with-snapshot.js': expect.any(Number),
           },
         },
         {
@@ -320,7 +322,7 @@ describe('parallel worker', () => {
           region: 'us-east-1',
           profile: 'profile2',
           tests: {
-            'integ.another-test-with-snapshot.js': expect.any(Number),
+            'xxxxx.another-test-with-snapshot2.js': expect.any(Number),
           },
         },
         {
@@ -328,7 +330,7 @@ describe('parallel worker', () => {
           region: 'us-east-2',
           profile: 'profile2',
           tests: {
-            'integ.test-with-snapshot.js': expect.any(Number),
+            'xxxxx.another-test-with-snapshot3.js': expect.any(Number),
           },
         },
       ]),
@@ -338,12 +340,12 @@ describe('parallel worker', () => {
   test('run multiple tests', async () => {
     const tests = [
       {
-        fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
       },
       {
-        fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.another-test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -353,20 +355,20 @@ describe('parallel worker', () => {
     });
 
     expect(stderrMock.mock.calls[1][0]).toContain(
-      'Running test integ.test-with-snapshot.js in us-east-2',
+      'Running test xxxxx.test-with-snapshot.js in us-east-2',
     );
     expect(stderrMock.mock.calls[0][0]).toContain(
-      'Running test integ.another-test-with-snapshot.js in us-east-1',
+      'Running test xxxxx.another-test-with-snapshot.js in us-east-1',
     );
     expect(results).toEqual({
       failedTests: expect.arrayContaining([
         {
-          fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          fileName: 'xxxxx.test-with-snapshot.js',
+          discoveryRoot: 'test/test-data',
         },
         {
-          fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          fileName: 'xxxxx.another-test-with-snapshot.js',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -374,14 +376,14 @@ describe('parallel worker', () => {
           duration: expect.anything(),
           region: 'us-east-2',
           tests: {
-            'integ.test-with-snapshot.js': expect.anything(),
+            'xxxxx.test-with-snapshot.js': expect.anything(),
           },
         },
         {
           duration: expect.anything(),
           region: 'us-east-1',
           tests: {
-            'integ.another-test-with-snapshot.js': expect.anything(),
+            'xxxxx.another-test-with-snapshot.js': expect.anything(),
           },
         },
       ]),
@@ -391,12 +393,12 @@ describe('parallel worker', () => {
   test('more tests than regions', async () => {
     const tests = [
       {
-        fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
       },
       {
-        fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.another-test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -406,20 +408,20 @@ describe('parallel worker', () => {
     });
 
     expect(stderrMock.mock.calls[1][0]).toContain(
-      'Running test integ.test-with-snapshot.js in us-east-1',
+      'Running test xxxxx.test-with-snapshot.js in us-east-1',
     );
     expect(stderrMock.mock.calls[0][0]).toContain(
-      'Running test integ.another-test-with-snapshot.js in us-east-1',
+      'Running test xxxxx.another-test-with-snapshot.js in us-east-1',
     );
     expect(results).toEqual({
       failedTests: expect.arrayContaining([
         {
-          fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          fileName: 'xxxxx.another-test-with-snapshot.js',
+          discoveryRoot: 'test/test-data',
         },
         {
-          fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          fileName: 'xxxxx.test-with-snapshot.js',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -427,8 +429,8 @@ describe('parallel worker', () => {
           duration: expect.anything(),
           region: 'us-east-1',
           tests: {
-            'integ.test-with-snapshot.js': expect.anything(),
-            'integ.another-test-with-snapshot.js': expect.anything(),
+            'xxxxx.test-with-snapshot.js': expect.anything(),
+            'xxxxx.another-test-with-snapshot.js': expect.anything(),
           },
         },
       ]),
@@ -438,12 +440,12 @@ describe('parallel worker', () => {
   test('more regions than tests', async () => {
     const tests = [
       {
-        fileName: 'integ.test-with-snapshot.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
       },
       {
-        fileName: 'integ.another-test-with-snapshot.js',
-        directory: 'test/test-data',
+        fileName: 'xxxxx.another-test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
       },
     ];
     const results = await runIntegrationTestsInParallel({
@@ -453,20 +455,20 @@ describe('parallel worker', () => {
     });
 
     expect(stderrMock.mock.calls[1][0]).toContain(
-      'Running test integ.test-with-snapshot.js in us-east-2',
+      'Running test xxxxx.test-with-snapshot.js in us-east-2',
     );
     expect(stderrMock.mock.calls[0][0]).toContain(
-      'Running test integ.another-test-with-snapshot.js in us-east-1',
+      'Running test xxxxx.another-test-with-snapshot.js in us-east-1',
     );
     expect(results).toEqual({
       failedTests: expect.arrayContaining([
         {
-          fileName: 'integ.test-with-snapshot.js',
-          directory: 'test/test-data',
+          fileName: 'xxxxx.test-with-snapshot.js',
+          discoveryRoot: 'test/test-data',
         },
         {
-          fileName: 'integ.another-test-with-snapshot.js',
-          directory: 'test/test-data',
+          fileName: 'xxxxx.another-test-with-snapshot.js',
+          discoveryRoot: 'test/test-data',
         },
       ]),
       metrics: expect.arrayContaining([
@@ -474,14 +476,14 @@ describe('parallel worker', () => {
           duration: expect.anything(),
           region: 'us-east-2',
           tests: {
-            'integ.test-with-snapshot.js': expect.anything(),
+            'xxxxx.test-with-snapshot.js': expect.anything(),
           },
         },
         {
           duration: expect.anything(),
           region: 'us-east-1',
           tests: {
-            'integ.another-test-with-snapshot.js': expect.anything(),
+            'xxxxx.another-test-with-snapshot.js': expect.anything(),
           },
         },
       ]),

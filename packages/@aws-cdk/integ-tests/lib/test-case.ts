@@ -7,10 +7,6 @@ import { IntegManifestSynthesizer } from './manifest-synthesizer';
 
 const TEST_CASE_STACK_SYMBOL = Symbol.for('@aws-cdk/integ-tests.IntegTestCaseStack');
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Properties of an integration test case
  */
@@ -28,7 +24,7 @@ export interface IntegTestCaseProps extends TestOptions {
  * It is recommended that you use the IntegTest construct since that will create
  * a default IntegTestCase
  */
-export class IntegTestCase extends CoreConstruct {
+export class IntegTestCase extends Construct {
   /**
    * Make assertions on resources in this test case
    */
@@ -124,7 +120,7 @@ export interface IntegTestProps extends TestOptions {
  * A collection of test cases. Each test case file should contain exactly one
  * instance of this class.
  */
-export class IntegTest extends CoreConstruct {
+export class IntegTest extends Construct {
   /**
    * Make assertions on resources in this test case
    */
@@ -150,14 +146,16 @@ export class IntegTest extends CoreConstruct {
         .filter(stack => IntegTestCaseStack.isIntegTestCaseStack(stack))
         .map(stack => (stack as IntegTestCaseStack)._testCase),
     ];
-  }
 
-
-  protected onPrepare(): void {
-    attachCustomSynthesis(this, {
-      onSynthesize: (session: ISynthesisSession) => {
-        const synthesizer = new IntegManifestSynthesizer(this.testCases);
-        synthesizer.synthesize(session);
+    this.node.addValidation({
+      validate: () => {
+        attachCustomSynthesis(this, {
+          onSynthesize: (session: ISynthesisSession) => {
+            const synthesizer = new IntegManifestSynthesizer(this.testCases);
+            synthesizer.synthesize(session);
+          },
+        });
+        return [];
       },
     });
   }

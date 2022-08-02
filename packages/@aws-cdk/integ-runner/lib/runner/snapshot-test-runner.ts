@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Writable, WritableOptions } from 'stream';
-import { StringDecoder, NodeStringDecoder } from 'string_decoder';
+import { StringDecoder } from 'string_decoder';
 import { diffTemplate, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import { Diagnostic, DiagnosticReason, DestructiveChange, SnapshotVerificationOptions } from '../workers/common';
 import { canonicalizeTemplate } from './private/canonicalize-assets';
@@ -47,11 +47,11 @@ export class IntegSnapshotRunner extends IntegRunner {
       this.cdk.synthFast({
         execCmd: this.cdkApp.split(' '),
         env,
-        output: this.cdkOutDir,
+        output: path.relative(this.directory, this.cdkOutDir),
       });
 
       // read the "actual" snapshot
-      const actualDir = path.join(this.directory, this.cdkOutDir);
+      const actualDir = this.cdkOutDir;
       const actualStacks = this.readAssembly(actualDir);
       // only diff stacks that are part of the test case
       const actualStacksToDiff: Record<string, any> = {};
@@ -229,7 +229,7 @@ export class IntegSnapshotRunner extends IntegRunner {
 
 class StringWritable extends Writable {
   public data: string;
-  private _decoder: NodeStringDecoder;
+  private _decoder: StringDecoder;
   constructor(options: WritableOptions) {
     super(options);
     this._decoder = new StringDecoder();

@@ -1,9 +1,9 @@
 import * as cdk from '@aws-cdk/core';
-import { IConstruct } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { Group } from './group';
 import {
   AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
+  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts, validateConditionObject,
 } from './principals';
 import { normalizeStatement } from './private/postprocess-policy-document';
 import { LITERAL_STRING_KEY, mergePrincipal, sum } from './util';
@@ -69,28 +69,21 @@ export class PolicyStatement {
     return ret;
   }
 
-  /**
-   * Statement ID for this statement
-   */
-  public sid?: string;
-
-  /**
-   * Whether to allow or deny the actions in this statement
-   */
-  public effect: Effect;
-
-  private readonly _action = new Array<string>();
-  private readonly _notAction = new Array<string>();
+  private readonly _action = new OrderedSet<string>();
+  private readonly _notAction = new OrderedSet<string>();
   private readonly _principal: { [key: string]: any[] } = {};
   private readonly _notPrincipal: { [key: string]: any[] } = {};
-  private readonly _resource = new Array<string>();
-  private readonly _notResource = new Array<string>();
+  private readonly _resource = new OrderedSet<string>();
+  private readonly _notResource = new OrderedSet<string>();
   private readonly _condition: { [key: string]: any } = { };
+  private _sid?: string;
+  private _effect: Effect;
   private principalConditionsJson?: string;
 
   // Hold on to those principals
-  private readonly _principals = new Array<IPrincipal>();
-  private readonly _notPrincipals = new Array<IPrincipal>();
+  private readonly _principals = new OrderedSet<IPrincipal>();
+  private readonly _notPrincipals = new OrderedSet<IPrincipal>();
+  private _frozen = false;
 
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
@@ -101,8 +94,8 @@ export class PolicyStatement {
       }
     }
 
-    this.sid = props.sid;
-    this.effect = props.effect || Effect.ALLOW;
+    this._sid = props.sid;
+    this._effect = props.effect || Effect.ALLOW;
 
     this.addActions(...props.actions || []);
     this.addNotActions(...props.notActions || []);
@@ -113,6 +106,36 @@ export class PolicyStatement {
     if (props.conditions !== undefined) {
       this.addConditions(props.conditions);
     }
+  }
+
+  /**
+   * Statement ID for this statement
+   */
+  public get sid(): string | undefined {
+    return this._sid;
+  }
+
+  /**
+   * Set Statement ID for this statement
+   */
+  public set sid(sid: string | undefined) {
+    this.assertNotFrozen('sid');
+    this._sid = sid;
+  }
+
+  /**
+   * Whether to allow or deny the actions in this statement
+   */
+  public get effect(): Effect {
+    return this._effect;
+  }
+
+  /**
+   * Set effect for this statement
+   */
+  public set effect(effect: Effect) {
+    this.assertNotFrozen('effect');
+    this._effect = effect;
   }
 
   //
@@ -127,6 +150,7 @@ export class PolicyStatement {
    * @param actions actions that will be allowed.
    */
   public addActions(...actions: string[]) {
+    this.assertNotFrozen('addActions');
     if (actions.length > 0 && this._notAction.length > 0) {
       throw new Error('Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
     }
@@ -142,6 +166,7 @@ export class PolicyStatement {
    * @param notActions actions that will be denied. All other actions will be permitted.
    */
   public addNotActions(...notActions: string[]) {
+    this.assertNotFrozen('addNotActions');
     if (notActions.length > 0 && this._action.length > 0) {
       throw new Error('Cannot add \'NotActions\' to policy statement if \'Actions\' have been added');
     }
@@ -167,12 +192,16 @@ export class PolicyStatement {
    * @param principals IAM principals that will be added
    */
   public addPrincipals(...principals: IPrincipal[]) {
-    this._principals.push(...principals);
-    if (Object.keys(principals).length > 0 && Object.keys(this._notPrincipal).length > 0) {
+    this.assertNotFrozen('addPrincipals');
+    if (principals.length > 0 && this._notPrincipals.length > 0) {
       throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
     }
     for (const principal of principals) {
       this.validatePolicyPrincipal(principal);
+    }
+
+    const added = this._principals.push(...principals);
+    for (const principal of added) {
       const fragment = principal.policyFragment;
       mergePrincipal(this._principal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
@@ -188,12 +217,16 @@ export class PolicyStatement {
    * @param notPrincipals IAM principals that will be denied access
    */
   public addNotPrincipals(...notPrincipals: IPrincipal[]) {
-    this._notPrincipals.push(...notPrincipals);
-    if (Object.keys(notPrincipals).length > 0 && Object.keys(this._principal).length > 0) {
+    this.assertNotFrozen('addNotPrincipals');
+    if (notPrincipals.length > 0 && this._principals.length > 0) {
       throw new Error('Cannot add \'NotPrincipals\' to policy statement if \'Principals\' have been added');
     }
     for (const notPrincipal of notPrincipals) {
       this.validatePolicyPrincipal(notPrincipal);
+    }
+
+    const added = this._notPrincipals.push(...notPrincipals);
+    for (const notPrincipal of added) {
       const fragment = notPrincipal.policyFragment;
       mergePrincipal(this._notPrincipal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
@@ -280,6 +313,7 @@ export class PolicyStatement {
    * @param arns Amazon Resource Names (ARNs) of the resources that this policy statement applies to
    */
   public addResources(...arns: string[]) {
+    this.assertNotFrozen('addResources');
     if (arns.length > 0 && this._notResource.length > 0) {
       throw new Error('Cannot add \'Resources\' to policy statement if \'NotResources\' have been added');
     }
@@ -295,6 +329,7 @@ export class PolicyStatement {
    * @param arns Amazon Resource Names (ARNs) of the resources that this policy statement does not apply to
    */
   public addNotResources(...arns: string[]) {
+    this.assertNotFrozen('addNotResources');
     if (arns.length > 0 && this._resource.length > 0) {
       throw new Error('Cannot add \'NotResources\' to policy statement if \'Resources\' have been added');
     }
@@ -344,6 +379,9 @@ export class PolicyStatement {
    * ```
    */
   public addCondition(key: string, value: Condition) {
+    this.assertNotFrozen('addCondition');
+    validateConditionObject(value);
+
     const existingValue = this._condition[key];
     this._condition[key] = existingValue ? { ...existingValue, ...value } : value;
   }
@@ -396,14 +434,14 @@ export class PolicyStatement {
    */
   public toStatementJson(): any {
     return normalizeStatement({
-      Action: this._action,
-      NotAction: this._notAction,
+      Action: this._action.direct(),
+      NotAction: this._notAction.direct(),
       Condition: this._condition,
       Effect: this.effect,
       Principal: this._principal,
       NotPrincipal: this._notPrincipal,
-      Resource: this._resource,
-      NotResource: this._notResource,
+      Resource: this._resource.direct(),
+      NotResource: this._notResource.direct(),
       Sid: this.sid,
     });
   }
@@ -473,7 +511,7 @@ export class PolicyStatement {
    */
   public validateForResourcePolicy(): string[] {
     const errors = this.validateForAnyPolicy();
-    if (Object.keys(this._principal).length === 0 && Object.keys(this._notPrincipal).length === 0) {
+    if (this._principals.length === 0 && this._notPrincipals.length === 0) {
       errors.push('A PolicyStatement used in a resource-based policy must specify at least one IAM principal.');
     }
     return errors;
@@ -486,10 +524,10 @@ export class PolicyStatement {
    */
   public validateForIdentityPolicy(): string[] {
     const errors = this.validateForAnyPolicy();
-    if (Object.keys(this._principal).length > 0 || Object.keys(this._notPrincipal).length > 0) {
+    if (this._principals.length > 0 || this._notPrincipals.length > 0) {
       errors.push('A PolicyStatement used in an identity-based policy cannot specify any IAM principals.');
     }
-    if (Object.keys(this._resource).length === 0 && Object.keys(this._notResource).length === 0) {
+    if (this._resource.length === 0 && this._notResource.length === 0) {
       errors.push('A PolicyStatement used in an identity-based policy must specify at least one resource.');
     }
     return errors;
@@ -499,42 +537,42 @@ export class PolicyStatement {
    * The Actions added to this statement
    */
   public get actions() {
-    return [...this._action];
+    return this._action.copy();
   }
 
   /**
    * The NotActions added to this statement
    */
   public get notActions() {
-    return [...this._notAction];
+    return this._notAction.copy();
   }
 
   /**
    * The Principals added to this statement
    */
   public get principals(): IPrincipal[] {
-    return [...this._principals];
+    return this._principals.copy();
   }
 
   /**
    * The NotPrincipals added to this statement
    */
   public get notPrincipals(): IPrincipal[] {
-    return [...this._notPrincipals];
+    return this._notPrincipals.copy();
   }
 
   /**
    * The Resources added to this statement
    */
   public get resources() {
-    return [...this._resource];
+    return this._resource.copy();
   }
 
   /**
    * The NotResources added to this statement
    */
   public get notResources() {
-    return [...this._notResource];
+    return this._notResource.copy();
   }
 
   /**
@@ -542,6 +580,29 @@ export class PolicyStatement {
    */
   public get conditions(): any {
     return { ...this._condition };
+  }
+
+  /**
+   * Make the PolicyStatement immutable
+   *
+   * After calling this, any of the `addXxx()` methods will throw an exception.
+   *
+   * Libraries that lazily generate statement bodies can override this method to
+   * fill the actual PolicyStatement fields. Be aware that this method may be called
+   * multiple times.
+   */
+  public freeze(): PolicyStatement {
+    this._frozen = true;
+    return this;
+  }
+
+  /**
+   * Whether the PolicyStatement has been frozen
+   *
+   * The statement object is frozen when `freeze()` is called.
+   */
+  public get frozen(): boolean {
+    return this._frozen;
   }
 
   /**
@@ -577,6 +638,15 @@ export class PolicyStatement {
       }
     }
   }
+
+  /**
+   * Throw an exception when the object is frozen
+   */
+  private assertNotFrozen(method: string) {
+    if (this._frozen) {
+      throw new Error(`${method}: freeze() has been called on this PolicyStatement previously, so it can no longer be modified`);
+    }
+  }
 }
 
 /**
@@ -602,19 +672,15 @@ export enum Effect {
  * Condition for when an IAM policy is in effect. Maps from the keys in a request's context to
  * a string value or array of string values. See the Conditions interface for more details.
  */
-export type Condition = any;
+export type Condition = unknown;
 
-// NOTE! We'd ideally like to type this as `Record<string, any>`, because the
-// API expects a map which can take either strings or lists of strings.
+// NOTE! We would have liked to have typed this as `Record<string, unknown>`, but in some places
+// of the code we are assuming we can pass a `CfnJson` object into where a `Condition` is expected,
+// and that wouldn't typecheck anymore.
 //
-// However, if we were to change this right now, the Java bindings for CDK would
-// emit a type of `Map<String, Object>`, but the most common types people would
-// instantiate would be an `ImmutableMap<String, String>` which would not be
-// assignable to `Map<String, Object>`. The types don't have a built-in notion
-// of co-contravariance, you have to indicate that on the type. So jsii would first
-// need to emit the type as `Map<String, ? extends Object>`.
-//
-// Feature request in https://github.com/aws/jsii/issues/1517
+// Needs to be `unknown` instead of `any` so that the type of `Conditions` is
+// `Record<string, unknown>`; if it had been `Record<string, any>`, TypeScript would have allowed
+// passing an array into `conditions` arguments (where it needs to be a map).
 
 /**
  * Conditions for when an IAM Policy is in effect, specified in the following structure:
@@ -759,4 +825,54 @@ export function deriveEstimateSizeOptions(scope: IConstruct): EstimateSizeOption
   }
 
   return { actionEstimate, arnEstimate };
+}
+
+/**
+ * A class that behaves both as a set and an array
+ *
+ * Used for the elements of a PolicyStatement. In practice they behave as sets,
+ * but we have thousands of snapshot tests in existence that will rely on a
+ * particular order so we can't just change the type to `Set<>` wholesale without
+ * causing a lot of churn.
+ */
+class OrderedSet<A> {
+  private readonly set = new Set<A>();
+  private readonly array = new Array<A>();
+
+  /**
+   * Add new elements to the set
+   *
+   * @param xs the elements to be added
+   *
+   * @returns the elements actually added
+   */
+  public push(...xs: readonly A[]): A[] {
+    const ret = new Array<A>();
+    for (const x of xs) {
+      if (this.set.has(x)) {
+        continue;
+      }
+      this.set.add(x);
+      this.array.push(x);
+      ret.push(x);
+    }
+    return ret;
+  }
+
+  public get length() {
+    return this.array.length;
+  }
+
+  public copy(): A[] {
+    return [...this.array];
+  }
+
+  /**
+   * Direct (read-only) access to the underlying array
+   *
+   * (Saves a copy)
+   */
+  public direct(): readonly A[] {
+    return this.array;
+  }
 }

@@ -1,16 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line
-import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * networking mode on build time supported by docker
@@ -222,7 +216,7 @@ export interface DockerImageAssetProps extends DockerImageAssetOptions {
  *
  * The image will be created in build time and uploaded to an ECR repository.
  */
-export class DockerImageAsset extends CoreConstruct implements IAsset {
+export class DockerImageAsset extends Construct implements IAsset {
   /**
    * The full URI of the image (including a tag). Use this reference to pull
    * the asset.

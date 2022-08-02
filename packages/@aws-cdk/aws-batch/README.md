@@ -119,8 +119,7 @@ The alternative would be to use the `BEST_FIT_PROGRESSIVE` strategy in order for
 
 Simply define your Launch Template:
 
-```text
-// This example is only available in TypeScript
+```ts
 const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
   launchTemplateName: 'extra-storage-template',
   launchTemplateData: {
@@ -138,7 +137,7 @@ const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
-and use it:
+And provide `launchTemplateName`:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -148,6 +147,23 @@ const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
   computeResources: {
     launchTemplate: {
       launchTemplateName: myLaunchTemplate.launchTemplateName as string, //or simply use an existing template name
+    },
+    vpc,
+  },
+  computeEnvironmentName: 'MyStorageCapableComputeEnvironment',
+});
+```
+
+Or provide `launchTemplateId` instead:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const myLaunchTemplate: ec2.CfnLaunchTemplate;
+
+const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
+  computeResources: {
+    launchTemplate: {
+      launchTemplateId: myLaunchTemplate.ref as string,
     },
     vpc,
   },
@@ -299,6 +315,25 @@ new batch.JobDefinition(this, 'job-def', {
   },
 });
 ```
+
+### Using the secret on secrets manager
+
+You can set the environment variables from secrets manager.
+
+```ts
+const dbSecret = new secretsmanager.Secret(this, 'secret');
+
+new batch.JobDefinition(this, 'batch-job-def-secrets', {
+  container: {
+    image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+    secrets: {
+      PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'),
+    },
+  },
+});
+```
+
+It is common practice to invoke other AWS services from within AWS Batch jobs (e.g. using the AWS SDK). For this reason, the AWS_ACCOUNT and AWS_REGION environments are always provided by default to the JobDefinition construct with the values inferred from the current context. You can always overwrite them by setting these environment variables explicitly though.
 
 ### Importing an existing Job Definition
 

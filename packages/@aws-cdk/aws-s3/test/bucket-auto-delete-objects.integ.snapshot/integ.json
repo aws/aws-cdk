@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-s3/test/integ.bucket-auto-delete-objects": {
+    "integ.bucket-auto-delete-objects": {
       "stacks": [
         "cdk-s3-bucket-auto-delete-objects"
       ],

@@ -1,5 +1,5 @@
 {
-  "$version": "72.0.0",
+  "$version": "81.1.0",
   "PropertyTypes": {
     "AWS::CloudFront::CachePolicy.CachePolicyConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-cachepolicy-cachepolicyconfig.html",
@@ -553,7 +553,7 @@
         },
         "DefaultCacheBehavior": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-distributionconfig.html#cfn-cloudfront-distribution-distributionconfig-defaultcachebehavior",
-          "Required": false,
+          "Required": true,
           "Type": "DefaultCacheBehavior",
           "UpdateType": "Mutable"
         },

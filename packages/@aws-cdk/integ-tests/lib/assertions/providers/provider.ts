@@ -2,9 +2,6 @@ import * as path from 'path';
 import { Duration, CfnResource, AssetStaging, Stack, FileAssetPackaging, Token, Lazy, Reference } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 let SDK_METADATA: any = undefined;
 
 
@@ -13,7 +10,7 @@ let SDK_METADATA: any = undefined;
  * this construct creates a lambda function provider using
  * only CfnResource
  */
-class LambdaFunctionProvider extends CoreConstruct {
+class LambdaFunctionProvider extends Construct {
   /**
    * The ARN of the lambda function which can be used
    * as a serviceToken to a CustomResource
@@ -106,7 +103,7 @@ interface SingletonFunctionProps {
 /**
  * Mimic the singletonfunction construct in '@aws-cdk/aws-lambda'
  */
-class SingletonFunction extends CoreConstruct {
+class SingletonFunction extends Construct {
   public readonly serviceToken: string;
 
   public readonly lambdaFunction: LambdaFunctionProvider;
@@ -115,13 +112,16 @@ class SingletonFunction extends CoreConstruct {
     super(scope, id);
     this.lambdaFunction = this.ensureFunction(props);
     this.serviceToken = this.lambdaFunction.serviceToken;
-  }
 
-  /**
-   * The policies can be added by different constructs
-   */
-  onPrepare(): void {
-    this.lambdaFunction.addPolicies(this.policies);
+    /**
+     * The policies can be added by different constructs
+     */
+    this.node.addValidation({
+      validate: () => {
+        this.lambdaFunction.addPolicies(this.policies);
+        return [];
+      },
+    });
   }
 
   private ensureFunction(props: SingletonFunctionProps): LambdaFunctionProvider {
@@ -132,6 +132,24 @@ class SingletonFunction extends CoreConstruct {
     }
 
     return new LambdaFunctionProvider(Stack.of(this), constructName);
+  }
+
+  /**
+   * Add an IAM policy statement to the inline policy of the
+   * lambdas function's role
+   *
+   * **Please note**: this is a direct IAM JSON policy blob, *not* a `iam.PolicyStatement`
+   * object like you will see in the rest of the CDK.
+   *
+   *
+   * singleton.addToRolePolicy({
+   *   Effect: 'Allow',
+   *   Action: 's3:GetObject',
+   *   Resources: '*',
+   * });
+   */
+  public addToRolePolicy(statement: any): void {
+    this.policies.push(statement);
   }
 
   /**
@@ -160,7 +178,7 @@ class SingletonFunction extends CoreConstruct {
  * that serves as the custom resource provider for the various
  * assertion providers
  */
-export class AssertionsProvider extends CoreConstruct {
+export class AssertionsProvider extends Construct {
   /**
    * The ARN of the lambda function which can be used
    * as a serviceToken to a CustomResource
@@ -215,6 +233,26 @@ export class AssertionsProvider extends CoreConstruct {
    */
   public addPolicyStatementFromSdkCall(service: string, api: string, resources?: string[]): void {
     this.handler.addPolicyStatementFromSdkCall(service, api, resources);
+  }
+
+  /**
+   * Add an IAM policy statement to the inline policy of the
+   * lambdas function's role
+   *
+   * **Please note**: this is a direct IAM JSON policy blob, *not* a `iam.PolicyStatement`
+   * object like you will see in the rest of the CDK.
+   *
+   *
+   * @example
+   * declare const provider: AssertionsProvider;
+   * provider.addToRolePolicy({
+   *   Effect: 'Allow',
+   *   Action: 's3:GetObject',
+   *   Resources: '*',
+   * });
+   */
+  public addToRolePolicy(statement: any): void {
+    this.handler.addToRolePolicy(statement);
   }
 }
 
