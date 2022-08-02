@@ -8,21 +8,21 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.63"
         }
       },
-      "test-dynamo-d-bv2-put-item-action-stack": {
-        "id": "test-dynamo-d-bv2-put-item-action-stack",
-        "path": "test-dynamo-d-bv2-put-item-action-stack",
+      "test-dynamodbv2-put-item-action-stack": {
+        "id": "test-dynamodbv2-put-item-action-stack",
+        "path": "test-dynamodbv2-put-item-action-stack",
         "children": {
           "TopicRule": {
             "id": "TopicRule",
-            "path": "test-dynamo-d-bv2-put-item-action-stack/TopicRule",
+            "path": "test-dynamodbv2-put-item-action-stack/TopicRule",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-dynamo-d-bv2-put-item-action-stack/TopicRule/Resource",
+                "path": "test-dynamodbv2-put-item-action-stack/TopicRule/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IoT::TopicRule",
                   "aws:cdk:cloudformation:props": {
@@ -56,11 +56,11 @@
               },
               "TopicRuleActionRole": {
                 "id": "TopicRuleActionRole",
-                "path": "test-dynamo-d-bv2-put-item-action-stack/TopicRule/TopicRuleActionRole",
+                "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-dynamo-d-bv2-put-item-action-stack/TopicRule/TopicRuleActionRole/Resource",
+                    "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -85,11 +85,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "test-dynamo-d-bv2-put-item-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy",
+                    "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "test-dynamo-d-bv2-put-item-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource",
+                        "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -141,11 +141,11 @@
           },
           "MyTable": {
             "id": "MyTable",
-            "path": "test-dynamo-d-bv2-put-item-action-stack/MyTable",
+            "path": "test-dynamodbv2-put-item-action-stack/MyTable",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-dynamo-d-bv2-put-item-action-stack/MyTable/Resource",
+                "path": "test-dynamodbv2-put-item-action-stack/MyTable/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
@@ -183,7 +183,7 @@
               },
               "ScalingRole": {
                 "id": "ScalingRole",
-                "path": "test-dynamo-d-bv2-put-item-action-stack/MyTable/ScalingRole",
+                "path": "test-dynamodbv2-put-item-action-stack/MyTable/ScalingRole",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -198,6 +198,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "dynamodbv2-integtest": {
+        "id": "dynamodbv2-integtest",
+        "path": "dynamodbv2-integtest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "dynamodbv2-integtest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "dynamodbv2-integtest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.63"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "dynamodbv2-integtest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

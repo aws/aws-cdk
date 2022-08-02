@@ -1,14 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "dynamodb-v2/integ.dynamodb-v2-put-item-action": {
+    "dynamodbv2-integtest/DefaultTest": {
       "stacks": [
-        "test-dynamo-d-bv2-put-item-action-stack"
+        "test-dynamodbv2-put-item-action-stack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "dynamodbv2integtestDefaultTestDeployAssertEF9A9A37"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
