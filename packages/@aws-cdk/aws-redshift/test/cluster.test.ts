@@ -326,8 +326,10 @@ test('can create a cluster with logging enabled', () => {
       masterUsername: 'admin',
     },
     vpc,
-    loggingBucket: bucket,
-    loggingKeyPrefix: 'prefix',
+    loggingProperties: {
+      loggingBucket: bucket,
+      loggingKeyPrefix: 'prefix',
+    },
   });
 
   // THEN
@@ -337,25 +339,6 @@ test('can create a cluster with logging enabled', () => {
       S3KeyPrefix: 'prefix',
     },
   });
-});
-
-test('throws error when logging enabled without s3 prefix', () => {
-  // GIVEN
-  const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'logging-bucket');
-
-  // WHEN
-  const props = {
-    masterUser: {
-      masterUsername: 'admin',
-    },
-    vpc,
-    loggingBucket: bucket,
-  };
-
-  // THEN
-  expect(() => {
-    new Cluster(stack, 'Redshift', props);
-  }).toThrowError();
 });
 
 test('throws when trying to add rotation to a cluster without secret', () => {
