@@ -879,11 +879,11 @@ export class NodeCompatibility extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     const atTypesNode = pkg.getDevDependency('@types/node');
-    if (atTypesNode && !atTypesNode.startsWith('^10.')) {
+    if (atTypesNode && !atTypesNode.startsWith('^14.')) {
       pkg.report({
         ruleName: this.name,
-        message: `packages must support node version 10 and up, but ${atTypesNode} is declared`,
-        fix: () => pkg.addDevDependency('@types/node', '^10.17.5'),
+        message: `packages must support node version 14 and up, but ${atTypesNode} is declared`,
+        fix: () => pkg.addDevDependency('@types/node', '^14.18.22'),
       });
     }
   }

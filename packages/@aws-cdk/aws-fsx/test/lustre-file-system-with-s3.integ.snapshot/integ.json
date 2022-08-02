@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "FsxLustreWithS3Test/DefaultTest": {
+      "stacks": [
+        "AwsCdkFsxLustre"
+      ],
+      "assertionStack": "FsxLustreWithS3TestDefaultTestDeployAssert0752DB81"
+    }
+  }
+}

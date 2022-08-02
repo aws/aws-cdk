@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -175,6 +175,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ServerlessDatabaseDF340AE1"
+          }
+        ],
+        "/aws-cdk-rds-integ/Serverless Database Without Copy Tags/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServerlessDatabaseWithoutCopyTagsSecurityGroup9C8F4A01"
+          }
+        ],
+        "/aws-cdk-rds-integ/Serverless Database Without Copy Tags/SecurityGroup/from 0.0.0.0_0:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServerlessDatabaseWithoutCopyTagsSecurityGroupfrom00000IndirectPortEFBD728B"
+          }
+        ],
+        "/aws-cdk-rds-integ/Serverless Database Without Copy Tags/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServerlessDatabaseWithoutCopyTagsB34876C9"
           }
         ]
       },
