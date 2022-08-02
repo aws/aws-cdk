@@ -2,6 +2,7 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as iot from '@aws-cdk/aws-iot';
 import * as cdk from '@aws-cdk/core';
 import * as actions from '../../lib';
+import * as integ from '@aws-cdk/integ-tests';
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -37,5 +38,10 @@ class TestStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new TestStack(app, 'test-dynamo-d-bv2-put-item-action-stack');
+const stack = new TestStack(app, 'test-dynamo-d-bv2-put-item-action-stack');
+
+new integ.IntegTest(app, 'dynamodbv2-integtest', {
+  testCases: [stack],
+});
+
 app.synth();
