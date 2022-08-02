@@ -51,6 +51,21 @@ export enum LustreAutoImportPolicy {
 }
 
 /**
+  * The permitted Lustre data compression algorithms
+*/
+export enum LustreDataCompressionType {
+  /**
+  *
+  * `NONE` - (Default) Data compression is turned off when the file system is created.
+  */
+  NONE = 'NONE',
+  /**
+  * `LZ4` - Data compression is turned on with the LZ4 algorithm.  Note: When you turn data compression on for an existing file system, only newly written files are compressed. Existing files are not compressed.
+  */
+  LZ4 = 'LZ4',
+}
+
+/**
  * The configuration for the Amazon FSx for Lustre file system.
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-lustreconfiguration.html
@@ -101,6 +116,16 @@ export interface LustreConfiguration {
    * @default - no import policy
    */
   readonly autoImportPolicy?: LustreAutoImportPolicy;
+
+  /**
+   * Sets the data compression configuration for the file system.
+   * For more information, see [Lustre data compression](https://docs.aws.amazon.com/fsx/latest/LustreGuide/data-compression.html) in the *Amazon FSx for Lustre User Guide* .
+   *
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-lustreconfiguration.html#cfn-fsx-filesystem-lustreconfiguration-datacompressiontype
+   * @default - no compression
+   */
+
+  readonly dataCompressionType?: LustreDataCompressionType;
 
   /**
    * Required for the PERSISTENT_1 deployment type, describes the amount of read and write throughput for each 1
