@@ -31,6 +31,7 @@ Currently supported are:
 - Put records to Kinesis Data Firehose stream
 - Send messages to SQS queues
 - Publish messages on SNS topics
+- Write messages into columns of DynamoDB
 
 ## Republish a message to another MQTT topic
 
@@ -275,6 +276,26 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
     new actions.SnsTopicAction(topic, {
       messageFormat: actions.SnsActionMessageFormat.JSON, // optional property, default is SnsActionMessageFormat.RAW
     }),
+  ],
+});
+```
+
+## Write attributes of a message to DynamoDB
+
+The code snippet below creates an AWS IoT rule that writes all or part of an 
+MQTT message to DynamoDB using the DynamoDBv2 action.
+
+```ts
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+
+declare const table: dynamodb.Table;
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT * FROM 'device/+/data'",
+  ),
+  actions: [
+    new actions.DynamoDBv2PutItemAction(table)
   ],
 });
 ```
