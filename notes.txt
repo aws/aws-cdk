@@ -4,3 +4,8 @@ To verify the current code, I have created a standalone cdk application that has
 dependencies directly on locally created tarballs for aws-cdk-lib and
 @aws-cdk/lambda-layer-awscli which are generated from running `yarn package` in
 the corresponding directory.
+
+npm install doesn't like it when I change the contents of the tarball, and
+reinstall with the same file name. So I've manually incremented the version
+number at the end. This is not a good workflow. We need a better one for
+developing this project. 
