@@ -1097,7 +1097,7 @@ describe('restapi', () => {
         DisableExecuteApiEndpoint: false,
       });
     });
-    
+
     test('disableExecuteApiEndpoint is false when set to false in RestApi', () => {
       // GIVEN
       const stack = new Stack();
@@ -1111,7 +1111,7 @@ describe('restapi', () => {
         DisableExecuteApiEndpoint: false,
       });
     });
-    
+
     test('disableExecuteApiEndpoint is true when set to true in RestApi', () => {
       // GIVEN
       const stack = new Stack();
@@ -1176,7 +1176,7 @@ describe('restapi', () => {
       });
     });
   });
-    
+
   describe('Description', () => {
     test('description can be set', () => {
       // GIVEN
