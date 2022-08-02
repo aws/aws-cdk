@@ -194,7 +194,7 @@ export class Match implements IResolvable {
     // Resolve each of the matchers first and then flatten the resulting list
     const matchers = this.matchers
       .map(matcher => context.resolve(matcher))
-      .flatMap(x => x);
+      .flat();
 
     return this.options.mergeMatchers ? this.merge(matchers) : matchers;
   }
