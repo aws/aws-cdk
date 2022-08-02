@@ -1,0 +1,111 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "AppSyncIntegLogRetention": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AppSyncIntegLogRetention.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/AppSyncIntegLogRetention": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a",
+              "id": "c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a",
+              "packaging": "zip",
+              "sourceHash": "c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a",
+              "s3BucketParameter": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aS3BucketB4787383",
+              "s3KeyParameter": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aS3VersionKey8CF8E820",
+              "artifactHashParameter": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aArtifactHashC9560B34"
+            }
+          }
+        ],
+        "/AppSyncIntegLogRetention/GraphqlApi/ApiLogsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GraphqlApiApiLogsRoleBB9E6BAD"
+          }
+        ],
+        "/AppSyncIntegLogRetention/GraphqlApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GraphqlApi1B6CF24C"
+          }
+        ],
+        "/AppSyncIntegLogRetention/GraphqlApi/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GraphqlApiSchema1B71CE4F"
+          }
+        ],
+        "/AppSyncIntegLogRetention/GraphqlApi/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GraphqlApiDefaultApiKey47EE7128"
+          }
+        ],
+        "/AppSyncIntegLogRetention/GraphqlApi/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GraphqlApiLogRetention082A7017"
+          }
+        ],
+        "/AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/AppSyncIntegLogRetention/AssetParameters/c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aS3BucketB4787383"
+          }
+        ],
+        "/AppSyncIntegLogRetention/AssetParameters/c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aS3VersionKey8CF8E820"
+          }
+        ],
+        "/AppSyncIntegLogRetention/AssetParameters/c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aArtifactHashC9560B34"
+          }
+        ]
+      },
+      "displayName": "AppSyncIntegLogRetention"
+    },
+    "IntegDefaultTestDeployAssert4E6713E1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegDefaultTestDeployAssert4E6713E1.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "Integ/DefaultTest/DeployAssert"
+    }
+  }
+}

@@ -643,10 +643,11 @@ export class GraphqlApi extends GraphqlApiBase {
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
       ],
     }).roleArn;
+    const fieldLogLevel: FieldLogLevel = config.fieldLogLevel ?? FieldLogLevel.NONE;
     return {
       cloudWatchLogsRoleArn: logsRoleArn,
       excludeVerboseContent: config.excludeVerboseContent,
-      fieldLogLevel: config.fieldLogLevel,
+      fieldLogLevel: fieldLogLevel,
     };
   }
 
