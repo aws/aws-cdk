@@ -81,7 +81,7 @@ describe('DeployStacks', () => {
     { scenario: 'A -> B, A -> C', concurrency: 2, toDeploy: [{ id: 'A', dependencies: [] }, { id: 'B', dependencies: [{ id: 'A' }] }, { id: 'C', dependencies: [{ id: 'A' }] }], expected: ['A', 'B', 'C'] },
     {
       scenario: 'A, B',
-      concurrency: 4,
+      concurrency: 2,
       toDeploy: [
         { id: 'A', dependencies: [], name: 10 },
         { id: 'B', dependencies: [] },

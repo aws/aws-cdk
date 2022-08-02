@@ -21,7 +21,7 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
 
   const hasAnyStackFailed = (states: Record<string, DeploymentState>) => Object.values(states).includes('failed');
 
-  const enqueueStackDeploys = async () => {
+  const enqueueStackDeploys = () => {
     stacks.forEach(async (stack) => {
       if (deploymentStates[stack.id] === 'pending' && isStackUnblocked(stack)) {
         deploymentStates[stack.id] = 'queued';
@@ -50,7 +50,9 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
     });
   };
 
-  await enqueueStackDeploys();
+  enqueueStackDeploys();
+
+  await queue.onIdle();
 
   const results = await Promise.allSettled(deployPromises);
   const isRejectedResult = (result: PromiseSettledResult<void>): result is PromiseRejectedResult => result.status === 'rejected';
@@ -59,6 +61,4 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
   if (errors.length) {
     throw Error(`Stack Deployments Failed: ${errors}`);
   }
-
-  await queue.onIdle();
 };
