@@ -29,6 +29,16 @@ describe('rule', () => {
     });
   });
 
+  test('rule schedule type is correct', () => {
+    const mockSchedule: jest.Mocked<Schedule> = {
+      expressionString: '',
+      _bind: jest.fn(),
+    };
+    const stack = new cdk.Stack();
+
+    expect(() => new Rule(stack, 'MyRule', { schedule: mockSchedule })).toThrow(/Incorrect type of schedule it must be events.Schedule/i);
+  });
+
   test('rule displays warning when minutes are not included in cron', () => {
     const stack = new cdk.Stack();
     new Rule(stack, 'MyRule', {

@@ -129,6 +129,10 @@ export class Rule extends Resource implements IRule {
       throw new Error('Cannot associate rule with \'eventBus\' when using \'schedule\'');
     }
 
+    if (props.schedule && !(props.schedule instanceof Schedule)) {
+      throw new Error('Incorrect type of schedule it must be events.Schedule');
+    }
+
     this.description = props.description;
     this.scheduleExpression = props.schedule?.expressionString;
 
