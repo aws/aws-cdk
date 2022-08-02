@@ -337,11 +337,9 @@ new route53.CnameRecord(this, `CnameApiRecord`, {
 ## Log Group
 
 AppSync automatically create a log group with the name `/aws/appsync/apis/<graphql_api_id>` upon deployment with
-log data set to never expire.
+log data set to never expire. If you want to set a different expiration period, use the `logConfig.retention` property.
 
-The `logConfig.retention` property can be used to set a different expiration period.
-
-It is possible to obtain the GraphQL API's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
+To obtain the GraphQL API's log group as a `logs.ILogGroup` use the `logGroup` property of the
 `GraphqlApi` construct.
 
 ## Schema
