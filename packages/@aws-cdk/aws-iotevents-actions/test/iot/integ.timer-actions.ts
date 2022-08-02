@@ -28,9 +28,7 @@ class TestStack extends cdk.Stack {
         eventName: 'enter-event',
         condition: iotevents.Expression.currentInput(input),
         actions: [
-          new actions.SetTimerAction('MyTimer', {
-            duration: cdk.Duration.seconds(60),
-          }),
+          new actions.SetTimerAction('MyTimer', actions.TimerDuration.fromDuration(cdk.Duration.seconds(60))),
         ],
       }],
       onInput: [{
