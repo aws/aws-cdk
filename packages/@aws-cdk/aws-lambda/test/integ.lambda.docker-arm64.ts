@@ -9,8 +9,8 @@ class TestStack extends Stack {
     /**
      * The platform will be set to ARM_64 automatically based on the `architecture` property.
      */
-    new DockerImageFunction(this, 'MyArmLambda', {
-      code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+    new DockerImageFunction(this, 'MyLambda', {
+      code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
       architecture: Architecture.ARM_64,
     });
   }
