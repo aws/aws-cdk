@@ -74,7 +74,7 @@ describe('User Pool Client', () => {
       });
 
       // THEN
-      expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if the "generateSecret" prop is set to true/);
+      expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if generateSecret is set to true./);
     });
 
     test('lacking secret configuration implicitly disables it', () => {
@@ -89,7 +89,7 @@ describe('User Pool Client', () => {
       });
 
       // THEN
-      expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if the "generateSecret" prop is set to true/);
+      expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if generateSecret is set to true./);
     });
   });
 
