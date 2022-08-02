@@ -238,25 +238,55 @@ export class MariaDbEngineVersion {
   */
   public static readonly VER_10_1_34 = MariaDbEngineVersion.of('10.1.34', '10.1');
 
-  /** Version "10.2" (only a major version, without a specific minor version). */
+  /** 
+   * Version "10.2" (only a major version, without a specific minor version)
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2 = MariaDbEngineVersion.of('10.2', '10.2');
-  /** Version "10.2.11". */
+  /**
+   * Version "10.2.11".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+  */
   public static readonly VER_10_2_11 = MariaDbEngineVersion.of('10.2.11', '10.2');
-  /** Version "10.2.12". */
+  /** 
+   * Version "10.2.12".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2_12 = MariaDbEngineVersion.of('10.2.12', '10.2');
-  /** Version "10.2.15". */
+  /** 
+   * Version "10.2.15".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2_15 = MariaDbEngineVersion.of('10.2.15', '10.2');
-  /** Version "10.2.21". */
+  /**
+   * Version "10.2.21". 
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+  */
   public static readonly VER_10_2_21 = MariaDbEngineVersion.of('10.2.21', '10.2');
-  /** Version "10.2.32". */
+  /**
+   * Version "10.2.32". 
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+  */
   public static readonly VER_10_2_32 = MariaDbEngineVersion.of('10.2.32', '10.2');
-  /** Version "10.2.37". */
+  /** 
+   * Version "10.2.37". 
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+  */
   public static readonly VER_10_2_37 = MariaDbEngineVersion.of('10.2.37', '10.2');
-  /** Version "10.2.39". */
+  /**
+   * Version "10.2.39".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2_39 = MariaDbEngineVersion.of('10.2.39', '10.2');
-  /** Version "10.2.40". */
+  /** 
+   * Version "10.2.40".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2_40 = MariaDbEngineVersion.of('10.2.40', '10.2');
-  /** Version "10.2.41". */
+  /** 
+   * Version "10.2.41". 
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2_41 = MariaDbEngineVersion.of('10.2.41', '10.2');
 
   /** Version "10.3" (only a major version, without a specific minor version). */
