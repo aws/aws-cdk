@@ -329,6 +329,15 @@
         ]
       },
       "displayName": "aws-ecs-integ"
+    },
+    "applicationLoadBalancedEc2ServiceTestDefaultTestDeployAssert3356477A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "applicationLoadBalancedEc2ServiceTestDefaultTestDeployAssert3356477A.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

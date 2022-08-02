@@ -1083,34 +1083,129 @@ describe('restapi', () => {
     });
   });
 
-  test('"disableExecuteApiEndpoint" can disable the default execute-api endpoint', () => {
-    // GIVEN
-    const stack = new Stack();
+  describe('DisableExecuteApiEndpoint', () => {
+    test('disableExecuteApiEndpoint is false when not set in RestApi', () => {
+      // GIVEN
+      const stack = new Stack();
 
-    // WHEN
-    const api = new apigw.RestApi(stack, 'my-api', { disableExecuteApiEndpoint: true });
-    api.root.addMethod('GET');
+      // WHEN
+      const api = new apigw.RestApi(stack, 'my-api', { });
+      api.root.addMethod('GET');
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
-      DisableExecuteApiEndpoint: true,
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        DisableExecuteApiEndpoint: false,
+      });
+    });
+    
+    test('disableExecuteApiEndpoint is false when set to false in RestApi', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'my-api', { disableExecuteApiEndpoint: false });
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        DisableExecuteApiEndpoint: false,
+      });
+    });
+    
+    test('disableExecuteApiEndpoint is true when set to true in RestApi', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'my-api', { disableExecuteApiEndpoint: true });
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        DisableExecuteApiEndpoint: true,
+      });
+    });
+
+    test('disableExecuteApiEndpoint is false when not set in SpecRestApi', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.SpecRestApi(stack, 'my-api', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      });
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        DisableExecuteApiEndpoint: false,
+      });
+    });
+
+    test('disableExecuteApiEndpoint is false when set to false in SpecRestApi', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.SpecRestApi(stack, 'my-api', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+        disableExecuteApiEndpoint: false,
+      });
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        DisableExecuteApiEndpoint: false,
+      });
+    });
+
+    test('disableExecuteApiEndpoint is true when set to true in SpecRestApi', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.SpecRestApi(stack, 'my-api', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+        disableExecuteApiEndpoint: true,
+      });
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        DisableExecuteApiEndpoint: true,
+      });
     });
   });
+    
+  describe('Description', () => {
+    test('description can be set', () => {
+      // GIVEN
+      const stack = new Stack();
 
-  test('"disableExecuteApiEndpoint" can disable the default execute-api endpoint for SpecRestApi', () => {
-    // GIVEN
-    const stack = new Stack();
+      // WHEN
+      const api = new apigw.RestApi(stack, 'my-api', { description: 'My API' });
+      api.root.addMethod('GET');
 
-    // WHEN
-    const api = new apigw.SpecRestApi(stack, 'my-api', {
-      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
-      disableExecuteApiEndpoint: true,
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::ApiGateway::RestApi',
+        {
+          Description: 'My API',
+        });
     });
-    api.root.addMethod('GET');
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
-      DisableExecuteApiEndpoint: true,
+    test('description is not set', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'my-api');
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::ApiGateway::RestApi', {});
+      });
     });
   });
 });
