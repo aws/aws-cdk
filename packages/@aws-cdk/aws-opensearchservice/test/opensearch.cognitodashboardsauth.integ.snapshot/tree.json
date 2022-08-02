@@ -1,0 +1,265 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.58"
+        }
+      },
+      "cdk-integ-opensearch-cognitodashboardsauth": {
+        "id": "cdk-integ-opensearch-cognitodashboardsauth",
+        "path": "cdk-integ-opensearch-cognitodashboardsauth",
+        "children": {
+          "IdentityPool": {
+            "id": "IdentityPool",
+            "path": "cdk-integ-opensearch-cognitodashboardsauth/IdentityPool",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Cognito::IdentityPool",
+              "aws:cdk:cloudformation:props": {
+                "allowUnauthenticatedIdentities": true
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.CfnIdentityPool",
+              "version": "0.0.0"
+            }
+          },
+          "UserPool": {
+            "id": "UserPool",
+            "path": "cdk-integ-opensearch-cognitodashboardsauth/UserPool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-opensearch-cognitodashboardsauth/UserPool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              },
+              "UserPoolDomain": {
+                "id": "UserPoolDomain",
+                "path": "cdk-integ-opensearch-cognitodashboardsauth/UserPool/UserPoolDomain",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-integ-opensearch-cognitodashboardsauth/UserPool/UserPoolDomain/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "integ-test-domain-prefix",
+                        "userPoolId": {
+                          "Ref": "UserPool6BA7E5F2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolDomain",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.UserPoolDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "Role": {
+            "id": "Role",
+            "path": "cdk-integ-opensearch-cognitodashboardsauth/Role",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-opensearch-cognitodashboardsauth/Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "opensearchservice.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AmazonOpenSearchServiceCognitoAccess"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "Domain": {
+            "id": "Domain",
+            "path": "cdk-integ-opensearch-cognitodashboardsauth/Domain",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-opensearch-cognitodashboardsauth/Domain/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
+                  "aws:cdk:cloudformation:props": {
+                    "clusterConfig": {
+                      "dedicatedMasterEnabled": false,
+                      "instanceCount": 1,
+                      "instanceType": "r5.large.search",
+                      "zoneAwarenessEnabled": false
+                    },
+                    "cognitoOptions": {
+                      "enabled": true,
+                      "identityPoolId": {
+                        "Ref": "IdentityPool"
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "userPoolId": {
+                        "Ref": "UserPool6BA7E5F2"
+                      }
+                    },
+                    "domainEndpointOptions": {
+                      "enforceHttps": false,
+                      "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+                    },
+                    "ebsOptions": {
+                      "ebsEnabled": true,
+                      "volumeSize": 10,
+                      "volumeType": "gp2"
+                    },
+                    "encryptionAtRestOptions": {
+                      "enabled": false
+                    },
+                    "engineVersion": "OpenSearch_1.0",
+                    "logPublishingOptions": {},
+                    "nodeToNodeEncryptionOptions": {
+                      "enabled": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-opensearchservice.CfnDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-opensearchservice.Domain",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "CognitoAuthForOpenSearchDashboards": {
+        "id": "CognitoAuthForOpenSearchDashboards",
+        "path": "CognitoAuthForOpenSearchDashboards",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "CognitoAuthForOpenSearchDashboards/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CognitoAuthForOpenSearchDashboards/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.58"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "CognitoAuthForOpenSearchDashboards/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
