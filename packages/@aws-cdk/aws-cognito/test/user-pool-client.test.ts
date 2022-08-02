@@ -42,9 +42,9 @@ describe('User Pool Client', () => {
     expect(() => client2.userPoolClientName).toThrow(/available only if specified on the UserPoolClient during initialization/);
   });
 
-  describe('Client with secret', ()=>{
+  describe('Client with secret', () => {
 
-    test('generate secret', ()=>{
+    test('generate secret', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
@@ -59,10 +59,10 @@ describe('User Pool Client', () => {
       expect(clientWithSecret.userPoolClientSecret).toBeDefined();
 
       // Make sure getter returns the same secret regardless if it's called one or many times
-      expect(clientWithSecret.userPoolClientSecret === clientWithSecret.userPoolClientSecret).toBeTruthy();
+      expect(clientWithSecret.userPoolClientSecret).toEqual(clientWithSecret.userPoolClientSecret);
     });
 
-    test('explicitly disable secret generation', ()=>{
+    test('explicitly disable secret generation', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
@@ -77,7 +77,7 @@ describe('User Pool Client', () => {
       expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if the "generateSecret" prop is set to true/);
     });
 
-    test('lacking secret configuration implicitly disables it', ()=>{
+    test('lacking secret configuration implicitly disables it', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');

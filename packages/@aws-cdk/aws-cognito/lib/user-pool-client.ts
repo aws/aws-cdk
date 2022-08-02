@@ -429,7 +429,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   public get userPoolClientSecret(): SecretValue {
     if (!this._generateSecret) {
       throw new Error(
-        'userPoolClientSecret is available only if the "generateSecret" prop is set to true',
+        'userPoolClientSecret is available only if generateSecret is set to true.',
       );
     }
 
