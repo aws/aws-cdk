@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.58"
         }
       },
       "aws-cdk-lambda-1": {
@@ -209,7 +209,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaCurrentVersionE7A382CCaab0ffd2d3271bb29338c3fe7c7f3151",
+                        "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629",
                         "Version"
                       ]
                     },
@@ -259,8 +259,12 @@
                       "aws:cdk:cloudformation:props": {
                         "authType": "NONE",
                         "targetFunctionArn": {
-                          "Ref": "Alias325C5727"
-                        }
+                          "Fn::GetAtt": [
+                            "MyLambdaCCE802FB",
+                            "Arn"
+                          ]
+                        },
+                        "qualifier": "prod"
                       }
                     },
                     "constructInfo": {

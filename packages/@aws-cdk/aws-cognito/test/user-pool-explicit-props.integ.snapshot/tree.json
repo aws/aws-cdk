@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.0.9"
         }
       },
       "integ-user-pool": {
@@ -86,7 +86,7 @@
                     },
                     "functionName": "createAuthChallenge",
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -197,7 +197,7 @@
                     },
                     "functionName": "customMessage",
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -308,7 +308,7 @@
                     },
                     "functionName": "defineAuthChallenge",
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -419,7 +419,7 @@
                     },
                     "functionName": "postAuthentication",
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -530,7 +530,7 @@
                     },
                     "functionName": "postConfirmation",
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -641,7 +641,7 @@
                     },
                     "functionName": "preAuthentication",
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -752,7 +752,7 @@
                     },
                     "functionName": "preSignUp",
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -863,7 +863,7 @@
                     },
                     "functionName": "preTokenGeneration",
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -974,7 +974,7 @@
                     },
                     "functionName": "userMigration",
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -1085,7 +1085,7 @@
                     },
                     "functionName": "verifyAuthChallengeResponse",
                     "handler": "index.handler",
-                    "runtime": "nodejs12.x"
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -1218,6 +1218,9 @@
                       "email",
                       "phone_number"
                     ],
+                    "userAttributeUpdateSettings": {
+                      "attributesRequireVerificationBeforeUpdate": ["email", "phone_number"]
+                    },
                     "emailVerificationMessage": "verification email body from the integ test. Code is {####}.",
                     "emailVerificationSubject": "verification email subject from the integ test",
                     "lambdaConfig": {

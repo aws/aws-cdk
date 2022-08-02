@@ -1,5 +1,5 @@
 {
-  "$version": "68.0.0",
+  "$version": "81.1.0",
   "PropertyTypes": {
     "AWS::AutoScalingPlans::ScalingPlan.ApplicationSource": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-applicationsource.html",

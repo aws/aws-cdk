@@ -62,7 +62,7 @@
       "ApiId"
      ]
     },
-    "Definition": "type ServiceVersion @aws_api_key {\n  version: String!\n}\n\ntype Customer @aws_api_key {\n  id: String!\n  name: String!\n}\n\ninput SaveCustomerInput {\n  name: String!\n}\n\ntype Order @aws_api_key {\n  customer: String!\n  order: String!\n}\n\ntype Payment @aws_api_key {\n  id: String!\n  amount: String!\n}\n\ninput PaymentInput {\n  amount: String!\n}\n\ntype Query @aws_api_key {\n  getServiceVersion: ServiceVersion\n  getCustomers: [Customer]\n  getCustomer(id: String): Customer\n  getCustomerOrdersEq(customer: String): Order\n  getCustomerOrdersLt(customer: String): Order\n  getCustomerOrdersLe(customer: String): Order\n  getCustomerOrdersGt(customer: String): Order\n  getCustomerOrdersGe(customer: String): Order\n  getCustomerOrdersFilter(customer: String, order: String): Order\n  getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n  getOrderCustomersEq(order: String): [Customer]\n  getOrderCustomersLt(order: String): [Customer]\n  getOrderCustomersLe(order: String): [Customer]\n  getOrderCustomersGt(order: String): [Customer]\n  getOrderCustomersGe(order: String): [Customer]\n  getOrderCustomersFilter(order: String, customer: String): [Customer]\n  getOrderCustomersBetween(order: String, customer1: String, customer2: String): [Customer]\n  getPayment(id: String): Payment\n}\n\ninput FirstOrderInput {\n  product: String!\n  quantity: Int!\n}\n\ntype Mutation @aws_api_key {\n  addCustomer(customer: SaveCustomerInput!): Customer\n  saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n  removeCustomer(id: String!): Customer\n  saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order\n  savePayment(payment: PaymentInput!): Payment\n  doPostOnAws: String!\n}\n"
+    "Definition": "type ServiceVersion @aws_api_key {\n  version: String!\n}\n\ntype Customer @aws_api_key {\n  id: String!\n  name: String!\n}\n\ninput SaveCustomerInput {\n  name: String!\n}\n\ntype Order @aws_api_key {\n  customer: String!\n  order: String!\n}\n\ntype Payment @aws_api_key {\n  id: String!\n  amount: String!\n}\n\ninput PaymentInput {\n  amount: String!\n}\n\ntype Query @aws_api_key {\n  getServiceVersion: ServiceVersion\n  getCustomers: [Customer]\n  getCustomersNotConsistent: [Customer]\n  getCustomersConsistent: [Customer]\n  getCustomer(id: String): Customer\n  getCustomerNotConsistent(id: String): Customer\n  getCustomerConsistent(id: String): Customer\n  getCustomerOrdersEq(customer: String): Order\n  getCustomerOrdersLt(customer: String): Order\n  getCustomerOrdersLe(customer: String): Order\n  getCustomerOrdersGt(customer: String): Order\n  getCustomerOrdersGe(customer: String): Order\n  getCustomerOrdersNotConsistentEq(customer: String): Order\n  getCustomerOrdersNotConsistentLt(customer: String): Order\n  getCustomerOrdersNotConsistentLe(customer: String): Order\n  getCustomerOrdersNotConsistentGt(customer: String): Order\n  getCustomerOrdersNotConsistentGe(customer: String): Order\n  getCustomerOrdersConsistentEq(customer: String): Order\n  getCustomerOrdersConsistentLt(customer: String): Order\n  getCustomerOrdersConsistentLe(customer: String): Order\n  getCustomerOrdersConsistentGt(customer: String): Order\n  getCustomerOrdersConsistentGe(customer: String): Order\n  getCustomerOrdersFilter(customer: String, order: String): Order\n  getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n  getOrderCustomersEq(order: String): [Customer]\n  getOrderCustomersLt(order: String): [Customer]\n  getOrderCustomersLe(order: String): [Customer]\n  getOrderCustomersGt(order: String): [Customer]\n  getOrderCustomersGe(order: String): [Customer]\n  getOrderCustomersNotConsistentEq(order: String): [Customer]\n  getOrderCustomersNotConsistentLt(order: String): [Customer]\n  getOrderCustomersNotConsistentLe(order: String): [Customer]\n  getOrderCustomersNotConsistentGt(order: String): [Customer]\n  getOrderCustomersNotConsistentGe(order: String): [Customer]\n  getOrderCustomersConsistentEq(order: String): [Customer]\n  getOrderCustomersConsistentLt(order: String): [Customer]\n  getOrderCustomersConsistentLe(order: String): [Customer]\n  getOrderCustomersConsistentGt(order: String): [Customer]\n  getOrderCustomersConsistentGe(order: String): [Customer]\n  getOrderCustomersFilter(order: String, customer: String): [Customer]\n  getOrderCustomersBetween(order: String, customer1: String, customer2: String): [Customer]\n  getPayment(id: String): Payment\n  getPaymentConsistent(id: String): Payment\n}\n\ninput FirstOrderInput {\n  product: String!\n  quantity: Int!\n}\n\ntype Mutation @aws_api_key {\n  addCustomer(customer: SaveCustomerInput!): Customer\n  saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n  removeCustomer(id: String!): Customer\n  saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order\n  savePayment(payment: PaymentInput!): Payment\n  doPostOnAws: String!\n}\n"
    }
   },
   "ApiDefaultApiKeyF991C37B": {
@@ -214,7 +214,7 @@
     "TypeName": "Query",
     "DataSourceName": "Customer",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -235,7 +235,91 @@
     "TypeName": "Query",
     "DataSourceName": "Customer",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+   },
+   "DependsOn": [
+    "ApicustomerDsFE73DAC5",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApicustomerDsQuerygetCustomersNotConsistentResolver66499326": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomersNotConsistent",
+    "TypeName": "Query",
+    "DataSourceName": "Customer",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApicustomerDsFE73DAC5",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApicustomerDsQuerygetCustomerNotConsistentResolverE173BDA3": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerNotConsistent",
+    "TypeName": "Query",
+    "DataSourceName": "Customer",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+   },
+   "DependsOn": [
+    "ApicustomerDsFE73DAC5",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApicustomerDsQuerygetCustomersConsistentResolver302CA74B": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomersConsistent",
+    "TypeName": "Query",
+    "DataSourceName": "Customer",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": true}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApicustomerDsFE73DAC5",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApicustomerDsQuerygetCustomerConsistentResolver0A30CD6C": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerConsistent",
+    "TypeName": "Query",
+    "DataSourceName": "Customer",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": true, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result)"
    },
    "DependsOn": [
@@ -439,7 +523,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -460,7 +544,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -481,7 +565,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -502,7 +586,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -523,7 +607,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -544,7 +628,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -565,7 +649,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -586,7 +670,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -607,7 +691,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -628,7 +712,427 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetCustomerOrdersNotConsistentEqResolver242A8314": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerOrdersNotConsistentEq",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetOrderCustomersNotConsistentEqResolver53CBADD9": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getOrderCustomersNotConsistentEq",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetCustomerOrdersNotConsistentLtResolver5259538F": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerOrdersNotConsistentLt",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetOrderCustomersNotConsistentLtResolver322C467A": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getOrderCustomersNotConsistentLt",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetCustomerOrdersNotConsistentLeResolver2DB38FDE": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerOrdersNotConsistentLe",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetOrderCustomersNotConsistentLeResolver8A28C79C": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getOrderCustomersNotConsistentLe",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetCustomerOrdersNotConsistentGtResolverD7C416AD": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerOrdersNotConsistentGt",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetOrderCustomersNotConsistentGtResolver91BD36C9": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getOrderCustomersNotConsistentGt",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetCustomerOrdersNotConsistentGeResolver0E9FE662": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerOrdersNotConsistentGe",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetOrderCustomersNotConsistentGeResolver555023D7": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getOrderCustomersNotConsistentGe",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetCustomerOrdersConsistentEqResolver0A400223": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerOrdersConsistentEq",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetOrderCustomersConsistentEqResolverF54BDAB4": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getOrderCustomersConsistentEq",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetCustomerOrdersConsistentLtResolver73E118EE": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerOrdersConsistentLt",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetOrderCustomersConsistentLtResolver8B18EA77": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getOrderCustomersConsistentLt",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetCustomerOrdersConsistentLeResolverEA8D11EE": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerOrdersConsistentLe",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetOrderCustomersConsistentLeResolverB027B939": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getOrderCustomersConsistentLe",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetCustomerOrdersConsistentGtResolverD927E07A": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerOrdersConsistentGt",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetOrderCustomersConsistentGtResolver58B23E21": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getOrderCustomersConsistentGt",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetCustomerOrdersConsistentGeResolverB8F83696": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getCustomerOrdersConsistentGe",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+   },
+   "DependsOn": [
+    "ApiorderDsB50C8AAD",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApiorderDsQuerygetOrderCustomersConsistentGeResolver674A5CD5": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getOrderCustomersConsistentGe",
+    "TypeName": "Query",
+    "DataSourceName": "Order",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -649,7 +1153,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n              \"expression\" : \"#customer = :customer AND begins_with(#order, :order)\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer AND begins_with(#order, :order)\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -670,7 +1174,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n              \"expression\" : \"#customer = :customer AND #order BETWEEN :order1 AND :order2\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order1\" : $util.dynamodb.toDynamoDBJson($ctx.args.order1), \":order2\" : $util.dynamodb.toDynamoDBJson($ctx.args.order2)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer AND #order BETWEEN :order1 AND :order2\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order1\" : $util.dynamodb.toDynamoDBJson($ctx.args.order1), \":order2\" : $util.dynamodb.toDynamoDBJson($ctx.args.order2)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -691,7 +1195,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n              \"expression\" : \"#order = :order AND begins_with(#customer, :customer)\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#order = :order AND begins_with(#customer, :customer)\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -712,7 +1216,7 @@
     "TypeName": "Query",
     "DataSourceName": "Order",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order AND #customer BETWEEN :customer1 AND :customer2\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer1\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer1), \":customer2\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer2)\n              }\n            }}",
+    "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order AND #customer BETWEEN :customer1 AND :customer2\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer1\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer1), \":customer2\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer2)\n              }\n            }}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
@@ -833,7 +1337,28 @@
     "TypeName": "Query",
     "DataSourceName": "Payment",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+    "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+   },
+   "DependsOn": [
+    "ApipaymentDs95C7AC36",
+    "ApiSchema510EECD7"
+   ]
+  },
+  "ApipaymentDsQuerygetPaymentConsistentResolver05C2ACB8": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiF70053CD",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getPaymentConsistent",
+    "TypeName": "Query",
+    "DataSourceName": "Payment",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": true, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
     "ResponseMappingTemplate": "$util.toJson($ctx.result)"
    },
    "DependsOn": [

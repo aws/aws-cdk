@@ -118,10 +118,8 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
 
     this.deploymentConfigName = resource.ref;
     this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);
-  }
 
-  protected validate(): string[] {
-    return validateName('Deployment config', this.physicalName);
+    this.node.addValidation({ validate: () => validateName('Deployment config', this.physicalName) });
   }
 }
 

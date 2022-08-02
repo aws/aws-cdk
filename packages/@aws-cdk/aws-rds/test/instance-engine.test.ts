@@ -52,8 +52,24 @@ describe('instance engine', () => {
     expect(family).toEqual(undefined);
   });
 
+  test('default parameterGroupFamily for versionless Oracle SE 2 (CDB) instance engine is not defined', () => {
+    const engine = rds.DatabaseInstanceEngine.ORACLE_SE2_CDB;
+
+    const family = engine.parameterGroupFamily;
+
+    expect(family).toEqual(undefined);
+  });
+
   test('default parameterGroupFamily for versionless Oracle EE instance engine is not defined', () => {
     const engine = rds.DatabaseInstanceEngine.ORACLE_EE;
+
+    const family = engine.parameterGroupFamily;
+
+    expect(family).toEqual(undefined);
+  });
+
+  test('default parameterGroupFamily for versionless Oracle EE (CDB) instance engine is not defined', () => {
+    const engine = rds.DatabaseInstanceEngine.ORACLE_EE_CDB;
 
     const family = engine.parameterGroupFamily;
 

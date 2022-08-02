@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -110,6 +110,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EcsCluster97242B84"
+          }
+        ],
+        "/aws-ecs-integ-fargate/MyDeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueueD997968A"
+          }
+        ],
+        "/aws-ecs-integ-fargate/MyDeadLetterQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueuePolicyCC35D52C"
           }
         ],
         "/aws-ecs-integ-fargate/TaskDef/TaskRole/Resource": [

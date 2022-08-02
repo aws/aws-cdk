@@ -18,10 +18,6 @@ import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * The properties for the base ApplicationMultipleTargetGroupsEc2Service or ApplicationMultipleTargetGroupsFargateService service.
  */
@@ -111,6 +107,13 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
    * @default - default portMapping registered as target group and attached to the first defined listener
    */
   readonly targetGroups?: ApplicationTargetProps[];
+
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -301,6 +304,13 @@ export interface ApplicationLoadBalancerProps {
    * @default - No Route53 hosted domain zone.
    */
   readonly domainZone?: IHostedZone;
+
+  /**
+   * The load balancer idle timeout, in seconds
+   *
+   * @default - CloudFormation sets idle timeout to 60 seconds
+   */
+  readonly idleTimeout?: Duration;
 }
 
 /**
@@ -351,7 +361,8 @@ export interface ApplicationListenerProps {
 /**
  * The base class for ApplicationMultipleTargetGroupsEc2Service and ApplicationMultipleTargetGroupsFargateService classes.
  */
-export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreConstruct {
+export abstract class ApplicationMultipleTargetGroupsServiceBase extends Construct {
+
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    * @deprecated - Use `internalDesiredCount` instead.
@@ -404,8 +415,9 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
     }
 
     if (props.loadBalancers) {
+      this.validateLbProps(props.loadBalancers);
       for (const lbProps of props.loadBalancers) {
-        const lb = this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer);
+        const lb = this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer, lbProps.idleTimeout);
         this.loadBalancers.push(lb);
         const protocolType = new Set<ApplicationProtocol>();
         for (const listenerProps of lbProps.listeners) {
@@ -560,11 +572,23 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
     }
   }
 
-  private createLoadBalancer(name: string, publicLoadBalancer?: boolean): ApplicationLoadBalancer {
+  private validateLbProps(props: ApplicationLoadBalancerProps[]) {
+    for (let prop of props) {
+      if (prop.idleTimeout) {
+        if (prop.idleTimeout > Duration.seconds(4000) || prop.idleTimeout < Duration.seconds(1)) {
+          throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
+        }
+      }
+    }
+
+  }
+
+  private createLoadBalancer(name: string, publicLoadBalancer?: boolean, idleTimeout?: Duration): ApplicationLoadBalancer {
     const internetFacing = publicLoadBalancer ?? true;
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,
+      idleTimeout: idleTimeout,
     };
 
     return new ApplicationLoadBalancer(this, name, lbProps);

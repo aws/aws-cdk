@@ -103,6 +103,19 @@ test('can have multiple principals the same conditions in the same statement', (
   }));
 });
 
+test('use federated principal', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const principal = new iam.FederatedPrincipal('federated');
+
+  // THEN
+  expect(stack.resolve(principal.federated)).toStrictEqual('federated');
+  expect(stack.resolve(principal.assumeRoleAction)).toStrictEqual('sts:AssumeRole');
+  expect(stack.resolve(principal.conditions)).toStrictEqual({});
+});
+
 test('use Web Identity principal', () => {
   // GIVEN
   const stack = new Stack();
@@ -292,6 +305,20 @@ test('AccountPrincipal can specify an organization', () => {
     ],
     Version: '2012-10-17',
   });
+});
+
+test('ServicePrincipalName returns just a string representing the principal', () => {
+  // GIVEN
+  const usEastStack = new Stack(undefined, undefined, { env: { region: 'us-east-1' } });
+  const afSouthStack = new Stack(undefined, undefined, { env: { region: 'af-south-1' } });
+  const principalName = iam.ServicePrincipal.servicePrincipalName('ssm.amazonaws.com');
+
+  expect(usEastStack.resolve(principalName)).toEqual('ssm.amazonaws.com');
+  expect(afSouthStack.resolve(principalName)).toEqual('ssm.af-south-1.amazonaws.com');
+});
+
+test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
+  expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
 });
 
 test('ServicePrincipal in agnostic stack generates lookup table', () => {

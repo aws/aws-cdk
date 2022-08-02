@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-eks/test/integ.fargate-cluster": {
+    "integ.fargate-cluster": {
       "stacks": [
         "aws-cdk-eks-fargate-cluster-test"
       ],

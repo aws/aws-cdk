@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function error {
-  printf "\e[91;5;81m$@\e[0m\n"
+  printf "\e[91m$@\e[0m\n"
 }
 
 function usage {
@@ -21,7 +21,7 @@ elif [[ "$1" == "--check" ]]; then
     exit 1
   fi
   echo THIS TEST SHOULD PRODUCE A LIST OF BOOKS
-  curl -XPOST -H "Content-Type:application/graphql" -H "x-api-key:$2" -d '{ "query": "query { allPosts { id author title relatedPosts { id title } } }" }" }' $3 | json_pp
+  curl -XPOST -H "Content-Type:application/graphql" -H "x-api-key:$2" -d '{ "query": "query { allPosts { id author title relatedPosts { id title } relatedPostsMaxBatchSize { id title } } }" }" }' $3 | json_pp
   echo ""
 elif [[ "$1" == "--clean" ]];then
   cdk destroy --app "node integ.appsync-lambda.js"

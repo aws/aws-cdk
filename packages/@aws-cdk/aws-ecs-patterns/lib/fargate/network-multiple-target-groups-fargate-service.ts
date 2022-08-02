@@ -1,5 +1,6 @@
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { FeatureFlags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import {
@@ -133,9 +134,11 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
-        logging: this.logDriver,
+        cpu: props.cpu,
+        memoryLimitMiB: props.memoryLimitMiB,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
+        logging: this.logDriver,
         dockerLabels: taskImageOptions.dockerLabels,
       });
       if (taskImageOptions.containerPorts) {
@@ -170,7 +173,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
   }
 
   private createFargateService(props: NetworkMultipleTargetGroupsFargateServiceProps): FargateService {
-    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
 
     return new FargateService(this, 'Service', {
       cluster: this.cluster,
@@ -183,6 +186,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
+      enableExecuteCommand: props.enableExecuteCommand,
     });
   }
 }

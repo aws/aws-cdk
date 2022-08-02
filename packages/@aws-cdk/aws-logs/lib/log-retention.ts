@@ -2,16 +2,9 @@ import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
+import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { RetentionDays } from './log-group';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { ArnFormat } from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Construction properties for a LogRetention.
@@ -73,7 +66,7 @@ export interface LogRetentionRetryOptions {
  * Log group can be created in the region that is different from stack region by
  * specifying `logGroupRegion`
  */
-export class LogRetention extends CoreConstruct {
+export class LogRetention extends Construct {
 
   /**
    * The ARN of the LogGroup.
@@ -132,7 +125,7 @@ export class LogRetention extends CoreConstruct {
 /**
  * Private provider Lambda function to support the log retention custom resource.
  */
-class LogRetentionFunction extends CoreConstruct implements cdk.ITaggable {
+class LogRetentionFunction extends Construct implements cdk.ITaggable {
   public readonly functionArn: cdk.Reference;
 
   public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Lambda::Function');
@@ -182,7 +175,7 @@ class LogRetentionFunction extends CoreConstruct implements cdk.ITaggable {
       if (cdk.CfnResource.isCfnResource(child)) {
         resource.addDependsOn(child);
       }
-      if (cdk.Construct.isConstruct(child) && child.node.defaultChild && cdk.CfnResource.isCfnResource(child.node.defaultChild)) {
+      if (Construct.isConstruct(child) && child.node.defaultChild && cdk.CfnResource.isCfnResource(child.node.defaultChild)) {
         resource.addDependsOn(child.node.defaultChild);
       }
     });

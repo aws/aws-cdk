@@ -18,7 +18,12 @@
       }
      }
     },
-    "InstanceConfiguration": {}
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    }
    }
   },
   "Service5AD92B5A5": {
@@ -45,7 +50,12 @@
       }
      }
     },
-    "InstanceConfiguration": {}
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    }
    }
   }
  },
