@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { FileSystem } from '@aws-cdk/core';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { FileSystem } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 /**

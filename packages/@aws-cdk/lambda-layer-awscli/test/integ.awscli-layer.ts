@@ -1,7 +1,7 @@
 import * as path from 'path';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
-import * as cr from '@aws-cdk/custom-resources';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cdk from 'aws-cdk-lib/core';
+import * as cr from 'aws-cdk-lib/custom-resources';
 
 import { AwsCliLayer } from '../lib';
 

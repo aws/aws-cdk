@@ -77,18 +77,16 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.0.0",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -103,12 +101,12 @@
     "pre": [
       "layer/build.sh"
     ],
+    "eslint": {
+      "disable": true
+    },
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
-  },
-  "ubergen": {
-    "exclude": false
   },
   "nozem": {
     "ostools": [
@@ -118,6 +116,5 @@
   },
   "publishConfig": {
     "tag": "latest"
-  },
-  "private": true
+  }
 }

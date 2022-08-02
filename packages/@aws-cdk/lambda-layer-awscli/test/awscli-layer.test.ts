@@ -1,5 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
-import { Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Stack } from 'aws-cdk-lib/core';
 import { AwsCliLayer } from '../lib';
 
 test('synthesized to a layer version', () => {
