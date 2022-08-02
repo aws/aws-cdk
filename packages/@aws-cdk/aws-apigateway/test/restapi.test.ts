@@ -1205,7 +1205,6 @@ describe('restapi', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(
         'AWS::ApiGateway::RestApi', {});
-      });
     });
   });
 });
