@@ -390,8 +390,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   public readonly listener: ApplicationListener;
 
   /**
-    * The cluster that hosts the service.
-    */
+   * The cluster that hosts the service.
+   */
   public readonly cluster: ICluster;
 
   protected logDriver?: LogDriver;
