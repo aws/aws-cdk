@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.58"
         }
       },
       "cdk-integ-opensearch-vpc": {
@@ -711,9 +711,6 @@
                       "zoneAwarenessConfig": {
                         "availabilityZoneCount": 2
                       }
-                    },
-                    "cognitoOptions": {
-                      "enabled": false
                     },
                     "domainEndpointOptions": {
                       "enforceHttps": false,
