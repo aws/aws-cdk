@@ -105,7 +105,7 @@ it appropriate permissions:
 
 ```ts
 const myRole = new iam.Role(this, 'My Role', {
-  assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 
 const fn = new lambda.Function(this, 'MyFunction', {
