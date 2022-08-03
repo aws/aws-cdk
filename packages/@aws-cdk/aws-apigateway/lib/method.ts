@@ -1,5 +1,7 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { ArnFormat, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
 import { Integration, IntegrationConfig } from './integration';
@@ -9,6 +11,7 @@ import { IModel } from './model';
 import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
 import { IRestApi, RestApi, RestApiBase } from './restapi';
+import { IStage } from './stage';
 import { validateHttpMethod } from './util';
 
 export interface MethodOptions {
@@ -363,6 +366,100 @@ export class Method extends Resource {
 
     // For backward compatibility
     return options.requestValidator?.requestValidatorId;
+  }
+
+  /**
+   * Returns the given named metric for this API method
+   */
+  public metric(metricName: string, stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ApiGateway',
+      metricName,
+      dimensionsMap: { ApiName: this.api.restApiName, Method: this.httpMethod, Resource: this.resource.path, Stage: stage.stageName },
+      ...props,
+    }).attachTo(this);
+  }
+
+  /**
+   * Metric for the number of client-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricClientError(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics._4XxErrorSum, stage, props);
+  }
+
+  /**
+   * Metric for the number of server-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricServerError(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics._5XxErrorSum, stage, props);
+  }
+
+  /**
+   * Metric for the number of requests served from the API cache in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricCacheHitCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.cacheHitCountSum, stage, props);
+  }
+
+  /**
+   * Metric for the number of requests served from the backend in a given period,
+   * when API caching is enabled.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricCacheMissCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.cacheMissCountSum, stage, props);
+  }
+
+  /**
+   * Metric for the total number API requests in a given period.
+   *
+   * @default - sample count over 5 minutes
+   */
+  public metricCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.countSum, stage, {
+      statistic: 'SampleCount',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the time between when API Gateway relays a request to the backend
+   * and when it receives a response from the backend.
+   *
+   * @default - average over 5 minutes.
+   */
+  public metricIntegrationLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.integrationLatencyAverage, stage, props);
+  }
+
+  /**
+   * The time between when API Gateway receives a request from a client
+   * and when it returns a response to the client.
+   * The latency includes the integration latency and other API Gateway overhead.
+   *
+   * @default - average over 5 minutes.
+   */
+  public metricLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.latencyAverage, stage, props);
+  }
+
+  private cannedMetric(fn: (dims: {
+    ApiName: string;
+    Method: string;
+    Resource: string;
+    Stage: string;
+  }) => cloudwatch.MetricProps, stage: IStage, props?: cloudwatch.MetricOptions) {
+    return new cloudwatch.Metric({
+      ...fn({ ApiName: this.api.restApiName, Method: this.httpMethod, Resource: this.resource.path, Stage: stage.stageName }),
+      ...props,
+    }).attachTo(this);
   }
 }
 
