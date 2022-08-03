@@ -1,0 +1,1981 @@
+{
+ "Resources": {
+  "vpcA2121C38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet1Subnet2E65531E": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet1RouteTable48A2DF9B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet1RouteTableAssociation5D3F4579": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet1Subnet2E65531E"
+    }
+   }
+  },
+  "vpcPublicSubnet1DefaultRoute10708846": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "vpcIGWE57CBDCA"
+    }
+   },
+   "DependsOn": [
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "vpcPublicSubnet1EIPDA49DCBE": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet1NATGateway9C16659E": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet1Subnet2E65531E"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "vpcPublicSubnet1EIPDA49DCBE",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet2Subnet009B674F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet2RouteTableEB40D4CB": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet2RouteTableAssociation21F81B59": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet2Subnet009B674F"
+    }
+   }
+  },
+  "vpcPublicSubnet2DefaultRouteA1EC0F60": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "vpcIGWE57CBDCA"
+    }
+   },
+   "DependsOn": [
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "vpcPublicSubnet2EIP9B3743B1": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet2NATGateway9B8AE11A": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet2Subnet009B674F"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "vpcPublicSubnet2EIP9B3743B1",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "vpcPrivateSubnet1Subnet934893E8": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPrivateSubnet1RouteTableB41A48CC": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPrivateSubnet1RouteTableAssociation67945127": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
+    },
+    "SubnetId": {
+     "Ref": "vpcPrivateSubnet1Subnet934893E8"
+    }
+   }
+  },
+  "vpcPrivateSubnet1DefaultRoute1AA8E2E5": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "vpcPublicSubnet1NATGateway9C16659E"
+    }
+   }
+  },
+  "vpcPrivateSubnet2Subnet7031C2BA": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "vpcPrivateSubnet2RouteTable7280F23E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "vpcPrivateSubnet2RouteTableAssociation007E94D3": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
+    },
+    "SubnetId": {
+     "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+    }
+   }
+  },
+  "vpcPrivateSubnet2DefaultRouteB0E07F99": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "vpcPublicSubnet2NATGateway9B8AE11A"
+    }
+   }
+  },
+  "vpcIGWE57CBDCA": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/vpc"
+     }
+    ]
+   }
+  },
+  "vpcVPCGW7984C166": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "InternetGatewayId": {
+     "Ref": "vpcIGWE57CBDCA"
+    }
+   }
+  },
+  "EFSF3301CFD": {
+   "Type": "AWS::EFS::FileSystem",
+   "Properties": {
+    "Encrypted": true,
+    "FileSystemTags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/EFS"
+     }
+    ],
+    "PerformanceMode": "generalPurpose"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EFSEfsSecurityGroup56F189CE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "batch-stack/EFS/EfsSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/EFS"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "EFSEfsSecurityGroupfrombatchstackbatchdemandcomputeenvlaunchtemplateResourceSecurityGroup0D1298652049B175033E": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "from batchstackbatchdemandcomputeenvlaunchtemplateResourceSecurityGroup0D129865:2049",
+    "FromPort": 2049,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "EFSEfsSecurityGroup56F189CE",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "batchdemandcomputeenvlaunchtemplateResourceSecurityGroup23599B84",
+      "GroupId"
+     ]
+    },
+    "ToPort": 2049
+   }
+  },
+  "EFSEfsSecurityGroupfrombatchstackbatchspotcomputeenvResourceSecurityGroup729D2DBD2049CEAD960B": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "from batchstackbatchspotcomputeenvResourceSecurityGroup729D2DBD:2049",
+    "FromPort": 2049,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "EFSEfsSecurityGroup56F189CE",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "batchspotcomputeenvResourceSecurityGroup07B09BF9",
+      "GroupId"
+     ]
+    },
+    "ToPort": 2049
+   }
+  },
+  "EFSEfsSecurityGroupfrombatchstackbatchdemandcomputeenvlaunchtemplate2ResourceSecurityGroup3ED06424204916919BCC": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "from batchstackbatchdemandcomputeenvlaunchtemplate2ResourceSecurityGroup3ED06424:2049",
+    "FromPort": 2049,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "EFSEfsSecurityGroup56F189CE",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "batchdemandcomputeenvlaunchtemplate2ResourceSecurityGroupBEA8DDD5",
+      "GroupId"
+     ]
+    },
+    "ToPort": 2049
+   }
+  },
+  "EFSEfsSecurityGroupfrombatchstackbatchfargatecomputeenvResourceSecurityGroup32BE704C2049F5D69397": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "from batchstackbatchfargatecomputeenvResourceSecurityGroup32BE704C:2049",
+    "FromPort": 2049,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "EFSEfsSecurityGroup56F189CE",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "batchfargatecomputeenvResourceSecurityGroupE2963776",
+      "GroupId"
+     ]
+    },
+    "ToPort": 2049
+   }
+  },
+  "EFSEfsSecurityGroupfrombatchstackbatchfargatespotcomputeenvResourceSecurityGroup86E388C12049304E0F7C": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "from batchstackbatchfargatespotcomputeenvResourceSecurityGroup86E388C1:2049",
+    "FromPort": 2049,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "EFSEfsSecurityGroup56F189CE",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "batchfargatespotcomputeenvResourceSecurityGroup923D2390",
+      "GroupId"
+     ]
+    },
+    "ToPort": 2049
+   }
+  },
+  "EFSEfsMountTarget1674E914B": {
+   "Type": "AWS::EFS::MountTarget",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "EFSF3301CFD"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "EFSEfsSecurityGroup56F189CE",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "vpcPrivateSubnet1Subnet934893E8"
+    }
+   }
+  },
+  "EFSEfsMountTarget2A889DFBF": {
+   "Type": "AWS::EFS::MountTarget",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "EFSF3301CFD"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "EFSEfsSecurityGroup56F189CE",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+    }
+   }
+  },
+  "EFSAccessPointA847C4A5": {
+   "Type": "AWS::EFS::AccessPoint",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "EFSF3301CFD"
+    },
+    "PosixUser": {
+     "Gid": "1000",
+     "Uid": "1000"
+    },
+    "RootDirectory": {
+     "CreationInfo": {
+      "OwnerGid": "1000",
+      "OwnerUid": "1000",
+      "Permissions": "750"
+     }
+    }
+   }
+  },
+  "DefaultJobRole72A01394": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "DefaultJobRoleDefaultPolicyDA586FA5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "elasticfilesystem:ClientRead",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "EFSF3301CFD",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "batchjobrepo4C508C51",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DefaultJobRoleDefaultPolicyDA586FA5",
+    "Roles": [
+     {
+      "Ref": "DefaultJobRole72A01394"
+     }
+    ]
+   }
+  },
+  "ec2launchtemplate": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "BlockDeviceMappings": [
+      {
+       "DeviceName": "/dev/xvdcz",
+       "Ebs": {
+        "Encrypted": true,
+        "VolumeSize": 100,
+        "VolumeType": "gp2"
+       }
+      }
+     ]
+    },
+    "LaunchTemplateName": "EC2LaunchTemplate"
+   }
+  },
+  "batchdemandcomputeenvlaunchtemplateResourceSecurityGroup23599B84": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "batch-stack/batch-demand-compute-env-launch-template/Resource-Security-Group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchdemandcomputeenvlaunchtemplateEcsInstanceRole24D4E799": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": {
+         "Fn::Join": [
+          "",
+          [
+           "ec2.",
+           {
+            "Ref": "AWS::URLSuffix"
+           }
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchdemandcomputeenvlaunchtemplateInstanceProfile2DEC3A97": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "batchdemandcomputeenvlaunchtemplateEcsInstanceRole24D4E799"
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchdemandcomputeenvlaunchtemplateResourceServiceInstanceRole76AD99CC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "batch.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSBatchServiceRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchdemandcomputeenvlaunchtemplateF8A5B233": {
+   "Type": "AWS::Batch::ComputeEnvironment",
+   "Properties": {
+    "Type": "MANAGED",
+    "ComputeResources": {
+     "AllocationStrategy": "BEST_FIT",
+     "InstanceRole": {
+      "Fn::GetAtt": [
+       "batchdemandcomputeenvlaunchtemplateInstanceProfile2DEC3A97",
+       "Arn"
+      ]
+     },
+     "InstanceTypes": [
+      "optimal"
+     ],
+     "LaunchTemplate": {
+      "LaunchTemplateName": "EC2LaunchTemplate"
+     },
+     "MaxvCpus": 256,
+     "MinvCpus": 0,
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "batchdemandcomputeenvlaunchtemplateResourceSecurityGroup23599B84",
+        "GroupId"
+       ]
+      }
+     ],
+     "Subnets": [
+      {
+       "Ref": "vpcPrivateSubnet1Subnet934893E8"
+      },
+      {
+       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+      }
+     ],
+     "Tags": {
+      "compute-env-tag": "123XYZ"
+     },
+     "Type": "EC2"
+    },
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "batchdemandcomputeenvlaunchtemplateResourceServiceInstanceRole76AD99CC",
+      "Arn"
+     ]
+    },
+    "State": "ENABLED"
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchspotcomputeenvResourceSecurityGroup07B09BF9": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "batch-stack/batch-spot-compute-env/Resource-Security-Group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchspotcomputeenvEcsInstanceRoleE976826B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": {
+         "Fn::Join": [
+          "",
+          [
+           "ec2.",
+           {
+            "Ref": "AWS::URLSuffix"
+           }
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchspotcomputeenvInstanceProfileFA613AC2": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "batchspotcomputeenvEcsInstanceRoleE976826B"
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchspotcomputeenvResourceServiceInstanceRole8B0DF5A7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "batch.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSBatchServiceRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchspotcomputeenv2CE4DFD9": {
+   "Type": "AWS::Batch::ComputeEnvironment",
+   "Properties": {
+    "Type": "MANAGED",
+    "ComputeResources": {
+     "AllocationStrategy": "SPOT_CAPACITY_OPTIMIZED",
+     "BidPercentage": 80,
+     "InstanceRole": {
+      "Fn::GetAtt": [
+       "batchspotcomputeenvInstanceProfileFA613AC2",
+       "Arn"
+      ]
+     },
+     "InstanceTypes": [
+      "optimal"
+     ],
+     "MaxvCpus": 256,
+     "MinvCpus": 0,
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "batchspotcomputeenvResourceSecurityGroup07B09BF9",
+        "GroupId"
+       ]
+      }
+     ],
+     "SpotIamFleetRole": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet"
+       ]
+      ]
+     },
+     "Subnets": [
+      {
+       "Ref": "vpcPrivateSubnet1Subnet934893E8"
+      },
+      {
+       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+      }
+     ],
+     "Type": "SPOT"
+    },
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "batchspotcomputeenvResourceServiceInstanceRole8B0DF5A7",
+      "Arn"
+     ]
+    },
+    "State": "ENABLED"
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchdemandcomputeenvlaunchtemplate2ResourceSecurityGroupBEA8DDD5": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "batch-stack/batch-demand-compute-env-launch-template-2/Resource-Security-Group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchdemandcomputeenvlaunchtemplate2EcsInstanceRoleEE146754": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": {
+         "Fn::Join": [
+          "",
+          [
+           "ec2.",
+           {
+            "Ref": "AWS::URLSuffix"
+           }
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchdemandcomputeenvlaunchtemplate2InstanceProfileC5A36CBC": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "batchdemandcomputeenvlaunchtemplate2EcsInstanceRoleEE146754"
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchdemandcomputeenvlaunchtemplate2ResourceServiceInstanceRole41CADAC1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "batch.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSBatchServiceRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchdemandcomputeenvlaunchtemplate2E12D5CBC": {
+   "Type": "AWS::Batch::ComputeEnvironment",
+   "Properties": {
+    "Type": "MANAGED",
+    "ComputeResources": {
+     "AllocationStrategy": "BEST_FIT",
+     "InstanceRole": {
+      "Fn::GetAtt": [
+       "batchdemandcomputeenvlaunchtemplate2InstanceProfileC5A36CBC",
+       "Arn"
+      ]
+     },
+     "InstanceTypes": [
+      "optimal"
+     ],
+     "LaunchTemplate": {
+      "LaunchTemplateId": {
+       "Ref": "ec2launchtemplate"
+      }
+     },
+     "MaxvCpus": 256,
+     "MinvCpus": 0,
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "batchdemandcomputeenvlaunchtemplate2ResourceSecurityGroupBEA8DDD5",
+        "GroupId"
+       ]
+      }
+     ],
+     "Subnets": [
+      {
+       "Ref": "vpcPrivateSubnet1Subnet934893E8"
+      },
+      {
+       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+      }
+     ],
+     "Tags": {
+      "compute-env-tag": "123XYZ"
+     },
+     "Type": "EC2"
+    },
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "batchdemandcomputeenvlaunchtemplate2ResourceServiceInstanceRole41CADAC1",
+      "Arn"
+     ]
+    },
+    "State": "ENABLED"
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchjobqueueE3C528F2": {
+   "Type": "AWS::Batch::JobQueue",
+   "Properties": {
+    "ComputeEnvironmentOrder": [
+     {
+      "ComputeEnvironment": {
+       "Ref": "batchdemandcomputeenvlaunchtemplateF8A5B233"
+      },
+      "Order": 2
+     },
+     {
+      "ComputeEnvironment": {
+       "Ref": "batchspotcomputeenv2CE4DFD9"
+      },
+      "Order": 3
+     },
+     {
+      "ComputeEnvironment": {
+       "Ref": "batchdemandcomputeenvlaunchtemplate2E12D5CBC"
+      },
+      "Order": 4
+     }
+    ],
+    "Priority": 1,
+    "State": "ENABLED"
+   }
+  },
+  "batchfargatecomputeenvResourceSecurityGroupE2963776": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "batch-stack/batch-fargate-compute-env/Resource-Security-Group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchfargatecomputeenvResourceServiceInstanceRole94D7AA5F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "batch.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSBatchServiceRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchfargatecomputeenvE9C3FCA4": {
+   "Type": "AWS::Batch::ComputeEnvironment",
+   "Properties": {
+    "Type": "MANAGED",
+    "ComputeResources": {
+     "MaxvCpus": 256,
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "batchfargatecomputeenvResourceSecurityGroupE2963776",
+        "GroupId"
+       ]
+      }
+     ],
+     "Subnets": [
+      {
+       "Ref": "vpcPrivateSubnet1Subnet934893E8"
+      },
+      {
+       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+      }
+     ],
+     "Type": "FARGATE"
+    },
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "batchfargatecomputeenvResourceServiceInstanceRole94D7AA5F",
+      "Arn"
+     ]
+    },
+    "State": "ENABLED"
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchfargatespotcomputeenvResourceSecurityGroup923D2390": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "batch-stack/batch-fargate-spot-compute-env/Resource-Security-Group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchfargatespotcomputeenvResourceServiceInstanceRole6462BFB0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "batch.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSBatchServiceRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchfargatespotcomputeenv374749B0": {
+   "Type": "AWS::Batch::ComputeEnvironment",
+   "Properties": {
+    "Type": "MANAGED",
+    "ComputeResources": {
+     "MaxvCpus": 256,
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "batchfargatespotcomputeenvResourceSecurityGroup923D2390",
+        "GroupId"
+       ]
+      }
+     ],
+     "Subnets": [
+      {
+       "Ref": "vpcPrivateSubnet1Subnet934893E8"
+      },
+      {
+       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+      }
+     ],
+     "Type": "FARGATE_SPOT"
+    },
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "batchfargatespotcomputeenvResourceServiceInstanceRole6462BFB0",
+      "Arn"
+     ]
+    },
+    "State": "ENABLED"
+   },
+   "DependsOn": [
+    "vpcIGWE57CBDCA",
+    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
+    "vpcPrivateSubnet1RouteTableB41A48CC",
+    "vpcPrivateSubnet1RouteTableAssociation67945127",
+    "vpcPrivateSubnet1Subnet934893E8",
+    "vpcPrivateSubnet2DefaultRouteB0E07F99",
+    "vpcPrivateSubnet2RouteTable7280F23E",
+    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
+    "vpcPrivateSubnet2Subnet7031C2BA",
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1EIPDA49DCBE",
+    "vpcPublicSubnet1NATGateway9C16659E",
+    "vpcPublicSubnet1RouteTable48A2DF9B",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
+    "vpcPublicSubnet1Subnet2E65531E",
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2EIP9B3743B1",
+    "vpcPublicSubnet2NATGateway9B8AE11A",
+    "vpcPublicSubnet2RouteTableEB40D4CB",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59",
+    "vpcPublicSubnet2Subnet009B674F",
+    "vpcA2121C38",
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "batchjobfargatequeue5A12983E": {
+   "Type": "AWS::Batch::JobQueue",
+   "Properties": {
+    "ComputeEnvironmentOrder": [
+     {
+      "ComputeEnvironment": {
+       "Ref": "batchfargatecomputeenvE9C3FCA4"
+      },
+      "Order": 1
+     },
+     {
+      "ComputeEnvironment": {
+       "Ref": "batchfargatespotcomputeenv374749B0"
+      },
+      "Order": 2
+     }
+    ],
+    "Priority": 1,
+    "State": "ENABLED"
+   }
+  },
+  "batchjobrepo4C508C51": {
+   "Type": "AWS::ECR::Repository",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "batchjobdeffromecrE0E30DAD": {
+   "Type": "AWS::Batch::JobDefinition",
+   "Properties": {
+    "Type": "container",
+    "ContainerProperties": {
+     "Environment": [
+      {
+       "Name": "AWS_REGION",
+       "Value": {
+        "Ref": "AWS::Region"
+       }
+      },
+      {
+       "Name": "AWS_ACCOUNT",
+       "Value": {
+        "Ref": "AWS::AccountId"
+       }
+      }
+     ],
+     "Image": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          4,
+          {
+           "Fn::Split": [
+            ":",
+            {
+             "Fn::GetAtt": [
+              "batchjobrepo4C508C51",
+              "Arn"
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        ".dkr.ecr.",
+        {
+         "Fn::Select": [
+          3,
+          {
+           "Fn::Split": [
+            ":",
+            {
+             "Fn::GetAtt": [
+              "batchjobrepo4C508C51",
+              "Arn"
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        ".",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/",
+        {
+         "Ref": "batchjobrepo4C508C51"
+        },
+        ":latest"
+       ]
+      ]
+     },
+     "JobRoleArn": {
+      "Fn::GetAtt": [
+       "DefaultJobRole72A01394",
+       "Arn"
+      ]
+     },
+     "MountPoints": [
+      {
+       "ContainerPath": "/mnt",
+       "ReadOnly": true,
+       "SourceVolume": "batchstackEFS25FF7B1E"
+      }
+     ],
+     "Privileged": false,
+     "ReadonlyRootFilesystem": false,
+     "ResourceRequirements": [
+      {
+       "Type": "VCPU",
+       "Value": "1"
+      },
+      {
+       "Type": "MEMORY",
+       "Value": "4"
+      }
+     ],
+     "Volumes": [
+      {
+       "EfsVolumeConfiguration": {
+        "AuthorizationConfig": {
+         "AccessPointId": {
+          "Ref": "EFSAccessPointA847C4A5"
+         },
+         "Iam": "ENABLED"
+        },
+        "FileSystemId": {
+         "Ref": "EFSF3301CFD"
+        },
+        "TransitEncryption": "ENABLED"
+       },
+       "Name": "batchstackEFS25FF7B1E"
+      }
+     ]
+    },
+    "PlatformCapabilities": [
+     "EC2"
+    ],
+    "RetryStrategy": {
+     "Attempts": 1
+    },
+    "Timeout": {}
+   }
+  }
+ }
+}
