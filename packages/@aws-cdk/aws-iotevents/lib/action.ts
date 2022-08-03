@@ -20,7 +20,7 @@ export interface IAction {
    * Returns the AWS IoT Events action specification.
    * @internal
    */
-  public _bind(scope: Construct, options: ActionBindOptions): ActionConfig;
+  _bind(scope: Construct, options: ActionBindOptions): ActionConfig;
 }
 
 /**
