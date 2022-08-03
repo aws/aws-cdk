@@ -385,9 +385,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
 
   /**
     * The default listener for the service (first added listener).
-    *
-    * @deprecated - Use `listeners` instead.
-    */
+   * @deprecated - Use `listeners` instead.
+   */
   public readonly listener: ApplicationListener;
 
   /**
