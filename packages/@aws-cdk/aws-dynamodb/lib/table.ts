@@ -987,6 +987,7 @@ abstract class TableBase extends Resource implements ITable {
    * @param grantee The principal (no-op if undefined)
    * @param opts Options for keyActions, tableActions and streamActions
    */
+  //use the specific indexes to format Arn name of resources
   private combinedGrant(
     grantee: iam.IGrantable,
     opts: { keyActions?: string[], tableActions?: string[], streamActions?: string[] },
@@ -1089,6 +1090,7 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
+      //change hasIndex to a string array which contains specific indexes
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
