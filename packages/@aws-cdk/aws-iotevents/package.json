@@ -103,6 +103,12 @@
   "engines": {
     "node": ">= 14.15.0"
   },
+  "awslint": {
+    "exclude": [
+      "no-unused-type:@aws-cdk/aws-iotevents.ActionBindOptions",
+      "no-unused-type:@aws-cdk/aws-iotevents.ActionConfig"
+    ]
+  },
   "stability": "experimental",
   "maturity": "experimental",
   "awscdkio": {
