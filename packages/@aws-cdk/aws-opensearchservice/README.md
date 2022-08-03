@@ -378,3 +378,22 @@ new opensearch.Domain(this, 'Domain', {
   },
 });
 ```
+
+## Amazon Cognito authentication for OpenSearch Dashboards
+
+The domain can be configured to use Amazon Cognito authentication for OpenSearch Dashboards.
+
+> Visit [Configuring Amazon Cognito authentication for OpenSearch Dashboards](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cognito-auth.html) for more details.
+
+```ts
+declare const cognitoConfigurationRole: iam.Role;
+
+const domain = new opensearch.Domain(this, 'Domain', {
+  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+  cognitoDashboardsAuth: {
+    role: cognitoConfigurationRole,
+    identityPoolId: 'example-identity-pool-id',
+    userPoolId: 'example-user-pool-id',
+  },
+});
+```
