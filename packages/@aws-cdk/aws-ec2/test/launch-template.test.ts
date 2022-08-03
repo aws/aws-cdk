@@ -722,4 +722,22 @@ describe('LaunchTemplate marketOptions', () => {
       },
     });
   });
+
+  test('Requires licenseSpecifications', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      licenseSpecification: [{
+        licenseConfigurationArn: 'arn:aws:license-manager:us-east-1:123456789:license-configuration:lic-1234567890abcdef',
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        LicenseSpecifications: [
+          { LicenseConfigurationArn: 'arn:aws:license-manager:us-east-1:123456789:license-configuration:lic-1234567890abcdef' },
+        ],
+      },
+    });
+  });
 });

@@ -69,6 +69,17 @@ export enum InstanceInitiatedShutdownBehavior {
 };
 
 /**
+* Provide object for license specification
+* @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-licensespecifications
+*/
+
+export interface ILicenseSpecifications {
+
+  /** the amazon resource name of the license configuration that should be applied*/
+  licenseConfigurationArn: string;
+}
+
+/**
  * Interface for LaunchTemplate-like objects.
  */
 export interface ILaunchTemplate extends IResource {
@@ -341,6 +352,14 @@ export interface LaunchTemplateProps {
    * @default - false
    */
   readonly requireImdsv2?: boolean;
+
+  /**
+   * what kind of license specification should be applied to the instances
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-licensespecifications
+   *
+   * @default undefined - be default this setting will be undefined and therefore no license will be attached to the instances
+   */
+  readonly licenseSpecification?: ILicenseSpecifications[]
 }
 
 /**
@@ -611,6 +630,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         instanceInitiatedShutdownBehavior: props?.instanceInitiatedShutdownBehavior,
         instanceMarketOptions: marketOptions,
         keyName: props?.keyName,
+        licenseSpecifications: props?.licenseSpecification,
         monitoring: props?.detailedMonitoring !== undefined ? {
           enabled: props.detailedMonitoring,
         } : undefined,
@@ -636,10 +656,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-kernelid
         // kernelId: undefined,
         // ramDiskId: undefined,
-
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-licensespecifications
-        // Also not implemented in Instance L2
-        // licenseSpecifications: undefined,
 
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions
         // metadataOptions: undefined,
