@@ -77,6 +77,8 @@ const demoTable = new dynamodb.Table(this, 'DemoTable', {
 const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 
 // Resolver for the Query "getDemos" that scans the DynamoDb table and returns the entire list.
+// Resolver Mapping Template Reference:
+// https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-dynamodb.html
 demoDS.createResolver({
   typeName: 'Query',
   fieldName: 'getDemos',
@@ -94,7 +96,17 @@ demoDS.createResolver({
   ),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
+
+//To enable DynamoDB read consistency with the `MappingTemplate`:
+demoDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getDemosConsistent',
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(true),
+  responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
+});
 ```
+
+
 
 ### Aurora Serverless
 
@@ -252,7 +264,7 @@ import * as opensearch from '@aws-cdk/aws-opensearchservice';
 
 const user = new iam.User(this, 'User');
 const domain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_2,
+  version: opensearch.EngineVersion.OPENSEARCH_1_3,
   removalPolicy: RemovalPolicy.DESTROY,
   fineGrainedAccessControl: { masterUserArn: user.userArn },
   encryptionAtRest: { enabled: true },

@@ -2,7 +2,7 @@ import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-c
 import { IVpc } from '@aws-cdk/aws-ec2';
 import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
-  ICluster, LogDriver, PropagatedTagSource, Secret,
+  ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
 } from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
@@ -12,6 +12,7 @@ import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 /**
@@ -249,6 +250,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly circuitBreaker?: DeploymentCircuitBreaker;
 
   /**
+   * A list of Capacity Provider strategies used to place a service.
+   *
+   * @default - undefined
+   *
+   */
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+  /**
    * Name of the load balancer
    *
    * @default - Automatically generated name.
@@ -261,6 +270,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - false
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * The load balancer idle timeout, in seconds
+   *
+   * @default - CloudFormation sets idle timeout to 60 seconds
+   */
+  readonly idleTimeout?: Duration;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -426,10 +442,17 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
 
     const internetFacing = props.publicLoadBalancer ?? true;
 
+    if (props.idleTimeout) {
+      if (props.idleTimeout > Duration.seconds(4000) || props.idleTimeout < Duration.seconds(1)) {
+        throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
+      }
+    }
+
     const lbProps = {
       vpc: this.cluster.vpc,
       loadBalancerName: props.loadBalancerName,
       internetFacing,
+      idleTimeout: props.idleTimeout,
     };
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
