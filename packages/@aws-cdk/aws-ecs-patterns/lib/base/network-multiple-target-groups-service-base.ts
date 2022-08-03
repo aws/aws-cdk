@@ -300,8 +300,8 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   public readonly listener: NetworkListener;
 
   /**
-    * The cluster that hosts the service.
-    */
+   * The cluster that hosts the service.
+   */
   public readonly cluster: ICluster;
 
   protected logDriver?: LogDriver;
