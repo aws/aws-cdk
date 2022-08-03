@@ -294,10 +294,9 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   public readonly loadBalancer: NetworkLoadBalancer;
 
   /**
-    * The listener for the service.
-    *
-    * @deprecated - Use `listeners` instead.
-    */
+   * The listener for the service.
+   * @deprecated - Use `listeners` instead.
+   */
   public readonly listener: NetworkListener;
 
   /**
