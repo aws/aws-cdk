@@ -19,14 +19,14 @@ export interface Environment {
   /**
    * The AWS region for this environment.
    *
-   * This can be either a concrete value such as `eu-west-2` or `Aws.Region`
+   * This can be either a concrete value such as `eu-west-2` or `Aws.REGION`
    * which indicates that account ID will only be determined during deployment
    * (it will resolve to the CloudFormation intrinsic `{"Ref":"AWS::Region"}`).
    * Note that certain features, such as cross-stack references and
    * environmental context providers require concrete region information and
    * will cause this stack to emit synthesis errors.
    *
-   * @default Aws.Region which means that the stack will be region-agnostic.
+   * @default Aws.REGION which means that the stack will be region-agnostic.
    */
   readonly region?: string;
 }
