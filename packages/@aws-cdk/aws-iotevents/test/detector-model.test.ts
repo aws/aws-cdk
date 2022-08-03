@@ -148,7 +148,7 @@ test('can set actions to events', () => {
         eventName: 'test-eventName1',
         condition: iotevents.Expression.currentInput(input),
         actions: [{
-          bind: () => ({
+          _bind: () => ({
             configuration: {
               lambda: {
                 functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
@@ -200,7 +200,7 @@ test.each([
 test('can set an action to multiple detector models', () => {
   // GIVEN an action
   const action: iotevents.IAction = {
-    bind: (_, { role }) => {
+    _bind: (_, { role }) => {
       role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['lambda:InvokeFunction'],
         resources: ['arn:aws:lambda:us-east-1:123456789012:function:MyFn'],
@@ -393,7 +393,7 @@ test('can set actions to transitions', () => {
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
       iotevents.Expression.fromString('12'),
     ),
-    executing: [{ bind: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
+    executing: [{ _bind: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
   });
 
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
