@@ -371,7 +371,6 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
 
   /**
    * The default Application Load Balancer for the service (first added load balancer).
-   *
    * @deprecated - Use `loadBalancers` instead.
    */
   public readonly loadBalancer: ApplicationLoadBalancer;
