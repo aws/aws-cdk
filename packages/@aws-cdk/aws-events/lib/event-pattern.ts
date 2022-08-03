@@ -191,11 +191,7 @@ export class Match implements IResolvable {
   }
 
   resolve(context: IResolveContext): any {
-    // Resolve each of the matchers first and then flatten the resulting list
-    const matchers = this.matchers
-      .map(matcher => context.resolve(matcher))
-      .flat();
-
+    const matchers = this.matchers.flatMap(matcher => context.resolve(matcher));
     return this.options.mergeMatchers ? this.merge(matchers) : matchers;
   }
 
@@ -208,7 +204,6 @@ export class Match implements IResolvable {
 
     return [{ numeric: matchers.flatMap(matcher => matcher.numeric) }];
   }
-
 
   toString(): string {
     return Token.asString(this);
