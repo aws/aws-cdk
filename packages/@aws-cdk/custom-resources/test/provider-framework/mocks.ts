@@ -20,6 +20,8 @@ export let isCompleteImplMock: AWSCDKAsyncCustomResource.IsCompleteHandler | und
 export let startStateMachineInput: AWS.StepFunctions.StartExecutionInput | undefined;
 export let cfnResponse: AWSLambda.CloudFormationCustomResourceResponse;
 
+let getFunctionInvokeCount: number;
+
 export function setup() {
   process.env[consts.WAITER_STATE_MACHINE_ARN_ENV] = MOCK_SFN_ARN;
 
@@ -28,6 +30,7 @@ export function setup() {
   isCompleteImplMock = undefined;
   cfnResponse = {} as any;
   startStateMachineInput = undefined;
+  getFunctionInvokeCount = -1;
 }
 
 export async function httpRequestMock(options: https.RequestOptions, body: string) {
@@ -79,9 +82,6 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
         }
         ret = await isCompleteImplMock(input as AWSCDKAsyncCustomResource.IsCompleteRequest);
         break;
-
-      case MOCK_INACTIVE_FUNCTION_ARN:
-        throw new Error('the lambda is inactive');
 
       default:
         throw new Error('unknown mock function');
@@ -139,16 +139,15 @@ export async function startExecutionMock(req: AWS.StepFunctions.StartExecutionIn
   };
 }
 
-let invokeCount = -1;
 export async function getFunctionMock(_req: AWS.Lambda.GetFunctionRequest): Promise<AWS.Lambda.GetFunctionResponse> {
-  invokeCount++;
-  if (invokeCount === 0) {
+  getFunctionInvokeCount++;
+  if (getFunctionInvokeCount === 0) {
     return {
       Configuration: {
         State: 'Inactive',
       },
     };
-  } else if (invokeCount === 1) {
+  } else if (getFunctionInvokeCount === 1) {
     return {
       Configuration: {
         State: 'Pending',

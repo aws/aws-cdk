@@ -349,18 +349,22 @@ describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
   });
 });
 
-test('foo', async () => {
+test('getFunction() is called only when user function is inactive, pending, and active', async () => {
   // GIVEN
+  const getFunctionSpy = jest.spyOn(outbound, 'getFunction');
+  mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+  mocks.isCompleteImplMock = async () => {
+    await outbound.invokeFunction({ FunctionName: mocks.MOCK_INACTIVE_FUNCTION_ARN, Payload: 'foo' });
+    return { IsComplete: true };
+  };
 
   // WHEN
-  await outbound.invokeFunction({
-    FunctionName: mocks.MOCK_INACTIVE_FUNCTION_ARN,
+  await simulateEvent({
+    RequestType: 'Create',
   });
 
   // THEN
-  // expect the mocked user function to have been called twice (once after getting inactive, and once after getting active)
-  // no errors ofc
-
+  expect(getFunctionSpy).toHaveBeenCalledTimes(3);
 });
 
 // -----------------------------------------------------------------------------------------------------------------------
