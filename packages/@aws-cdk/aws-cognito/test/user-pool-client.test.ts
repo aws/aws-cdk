@@ -60,6 +60,11 @@ describe('User Pool Client', () => {
 
       // Make sure getter returns the same secret regardless if it's called one or many times
       expect(clientWithSecret.userPoolClientSecret).toEqual(clientWithSecret.userPoolClientSecret);
+
+      // Make sure the generated template has correct Secret Generation flag
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        GenerateSecret: Match.exact(true),
+      });
     });
 
     test('explicitly disable secret generation', () => {
@@ -75,6 +80,11 @@ describe('User Pool Client', () => {
 
       // THEN
       expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if generateSecret is set to true./);
+
+      // Make sure the generated template has correct Secret Generation flag
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        GenerateSecret: Match.exact(false),
+      });
     });
 
     test('lacking secret configuration implicitly disables it', () => {
@@ -90,6 +100,11 @@ describe('User Pool Client', () => {
 
       // THEN
       expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if generateSecret is set to true./);
+
+      // Make sure the generated template has correct Secret Generation flag
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        GenerateSecret: Match.absent(),
+      });
     });
   });
 
