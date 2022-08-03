@@ -680,8 +680,6 @@ export class Function extends FunctionBase {
     if (props.vpc) {
       // Policy that will have ENI creation permissions
       managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
-    } else if (props.vpcSubnets) {
-      throw new Error("'vpc' must be specified with 'vpcSubnets' in order to place the Function's interfaces in a VPC");
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
@@ -1096,7 +1094,12 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
-    if (!props.vpc) { return undefined; }
+    if (!props.vpc) {
+      if (props.vpcSubnets) {
+        throw new Error("'vpc' must be specified with 'vpcSubnets' in order to place the Function's interfaces in a VPC");
+      }
+      return undefined;
+    }
 
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
       throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
