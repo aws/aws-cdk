@@ -54,7 +54,10 @@ export class IotEventsPutMessageAction implements iot.IAction {
     }
   }
 
-  bind(rule: iot.ITopicRule): iot.ActionConfig {
+  /**
+   * @internal
+   */
+  public _bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
     this.input.grantWrite(role);
 
