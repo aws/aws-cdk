@@ -561,7 +561,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * The ARN will be formatted as follows:
    *
-   *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
+   *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
    *
    * The required ARN pieces that are omitted will be taken from the stack that
    * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
@@ -1168,10 +1168,10 @@ export class Stack extends Construct implements ITaggable {
   public get bundlingRequired() {
     const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
 
-    // bundlingStacks is of the form `Stage/Stack`
+    // bundlingStacks is of the form `Stage/Stack`, convert it to `Stage-Stack` before comparing to stack name
     return bundlingStacks.some(pattern => minimatch(
-      this.node.path, // the same value used for pattern matching in aws-cdk CLI (displayName / hierarchicalId)
-      pattern,
+      this.stackName,
+      pattern.replace('/', '-'),
     ));
   }
 }

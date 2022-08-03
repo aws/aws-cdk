@@ -1,3 +1,85 @@
+# CloudFormation Resource Specification v81.1.0
+
+## New Resource Types
+
+* AWS::Evidently::Segment
+
+## Attribute Changes
+
+* AWS::ApiGateway::DocumentationPart DocumentationPartId (__added__)
+* AWS::IoT::Policy Id (__added__)
+
+## Property Changes
+
+* AWS::CloudWatch::CompositeAlarm ActionsSuppressor (__added__)
+* AWS::CloudWatch::CompositeAlarm ActionsSuppressorExtensionPeriod (__added__)
+* AWS::CloudWatch::CompositeAlarm ActionsSuppressorWaitPeriod (__added__)
+* AWS::EC2::Host InstanceFamily (__added__)
+* AWS::EC2::Host OutpostArn (__added__)
+* AWS::EC2::Host InstanceType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::VPCEndpointService ContributorInsightsEnabled (__added__)
+* AWS::GuardDuty::Detector Tags (__added__)
+* AWS::GuardDuty::Filter Tags (__added__)
+* AWS::GuardDuty::IPSet Tags (__added__)
+* AWS::GuardDuty::ThreatIntelSet Tags (__added__)
+* AWS::IoT::Policy PolicyDocument.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Location::GeofenceCollection KmsKeyId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Location::GeofenceCollection PricingPlanDataSource.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Location::Tracker PricingPlanDataSource.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSO::PermissionSet CustomerManagedPolicyReferences (__added__)
+* AWS::SSO::PermissionSet PermissionsBoundary (__added__)
+
+## Property Type Changes
+
+* AWS::SSO::PermissionSet.CustomerManagedPolicyReference (__added__)
+* AWS::SSO::PermissionSet.PermissionsBoundary (__added__)
+* AWS::Transfer::Server.As2Transport (__added__)
+* AWS::AppFlow::Flow.ScheduledTriggerProperties FirstExecutionFrom (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig DefaultCacheBehavior.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Transfer::Server.ProtocolDetails As2Transports (__added__)
+
+## Unapplied changes
+
+* AWS::ConnectCampaigns is at 0.0.0
+* AWS::Rekognition is at 68.0.0
+* AWS::RolesAnywhere is at 0.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v81.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Evidently::Experiment RemoveSegment (__added__)
+* AWS::Evidently::Experiment Segment (__added__)
+
+## Property Type Changes
+
+* AWS::Evidently::Launch.SegmentOverride (__added__)
+* AWS::Evidently::Launch.StepConfig SegmentOverrides (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
 # CloudFormation Resource Specification v80.0.0
 
 ## New Resource Types

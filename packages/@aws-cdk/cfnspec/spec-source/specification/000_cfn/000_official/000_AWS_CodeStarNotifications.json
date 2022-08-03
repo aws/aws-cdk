@@ -1,5 +1,5 @@
 {
-  "$version": "80.0.0",
+  "$version": "81.1.0",
   "PropertyTypes": {
     "AWS::CodeStarNotifications::NotificationRule.Target": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codestarnotifications-notificationrule-target.html",
