@@ -161,13 +161,43 @@ export interface SecretProps {
    * to the CloudFormation template (via the AWS Console, SDKs, or CLI).
    *
    * Specifies text data that you want to encrypt and store in this new version of the secret.
-   * May be a simple string value, or a string representation of a JSON structure.
+   * May be a simple string value. To provide a string representation of JSON structure, use {@link SecretProps.secretObjectValue} instead.
    *
-   * Only one of `secretStringBeta1`, `secretStringValue`, and `generateSecretString` can be provided.
+   * Only one of `secretStringBeta1`, `secretStringValue`, 'secretObjectValue', and `generateSecretString` can be provided.
    *
    * @default - SecretsManager generates a new secret value.
    */
   readonly secretStringValue?: SecretValue;
+
+  /**
+   * Initial value for a JSON secret
+   *
+   * **NOTE:** *It is **highly** encouraged to leave this field undefined and allow SecretsManager to create the secret value.
+   * The secret object -- if provided -- will be included in the output of the cdk as part of synthesis,
+   * and will appear in the CloudFormation template in the console. This can be secure(-ish) if that value is merely reference to
+   * another resource (or one of its attributes), but if the value is a plaintext string, it will be visible to anyone with access
+   * to the CloudFormation template (via the AWS Console, SDKs, or CLI).
+   *
+   * Specifies a JSON object that you want to encrypt and store in this new version of the secret.
+   * To specify a simple string value instead, use {@link SecretProps.secretStringValue}
+   *
+   * Only one of `secretStringBeta1`, `secretStringValue`, 'secretObjectValue', and `generateSecretString` can be provided.
+   *
+   * @example
+   * declare const user: iam.User;
+   * declare const accessKey: iam.AccessKey;
+   * declare const stack: Stack;
+   * new secretsmanager.Secret(stack, 'JSONSecret', {
+   *   secretObjectValue: {
+   *     username: SecretValue.unsafePlainText(user.userName), // intrinsic reference, not exposed as plaintext
+   *     database: SecretValue.unsafePlainText('foo'), // rendered as plain text, but not a secret
+   *     password: accessKey.secretAccessKey, // SecretValue
+   *   },
+   * });
+   *
+   * @default - SecretsManager generates a new secret value.
+   */
+  readonly secretObjectValue?: { [key: string]: SecretValue };
 
   /**
    * Policy to apply when the secret is removed from this stack.
@@ -233,7 +263,7 @@ export class SecretStringValueBeta1 {
    * // Creates a new IAM user, access and secret keys, and stores the secret access key in a Secret.
    * const user = new iam.User(this, 'User');
    * const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
-   * const secret = new secrets.Secret(this, 'Secret', {
+   * const secret = new secretsmanager.Secret(this, 'Secret', {
    * 	secretStringValue: accessKey.secretAccessKey,
    * });
    * ```
@@ -582,11 +612,17 @@ export class Secret extends SecretBase {
       throw new Error('`secretStringTemplate` and `generateStringKey` must be specified together.');
     }
 
-    if ((props.generateSecretString ? 1 : 0) + (props.secretStringBeta1 ? 1 : 0) + (props.secretStringValue ? 1 : 0) > 1) {
-      throw new Error('Cannot specify more than one of `generateSecretString`, `secretStringValue`, and `secretStringBeta1`.');
+    if ((props.generateSecretString ? 1 : 0)
+      + (props.secretStringBeta1 ? 1 : 0)
+      + (props.secretStringValue ? 1 : 0)
+      + (props.secretObjectValue ? 1 : 0)
+      > 1) {
+      throw new Error('Cannot specify more than one of `generateSecretString`, `secretStringValue`, `secretObjectValue`, and `secretStringBeta1`.');
     }
 
-    const secretString = props.secretStringValue?.unsafeUnwrap() ?? props.secretStringBeta1?.secretValue();
+    const secretString = props.secretObjectValue
+      ? this.resolveSecretObjectValue(props.secretObjectValue)
+      : props.secretStringValue?.unsafeUnwrap() ?? props.secretStringBeta1?.secretValue();
 
     const resource = new secretsmanager.CfnSecret(this, 'Resource', {
       description: props.description,
@@ -625,6 +661,14 @@ export class Secret extends SecretBase {
     }
 
     this.excludeCharacters = props.generateSecretString?.excludeCharacters;
+  }
+
+  private resolveSecretObjectValue(secretObject: { [key: string]: SecretValue }): string {
+    const resolvedObject: { [key: string]: string } = {};
+    for (const [key, value] of Object.entries(secretObject)) {
+      resolvedObject[key] = value.unsafeUnwrap();
+    }
+    return JSON.stringify(resolvedObject);
   }
 
   /**
@@ -684,7 +728,7 @@ export enum AttachmentTargetType {
    *
    * @deprecated use RDS_DB_INSTANCE instead
    */
-  INSTANCE = 'AWS::RDS::DBInstance',
+  INSTANCE = 'deprecated_AWS::RDS::DBInstance',
 
   /**
    * AWS::RDS::DBCluster
@@ -696,7 +740,7 @@ export enum AttachmentTargetType {
    *
    * @deprecated use RDS_DB_CLUSTER instead
    */
-  CLUSTER = 'AWS::RDS::DBCluster',
+  CLUSTER = 'deprecated_AWS::RDS::DBCluster',
 
   /**
    * AWS::RDS::DBProxy
@@ -797,7 +841,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     const attachment = new secretsmanager.CfnSecretTargetAttachment(this, 'Resource', {
       secretId: props.secret.secretArn,
       targetId: props.target.asSecretAttachmentTarget().targetId,
-      targetType: props.target.asSecretAttachmentTarget().targetType,
+      targetType: attachmentTargetTypeToString(props.target.asSecretAttachmentTarget().targetType),
     });
 
     this.encryptionKey = props.secret.encryptionKey;
@@ -950,3 +994,22 @@ Object.defineProperty(Secret.prototype, SECRET_SYMBOL, {
   enumerable: false,
   writable: false,
 });
+
+function attachmentTargetTypeToString(x: AttachmentTargetType): string {
+  switch (x) {
+    case AttachmentTargetType.RDS_DB_INSTANCE:
+    case AttachmentTargetType.INSTANCE:
+      return 'AWS::RDS::DBInstance';
+    case AttachmentTargetType.RDS_DB_CLUSTER:
+    case AttachmentTargetType.CLUSTER:
+      return 'AWS::RDS::DBCluster';
+    case AttachmentTargetType.RDS_DB_PROXY:
+      return 'AWS::RDS::DBProxy';
+    case AttachmentTargetType.REDSHIFT_CLUSTER:
+      return 'AWS::Redshift::Cluster';
+    case AttachmentTargetType.DOCDB_DB_INSTANCE:
+      return 'AWS::DocDB::DBInstance';
+    case AttachmentTargetType.DOCDB_DB_CLUSTER:
+      return 'AWS::DocDB::DBCluster';
+  }
+}

@@ -22,7 +22,10 @@ outbound.getFunction = mocks.getFunctionMock;
   return callback();
 });
 
+const invokeFunctionSpy = jest.spyOn(outbound, 'invokeFunction');
+
 beforeEach(() => mocks.setup());
+afterEach(() => invokeFunctionSpy.mockClear());
 
 test('async flow: isComplete returns true only after 3 times', async () => {
   let isCompleteCalls = 0;
@@ -365,6 +368,41 @@ test('getFunction() is called only when user function is inactive, pending, and 
 
   // THEN
   expect(getFunctionSpy).toHaveBeenCalledTimes(3);
+});
+
+describe('ResponseURL is passed to user function', () => {
+  test('for onEvent', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expect(invokeFunctionSpy).toHaveBeenCalledTimes(1);
+    expect(invokeFunctionSpy).toBeCalledWith(expect.objectContaining({
+      Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
+    }));
+  });
+
+  test('for isComplete', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expect(invokeFunctionSpy).toHaveBeenCalledTimes(2);
+    expect(invokeFunctionSpy).toHaveBeenLastCalledWith(expect.objectContaining({
+      Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
+    }));
+  });
 });
 
 // -----------------------------------------------------------------------------------------------------------------------

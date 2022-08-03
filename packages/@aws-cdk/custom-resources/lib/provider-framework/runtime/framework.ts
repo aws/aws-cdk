@@ -73,6 +73,7 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
       throw new Error('"Data" is not allowed if "IsComplete" is "False"');
     }
 
+    // This must be the full event, it will be deserialized in `onTimeout` to send the response to CloudFormation
     throw new cfnResponse.Retry(JSON.stringify(event));
   }
 
