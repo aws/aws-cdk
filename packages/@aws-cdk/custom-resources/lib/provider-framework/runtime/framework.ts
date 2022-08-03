@@ -96,10 +96,6 @@ async function onTimeout(timeoutEvent: any) {
   });
 }
 
-async function sleep(ms: number): Promise<void> {
-  return new Promise<void>(ok => setTimeout(ok, ms));
-}
-
 async function invokeUserFunction(functionArnEnv: string, payload: any): Promise<any> {
   const functionArn = getEnv(functionArnEnv);
   log(`executing user function ${functionArn} with payload`, payload);
@@ -166,6 +162,10 @@ async function invokeUserFunction(functionArnEnv: string, payload: any): Promise
   }
 
   return jsonPayload;
+}
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise<void>(ok => setTimeout(ok, ms));
 }
 
 function parseJsonPayload(payload: any): any {
