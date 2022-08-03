@@ -216,6 +216,10 @@ describe('fs fingerprint', () => {
       fs.writeSync(file, 'foobar');
       fs.closeSync(file);
 
+      // Update mtime to a value that is guaranteed to be different even if the tests run... fast!
+      const fileStat = fs.statSync(testFile, { bigint: true });
+      fs.utimesSync(testFile, fileStat.atime, new Date(1337));
+
       const hash2 = FileSystem.fingerprint(testFile, {});
 
       expect(hash1).not.toEqual(hash2);
