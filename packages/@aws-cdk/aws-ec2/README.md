@@ -1506,6 +1506,18 @@ const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
+### License Specification
+
+It is possible to use custom license configuration via the [AWS License Manager](https://aws.amazon.com/de/license-manager/).
+
+```ts
+const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  licenseSpecification: [{
+    licenseConfigurationArn: 'arn:aws:license-manager:us-east-1:123456789:license-configuration:lic-1234567890abcdef',
+    }],
+});
+```
+
 ## Detailed Monitoring
 
 The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
