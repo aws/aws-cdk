@@ -7,5 +7,3 @@ dist
 !.eslintrc.js
 !config/*.js
 junit.xml
-.jsii.gz
-.jsii

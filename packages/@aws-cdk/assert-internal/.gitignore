@@ -18,6 +18,3 @@ junit.xml
 !**/*.integ.snapshot/**/asset.*/*.d.ts
 
 !**/*.integ.snapshot/**/asset.*/**
-
-.jsii.gz
-.jsii

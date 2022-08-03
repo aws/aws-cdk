@@ -31,6 +31,3 @@ test/test-archive-follow/data/linked
 !**/*.integ.snapshot/**/asset.*/*.d.ts
 
 !**/*.integ.snapshot/**/asset.*/**
-
-.jsii.gz
-.jsii

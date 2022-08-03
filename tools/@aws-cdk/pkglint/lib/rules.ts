@@ -1117,6 +1117,8 @@ export class MustIgnoreJsii extends ValidationRule {
   public readonly name = 'ignore/.jsii.gz';
 
   public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
     fileShouldContain(this.name, pkg, '.gitignore', '.jsii.gz');
     fileShouldContain(this.name, pkg, '.gitignore', '.jsii');
   }

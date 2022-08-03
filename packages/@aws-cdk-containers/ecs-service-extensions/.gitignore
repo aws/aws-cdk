@@ -4,7 +4,6 @@
 *.generated.ts
 dist
 lib/generated/resources.ts
-.jsii
 
 .coverage
 __pycache__
@@ -24,5 +23,3 @@ junit.xml
 !**/*.integ.snapshot/**/asset.*/*.d.ts
 
 !**/*.integ.snapshot/**/asset.*/**
-
-.jsii.gz

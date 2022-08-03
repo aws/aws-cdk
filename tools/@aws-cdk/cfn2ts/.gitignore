@@ -11,5 +11,3 @@ nyc.config.js
 !.eslintrc.js
 
 junit.xml
-.jsii.gz
-.jsii
