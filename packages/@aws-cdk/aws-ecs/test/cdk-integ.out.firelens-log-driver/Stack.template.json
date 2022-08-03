@@ -1,0 +1,193 @@
+{
+ "Resources": {
+  "TaskDefinitionTaskRoleFD40A61D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TaskDefinitionTaskRoleDefaultPolicy282E8624": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:DescribeLogStreams",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TaskDefinitionTaskRoleDefaultPolicy282E8624",
+    "Roles": [
+     {
+      "Ref": "TaskDefinitionTaskRoleFD40A61D"
+     }
+    ]
+   }
+  },
+  "TaskDefinitionB36D86D9": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "Image": "test-image",
+      "LogConfiguration": {
+       "LogDriver": "awsfirelens",
+       "Options": {
+        "Name": "cloudwatch",
+        "region": "us-west-2",
+        "log_group_name": "cloudwatch_container_log_group",
+        "auto_create_group": "true",
+        "log_stream_prefix": "from-fluent-bit"
+       }
+      },
+      "Memory": 128,
+      "Name": "ContainerWithCloudWatchPlugin"
+     },
+     {
+      "Essential": true,
+      "Image": "test-image",
+      "LogConfiguration": {
+       "LogDriver": "awsfirelens",
+       "Options": {
+        "Name": "cloudwatch_logs",
+        "region": "us-west-2",
+        "log_group_name": "cloudwatch_logs_container_log_group",
+        "auto_create_group": "true",
+        "log_stream_prefix": "from-fluent-bit"
+       }
+      },
+      "Memory": 128,
+      "Name": "ContainerWithCloudWatchLogsPlugin"
+     },
+     {
+      "Essential": true,
+      "FirelensConfiguration": {
+       "Type": "fluentbit"
+      },
+      "Image": {
+       "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "TaskDefinitionlogrouterLogGroup5058FCD2"
+        },
+        "awslogs-stream-prefix": "firelens",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "MemoryReservation": 50,
+      "Name": "log-router"
+     }
+    ],
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "TaskDefinitionExecutionRole8D61C2FB",
+      "Arn"
+     ]
+    },
+    "Family": "StackTaskDefinitionB1C46A94",
+    "NetworkMode": "bridge",
+    "RequiresCompatibilities": [
+     "EC2"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "TaskDefinitionTaskRoleFD40A61D",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "TaskDefinitionExecutionRole8D61C2FB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TaskDefinitionExecutionRoleDefaultPolicy1F3406F5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetAuthorizationToken",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TaskDefinitionlogrouterLogGroup5058FCD2",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TaskDefinitionExecutionRoleDefaultPolicy1F3406F5",
+    "Roles": [
+     {
+      "Ref": "TaskDefinitionExecutionRole8D61C2FB"
+     }
+    ]
+   }
+  },
+  "TaskDefinitionlogrouterLogGroup5058FCD2": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/aws/service/aws-for-fluent-bit/latest"
+  }
+ }
+}

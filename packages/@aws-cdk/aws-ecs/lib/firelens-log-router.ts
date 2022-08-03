@@ -167,7 +167,7 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
   // grant cloudwatch or firehose permissions to task role
   const logName = logDriverConfig && logDriverConfig.logDriver === 'awsfirelens'
     && logDriverConfig.options && logDriverConfig.options.Name;
-  if (logName === 'cloudwatch') {
+  if (logName === 'cloudwatch' || logName === 'cloudwatch_logs') {
     task.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'logs:CreateLogGroup',

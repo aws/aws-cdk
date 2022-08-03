@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "FireLensLogDriverTest/DefaultTest": {
+      "stacks": [
+        "Stack"
+      ],
+      "assertionStack": "FireLensLogDriverTestDefaultTestDeployAssert3F992FE2"
+    }
+  }
+}

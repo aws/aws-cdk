@@ -172,7 +172,7 @@ describe('firelens log driver', () => {
     });
   });
 
-  test('create a firelens log driver to route logs to CloudWatch Logs with Fluent Bit', () => {
+  test('create a firelens log driver to route logs to CloudWatch Logs with Fluent Bit using the cloudwatch plugin', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -189,7 +189,8 @@ describe('firelens log driver', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         Match.objectLike({
           LogConfiguration: {
@@ -210,6 +211,68 @@ describe('firelens log driver', () => {
           },
         }),
       ],
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
+            Resource: '*',
+          },
+        ],
+      },
+    });
+  });
+
+  test('create a firelens log driver to route logs to CloudWatch Logs with Fluent Bit using the cloudwatch_logs plugin', () => {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDrivers.firelens({
+        options: {
+          Name: 'cloudwatch_logs',
+          region: 'us-west-2',
+          log_group_name: 'firelens-fluent-bit',
+          auto_create_group: 'true',
+          log_stream_prefix: 'from-fluent-bit',
+        },
+      }),
+      memoryLimitMiB: 128,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          LogConfiguration: {
+            LogDriver: 'awsfirelens',
+            Options: {
+              Name: 'cloudwatch_logs',
+              region: 'us-west-2',
+              log_group_name: 'firelens-fluent-bit',
+              auto_create_group: 'true',
+              log_stream_prefix: 'from-fluent-bit',
+            },
+          },
+        }),
+        Match.objectLike({
+          Essential: true,
+          FirelensConfiguration: {
+            Type: 'fluentbit',
+          },
+        }),
+      ],
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
+            Resource: '*',
+          },
+        ],
+      },
     });
   });
 
