@@ -45,7 +45,7 @@ export abstract class DockerImageCode {
     return {
       _bind(architecture?: Architecture) {
         return new AssetImageCode(directory, {
-           // determine the platform from `architecture`.
+          // determine the platform from `architecture`.
           ...architecture?.dockerPlatform ? { platform: Platform.custom(architecture.dockerPlatform) } : {},
           ...props,
         });
