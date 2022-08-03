@@ -7,6 +7,7 @@ import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
 import { CfnStack } from './cloudformation.generated';
 import { Duration } from './duration';
+import { FeatureFlags } from './feature-flags';
 import { Lazy } from './lazy';
 import { Names } from './names';
 import { RemovalPolicy } from './removal-policy';
@@ -124,7 +125,20 @@ export class NestedStack extends Stack {
 
     this._parentStack = parentStack;
 
-    const parentScope = new Construct(scope, id + '.Nests');
+    // the preferred behavior is to generate a unique id for this stack and use
+    // it as the artifact ID in the assembly. this allows multiple stacks to use
+    // the same name. however, this behavior is breaking for 1.x so it's only
+    // applied under a feature flag which is applied automatically for new
+    // projects created using `cdk init`.
+    //
+    // Also use the new behavior if we are using the new CI/CD-ready synthesizer; that way
+    // people only have to flip one flag.
+    const featureFlags = FeatureFlags.of(this);
+    const shorterLogicalId = featureFlags.isEnabled(cxapi.ENABLE_SHORTER_LOGICAL_ID_NESTED_STACKS);
+
+    const [nestedStackFiller1, nestedStackFiller2] = shorterLogicalId ? ['.Nests', ''] : ['.NestedStack', '.NestedStackResource'];
+
+    const parentScope = new Construct(scope, id + nestedStackFiller1);
 
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
@@ -133,7 +147,7 @@ export class NestedStack extends Stack {
 
     this.parameters = props.parameters || {};
 
-    this.resource = new CfnStack(parentScope, `${id}`, {
+    this.resource = new CfnStack(parentScope, `${id}${nestedStackFiller2}`, {
       // This value cannot be cached since it changes during the synthesis phase
       templateUrl: Lazy.uncachedString({ produce: () => this._templateUrl || '<unresolved>' }),
       parameters: Lazy.any({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),

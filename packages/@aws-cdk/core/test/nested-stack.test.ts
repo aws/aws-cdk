@@ -1,3 +1,5 @@
+import * as cxapi from '@aws-cdk/cx-api';
+import { App } from '@aws-cdk/core';
 import {
   Stack, NestedStack, CfnStack,
 } from '../lib';
@@ -30,5 +32,21 @@ describe('nested-stack', () => {
     });
 
     expect(nestedStack.templateOptions.description).toEqual(description);
+  });
+
+  test('a nested-stack has shorter logical id', () => {
+    // GIVEN
+    const shortlogicalId = 'MyNestedStackNestsMyNestedStack47285AF6';
+    const shortlogicalIdFlag = { [cxapi.ENABLE_SHORTER_LOGICAL_ID_NESTED_STACKS]: true };
+    const app = new App({
+      context: shortlogicalIdFlag,
+    });
+
+    const stack = new Stack(app);
+    const nestedStack = new NestedStack(stack, 'MyNestedStack');
+    const cfn_nestedStack = (nestedStack.node.defaultChild) as CfnStack;
+
+    // THEN
+    expect(stack.getLogicalId(cfn_nestedStack)).toEqual(shortlogicalId);
   });
 });

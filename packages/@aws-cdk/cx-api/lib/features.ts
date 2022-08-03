@@ -314,6 +314,18 @@ export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLo
 export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption';
 
 /**
+ * If this is set, multiple stacks can use the same stack name (e.g. deployed to
+ * different environments). This means that the name of the synthesized template
+ * file will be based on the construct path and not on the defined `stackName`
+ * of the stack.
+ *
+ * This is a "future flag": the feature is disabled by default for backwards
+ * compatibility, but new projects created using `cdk init` will have this
+ * enabled through the generated `cdk.json`.
+ */
+export const ENABLE_SHORTER_LOGICAL_ID_NESTED_STACKS = '@aws-cdk/core:enableShorterLogicalIdNestedStacks';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -346,6 +358,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
   [S3_CREATE_DEFAULT_LOGGING_POLICY]: true,
   [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
+  [ENABLE_SHORTER_LOGICAL_ID_NESTED_STACKS]: true,
 };
 
 /**
