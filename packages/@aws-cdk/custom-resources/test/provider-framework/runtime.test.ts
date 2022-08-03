@@ -18,8 +18,8 @@ outbound.httpRequest = mocks.httpRequestMock;
 outbound.invokeFunction = mocks.invokeFunctionMock;
 outbound.startExecution = mocks.startExecutionMock;
 outbound.getFunction = mocks.getFunctionMock;
-(setTimeout as any) = jest.fn((callback, _timeout, functionargsEnv, payload, options) => {
-  return callback(functionargsEnv, payload, options);
+(setTimeout as any) = jest.fn((callback, _timeout) => {
+  return callback();
 });
 
 beforeEach(() => mocks.setup());

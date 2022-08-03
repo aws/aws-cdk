@@ -16,11 +16,6 @@ export = {
 const BASE_SLEEP = 10_000;
 const MAX_TOTAL_SLEEP = 620_000;
 
-interface RetryOptions {
-  attempt: number,
-  totalSleep: number,
-}
-
 /**
  * The main runtime entrypoint of the async custom resource lambda function.
  *
@@ -101,7 +96,11 @@ async function onTimeout(timeoutEvent: any) {
   });
 }
 
-async function invokeUserFunction(functionArnEnv: string, payload: any, retryOptions?: RetryOptions): Promise<any> {
+async function sleep(ms: number): Promise<void> {
+  return new Promise<void>(ok => setTimeout(ok, ms));
+}
+
+async function invokeUserFunction(functionArnEnv: string, payload: any): Promise<any> {
   const functionArn = getEnv(functionArnEnv);
   log(`executing user function ${functionArn} with payload`, payload);
 
@@ -122,26 +121,24 @@ async function invokeUserFunction(functionArnEnv: string, payload: any, retryOpt
 
   const jsonPayload = parseJsonPayload(resp.Payload);
   if (resp.FunctionError) {
-    const getFunctionResponse = await getFunction({
-      FunctionName: functionName,
-    });
+    let totalSleep = 0, attempt = 0;
+    while (totalSleep <= MAX_TOTAL_SLEEP) {
+      const getFunctionResponse = await getFunction({
+        FunctionName: functionName,
+      });
 
-    if (getFunctionResponse.Configuration?.State === 'Inactive' || getFunctionResponse.Configuration?.State === 'Pending') {
-      const currentAttempt = retryOptions?.attempt ?? 1;
-      const newSleep = Math.floor(BASE_SLEEP * Math.pow(2, currentAttempt) * Math.random());
-      const newTotalSleep = (retryOptions ? retryOptions.totalSleep : 0) + newSleep;
+      if (!(getFunctionResponse.Configuration?.State === 'Inactive' || getFunctionResponse.Configuration?.State === 'Pending')) {
+        break;
+      }
+
+      const currentSleep = Math.floor(BASE_SLEEP * Math.pow(2, attempt) * Math.random());
 
       // don't spend more than 10 minutes and some change waiting
-      if (newTotalSleep <= MAX_TOTAL_SLEEP) {
-        const newRetryOptions: RetryOptions = {
-          attempt: currentAttempt + 1,
-          totalSleep: newTotalSleep,
-        };
+      log(`user function is still being initialized by Lambda, sleeping for: ${currentSleep} ms before retry`);
+      await sleep(currentSleep);
 
-        log('user function is still being initialized by Lambda, retrying with delay of: ', newSleep);
-
-        return setTimeout(invokeUserFunction, newSleep, functionArnEnv, payload, newRetryOptions);
-      }
+      totalSleep += currentSleep;
+      attempt++;
     }
 
     log('user function threw an error:', resp.FunctionError);
