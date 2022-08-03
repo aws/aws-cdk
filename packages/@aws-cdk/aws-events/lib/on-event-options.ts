@@ -35,12 +35,13 @@ export interface EventCommonOptions {
   readonly eventPattern?: EventPattern;
 
   /**
-   * The scope to use if the source of the rule and its target are in different Stacks.
+   * The scope to use if the source of the rule and its target are in different Stacks
+   * (but in the same account & region).
    * This helps dealing with cycles that often arise in these situations.
    *
    * @default - none (the main scope will be used, even for cross-stack Events)
    */
-  readonly scopeIfCrossStack?: Construct;
+  readonly crossStackScope?: Construct;
 }
 
 /**

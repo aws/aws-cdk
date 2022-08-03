@@ -171,7 +171,7 @@ export class CodeCommitSourceAction extends Action {
           eventRole: this.props.eventRole,
         }),
         branches: [this.branch],
-        scopeIfCrossStack: stage.pipeline as unknown as Construct,
+        crossStackScope: stage.pipeline as unknown as Construct,
       });
     }
 

@@ -426,11 +426,11 @@ export class Rule extends Resource implements IRule {
 }
 
 function determineRuleScope(scope: Construct, props: RuleProps): Construct {
-  if (!props.scopeIfCrossStack) {
+  if (!props.crossStackScope) {
     return scope;
   }
   const scopeStack = Stack.of(scope);
-  const targetStack = Stack.of(props.scopeIfCrossStack);
+  const targetStack = Stack.of(props.crossStackScope);
   if (scopeStack === targetStack) {
     return scope;
   }
@@ -438,10 +438,9 @@ function determineRuleScope(scope: Construct, props: RuleProps): Construct {
   // so we use the base scope in that case
   const regionComparison = Token.compareStrings(scopeStack.region, targetStack.region);
   const accountComparison = Token.compareStrings(scopeStack.account, targetStack.account);
-  return (regionComparison === TokenComparison.SAME || regionComparison === TokenComparison.BOTH_UNRESOLVED) &&
-      (accountComparison === TokenComparison.SAME || accountComparison === TokenComparison.BOTH_UNRESOLVED)
-    ? props.scopeIfCrossStack
-    : scope;
+  const stacksInSameAccountAndRegion = (regionComparison === TokenComparison.SAME || regionComparison === TokenComparison.BOTH_UNRESOLVED) &&
+    (accountComparison === TokenComparison.SAME || accountComparison === TokenComparison.BOTH_UNRESOLVED);
+  return stacksInSameAccountAndRegion ? props.crossStackScope : scope;
 }
 
 /**
