@@ -314,10 +314,8 @@ export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLo
 export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption';
 
 /**
- * If this is set, multiple stacks can use the same stack name (e.g. deployed to
- * different environments). This means that the name of the synthesized template
- * file will be based on the construct path and not on the defined `stackName`
- * of the stack.
+ * If this is set, the logical id retured for nested stacks will be shorter with verbose strings removed.
+ *
  *
  * This is a "future flag": the feature is disabled by default for backwards
  * compatibility, but new projects created using `cdk init` will have this
