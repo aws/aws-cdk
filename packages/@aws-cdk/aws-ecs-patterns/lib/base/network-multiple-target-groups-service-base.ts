@@ -307,16 +307,16 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
 
   protected logDriver?: LogDriver;
   /**
-    * The listeners of the service.
-    */
+   * The listeners of the service.
+   */
   public readonly listeners = new Array<NetworkListener>();
   /**
-    * The target groups of the service.
-    */
+   * The target groups of the service.
+   */
   public readonly targetGroups = new Array<NetworkTargetGroup>();
   /**
-    * The load balancers of the service.
-    */
+   * The load balancers of the service.
+   */
   public readonly loadBalancers = new Array<NetworkLoadBalancer>();
 
   /**
