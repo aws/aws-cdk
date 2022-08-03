@@ -1029,6 +1029,23 @@ const stack = new Stack(app, 'StackName', {
   description: 'This is a description.',
 });
 ```
+### Logical ID For NestedStacks
+
+When using nested stacks, you can get a logical Id that doesn't contain the 
+verbose strings that make it a little had to read and understand by passing a
+the feature flag `cxapi.ENABLE_SHORTER_LOGICAL_ID_NESTED_STACKS`as true.
+
+```ts
+const shortlogicalIdFlag = { 
+      [cxapi.ENABLE_SHORTER_LOGICAL_ID_NESTED_STACKS]: true 
+};
+const app = new App({
+  context: shortlogicalIdFlag,
+});
+
+const stack = new Stack(app);
+const nestedStack = new NestedStack(stack, 'MyNestedStack');
+```
 
 ### CfnJson
 
