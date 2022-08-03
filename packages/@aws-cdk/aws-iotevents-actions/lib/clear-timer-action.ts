@@ -10,7 +10,10 @@ export class ClearTimerAction implements iotevents.IAction {
    */
   constructor(private readonly timerName: string) {}
 
-  bind(_scope: Construct, _options: iotevents.ActionBindOptions): iotevents.ActionConfig {
+  /**
+   * @internal
+   */
+  public _bind(_scope: Construct, _options: iotevents.ActionBindOptions): iotevents.ActionConfig {
     return {
       configuration: {
         clearTimer: {

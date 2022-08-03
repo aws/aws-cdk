@@ -16,7 +16,10 @@ export class SetTimerAction implements iotevents.IAction {
   ) {
   }
 
-  bind(_scope: Construct, _options: iotevents.ActionBindOptions): iotevents.ActionConfig {
+  /**
+   * @internal
+   */
+  public _bind(_scope: Construct, _options: iotevents.ActionBindOptions): iotevents.ActionConfig {
     return {
       configuration: {
         setTimer: {
