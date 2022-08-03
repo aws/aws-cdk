@@ -501,6 +501,7 @@ describe('Expression', () => {
   const E = iotevents.Expression;
   test.each([
     ['currentInput', (testInput: iotevents.IInput) => E.currentInput(testInput), 'currentInput("test-input")'],
+    ['timeout', () => E.timeout('test-timer'), 'timeout("test-timer")'],
     ['inputAttribute', (testInput: iotevents.IInput) => E.inputAttribute(testInput, 'json.path'), '$input.test-input.json.path'],
     ['add', () => E.add(E.fromString('5'), E.fromString('2')), '5 + 2'],
     ['subtract', () => E.subtract(E.fromString('5'), E.fromString('2')), '5 - 2'],
