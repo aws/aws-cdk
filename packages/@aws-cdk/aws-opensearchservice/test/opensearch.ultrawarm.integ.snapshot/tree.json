@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.58"
         }
       },
       "cdk-integ-opensearch-ultrawarm": {
@@ -36,9 +36,6 @@
                       "warmCount": 2,
                       "warmType": "ultrawarm1.medium.search",
                       "zoneAwarenessEnabled": false
-                    },
-                    "cognitoOptions": {
-                      "enabled": false
                     },
                     "domainEndpointOptions": {
                       "enforceHttps": false,

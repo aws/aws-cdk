@@ -187,9 +187,6 @@ test('minimal example renders correctly', () => {
   new Domain(stack, 'Domain', { version: defaultVersion });
 
   Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
-    CognitoOptions: {
-      Enabled: false,
-    },
     EBSOptions: {
       EBSEnabled: true,
       VolumeSize: 10,
@@ -1848,6 +1845,46 @@ describe('advanced options', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       AdvancedOptions: Match.absent(),
+    });
+  });
+});
+
+describe('cognito dashboards auth', () => {
+  test('cognito dashboards auth is not configured by default', () => {
+    new Domain(stack, 'Domain', { version: defaultVersion });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      CognitoOptions: Match.absent(),
+    });
+  });
+
+  test('cognito dashboards auth can be configured', () => {
+    const identityPoolId = 'test-identity-pool-id';
+    const userPoolId = 'test-user-pool-id';
+    const user = new iam.User(stack, 'testuser');
+    const role = new iam.Role(stack, 'testrole', { assumedBy: user });
+
+    new Domain(stack, 'Domain', {
+      version: defaultVersion,
+      cognitoDashboardsAuth: {
+        role,
+        identityPoolId,
+        userPoolId,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      CognitoOptions: {
+        Enabled: true,
+        IdentityPoolId: identityPoolId,
+        RoleArn: {
+          'Fn::GetAtt': [
+            'testroleFAA56B58',
+            'Arn',
+          ],
+        },
+        UserPoolId: userPoolId,
+      },
     });
   });
 });
