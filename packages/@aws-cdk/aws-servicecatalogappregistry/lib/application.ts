@@ -149,9 +149,7 @@ export class Application extends ApplicationBase {
    * Imports an Application construct that represents an external application.
    *
    * @param scope The parent creating construct (usually `this`).
-   *
    * @param id The construct's name.
-   *
    * @param applicationArn the Amazon Resource Name of the existing AppRegistry Application
    */
   public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
