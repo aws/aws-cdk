@@ -15,3 +15,5 @@ dist
 *.snk
 junit.xml
 !.eslintrc.js
+.jsii.gz
+.jsii

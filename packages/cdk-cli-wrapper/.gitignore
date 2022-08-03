@@ -28,3 +28,5 @@ junit.xml
 
 # Ignore this symlink, we recreate it at test time
 test/test-archive-follow/data/linked
+
+.jsii.gz

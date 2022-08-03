@@ -13,3 +13,5 @@ nyc.config.js
 !jest.config.js
 
 junit.xml
+.jsii.gz
+.jsii

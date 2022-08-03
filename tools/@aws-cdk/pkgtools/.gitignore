@@ -11,3 +11,5 @@ dist
 coverage
 nyc.config.js
 junit.xml
+.jsii.gz
+.jsii

@@ -4,3 +4,6 @@ junit.xml
 *.js
 *.d.ts
 !.eslintrc.js
+
+.jsii.gz
+.jsii

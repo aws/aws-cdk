@@ -30,3 +30,5 @@ junit.xml
 
 # exclude source maps as they only work locally
 *.map
+
+!.jsii.gz

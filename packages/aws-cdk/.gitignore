@@ -39,3 +39,6 @@ test/integ/cli/*.d.ts
 .DS_Store
 
 junit.xml
+
+.jsii.gz
+.jsii

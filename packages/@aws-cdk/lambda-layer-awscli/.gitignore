@@ -23,3 +23,5 @@ lib/*.zip
 !**/*.integ.snapshot/**/asset.*/*.d.ts
 
 !**/*.integ.snapshot/**/asset.*/**
+
+.jsii.gz

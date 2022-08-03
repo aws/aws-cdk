@@ -13,3 +13,6 @@ nyc.config.js
 !.eslintrc.js
 !test/test-fixture/jsii/node_modules/
 junit.xml
+
+.jsii.gz
+.jsii

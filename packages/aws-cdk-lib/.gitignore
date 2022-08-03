@@ -13,3 +13,5 @@ junit.xml
 !.eslintrc.js
 dist
 .LAST_PACKAGE
+.jsii.gz
+.jsii

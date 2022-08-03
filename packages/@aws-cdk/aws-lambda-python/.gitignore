@@ -25,3 +25,5 @@ test/lambda-handler-*/requirements.txt
 
 !**/*.integ.snapshot/**/asset.*/**
 !**/*.integ.snapshot/**/asset.*/requirements.txt
+
+.jsii.gz

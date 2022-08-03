@@ -26,3 +26,5 @@ test/
 !*.lit.ts
 **/*.integ.snapshot
 **/*.integ.snapshot
+
+!.jsii.gz

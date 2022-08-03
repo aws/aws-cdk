@@ -848,6 +848,9 @@ export class IncludeJsiiInNpmTarball extends ValidationRule {
 
     fileShouldNotContain(this.name, pkg, '.npmignore', '.jsii');
     fileShouldContain(this.name, pkg, '.npmignore', '!.jsii'); // make sure .jsii is included
+
+    fileShouldNotContain(this.name, pkg, '.npmignore', '.jsii.gz');
+    fileShouldContain(this.name, pkg, '.npmignore', '!.jsii.gz'); // make sure .jsii.gz is included
   }
 }
 
@@ -1107,6 +1110,15 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
         });
       }
     }
+  }
+}
+
+export class MustIgnoreJsii extends ValidationRule {
+  public readonly name = 'ignore/.jsii.gz';
+
+  public validate(pkg: PackageJson): void {
+    fileShouldContain(this.name, pkg, '.gitignore', '.jsii.gz');
+    fileShouldContain(this.name, pkg, '.gitignore', '.jsii');
   }
 }
 
