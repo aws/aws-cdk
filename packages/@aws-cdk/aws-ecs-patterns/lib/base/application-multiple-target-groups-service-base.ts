@@ -403,8 +403,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   */
   public readonly targetGroups = new Array<ApplicationTargetGroup>();
   /**
-       * The load balancers of the service.
-       */
+  * The load balancers of the service.
+  */
   public readonly loadBalancers = new Array<ApplicationLoadBalancer>();
 
   /**
