@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "PlacementStrategies/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ecs-integration-test-stack"
+      ],
+      "assertionStack": "PlacementStrategiesDefaultTestDeployAssert6383DC1B"
+    }
+  }
+}

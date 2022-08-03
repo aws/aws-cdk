@@ -1,0 +1,92 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.58"
+        }
+      },
+      "IntegStack": {
+        "id": "IntegStack",
+        "path": "IntegStack",
+        "children": {
+          "EventBridge": {
+            "id": "EventBridge",
+            "path": "IntegStack/EventBridge",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IntegStack/EventBridge/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "IntegStackEventBridgeF828A2C9"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnEventBus",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.EventBus",
+              "version": "0.0.0"
+            }
+          },
+          "Archive": {
+            "id": "Archive",
+            "path": "IntegStack/Archive",
+            "children": {
+              "Archive": {
+                "id": "Archive",
+                "path": "IntegStack/Archive/Archive",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Archive",
+                  "aws:cdk:cloudformation:props": {
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "EventBridgeF6D0CF9D",
+                        "Arn"
+                      ]
+                    },
+                    "eventPattern": {
+                      "account": [
+                        {
+                          "Ref": "AWS::AccountId"
+                        }
+                      ]
+                    },
+                    "retentionDays": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnArchive",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.Archive",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
