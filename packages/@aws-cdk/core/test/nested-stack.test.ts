@@ -1,9 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { App } from '@aws-cdk/core';
 import {
-  Stack, NestedStack, CfnStack,
+  App, Stack, NestedStack, CfnStack,
 } from '../lib';
 import { toCloudFormation } from './util';
+
 
 describe('nested-stack', () => {
   test('a nested-stack has a defaultChild', () => {
