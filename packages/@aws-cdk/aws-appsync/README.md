@@ -342,6 +342,17 @@ log data set to never expire. If you want to set a different expiration period, 
 To obtain the GraphQL API's log group as a `logs.ILogGroup` use the `logGroup` property of the
 `GraphqlApi` construct.
 
+```ts
+import * as logs from '@aws-cdk/aws-logs';
+
+new GraphqlApi(this, 'api', {
+  name: 'api',
+  logConfig: {
+    retention: logs.RetentionDays.ONE_WEEK,
+  },
+});
+```
+
 ## Schema
 
 Every GraphQL Api needs a schema to define the Api. CDK offers `appsync.Schema`
