@@ -28,6 +28,7 @@
   - [IAM Authorizers](#iam-authorizers)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda Authorizer](#lambda-authorizer)
+  - [IAM Authorizers](#iam-authorizer)
 
 ## Introduction
 
@@ -255,4 +256,43 @@ new apigwv2.WebSocketApi(this, 'WebSocketApi', {
     authorizer,
   },
 });
+```
+
+### IAM Authorizer
+
+IAM authorizers can be used to allow identity-based access to your WebSocket API.
+
+```ts
+import { WebSocketIamAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+// This function handles your connect route
+declare const connectHandler: lambda.Function;
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'WebSocketApi');
+
+webSocketApi.addRoute('$connect', {
+  integration: new WebSocketLambdaIntegration('Integration', connectHandler),
+  authorizer: new WebSocketIamAuthorizer()
+});
+
+// Create an IAM user (identity)
+const user = new iam.User(this, 'User');
+
+const webSocketArn = Stack.of(this).formatArn({
+  service: 'execute-api',
+  resource: webSocketApi.apiId,
+});
+
+// Grant access to the IAM user
+user.attachInlinePolicy(new iam.Policy(this, 'AllowInvoke', {
+  statements: [
+    new iam.PolicyStatement({
+      actions: ['execute-api:Invoke'],
+      effect: iam.Effect.ALLOW,
+      resources: [webSocketArn],
+    }),
+  ],
+}));
+
 ```
