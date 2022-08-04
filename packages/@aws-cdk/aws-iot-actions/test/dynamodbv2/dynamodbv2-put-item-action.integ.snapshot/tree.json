@@ -1,0 +1,246 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.63"
+        }
+      },
+      "test-dynamodbv2-put-item-action-stack": {
+        "id": "test-dynamodbv2-put-item-action-stack",
+        "path": "test-dynamodbv2-put-item-action-stack",
+        "children": {
+          "TopicRule": {
+            "id": "TopicRule",
+            "path": "test-dynamodbv2-put-item-action-stack/TopicRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-dynamodbv2-put-item-action-stack/TopicRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::TopicRule",
+                  "aws:cdk:cloudformation:props": {
+                    "topicRulePayload": {
+                      "actions": [
+                        {
+                          "dynamoDBv2": {
+                            "putItem": {
+                              "tableName": {
+                                "Ref": "MyTable794EDED1"
+                              }
+                            },
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "TopicRuleTopicRuleActionRole246C4F77",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "awsIotSqlVersion": "2016-03-23",
+                      "sql": "SELECT * FROM 'device/+/data'"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iot.CfnTopicRule",
+                  "version": "0.0.0"
+                }
+              },
+              "TopicRuleActionRole": {
+                "id": "TopicRuleActionRole",
+                "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "iot.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "dynamodb:PutItem",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyTable794EDED1",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687",
+                            "roles": [
+                              {
+                                "Ref": "TopicRuleTopicRuleActionRole246C4F77"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot.TopicRule",
+              "version": "0.0.0"
+            }
+          },
+          "MyTable": {
+            "id": "MyTable",
+            "path": "test-dynamodbv2-put-item-action-stack/MyTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-dynamodbv2-put-item-action-stack/MyTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "keyType": "RANGE"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "attributeType": "N"
+                      }
+                    ],
+                    "provisionedThroughput": {
+                      "readCapacityUnits": 1,
+                      "writeCapacityUnits": 1
+                    },
+                    "tableName": "MyTable"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "test-dynamodbv2-put-item-action-stack/MyTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "dynamodbv2-integtest": {
+        "id": "dynamodbv2-integtest",
+        "path": "dynamodbv2-integtest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "dynamodbv2-integtest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "dynamodbv2-integtest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.63"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "dynamodbv2-integtest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
