@@ -79,10 +79,12 @@ const spotEnvironment = new batch.ComputeEnvironment(this, 'MySpotEnvironment', 
 Compute Environments now implement the IConnectable interface, which means you can use
 connections on other CDK resources to manipulate the security groups and allow access.
 
-For example:
+For example, allowing Compute Environments to access an EFS filesystem:
 
 ```ts
-declare const fs: efs.Filesystem;
+import * as efs from '@aws-cdk/aws-efs';
+
+declare const fs: efs.FileSystem;
 declare const ce: batch.ComputeEnvironment;
 
 fs.connections.allowDefaultPortFrom(ce);
