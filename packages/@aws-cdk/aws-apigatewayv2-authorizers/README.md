@@ -276,5 +276,23 @@ webSocketApi.addRoute('$connect', {
   authorizer: new WebSocketIamAuthorizer()
 });
 
+// Create an IAM user (identity)
+const user = new iam.User(this, 'User');
+
+const webSocketArn = Stack.of(this).formatArn({
+  service: 'execute-api',
+  resource: webSocketApi.apiId,
+});
+
+// Grant access to the IAM user
+user.attachInlinePolicy(new iam.Policy(this, 'AllowInvoke', {
+  statements: [
+    new iam.PolicyStatement({
+      actions: ['execute-api:Invoke'],
+      effect: iam.Effect.ALLOW,
+      resources: [webSocketArn],
+    }),
+  ],
+}));
 
 ```
