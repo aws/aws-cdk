@@ -260,8 +260,14 @@ export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
   public static readonly SAGEMAKER_NOTEBOOK = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
   public static readonly ATHENA = new InterfaceVpcEndpointAwsService('athena');
+  public static readonly APPLICATION_AUTOSCALING = new InterfaceVpcEndpointAwsService('application-autoscaling');
+  public static readonly AUTOSCALING = new InterfaceVpcEndpointAwsService('autoscaling');
+  public static readonly AUTOSCALING_PLANS = new InterfaceVpcEndpointAwsService('autoscaling-plans');
+  public static readonly BATCH = new InterfaceVpcEndpointAwsService('batch');
   public static readonly CLOUDFORMATION = new InterfaceVpcEndpointAwsService('cloudformation');
   public static readonly CLOUDTRAIL = new InterfaceVpcEndpointAwsService('cloudtrail');
+  public static readonly CODEARTIFACT_API = new InterfaceVpcEndpointAwsService('codeartifact.api');
+  public static readonly CODEARTIFACT_REPOSITORIES = new InterfaceVpcEndpointAwsService('codeartifact.repositories');
   public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
   public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuild-fips');
   public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
@@ -294,6 +300,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CLOUDWATCH = new InterfaceVpcEndpointAwsService('monitoring');
   public static readonly RDS = new InterfaceVpcEndpointAwsService('rds');
   public static readonly RDS_DATA = new InterfaceVpcEndpointAwsService('rds-data');
+  public static readonly S3 = new InterfaceVpcEndpointAwsService('s3');
   public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
   public static readonly SAGEMAKER_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.runtime');
   public static readonly SAGEMAKER_RUNTIME_FIPS = new InterfaceVpcEndpointAwsService('sagemaker.runtime-fips');
