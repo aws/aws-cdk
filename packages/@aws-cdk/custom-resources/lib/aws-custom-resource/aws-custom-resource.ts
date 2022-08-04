@@ -351,7 +351,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     }
 
     if (!props.role && !props.policy) {
-      throw new Error('Either `policy` or `role` must be specified.');
+      throw new Error('At least one of `policy` or `role` (or both) must be specified.');
     }
 
     for (const call of [props.onCreate, props.onUpdate]) {
