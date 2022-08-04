@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
@@ -190,4 +191,50 @@ test('appsync GraphqlApi should be configured with custom domain when specified'
     CertificateArn: { Ref: 'AcmCertificate49D3B5AF' },
     DomainName: domainName,
   });
+});
+
+test('log retention should be configured with given retention time when specified', () => {
+  // GIVEN
+  const retentionTime = logs.RetentionDays.ONE_WEEK;
+
+  // WHEN
+  new appsync.GraphqlApi(stack, 'log-retention', {
+    authorizationConfig: {},
+    name: 'log-retention',
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    logConfig: {
+      retention: retentionTime,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+    LogGroupName: {
+      'Fn::Join': [
+        '',
+        [
+          '/aws/appsync/apis/',
+          {
+            'Fn::GetAtt': [
+              'logretentionB69DFB48',
+              'ApiId',
+            ],
+          },
+        ],
+      ],
+    },
+    RetentionInDays: 7,
+  });
+});
+
+test('log retention should not appear when no retention time is specified', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'no-log-retention', {
+    authorizationConfig: {},
+    name: 'no-log-retention',
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  });
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 0);
 });
