@@ -29,6 +29,12 @@ export interface IRestApi extends IResourceBase {
   readonly restApiId: string;
 
   /**
+   * The name of this API Gateway RestApi.
+   * @attribute
+   */
+  readonly restApiName: string;
+
+  /**
    * The resource ID of the root resource.
    * @attribute
    */
@@ -180,6 +186,13 @@ export interface RestApiBaseProps {
    * @default false
    */
   readonly disableExecuteApiEndpoint?: boolean;
+
+  /**
+   * A description of the RestApi construct.
+   *
+   * @default - 'Automatically created by the RestApi construct'
+   */
+  readonly description?: string;
 }
 
 /**
@@ -193,12 +206,6 @@ export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
  * Props to create a new instance of RestApi
  */
 export interface RestApiProps extends RestApiOptions {
-  /**
-   * A description of the purpose of this API Gateway RestApi resource.
-   *
-   * @default - No description.
-   */
-  readonly description?: string;
 
   /**
    * The list of binary media mime-types that are supported by the RestApi
@@ -554,7 +561,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     if (deploy) {
 
       this._latestDeployment = new Deployment(this, 'Deployment', {
-        description: 'Automatically created by the RestApi construct',
+        description: props.description? props.description :'Automatically created by the RestApi construct',
         api: this,
         retainDeployments: props.retainDeployments,
       });
@@ -673,6 +680,13 @@ export interface RestApiAttributes {
   readonly restApiId: string;
 
   /**
+   * The name of the API Gateway RestApi.
+   *
+   * @default - ID of the RestApi construct.
+   */
+  readonly restApiName?: string;
+
+  /**
    * The resource ID of the root resource.
    */
   readonly rootResourceId: string;
@@ -712,6 +726,7 @@ export class RestApi extends RestApiBase {
   public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): IRestApi {
     class Import extends RestApiBase {
       public readonly restApiId = attrs.restApiId;
+      public readonly restApiName = attrs.restApiName ?? id;
       public readonly restApiRootResourceId = attrs.rootResourceId;
       public readonly root: IResource = new RootResource(this, {}, this.restApiRootResourceId);
     }
