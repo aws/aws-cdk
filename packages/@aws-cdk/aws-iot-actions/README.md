@@ -310,7 +310,7 @@ to an IoT Events input when it is triggered:
 import * as iotevents from '@aws-cdk/aws-iotevents';
 import * as iam from '@aws-cdk/aws-iam';
 
-declare role: iam.IRole;
+declare const role: iam.IRole;
 
 const input = new iotevents.Input(this, 'MyInput', {
   attributeJsonPaths: ['payload.temperature', 'payload.transactionId'],
@@ -323,7 +323,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
     new actions.IotEventsPutMessageAction(input, {
       batchMode: true, // optional property, default is 'false'
       messageId: '${payload.transactionId}', // optional property, default is a new UUID
-      role: // optional property, default is a new UUID
+      role: role, // optional property, default is a new UUID
     }),
   ],
 });
