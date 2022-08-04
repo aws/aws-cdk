@@ -214,7 +214,7 @@ describe('log retention provider', () => {
 
   });
 
-  test('delete event with LogDeletionPolicy', async () => {
+  test('delete event with RemovalPolicy', async () => {
     const createLogGroupFake = sinon.fake.resolves({});
     const deleteLogGroupFake = sinon.fake.resolves({});
     const putRetentionPolicyFake = sinon.fake.resolves({});
@@ -232,7 +232,7 @@ describe('log retention provider', () => {
       ResourceProperties: {
         ServiceToken: 'token',
         LogGroupName: 'group',
-        LogDeletionPolicy: 'destroy',
+        RemovalPolicy: 'destroy',
       },
     };
 

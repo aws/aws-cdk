@@ -3,7 +3,8 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { LogDeletionPolicy, LogRetention, RetentionDays } from '../lib';
+import { LogRetention, RetentionDays } from '../lib';
+
 
 /* eslint-disable quote-props */
 
@@ -32,30 +33,30 @@ describe('log retention', () => {
           },
           {
             'Action': [
-                'logs:DeleteLogGroup',
-                'logs:DeleteLogStream'
+              'logs:DeleteLogGroup',
+              'logs:DeleteLogStream',
+            ],
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':logs:',
+                  {
+                    'Ref': 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':log-group:group:*',
+                ],
               ],
-              'Effect': 'Allow',
-              'Resource': {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition'
-                    },
-                    ':logs:',
-                    {
-                      'Ref': 'AWS::Region'
-                    },
-                    ':',
-                    {
-                      'Ref': 'AWS::AccountId'
-                    },
-                    ':log-group:group:*'
-                  ]
-                ]
-              }
+            },
           },
         ],
         'Version': '2012-10-17',
@@ -85,7 +86,7 @@ describe('log retention', () => {
     });
   });
 
-  test('set the logDeletionPlicy to DESTROY', () => {
+  test('set the removalPolicy to DESTROY', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -93,7 +94,7 @@ describe('log retention', () => {
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
       retention: RetentionDays.ONE_DAY,
-      logDeletionPolicy: LogDeletionPolicy.DESTROY,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // THEN
@@ -106,11 +107,11 @@ describe('log retention', () => {
       },
       'LogGroupName': 'group',
       'RetentionInDays': 1,
-      'LogDeletionPolicy': 'destroy',
+      'RemovalPolicy': 'destroy',
     });
   });
 
-  test('set the logDeletionPlicy to RETAIN', () => {
+  test('set the removalPolicy to RETAIN', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -118,7 +119,7 @@ describe('log retention', () => {
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
       retention: RetentionDays.ONE_DAY,
-      logDeletionPolicy: LogDeletionPolicy.RETAIN,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
     // THEN
@@ -131,7 +132,7 @@ describe('log retention', () => {
       },
       'LogGroupName': 'group',
       'RetentionInDays': 1,
-      'LogDeletionPolicy': 'retain',
+      'RemovalPolicy': 'retain',
     });
   });
 
@@ -162,7 +163,7 @@ describe('log retention', () => {
           {
             'Action': [
               'logs:DeleteLogGroup',
-              'logs:DeleteLogStream'
+              'logs:DeleteLogStream',
             ],
             'Effect': 'Allow',
             'Resource': {
@@ -171,21 +172,21 @@ describe('log retention', () => {
                 [
                   'arn:',
                   {
-                    'Ref': 'AWS::Partition'
+                    'Ref': 'AWS::Partition',
                   },
                   ':logs:',
                   {
-                    'Ref': 'AWS::Region'
+                    'Ref': 'AWS::Region',
                   },
                   ':',
                   {
-                    'Ref': 'AWS::AccountId'
+                    'Ref': 'AWS::AccountId',
                   },
-                  ':log-group:group:*'
-                ]
-              ]
-            }
-          }
+                  ':log-group:group:*',
+                ],
+              ],
+            },
+          },
         ],
         'Version': '2012-10-17',
       },

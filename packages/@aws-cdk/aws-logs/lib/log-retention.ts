@@ -41,25 +41,10 @@ export interface LogRetentionProps {
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
 
   /**
-   * The deletionPolicy the LogRetention uses on log
-   * @default LogDeletionPolicy.RETAINLOG
+   * The removalPolicy for the log group when the stack is deleted
+   * @default RemovalPolicy.RETAIN
    */
-  readonly logDeletionPolicy?: LogDeletionPolicy;
-}
-
-/**
- * LogDeletionPolicy for the log group when the stack is deleted
- */
-export enum LogDeletionPolicy {
-  /**
-   * This is the default log deletion policy. It means that when the resource is
-   * removed from the app, the log will retain.
-   */
-  RETAIN = 'retain',
-  /**
-   * This uses the 'destroyLog' DeletionPolicy, which will destroy the log when the stack is deleted.
-   */
-  DESTROY = 'destroy',
+  readonly removalPolicy?: cdk.RemovalPolicy;
 }
 
 /**
@@ -114,7 +99,7 @@ export class LogRetention extends Construct {
           base: retryOptions.base?.toMilliseconds(),
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
-        LogDeletionPolicy: props.logDeletionPolicy ? props.logDeletionPolicy : LogDeletionPolicy.RETAIN,
+        RemovalPolicy: props.removalPolicy ? props.removalPolicy : cdk.RemovalPolicy.RETAIN,
       },
     });
 
