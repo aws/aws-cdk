@@ -1,0 +1,49 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "iotevents-timer-actions-test-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "iotevents-timer-actions-test-stack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/iotevents-timer-actions-test-stack/MyInput/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyInput08947B23"
+          }
+        ],
+        "/iotevents-timer-actions-test-stack/MyDetectorModel/DetectorModelRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDetectorModelDetectorModelRoleF2FB4D88"
+          }
+        ],
+        "/iotevents-timer-actions-test-stack/MyDetectorModel/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDetectorModel559C0B0E"
+          }
+        ]
+      },
+      "displayName": "iotevents-timer-actions-test-stack"
+    },
+    "TimerActionsDefaultTestDeployAssert89D9000B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "TimerActionsDefaultTestDeployAssert89D9000B.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "TimerActions/DefaultTest/DeployAssert"
+    }
+  }
+}
