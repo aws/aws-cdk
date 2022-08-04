@@ -152,8 +152,18 @@ export interface IntegTestOptions {
    * Whether to enable verbose logging
    *
    * @default false
+   * @deprecated - use `verbosity` instead
    */
   readonly verbose?: boolean;
+
+  /**
+   * The level of verbosity for logging.
+   *
+   * Maximum is 2.
+   *
+   * @default 0
+   */
+  readonly verbosity?: number;
 
   /**
    * If this is set to true then the stack update workflow will be disabled

@@ -14,6 +14,8 @@ import { IntegTestBatchRequest } from '../integ-test-worker';
  */
 export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorkerConfig[] {
   const failures: IntegTestInfo[] = [];
+  const verbosity = request.verbosity ?? (request.verbose ? 1 : 0);
+
   for (const testInfo of request.tests) {
     const test = new IntegTest(testInfo); // Hydrate from data
     const start = Date.now();
@@ -25,6 +27,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
         env: {
           AWS_REGION: request.region,
         },
+        showOutput: verbosity >= 2,
       }, testInfo.destructiveChanges);
 
       const tests = runner.actualTests();
@@ -39,6 +42,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
             clean: request.clean,
             dryRun: request.dryRun,
             updateWorkflow: request.updateWorkflow,
+            verbosity,
           });
           if (results) {
             failures.push(testInfo);
