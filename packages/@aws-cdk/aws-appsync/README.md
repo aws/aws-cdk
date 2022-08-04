@@ -345,14 +345,14 @@ To obtain the GraphQL API's log group as a `logs.ILogGroup` use the `logGroup` p
 ```ts
 import * as logs from '@aws-cdk/aws-logs';
 
-const logConfig: logs.LogConfig = {
-  retention: RetentionDays.ONE_WEEK,
+const logConfig: appsync.LogConfig = {
+  retention: logs.RetentionDays.ONE_WEEK,
 };
 
 new appsync.GraphqlApi(this, 'api', {
   authorizationConfig: {},
   name: 'myApi',
-  schema: appsync.Schema.fromAsset(join(__dirname, 'myApi.graphql')),
+  schema: appsync.Schema.fromAsset(path.join(__dirname, 'myApi.graphql')),
   logConfig,
 });
 ```
