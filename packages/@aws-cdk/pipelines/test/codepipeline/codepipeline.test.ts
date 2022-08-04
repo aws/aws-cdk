@@ -1,9 +1,13 @@
 import { Template, Annotations, Match } from '@aws-cdk/assertions';
 import * as ccommit from '@aws-cdk/aws-codecommit';
+import { Pipeline } from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
+import { CodePipeline } from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp } from '../testhelpers';
 
 let app: TestApp;
@@ -71,6 +75,33 @@ describe('CodePipeline support stack reuse', () => {
   });
 });
 
+describe('Providing codePipeline parameter and prop(s) of codePipeline parameter to CodePipeline constructor should throw error', () => {
+  test('Providing codePipeline parameter and pipelineName parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      pipelineName: 'randomName',
+    }).create()).toThrowError('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+  test('Providing codePipeline parameter and crossAccountKeys parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      crossAccountKeys: true,
+    }).create()).toThrowError('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+  test('Providing codePipeline parameter and reuseCrossRegionSupportStacks parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      reuseCrossRegionSupportStacks: true,
+    }).create()).toThrowError('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+  test('Providing codePipeline parameter and role parameter should throw error', () => {
+    const stack = new Stack(app, 'Stack');
+
+    expect(() => new CodePipelinePropsCheckTest(stack, 'CodePipeline', {
+      role: new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      }),
+    }).create()).toThrowError('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+});
+
 test('Policy sizes do not exceed the maximum size', () => {
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   pipelineStack.node.setContext('@aws-cdk/aws-iam:minimizePolicies', true);
@@ -111,7 +142,6 @@ test('Policy sizes do not exceed the maximum size', () => {
       rolePolicies[roleLogicalId].push(pol.Properties.PolicyDocument);
     }
   }
-
 
   // Validate sizes
   //
@@ -159,6 +189,51 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
         },
       ],
     },
+  });
+});
+
+test('CodePipeline supports use of existing role', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const repo = new ccommit.Repository(pipelineStack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+
+  new CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    }),
+    role: new iam.Role(pipelineStack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+      roleName: 'MyCustomPipelineRole',
+    }),
+  });
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'codepipeline.amazonaws.com',
+          },
+        },
+      ],
+    },
+    RoleName: 'MyCustomPipelineRole',
+  });
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    RoleArn: { 'Fn::GetAtt': ['CustomRole6D8E6809', 'Arn'] },
   });
 });
 
@@ -216,5 +291,50 @@ class ReuseStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
     new sqs.Queue(this, 'Queue');
+  }
+}
+
+interface CodePipelineStackProps extends cdk.StackProps {
+  pipelineName?: string;
+  crossAccountKeys?: boolean;
+  reuseCrossRegionSupportStacks?: boolean;
+  role?: iam.IRole;
+}
+
+class CodePipelinePropsCheckTest extends cdk.Stack {
+  cProps: CodePipelineStackProps;
+  public constructor(scope: Construct, id: string, props: CodePipelineStackProps) {
+    super(scope, id, props);
+    this.cProps = props;
+  }
+  public create() {
+    if (this.cProps.pipelineName !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline1', {
+        pipelineName: this.cProps.pipelineName,
+        codePipeline: new Pipeline(this, 'Pipeline1'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.crossAccountKeys !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline2', {
+        crossAccountKeys: this.cProps.crossAccountKeys,
+        codePipeline: new Pipeline(this, 'Pipline2'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.reuseCrossRegionSupportStacks !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline3', {
+        reuseCrossRegionSupportStacks: this.cProps.reuseCrossRegionSupportStacks,
+        codePipeline: new Pipeline(this, 'Pipline3'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.role !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline4', {
+        role: this.cProps.role,
+        codePipeline: new Pipeline(this, 'Pipline4'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
   }
 }

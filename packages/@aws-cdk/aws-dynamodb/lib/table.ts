@@ -188,7 +188,7 @@ export interface TableOptions extends SchemaOptions {
    *
    * This property cannot be set if `encryption` and/or `encryptionKey` is set.
    *
-   * @default - server-side encryption is enabled with an AWS owned customer master key
+   * @default - The table is encrypted with an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    *
    * @deprecated This property is deprecated. In order to obtain the same behavior as
    * enabling this, set the `encryption` property to `TableEncryption.AWS_MANAGED` instead.
@@ -213,7 +213,7 @@ export interface TableOptions extends SchemaOptions {
    * > using CDKv1, make sure the feature flag
    * > `@aws-cdk/aws-kms:defaultKeyPolicies` is set to `true` in your `cdk.json`.
    *
-   * @default - server-side encryption is enabled with an AWS owned customer master key
+   * @default - The table is encrypted with an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    */
   readonly encryption?: TableEncryption;
 
@@ -224,6 +224,8 @@ export interface TableOptions extends SchemaOptions {
    *
    * @default - If `encryption` is set to `TableEncryption.CUSTOMER_MANAGED` and this
    * property is undefined, a new KMS key will be created and associated with this table.
+   * If `encryption` and this property are both undefined, then the table is encrypted with
+   * an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    */
   readonly encryptionKey?: kms.IKey;
 
@@ -599,6 +601,15 @@ export interface TableAttributes {
    * @default - no local indexes
    */
   readonly localIndexes?: string[];
+
+  /**
+   * If set to true, grant methods always grant permissions for all indexes.
+   * If false is provided, grant methods grant the permissions
+   * only when {@link globalIndexes} or {@link localIndexes} is specified.
+   *
+   * @default - false
+   */
+  readonly grantIndexPermissions?: boolean;
 }
 
 abstract class TableBase extends Resource implements ITable {
@@ -1078,7 +1089,8 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
-      protected readonly hasIndex = (attrs.globalIndexes ?? []).length > 0 ||
+      protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
+        (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {

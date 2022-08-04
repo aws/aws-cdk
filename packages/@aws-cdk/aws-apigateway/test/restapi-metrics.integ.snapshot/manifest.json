@@ -1,0 +1,91 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "restapi-metrics": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "restapi-metrics.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/restapi-metrics/Api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiF70053CD"
+          }
+        ],
+        "/restapi-metrics/Api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiCloudWatchRole73EC6FC4"
+          }
+        ],
+        "/restapi-metrics/Api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiAccountA18C9B29"
+          }
+        ],
+        "/restapi-metrics/Api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiDeploymentB17BE62Df672ad8455f9678e4a3db5854bdb8d73"
+          }
+        ],
+        "/restapi-metrics/Api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiDeploymentStageprod3EB9684E"
+          }
+        ],
+        "/restapi-metrics/Api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiEndpoint4F160690"
+          }
+        ],
+        "/restapi-metrics/Api/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiGET9257B917"
+          }
+        ],
+        "/restapi-metrics/RestApiAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApiAlarm9B915321"
+          }
+        ],
+        "/restapi-metrics/MethodAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MethodAlarm14370C32"
+          }
+        ],
+        "/restapi-metrics/StageAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StageAlarm5DB1CE5B"
+          }
+        ]
+      },
+      "displayName": "restapi-metrics"
+    },
+    "MetricsTestDefaultTestDeployAssertEA4ED73F": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MetricsTestDefaultTestDeployAssertEA4ED73F.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "MetricsTest/DefaultTest/DeployAssert"
+    }
+  }
+}

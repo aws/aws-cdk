@@ -5,8 +5,20 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import {
-  Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags, Duration,
+  CustomResource,
+  CustomResourceProvider,
+  CustomResourceProviderRuntime,
+  Duration,
+  FeatureFlags,
+  Fn,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  ResourceProps,
+  Stack,
+  Tags,
+  Token,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -354,6 +366,23 @@ export interface IBucket extends IResource {
    * @param filters Filters (see onEvent)
    */
   addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
+
+
+  /**
+   * Enables event bridge notification, causing all events below to be sent to EventBridge:
+   *
+   * - Object Deleted (DeleteObject)
+   * - Object Deleted (Lifecycle expiration)
+   * - Object Restore Initiated
+   * - Object Restore Completed
+   * - Object Restore Expired
+   * - Object Storage Class Changed
+   * - Object Access Tier Changed
+   * - Object ACL Updated
+   * - Object Tags Added
+   * - Object Tags Deleted
+   */
+  enableEventBridgeNotification(): void;
 }
 
 /**
@@ -885,7 +914,21 @@ export abstract class BucketBase extends Resource implements IBucket {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
   }
 
-  protected enableEventBridgeNotification() {
+  /**
+   * Enables event bridge notification, causing all events below to be sent to EventBridge:
+   *
+   * - Object Deleted (DeleteObject)
+   * - Object Deleted (Lifecycle expiration)
+   * - Object Restore Initiated
+   * - Object Restore Completed
+   * - Object Restore Expired
+   * - Object Storage Class Changed
+   * - Object Access Tier Changed
+   * - Object ACL Updated
+   * - Object Tags Added
+   * - Object Tags Deleted
+   */
+  public enableEventBridgeNotification() {
     this.withNotifications(notifications => notifications.enableEventBridgeNotification());
   }
 
@@ -1537,6 +1580,17 @@ export interface Tag {
  *
  * This bucket does not yet have all features that exposed by the underlying
  * BucketResource.
+ *
+ * @example
+ *
+ * new Bucket(scope, 'Bucket', {
+ *   blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+ *   encryption: BucketEncryption.S3_MANAGED,
+ *   enforceSSL: true,
+ *   versioned: true,
+ *   removalPolicy: RemovalPolicy.RETAIN,
+ * });
+ *
  */
 export class Bucket extends BucketBase {
 

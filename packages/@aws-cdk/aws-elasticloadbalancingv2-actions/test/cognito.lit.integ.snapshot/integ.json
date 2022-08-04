@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-elasticloadbalancingv2-actions/test/integ.cognito.lit": {
+    "integ.cognito.lit": {
       "stacks": [
         "integ-cognito"
       ],

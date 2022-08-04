@@ -19,7 +19,7 @@ import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setLogLevel } from '../lib/logging';
+import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
@@ -79,6 +79,7 @@ async function parseCommandLineArguments() {
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('notices', { type: 'boolean', desc: 'Show relevant notices' })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
+    .option('ci', { type: 'boolean', desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr', default: process.env.CI !== undefined })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
     )
@@ -108,7 +109,6 @@ async function parseCommandLineArguments() {
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
-      .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
       .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
       // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
@@ -227,7 +227,8 @@ async function parseCommandLineArguments() {
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false })
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
-      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false }))
+      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
+      .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
@@ -238,6 +239,7 @@ async function parseCommandLineArguments() {
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
+      .option('force', { alias: 'f', desc: 'Ignore missing key error', type: 'boolean', default: false })
       .option('clear', { desc: 'Clear all context', type: 'boolean' }))
     .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) => yargs
       .option('browser', {
@@ -268,6 +270,10 @@ async function initCommandLine() {
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
     setLogLevel(argv.verbose);
+  }
+
+  if (argv.ci) {
+    setCI(true);
   }
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
@@ -412,7 +418,9 @@ async function initCommandLine() {
           strict: args.strict,
           contextLines: args.contextLines,
           securityOnly: args.securityOnly,
-          fail: args.fail || !enableDiffNoFail,
+          fail: args.fail != null ? args.fail : !enableDiffNoFail,
+          stream: args.ci ? process.stdout : undefined,
+          compareAgainstProcessedTemplate: args.processed,
         });
 
       case 'bootstrap':
@@ -514,6 +522,7 @@ async function initCommandLine() {
           exclusively: args.exclusively,
           force: args.force,
           roleArn: args.roleArn,
+          ci: args.ci,
         });
 
       case 'synthesize':

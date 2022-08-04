@@ -322,6 +322,28 @@ export interface ClusterProps {
    * @default false
    */
   readonly publiclyAccessible?: boolean
+
+  /**
+   * If this flag is set, the cluster resizing type will be set to classic.
+   * When resizing a cluster, classic resizing will always provision a new cluster and transfer the data there.
+   *
+   * Classic resize takes more time to complete, but it can be useful in cases where the change in node count or
+   * the node type to migrate to doesn't fall within the bounds for elastic resize.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#elastic-resize
+   *
+   * @default - Elastic resize type
+   */
+  readonly classicResizing?: boolean
+
+  /**
+   * The Elastic IP (EIP) address for the cluster.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-clusters-vpc.html
+   *
+   * @default - No Elastic IP
+   */
+  readonly elasticIp?: string
 }
 
 /**
@@ -485,6 +507,8 @@ export class Cluster extends ClusterBase {
       // Encryption
       kmsKeyId: props.encryptionKey?.keyId,
       encrypted: props.encrypted ?? true,
+      classic: props.classicResizing,
+      elasticIp: props.elasticIp,
     });
 
     cluster.applyRemovalPolicy(removalPolicy, {

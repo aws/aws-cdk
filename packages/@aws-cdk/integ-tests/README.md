@@ -143,7 +143,7 @@ const testCase = new IntegTest(app, 'CustomizedDeploymentWorkflow', {
         requireApproval: RequireApproval.NEVER,
         json: true,
       },
-	  },
+    },
     destroy: {
       args: {
         force: true,
@@ -263,6 +263,34 @@ integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: 'url',
 });
 ```
+
+By default, the `AwsApiCall` construct will automatically add the correct IAM policies
+to allow the Lambda function to make the API call. It does this based on the `service`
+and `api` that is provided. In the above example the service is `SQS` and the api is
+`receiveMessage` so it will create a policy with `Action: 'sqs:ReceiveMessage`.
+
+There are some cases where the permissions do not exactly match the service/api call, for
+example the S3 `listObjectsV2` api. In these cases it is possible to add the correct policy
+by accessing the `provider` object.
+
+```ts
+declare const app: App;
+declare const stack: Stack;
+declare const integ: IntegTest;
+
+const apiCall = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
+  Bucket: 'mybucket',
+});
+
+apiCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['s3:GetObject', 's3:ListBucket'],
+  Resource: ['*'],
+});
+```
+
+Note that addToRolePolicy() uses direct IAM JSON policy blobs, not a iam.PolicyStatement
+object like you will see in the rest of the CDK.
 
 ### EqualsAssertion
 
