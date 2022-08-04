@@ -223,5 +223,18 @@
    "Type": "String",
    "Description": "Artifact hash for asset \"c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a\""
   }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttGraphqlApi1B6CF24CApiIdE34D50AD": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GraphqlApi1B6CF24C",
+     "ApiId"
+    ]
+   },
+   "Export": {
+    "Name": "AppSyncIntegLogRetention:ExportsOutputFnGetAttGraphqlApi1B6CF24CApiIdE34D50AD"
+   }
+  }
  }
 }
