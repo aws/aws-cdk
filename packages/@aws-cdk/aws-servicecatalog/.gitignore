@@ -7,6 +7,7 @@ product-stack-snapshots
 *.generated.ts
 dist
 .jsii
+.jsii.gz
 
 .LAST_BUILD
 .nyc_output

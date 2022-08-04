@@ -18,6 +18,7 @@ dist
 
 # Include .jsii
 !.jsii
+!.jsii.gz
 
 *.tsbuildinfo
 

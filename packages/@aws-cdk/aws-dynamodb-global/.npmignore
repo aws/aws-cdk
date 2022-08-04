@@ -12,6 +12,7 @@ dist
 
 # Include .jsii
 !.jsii
+!.jsii.gz
 
 *.snk
 lambda-packages/aws-global-table-coordinator/node_modules

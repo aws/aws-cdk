@@ -4,6 +4,7 @@ tsconfig.json
 .LAST_PACKAGE
 .LAST_BUILD
 .jsii
+.jsii.gz
 *.d.ts
 *.js
 *.snk

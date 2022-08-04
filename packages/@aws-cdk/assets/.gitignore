@@ -10,6 +10,7 @@ tsconfig.json
 coverage
 
 .jsii
+.jsii.gz
 
 nyc.config.js
 .LAST_PACKAGE

@@ -18,6 +18,7 @@ dist
 *.tsbuildinfo
 tsconfig.json
 !.jsii
+!.jsii.gz
 .eslintrc.js
 jest.config.js
 

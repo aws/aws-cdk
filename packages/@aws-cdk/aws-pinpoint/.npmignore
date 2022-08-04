@@ -20,6 +20,7 @@ dist
 
 # Include .jsii
 !.jsii
+!.jsii.gz
 
 tsconfig.json
 .eslintrc.js

@@ -3,6 +3,7 @@
 *.js
 *.js.map
 .jsii
+.jsii.gz
 dist
 lib/generated/resources.ts
 node_modules

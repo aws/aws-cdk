@@ -8,6 +8,7 @@ tsconfig.json
 dist
 lib/generated/resources.ts
 .jsii
+.jsii.gz
 lib/*.zip
 
 .LAST_BUILD

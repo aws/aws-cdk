@@ -13,6 +13,7 @@ coverage
 
 # Include .jsii
 !.jsii
+!.jsii.gz
 
 *.snk
 

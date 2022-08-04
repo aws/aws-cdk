@@ -2,6 +2,7 @@ dist
 .LAST_PACKAGE
 .LAST_BUILD
 .jsii
+.jsii.gz
 .nyc_output
 nyc.config.js
 tsconfig.json

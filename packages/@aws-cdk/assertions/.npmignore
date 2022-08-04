@@ -21,6 +21,7 @@ jest.config.js
 junit.xml
 test/
 !.jsii
+!.jsii.gz
 !*.js
 !*.lit.ts
 **/*.integ.snapshot

@@ -5,6 +5,7 @@
 dist
 lib/generated/resources.ts
 .jsii
+.jsii.gz
 
 .coverage
 __pycache__

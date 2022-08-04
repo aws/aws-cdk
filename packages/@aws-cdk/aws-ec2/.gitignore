@@ -6,6 +6,7 @@ tsconfig.json
 dist
 test/cdk.json
 .jsii
+.jsii.gz
 
 .LAST_BUILD
 .nyc_output

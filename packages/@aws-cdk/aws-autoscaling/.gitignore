@@ -6,6 +6,7 @@ tsconfig.json
 node_modules
 dist
 .jsii
+.jsii.gz
 
 .LAST_BUILD
 .nyc_output

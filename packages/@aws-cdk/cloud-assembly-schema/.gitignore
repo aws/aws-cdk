@@ -8,6 +8,7 @@ node_modules
 dist
 tsconfig.json
 .jsii
+.jsii.gz
 
 .LAST_BUILD
 .LAST_PACKAGE

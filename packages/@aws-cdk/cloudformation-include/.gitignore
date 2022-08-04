@@ -6,6 +6,7 @@ dist
 lib/generated/resources.ts
 *.tgz
 .jsii
+.jsii.gz
 tsconfig.json
 
 .LAST_BUILD

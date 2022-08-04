@@ -12,6 +12,7 @@ dist
 
 # Include .jsii
 !.jsii
+!.jsii.gz
 
 lambda/test
 lambda/*.sh

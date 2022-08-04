@@ -6,6 +6,7 @@ lib/vendored/
 *.js.map
 *.snk
 .jsii
+.jsii.gz
 .LAST_BUILD
 .LAST_PACKAGE
 nyc.config.js
