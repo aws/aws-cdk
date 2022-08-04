@@ -226,3 +226,15 @@ test('log retention should be configured with given retention time when specifie
     RetentionInDays: 7,
   });
 });
+
+test('log retention should not appear when no retention time is specified', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'no-log-retention', {
+    authorizationConfig: {},
+    name: 'no-log-retention',
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  });
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 0);
+});
