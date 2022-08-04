@@ -1096,7 +1096,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     if (!props.vpc) {
       if (props.vpcSubnets) {
-        throw new Error("'vpcSubnets' may not be specified without 'vpc'");
+        throw new Error('Cannot configure \'vpcSubnets\' without configuring a VPC');
       }
       return undefined;
     }

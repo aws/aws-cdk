@@ -336,7 +336,7 @@ describe('lambda + vpc', () => {
         runtime: lambda.Runtime.NODEJS_14_X,
         vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
       });
-    }).toThrow("'vpcSubnets' may not be specified without 'vpc'");
+    }).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');
   });
 });
 
