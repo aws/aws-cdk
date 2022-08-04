@@ -2314,6 +2314,224 @@
               "fqn": "@aws-cdk/aws-batch.JobDefinition",
               "version": "0.0.0"
             }
+          },
+          "batch-secret": {
+            "id": "batch-secret",
+            "path": "batch-stack/batch-secret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-stack/batch-secret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "execution-role": {
+            "id": "execution-role",
+            "path": "batch-stack/execution-role",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-stack/execution-role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "batch.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "batch-stack/execution-role/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-stack/execution-role/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "secretsmanager:DescribeSecret",
+                                "secretsmanager:GetSecretValue"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "batchsecret7CD5E4C6"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "executionroleDefaultPolicy497F11A3",
+                        "roles": [
+                          {
+                            "Ref": "executionroleD9A39BE6"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "batch-job-def-fargate": {
+            "id": "batch-job-def-fargate",
+            "path": "batch-stack/batch-job-def-fargate",
+            "children": {
+              "Resource-Batch-Job-Container-Definition": {
+                "id": "Resource-Batch-Job-Container-Definition",
+                "path": "batch-stack/batch-job-def-fargate/Resource-Batch-Job-Container-Definition",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-stack/batch-job-def-fargate/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Batch::JobDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "container",
+                    "containerProperties": {
+                      "environment": [
+                        {
+                          "name": "AWS_REGION",
+                          "value": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        {
+                          "name": "AWS_ACCOUNT",
+                          "value": {
+                            "Ref": "AWS::AccountId"
+                          }
+                        }
+                      ],
+                      "secrets": [
+                        {
+                          "name": "SECRET",
+                          "valueFrom": {
+                            "Ref": "batchsecret7CD5E4C6"
+                          }
+                        }
+                      ],
+                      "image": "docker/whalesay",
+                      "jobRoleArn": {
+                        "Fn::GetAtt": [
+                          "DefaultJobRole72A01394",
+                          "Arn"
+                        ]
+                      },
+                      "executionRoleArn": {
+                        "Fn::GetAtt": [
+                          "executionroleD9A39BE6",
+                          "Arn"
+                        ]
+                      },
+                      "mountPoints": [
+                        {
+                          "containerPath": "/mnt",
+                          "sourceVolume": "batchstackEFS25FF7B1E",
+                          "readOnly": true
+                        }
+                      ],
+                      "privileged": false,
+                      "readonlyRootFilesystem": false,
+                      "volumes": [
+                        {
+                          "name": "batchstackEFS25FF7B1E",
+                          "efsVolumeConfiguration": {
+                            "fileSystemId": {
+                              "Ref": "EFSF3301CFD"
+                            },
+                            "transitEncryption": "ENABLED",
+                            "authorizationConfig": {
+                              "accessPointId": {
+                                "Ref": "EFSAccessPointA847C4A5"
+                              },
+                              "iam": "ENABLED"
+                            }
+                          }
+                        }
+                      ],
+                      "fargatePlatformConfiguration": {
+                        "platformVersion": "1.4.0"
+                      },
+                      "resourceRequirements": [
+                        {
+                          "type": "VCPU",
+                          "value": "0.25"
+                        },
+                        {
+                          "type": "MEMORY",
+                          "value": "512"
+                        }
+                      ]
+                    },
+                    "platformCapabilities": [
+                      "FARGATE"
+                    ],
+                    "retryStrategy": {
+                      "attempts": 1
+                    },
+                    "timeout": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-batch.CfnJobDefinition",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-batch.JobDefinition",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {

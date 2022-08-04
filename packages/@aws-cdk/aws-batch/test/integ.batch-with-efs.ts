@@ -3,7 +3,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
-// import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as batch from '../lib/';
@@ -37,7 +37,7 @@ const accessPoint = new efs.AccessPoint(
   },
 );
 
-let volumes: ecs.Volume[] = [{
+const volumes: ecs.Volume[] = [{
   name: cdk.Names.uniqueId(efsFs),
   efsVolumeConfiguration: {
     fileSystemId: efsFs.fileSystemId,
@@ -49,7 +49,7 @@ let volumes: ecs.Volume[] = [{
   },
 }];
 
-let mountPoints: ecs.MountPoint[] = [{
+const mountPoints: ecs.MountPoint[] = [{
   containerPath: '/mnt',
   sourceVolume: volumes[0].name,
   readOnly: true,
@@ -174,7 +174,6 @@ new batch.JobDefinition(stack, 'batch-job-def-from-ecr', {
   },
 });
 
-/*
 const secret = new secretsmanager.Secret(stack, 'batch-secret');
 const executionRole = new iam.Role(stack, 'execution-role', {
   assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
@@ -184,6 +183,9 @@ new batch.JobDefinition(stack, 'batch-job-def-fargate', {
   platformCapabilities: [batch.PlatformCapabilities.FARGATE],
   container: {
     image: ecs.ContainerImage.fromRegistry('docker/whalesay'),
+    // Have to specify 1.4 here rather than LATEST - stack fails to deploy with
+    // 'LATEST' which is a bug somewhere in CloudFormation/Fargate
+    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     executionRole,
     jobRole,
     secrets: {
@@ -193,7 +195,6 @@ new batch.JobDefinition(stack, 'batch-job-def-fargate', {
     volumes,
   },
 });
-*/
 
 new integ.IntegTest(app, 'BatchWithEFSTest', {
   testCases: [stack],

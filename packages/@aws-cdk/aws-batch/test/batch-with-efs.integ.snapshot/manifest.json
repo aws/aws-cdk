@@ -380,6 +380,30 @@
             "type": "aws:cdk:logicalId",
             "data": "batchjobdeffromecrE0E30DAD"
           }
+        ],
+        "/batch-stack/batch-secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchsecret7CD5E4C6"
+          }
+        ],
+        "/batch-stack/execution-role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "executionroleD9A39BE6"
+          }
+        ],
+        "/batch-stack/execution-role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "executionroleDefaultPolicy497F11A3"
+          }
+        ],
+        "/batch-stack/batch-job-def-fargate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchjobdeffargate7FE30059"
+          }
         ]
       },
       "displayName": "batch-stack"
