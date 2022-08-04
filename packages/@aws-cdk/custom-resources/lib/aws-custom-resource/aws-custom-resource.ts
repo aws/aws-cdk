@@ -260,10 +260,16 @@ export interface AwsCustomResourceProps {
    * to note the that function's role will eventually accumulate the
    * permissions/grants from all resources.
    *
+   * Note that a policy must be specified if `role` is not provided, as
+   * by default a new role is created which requires policy changes to access
+   * resources.
+   *
+   * @default - no policy added
+   *
    * @see Policy.fromStatements
    * @see Policy.fromSdkCalls
    */
-  readonly policy: AwsCustomResourcePolicy;
+  readonly policy?: AwsCustomResourcePolicy;
 
   /**
    * The execution role for the singleton Lambda function implementing this custom
@@ -344,6 +350,10 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       throw new Error('At least `onCreate`, `onUpdate` or `onDelete` must be specified.');
     }
 
+    if (!props.role && !props.policy) {
+      throw new Error('Either `policy` or `role` must be specified.');
+    }
+
     for (const call of [props.onCreate, props.onUpdate]) {
       if (call && !call.physicalResourceId) {
         throw new Error('`physicalResourceId` must be specified for onCreate and onUpdate calls.');
@@ -377,37 +387,6 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     });
     this.grantPrincipal = provider.grantPrincipal;
 
-    // Create the policy statements for the custom resource function role, or use the user-provided ones
-    const statements = [];
-    if (props.policy.statements.length !== 0) {
-      // Use custom statements provided by the user
-      for (const statement of props.policy.statements) {
-        statements.push(statement);
-      }
-    } else {
-      // Derive statements from AWS SDK calls
-      for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
-        if (call && call.assumedRoleArn == null) {
-          const statement = new iam.PolicyStatement({
-            actions: [awsSdkToIamAction(call.service, call.action)],
-            resources: props.policy.resources,
-          });
-          statements.push(statement);
-        } else if (call && call.assumedRoleArn != null) {
-          const statement = new iam.PolicyStatement({
-            actions: ['sts:AssumeRole'],
-            resources: [call.assumedRoleArn],
-          });
-          statements.push(statement);
-        }
-      }
-    }
-    const policy = new iam.Policy(this, 'CustomResourcePolicy', {
-      statements: statements,
-    });
-    if (provider.role !== undefined) {
-      policy.attachToRole(provider.role);
-    }
     const create = props.onCreate || props.onUpdate;
     this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
@@ -421,9 +400,43 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       },
     });
 
-    // If the policy was deleted first, then the function might lose permissions to delete the custom resource
-    // This is here so that the policy doesn't get removed before onDelete is called
-    this.customResource.node.addDependency(policy);
+    // Create the policy statements for the custom resource function role, or use the user-provided ones
+    if (props.policy) {
+      const statements = [];
+      if (props.policy.statements.length !== 0) {
+        // Use custom statements provided by the user
+        for (const statement of props.policy.statements) {
+          statements.push(statement);
+        }
+      } else {
+        // Derive statements from AWS SDK calls
+        for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
+          if (call && call.assumedRoleArn == null) {
+            const statement = new iam.PolicyStatement({
+              actions: [awsSdkToIamAction(call.service, call.action)],
+              resources: props.policy.resources,
+            });
+            statements.push(statement);
+          } else if (call && call.assumedRoleArn != null) {
+            const statement = new iam.PolicyStatement({
+              actions: ['sts:AssumeRole'],
+              resources: [call.assumedRoleArn],
+            });
+            statements.push(statement);
+          }
+        }
+      }
+      const policy = new iam.Policy(this, 'CustomResourcePolicy', {
+        statements: statements,
+      });
+      if (provider.role !== undefined) {
+        policy.attachToRole(provider.role);
+      }
+
+      // If the policy was deleted first, then the function might lose permissions to delete the custom resource
+      // This is here so that the policy doesn't get removed before onDelete is called
+      this.customResource.node.addDependency(policy);
+    }
   }
 
   /**
