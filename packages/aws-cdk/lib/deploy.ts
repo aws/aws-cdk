@@ -11,7 +11,6 @@ type DeploymentState = 'pending' | 'queued' | 'deploying' | 'completed' | 'faile
 export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], { concurrency, deployStack }: Options): Promise<void> => {
   const queue = new PQueue({ concurrency });
   const deploymentStates = stacks.reduce((acc, stack) => ({ ...acc, [stack.id]: 'pending' as const }), {} as Record<string, DeploymentState>);
-  const deployPromises: Promise<void>[] = [];
 
   const isStackUnblocked = (stack: cxapi.CloudFormationStackArtifact) =>
     stack.dependencies
@@ -21,31 +20,32 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
 
   const hasAnyStackFailed = (states: Record<string, DeploymentState>) => Object.values(states).includes('failed');
 
+  const deploymentErrors: Error[] = [];
+
   const enqueueStackDeploys = () => {
     stacks.forEach(async (stack) => {
       if (deploymentStates[stack.id] === 'pending' && isStackUnblocked(stack)) {
         deploymentStates[stack.id] = 'queued';
 
-        deployPromises.push(
-          queue.add(async () => {
-            // Do not start new deployments if any has already failed
-            if (hasAnyStackFailed(deploymentStates)) {
-              deploymentStates[stack.id] = 'skipped';
-              return;
-            }
+        await queue.add(async () => {
+          // Do not start new deployments if any has already failed
+          if (hasAnyStackFailed(deploymentStates)) {
+            deploymentStates[stack.id] = 'skipped';
+            return;
+          }
 
-            deploymentStates[stack.id] = 'deploying';
-            try {
-              await deployStack(stack);
-            } catch (e) {
-              deploymentStates[stack.id] = 'failed';
-              throw e;
-            }
+          deploymentStates[stack.id] = 'deploying';
 
-            deploymentStates[stack.id] = 'completed';
-            await enqueueStackDeploys();
-          }),
-        );
+          await deployStack(stack).catch((err) => {
+            deploymentStates[stack.id] = 'failed';
+            throw err;
+          });
+
+          deploymentStates[stack.id] = 'completed';
+          enqueueStackDeploys();
+        }).catch((err) => {
+          deploymentErrors.push(err);
+        });
       }
     });
   };
@@ -54,11 +54,7 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
 
   await queue.onIdle();
 
-  const results = await Promise.allSettled(deployPromises);
-  const isRejectedResult = (result: PromiseSettledResult<void>): result is PromiseRejectedResult => result.status === 'rejected';
-  const errors = results.filter(isRejectedResult).map(({ reason }) => reason);
-
-  if (errors.length) {
-    throw Error(`Stack Deployments Failed: ${errors}`);
+  if (deploymentErrors.length) {
+    throw Error(`Stack Deployments Failed: ${deploymentErrors}`);
   }
 };

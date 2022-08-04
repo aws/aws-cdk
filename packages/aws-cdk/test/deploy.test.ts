@@ -3,7 +3,7 @@ import { deployStacks } from '../lib/deploy';
 
 type Stack = cxapi.CloudFormationStackArtifact;
 
-const sleep = async (duration: number) => new Promise((resolve) => setTimeout(() => resolve(), duration));
+const sleep = async (duration: number) => new Promise<void>((resolve) => setTimeout(() => resolve(), duration));
 
 /**
  * Repurposing unused stack attributes to create specific test scenarios
