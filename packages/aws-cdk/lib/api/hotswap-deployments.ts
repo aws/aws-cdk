@@ -68,6 +68,11 @@ async function findAllHotswappableChanges(
   sdk: ISDK,
   nestedStackNames: { [nestedStackName: string]: NestedStackNames },
 ): Promise<HotswapOperation[] | undefined> {
+  // Skip hotswap if there is any change on stack outputs
+  if (stackChanges.outputs.differenceCount > 0) {
+    return undefined;
+  }
+
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
   let foundNonHotswappableChange = false;
