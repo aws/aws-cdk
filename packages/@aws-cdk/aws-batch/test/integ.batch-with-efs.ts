@@ -199,3 +199,5 @@ new batch.JobDefinition(stack, 'batch-job-def-fargate', {
 new integ.IntegTest(app, 'BatchWithEFSTest', {
   testCases: [stack],
 });
+
+app.synth();

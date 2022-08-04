@@ -359,8 +359,6 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
 
   /**
    * Connections for this compute environment.
-   *
-   * @attribute
    */
   public readonly connections: ec2.Connections;
 
