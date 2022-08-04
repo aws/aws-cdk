@@ -76,7 +76,7 @@ const spotEnvironment = new batch.ComputeEnvironment(this, 'MySpotEnvironment', 
 
 ### Compute Environments and Security Groups
 
-Compute Environments now implement the IConnectable interface, which means you can use
+Compute Environments implement the `IConnectable` interface, which means you can use
 connections on other CDK resources to manipulate the security groups and allow access.
 
 For example, allowing Compute Environments to access an EFS filesystem:
