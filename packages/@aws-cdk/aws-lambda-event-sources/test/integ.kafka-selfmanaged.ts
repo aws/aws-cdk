@@ -50,7 +50,7 @@ zp2mwJn2NYB7AZ7+imp0azDZb+8YG2aUCiyqb6PnnA==
         topic: 'my-test-topic',
         secret: clientCertificatesSecret,
         authenticationMethod: AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
-        encryption: rootCASecret,
+        rootCACertificate: rootCASecret,
         startingPosition: lambda.StartingPosition.TRIM_HORIZON,
       }),
     );

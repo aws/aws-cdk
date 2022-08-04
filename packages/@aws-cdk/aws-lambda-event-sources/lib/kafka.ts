@@ -10,7 +10,7 @@ import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 /**
  * Properties for a Kafka event source
  */
-export interface KafkaEventSourceProps extends BaseStreamEventSourceProps{
+export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
   /**
    * The Kafka topic to subscribe to
    */
@@ -96,11 +96,11 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
   readonly authenticationMethod?: AuthenticationMethod
 
   /**
-   * Choose the secret key containing the root CA certificate used by your Kafka brokers for TLS encryption.
+   * Choose the secret containing the root CA certificate used by your Kafka brokers for TLS encryption.
    *
    * @default - none, required if your Kafka brokers use certificates signed by a private CA
    */
-  readonly encryption?: secretsmanager.Secret;
+  readonly rootCACertificate?: secretsmanager.Secret;
 }
 
 /**
@@ -238,10 +238,10 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       sourceAccessConfigurations.push({ type: authType, uri: this.innerProps.secret.secretArn });
     }
 
-    if (this.innerProps.encryption !== undefined) {
+    if (this.innerProps.rootCACertificate !== undefined) {
       sourceAccessConfigurations.push({
         type: lambda.SourceAccessConfigurationType.SERVER_ROOT_CA_CERTIFICATE,
-        uri: this.innerProps.encryption.secretArn,
+        uri: this.innerProps.rootCACertificate.secretArn,
       });
     }
 

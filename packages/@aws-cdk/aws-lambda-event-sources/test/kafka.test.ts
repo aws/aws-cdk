@@ -524,13 +524,13 @@ describe('KafkaEventSource', () => {
       });
     });
 
-    test('using CLIENT_CERTIFICATE_TLS_AUTH with encryption', () => {
+    test('using CLIENT_CERTIFICATE_TLS_AUTH with rootCA', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
       const kafkaTopic = 'some-topic';
       const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
-      const encryption = new Secret(stack, 'EncryptionSecret', { secretName: 'AmazonMSK_KafkaSecret_Root_CA' });
+      const rootCACertificate = new Secret(stack, 'RootCASecret', { secretName: 'AmazonMSK_KafkaSecret_Root_CA' });
       const bootstrapServers = ['kafka-broker:9092'];
       const sg = SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789');
       const vpc = new Vpc(stack, 'Vpc');
@@ -546,7 +546,7 @@ describe('KafkaEventSource', () => {
           vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
-          encryption: encryption,
+          rootCACertificate: rootCACertificate,
         }));
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
@@ -560,19 +560,19 @@ describe('KafkaEventSource', () => {
           {
             Type: 'SERVER_ROOT_CA_CERTIFICATE',
             URI: {
-              Ref: 'EncryptionSecretA7F02943',
+              Ref: 'RootCASecret21632BB9',
             },
           },
         ]),
       });
     });
 
-    test('with encryption', () => {
+    test('with rootCA', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
       const kafkaTopic = 'some-topic';
-      const encryption = new Secret(stack, 'EncryptionSecret', { secretName: 'AmazonMSK_KafkaSecret_Root_CA' });
+      const rootCACertificate = new Secret(stack, 'RootCASecret', { secretName: 'AmazonMSK_KafkaSecret_Root_CA' });
       const bootstrapServers = ['kafka-broker:9092'];
       const sg = SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789');
       const vpc = new Vpc(stack, 'Vpc');
@@ -586,7 +586,7 @@ describe('KafkaEventSource', () => {
           vpc: vpc,
           vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
           securityGroup: sg,
-          encryption: encryption,
+          rootCACertificate: rootCACertificate,
         }));
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
@@ -594,7 +594,7 @@ describe('KafkaEventSource', () => {
           {
             Type: 'SERVER_ROOT_CA_CERTIFICATE',
             URI: {
-              Ref: 'EncryptionSecretA7F02943',
+              Ref: 'RootCASecret21632BB9',
             },
           },
         ]),
