@@ -1,5 +1,5 @@
 {
-  "$version": "81.1.0",
+  "$version": "82.0.0",
   "PropertyTypes": {
     "AWS::FSx::FileSystem.AuditLogConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-windowsconfiguration-auditlogconfiguration.html",
