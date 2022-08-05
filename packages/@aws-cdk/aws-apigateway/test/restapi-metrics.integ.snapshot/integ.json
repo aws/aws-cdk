@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "MetricsTest/DefaultTest": {
+      "stacks": [
+        "restapi-metrics"
+      ],
+      "assertionStack": "MetricsTestDefaultTestDeployAssertEA4ED73F"
+    }
+  }
+}

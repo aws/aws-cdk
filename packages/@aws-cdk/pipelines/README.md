@@ -835,6 +835,34 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
 }
 ```
 
+### Using an existing AWS Codepipeline
+
+If you wish to use an existing `CodePipeline.Pipeline` while using the modern API's
+methods and classes, you can pass in the existing `CodePipeline.Pipeline` to be built upon
+instead of having the `pipelines.CodePipeline` construct create a new `CodePipeline.Pipeline`.
+This also gives you more direct control over the underlying `CodePipeline.Pipeline` construct
+if the way the modern API creates it doesn't allow for desired configurations.
+
+Here's an example of passing in an existing pipeline:
+
+```ts
+declare const codePipeline: codepipeline.Pipeline;
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+    }),
+    commands: ['npm ci','npm run build','npx cdk synth'],
+  }),
+  codePipeline: codePipeline,
+});
+```
+
+Note that if you provide an existing pipeline, you cannot provide values for
+`pipelineName`, `crossAccountKeys`, `reuseCrossRegionSupportStacks`, or `role`
+because those values are passed in directly to the underlying `codepipeline.Pipeline`.
+
 ## Using Docker in the pipeline
 
 Docker can be used in 3 different places in the pipeline:
