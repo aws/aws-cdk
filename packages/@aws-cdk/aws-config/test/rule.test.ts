@@ -298,4 +298,79 @@ describe('rule', () => {
       },
     });
   });
+
+  test('scope to resource', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new config.ManagedRule(stack, 'Rule', {
+      identifier: 'AWS_SUPER_COOL',
+      ruleScope: config.RuleScope.fromResources([
+        config.ResourceType.EC2_NETWORK_INTERFACE,
+        config.ResourceType.EC2_TRANSIT_GATEWAY,
+        config.ResourceType.EC2_TRANSIT_GATEWAY_ATTACHMENT,
+        config.ResourceType.EC2_TRANSIT_GATEWAY_ROUTE_TABLE,
+        config.ResourceType.EC2_REGISTERED_HA_INSTANCE,
+        config.ResourceType.EC2_LAUNCH_TEMPLATE,
+        config.ResourceType.ECR_REPOSITORY,
+        config.ResourceType.ECR_PUBLIC_REPOSITORY,
+        config.ResourceType.ECS_CLUSTER,
+        config.ResourceType.ECS_TASK_DEFINITION,
+        config.ResourceType.ECS_SERVICE,
+        config.ResourceType.EFS_FILE_SYSTEM,
+        config.ResourceType.EFS_ACCESS_POINT,
+        config.ResourceType.EMR_SECURITY_CONFIGURATION,
+        config.ResourceType.GUARDDUTY_DETECTOR,
+        config.ResourceType.OPENSEARCH_DOMAIN,
+        config.ResourceType.KINESIS_STREAM,
+        config.ResourceType.KINESIS_STREAM_CONSUMER,
+        config.ResourceType.MSK_CLUSTER,
+        config.ResourceType.ROUTE53_RESOLVER_RESOLVER_ENDPOINT,
+        config.ResourceType.ROUTE53_RESOLVER_RESOLVER_RULE,
+        config.ResourceType.ROUTE53_RESOLVER_RESOLVER_RULE_ASSOCIATION,
+        config.ResourceType.SAGEMAKER_CODE_REPOSITORY,
+        config.ResourceType.SAGEMAKER_MODEL,
+        config.ResourceType.SAGEMAKER_NOTEBOOK_INSTANCE,
+        config.ResourceType.WORKSPACES_CONNECTION_ALIAS,
+        config.ResourceType.WORKSPACES_WORKSPACE,
+      ]),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
+      Scope: {
+        ComplianceResourceTypes: [
+          'AWS::EC2::NetworkInterface',
+          'AWS::EC2::TransitGateway',
+          'AWS::EC2::TransitGatewayAttachment',
+          'AWS::EC2::TransitGatewayRouteTable',
+          'AWS::EC2::RegisteredHAInstance',
+          'AWS::EC2::LaunchTemplate',
+          'AWS::ECR::Repository',
+          'AWS::ECR::PublicRepository',
+          'AWS::ECS::Cluster',
+          'AWS::ECS::TaskDefinition',
+          'AWS::ECS::Service',
+          'AWS::EFS::FileSystem',
+          'AWS::EFS::AccessPoint',
+          'AWS::EMR::SecurityConfiguration',
+          'AWS::GuardDuty::Detector',
+          'AWS::OpenSearch::Domain',
+          'AWS::Kinesis::Stream',
+          'AWS::Kinesis::StreamConsumer',
+          'AWS::MSK::Cluster',
+          'AWS::Route53Resolver::ResolverEndpoint',
+          'AWS::Route53Resolver::ResolverRule',
+          'AWS::Route53Resolver::ResolverRuleAssociation',
+          'AWS::SageMaker::CodeRepository',
+          'AWS::SageMaker::Model',
+          'AWS::SageMaker::NotebookInstance',
+          'AWS::WorkSpaces::ConnectionAlias',
+          'AWS::WorkSpaces::Workspace',
+        ],
+      },
+    });
+  });
+
 });
