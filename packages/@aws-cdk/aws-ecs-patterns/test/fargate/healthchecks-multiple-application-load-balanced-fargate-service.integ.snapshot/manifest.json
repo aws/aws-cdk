@@ -252,7 +252,10 @@
         "/aws-ecs-integ/myService/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceTaskDef7FB8322A"
+            "data": "myServiceTaskDef7FB8322A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ/myService/TaskDef/web/LogGroup/Resource": [
