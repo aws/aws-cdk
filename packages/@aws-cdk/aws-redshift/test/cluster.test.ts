@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { AddParameterResultStatus, Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType } from '../lib';
+import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType } from '../lib';
 import { CfnCluster } from '../lib/redshift.generated';
 
 let stack: cdk.Stack;
@@ -289,10 +289,7 @@ describe('parameter group', () => {
       vpc,
     });
 
-    const result = cluster.addToParameterGroup('foo', 'bar');
-
-    // THEN
-    expect(result.parameterAddedResult).toBe(AddParameterResultStatus.SUCCESS);
+    cluster.addToParameterGroup('foo', 'bar');
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::Redshift::Cluster', {
@@ -311,22 +308,6 @@ describe('parameter group', () => {
     });
   });
 
-  test('fail to add parameter on an imported cluster', () => {
-
-    // WHEN
-    const cluster = Cluster.fromClusterAttributes(stack, 'Database', {
-      clusterEndpointAddress: 'addr',
-      clusterName: 'identifier',
-      clusterEndpointPort: 42,
-    });
-
-    const result = cluster.addToParameterGroup('foo', 'bar');
-
-    // THEN
-    expect(result.parameterAddedResult).toBe(AddParameterResultStatus.IMPORTED_RESOURCE_FAILURE);
-
-    Template.fromStack(stack).resourceCountIs('AWS::Redshift::ClusterParameterGroup', 0);
-  });
 });
 
 test('publicly accessible cluster', () => {

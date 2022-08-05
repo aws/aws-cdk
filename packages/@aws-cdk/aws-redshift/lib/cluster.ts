@@ -3,11 +3,11 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, Lazy, Names, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Duration, IResource, Names, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { AddParameterResult, AddParameterResultStatus, ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
+import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
 import { CfnCluster } from './redshift.generated';
 import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
 
@@ -142,19 +142,6 @@ export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.IS
    * @attribute EndpointAddress,EndpointPort
    */
   readonly clusterEndpoint: Endpoint;
-
-  /**
-   * Adds a parameter to the Clusters' parameter group
-   *
-   * @param name the parameter name
-   * @param value the parameter name
-   * @returns metadata about the execution of this method. If the parameter
-   * was not added, the value of `parameterAddedResult` will report a failure status. You
-   * should always check this value to make sure that the operation was
-   * actually carried out. Otherwise, synthesis and deploy will terminate
-   * silently, which may be confusing.
-   */
-  addToParameterGroup(name: string, value: string): AddParameterResult;
 }
 
 /**
@@ -380,11 +367,6 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly connections: ec2.Connections;
 
   /**
-   * Indicates if the parameter group can be updated.
-   */
-  protected abstract autoCreateParameterGroup: boolean;
-
-  /**
    * Renders the secret attachment target specifications.
    */
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
@@ -394,9 +376,6 @@ abstract class ClusterBase extends Resource implements ICluster {
     };
   }
 
-  public addToParameterGroup(_name: string, _value: string): AddParameterResult {
-    return { parameterAddedResult: AddParameterResultStatus.IMPORTED_RESOURCE_FAILURE };
-  }
 }
 
 /**
@@ -417,7 +396,6 @@ export class Cluster extends ClusterBase {
       public readonly clusterName = attrs.clusterName;
       public readonly instanceIdentifiers: string[] = [];
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.clusterEndpointPort);
-      protected autoCreateParameterGroup = false;
     }
     return new Import(scope, id);
   }
@@ -456,6 +434,12 @@ export class Cluster extends ClusterBase {
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
+   * The underlying CfnCluster
+   */
+  private readonly cluster: CfnCluster;
+
+
+  /**
    * The cluster's parameter group
    */
   protected parameterGroup?: IClusterParameterGroup;
@@ -465,7 +449,6 @@ export class Cluster extends ClusterBase {
    */
   protected clusterIdentifier: string;
 
-  protected autoCreateParameterGroup = true;
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
@@ -517,7 +500,7 @@ export class Cluster extends ClusterBase {
       };
     }
 
-    const cluster = new CfnCluster(this, 'Resource', {
+    this.cluster = new CfnCluster(this, 'Resource', {
       // Basic
       allowVersionUpgrade: true,
       automatedSnapshotRetentionPeriod: 1,
@@ -526,7 +509,7 @@ export class Cluster extends ClusterBase {
       clusterSubnetGroupName: subnetGroup.clusterSubnetGroupName,
       vpcSecurityGroupIds: securityGroupIds,
       port: props.port,
-      clusterParameterGroupName: Lazy.string({ produce: () => this.parseParameterGroup() }),
+      clusterParameterGroupName: props.parameterGroup && props.parameterGroup.clusterParameterGroupName,
       // Admin (unsafeUnwrap here is safe)
       masterUsername: secret?.secretValueFromJson('username').unsafeUnwrap() ?? props.masterUser.masterUsername,
       masterUserPassword: secret?.secretValueFromJson('password').unsafeUnwrap()
@@ -546,15 +529,15 @@ export class Cluster extends ClusterBase {
       elasticIp: props.elasticIp,
     });
 
-    cluster.applyRemovalPolicy(removalPolicy, {
+    this.cluster.applyRemovalPolicy(removalPolicy, {
       applyToUpdateReplacePolicy: true,
     });
 
-    this.clusterName = cluster.ref;
+    this.clusterName = this.cluster.ref;
 
     // create a number token that represents the port of the cluster
-    const portAttribute = Token.asNumber(cluster.attrEndpointPort);
-    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(this.cluster.attrEndpointPort);
+    this.clusterEndpoint = new Endpoint(this.cluster.attrEndpointAddress, portAttribute);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -562,7 +545,7 @@ export class Cluster extends ClusterBase {
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups, defaultPort });
-    this.clusterIdentifier = props.clusterName ?? Names.uniqueId(this);
+    this.clusterIdentifier = props.clusterName ?? Names.uniqueResourceName(this, {});
   }
 
   /**
@@ -629,23 +612,23 @@ export class Cluster extends ClusterBase {
     }
   }
 
-  public addToParameterGroup(name: string, value: string): AddParameterResult {
-    if (!this.parameterGroup && this.autoCreateParameterGroup) {
+  /**
+   * Adds a parameter to the Clusters' parameter group
+   *
+   * @param name the parameter name
+   * @param value the parameter name
+   */
+  public addToParameterGroup(name: string, value: string): void {
+    if (!this.parameterGroup) {
       const param: { [name: string]: string } = {};
       param[name] = value;
       this.parameterGroup = new ClusterParameterGroup(this, 'ParameterGroup', {
         description: `Parameter Group for the ${this.clusterIdentifier} Redshift cluster`,
         parameters: param,
       });
-      return { parameterAddedResult: AddParameterResultStatus.SUCCESS };
-    } else if (this.parameterGroup) {
-      return this.parameterGroup.addParameter(name, value);
+      this.cluster.clusterParameterGroupName = this.parameterGroup.clusterParameterGroupName;
     } else {
-      return { parameterAddedResult: AddParameterResultStatus.IMPORTED_RESOURCE_FAILURE };
-    };
-  }
-
-  private parseParameterGroup(): string | undefined {
-    return this.parameterGroup?.clusterParameterGroupName;
+      this.parameterGroup.addParameter(name, value);
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { IResource, Resource, Lazy } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnClusterParameterGroup } from './redshift.generated';
 
@@ -14,31 +14,31 @@ export interface IClusterParameterGroup extends IResource {
   readonly clusterParameterGroupName: string;
 
   /**
-   * Adds a parameter to the parameter group
+   * Adds a parameter to the parameter group.
    *
    * @param name the parameter name
    * @param value the parameter name
-   * @returns metadata about the execution of this method. If the parameter
-   * was not added, the value of `parameterAddedResult` will report a failure status. You
-   * should always check this value to make sure that the operation was
-   * actually carried out. Otherwise, synthesis and deploy will terminate
-   * silently, which may be confusing.
    */
-  addParameter(name: string, value: string): AddParameterResult;
+  addParameter(name: string, value: string): void;
 }
 
 /**
  * A new cluster or instance parameter group
  */
 abstract class ClusterParameterGroupBase extends Resource implements IClusterParameterGroup {
+
   /**
    * The name of the parameter group
    */
   public abstract readonly clusterParameterGroupName: string;
 
-  public addParameter(_name: string, _value: string): AddParameterResult {
-    return { parameterAddedResult: AddParameterResultStatus.IMPORTED_RESOURCE_FAILURE };
-  }
+  /**
+   * Adds a parameter to the parameter group
+   *
+   * @param name the parameter name
+   * @param value the parameter name
+   */
+  abstract addParameter(name: string, value: string): void;
 }
 
 /**
@@ -59,40 +59,6 @@ export interface ClusterParameterGroupProps {
 }
 
 /**
- * Result of calling addParameter
- */
-export interface AddParameterResult {
-  /**
-   * Whether the parameter was added
-   */
-  readonly parameterAddedResult: AddParameterResultStatus;
-}
-
-/**
- * Success and failure statuses for adding parameters
- */
-export enum AddParameterResultStatus {
-  /**
-   * The named parameter did not already exist and was added.
-   */
-  SUCCESS,
-  /**
-   * The named parameter already exists and the provided value matched the existing value.
-   */
-  SAME_VALUE_FAILURE,
-  /**
-   * The named parameter already exists and the provided value did not match the existing value.
-   */
-  CONFLICTING_VALUE_FAILURE,
-  /**
-   * The operation failed due to one of the following reasons.
-   * The parameter group is an imported parameter group.
-   * The cluster is an imported cluster.
-   */
-  IMPORTED_RESOURCE_FAILURE
-}
-
-/**
  * A cluster parameter group
  *
  * @resource AWS::Redshift::ClusterParameterGroup
@@ -103,7 +69,12 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
    */
   public static fromClusterParameterGroupName(scope: Construct, id: string, clusterParameterGroupName: string): IClusterParameterGroup {
     class Import extends ClusterParameterGroupBase {
+
       public readonly clusterParameterGroupName = clusterParameterGroupName;
+
+      addParameter(_name: string, _value: string): void {
+        throw new Error('Cannot add a parameter to an imported parameter group.');
+      }
     }
     return new Import(scope, id);
   }
@@ -118,16 +89,21 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
   */
   readonly parameters: { [name: string]: string };
 
+  /**
+   * The underlying CfnClusterParameterGroup
+  */
+  private readonly resource: CfnClusterParameterGroup;
+
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
     this.parameters = props.parameters;
-    const resource = new CfnClusterParameterGroup(this, 'Resource', {
+    this.resource = new CfnClusterParameterGroup(this, 'Resource', {
       description: props.description || 'Cluster parameter group for family redshift-1.0',
       parameterGroupFamily: 'redshift-1.0',
-      parameters: Lazy.any({ produce: () => this.parseParameters() }),
+      parameters: this.parseParameters(),
     });
 
-    this.clusterParameterGroupName = resource.ref;
+    this.clusterParameterGroupName = this.resource.ref;
   }
   private parseParameters(): any {
     return Object.entries(this.parameters).map(([name, value]) => {
@@ -135,15 +111,19 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
     });
   }
 
-  public addParameter(name: string, value: string): AddParameterResult {
+  /**
+   * Adds a parameter to the parameter group
+   *
+   * @param name the parameter name
+   * @param value the parameter name
+   */
+  public addParameter(name: string, value: string): void {
     const existingValue = Object.entries(this.parameters).find(([key, _]) => key === name)?.[1];
     if (existingValue === undefined) {
       this.parameters[name] = value;
-      return { parameterAddedResult: AddParameterResultStatus.SUCCESS };
-    } else if (existingValue === value) {
-      return { parameterAddedResult: AddParameterResultStatus.SAME_VALUE_FAILURE };
-    } else {
-      return { parameterAddedResult: AddParameterResultStatus.CONFLICTING_VALUE_FAILURE };
+      this.resource.parameters = this.parseParameters();
+    } else if (existingValue !== value) {
+      throw new Error(`The parameter group already contains the parameter "${name}", but with a different value (Given: ${value}, Existing: ${existingValue}).`);
     }
   }
 }

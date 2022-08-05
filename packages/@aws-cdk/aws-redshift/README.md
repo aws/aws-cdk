@@ -277,6 +277,31 @@ cluster.addRotationMultiUser('MultiUserRotation', {
 });
 ```
 
+## Adding Parameters
+
+You can add a parameter to a parameter group by using the
+`ClusterParameterGroup.addParameter()` method.
+
+```ts
+const params = new ClusterParameterGroup(stack, 'Params', {
+  description: 'desc',
+  parameters: {
+    require_ssl: 'true',
+  },
+});
+
+params.addParameter('enable_user_activity_logging', 'true');
+```
+
+Additionally, you can add a parameter to the cluster's associated parameter group by using the
+`Cluster.addToParameterGroup()` method. If the cluster does not have an associated parameter group, a new parameter group is created.
+
+```ts fixture=cluster
+cluster.addToParameterGroup('enable_user_activity_logging', 'true');
+```
+
+Note that both the `ClusterParameterGroup.addParameter()` and `Cluster.addToParameterGroup()` methods will throw an error when attempting to add a parameter to an imported parameter group or when attempting to add an existing parameter with a different value than the existing value.
+
 ## Elastic IP
 
 If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.

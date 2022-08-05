@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { ClusterParameterGroup, AddParameterResultStatus } from '../lib';
+import { ClusterParameterGroup } from '../lib';
 
 test('create a cluster parameter group', () => {
   // GIVEN
@@ -40,11 +40,9 @@ describe('Adding parameters to an existing group', () => {
     });
 
     // WHEN
-    const result = params.addParameter('param2', 'value2');
+    params.addParameter('param2', 'value2');
 
     // THEN
-    expect(result.parameterAddedResult).toEqual(AddParameterResultStatus.SUCCESS);
-
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::ClusterParameterGroup', {
       Description: 'desc',
       ParameterGroupFamily: 'redshift-1.0',
@@ -72,11 +70,9 @@ describe('Adding parameters to an existing group', () => {
     });
 
     // WHEN
-    const result = params.addParameter('param', 'value');
+    params.addParameter('param', 'value');
 
     // THEN
-    expect(result.parameterAddedResult).toEqual(AddParameterResultStatus.SAME_VALUE_FAILURE);
-
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::ClusterParameterGroup', {
       Description: 'desc',
       ParameterGroupFamily: 'redshift-1.0',
@@ -100,21 +96,9 @@ describe('Adding parameters to an existing group', () => {
     });
 
     // WHEN
-    const result = params.addParameter('param', 'value2');
-
-    // THEN
-    expect(result.parameterAddedResult).toEqual(AddParameterResultStatus.CONFLICTING_VALUE_FAILURE);
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::ClusterParameterGroup', {
-      Description: 'desc',
-      ParameterGroupFamily: 'redshift-1.0',
-      Parameters: [
-        {
-          ParameterName: 'param',
-          ParameterValue: 'value',
-        },
-      ],
-    });
+    expect(() => params.addParameter('param', 'value2'))
+      // THEN
+      .toThrowError('The parameter group already contains the parameter');
   });
 
   test('Adding a parameter to an IClusterParameterGroup', () => {
@@ -123,9 +107,8 @@ describe('Adding parameters to an existing group', () => {
     const params = ClusterParameterGroup.fromClusterParameterGroupName(stack, 'Params', 'foo');
 
     // WHEN
-    const result = params.addParameter('param', 'value');
-
-    // THEN
-    expect(result.parameterAddedResult).toEqual(AddParameterResultStatus.IMPORTED_RESOURCE_FAILURE);
+    expect(() => params.addParameter('param', 'value2'))
+      // THEN
+      .toThrowError('Cannot add a parameter to an imported parameter group');
   });
 });
