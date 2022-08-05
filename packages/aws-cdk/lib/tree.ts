@@ -26,18 +26,14 @@ export interface ConstructTreeNode {
   readonly constructInfo?: ConstructInfo;
 }
 
+/**
+ * Whether the provided predicate is true for at least one element in the construct (sub-)tree.
+ */
 export function some(node: ConstructTreeNode, predicate: (n: ConstructTreeNode) => boolean): boolean {
   return node != null && (predicate(node) || findInChildren());
 
   function findInChildren(): boolean {
-    if (node.children == null) { return false; }
-
-    for (const name in node.children) {
-      if (some(node.children[name], predicate)) {
-        return true;
-      }
-    }
-    return false;
+    return Object.values(node.children ?? {}).some(child => some(child, predicate));
   }
 }
 
