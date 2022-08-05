@@ -743,3 +743,37 @@ test('assumedRoleArn adds statement for sts:assumeRole', () => {
     },
   });
 });
+
+test('fails when at least one of policy or role is not specified', () => {
+  const stack = new cdk.Stack();
+  expect(() => new AwsCustomResource(stack, 'AwsSdk', {
+    onUpdate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+      parameters: {
+        param: 'param',
+      },
+    },
+  })).toThrow(/`policy`.+`role`/);
+});
+
+test('can provide no policy if using existing role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/CoolRole');
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    role,
+  });
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+});

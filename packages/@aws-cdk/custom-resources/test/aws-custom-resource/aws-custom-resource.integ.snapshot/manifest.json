@@ -19,13 +19,13 @@
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
-              "id": "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
+              "path": "asset.105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
+              "id": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
               "packaging": "zip",
-              "sourceHash": "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
-              "s3BucketParameter": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F",
-              "s3KeyParameter": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058",
-              "artifactHashParameter": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90ArtifactHashC00C7285"
+              "sourceHash": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
+              "s3BucketParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A",
+              "s3KeyParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5",
+              "artifactHashParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC"
             }
           }
         ],
@@ -35,16 +35,16 @@
             "data": "TopicBFC7AF6E"
           }
         ],
-        "/aws-cdk-sdk-js/Publish/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PublishCustomResourcePolicyDF696FCA"
-          }
-        ],
         "/aws-cdk-sdk-js/Publish/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Publish2E9BDF73"
+          }
+        ],
+        "/aws-cdk-sdk-js/Publish/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishCustomResourcePolicyDF696FCA"
           }
         ],
         "/aws-cdk-sdk-js/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -59,28 +59,22 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/aws-cdk-sdk-js/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3Bucket": [
+        "/aws-cdk-sdk-js/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F"
+            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A"
           }
         ],
-        "/aws-cdk-sdk-js/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3VersionKey": [
+        "/aws-cdk-sdk-js/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
+            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5"
           }
         ],
-        "/aws-cdk-sdk-js/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/ArtifactHash": [
+        "/aws-cdk-sdk-js/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90ArtifactHashC00C7285"
-          }
-        ],
-        "/aws-cdk-sdk-js/ListTopics/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ListTopicsCustomResourcePolicy31A8396A"
+            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC"
           }
         ],
         "/aws-cdk-sdk-js/ListTopics/Resource/Default": [
@@ -89,10 +83,22 @@
             "data": "ListTopicsCE1E0341"
           }
         ],
+        "/aws-cdk-sdk-js/ListTopics/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListTopicsCustomResourcePolicy31A8396A"
+          }
+        ],
         "/aws-cdk-sdk-js/DummyParameter/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DummyParameter53662B67"
+          }
+        ],
+        "/aws-cdk-sdk-js/GetParameter/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetParameter42B0A00E"
           }
         ],
         "/aws-cdk-sdk-js/GetParameter/CustomResourcePolicy/Resource": [
@@ -101,10 +107,22 @@
             "data": "GetParameterCustomResourcePolicyD8E5D455"
           }
         ],
-        "/aws-cdk-sdk-js/GetParameter/Resource/Default": [
+        "/aws-cdk-sdk-js/CustomRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GetParameter42B0A00E"
+            "data": "CustomRole6D8E6809"
+          }
+        ],
+        "/aws-cdk-sdk-js/CustomRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomRoleDefaultPolicyC5C189DF"
+          }
+        ],
+        "/aws-cdk-sdk-js/GetParameterNoPolicy/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetParameterNoPolicyFCF7AA3B"
           }
         ],
         "/aws-cdk-sdk-js/MessageId": [
@@ -123,6 +141,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ParameterValue"
+          }
+        ],
+        "/aws-cdk-sdk-js/ParameterValueNoPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterValueNoPolicy"
           }
         ]
       },
