@@ -585,7 +585,7 @@ function renderWeightedTargets(weightedTargets: WeightedTarget[]): CfnRoute.Weig
   for (const t of weightedTargets) {
     renderedTargets.push({
       virtualNode: t.virtualNode.virtualNodeName,
-      weight: t.weight || 1,
+      weight: t.weight == undefined ? 1 : t.weight,
     });
   }
   return renderedTargets;
