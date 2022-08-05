@@ -95,6 +95,12 @@ export interface BundlingOptions {
    * @default - no security options
    */
   readonly securityOpt?: string;
+  /**
+   * Docker [Networking options](https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network)
+   *
+   * @default - no networking options
+   */
+  readonly network?: string;
 }
 
 /**
@@ -197,6 +203,9 @@ export class BundlingDockerImage {
       'run', '--rm',
       ...options.securityOpt
         ? ['--security-opt', options.securityOpt]
+        : [],
+      ...options.network
+        ? ['--network', options.network]
         : [],
       ...options.user
         ? ['-u', options.user]
@@ -460,6 +469,13 @@ export interface DockerRunOptions {
    * @default - no security options
    */
   readonly securityOpt?: string;
+
+  /**
+   * Docker [Networking options](https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network)
+   *
+   * @default - no networking options
+   */
+  readonly network?: string;
 }
 
 /**
