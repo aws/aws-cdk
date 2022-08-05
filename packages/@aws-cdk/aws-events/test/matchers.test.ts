@@ -1,4 +1,4 @@
-import { App, Stack, Token } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import { Match } from '../lib';
 
 describe(Match, () => {
