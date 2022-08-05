@@ -941,6 +941,8 @@ new lambda.Function(this, 'Function', {
 });
 ```
 
+See [Asset Bundling](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3_assets-readme.html#asset-bundling) for more details on bundling options
+
 ## Language-specific APIs
 
 Language-specific higher level constructs are provided in separate modules:
