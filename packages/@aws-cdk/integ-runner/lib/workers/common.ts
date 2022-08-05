@@ -149,17 +149,8 @@ export interface IntegTestOptions {
   readonly dryRun?: boolean;
 
   /**
-   * Whether to enable verbose logging
-   *
-   * @default false
-   * @deprecated - use `verbosity` instead
-   */
-  readonly verbose?: boolean;
-
-  /**
    * The level of verbosity for logging.
-   *
-   * Maximum is 2.
+   * Higher number means more output.
    *
    * @default 0
    */

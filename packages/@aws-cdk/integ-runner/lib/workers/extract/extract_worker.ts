@@ -14,7 +14,7 @@ import { IntegTestBatchRequest } from '../integ-test-worker';
  */
 export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorkerConfig[] {
   const failures: IntegTestInfo[] = [];
-  const verbosity = request.verbosity ?? (request.verbose ? 1 : 0);
+  const verbosity = request.verbosity ?? 0;
 
   for (const testInfo of request.tests) {
     const test = new IntegTest(testInfo); // Hydrate from data
