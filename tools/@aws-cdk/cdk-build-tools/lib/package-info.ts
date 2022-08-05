@@ -100,6 +100,9 @@ export interface CompilerOverrides {
 export function packageCompiler(compilers: CompilerOverrides, options?: CDKBuildOptions): string[] {
   if (isJsii()) {
     const args = ['--silence-warnings=reserved-word', '--add-deprecation-warnings'];
+    if (options?.compressAssembly) {
+      args.push('--compress-assembly');
+    }
     if (options?.stripDeprecated) {
       args.push(`--strip-deprecated ${path.join(__dirname, '..', '..', '..', '..', 'deprecated_apis.txt')}`);
     }
@@ -174,6 +177,11 @@ export interface CDKBuildOptions {
    * @see https://aws.github.io/jsii/user-guides/lib-author/toolchain/jsii/#-strip-deprecated
    */
   stripDeprecated?: boolean;
+
+  /**
+   * Whether or not the jsii assembly should be compressed into a .jsii.gz file or not.
+   */
+  compressAssembly?: boolean;
 }
 
 export interface CDKPackageOptions {
