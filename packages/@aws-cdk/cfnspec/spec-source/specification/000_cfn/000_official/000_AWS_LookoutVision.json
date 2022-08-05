@@ -1,5 +1,5 @@
 {
-  "$version": "81.1.0",
+  "$version": "82.0.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::LookoutVision::Project": {
