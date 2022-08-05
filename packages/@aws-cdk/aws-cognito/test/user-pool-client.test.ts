@@ -61,9 +61,100 @@ describe('User Pool Client', () => {
       // Make sure getter returns the same secret regardless if it's called one or many times
       expect(clientWithSecret.userPoolClientSecret).toEqual(clientWithSecret.userPoolClientSecret);
 
-      // Make sure the generated template has correct Secret Generation flag
-      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-        GenerateSecret: Match.exact(true),
+      // Make sure the generated template has correct resources
+      Template.fromStack(stack).hasResourceProperties('Custom::DescribeCognitoUserPoolClient', {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
+            'Arn',
+          ],
+        },
+        Create: {
+          'Fn::Join': [
+            '',
+            [
+              '{"region":"',
+              {
+                Ref: 'AWS::Region',
+              },
+              '","service":"CognitoIdentityServiceProvider","action":"describeUserPoolClient","parameters":{"UserPoolId":"',
+              {
+                Ref: 'PoolD3F588B8',
+              },
+              '","ClientId":"',
+              {
+                Ref: 'clientWithSecretD25031A8',
+              },
+              '"},"physicalResourceId":{"id":"',
+              {
+                Ref: 'clientWithSecretD25031A8',
+              },
+              '"}}',
+            ],
+          ],
+        },
+        InstallLatestAwsSdk: true,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [{
+            Action: 'cognito-idp:DescribeUserPoolClient',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'PoolD3F588B8',
+                'Arn',
+              ],
+            },
+          }],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'clientWithSecretDescribeCognitoUserPoolClientCustomResourcePolicyCDE4AB00',
+        Roles: [{ Ref: 'AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2' }],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [{
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+          }],
+          Version: '2012-10-17',
+        },
+        ManagedPolicyArns: [{
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+            ],
+          ],
+        }],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Code: {
+          S3Bucket: {
+            'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
+          },
+          S3Key: '105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip',
+        },
+        Role: {
+          'Fn::GetAtt': [
+            'AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2',
+            'Arn',
+          ],
+        },
+        Handler: 'index.handler',
+        Runtime: 'nodejs14.x',
+        Timeout: 120,
       });
     });
 
@@ -81,10 +172,11 @@ describe('User Pool Client', () => {
       // THEN
       expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if generateSecret is set to true./);
 
-      // Make sure the generated template has correct Secret Generation flag
-      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-        GenerateSecret: Match.exact(false),
-      });
+      // Make sure the generated template does not create resources
+      expect(Template.fromStack(stack).findResources('Custom::DescribeCognitoUserPoolClient')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::IAM::Policy')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::IAM::Role')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::Lambda::Function')).toEqual({});
     });
 
     test('lacking secret configuration implicitly disables it', () => {
@@ -101,10 +193,11 @@ describe('User Pool Client', () => {
       // THEN
       expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if generateSecret is set to true./);
 
-      // Make sure the generated template has correct Secret Generation flag
-      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-        GenerateSecret: Match.absent(),
-      });
+      // Make sure the generated template does not create resources
+      expect(Template.fromStack(stack).findResources('Custom::DescribeCognitoUserPoolClient')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::IAM::Policy')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::IAM::Role')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::Lambda::Function')).toEqual({});
     });
   });
 
