@@ -132,8 +132,7 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
       if ((getFunctionResponse.Configuration?.State === 'Active') || getFunctionResponse.Configuration?.State === 'Failed') {
         if (getFunctionResponse.Configuration?.State === 'Active') {
           log('user function is in the \'Active\' state, reinvoking it now');
-        }
-        if (getFunctionResponse.Configuration?.State === 'Failed') {
+        } else if (getFunctionResponse.Configuration?.State === 'Failed') {
           log('user function is in the \'Failed\' state with this reason code: ', getFunctionResponse.Configuration.StateReasonCode);
           log('user function provided this reason for the error: ', getFunctionResponse.Configuration.StateReason);
           log('reinvoking user function to get error trace');
