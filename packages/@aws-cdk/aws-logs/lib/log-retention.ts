@@ -99,7 +99,8 @@ export class LogRetention extends Construct {
           base: retryOptions.base?.toMilliseconds(),
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
-        RemovalPolicy: props.removalPolicy ? props.removalPolicy : cdk.RemovalPolicy.RETAIN,
+        //only add RemovalPolicy if it is set to DESTROY
+        RemovalPolicy: props.removalPolicy && props.removalPolicy === cdk.RemovalPolicy.DESTROY ? props.removalPolicy : undefined,
       },
     });
 

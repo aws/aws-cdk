@@ -71,6 +71,76 @@ describe('log retention', () => {
     });
 
     // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'logs:PutRetentionPolicy',
+              'logs:DeleteRetentionPolicy',
+            ],
+            'Effect': 'Allow',
+            'Resource': '*',
+          },
+          {
+            'Action': 'logs:DeleteLogGroup',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':logs:',
+                  {
+                    'Ref': 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':log-group:group:*',
+                ],
+              ],
+            },
+          },
+          {
+            'Action': 'logs:DeleteLogStream',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':logs:',
+                  {
+                    'Ref': 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':log-group:group:log-stream:*',
+                ],
+              ],
+            },
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      'Roles': [
+        {
+          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+        },
+      ],
+    });
+
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
       'ServiceToken': {
         'Fn::GetAtt': [
@@ -96,6 +166,28 @@ describe('log retention', () => {
     });
 
     // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'logs:PutRetentionPolicy',
+              'logs:DeleteRetentionPolicy',
+            ],
+            'Effect': 'Allow',
+            'Resource': '*',
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      'Roles': [
+        {
+          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+        },
+      ],
+    });
+
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
       'ServiceToken': {
         'Fn::GetAtt': [
@@ -105,7 +197,6 @@ describe('log retention', () => {
       },
       'LogGroupName': 'group',
       'RetentionInDays': 1,
-      'RemovalPolicy': 'retain',
     });
   });
 
@@ -129,7 +220,6 @@ describe('log retention', () => {
       },
       'LogGroupName': 'group',
       'RetentionInDays': 1,
-      'RemovalPolicy': 'retain',
     });
   });
 
