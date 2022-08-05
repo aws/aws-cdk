@@ -31,33 +31,6 @@ describe('log retention', () => {
             'Effect': 'Allow',
             'Resource': '*',
           },
-          {
-            'Action': [
-              'logs:DeleteLogGroup',
-              'logs:DeleteLogStream',
-            ],
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    'Ref': 'AWS::Partition',
-                  },
-                  ':logs:',
-                  {
-                    'Ref': 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    'Ref': 'AWS::AccountId',
-                  },
-                  ':log-group:group:*',
-                ],
-              ],
-            },
-          },
         ],
         'Version': '2012-10-17',
       },
@@ -136,6 +109,30 @@ describe('log retention', () => {
     });
   });
 
+  test('the removalPolicy is not set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_DAY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      'ServiceToken': {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      'LogGroupName': 'group',
+      'RetentionInDays': 1,
+      'RemovalPolicy': 'retain',
+    });
+  });
+
   test('with imported role', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -159,33 +156,6 @@ describe('log retention', () => {
             ],
             'Effect': 'Allow',
             'Resource': '*',
-          },
-          {
-            'Action': [
-              'logs:DeleteLogGroup',
-              'logs:DeleteLogStream',
-            ],
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    'Ref': 'AWS::Partition',
-                  },
-                  ':logs:',
-                  {
-                    'Ref': 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    'Ref': 'AWS::AccountId',
-                  },
-                  ':log-group:group:*',
-                ],
-              ],
-            },
           },
         ],
         'Version': '2012-10-17',
