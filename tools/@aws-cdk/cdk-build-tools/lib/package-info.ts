@@ -179,7 +179,7 @@ export interface CDKBuildOptions {
   stripDeprecated?: boolean;
 
   /**
-   * Whether or not the jsii assembly should be compressed into a .jsii.gz file or not.
+   * Whether the jsii assembly should be compressed into a .jsii.gz file or left uncompressed as a .jsii file.
    */
   compressAssembly?: boolean;
 }
