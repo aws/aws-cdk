@@ -96,9 +96,10 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
   readonly authenticationMethod?: AuthenticationMethod
 
   /**
-   * Choose the secret containing the root CA certificate used by your Kafka brokers for TLS encryption.
+   * The secret with the root CA certificate used by your Kafka brokers for TLS encryption
+   * This field is required if your Kafka brokers use certificates signed by a private CA
    *
-   * @default - none, required if your Kafka brokers use certificates signed by a private CA
+   * @default - none
    */
   readonly rootCACertificate?: secretsmanager.Secret;
 }
