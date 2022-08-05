@@ -583,5 +583,61 @@ describe('Batch Compute Environment', () => {
         });
       });
     });
+
+    describe('connectable functions', () => {
+      test('ec2 ingress rule', () => {
+        const computeEnvironment = new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+          },
+        });
+
+        const sg1 = new ec2.SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
+        const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [sg1] }));
+
+        somethingConnectable.connections.allowFrom(computeEnvironment, ec2.Port.tcp(12345), 'connect to me');
+
+        Template.fromStack(stack).hasResourceProperties
+        ('AWS::EC2::SecurityGroupIngress', {
+          GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
+          IpProtocol: 'tcp',
+          Description: 'connect to me',
+          SourceSecurityGroupId: { 'Fn::GetAtt': ['testcomputeenvResourceSecurityGroup7615BA87', 'GroupId'] },
+          FromPort: 12345,
+          ToPort: 12345,
+        });
+      });
+
+      test('fargate ingress rule', () => {
+        const computeEnvironment = new batch.ComputeEnvironment(stack, 'test-fargate-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+          },
+        });
+
+        const sg1 = new ec2.SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
+        const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [sg1] }));
+
+        somethingConnectable.connections.allowFrom(computeEnvironment, ec2.Port.tcp(12345), 'connect to me');
+
+        Template.fromStack(stack).hasResourceProperties
+        ('AWS::EC2::SecurityGroupIngress', {
+          GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
+          IpProtocol: 'tcp',
+          Description: 'connect to me',
+          SourceSecurityGroupId: { 'Fn::GetAtt': ['testfargateenvResourceSecurityGroup66A2FC03', 'GroupId'] },
+          FromPort: 12345,
+          ToPort: 12345,
+        });
+      });
+    });
   });
 });
+
+class SomethingConnectable implements ec2.IConnectable {
+  constructor(public readonly connections: ec2.Connections) {
+  }
+}
