@@ -48,7 +48,7 @@ By default, the log group will be created in the same region as the stack. The `
 log groups in other regions. This is typically useful when controlling retention for log groups auto-created by global services that
 publish their log group to a specific region, such as AWS Chatbot creating a log group in `us-east-1`.
 
-By default, the log group created by LogRetention will retain after the stack is deleted. If the logDeletionPolicy is set to DESTROY, then the log group will be deleted after the stack is deleted.
+By default, the log group created by LogRetention will retain after the stack is deleted. If the RemovalPolicy is set to DESTROY, then the log group will be deleted after the stack is deleted.
 
 ## Resource Policy
 

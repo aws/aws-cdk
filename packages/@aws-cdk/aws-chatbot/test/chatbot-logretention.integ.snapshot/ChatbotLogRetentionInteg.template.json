@@ -64,8 +64,7 @@
     },
     "LogGroupName": "/aws/chatbot/test-channel",
     "LogGroupRegion": "us-east-1",
-    "RetentionInDays": 30,
-    "RemovalPolicy": "retain"
+    "RetentionInDays": 30
    }
   },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
