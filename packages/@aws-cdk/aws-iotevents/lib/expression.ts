@@ -21,10 +21,75 @@ export abstract class Expression {
   }
 
   /**
+   * Create a expression for function `timeout("timer-name")`.
+   * It is evaluated to true if the specified timer has elapsed.
+   * You can define a timer only using the `setTimer` action.
+   */
+  public static timeout(timerName: string): Expression {
+    return this.fromString(`timeout("${timerName}")`);
+  }
+
+  /**
    * Create a expression for get an input attribute as `$input.TemperatureInput.temperatures[2]`.
    */
   public static inputAttribute(input: IInput, path: string): Expression {
     return this.fromString(`$input.${input.inputName}.${path}`);
+  }
+
+  /**
+   * Create a expression for the Addition operator.
+   */
+  public static add(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '+', right, 12);
+  }
+
+  /**
+   * Create a expression for the Subtraction operator.
+   */
+  public static subtract(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '-', right, 12);
+  }
+
+  /**
+   * Create a expression for the Division operator.
+   */
+  public static divide(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '/', right, 13);
+  }
+
+  /**
+   * Create a expression for the Multiplication operator.
+   */
+  public static multiply(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '*', right, 13);
+  }
+
+  /**
+   * Create a expression for the String Concatenation operator.
+   */
+  public static concat(left: Expression, right: Expression): Expression {
+    return this.add(left, right);
+  }
+
+  /**
+   * Create a expression for the Bitwise OR operator.
+   */
+  public static bitwiseOr(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '|', right, 6);
+  }
+
+  /**
+   * Create a expression for the Bitwise AND operator.
+   */
+  public static bitwiseAnd(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '&', right, 8);
+  }
+
+  /**
+   * Create a expression for the Bitwise XOR operator.
+   */
+  public static bitwiseXor(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '^', right, 7);
   }
 
   /**

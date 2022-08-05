@@ -299,7 +299,7 @@ export class BucketDeployment extends Construct {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
-      runtime: lambda.Runtime.PYTHON_3_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       environment: props.useEfs ? {
         MOUNT_PATH: mountPath,
       } : undefined,
