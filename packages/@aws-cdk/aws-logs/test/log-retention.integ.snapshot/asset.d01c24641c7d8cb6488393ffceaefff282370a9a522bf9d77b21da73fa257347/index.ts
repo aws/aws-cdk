@@ -1,4 +1,3 @@
-import { RemovalPolicy } from '@aws-cdk/core';
 /* eslint-disable no-console */
 
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -155,7 +154,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     }
 
     //When the requestType is delete, delete the log group if the removal policy is delete
-    if (event.RequestType === 'Delete' && event.ResourceProperties.RemovalPolicy === RemovalPolicy.DESTROY) {
+    if (event.RequestType === 'Delete' && event.ResourceProperties.RemovalPolicy === 'destroy') {
       await deleteLogGroup(logGroupName, logGroupRegion, retryOptions);
       //else retain the log group
     }

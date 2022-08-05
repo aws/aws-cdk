@@ -128,10 +128,7 @@
                                   "Resource": "*"
                                 },
                                 {
-                                  "Action": [
-                                    "logs:DeleteLogGroup",
-                                    "logs:DeleteLogStream"
-                                  ],
+                                  "Action": "logs:DeleteLogGroup",
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::Join": [
@@ -150,6 +147,30 @@
                                           "Ref": "AWS::AccountId"
                                         },
                                         ":log-group:logRetentionLogGroup:*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:DeleteLogStream",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:logRetentionLogGroup:log-stream:*"
                                       ]
                                     ]
                                   }
@@ -200,13 +221,13 @@
             "id": "AssetParameters",
             "path": "aws-cdk-log-retention-integ/AssetParameters",
             "children": {
-              "df62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11": {
-                "id": "df62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11",
-                "path": "aws-cdk-log-retention-integ/AssetParameters/df62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11",
+              "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347": {
+                "id": "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
+                "path": "aws-cdk-log-retention-integ/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-log-retention-integ/AssetParameters/df62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11/S3Bucket",
+                    "path": "aws-cdk-log-retention-integ/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -214,7 +235,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-log-retention-integ/AssetParameters/df62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11/S3VersionKey",
+                    "path": "aws-cdk-log-retention-integ/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -222,7 +243,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-log-retention-integ/AssetParameters/df62d051e4ea89f7a80194cb2acfd8ff11ed74c6442c60eea1204862f77e6b11/ArtifactHash",
+                    "path": "aws-cdk-log-retention-integ/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
