@@ -64,10 +64,4 @@ describe(Match, () => {
 
     expect(() => stack.resolve(Match.anyOf())).toThrow(/A list of matchers must contain at least one element/);
   });
-
-  test('factory methods produce the right pattern when the input contains tokens', () => {
-    expect(stack.resolve(Match.greaterThan(Token.asNumber(42)))).toEqual([
-      { numeric: ['>', 42] },
-    ]);
-  });
 });
