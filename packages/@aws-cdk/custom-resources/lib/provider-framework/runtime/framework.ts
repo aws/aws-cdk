@@ -99,7 +99,7 @@ async function onTimeout(timeoutEvent: any) {
   });
 }
 
-async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A, responseUrl: string): Promise<any> {
+async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A, responseUrl: string, reinvoke?: boolean): Promise<any> {
   const functionArn = getEnv(functionArnEnv);
   log(`executing user function ${functionArn} with payload`, sanitizedPayload);
 
@@ -129,7 +129,7 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
         FunctionName: functionName,
       });
 
-      if ((getFunctionResponse.Configuration?.State === 'Active') || getFunctionResponse.Configuration?.State === 'Failed') {
+      if ((getFunctionResponse.Configuration?.State === 'Active' || getFunctionResponse.Configuration?.State === 'Failed') && !reinvoke) {
         if (getFunctionResponse.Configuration?.State === 'Active') {
           log('user function is in the \'Active\' state, reinvoking it now');
         } else if (getFunctionResponse.Configuration?.State === 'Failed') {
@@ -138,7 +138,8 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
           log('reinvoking user function to get error trace');
         }
 
-        return invokeUserFunction(functionArnEnv, sanitizedPayload, responseUrl);
+        // do not reinvoke more than once
+        return invokeUserFunction(functionArnEnv, sanitizedPayload, responseUrl, true);
       }
 
       const currentSleep = Math.floor(BASE_SLEEP * Math.pow(2, attempt) * Math.random());

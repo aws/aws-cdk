@@ -22,10 +22,14 @@ outbound.getFunction = mocks.getFunctionMock;
   return callback();
 });
 
-const invokeFunctionSpy = jest.spyOn(outbound, 'invokeFunction');
+let invokeFunctionSpy = jest.spyOn(outbound, 'invokeFunction');
 const getFunctionSpy = jest.spyOn(outbound, 'getFunction');
 
-beforeEach(() => mocks.setup());
+beforeEach(() => {
+  outbound.invokeFunction = mocks.invokeFunctionMock;
+  invokeFunctionSpy = jest.spyOn(outbound, 'invokeFunction');
+  mocks.setup();
+});
 afterEach(() => {
   invokeFunctionSpy.mockClear();
   getFunctionSpy.mockClear();
