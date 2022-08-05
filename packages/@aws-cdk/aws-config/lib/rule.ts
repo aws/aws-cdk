@@ -1318,6 +1318,8 @@ export class ResourceType {
   public static readonly EC2_EIP = new ResourceType('AWS::EC2::EIP');
   /** EC2 instance */
   public static readonly EC2_INSTANCE = new ResourceType('AWS::EC2::Instance');
+  /** EC2 Network Interface */
+  public static readonly EC2_NETWORK_INTERFACE = new ResourceType('AWS::EC2::NetworkInterface');
   /** EC2 security group */
   public static readonly EC2_SECURITY_GROUP = new ResourceType('AWS::EC2::SecurityGroup');
   /** EC2 NAT gateway */
@@ -1326,18 +1328,54 @@ export class ResourceType {
   public static readonly EC2_EGRESS_ONLY_INTERNET_GATEWAY = new ResourceType('AWS::EC2::EgressOnlyInternetGateway');
   /** EC2 flow log */
   public static readonly EC2_FLOW_LOG = new ResourceType('AWS::EC2::FlowLog');
+  /** EC2 transit gateway */
+  public static readonly EC2_TRANSIT_GATEWAY = new ResourceType('AWS::EC2::TransitGateway');
+  /** EC2 transit gateway attachment */
+  public static readonly EC2_TRANSIT_GATEWAY_ATTACHMENT = new ResourceType('AWS::EC2::TransitGatewayAttachment');
+  /** EC2 transit gateway route table */
+  public static readonly EC2_TRANSIT_GATEWAY_ROUTE_TABLE = new ResourceType('AWS::EC2::TransitGatewayRouteTable');
   /** EC2 VPC endpoint */
   public static readonly EC2_VPC_ENDPOINT = new ResourceType('AWS::EC2::VPCEndpoint');
   /** EC2 VPC endpoint service */
   public static readonly EC2_VPC_ENDPOINT_SERVICE = new ResourceType('AWS::EC2::VPCEndpointService');
   /** EC2 VPC peering connection */
   public static readonly EC2_VPC_PEERING_CONNECTION = new ResourceType('AWS::EC2::VPCPeeringConnection');
+  /** EC2 registered HA instance */
+  public static readonly EC2_REGISTERED_HA_INSTANCE = new ResourceType('AWS::EC2::RegisteredHAInstance');
+  /** EC2 launch template */
+  public static readonly EC2_LAUNCH_TEMPLATE = new ResourceType('AWS::EC2::LaunchTemplate');
+  /** Amazon ECR repository */
+  public static readonly ECR_REPOSITORY = new ResourceType('AWS::ECR::Repository');
+  /** Amazon ECR public repository */
+  public static readonly ECR_PUBLIC_REPOSITORY = new ResourceType('AWS::ECR::PublicRepository');
+  /** Amazon ECS cluster */
+  public static readonly ECS_CLUSTER = new ResourceType('AWS::ECS::Cluster');
+  /** Amazon ECS task definition */
+  public static readonly ECS_TASK_DEFINITION = new ResourceType('AWS::ECS::TaskDefinition');
+  /** Amazon ECS service */
+  public static readonly ECS_SERVICE = new ResourceType('AWS::ECS::Service');
+  /** Amazon EFS file system */
+  public static readonly EFS_FILE_SYSTEM = new ResourceType('AWS::EFS::FileSystem');
+  /** Amazon EFS access point */
+  public static readonly EFS_ACCESS_POINT = new ResourceType('AWS::EFS::AccessPoint');
   /** Amazon Elastic Kubernetes Service cluster */
   public static readonly EKS_CLUSTER = new ResourceType('AWS::EKS::Cluster');
+  /** Amazon EMR security configuration */
+  public static readonly EMR_SECURITY_CONFIGURATION = new ResourceType('AWS::EMR::SecurityConfiguration');
+  /** Amazon GuardDuty detector */
+  public static readonly GUARDDUTY_DETECTOR = new ResourceType('AWS::GuardDuty::Detector');
   /** Amazon ElasticSearch domain */
   public static readonly ELASTICSEARCH_DOMAIN = new ResourceType('AWS::Elasticsearch::Domain');
+  /** Amazon OpenSearch domain */
+  public static readonly OPENSEARCH_DOMAIN = new ResourceType('AWS::OpenSearch::Domain');
   /** Amazon QLDB ledger */
   public static readonly QLDB_LEDGER = new ResourceType('AWS::QLDB::Ledger');
+  /** Amazon Kinesis stream */
+  public static readonly KINESIS_STREAM = new ResourceType('AWS::Kinesis::Stream');
+  /** Amazon Kinesis stream consumer */
+  public static readonly KINESIS_STREAM_CONSUMER = new ResourceType('AWS::Kinesis::StreamConsumer');
+  /** Amazon MSK cluster */
+  public static readonly MSK_CLUSTER = new ResourceType('AWS::MSK::Cluster');
   /** Amazon Redshift cluster */
   public static readonly REDSHIFT_CLUSTER = new ResourceType('AWS::Redshift::Cluster');
   /** Amazon Redshift cluster parameter group */
@@ -1364,12 +1402,24 @@ export class ResourceType {
   public static readonly RDS_DB_CLUSTER = new ResourceType('AWS::RDS::DBCluster');
   /** Amazon RDS database cluster snapshot */
   public static readonly RDS_DB_CLUSTER_SNAPSHOT = new ResourceType('AWS::RDS::DBClusterSnapshot');
+  /** Amazon Route53 resolver resolver endpoint */
+  public static readonly ROUTE53_RESOLVER_RESOLVER_ENDPOINT = new ResourceType('AWS::Route53Resolver::ResolverEndpoint');
+  /** Amazon Route53 resolver resolver rule */
+  public static readonly ROUTE53_RESOLVER_RESOLVER_RULE = new ResourceType('AWS::Route53Resolver::ResolverRule');
+  /** Amazon Route53 resolver resolver rule association */
+  public static readonly ROUTE53_RESOLVER_RESOLVER_RULE_ASSOCIATION = new ResourceType('AWS::Route53Resolver::ResolverRuleAssociation');
   /** Amazon SQS queue */
   public static readonly SQS_QUEUE = new ResourceType('AWS::SQS::Queue');
   /** Amazon SNS topic */
   public static readonly SNS_TOPIC = new ResourceType('AWS::SNS::Topic');
   /** Amazon S3 bucket */
   public static readonly S3_BUCKET = new ResourceType('AWS::S3::Bucket');
+  /** Amazon SageMaker code repository */
+  public static readonly SAGEMAKER_CODE_REPOSITORY = new ResourceType('AWS::SageMaker::CodeRepository');
+  /** Amazon SageMaker model */
+  public static readonly SAGEMAKER_MODEL = new ResourceType('AWS::SageMaker::Model');
+  /** Amazon SageMaker notebook instance */
+  public static readonly SAGEMAKER_NOTEBOOK_INSTANCE = new ResourceType('AWS::SageMaker::NotebookInstance');
   /** Amazon S3 account public access block */
   public static readonly S3_ACCOUNT_PUBLIC_ACCESS_BLOCK = new ResourceType('AWS::S3::AccountPublicAccessBlock');
   /** Amazon EC2 customer gateway */
@@ -1396,6 +1446,22 @@ export class ResourceType {
   public static readonly AUTO_SCALING_POLICY = new ResourceType('AWS::AutoScaling::ScalingPolicy');
   /** AWS Auto Scaling scheduled action */
   public static readonly AUTO_SCALING_SCHEDULED_ACTION = new ResourceType('AWS::AutoScaling::ScheduledAction');
+  /** Amazon WorkSpaces connection alias */
+  public static readonly WORKSPACES_CONNECTION_ALIAS = new ResourceType('AWS::WorkSpaces::ConnectionAlias');
+  /** Amazon WorkSpaces workSpace */
+  public static readonly WORKSPACES_WORKSPACE = new ResourceType('AWS::WorkSpaces::Workspace');
+  /** AWS Backup backup plan */
+  public static readonly BACKUP_BACKUP_PLAN = new ResourceType('AWS::Backup::BackupPlan');
+  /** AWS Backup backup selection */
+  public static readonly BACKUP_BACKUP_SELECTION = new ResourceType('AWS::Backup::BackupSelection');
+  /** AWS Backup backup vault */
+  public static readonly BACKUP_BACKUP_VAULT = new ResourceType('AWS::Backup::BackupVault');
+  /** AWS Backup backup recovery point */
+  public static readonly BACKUP_RECOVERY_POINT = new ResourceType('AWS::Backup::RecoveryPoint');
+  /** AWS Batch job queue */
+  public static readonly BATCH_JOB_QUEUE = new ResourceType('AWS::Batch::JobQueue');
+  /** AWS Batch compute environment */
+  public static readonly BATCH_COMPUTE_ENVIRONMENT = new ResourceType('AWS::Batch::ComputeEnvironment');
   /** AWS Certificate manager certificate */
   public static readonly ACM_CERTIFICATE = new ResourceType('AWS::ACM::Certificate');
   /** AWS CloudFormation stack */
@@ -1404,8 +1470,22 @@ export class ResourceType {
   public static readonly CLOUDTRAIL_TRAIL = new ResourceType('AWS::CloudTrail::Trail');
   /** AWS CodeBuild project */
   public static readonly CODEBUILD_PROJECT = new ResourceType('AWS::CodeBuild::Project');
+  /** AWS CodeDeploy application */
+  public static readonly CODEDEPLOY_APPLICATION = new ResourceType('AWS::CodeDeploy::Application');
+  /** AWS CodeDeploy deployment config */
+  public static readonly CODEDEPLOY_DEPLOYMENT_CONFIG = new ResourceType('AWS::CodeDeploy::DeploymentConfig');
+  /** AWS CodeDeploy deployment group */
+  public static readonly CODEDEPLOY_DEPLOYMENT_GROUP = new ResourceType('AWS::CodeDeploy::DeploymentGroup');
   /** AWS CodePipeline pipeline */
   public static readonly CODEPIPELINE_PIPELINE = new ResourceType('AWS::CodePipeline::Pipeline');
+  /** AWS Config resource compliance */
+  public static readonly CONFIG_RESOURCE_COMPLIANCE = new ResourceType('AWS::Config::ResourceCompliance');
+  /** AWS Config conformance pack compliance */
+  public static readonly CONFIG_CONFORMANCE_PACK_COMPLIANCE = new ResourceType('AWS::Config::ConformancePackCompliance');
+  /** AWS DMS event subscription */
+  public static readonly DMS_EVENT_SUBSCRIPTION = new ResourceType('AWS::DMS::EventSubscription');
+  /** AWS DMS replication subnet group */
+  public static readonly DMS_REPLICATION_SUBNET_GROUP = new ResourceType('AWS::DMS::ReplicationSubnetGroup');
   /** AWS Elastic Beanstalk (EB) application */
   public static readonly ELASTIC_BEANSTALK_APPLICATION = new ResourceType('AWS::ElasticBeanstalk::Application');
   /** AWS Elastic Beanstalk (EB) application version */
