@@ -27,7 +27,7 @@ const getFunctionSpy = jest.spyOn(outbound, 'getFunction');
 
 beforeEach(() => {
   outbound.invokeFunction = mocks.invokeFunctionMock;
-  invokeFunctionSpy = jest.spyOn(outbound, 'invokeFunction');
+  invokeFunctionSpy = jest.spyOn(outbound, 'invokeFunction'); // has to be reset because one test changes outbound.invokeFunction
   mocks.setup();
 });
 afterEach(() => {
