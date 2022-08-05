@@ -11,7 +11,6 @@ export const MOCK_REQUEST = {
 
 export const MOCK_ON_EVENT_FUNCTION_ARN = 'arn:lambda:user:on:event';
 export const MOCK_IS_COMPLETE_FUNCTION_ARN = 'arn:lambda:user:is:complete';
-export const MOCK_INACTIVE_FUNCTION_ARN = 'arn:lambda:user:is:inactive';
 export const MOCK_SFN_ARN = 'arn:of:state:machine';
 
 export let stringifyPayload = true;
@@ -112,6 +111,17 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
       }),
     };
   }
+}
+
+export async function invokeInactiveFunctionMock(_req: AWS.Lambda.InvocationRequest): Promise<AWS.Lambda.InvocationResponse> {
+  const ret = {
+    foo: 'bar',
+  };
+
+  return {
+    FunctionError: getFunctionInvokeCount <= 1 ? 'Lambda is initializing your function...' : undefined,
+    Payload: stringifyPayload ? JSON.stringify(ret) : ret,
+  };
 }
 
 export function prepareForExecution() {

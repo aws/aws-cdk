@@ -99,7 +99,7 @@ async function onTimeout(timeoutEvent: any) {
   });
 }
 
-async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A, responseUrl: string) {
+async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A, responseUrl: string): Promise<any> {
   const functionArn = getEnv(functionArnEnv);
   log(`executing user function ${functionArn} with payload`, sanitizedPayload);
 

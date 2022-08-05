@@ -23,9 +23,13 @@ outbound.getFunction = mocks.getFunctionMock;
 });
 
 const invokeFunctionSpy = jest.spyOn(outbound, 'invokeFunction');
+const getFunctionSpy = jest.spyOn(outbound, 'getFunction');
 
 beforeEach(() => mocks.setup());
-afterEach(() => invokeFunctionSpy.mockClear());
+afterEach(() => {
+  invokeFunctionSpy.mockClear();
+  getFunctionSpy.mockClear();
+});
 
 test('async flow: isComplete returns true only after 3 times', async () => {
   let isCompleteCalls = 0;
@@ -354,12 +358,8 @@ describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
 
 test('getFunction() is called only when user function is inactive, pending, and active', async () => {
   // GIVEN
-  const getFunctionSpy = jest.spyOn(outbound, 'getFunction');
   mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
-  mocks.isCompleteImplMock = async () => {
-    await outbound.invokeFunction({ FunctionName: mocks.MOCK_INACTIVE_FUNCTION_ARN, Payload: 'foo' });
-    return { IsComplete: true };
-  };
+  outbound.invokeFunction = mocks.invokeInactiveFunctionMock;
 
   // WHEN
   await simulateEvent({
