@@ -1492,6 +1492,12 @@ export class ResourceType {
   public static readonly ELASTIC_BEANSTALK_APPLICATION_VERSION = new ResourceType('AWS::ElasticBeanstalk::ApplicationVersion');
   /** AWS Elastic Beanstalk (EB) environment */
   public static readonly ELASTIC_BEANSTALK_ENVIRONMENT = new ResourceType('AWS::ElasticBeanstalk::Environment');
+  /** AWS GlobalAccelerator listener */
+  public static readonly GLOBALACCELERATOR_LISTENER = new ResourceType('AWS::GlobalAccelerator::Listener');
+  /** AWS GlobalAccelerator endpoint group */
+  public static readonly GLOBALACCELERATOR_ENDPOINT_GROUP = new ResourceType('AWS::GlobalAccelerator::EndpointGroup');
+  /** AWS GlobalAccelerator accelerator */
+  public static readonly GLOBALACCELERATOR_ACCELERATOR = new ResourceType('AWS::GlobalAccelerator::Accelerator');
   /** AWS IAM user */
   public static readonly IAM_USER = new ResourceType('AWS::IAM::User');
   /** AWS IAM group */
@@ -1500,6 +1506,8 @@ export class ResourceType {
   public static readonly IAM_ROLE = new ResourceType('AWS::IAM::Role');
   /** AWS IAM policy */
   public static readonly IAM_POLICY = new ResourceType('AWS::IAM::Policy');
+  /** AWS IAM AccessAnalyzer analyzer */
+  public static readonly IAM_ACCESSANALYZER_ANALYZER = new ResourceType('AWS::AccessAnalyzer::Analyzer');
   /** AWS KMS Key */
   public static readonly KMS_KEY = new ResourceType('AWS::KMS::Key');
   /** AWS Lambda function */
@@ -1517,6 +1525,10 @@ export class ResourceType {
   public static readonly SHIELD_PROTECTION = new ResourceType('AWS::Shield::Protection');
   /** AWS Shield regional protection */
   public static readonly SHIELD_REGIONAL_PROTECTION = new ResourceType('AWS::ShieldRegional::Protection');
+  /** AWS StepFunctions activity */
+  public static readonly STEPFUNCTIONS_ACTIVITY = new ResourceType('AWS::StepFunctions::Activity');
+  /** AWS StepFunctions state machine */
+  public static readonly STEPFUNCTIONS_STATE_MACHINE = new ResourceType('AWS::StepFunctions::StateMachine');
   /** AWS Systems Manager managed instance inventory */
   public static readonly SYSTEMS_MANAGER_MANAGED_INSTANCE_INVENTORY = new ResourceType('AWS::SSM::ManagedInstanceInventory');
   /** AWS Systems Manager patch compliance */
@@ -1547,12 +1559,18 @@ export class ResourceType {
   public static readonly WAFV2_RULE_GROUP = new ResourceType('AWS::WAFv2::RuleGroup');
   /** AWS WAFv2 managed rule set */
   public static readonly WAFV2_MANAGED_RULE_SET = new ResourceType('AWS::WAFv2::ManagedRuleSet');
+  /** AWS WAFv2 ip set */
+  public static readonly WAFV2_IP_SET = new ResourceType('AWS::WAFv2::IPSet');
+  /** AWS WAFv2 regex pattern set */
+  public static readonly WAFV2_REGEX_PATTERN_SET = new ResourceType('AWS::WAFv2::RegexPatternSet');
   /** AWS X-Ray encryption configuration */
   public static readonly XRAY_ENCRYPTION_CONFIGURATION = new ResourceType('AWS::XRay::EncryptionConfig');
   /** AWS ELB classic load balancer */
   public static readonly ELB_LOAD_BALANCER = new ResourceType('AWS::ElasticLoadBalancing::LoadBalancer');
   /** AWS ELBv2 network load balancer or AWS ELBv2 application load balancer */
   public static readonly ELBV2_LOAD_BALANCER = new ResourceType('AWS::ElasticLoadBalancingV2::LoadBalancer');
+  /** AWS ELBv2 application load balancer listener */
+  public static readonly ELBV2_LISTENER = new ResourceType('AWS::ElasticLoadBalancingV2::Listener');
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {
