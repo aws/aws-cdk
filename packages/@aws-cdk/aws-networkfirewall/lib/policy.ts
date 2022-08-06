@@ -223,7 +223,7 @@ export class FirewallPolicy extends FirewallPolicyBase {
       if (/^[a-zA-Z0-9-]+$/.test(props.firewallPolicyName)) {
         this.firewallPolicyId = props.firewallPolicyName;
       } else {
-        throw new Error('firewallPolicyName must contain only letters, numbers, and hyphens, ' +
+        throw new Error('firewallPolicyName must contain only letters, numbers, and dashes, ' +
 		  `got: '${props.firewallPolicyName}'`);
       }
     }

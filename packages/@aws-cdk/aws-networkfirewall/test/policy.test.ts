@@ -80,7 +80,7 @@ test('Policy name must be valid', () => {
       statelessFragmentDefaultActions: [NetFW.StatelessStandardAction.DROP],
     });
   // THEN
-  }).toThrow('firewallPolicyName must contain only letters, numbers, and hyphens, got: \'MyFirewallPolicy%3\'');
+  }).toThrow('firewallPolicyName must contain only letters, numbers, and dashes, got: \'MyFirewallPolicy%3\'');
 });
 
 test('Stateless default actions must only have one non-custom action', () => {
