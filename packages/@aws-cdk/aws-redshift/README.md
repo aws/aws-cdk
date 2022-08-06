@@ -279,8 +279,7 @@ cluster.addRotationMultiUser('MultiUserRotation', {
 
 ## Adding Parameters
 
-You can add a parameter to a parameter group by using the
-`ClusterParameterGroup.addParameter()` method.
+You can add a parameter to a parameter group with`ClusterParameterGroup.addParameter()`.
 
 ```ts
 const params = new ClusterParameterGroup(stack, 'Params', {
@@ -293,14 +292,11 @@ const params = new ClusterParameterGroup(stack, 'Params', {
 params.addParameter('enable_user_activity_logging', 'true');
 ```
 
-Additionally, you can add a parameter to the cluster's associated parameter group by using the
-`Cluster.addToParameterGroup()` method. If the cluster does not have an associated parameter group, a new parameter group is created.
+Additionally, you can add a parameter to the cluster's associated parameter group with `Cluster.addToParameterGroup()`. If the cluster does not have an associated parameter group, a new parameter group is created.
 
 ```ts fixture=cluster
 cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 ```
-
-Note that both the `ClusterParameterGroup.addParameter()` and `Cluster.addToParameterGroup()` methods will throw an error when attempting to add a parameter to an imported parameter group or when attempting to add an existing parameter with a different value than the existing value.
 
 ## Elastic IP
 

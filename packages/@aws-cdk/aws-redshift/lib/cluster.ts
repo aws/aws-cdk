@@ -438,7 +438,6 @@ export class Cluster extends ClusterBase {
    */
   private readonly cluster: CfnCluster;
 
-
   /**
    * The cluster's parameter group
    */
