@@ -5,7 +5,7 @@ import { castAddressProperty } from './private/rules-common';
 /**
  * The interface that represents the values of a StatelessRule
  */
-export interface IStatelessRule {}
+export interface IStatelessRule{}
 
 /**
  * The base class of Stateless Rules
@@ -22,12 +22,6 @@ export interface StatelessRuleProps {
    * The actions to take on a packet that matches one of the stateless rule definition's match attributes.
    */
   readonly actions: (StatelessStandardAction|string)[];
-
-  /**
-   * The Priority of this rule in the rule group.
-   * Must be unique from other rules
-   */
-  readonly priority: number;
 
   /**
    * The destination port to inspect for.
@@ -85,27 +79,14 @@ export class StatelessRule extends StatelessRuleBase {
   private readonly protocols: number[];
 
   /**
-   * The priority of the rule in the rule group.
-   */
-  public priority: number;
-
-  /**
    * The L1 Stateless Rule Property
    * @attribute
    */
-  public resource: CfnRuleGroup.StatelessRuleProperty;
+  public resource: CfnRuleGroup.RuleDefinitionProperty;
   constructor( props: StatelessRuleProps) {
     super();
 
     // Adding Validations
-
-    /**
-     * validating priority
-     */
-    if (props.priority < 0 || props.priority > 30000 ) {
-      throw new Error('Priority must be a positive value less than 30000'+
-			`got: '${props.priority}'`);
-    }
 
     /**
      * Validating Actions
@@ -131,7 +112,6 @@ export class StatelessRule extends StatelessRuleBase {
     this.sources = props.sources || [];
     this.sourcePorts = props.sourcePorts || [];
     this.protocols = props.protocols || [];
-    this.priority = props.priority;
 
     const destinations:CfnRuleGroup.AddressProperty[] = castAddressProperty(props.destinations);
 
@@ -151,11 +131,7 @@ export class StatelessRule extends StatelessRuleBase {
       matchAttributes: ruleMatchAttributes,
     };
 
-    const resource:CfnRuleGroup.StatelessRuleProperty = {
-      priority: props.priority,
-      ruleDefinition: ruleDefinition,
-    };
-    this.resource = resource;
+    this.resource = ruleDefinition;
   }
 
   /**
@@ -362,10 +338,8 @@ export enum StatefulDomainListTargetType{
 export interface StatefulDomainListRuleProps extends StatefulRuleBaseProps {
   /**
    * Whether you want to allow or deny access to the domains in your target list.
-   *
-   * @default - DENYLIST
    */
-  readonly type?: StatefulDomainListType | string;
+  readonly type: StatefulDomainListType | string;
 
   /**
    * The domains that you want to inspect for in your traffic flows.
@@ -390,7 +364,7 @@ export class StatefulDomainListRule extends StatefulRuleBase {
   constructor(props:StatefulDomainListRuleProps) {
     super();
     const resource:CfnRuleGroup.RulesSourceListProperty = {
-      generatedRulesType: props.type || StatefulDomainListType.DENYLIST,
+      generatedRulesType: props.type,
       targets: props.targets,
       targetTypes: props.targetTypes,
     };

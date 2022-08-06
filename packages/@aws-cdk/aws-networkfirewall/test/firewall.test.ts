@@ -107,7 +107,7 @@ test('firewall name is verified', () => {
       firewallName: 'MyFirewall%3',
     });
   // THEN
-  }).toThrow('firewallName must be non-empty and contain only letters, numbers, and dashes, got: \'MyFirewall%3\'');
+  }).toThrow('firewallName must be non-empty and contain only letters, numbers, and hyphens, got: \'MyFirewall%3\'');
 });
 
 

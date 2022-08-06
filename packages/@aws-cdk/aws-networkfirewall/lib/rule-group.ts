@@ -6,6 +6,21 @@ import { StatelessRule, Stateful5TupleRule, StatefulDomainListRule } from './rul
 //import { StatelessStandardAction, StatefulStandardAction } from './actions';
 
 /**
+ * Maps a priority to a stateless rule
+ */
+export interface StatelessRuleList{
+  /**
+   * The priority of the rule in the rule group
+   */
+  readonly priority: number;
+
+  /**
+   * The stateless rule
+   */
+  readonly rule: StatelessRule;
+}
+
+/**
  * The Possible Rule Group Types
  */
 enum RuleGroupType {
@@ -69,7 +84,7 @@ export interface StatelessRuleGroupProps {
 	 *
 	 * @default = undefined
 	 */
-  readonly rules?: StatelessRule[];
+  readonly rules?: StatelessRuleList[];
 
   /**
 	 * An optional Non-standard action to use
@@ -91,13 +106,6 @@ export interface StatelessRuleGroupProps {
    * @default - undefined
    */
   readonly description?: string;
-
-  /**
-   * Tags to be added to the rule group.
-   *
-   * @default No tags applied
-   */
-  readonly tags?: core.Tag[];
 }
 
 /**
@@ -133,7 +141,7 @@ export class StatelessRuleGroup extends StatelessRuleGroupBase {
 
   public readonly ruleGroupId: string;
   public readonly ruleGroupArn: string;
-  private rules:StatelessRule[];
+  private rules:StatelessRuleList[];
 
   constructor(scope: Construct, id:string, props?: StatelessRuleGroupProps) {
     if (props === undefined) {props = {};}
@@ -148,7 +156,7 @@ export class StatelessRuleGroup extends StatelessRuleGroupBase {
      */
     if (props.ruleGroupName !== undefined &&
 				!/^[a-zA-Z0-9-]+$/.test(props.ruleGroupName)) {
-      throw new Error('ruleGroupName must be non-empty and contain only letters, numbers, and dashes, ' +
+      throw new Error('ruleGroupName must be non-empty and contain only letters, numbers, and hyphens, ' +
 				`got: '${props.ruleGroupName}'`);
     }
 
@@ -156,25 +164,30 @@ export class StatelessRuleGroup extends StatelessRuleGroupBase {
      * Validate Rule priority
      */
     this.rules = props.rules||[];
-    this.verifyUniquePriority();
+    this.verifyPriorities();
     /**
      * Validating Capacity
      */
     const capacity:number = props.capacity || this.calculateCapacity();
     if (!Number.isInteger(capacity)) {
-      throw new Error('capacity must be an integer value, '+
+      throw new Error('Capacity must be an integer value, '+
 				`got: '${capacity}'`);
     }
     if (capacity < 0 || capacity > 30000) {
-      throw new Error('capacity must be a positive value less than 30,000, '+
+      throw new Error('Capacity must be a positive value less than 30,000, '+
 				`got: '${capacity}'`);
     }
 
     const statelessRules:CfnRuleGroup.StatelessRuleProperty[] = [];
     if (props.rules !== undefined) {
-      let rule:StatelessRule;
+      let rule:StatelessRuleList;
       for (rule of props.rules) {
-        statelessRules.push(rule.resource);
+        statelessRules.push(
+          <CfnRuleGroup.StatelessRuleProperty>{
+            ruleDefinition: rule.rule.resource,
+            priority: rule.priority,
+          },
+        );
       }
     }
 
@@ -200,7 +213,7 @@ export class StatelessRuleGroup extends StatelessRuleGroupBase {
       type: RuleGroupType.STATELESS,
       ruleGroup: resourceRuleGroupProperty,
       description: props.description,
-      tags: props.tags || [],
+      //tags
     };
     const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);
     this.ruleGroupId = this.getResourceNameAttribute(resource.ref);
@@ -218,25 +231,29 @@ export class StatelessRuleGroup extends StatelessRuleGroupBase {
    */
   public calculateCapacity(): number {
     let total:number = 0;
-    var statelessRule: StatelessRule;
+    var statelessRule: StatelessRuleList;
     if (this.rules !== undefined) {
       for (statelessRule of this.rules) {
-        total += statelessRule.calculateCapacity();
+        total += statelessRule.rule.calculateCapacity();
       }
     }
     return total;
   }
 
   /**
-   * Ensure all rules have unique priority values
+   * Ensure all priorities are within allowed range values
    */
-  private verifyUniquePriority() {
+  private verifyPriorities() {
     let priorities:number[] = [];
-    let rule:StatelessRule;
+    let rule:StatelessRuleList;
     for (rule of this.rules) {
       if (priorities.includes(rule.priority)) {
         throw new Error('Priority must be unique, '+
           `got duplicate priority: '${rule.priority}'`);
+      }
+      if (rule.priority < 0 || rule.priority > 30000) {
+        throw new Error('Priority must be a positive value less than 30000'+
+          `got: '${rule.priority}'`);
       }
       priorities.push(rule.priority);
     }
@@ -320,13 +337,6 @@ interface StatefulRuleGroupProps {
    * @default - undefined
    */
   readonly description?: string;
-
-  /**
-   * Tags to be added to the rule group.
-   *
-   * @default No tags applied
-   */
-  readonly tags?: core.Tag[];
 }
 
 /**
@@ -421,7 +431,7 @@ export class StatefulSuricataRuleGroup extends StatefulRuleGroup {
       type: RuleGroupType.STATEFUL,
       ruleGroup: resourceRuleGroupProperty,
       description: props.description,
-      tags: props.tags || [],
+      //tags
     };
 
     const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);
@@ -490,7 +500,7 @@ export class Stateful5TupleRuleGroup extends StatefulRuleGroup {
       type: RuleGroupType.STATEFUL,
       ruleGroup: resourceRuleGroupProperty,
       description: props.description,
-      tags: props.tags || [],
+      //tags
     };
 
     const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);
@@ -549,7 +559,7 @@ export class StatefulDomainListRuleGroup extends StatefulRuleGroup {
       type: RuleGroupType.STATEFUL,
       ruleGroup: resourceRuleGroupProperty,
       description: props.description,
-      tags: props.tags || [],
+      //tags
     };
 
     const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);

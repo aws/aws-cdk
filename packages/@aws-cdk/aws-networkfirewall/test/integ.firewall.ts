@@ -76,7 +76,6 @@ class TestStack extends cdk.Stack {
 
     const statelessRule = new NetFW.StatelessRule({
       actions: [NetFW.StatelessStandardAction.DROP],
-      priority: 10,
       destinationPorts: [
         {
           fromPort: 80,
@@ -98,7 +97,7 @@ class TestStack extends cdk.Stack {
 
     const statelessRuleGroup = new NetFW.StatelessRuleGroup(this, 'MyStatelessRuleGroup', {
       ruleGroupName: 'MyStatelessRuleGroup',
-      rules: [statelessRule],
+      rules: [{ rule: statelessRule, priority: 10 }],
     });
 
 

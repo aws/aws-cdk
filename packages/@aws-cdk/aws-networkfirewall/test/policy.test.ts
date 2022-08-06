@@ -80,7 +80,7 @@ test('Policy name must be valid', () => {
       statelessFragmentDefaultActions: [NetFW.StatelessStandardAction.DROP],
     });
   // THEN
-  }).toThrow('policyId must be non-empty and contain only letters, numbers, and dashes, got: \'MyFirewallPolicy%3\'');
+  }).toThrow('firewallPolicyName must contain only letters, numbers, and hyphens, got: \'MyFirewallPolicy%3\'');
 });
 
 test('Stateless default actions must only have one non-custom action', () => {
@@ -210,7 +210,6 @@ test('Can add new groups to policy', () => {
   // create some rules
   const statelessRule1 = new NetFW.StatelessRule({
     actions: [NetFW.StatelessStandardAction.FORWARD],
-    priority: 10,
   });
   const statefulRule1 = new NetFW.Stateful5TupleRule({
     action: NetFW.StatefulStandardAction.DROP,
@@ -222,7 +221,7 @@ test('Can add new groups to policy', () => {
   });
   // create some rule groups
   const statelessRuleGroup1 = new NetFW.StatelessRuleGroup(stack, 'StatelessRuleGroup1', {
-    rules: [statelessRule1],
+    rules: [{ rule: statelessRule1, priority: 10 }],
   });
   const statefulRuleGroup1 = new NetFW.Stateful5TupleRuleGroup(stack, 'StatefulRuleGroup1', {
     rules: [statefulRule1],

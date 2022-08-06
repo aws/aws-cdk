@@ -75,6 +75,7 @@ test('Default properties Domain List', () => {
   // GIVEN
   // WHEN
   const statefulDomainListRule = new NetFW.StatefulDomainListRule({
+    type: NetFW.StatefulDomainListType.DENYLIST,
     targets: [],
     targetTypes: [],
   });
