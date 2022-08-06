@@ -31,6 +31,9 @@ enables organizations to create and manage repositores of applications and assoc
 - [Associations](#associations)
   - [Associating application with an attribute group](#attribute-group-association)
   - [Associating application with a stack](#resource-association)
+- [Sharing](#sharing)
+  - [Sharing an application](#sharing-an-application)
+  - [Sharing an attribute group](#sharing-an-attribute-group)
 
 The `@aws-cdk/aws-servicecatalogappregistry` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
