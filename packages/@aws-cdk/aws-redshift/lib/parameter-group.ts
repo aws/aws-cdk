@@ -12,14 +12,6 @@ export interface IClusterParameterGroup extends IResource {
    * @attribute
    */
   readonly clusterParameterGroupName: string;
-
-  /**
-   * Adds a parameter to the parameter group.
-   *
-   * @param name the parameter name
-   * @param value the parameter name
-   */
-  addParameter(name: string, value: string): void;
 }
 
 /**
@@ -31,14 +23,6 @@ abstract class ClusterParameterGroupBase extends Resource implements IClusterPar
    * The name of the parameter group
    */
   public abstract readonly clusterParameterGroupName: string;
-
-  /**
-   * Adds a parameter to the parameter group
-   *
-   * @param name the parameter name
-   * @param value the parameter name
-   */
-  abstract addParameter(name: string, value: string): void;
 }
 
 /**
@@ -69,12 +53,7 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
    */
   public static fromClusterParameterGroupName(scope: Construct, id: string, clusterParameterGroupName: string): IClusterParameterGroup {
     class Import extends Resource implements IClusterParameterGroup {
-
       public readonly clusterParameterGroupName = clusterParameterGroupName;
-
-      addParameter(_name: string, _value: string): void {
-        throw new Error('Cannot add a parameter to an imported parameter group.');
-      }
     }
     return new Import(scope, id);
   }

@@ -100,15 +100,4 @@ describe('Adding parameters to an existing group', () => {
       // THEN
       .toThrowError('The parameter group already contains the parameter');
   });
-
-  test('Adding a parameter to an IClusterParameterGroup', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const params = ClusterParameterGroup.fromClusterParameterGroupName(stack, 'Params', 'foo');
-
-    // WHEN
-    expect(() => params.addParameter('param', 'value2'))
-      // THEN
-      .toThrowError('Cannot add a parameter to an imported parameter group');
-  });
 });

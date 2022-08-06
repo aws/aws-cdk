@@ -308,6 +308,23 @@ describe('parameter group', () => {
     });
   });
 
+  test('Adding a parameter to an IClusterParameterGroup', () => {
+    // GIVEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      clusterName: 'foobar',
+      parameterGroup: ClusterParameterGroup.fromClusterParameterGroupName(stack, 'Params', 'foo'),
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    // WHEN
+    expect(() => cluster.addToParameterGroup('param', 'value2'))
+      // THEN
+      .toThrowError('Cannot add a parameter to an imported parameter group');
+  });
+
 });
 
 test('publicly accessible cluster', () => {

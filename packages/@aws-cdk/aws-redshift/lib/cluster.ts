@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, Names, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -443,11 +443,6 @@ export class Cluster extends ClusterBase {
    */
   protected parameterGroup?: IClusterParameterGroup;
 
-  /**
-   * Identifier of the cluster
-   */
-  protected clusterIdentifier: string;
-
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
@@ -544,7 +539,6 @@ export class Cluster extends ClusterBase {
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups, defaultPort });
-    this.clusterIdentifier = props.clusterName ?? Names.uniqueResourceName(this, {});
   }
 
   /**
@@ -622,12 +616,14 @@ export class Cluster extends ClusterBase {
       const param: { [name: string]: string } = {};
       param[name] = value;
       this.parameterGroup = new ClusterParameterGroup(this, 'ParameterGroup', {
-        description: `Parameter Group for the ${this.clusterIdentifier} Redshift cluster`,
+        description: `Parameter Group for the ${this.cluster.clusterIdentifier ?? this.clusterName} Redshift cluster`,
         parameters: param,
       });
       this.cluster.clusterParameterGroupName = this.parameterGroup.clusterParameterGroupName;
-    } else {
+    } else if (this.parameterGroup instanceof ClusterParameterGroup) {
       this.parameterGroup.addParameter(name, value);
+    } else {
+      throw new Error('Cannot add a parameter to an imported parameter group.');
     }
   }
 }
