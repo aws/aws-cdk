@@ -25,8 +25,8 @@ export interface BasePathMappingOptions {
 
   /**
    * Whether to attach the base path mapping to a stage.
-   * Use this prop to create a base path mapping without attaching it to the Rest API default stage.
-   * This prop is ignored if `stage` is provided.
+   * Use this property to create a base path mapping without attaching it to the Rest API default stage.
+   * This property is ignored if `stage` is provided.
    * @default - true
    */
   readonly attachToStage?: boolean;

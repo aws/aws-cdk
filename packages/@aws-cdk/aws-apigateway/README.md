@@ -950,8 +950,8 @@ domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
 domain.addBasePathMapping(api2, { basePath: 'boom' });
 ```
 
-You can specify the API `Stage` to which this base path URL will map to. By default, this will be the
-`deploymentStage` of the `RestApi`.
+By default, the base path URL will map to the `deploymentStage` of the `RestApi`.
+You can specify a different API `Stage` to which the base path URL will map to.
 
 ```ts
 declare const domain: apigateway.DomainName;
@@ -966,6 +966,19 @@ const betaStage = new apigateway.Stage(this, 'beta-stage', {
 domain.addBasePathMapping(restapi, { basePath: 'api/beta', stage: betaStage });
 ```
 
+It is possible to create a base path mapping without associating it with a
+stage by using the `attachToStage` property. When set to `false`, the stage must be
+included in the URL when invoking the API. For example,
+<https://example.com/myapi/prod> will invoke the stage named `prod` from the
+`myapi` base path mapping.
+
+```ts
+declare const domain: apigateway.DomainName;
+declare const api: apigateway.RestApi;
+
+domain.addBasePathMapping(api, { basePath: 'myapi', attachToStage: false });
+```
+
 If you don't specify `basePath`, all URLs under this domain will be mapped
 to the API, and you won't be able to map another API to the same domain:
 
@@ -977,6 +990,23 @@ domain.addBasePathMapping(api);
 
 This can also be achieved through the `mapping` configuration when defining the
 domain as demonstrated above.
+
+Base path mappings can also be created with the `BasePathMapping` resource.
+
+```ts
+declare const api: apigateway.RestApi;
+
+const domainName = apigateway.DomainName.fromDomainNameAttributes(this, 'DomainName', {
+  domainName: 'domainName',
+  domainNameAliasHostedZoneId: 'domainNameAliasHostedZoneId',
+  domainNameAliasTarget: 'domainNameAliasTarget',
+});
+
+new apigateway.BasePathMapping(this, 'BasePathMapping', {
+  domainName: domainName,
+  restApi: api,
+});
+```
 
 If you wish to setup this domain with an Amazon Route53 alias, use the `targets.ApiGatewayDomain`:
 
