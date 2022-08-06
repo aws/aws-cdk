@@ -22,6 +22,14 @@ export interface BasePathMappingOptions {
    * @default - map to deploymentStage of restApi otherwise stage needs to pass in URL
    */
   readonly stage?: Stage;
+
+  /**
+   * Whether to attach the base path mapping to a stage.
+   * Use this prop to create a base path mapping without attaching it to the Rest API default stage.
+   * This prop is ignored if `stage` is provided.
+   * @default - true
+   */
+  readonly attachToStage?: boolean;
 }
 
 export interface BasePathMappingProps extends BasePathMappingOptions {
@@ -53,9 +61,12 @@ export class BasePathMapping extends Resource {
       }
     }
 
+    const attachToStage = props.attachToStage ?? true;
+
     // if restApi is an owned API and it has a deployment stage, map all requests
     // to that stage. otherwise, the stage will have to be specified in the URL.
-    const stage = props.stage ?? (props.restApi instanceof RestApiBase
+    // if props.attachToStage is false, then do not attach to the stage.
+    const stage = props.stage ?? (props.restApi instanceof RestApiBase && attachToStage
       ? props.restApi.deploymentStage
       : undefined);
 
@@ -63,7 +74,7 @@ export class BasePathMapping extends Resource {
       basePath: props.basePath,
       domainName: props.domainName.domainName,
       restApiId: props.restApi.restApiId,
-      stage: stage && stage.stageName,
+      stage: stage?.stageName,
     });
   }
 }
