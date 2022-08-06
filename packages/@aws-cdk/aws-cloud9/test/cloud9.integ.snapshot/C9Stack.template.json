@@ -360,6 +360,8 @@
   "C9EnvF05FC3BE": {
    "Type": "AWS::Cloud9::EnvironmentEC2",
    "Properties": {
+    "ConnectionType": "CONNECT_SSH",
+    "ImageId": "amazonlinux-2-x86_64",
     "InstanceType": "t2.micro",
     "Repositories": [
      {

@@ -458,4 +458,101 @@ describe('fargate', () => {
     });
 
   });
+
+  test('supports cluster logging without FargateCluster', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    //THEN
+    Template.fromStack(stack).resourceCountIs('Custom::AWSCDK-EKS-Cluster::Config::logging', 0);
+  });
+
+  test('supports cluster partial logging enabled with FargateCluster', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+      clusterLogging: [
+        eks.ClusterLoggingTypes.API,
+        eks.ClusterLoggingTypes.AUTHENTICATOR,
+        eks.ClusterLoggingTypes.SCHEDULER,
+      ],
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        logging: {
+          clusterLogging: [
+            {
+              enabled: true,
+              types: [
+                'api',
+                'authenticator',
+                'scheduler',
+              ],
+            },
+            {
+              enabled: false,
+              types: [
+                'audit',
+                'controllerManager',
+              ],
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('supports cluster all logging enabled with FargateCluster', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+      clusterLogging: [
+        eks.ClusterLoggingTypes.API,
+        eks.ClusterLoggingTypes.AUDIT,
+        eks.ClusterLoggingTypes.AUTHENTICATOR,
+        eks.ClusterLoggingTypes.CONTROLLER_MANAGER,
+        eks.ClusterLoggingTypes.SCHEDULER,
+      ],
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        logging: {
+          clusterLogging: [
+            {
+              enabled: true,
+              types: [
+                'api',
+                'audit',
+                'authenticator',
+                'controllerManager',
+                'scheduler',
+              ],
+            },
+            {
+              enabled: false,
+              types: [],
+            },
+          ],
+        },
+      },
+    });
+  });
 });

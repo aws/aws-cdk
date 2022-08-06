@@ -77,6 +77,8 @@ const demoTable = new dynamodb.Table(this, 'DemoTable', {
 const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 
 // Resolver for the Query "getDemos" that scans the DynamoDb table and returns the entire list.
+// Resolver Mapping Template Reference:
+// https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-dynamodb.html
 demoDS.createResolver({
   typeName: 'Query',
   fieldName: 'getDemos',
@@ -94,7 +96,17 @@ demoDS.createResolver({
   ),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
+
+//To enable DynamoDB read consistency with the `MappingTemplate`:
+demoDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getDemosConsistent',
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(true),
+  responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
+});
 ```
+
+
 
 ### Aurora Serverless
 
@@ -252,7 +264,7 @@ import * as opensearch from '@aws-cdk/aws-opensearchservice';
 
 const user = new iam.User(this, 'User');
 const domain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_2,
+  version: opensearch.EngineVersion.OPENSEARCH_1_3,
   removalPolicy: RemovalPolicy.DESTROY,
   fineGrainedAccessControl: { masterUserArn: user.userArn },
   encryptionAtRest: { enabled: true },
@@ -319,6 +331,29 @@ new route53.CnameRecord(this, `CnameApiRecord`, {
   recordName: 'api',
   zone,
   domainName: myDomainName,
+});
+```
+
+## Log Group
+
+AppSync automatically create a log group with the name `/aws/appsync/apis/<graphql_api_id>` upon deployment with
+log data set to never expire. If you want to set a different expiration period, use the `logConfig.retention` property.
+
+To obtain the GraphQL API's log group as a `logs.ILogGroup` use the `logGroup` property of the
+`GraphqlApi` construct.
+
+```ts
+import * as logs from '@aws-cdk/aws-logs';
+
+const logConfig: appsync.LogConfig = {
+  retention: logs.RetentionDays.ONE_WEEK,
+};
+
+new appsync.GraphqlApi(this, 'api', {
+  authorizationConfig: {},
+  name: 'myApi',
+  schema: appsync.Schema.fromAsset(path.join(__dirname, 'myApi.graphql')),
+  logConfig,
 });
 ```
 
@@ -415,7 +450,7 @@ new appsync.GraphqlApi(this, 'api', {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.LAMBDA,
       lambdaAuthorizerConfig: {
-        handler: authFunction, 
+        handler: authFunction,
         // can also specify `resultsCacheTtl` and `validationRegex`.
       },
     },

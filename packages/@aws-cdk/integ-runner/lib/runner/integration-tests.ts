@@ -1,22 +1,126 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
+const CDK_OUTDIR_PREFIX = 'cdk-integ.out';
+
 /**
  * Represents a single integration test
+ *
+ * This type is a data-only structure, so it can trivially be passed to workers.
+ * Derived attributes are calculated using the `IntegTest` class.
  */
-export interface IntegTestConfig {
+export interface IntegTestInfo {
   /**
-   * The name of the file that contains the
-   * integration tests. This will be in the format
-   * of integ.{test-name}.js
+   * Path to the file to run
+   *
+   * Path is relative to the current working directory.
    */
   readonly fileName: string;
 
   /**
-   * The base directory where the tests are
-   * discovered from
+   * The root directory we discovered this test from
+   *
+   * Path is relative to the current working directory.
    */
-  readonly directory: string;
+  readonly discoveryRoot: string;
+}
+
+/**
+ * Derived information for IntegTests
+ */
+export class IntegTest {
+  /**
+   * The name of the file to run
+   *
+   * Path is relative to the current working directory.
+   */
+  public readonly fileName: string;
+
+  /**
+   * Relative path to the file to run
+   *
+   * Relative from the "discovery root".
+   */
+  public readonly discoveryRelativeFileName: string;
+
+  /**
+   * The absolute path to the file
+   */
+  public readonly absoluteFileName: string;
+
+  /**
+   * The normalized name of the test. This name
+   * will be the same regardless of what directory the tool
+   * is run from.
+   */
+  public readonly normalizedTestName: string;
+
+  /**
+   * Directory the test is in
+   */
+  public readonly directory: string;
+
+  /**
+   * Display name for the test
+   *
+   * Depends on the discovery directory.
+   *
+   * Looks like `integ.mytest` or `package/test/integ.mytest`.
+   */
+  public readonly testName: string;
+
+  /**
+   * Path of the snapshot directory for this test
+   */
+  public readonly snapshotDir: string;
+
+  /**
+   * Path to the temporary output directory for this test
+   */
+  public readonly temporaryOutputDir: string;
+
+  constructor(public readonly info: IntegTestInfo) {
+    this.absoluteFileName = path.resolve(info.fileName);
+    this.fileName = path.relative(process.cwd(), info.fileName);
+
+    const parsed = path.parse(this.fileName);
+    this.discoveryRelativeFileName = path.relative(info.discoveryRoot, info.fileName);
+    this.directory = parsed.dir;
+
+    // if we are running in a package directory then just use the fileName
+    // as the testname, but if we are running in a parent directory with
+    // multiple packages then use the directory/filename as the testname
+    //
+    // Looks either like `integ.mytest` or `package/test/integ.mytest`.
+    const relDiscoveryRoot = path.relative(process.cwd(), info.discoveryRoot);
+    this.testName = this.directory === path.join(relDiscoveryRoot, 'test') || this.directory === path.join(relDiscoveryRoot)
+      ? parsed.name
+      : path.join(path.relative(this.info.discoveryRoot, parsed.dir), parsed.name);
+
+    const nakedTestName = parsed.name.slice(6); // Leave name without 'integ.' and '.ts'
+    this.normalizedTestName = parsed.name;
+    this.snapshotDir = path.join(this.directory, `${nakedTestName}.integ.snapshot`);
+    this.temporaryOutputDir = path.join(this.directory, `${CDK_OUTDIR_PREFIX}.${nakedTestName}`);
+  }
+
+  /**
+   * Whether this test matches the user-given name
+   *
+   * We are very lenient here. A name matches if it matches:
+   *
+   * - The CWD-relative filename
+   * - The discovery root-relative filename
+   * - The suite name
+   * - The absolute filename
+   */
+  public matches(name: string) {
+    return [
+      this.fileName,
+      this.discoveryRelativeFileName,
+      this.testName,
+      this.absoluteFileName,
+    ].includes(name);
+  }
 }
 
 /**
@@ -49,7 +153,7 @@ export class IntegrationTests {
    * Takes a file name of a file that contains a list of test
    * to either run or exclude and returns a list of Integration Tests to run
    */
-  public async fromFile(fileName: string): Promise<IntegTestConfig[]> {
+  public async fromFile(fileName: string): Promise<IntegTest[]> {
     const file: IntegrationTestFileConfig = JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' }));
     const foundTests = await this.discover();
 
@@ -65,32 +169,27 @@ export class IntegrationTests {
    *   If they have provided a test name that we don't find, then we write out that error message.
    * - If it is a list of tests to exclude, then we discover all available tests and filter out the tests that were provided by the user.
    */
-  private filterTests(discoveredTests: IntegTestConfig[], requestedTests?: string[], exclude?: boolean): IntegTestConfig[] {
-    if (!requestedTests || requestedTests.length === 0) {
+  private filterTests(discoveredTests: IntegTest[], requestedTests?: string[], exclude?: boolean): IntegTest[] {
+    if (!requestedTests) {
       return discoveredTests;
     }
-    const all = discoveredTests.map(x => {
-      return path.relative(x.directory, x.fileName);
-    });
-    let foundAll = true;
-    // Pare down found tests to filter
+
+
     const allTests = discoveredTests.filter(t => {
-      if (exclude) {
-        return (!requestedTests.includes(path.relative(t.directory, t.fileName)));
-      }
-      return (requestedTests.includes(path.relative(t.directory, t.fileName)));
+      const matches = requestedTests.some(pattern => t.matches(pattern));
+      return matches !== !!exclude; // Looks weird but is equal to (matches && !exclude) || (!matches && exclude)
     });
 
+    // If not excluding, all patterns must have matched at least one test
     if (!exclude) {
-      const selectedNames = allTests.map(t => path.relative(t.directory, t.fileName));
-      for (const unmatched of requestedTests.filter(t => !selectedNames.includes(t))) {
+      const unmatchedPatterns = requestedTests.filter(pattern => !discoveredTests.some(t => t.matches(pattern)));
+      for (const unmatched of unmatchedPatterns) {
         process.stderr.write(`No such integ test: ${unmatched}\n`);
-        foundAll = false;
       }
-    }
-    if (!foundAll) {
-      process.stderr.write(`Available tests: ${all.join(' ')}\n`);
-      return [];
+      if (unmatchedPatterns.length > 0) {
+        process.stderr.write(`Available tests: ${discoveredTests.map(t => t.discoveryRelativeFileName).join(' ')}\n`);
+        return [];
+      }
     }
 
     return allTests;
@@ -99,8 +198,11 @@ export class IntegrationTests {
   /**
    * Takes an optional list of tests to look for, otherwise
    * it will look for all tests from the directory
+   *
+   * @param tests Tests to include or exclude, undefined means include all tests.
+   * @param exclude Whether the 'tests' list is inclusive or exclusive (inclusive by default).
    */
-  public async fromCliArgs(tests?: string[], exclude?: boolean): Promise<IntegTestConfig[]> {
+  public async fromCliArgs(tests?: string[], exclude?: boolean): Promise<IntegTest[]> {
     const discoveredTests = await this.discover();
 
     const allTests = this.filterTests(discoveredTests, tests, exclude);
@@ -108,14 +210,14 @@ export class IntegrationTests {
     return allTests;
   }
 
-  private async discover(): Promise<IntegTestConfig[]> {
+  private async discover(): Promise<IntegTest[]> {
     const files = await this.readTree();
     const integs = files.filter(fileName => path.basename(fileName).startsWith('integ.') && path.basename(fileName).endsWith('.js'));
     return this.request(integs);
   }
 
-  private request(files: string[]): IntegTestConfig[] {
-    return files.map(fileName => { return { directory: this.directory, fileName }; });
+  private request(files: string[]): IntegTest[] {
+    return files.map(fileName => new IntegTest({ discoveryRoot: this.directory, fileName }));
   }
 
   private async readTree(): Promise<string[]> {

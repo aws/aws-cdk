@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.49"
         }
       },
       "aws-ecs-integ-l3-vpconly": {
@@ -1676,6 +1676,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "vpcOnlyFargateTest": {
+        "id": "vpcOnlyFargateTest",
+        "path": "vpcOnlyFargateTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "vpcOnlyFargateTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "vpcOnlyFargateTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.49"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "vpcOnlyFargateTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

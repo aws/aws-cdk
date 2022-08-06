@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Construct, IConstruct } from 'constructs';
 import { App } from '../lib';
 import { IAspect, Aspects } from '../lib/aspect';
-import { Construct, IConstruct } from '../lib/construct-compat';
 
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
@@ -33,7 +33,6 @@ describe('aspect', () => {
     expect(root.visitCounter).toEqual(1);
     app.synth();
     expect(root.visitCounter).toEqual(1);
-
   });
 
   test('Warn if an Aspect is added via another Aspect', () => {
@@ -50,11 +49,10 @@ describe('aspect', () => {
       },
     });
     app.synth();
-    expect(root.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(root.node.metadataEntry[0].data).toEqual('We detected an Aspect was added via another Aspect, and will not be applied');
+    expect(root.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
+    expect(root.node.metadata[0].data).toEqual('We detected an Aspect was added via another Aspect, and will not be applied');
     // warning is not added to child construct
-    expect(child.node.metadataEntry.length).toEqual(0);
-
+    expect(child.node.metadata.length).toEqual(0);
   });
 
   test('Do not warn if an Aspect is added directly (not by another aspect)', () => {
@@ -63,14 +61,12 @@ describe('aspect', () => {
     const child = new MyConstruct(root, 'ChildConstruct');
     Aspects.of(root).add(new MyAspect());
     app.synth();
-    expect(root.node.metadataEntry[0].type).toEqual('foo');
-    expect(root.node.metadataEntry[0].data).toEqual('bar');
-    expect(child.node.metadataEntry[0].type).toEqual('foo');
-    expect(child.node.metadataEntry[0].data).toEqual('bar');
+    expect(root.node.metadata[0].type).toEqual('foo');
+    expect(root.node.metadata[0].data).toEqual('bar');
+    expect(child.node.metadata[0].type).toEqual('foo');
+    expect(child.node.metadata[0].data).toEqual('bar');
     // no warning is added
-    expect(root.node.metadataEntry.length).toEqual(1);
-    expect(child.node.metadataEntry.length).toEqual(1);
-
+    expect(root.node.metadata.length).toEqual(1);
+    expect(child.node.metadata.length).toEqual(1);
   });
-
 });

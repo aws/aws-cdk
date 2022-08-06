@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-stepfunctions-tasks/test/ecs/integ.ec2-run-task": {
+    "integ.ec2-run-task": {
       "stacks": [
         "aws-sfn-tasks-ecs-ec2-integ"
       ],

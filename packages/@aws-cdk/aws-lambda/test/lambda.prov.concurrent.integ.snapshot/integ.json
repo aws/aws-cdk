@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-lambda/test/integ.lambda.prov.concurrent": {
+    "integ.lambda.prov.concurrent": {
       "stacks": [
         "aws-cdk-lambda-pce-1"
       ],

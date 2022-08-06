@@ -49,7 +49,7 @@ cluster.addResource('mypod', {
 });
 ```
 
-Here is a [complete sample](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-kubectl.lit.ts).
+Here is a [complete sample](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-kubectl.lit.ts).
 
 ### Capacity
 

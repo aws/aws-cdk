@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-eks/test/integ.eks-helm-asset": {
+    "integ.eks-helm-asset": {
       "stacks": [
         "aws-cdk-eks-helm-test"
       ],

@@ -366,6 +366,32 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
 });
 ```
 
+### Set capacityProviderStrategies for ApplicationLoadBalancedFargateService
+
+```ts
+declare const cluster: ecs.Cluster;
+cluster.enableFargateCapacityProviders();
+
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  capacityProviderStrategies: [
+    {
+      capacityProvider: 'FARGATE_SPOT',
+      weight: 2,
+      base: 0,
+    },
+    {
+      capacityProvider: 'FARGATE',
+      weight: 1,
+      base: 1,
+    },
+  ],
+});
+```
+
 ### Add Schedule-Based Auto-Scaling to an ApplicationLoadBalancedFargateService
 
 ```ts
@@ -491,7 +517,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
   securityGroups: [securityGroup],
-  taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+  taskSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
 });
 ```
 
@@ -581,7 +607,7 @@ const capacityProvider = new ecs.AsgCapacityProvider(this, 'provider', {
 });
 cluster.addAsgCapacityProvider(capacityProvider);
 
-const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+const queueProcessingEc2Service = new ecsPatterns.QueueProcessingEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
@@ -610,6 +636,188 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   },
 });
 ```
+
+### Select idleTimeout for ApplicationLoadBalancedFargateService
+
+```ts
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  idleTimeout: Duration.seconds(120),
+});
+```
+
+### Select idleTimeout for ApplicationMultipleTargetGroupsFargateService
+
+```ts
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
+import { InstanceType } from '@aws-cdk/aws-ec2';
+import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
+import { ApplicationProtocol, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { PublicHostedZone } from '@aws-cdk/aws-route53';
+const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
+const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGroupsFargateService(this, 'myService', {
+  cluster: new ecs.Cluster(this, 'EcsCluster', { vpc }),
+  memoryLimitMiB: 256,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  enableExecuteCommand: true,
+  loadBalancers: [
+    {
+      name: 'lb',
+      idleTimeout: Duration.seconds(400),
+      domainName: 'api.example.com',
+      domainZone: new PublicHostedZone(this, 'HostedZone', { zoneName: 'example.com' }),
+      listeners: [
+        {
+          name: 'listener',
+          protocol: ApplicationProtocol.HTTPS,
+          certificate: Certificate.fromCertificateArn(this, 'Cert', 'helloworld'),
+          sslPolicy: SslPolicy.TLS12_EXT,
+        },
+      ],
+    },
+    {
+      name: 'lb2',
+      idleTimeout: Duration.seconds(120),
+      domainName: 'frontend.com',
+      domainZone: new PublicHostedZone(this, 'HostedZone', { zoneName: 'frontend.com' }),
+      listeners: [
+        {
+          name: 'listener2',
+          protocol: ApplicationProtocol.HTTPS,
+          certificate: Certificate.fromCertificateArn(this, 'Cert2', 'helloworld'),
+          sslPolicy: SslPolicy.TLS12_EXT,
+        },
+      ],
+    },
+  ],
+  targetGroups: [
+    {
+      containerPort: 80,
+      listener: 'listener',
+    },
+    {
+      containerPort: 90,
+      pathPattern: 'a/b/c',
+      priority: 10,
+      listener: 'listener',
+    },
+    {
+      containerPort: 443,
+      listener: 'listener2',
+    },
+    {
+      containerPort: 80,
+      pathPattern: 'a/b/c',
+      priority: 10,
+      listener: 'listener2',
+    },
+  ],
+});
+```
+
+### Set health checks for ApplicationMultipleTargetGroupsFargateService
+
+```ts
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
+import { InstanceType } from '@aws-cdk/aws-ec2';
+import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
+import { ApplicationProtocol,Protocol, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { PublicHostedZone } from '@aws-cdk/aws-route53';
+const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
+
+const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGroupsFargateService(this, 'myService', {
+  cluster: new ecs.Cluster(this, 'EcsCluster', { vpc }),
+  memoryLimitMiB: 256,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  enableExecuteCommand: true,
+  loadBalancers: [
+    {
+      name: 'lb',
+      idleTimeout: Duration.seconds(400),
+      domainName: 'api.example.com',
+      domainZone: new PublicHostedZone(this, 'HostedZone', { zoneName: 'example.com' }),
+      listeners: [
+        {
+          name: 'listener',
+          protocol: ApplicationProtocol.HTTPS,
+          certificate: Certificate.fromCertificateArn(this, 'Cert', 'helloworld'),
+          sslPolicy: SslPolicy.TLS12_EXT,
+        },
+      ],
+    },
+    {
+      name: 'lb2',
+      idleTimeout: Duration.seconds(120),
+      domainName: 'frontend.com',
+      domainZone: new PublicHostedZone(this, 'HostedZone', { zoneName: 'frontend.com' }),
+      listeners: [
+        {
+          name: 'listener2',
+          protocol: ApplicationProtocol.HTTPS,
+          certificate: Certificate.fromCertificateArn(this, 'Cert2', 'helloworld'),
+          sslPolicy: SslPolicy.TLS12_EXT,
+        },
+      ],
+    },
+  ],
+  targetGroups: [
+    {
+      containerPort: 80,
+      listener: 'listener',
+    },
+    {
+      containerPort: 90,
+      pathPattern: 'a/b/c',
+      priority: 10,
+      listener: 'listener',
+    },
+    {
+      containerPort: 443,
+      listener: 'listener2',
+    },
+    {
+      containerPort: 80,
+      pathPattern: 'a/b/c',
+      priority: 10,
+      listener: 'listener2',
+    },
+  ],
+});
+
+loadBalancedFargateService.targetGroups[0].configureHealthCheck({
+  port: '8050',
+  protocol: Protocol.HTTP,
+  healthyThresholdCount: 2,
+  unhealthyThresholdCount: 2,
+  timeout: Duration.seconds(10),
+  interval: Duration.seconds(30),
+  healthyHttpCodes: '200',
+});
+
+
+loadBalancedFargateService.targetGroups[1].configureHealthCheck({
+  port: '8050',
+  protocol: Protocol.HTTP,
+  healthyThresholdCount: 2,
+  unhealthyThresholdCount: 2,
+  timeout: Duration.seconds(10),
+  interval: Duration.seconds(30),
+  healthyHttpCodes: '200',
+});
+
+```
+
 
 ### Set PlatformVersion for ScheduledFargateTask
 
@@ -733,3 +941,32 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   loadBalancerName: 'application-lb-name',
 });
 ```
+
+### ECS Exec
+
+You can use ECS Exec to run commands in or get a shell to a container running on an Amazon EC2 instance or on
+AWS Fargate. Enable ECS Exec, by setting `enableExecuteCommand` to `true`.
+
+ECS Exec is supported by all Services i.e. `ApplicationLoadBalanced(Fargate|Ec2)Service`, `ApplicationMultipleTargetGroups(Fargate|Ec2)Service`, `NetworkLoadBalanced(Fargate|Ec2)Service`, `NetworkMultipleTargetGroups(Fargate|Ec2)Service`, `QueueProcessing(Fargate|Ec2)Service`. It is not supported for `ScheduledTask`s.
+
+Read more about ECS Exec in the [ECS Developer Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html).
+
+Example:
+
+```ts
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  enableExecuteCommand: true
+});
+```
+
+Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite for the exec command
+to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see
+[Install Session Manager plugin for AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).

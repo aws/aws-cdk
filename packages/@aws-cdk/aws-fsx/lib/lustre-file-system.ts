@@ -28,6 +28,42 @@ export enum LustreDeploymentType {
    */
   PERSISTENT_2 = 'PERSISTENT_2',
 }
+/**
+ * The different auto import policies which are allowed
+ */
+export enum LustreAutoImportPolicy {
+  /**
+   * AutoImport is off. Amazon FSx only updates file and directory listings from the linked S3 bucket when the file system is created. FSx does not update file and directory listings for any new or changed objects after choosing this option.
+   */
+  NONE = 'NONE',
+  /**
+   * AutoImport is on. Amazon FSx automatically imports directory listings of any new objects added to the linked S3 bucket that do not currently exist in the FSx file system.
+   */
+  NEW = 'NEW',
+  /**
+   * AutoImport is on. Amazon FSx automatically imports file and directory listings of any new objects added to the S3 bucket and any existing objects that are changed in the S3 bucket after you choose this option.
+   */
+  NEW_CHANGED = 'NEW_CHANGED',
+  /**
+   * AutoImport is on. Amazon FSx automatically imports file and directory listings of any new objects added to the S3 bucket, any existing objects that are changed in the S3 bucket, and any objects that were deleted in the S3 bucket.
+   * */
+  NEW_CHANGED_DELETED = 'NEW_CHANGED_DELETED',
+}
+
+/**
+  * The permitted Lustre data compression algorithms
+*/
+export enum LustreDataCompressionType {
+  /**
+  *
+  * `NONE` - (Default) Data compression is turned off when the file system is created.
+  */
+  NONE = 'NONE',
+  /**
+  * `LZ4` - Data compression is turned on with the LZ4 algorithm.  Note: When you turn data compression on for an existing file system, only newly written files are compressed. Existing files are not compressed.
+  */
+  LZ4 = 'LZ4',
+}
 
 /**
  * The configuration for the Amazon FSx for Lustre file system.
@@ -68,6 +104,28 @@ export interface LustreConfiguration {
    * @default - no bucket is imported
    */
   readonly importPath?: string;
+
+  /**
+   * Available with `Scratch` and `Persistent_1` deployment types. When you create your file system, your existing S3 objects appear as file and directory listings. Use this property to choose how Amazon FSx keeps your file and directory listings up to date as you add or modify objects in your linked S3 bucket. `AutoImportPolicy` can have the following values:
+   *
+   * For more information, see [Automatically import updates from your S3 bucket](https://docs.aws.amazon.com/fsx/latest/LustreGuide/autoimport-data-repo.html) .
+   *
+   * > This parameter is not supported for Lustre file systems using the `Persistent_2` deployment type.
+   *
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-lustreconfiguration.html#cfn-fsx-filesystem-lustreconfiguration-autoimportpolicy
+   * @default - no import policy
+   */
+  readonly autoImportPolicy?: LustreAutoImportPolicy;
+
+  /**
+   * Sets the data compression configuration for the file system.
+   * For more information, see [Lustre data compression](https://docs.aws.amazon.com/fsx/latest/LustreGuide/data-compression.html) in the *Amazon FSx for Lustre User Guide* .
+   *
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-lustreconfiguration.html#cfn-fsx-filesystem-lustreconfiguration-datacompressiontype
+   * @default - no compression
+   */
+
+  readonly dataCompressionType?: LustreDataCompressionType;
 
   /**
    * Required for the PERSISTENT_1 deployment type, describes the amount of read and write throughput for each 1
@@ -206,7 +264,7 @@ export class LustreFileSystem extends FileSystemBase {
     this.fileSystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = this.fileSystem.ref;
-    this.dnsName = `${this.fileSystemId}.fsx.${this.stack.region}.${Aws.URL_SUFFIX}`;
+    this.dnsName = `${this.fileSystemId}.fsx.${this.env.region}.${Aws.URL_SUFFIX}`;
     this.mountName = this.fileSystem.attrLustreMountName;
   }
 
@@ -222,8 +280,23 @@ export class LustreFileSystem extends FileSystemBase {
     this.validateExportPath(lustreConfiguration.exportPath, lustreConfiguration.importPath);
 
     this.validateImportedFileChunkSize(lustreConfiguration.importedFileChunkSizeMiB);
+    this.validateAutoImportPolicy(deploymentType, lustreConfiguration.importPath, lustreConfiguration.autoImportPolicy);
     this.validatePerUnitStorageThroughput(deploymentType, lustreConfiguration.perUnitStorageThroughput);
     this.validateStorageCapacity(deploymentType, props.storageCapacityGiB);
+  }
+
+  /**
+   * Validates the auto import policy
+   */
+
+  private validateAutoImportPolicy(deploymentType: LustreDeploymentType, importPath?: string, autoImportPolicy?: LustreAutoImportPolicy): void {
+    if (autoImportPolicy === undefined) { return; }
+    if (importPath === undefined) {
+      throw new Error('autoImportPolicy requires importPath to be defined');
+    }
+    if (deploymentType === LustreDeploymentType.PERSISTENT_2) {
+      throw new Error('autoImportPolicy is not supported with PERSISTENT_2 deployments');
+    }
   }
 
   /**

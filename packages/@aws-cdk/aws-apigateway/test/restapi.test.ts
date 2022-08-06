@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
+import { App, CfnElement, CfnResource, Lazy, Stack } from '@aws-cdk/core';
 import * as apigw from '../lib';
 
 describe('restapi', () => {
@@ -422,6 +422,16 @@ describe('restapi', () => {
 
     // THEN
     expect(() => api.arnForExecuteApi('method', 'hey-path', 'stage')).toThrow(/"path" must begin with a "\/": 'hey-path'/);
+  });
+
+  test('"executeApiArn" path can be a token', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+    api.root.addMethod('GET');
+
+    // THEN
+    expect(() => api.arnForExecuteApi('method', Lazy.string(({ produce: () => 'path' })), 'stage')).not.toThrow();
   });
 
   test('"executeApiArn" will convert ANY to "*"', () => {
@@ -850,6 +860,7 @@ describe('restapi', () => {
 
       // THEN
       expect(stack.resolve(imported.restApiId)).toEqual('api-rxt4498f');
+      expect(imported.restApiName).toEqual('imported-api');
     });
 
     test('fromRestApiAttributes()', () => {
@@ -873,6 +884,32 @@ describe('restapi', () => {
         HttpMethod: 'GET',
         ResourceId: stack.resolve(resource.resourceId),
       });
+      expect(imported.restApiName).toEqual('imported-api');
+    });
+
+    test('fromRestApiAttributes() with restApiName', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const imported = apigw.RestApi.fromRestApiAttributes(stack, 'imported-api', {
+        restApiId: 'test-restapi-id',
+        rootResourceId: 'test-root-resource-id',
+        restApiName: 'test-restapi-name',
+      });
+      const resource = imported.root.addResource('pets');
+      resource.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
+        PathPart: 'pets',
+        ParentId: stack.resolve(imported.restApiRootResourceId),
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'GET',
+        ResourceId: stack.resolve(resource.resourceId),
+      });
+      expect(imported.restApiName).toEqual('test-restapi-name');
     });
   });
 
@@ -1084,6 +1121,38 @@ describe('restapi', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       DisableExecuteApiEndpoint: true,
+    });
+  });
+
+
+  describe('Description', () => {
+    test('description can be set', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'my-api', { description: 'My API' });
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::ApiGateway::RestApi',
+        {
+          Description: 'My API',
+        });
+    });
+
+    test('description is not set', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'my-api');
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::ApiGateway::RestApi', {});
     });
   });
 });

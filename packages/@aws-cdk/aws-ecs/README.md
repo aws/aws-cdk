@@ -74,7 +74,7 @@ Here are the main differences:
   Application/Network Load Balancers. Only the AWS log driver is supported.
   Many host features are not supported such as adding kernel capabilities
   and mounting host devices/volumes inside the container.
-- **AWS ECSAnywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure owned by the customer. Only Bridge networking mode is supported. Does not support autoscaling, load balancing, cloudmap or attachment of volumes.
+- **AWS ECSAnywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure owned by the customer. Bridge, Host and None networking modes are supported. Does not support autoscaling, load balancing, cloudmap or attachment of volumes.
 
 For more information on Amazon EC2 vs AWS Fargate, networking and ECS Anywhere see the AWS Documentation:
 [AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html),
@@ -139,7 +139,10 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   // ... other options here ...
 });
 
-cluster.addAutoScalingGroup(autoScalingGroup);
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
+  autoScalingGroup,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
 ```
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
@@ -163,6 +166,36 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   instanceType: new ec2.InstanceType('t2.micro'),
 });
 ```
+
+To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(this, 'ASG-LaunchTemplate', {
+  instanceType: new ec2.InstanceType('t3.medium'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  userData: ec2.UserData.forLinux(),
+});
+
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  mixedInstancesPolicy: {
+    instancesDistribution: {
+      onDemandPercentageAboveBaseCapacity: 50,
+    },
+    launchTemplate: launchTemplate,
+  },
+});
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
+  autoScalingGroup,
+  machineImageType: ecs.MachineImageType.AMAZON_LINUX_2,
+});
+
+cluster.addAsgCapacityProvider(capacityProvider);
+```
+
 
 ### Bottlerocket
 
@@ -384,6 +417,20 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
   networkMode: ecs.NetworkMode.AWS_VPC,
   compatibility: ecs.Compatibility.EC2_AND_FARGATE,
 });
+```
+
+To grant a principal permission to run your `TaskDefinition`, you can use the `TaskDefinition.grantRun()` method:
+
+```ts
+declare const role: iam.IGrantable;
+const taskDef = new ecs.TaskDefinition(stack, 'TaskDef', {
+  cpu: '512',
+  memoryMiB: '512',
+  compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+});
+
+// Gives role required permissions to run taskDef
+taskDef.grantRun(role);
 ```
 
 ### Images
@@ -655,6 +702,37 @@ There are two higher-level constructs available which include a load balancer fo
 
 - `LoadBalancedFargateService`
 - `LoadBalancedEc2Service`
+
+### Import existing services
+
+`Ec2Service` and `FargateService` provide methods to import existing EC2/Fargate services.
+The ARN of the existing service has to be specified to import the service.
+
+Since AWS has changed the [ARN format for ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids), 
+feature flag `@aws-cdk/aws-ecs:arnFormatIncludesClusterName` must be enabled to use the new ARN format.
+The feature flag changes behavior for the entire CDK project. Therefore it is not possible to mix the old and the new format in one CDK project.
+
+```tss
+declare const cluster: ecs.Cluster;
+
+// Import service from EC2 service attributes
+const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+  serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+  cluster,
+});
+
+// Import service from EC2 service ARN
+const service = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+
+// Import service from Fargate service attributes
+const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+  serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+  cluster,
+});
+
+// Import service from Fargate service ARN
+const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+```
 
 ## Task Auto-Scaling
 
