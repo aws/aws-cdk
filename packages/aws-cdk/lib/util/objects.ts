@@ -143,15 +143,16 @@ export function deepMerge(...objects: Array<Obj<any> | undefined>) {
  */
 export function splitBySize(data: any, maxSizeBytes: number): [any, any] {
   if (maxSizeBytes < 2) {
-    throw new Error(`maxSizeBytes should be >= 2. Got: ${maxSizeBytes}`);
+    // It's impossible to fit anything in the first object
+    return [undefined, data];
   }
   const entries = Object.entries(data);
   return recurse(0, 0);
 
   function recurse(index: number, runningTotalSize: number): [any, any] {
     if (index >= entries.length) {
-      // Everything fits into the first object
-      return [data, {}];
+      // Everything fits in the first object
+      return [data, undefined];
     }
 
     const size = runningTotalSize + entrySize(entries[index]);

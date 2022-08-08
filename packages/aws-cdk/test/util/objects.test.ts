@@ -53,16 +53,12 @@ describe('splitBySize', () => {
         const [first, second] = splitBySize(data, size);
 
         expect(Buffer.from(JSON.stringify(first)).length).toBeLessThanOrEqual(size);
-        expect({ ...first, ...second }).toEqual(data);
+        expect(merge(first, second)).toEqual(data);
       }),
     );
-  });
 
-  test('smallest allowed limit is 2', () => {
-    fc.assert(
-      fc.property(fc.object(), fc.integer({ max: 1 }), (data, size) => {
-        expect(() => splitBySize(data, size)).toThrow();
-      }),
-    );
+    function merge(fst: any, snd: any) {
+      return { ...(fst ?? {}), ...(snd ?? {}) };
+    }
   });
 });

@@ -12,7 +12,7 @@ import { splitBySize } from '../../util/objects';
 import { versionNumber } from '../../version';
 import { SdkProvider } from '../aws-auth';
 
-const ENV_VARIABLE_SIZE_LIMIT = 131072; // 128KiB
+const ENV_VARIABLE_SIZE_LIMIT = 32760; // ~32KiB (Windows limit)
 
 /** Invokes the cloud executable and returns JSON output */
 export async function execProgram(aws: SdkProvider, config: Configuration): Promise<cxapi.CloudAssembly> {
@@ -51,20 +51,6 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   debug('context:', context);
 
-  const [smallContext, overflow] = splitBySize(context, ENV_VARIABLE_SIZE_LIMIT);
-
-  // Store the safe part in the environment variable
-  env[cxapi.CONTEXT_ENV] = JSON.stringify(smallContext);
-
-  // If there was any overflow, write it to a temporary file
-  let contextOverflowLocation;
-  if (Object.keys(overflow).length > 0) {
-    const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
-    contextOverflowLocation = path.join(contextDir, 'context-overflow.json');
-    fs.writeJSONSync(contextOverflowLocation, overflow);
-    env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV] = contextOverflowLocation;
-  }
-
   const build = config.settings.get(['build']);
   if (build) {
     await exec(build);
@@ -101,6 +87,20 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   env[cxapi.CLI_VERSION_ENV] = versionNumber();
 
   debug('env:', env);
+
+  const [smallContext, overflow] = splitBySize(context, spaceAvailableForContext(env));
+
+  // Store the safe part in the environment variable
+  env[cxapi.CONTEXT_ENV] = JSON.stringify(smallContext);
+
+  // If there was any overflow, write it to a temporary file
+  let contextOverflowLocation;
+  if (Object.keys(overflow ?? {}).length > 0) {
+    const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
+    contextOverflowLocation = path.join(contextDir, 'context-overflow.json');
+    fs.writeJSONSync(contextOverflowLocation, overflow);
+    env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV] = contextOverflowLocation;
+  }
 
   await exec(commandLine.join(' '));
 
@@ -257,4 +257,14 @@ function contextOverflowCleanup(location: string | undefined, assembly: cxapi.Cl
       warning('Part of the context could not be sent to the application. Please update the AWS CDK library to the latest version.');
     }
   }
+}
+
+function spaceAvailableForContext(env: { [key: string]: string }) {
+  const size = (value: string) => value != null ? Buffer.byteLength(value) : 0;
+
+  const usedSpace = Object.entries(env)
+    .map(([k, v]) => k === cxapi.CONTEXT_ENV ? size(k) : size(k) + size(v))
+    .reduce((a, b) => a + b, 0);
+
+  return Math.max(0, ENV_VARIABLE_SIZE_LIMIT - usedSpace);
 }
