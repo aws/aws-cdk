@@ -5,7 +5,7 @@ type ComparisonOperator = '>' | '>=' | '<' | '<=' | '=';
 /**
  * Options for how to construct matchers
  */
-export interface MatchOptions {
+interface MatchOptions {
   /**
    * Whether the list of matchers should be merged into a single matcher
    */
@@ -185,7 +185,7 @@ export class Match implements IResolvable {
 
   public readonly creationStack: string[];
 
-  constructor(private readonly matchers: any[],
+  private constructor(private readonly matchers: any[],
     private readonly options: MatchOptions) {
     this.creationStack = captureStackTrace();
   }
