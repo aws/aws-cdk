@@ -36,6 +36,7 @@
       "disable": true
     },
     "stripDeprecated": true,
+    "compressAssembly": true,
     "post": [
       "node ./scripts/verify-imports-resolve-same.js",
       "node ./scripts/verify-imports-shielded.js",
