@@ -1,5 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
@@ -248,6 +249,54 @@ test('specifying retry policy', () => {
           MaximumEventAgeInSeconds: 7200,
           MaximumRetryAttempts: 2,
         },
+      },
+    ],
+  });
+});
+
+test('specifying a role', () => {
+  const stack = new Stack();
+  const queue = new sqs.Queue(stack, 'MyQueue');
+  const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.StarPrincipal() });
+  role.addToPolicy(new iam.PolicyStatement({
+    actions: ['dummy:*'],
+    effect: iam.Effect.DENY,
+    resources: ['*'],
+  }));
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    role,
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'dummy:*',
+          Effect: 'Deny',
+          Resource: '*',
+        },
+        {
+          Action: 'sqs:SendMessage',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'MyRoleDefaultPolicyA36BE1DD',
+    Roles: [
+      {
+        Ref: 'MyRoleF48FFE04',
       },
     ],
   });

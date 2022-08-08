@@ -15,21 +15,18 @@ to the `rule.addTarget()` method.
 
 Currently supported are:
 
-* [Start a CodeBuild build](#start-a-codebuild-build)
-* [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)
-* Run an ECS task
-* [Invoke a Lambda function](#invoke-a-lambda-function)
-* [Invoke a API Gateway REST API](#invoke-an-api-gateway-rest-api)
-* Publish a message to an SNS topic
-* Send a message to an SQS queue
-* [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)
-* [Queue a Batch job](#queue-a-batch-job)
-* Make an AWS API call
-* Put a record to a Kinesis stream
-* [Log an event into a LogGroup](#log-an-event-into-a-loggroup)
-* Put a record to a Kinesis Data Firehose stream
-* [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
-* [Send an event to EventBridge API Destination](#invoke-an-api-destination)
+- [Event Targets for Amazon EventBridge](#event-targets-for-amazon-eventbridge)
+  - [Event retry policy and using dead-letter queues](#event-retry-policy-and-using-dead-letter-queues)
+  - [Invoke a Lambda function](#invoke-a-lambda-function)
+  - [Log an event into a LogGroup](#log-an-event-into-a-loggroup)
+  - [Start a CodeBuild build](#start-a-codebuild-build)
+  - [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)
+  - [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)
+  - [Queue a Batch job](#queue-a-batch-job)
+  - [Invoke an API Gateway REST API](#invoke-an-api-gateway-rest-api)
+  - [Invoke an API Destination](#invoke-an-api-destination)
+  - [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
+  - [Put an event on a SQS queue](#put-an-event-on-a-sqs-queue)
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.
@@ -344,4 +341,26 @@ rule.addTarget(new targets.EventBus(
     `arn:aws:events:eu-west-1:999999999999:event-bus/test-bus`,
   ),
 ));
+```
+
+## Put an event on a SQS queue
+
+Use the `SQS` target to route event to a SQS queue.
+
+The code snippet below creates the scheduled event rule that route events to a SQS queue.
+
+```ts
+const queue = new sqs.Queue(this, 'Queue');
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+});
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 minute)'),
+});
+
+rule.addTarget(new targets.SqsQueue(queue, {
+  role // Optional
+});
 ```
