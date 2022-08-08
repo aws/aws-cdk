@@ -24,9 +24,6 @@
      "InstanceType": "r5.large.search",
      "ZoneAwarenessEnabled": false
     },
-    "CognitoOptions": {
-     "Enabled": false
-    },
     "DomainEndpointOptions": {
      "EnforceHTTPS": true,
      "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
@@ -39,7 +36,7 @@
     "EncryptionAtRestOptions": {
      "Enabled": true
     },
-    "EngineVersion": "OpenSearch_1.2",
+    "EngineVersion": "OpenSearch_1.3",
     "LogPublishingOptions": {},
     "NodeToNodeEncryptionOptions": {
      "Enabled": true

@@ -451,6 +451,7 @@
      }
     ],
     "LustreConfiguration": {
+     "DataCompressionType": "LZ4",
      "DeploymentType": "SCRATCH_2"
     },
     "SecurityGroupIds": [

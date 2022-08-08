@@ -1,3 +1,177 @@
+# CloudFormation Resource Specification v83.0.0
+
+## New Resource Types
+
+* AWS::Synthetics::Group
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+## Unapplied changes
+
+* AWS::ConnectCampaigns is at 0.0.0
+* AWS::Rekognition is at 68.0.0
+* AWS::RolesAnywhere is at 0.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v82.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ElasticBeanstalk::Application Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-application.html
+* AWS::RDS::OptionGroup OptionGroupName (__added__)
+
+## Property Changes
+
+* AWS::DocDB::DBCluster RestoreToTime (__added__)
+* AWS::DocDB::DBCluster RestoreType (__added__)
+* AWS::DocDB::DBCluster SourceDBClusterIdentifier (__added__)
+* AWS::DocDB::DBCluster UseLatestRestorableTime (__added__)
+* AWS::ElasticBeanstalk::Application ApplicationName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html#cfn-elasticbeanstalk-application-name
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-application.html#cfn-elasticbeanstalk-application-applicationname
+* AWS::ElasticBeanstalk::Application Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html#cfn-elasticbeanstalk-application-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-application.html#cfn-elasticbeanstalk-application-description
+* AWS::ElasticBeanstalk::Application ResourceLifecycleConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html#cfn-elasticbeanstalk-application-resourcelifecycleconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-application.html#cfn-elasticbeanstalk-application-resourcelifecycleconfig
+* AWS::IoT::CACertificate RegistrationConfig.PrimitiveType (__deleted__)
+* AWS::IoT::CACertificate RegistrationConfig.Type (__added__)
+* AWS::IoT::ProvisioningTemplate TemplateType (__added__)
+* AWS::RDS::OptionGroup OptionConfigurations.DuplicatesAllowed (__deleted__)
+* AWS::RDS::OptionGroup OptionConfigurations.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::OptionGroup OptionConfigurations.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::OptionGroup Tags.DuplicatesAllowed (__deleted__)
+
+## Property Type Changes
+
+* AWS::GuardDuty::Detector.CFNMalwareProtectionConfiguration (__added__)
+* AWS::GuardDuty::Detector.CFNScanEc2InstanceWithFindingsConfiguration (__added__)
+* AWS::IoT::CACertificate.RegistrationConfig (__added__)
+* AWS::DLM::LifecyclePolicy.Parameters ExcludeDataVolumeTags (__added__)
+* AWS::GuardDuty::Detector.CFNDataSourceConfigurations MalwareProtection (__added__)
+* AWS::Lex::Bot.PromptSpecification MessageSelectionStrategy (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage IncludeIframeOnlyStream (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfigurationSessionStorage Mode.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RDS::OptionGroup.OptionConfiguration DBSecurityGroupMemberships.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfigurations-dbsecuritygroupmemberships
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-dbsecuritygroupmemberships
+* AWS::RDS::OptionGroup.OptionConfiguration DBSecurityGroupMemberships.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::OptionGroup.OptionConfiguration OptionName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfigurations-optionname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-optionname
+* AWS::RDS::OptionGroup.OptionConfiguration OptionSettings.DuplicatesAllowed (__deleted__)
+* AWS::RDS::OptionGroup.OptionConfiguration OptionSettings.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfigurations-optionsettings
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-optionsettings
+* AWS::RDS::OptionGroup.OptionConfiguration OptionVersion.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfiguration-optionversion
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-optionversion
+* AWS::RDS::OptionGroup.OptionConfiguration Port.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfigurations-port
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-port
+* AWS::RDS::OptionGroup.OptionConfiguration VpcSecurityGroupMemberships.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfigurations-vpcsecuritygroupmemberships
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-vpcsecuritygroupmemberships
+* AWS::RDS::OptionGroup.OptionConfiguration VpcSecurityGroupMemberships.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::OptionGroup.OptionSetting Name.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations-optionsettings.html#cfn-rds-optiongroup-optionconfigurations-optionsettings-name
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionsetting.html#cfn-rds-optiongroup-optionsetting-name
+* AWS::RDS::OptionGroup.OptionSetting Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations-optionsettings.html#cfn-rds-optiongroup-optionconfigurations-optionsettings-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionsetting.html#cfn-rds-optiongroup-optionsetting-value
+* AWS::WAFv2::RuleGroup.SqliMatchStatement SensitivityLevel (__added__)
+* AWS::WAFv2::WebACL.SqliMatchStatement SensitivityLevel (__added__)
+
+## Unapplied changes
+
+* AWS::ConnectCampaigns is at 0.0.0
+* AWS::DynamoDB is at 81.1.0
+* AWS::Rekognition is at 68.0.0
+* AWS::RolesAnywhere is at 0.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v81.1.0
+
+## New Resource Types
+
+* AWS::Evidently::Segment
+
+## Attribute Changes
+
+* AWS::ApiGateway::DocumentationPart DocumentationPartId (__added__)
+* AWS::IoT::Policy Id (__added__)
+
+## Property Changes
+
+* AWS::CloudWatch::CompositeAlarm ActionsSuppressor (__added__)
+* AWS::CloudWatch::CompositeAlarm ActionsSuppressorExtensionPeriod (__added__)
+* AWS::CloudWatch::CompositeAlarm ActionsSuppressorWaitPeriod (__added__)
+* AWS::EC2::Host InstanceFamily (__added__)
+* AWS::EC2::Host OutpostArn (__added__)
+* AWS::EC2::Host InstanceType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::VPCEndpointService ContributorInsightsEnabled (__added__)
+* AWS::GuardDuty::Detector Tags (__added__)
+* AWS::GuardDuty::Filter Tags (__added__)
+* AWS::GuardDuty::IPSet Tags (__added__)
+* AWS::GuardDuty::ThreatIntelSet Tags (__added__)
+* AWS::IoT::Policy PolicyDocument.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Location::GeofenceCollection KmsKeyId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Location::GeofenceCollection PricingPlanDataSource.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Location::Tracker PricingPlanDataSource.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSO::PermissionSet CustomerManagedPolicyReferences (__added__)
+* AWS::SSO::PermissionSet PermissionsBoundary (__added__)
+
+## Property Type Changes
+
+* AWS::SSO::PermissionSet.CustomerManagedPolicyReference (__added__)
+* AWS::SSO::PermissionSet.PermissionsBoundary (__added__)
+* AWS::Transfer::Server.As2Transport (__added__)
+* AWS::AppFlow::Flow.ScheduledTriggerProperties FirstExecutionFrom (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig DefaultCacheBehavior.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Transfer::Server.ProtocolDetails As2Transports (__added__)
+
+## Unapplied changes
+
+* AWS::ConnectCampaigns is at 0.0.0
+* AWS::Rekognition is at 68.0.0
+* AWS::RolesAnywhere is at 0.0.0
+* AWS::SageMaker is at 72.0.0
+
 # CloudFormation Resource Specification v81.0.0
 
 ## New Resource Types

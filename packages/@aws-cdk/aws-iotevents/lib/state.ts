@@ -182,7 +182,7 @@ function toEventsJson(
   return events?.map(event => ({
     eventName: event.eventName,
     condition: event.condition?.evaluate(),
-    actions: event.actions?.map(action => action.bind(scope, actionBindOptions).configuration),
+    actions: event.actions?.map(action => action._bind(scope, actionBindOptions).configuration),
   }));
 }
 
@@ -198,7 +198,7 @@ function toTransitionEventsJson(
   return transitionEvents.map(transitionEvent => ({
     eventName: transitionEvent.eventName,
     condition: transitionEvent.condition.evaluate(),
-    actions: transitionEvent.actions?.map(action => action.bind(scope, actionBindOptions).configuration),
+    actions: transitionEvent.actions?.map(action => action._bind(scope, actionBindOptions).configuration),
     nextState: transitionEvent.nextState.stateName,
   }));
 }

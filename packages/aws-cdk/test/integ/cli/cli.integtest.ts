@@ -61,6 +61,13 @@ integTest('Construct with builtin Lambda function', withDefaultFixture(async (fi
   await fixture.cdkDestroy('builtin-lambda-function');
 }));
 
+// this is to ensure that asset bundling for apps under a stage does not break
+integTest('Stage with bundled Lambda function', withDefaultFixture(async (fixture) => {
+  await fixture.cdkDeploy('bundling-stage/BundlingStack');
+  fixture.log('Setup complete!');
+  await fixture.cdkDestroy('bundling-stage/BundlingStack');
+}));
+
 integTest('Two ways of showing the version', withDefaultFixture(async (fixture) => {
   const version1 = await fixture.cdk(['version'], { verbose: false });
   const version2 = await fixture.cdk(['--version'], { verbose: false });
@@ -1087,6 +1094,32 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
     // Cleanup
     await fixture.cdkDestroy('importable-stack');
   }
+}));
+
+integTest('hotswap deployment supports Lambda function\'s description and environment variables', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('lambda-hotswap', {
+    captureStderr: false,
+  });
+
+  // WHEN
+  const deployOutput = await fixture.cdkDeploy('lambda-hotswap', {
+    options: ['--hotswap'],
+    captureStderr: true,
+    onlyStderr: true,
+  });
+
+  const response = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+  const functionName = response.Stacks?.[0].Outputs?.[0].OutputValue;
+
+  // THEN
+
+  // The deployment should not trigger a full deployment, thus the stack's status must remains
+  // "CREATE_COMPLETE"
+  expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+  expect(deployOutput).toContain(`Lambda Function '${functionName}' hotswapped!`);
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
