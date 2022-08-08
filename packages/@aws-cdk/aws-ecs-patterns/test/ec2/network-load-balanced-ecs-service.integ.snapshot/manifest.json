@@ -207,10 +207,10 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-ecs-integ/FirstCapacityProvier/FirstCapacityProvier": [
+        "/aws-ecs-integ/FirstCapacityProvider/FirstCapacityProvider": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstCapacityProvierD92F5AC4"
+            "data": "FirstCapacityProvider4F40D887"
           }
         ],
         "/aws-ecs-integ/SecondAutoScalingGroup/InstanceSecurityGroup/Resource": [
@@ -249,37 +249,28 @@
             "data": "SecondAutoScalingGroupASG6483DDB2"
           }
         ],
-        "/aws-ecs-integ/SecondCapacityProvier/SecondCapacityProvier": [
+        "/aws-ecs-integ/SecondCapacityProvider/SecondCapacityProvider": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondCapacityProvierADE5DA56"
+            "data": "SecondCapacityProvider85378C3E"
           }
         ],
         "/aws-ecs-integ/myService/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLB168895E1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "myServiceLB168895E1"
           }
         ],
         "/aws-ecs-integ/myService/LB/PublicListener/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBPublicListenerC78AE8A0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "myServiceLBPublicListenerC78AE8A0"
           }
         ],
         "/aws-ecs-integ/myService/LB/PublicListener/ECSGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBPublicListenerECSGroup17E9BBC1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "myServiceLBPublicListenerECSGroup17E9BBC1"
           }
         ],
         "/aws-ecs-integ/myService/LoadBalancerDNS": [
@@ -323,18 +314,18 @@
             "type": "aws:cdk:logicalId",
             "data": "myServiceB0B6FAA0"
           }
-        ],
-        "myServiceLBSecurityGroupFE0ED608": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myServiceLBSecurityGroupFE0ED608",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-ecs-integ"
+    },
+    "networkLoadBalancedEc2ServiceTestDefaultTestDeployAssert34DAD7DE": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "networkLoadBalancedEc2ServiceTestDefaultTestDeployAssert34DAD7DE.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "networkLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

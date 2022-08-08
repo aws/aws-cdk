@@ -1,3 +1,4 @@
+import { Bundle } from '@aws-cdk/node-bundle';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as caseUtils from 'case';
@@ -216,6 +217,35 @@ export class ThirdPartyAttributions extends ValidationRule {
           ruleName: this.name,
         });
       }
+    }
+  }
+}
+
+export class NodeBundleValidation extends ValidationRule {
+  public readonly name = '@aws-cdk/node-bundle';
+
+  public validate(pkg: PackageJson): void {
+    const bundleConfig = pkg.json['cdk-package']?.bundle;
+    if (bundleConfig == null) {
+      return;
+    }
+
+    const bundle = new Bundle({
+      ...bundleConfig,
+      packageDir: pkg.packageRoot,
+    });
+
+    const result = bundle.validate({ fix: false });
+    if (result.success) {
+      return;
+    }
+
+    for (const violation of result.violations) {
+      pkg.report({
+        fix: violation.fix,
+        message: violation.message,
+        ruleName: `${this.name} => ${violation.type}`,
+      });
     }
   }
 }
@@ -849,11 +879,11 @@ export class NodeCompatibility extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     const atTypesNode = pkg.getDevDependency('@types/node');
-    if (atTypesNode && !atTypesNode.startsWith('^10.')) {
+    if (atTypesNode && !atTypesNode.startsWith('^14.')) {
       pkg.report({
         ruleName: this.name,
-        message: `packages must support node version 10 and up, but ${atTypesNode} is declared`,
-        fix: () => pkg.addDevDependency('@types/node', '^10.17.5'),
+        message: `packages must support node version 14 and up, but ${atTypesNode} is declared`,
+        fix: () => pkg.addDevDependency('@types/node', '^14.18.22'),
       });
     }
   }
@@ -1709,8 +1739,8 @@ export class NoExperimentalDependents extends ValidationRule {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const stability = require(`${dep}/package.json`).stability;
-      if (stability === 'experimental') {
+      const maturity = require(`${dep}/package.json`).maturity;
+      if (maturity === 'experimental') {
         if (this.excludedDependencies.get(pkg.packageName)?.includes(dep)) {
           return;
         }

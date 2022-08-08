@@ -61,7 +61,7 @@ export interface SynthFastOptions {
   readonly context?: Record<string, string>,
 
   /**
-   * Additiional environment variables to set in the
+   * Additional environment variables to set in the
    * execution environment
    *
    * @default - no additional env
@@ -94,20 +94,29 @@ export interface CdkCliWrapperOptions {
    * @default 'aws-cdk/bin/cdk'
    */
   readonly cdkExecutable?: string;
+
+  /**
+   * Show the output from running the CDK CLI
+   *
+   * @default false
+   */
+  readonly showOutput?: boolean;
 }
 
 /**
- * Provides a programattic interface for interacting with the CDK CLI by
+ * Provides a programmatic interface for interacting with the CDK CLI by
  * wrapping the CLI with exec
  */
 export class CdkCliWrapper implements ICdk {
   private readonly directory: string;
   private readonly env?: { [key: string]: string };
   private readonly cdk: string;
+  private readonly showOutput: boolean;
 
   constructor(options: CdkCliWrapperOptions) {
     this.directory = options.directory;
     this.env = options.env;
+    this.showOutput = options.showOutput ?? false;
     try {
       this.cdk = options.cdkExecutable ?? 'cdk';
     } catch (e) {
@@ -129,7 +138,7 @@ export class CdkCliWrapper implements ICdk {
 
     return exec([this.cdk, 'ls', ...listCommandArgs], {
       cwd: this.directory,
-      verbose: options.verbose,
+      verbose: this.showOutput,
       env: this.env,
     });
   }
@@ -157,7 +166,7 @@ export class CdkCliWrapper implements ICdk {
 
     exec([this.cdk, 'deploy', ...deployCommandArgs], {
       cwd: this.directory,
-      verbose: options.verbose,
+      verbose: this.showOutput,
       env: this.env,
     });
   }
@@ -174,7 +183,7 @@ export class CdkCliWrapper implements ICdk {
 
     exec([this.cdk, 'destroy', ...destroyCommandArgs], {
       cwd: this.directory,
-      verbose: options.verbose,
+      verbose: this.showOutput,
       env: this.env,
     });
   }
@@ -192,7 +201,7 @@ export class CdkCliWrapper implements ICdk {
 
     exec([this.cdk, 'synth', ...synthCommandArgs], {
       cwd: this.directory,
-      verbose: options.verbose,
+      verbose: this.showOutput,
       env: this.env,
     });
   }
@@ -206,6 +215,7 @@ export class CdkCliWrapper implements ICdk {
   public synthFast(options: SynthFastOptions): void {
     exec(options.execCmd, {
       cwd: this.directory,
+      verbose: this.showOutput,
       env: {
         CDK_CONTEXT_JSON: JSON.stringify(options.context),
         CDK_OUTDIR: options.output,
