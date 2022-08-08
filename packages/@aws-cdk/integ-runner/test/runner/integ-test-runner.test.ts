@@ -496,4 +496,41 @@ describe('IntegTest runIntegTests', () => {
       ],
     ]);
   });
+
+
+  test.each`
+    verbosity | verbose      | debug
+    ${0}      | ${undefined} | ${undefined}
+    ${1}      | ${undefined} | ${undefined}
+    ${2}      | ${undefined} | ${undefined}
+    ${3}      | ${true}      | ${undefined}
+    ${4}      | ${true}      | ${true}
+`('with verbosity set to $verbosity', ({ verbosity, verbose, debug }) => {
+    // WHEN
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+      }),
+    });
+    integTest.runIntegTestCase({
+      testCaseName: 'xxxxx.test-with-snapshot',
+      verbosity: verbosity,
+    });
+
+    // THEN
+    expect(deployMock).toHaveBeenCalledWith(expect.objectContaining({
+      verbose,
+      debug,
+    }));
+    expect(deployMock).toHaveBeenCalledWith(expect.objectContaining({
+      verbose,
+      debug,
+    }));
+    expect(destroyMock).toHaveBeenCalledWith(expect.objectContaining({
+      verbose,
+      debug,
+    }));
+  });
 });
