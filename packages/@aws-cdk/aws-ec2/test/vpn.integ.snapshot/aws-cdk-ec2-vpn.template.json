@@ -117,7 +117,10 @@
       "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "MyVpcPublicSubnet1DefaultRoute95FDF9EB"
+   ]
   },
   "MyVpcPublicSubnet2Subnet492B6BFB": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +224,10 @@
       "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "MyVpcPublicSubnet2DefaultRoute052936F6"
+   ]
   },
   "MyVpcPrivateSubnet1Subnet5057CF7E": {
    "Type": "AWS::EC2::Subnet",
