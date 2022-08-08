@@ -166,6 +166,23 @@ export class CdkToolkit {
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
+    // Asset pre-publishing phase.
+    for (const stack of stacks.stackArtifacts) {
+      // Check whether the stack has an asset manifest before trying to
+      // pre-build and publish.
+      if (!stack.dependencies.some(cxapi.AssetManifestArtifact.isAssetManifestArtifact)) {
+        continue;
+      }
+
+      print('🏭 Pre-building and publishing assets for %s\n', stack.displayName);
+      await this.props.cloudFormation.publishStackAssets({
+        stack,
+        roleArn: options.roleArn,
+        toolkitStackName: options.toolkitStackName,
+      });
+      print('\n ✅  Assets published for %s\n', stack.displayName);
+    }
+
     for (const stack of stacks.stackArtifacts) {
       if (stacks.stackCount !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
@@ -234,6 +251,7 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
+          disableAssetPublishing: true,
         });
 
         const message = result.noOp
