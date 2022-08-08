@@ -18,7 +18,7 @@ async function main() {
     .usage('Usage: integ-runner [TEST...]')
     .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
     .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
-    .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs and metrics on integration tests durations' })
+    .option('verbose', { type: 'boolean', default: false, alias: 'v', count: true, desc: 'Verbose logs and metrics on integration tests durations (specify multiple times to increase verbosity)' })
     .option('dry-run', { type: 'boolean', default: false, desc: 'do not actually deploy the stack. just update the snapshot (not recommended!)' })
     .option('update-on-failed', { type: 'boolean', default: false, desc: 'rerun integration tests and update snapshots for failed tests.' })
     .option('force', { type: 'boolean', default: false, desc: 'Rerun all integration tests even if tests are passing' })
@@ -75,7 +75,7 @@ async function main() {
     // failed snapshot tests
     failedSnapshots = await runSnapshotTests(pool, testsFromArgs, {
       retain: argv['inspect-failures'],
-      verbose: argv.verbose,
+      verbose: Boolean(argv.verbose),
     });
     for (const failure of failedSnapshots) {
       destructiveChanges.push(...failure.destructiveChanges ?? []);
@@ -97,7 +97,7 @@ async function main() {
         profiles,
         clean: argv.clean,
         dryRun: argv['dry-run'],
-        verbose: argv.verbose,
+        verbosity: argv.verbose,
         updateWorkflow: !argv['disable-update-workflow'],
       });
       testsSucceeded = success;
@@ -107,7 +107,7 @@ async function main() {
         logger.warning('Not cleaning up stacks since "--no-clean" was used');
       }
 
-      if (argv.verbose) {
+      if (Boolean(argv.verbose)) {
         printMetrics(metrics);
       }
 
