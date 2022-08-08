@@ -1,0 +1,43 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "StackUnderTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://123456/us-east-2",
+      "properties": {
+        "templateFile": "StackUnderTest.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/StackUnderTest/OutputFromVpcAttributes": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputFromVpcAttributes"
+          }
+        ],
+        "/StackUnderTest/OutputFromLookup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputFromLookup"
+          }
+        ]
+      },
+      "displayName": "StackUnderTest"
+    },
+    "ArchiveTestDefaultTestDeployAssert3405726A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ArchiveTestDefaultTestDeployAssert3405726A.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "ArchiveTest/DefaultTest/DeployAssert"
+    }
+  }
+}

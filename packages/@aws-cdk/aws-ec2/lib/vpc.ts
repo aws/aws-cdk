@@ -2046,7 +2046,7 @@ class LookedUpVpc extends VpcBase {
   public readonly isolatedSubnets: ISubnet[];
   private readonly cidr?: string | undefined;
 
-  constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse & { region?: string }, isIncomplete: boolean) {
+  constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse, isIncomplete: boolean) {
     super(scope, id, {
       region: props.region,
     });
