@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "iotevents/DefaultTest": {
+      "stacks": [
+        "iotevents-put-message-action-test-stack"
+      ],
+      "assertionStack": "ioteventsDefaultTestDeployAssertE216288D"
+    }
+  }
+}

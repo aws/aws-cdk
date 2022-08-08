@@ -12,7 +12,7 @@ class TestStack extends cdk.Stack {
       sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id FROM 'device/+/data'"),
       actions: [
         {
-          bind: () => ({
+          _bind: () => ({
             configuration: {
               http: { url: 'https://example.com' },
             },
