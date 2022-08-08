@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.36.0](https://github.com/aws/aws-cdk/compare/v2.35.0...v2.36.0) (2022-08-08)
+
+
+### Features
+
+* **aws-cdk-lib:** aws-cdk-lib assembly file is compressed ([#21481](https://github.com/aws/aws-cdk/issues/21481)) ([2e97dfe](https://github.com/aws/aws-cdk/commit/2e97dfe81a9aef09f41648578d7b41c00f8c58e6))
+
 ## [2.35.0](https://github.com/aws/aws-cdk/compare/v2.34.2...v2.35.0) (2022-08-02)
 
 
