@@ -1,15 +1,15 @@
 {
   "version": "20.0.0",
   "files": {
-    "88eb4416b23f1e7730ec83de7bae0b316b64abca76222ac4b850807c5feb7263": {
+    "528017c7e0a173559e89192a5c2cf03ab5e72c5cff60c9d207d2c42b2d609edd": {
       "source": {
-        "path": "TestStack.template.json",
+        "path": "aws-cdk-ec2-vpn.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "88eb4416b23f1e7730ec83de7bae0b316b64abca76222ac4b850807c5feb7263.json",
+          "objectKey": "528017c7e0a173559e89192a5c2cf03ab5e72c5cff60c9d207d2c42b2d609edd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

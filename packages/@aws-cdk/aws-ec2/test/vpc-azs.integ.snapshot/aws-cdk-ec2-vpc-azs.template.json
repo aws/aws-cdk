@@ -117,7 +117,10 @@
       "Value": "aws-cdk-ec2-vpc-azs/MyVpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "MyVpcPublicSubnet1DefaultRoute95FDF9EB"
+   ]
   },
   "MyVpcPrivateSubnet1Subnet5057CF7E": {
    "Type": "AWS::EC2::Subnet",
