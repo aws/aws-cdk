@@ -4,6 +4,7 @@ export * from './cloudwatch-set-alarm-state-action';
 export * from './common-action-props';
 export * from './dynamodbv2-put-item-action';
 export * from './firehose-put-record-action';
+export * from './iotevents-put-message-action';
 export * from './iot-republish-action';
 export * from './kinesis-put-record-action';
 export * from './lambda-function-action';
