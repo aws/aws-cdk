@@ -2,6 +2,7 @@ import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as core from '../lib';
 import { getWarnings } from './util';
+import { Names } from '../lib';
 
 describe('cfn resource', () => {
   describe('._toCloudFormation', () => {
@@ -177,7 +178,11 @@ describe('cfn resource', () => {
     test('can explicitly add, obtain, and remove dependencies across stacks', () => {
       const app = new core.App();
       const stack1 = new core.Stack(app, 'TestStack1');
-      const stack2 = new core.Stack(app, 'TestStack2');
+      // Use a really long construct id to identify issues between Names.uniqueId and Names.uniqueResourceName
+      const reallyLongConstructId = 'A'.repeat(247);
+      const stack2 = new core.Stack(app, reallyLongConstructId, { stackName: 'TestStack2' });
+      // Sanity check since this test depends on the discrepancy
+      expect(Names.uniqueId(stack2)).not.toBe(Names.uniqueResourceName(stack2, {}));
       const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack2, 'Resource2', { type: 'Test::Resource::Fake2' });
       const resource3 = new core.CfnResource(stack1, 'Resource3', { type: 'Test::Resource::Fake3' });
@@ -186,14 +191,15 @@ describe('cfn resource', () => {
       // Adding the same resource dependency twice should be a no-op
       resource1.addDependsOn(resource2);
       resource1.addDependsOn(resource3);
-      expect(stack1.dependencies).toEqual([stack2]);
+      expect(stack1.dependencies.length).toEqual(1);
+      expect(stack1.dependencies[0].node.id).toEqual(stack2.node.id);
       // obtainDependsOn should assemble and flatten resource-to-resource dependencies even across stacks
       expect(resource1.obtainDependsOn().map(x => x.node.path)).toEqual([resource3.node.path, resource2.node.path]);
 
       resource1.removeDependsOn(resource2);
       // For symmetry, removing a dependency that doesn't exist should be a no-op
       resource1.removeDependsOn(resource2);
-      expect(stack1.dependencies).toEqual([]);
+      expect(stack1.dependencies.length).toEqual(0);
     });
 
     test('can explicitly add, then replace dependencies across stacks', () => {

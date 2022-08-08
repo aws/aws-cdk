@@ -1,0 +1,208 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "replace-depends-on-test": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "replace-depends-on-test.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/replace-depends-on-test": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a",
+              "id": "c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a",
+              "packaging": "zip",
+              "sourceHash": "c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a",
+              "s3BucketParameter": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aS3BucketB4787383",
+              "s3KeyParameter": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aS3VersionKey8CF8E820",
+              "artifactHashParameter": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aArtifactHashC9560B34"
+            }
+          }
+        ],
+        "/replace-depends-on-test/MyLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaServiceRole4539ECB6"
+          }
+        ],
+        "/replace-depends-on-test/MyLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCCE802FB"
+          }
+        ],
+        "/replace-depends-on-test/MyLambda/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaLogRetention48BA931C"
+          }
+        ],
+        "/replace-depends-on-test/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/replace-depends-on-test/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/replace-depends-on-test/AssetParameters/c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aS3BucketB4787383"
+          }
+        ],
+        "/replace-depends-on-test/AssetParameters/c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aS3VersionKey8CF8E820"
+          }
+        ],
+        "/replace-depends-on-test/AssetParameters/c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13aArtifactHashC9560B34"
+          }
+        ],
+        "/replace-depends-on-test/CustomPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomPolicy"
+          }
+        ]
+      },
+      "displayName": "replace-depends-on-test"
+    },
+    "nested-stack-depends-test": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "nested-stack-depends-test.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/nested-stack-depends-test": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "nestedstackdependstestStack1DE6783D8.nested.template.json",
+              "id": "d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2",
+              "packaging": "file",
+              "sourceHash": "d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2",
+              "s3BucketParameter": "AssetParametersd80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2S3Bucket8F2BF37F",
+              "s3KeyParameter": "AssetParametersd80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2S3VersionKeyC050131B",
+              "artifactHashParameter": "AssetParametersd80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2ArtifactHashDB64534C"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "nestedstackdependstestStack2A36722CF.nested.template.json",
+              "id": "caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431",
+              "packaging": "file",
+              "sourceHash": "caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431",
+              "s3BucketParameter": "AssetParameterscaff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431S3BucketA3C1BED8",
+              "s3KeyParameter": "AssetParameterscaff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431S3VersionKey1A3D6FCB",
+              "artifactHashParameter": "AssetParameterscaff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431ArtifactHashF40AA3DC"
+            }
+          }
+        ],
+        "/nested-stack-depends-test/Stack1/Lambda1/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda1ServiceRoleF188C4B8"
+          }
+        ],
+        "/nested-stack-depends-test/Stack1/Lambda1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda1DB8E9965"
+          }
+        ],
+        "/nested-stack-depends-test/Stack1.NestedStack/Stack1.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Stack1NestedStackStack1NestedStackResource256CB8C4"
+          }
+        ],
+        "/nested-stack-depends-test/Stack2/Lambda2/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda2ServiceRole31A072E1"
+          }
+        ],
+        "/nested-stack-depends-test/Stack2/Lambda2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda217CFB423"
+          }
+        ],
+        "/nested-stack-depends-test/Stack2.NestedStack/Stack2.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Stack2NestedStackStack2NestedStackResource9F0678CF"
+          }
+        ],
+        "/nested-stack-depends-test/AssetParameters/d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersd80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2S3Bucket8F2BF37F"
+          }
+        ],
+        "/nested-stack-depends-test/AssetParameters/d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersd80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2S3VersionKeyC050131B"
+          }
+        ],
+        "/nested-stack-depends-test/AssetParameters/d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersd80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2ArtifactHashDB64534C"
+          }
+        ],
+        "/nested-stack-depends-test/AssetParameters/caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterscaff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431S3BucketA3C1BED8"
+          }
+        ],
+        "/nested-stack-depends-test/AssetParameters/caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterscaff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431S3VersionKey1A3D6FCB"
+          }
+        ],
+        "/nested-stack-depends-test/AssetParameters/caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameterscaff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431ArtifactHashF40AA3DC"
+          }
+        ]
+      },
+      "displayName": "nested-stack-depends-test"
+    },
+    "DependsOnTestDefaultTestDeployAssert3B3B50E2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "DependsOnTestDefaultTestDeployAssert3B3B50E2.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "DependsOnTest/DefaultTest/DeployAssert"
+    }
+  }
+}

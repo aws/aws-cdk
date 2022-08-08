@@ -755,9 +755,9 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.map(x=>x.description).join(', ')}). Adding this dependency (${reason.description}) would create a cyclic reference.`);
     }
 
-    let dep = this._stackDependencies[Names.uniqueId(target)];
+    let dep = this._stackDependencies[Names.uniqueResourceName(target, {})];
     if (!dep) {
-      dep = this._stackDependencies[Names.uniqueId(target)] = { stack: target, reasons: [] };
+      dep = this._stackDependencies[Names.uniqueResourceName(target, {})] = { stack: target, reasons: [] };
     }
     let reasons = filterReasons(dep, reason);
     if (reasons.length > 0) {
@@ -837,7 +837,7 @@ export class Stack extends Construct implements ITaggable {
     dep.reasons.splice(index, 1);
     // If that was the last reason, remove the dependency
     if (dep.reasons.length == 0) {
-      delete this._stackDependencies[Names.uniqueId(target)];
+      delete this._stackDependencies[Names.uniqueResourceName(target, {})];
     }
 
     if (process.env.CDK_DEBUG_DEPS) {
