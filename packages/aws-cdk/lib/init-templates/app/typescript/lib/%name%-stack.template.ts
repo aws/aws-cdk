@@ -1,4 +1,5 @@
-import { Stack, StackProps, Duration } from 'aws-cdk-lib';
+// import * as cdk from 'aws-cdk-lib'
+import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
@@ -10,7 +11,7 @@ export class %name.PascalCased%Stack extends Stack {
 
     // example resource
     // const queue = new sqs.Queue(this, '%name.PascalCased%Queue', {
-    //   visibilityTimeout: Duration.seconds(300)
+    //   visibilityTimeout: cdk.Duration.seconds(300)
     // });
   }
 }
