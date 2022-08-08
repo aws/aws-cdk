@@ -1096,32 +1096,6 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
   }
 }));
 
-integTest('hotswap deployment supports Lambda function\'s description and environment variables', withDefaultFixture(async (fixture) => {
-  // GIVEN
-  const stackArn = await fixture.cdkDeploy('lambda-hotswap', {
-    captureStderr: false,
-  });
-
-  // WHEN
-  const deployOutput = await fixture.cdkDeploy('lambda-hotswap', {
-    options: ['--hotswap'],
-    captureStderr: true,
-    onlyStderr: true,
-  });
-
-  const response = await fixture.aws.cloudFormation('describeStacks', {
-    StackName: stackArn,
-  });
-  const functionName = response.Stacks?.[0].Outputs?.[0].OutputValue;
-
-  // THEN
-
-  // The deployment should not trigger a full deployment, thus the stack's status must remains
-  // "CREATE_COMPLETE"
-  expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
-  expect(deployOutput).toContain(`Lambda Function '${functionName}' hotswapped!`);
-}));
-
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
   const ret = new Array<string>();
   for (const child of await fs.readdir(parent, { encoding: 'utf-8' })) {
