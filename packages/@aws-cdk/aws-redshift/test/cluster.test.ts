@@ -326,8 +326,10 @@ test('can create a cluster with logging enabled', () => {
       masterUsername: 'admin',
     },
     vpc,
-    loggingBucket: bucket,
-    loggingKeyPrefix: 'prefix',
+    loggingProperties: {
+      loggingBucket: bucket,
+      loggingKeyPrefix: 'prefix',
+    },
   });
 
   // THEN

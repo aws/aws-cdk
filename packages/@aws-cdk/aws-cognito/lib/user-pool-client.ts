@@ -1,4 +1,5 @@
-import { IResource, Resource, Duration } from '@aws-cdk/core';
+import { IResource, Resource, Duration, Stack, SecretValue } from '@aws-cdk/core';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
@@ -321,24 +322,39 @@ export interface IUserPoolClient extends IResource {
    * @attribute
    */
   readonly userPoolClientId: string;
+
+  /**
+   * The generated client secret. Only available if the "generateSecret" props is set to true
+   * @attribute
+   */
+  readonly userPoolClientSecret: SecretValue;
 }
 
 /**
  * Define a UserPool App Client
  */
 export class UserPoolClient extends Resource implements IUserPoolClient {
+
   /**
    * Import a user pool client given its id.
    */
   public static fromUserPoolClientId(scope: Construct, id: string, userPoolClientId: string): IUserPoolClient {
     class Import extends Resource implements IUserPoolClient {
       public readonly userPoolClientId = userPoolClientId;
+      get userPoolClientSecret(): SecretValue {
+        throw new Error('UserPool Client Secret is not available for imported Clients');
+      }
     }
 
     return new Import(scope, id);
   }
 
   public readonly userPoolClientId: string;
+
+  private _generateSecret?: boolean;
+  private readonly userPool: IUserPool;
+  private _userPoolClientSecret?: SecretValue;
+
   /**
    * The OAuth flows enabled for this client.
    */
@@ -374,6 +390,9 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       }
     }
 
+    this._generateSecret = props.generateSecret;
+    this.userPool = props.userPool;
+
     const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.userPoolClientName,
       generateSecret: props.generateSecret,
@@ -405,6 +424,41 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       throw new Error('userPoolClientName is available only if specified on the UserPoolClient during initialization');
     }
     return this._userPoolClientName;
+  }
+
+  public get userPoolClientSecret(): SecretValue {
+    if (!this._generateSecret) {
+      throw new Error(
+        'userPoolClientSecret is available only if generateSecret is set to true.',
+      );
+    }
+
+    // Create the Custom Resource that assists in resolving the User Pool Client secret
+    // just once, no matter how many times this method is called
+    if (!this._userPoolClientSecret) {
+      this._userPoolClientSecret = SecretValue.resourceAttribute(new AwsCustomResource(
+        this,
+        'DescribeCognitoUserPoolClient',
+        {
+          resourceType: 'Custom::DescribeCognitoUserPoolClient',
+          onCreate: {
+            region: Stack.of(this).region,
+            service: 'CognitoIdentityServiceProvider',
+            action: 'describeUserPoolClient',
+            parameters: {
+              UserPoolId: this.userPool.userPoolId,
+              ClientId: this.userPoolClientId,
+            },
+            physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
+          },
+          policy: AwsCustomResourcePolicy.fromSdkCalls({
+            resources: [this.userPool.userPoolArn],
+          }),
+        },
+      ).getResponseField('UserPoolClient.ClientSecret'));
+    }
+
+    return this._userPoolClientSecret;
   }
 
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {

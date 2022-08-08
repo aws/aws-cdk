@@ -188,7 +188,9 @@ describe('getTsconfigCompilerOptions', () => {
       '--alwaysStrict',
       '--charset utf8',
       '--declaration',
+      '--declarationMap false',
       '--experimentalDecorators',
+      '--incremental false',
       '--inlineSourceMap',
       '--inlineSources',
       '--lib es2020',
@@ -207,6 +209,7 @@ describe('getTsconfigCompilerOptions', () => {
       '--strict',
       '--strictNullChecks',
       '--strictPropertyInitialization',
+      '--stripInternal false',
       '--target ES2020',
     ].join(' '));
   });

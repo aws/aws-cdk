@@ -214,6 +214,47 @@ describe('log retention provider', () => {
 
   });
 
+  test('delete event with RemovalPolicy', async () => {
+    const createLogGroupFake = sinon.fake.resolves({});
+    const deleteLogGroupFake = sinon.fake.resolves({});
+    const putRetentionPolicyFake = sinon.fake.resolves({});
+    const deleteRetentionPolicyFake = sinon.fake.resolves({});
+
+    AWS.mock('CloudWatchLogs', 'createLogGroup', createLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'deleteLogGroup', deleteLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'putRetentionPolicy', putRetentionPolicyFake);
+    AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', deleteRetentionPolicyFake);
+
+    const event = {
+      ...eventCommon,
+      RequestType: 'Delete',
+      PhysicalResourceId: 'group',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        LogGroupName: 'group',
+        RemovalPolicy: 'destroy',
+      },
+    };
+
+    const request = createRequest('SUCCESS');
+
+    await provider.handler(event as AWSLambda.CloudFormationCustomResourceDeleteEvent, context);
+
+    sinon.assert.notCalled(createLogGroupFake);
+
+    sinon.assert.calledWith(deleteLogGroupFake, {
+      logGroupName: 'group',
+    });
+
+    sinon.assert.notCalled(putRetentionPolicyFake);
+
+    sinon.assert.notCalled(deleteRetentionPolicyFake);
+
+    expect(request.isDone()).toEqual(true);
+
+
+  });
+
   test('responds with FAILED on error', async () => {
     const createLogGroupFake = sinon.fake.rejects(new Error('UnknownError'));
 

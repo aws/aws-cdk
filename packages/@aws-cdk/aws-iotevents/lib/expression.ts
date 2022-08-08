@@ -21,6 +21,15 @@ export abstract class Expression {
   }
 
   /**
+   * Create a expression for function `timeout("timer-name")`.
+   * It is evaluated to true if the specified timer has elapsed.
+   * You can define a timer only using the `setTimer` action.
+   */
+  public static timeout(timerName: string): Expression {
+    return this.fromString(`timeout("${timerName}")`);
+  }
+
+  /**
    * Create a expression for get an input attribute as `$input.TemperatureInput.temperatures[2]`.
    */
   public static inputAttribute(input: IInput, path: string): Expression {

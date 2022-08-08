@@ -74,6 +74,17 @@ describe('LaunchTemplate', () => {
           },
         ],
       },
+      TagSpecifications: [
+        {
+          ResourceType: 'launch-template',
+          Tags: [
+            {
+              Key: 'Name',
+              Value: 'Default/Template',
+            },
+          ],
+        },
+      ],
     });
     Template.fromStack(stack).resourceCountIs('AWS::IAM::InstanceProfile', 0);
     expect(() => { template.grantPrincipal; }).toThrow();
@@ -248,6 +259,17 @@ describe('LaunchTemplate', () => {
           },
         ],
       },
+      TagSpecifications: [
+        {
+          ResourceType: 'launch-template',
+          Tags: [
+            {
+              Key: 'Name',
+              Value: 'Default/Template',
+            },
+          ],
+        },
+      ],
     });
     expect(template.role).toBeDefined();
     expect(template.grantPrincipal).toBeDefined();
@@ -533,6 +555,21 @@ describe('LaunchTemplate', () => {
           },
         ],
       },
+      TagSpecifications: [
+        {
+          ResourceType: 'launch-template',
+          Tags: [
+            {
+              Key: 'Name',
+              Value: 'Default/Template',
+            },
+            {
+              Key: 'TestKey',
+              Value: 'TestValue',
+            },
+          ],
+        },
+      ],
     });
   });
 

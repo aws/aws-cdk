@@ -238,25 +238,55 @@ export class MariaDbEngineVersion {
   */
   public static readonly VER_10_1_34 = MariaDbEngineVersion.of('10.1.34', '10.1');
 
-  /** Version "10.2" (only a major version, without a specific minor version). */
+  /**
+   * Version "10.2" (only a major version, without a specific minor version)
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2 = MariaDbEngineVersion.of('10.2', '10.2');
-  /** Version "10.2.11". */
+  /**
+   * Version "10.2.11".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+  */
   public static readonly VER_10_2_11 = MariaDbEngineVersion.of('10.2.11', '10.2');
-  /** Version "10.2.12". */
+  /**
+   * Version "10.2.12".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2_12 = MariaDbEngineVersion.of('10.2.12', '10.2');
-  /** Version "10.2.15". */
+  /**
+   * Version "10.2.15".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2_15 = MariaDbEngineVersion.of('10.2.15', '10.2');
-  /** Version "10.2.21". */
+  /**
+   * Version "10.2.21".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+  */
   public static readonly VER_10_2_21 = MariaDbEngineVersion.of('10.2.21', '10.2');
-  /** Version "10.2.32". */
+  /**
+   * Version "10.2.32".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+  */
   public static readonly VER_10_2_32 = MariaDbEngineVersion.of('10.2.32', '10.2');
-  /** Version "10.2.37". */
+  /**
+   * Version "10.2.37".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+  */
   public static readonly VER_10_2_37 = MariaDbEngineVersion.of('10.2.37', '10.2');
-  /** Version "10.2.39". */
+  /**
+   * Version "10.2.39".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2_39 = MariaDbEngineVersion.of('10.2.39', '10.2');
-  /** Version "10.2.40". */
+  /**
+   * Version "10.2.40".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2_40 = MariaDbEngineVersion.of('10.2.40', '10.2');
-  /** Version "10.2.41". */
+  /**
+   * Version "10.2.41".
+   * @deprecated MariaDB 10.2 will reach end of life on October 15, 2022
+   */
   public static readonly VER_10_2_41 = MariaDbEngineVersion.of('10.2.41', '10.2');
 
   /** Version "10.3" (only a major version, without a specific minor version). */
@@ -275,6 +305,10 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_3_31 = MariaDbEngineVersion.of('10.3.31', '10.3');
   /** Version "10.3.32". */
   public static readonly VER_10_3_32 = MariaDbEngineVersion.of('10.3.32', '10.3');
+  /** Version "10.3.34". */
+  public static readonly VER_10_3_34 = MariaDbEngineVersion.of('10.3.34', '10.3');
+  /** Version "10.3.35". */
+  public static readonly VER_10_3_35 = MariaDbEngineVersion.of('10.3.35', '10.3');
 
   /** Version "10.4" (only a major version, without a specific minor version). */
   public static readonly VER_10_4 = MariaDbEngineVersion.of('10.4', '10.4');
@@ -288,6 +322,10 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_4_21 = MariaDbEngineVersion.of('10.4.21', '10.4');
   /** Version "10.4.22". */
   public static readonly VER_10_4_22 = MariaDbEngineVersion.of('10.4.22', '10.4');
+  /** Version "10.4.24". */
+  public static readonly VER_10_4_24 = MariaDbEngineVersion.of('10.4.24', '10.4');
+  /** Version "10.4.25". */
+  public static readonly VER_10_4_25 = MariaDbEngineVersion.of('10.4.25', '10.4');
 
   /** Version "10.5" (only a major version, without a specific minor version). */
   public static readonly VER_10_5 = MariaDbEngineVersion.of('10.5', '10.5');
@@ -299,6 +337,19 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_12 = MariaDbEngineVersion.of('10.5.12', '10.5');
   /** Version "10.5.13". */
   public static readonly VER_10_5_13 = MariaDbEngineVersion.of('10.5.13', '10.5');
+  /** Version "10.5.15". */
+  public static readonly VER_10_5_15 = MariaDbEngineVersion.of('10.5.15', '10.5');
+  /** Version "10.5.16". */
+  public static readonly VER_10_5_16 = MariaDbEngineVersion.of('10.5.16', '10.5');
+
+  /** Version "10.6" (only a major version, without a specific minor version). */
+  public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
+  /** Version "10.6.5". */
+  public static readonly VER_10_6_5 = MariaDbEngineVersion.of('10.6.5', '10.6');
+  /** Version "10.6.7". */
+  public static readonly VER_10_6_7 = MariaDbEngineVersion.of('10.6.7', '10.6');
+  /** Version "10.6.8". */
+  public static readonly VER_10_6_8 = MariaDbEngineVersion.of('10.6.8', '10.6');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -902,6 +953,8 @@ export class PostgresEngineVersion {
   public static readonly VER_12_9 = PostgresEngineVersion.of('12.9', '12', { s3Import: true, s3Export: true });
   /** Version "12.10". */
   public static readonly VER_12_10 = PostgresEngineVersion.of('12.10', '12', { s3Import: true, s3Export: true });
+  /** Version "12.11". */
+  public static readonly VER_12_11 = PostgresEngineVersion.of('12.11', '12', { s3Import: true, s3Export: true });
 
   /** Version "13" (only a major version, without a specific minor version). */
   public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true, s3Export: true });
@@ -917,6 +970,8 @@ export class PostgresEngineVersion {
   public static readonly VER_13_5 = PostgresEngineVersion.of('13.5', '13', { s3Import: true, s3Export: true });
   /** Version "13.6". */
   public static readonly VER_13_6 = PostgresEngineVersion.of('13.6', '13', { s3Import: true, s3Export: true });
+  /** Version "13.7". */
+  public static readonly VER_13_7 = PostgresEngineVersion.of('13.7', '13', { s3Import: true, s3Export: true });
 
   /** Version "14" (only a major version, without a specific minor version). */
   public static readonly VER_14 = PostgresEngineVersion.of('14', '14', { s3Import: true, s3Export: true });
@@ -924,6 +979,8 @@ export class PostgresEngineVersion {
   public static readonly VER_14_1 = PostgresEngineVersion.of('14.1', '14', { s3Import: true, s3Export: true });
   /** Version "14.2". */
   public static readonly VER_14_2 = PostgresEngineVersion.of('14.2', '14', { s3Import: true, s3Export: true });
+  /** Version "14.3". */
+  public static readonly VER_14_3 = PostgresEngineVersion.of('14.3', '14', { s3Import: true, s3Export: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.

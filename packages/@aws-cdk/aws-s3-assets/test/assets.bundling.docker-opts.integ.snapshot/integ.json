@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "cdk-integ-s3-assets-bundling-docker-opts/DefaultTest": {
+      "stacks": [
+        "cdk-integ-assets-bundling-docker-opts"
+      ],
+      "assertionStack": "cdkintegs3assetsbundlingdockeroptsDefaultTestDeployAssert7B7BC575"
+    }
+  }
+}

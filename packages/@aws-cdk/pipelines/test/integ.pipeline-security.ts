@@ -5,7 +5,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
-import { App, RemovalPolicy, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import { App, DefaultStackSynthesizer, RemovalPolicy, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 
@@ -13,6 +14,7 @@ class MyStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
     const stack = new Stack(this, 'MyStack', {
+      synthesizer: new DefaultStackSynthesizer(),
     });
     const topic = new sns.Topic(stack, 'Topic');
     topic.grantPublish(new iam.AccountPrincipal(stack.account));
@@ -23,6 +25,7 @@ class MySafeStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
     const stack = new Stack(this, 'MySafeStack', {
+      synthesizer: new DefaultStackSynthesizer(),
     });
     new sns.Topic(stack, 'MySafeTopic');
   }
@@ -98,5 +101,12 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': 'true',
   },
 });
-new TestCdkStack(app, 'PipelineSecurityStack');
+const stack = new TestCdkStack(app, 'PipelineSecurityStack', {
+  synthesizer: new DefaultStackSynthesizer(),
+});
+
+new integ.IntegTest(app, 'PipelineSecurityTest', {
+  testCases: [stack],
+});
+
 app.synth();

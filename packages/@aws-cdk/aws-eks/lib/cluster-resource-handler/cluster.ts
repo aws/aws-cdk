@@ -286,11 +286,11 @@ function parseProps(props: any): aws.EKS.CreateClusterRequest {
     parsed.resourcesVpcConfig.endpointPublicAccess = parsed.resourcesVpcConfig.endpointPublicAccess === 'true';
   }
 
-  if (typeof (parsed.logging?.clusterLogging[0].enabled) === 'string') {
+  if (typeof (parsed.logging?.clusterLogging[0]?.enabled) === 'string') {
     parsed.logging.clusterLogging[0].enabled = parsed.logging.clusterLogging[0].enabled === 'true';
   }
 
-  if (typeof (parsed.logging?.clusterLogging[1].enabled) === 'string') {
+  if (typeof (parsed.logging?.clusterLogging[1]?.enabled) === 'string') {
     parsed.logging.clusterLogging[1].enabled = parsed.logging.clusterLogging[1].enabled === 'false';
   }
 

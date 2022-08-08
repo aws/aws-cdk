@@ -134,14 +134,14 @@ test('can set actions', () => {
   const stack = new cdk.Stack();
 
   const action1: iot.IAction = {
-    bind: () => ({
+    _bind: () => ({
       configuration: {
         http: { url: 'http://example.com' },
       },
     }),
   };
   const action2: iot.IAction = {
-    bind: () => ({
+    _bind: () => ({
       configuration: {
         lambda: { functionArn: 'test-functionArn' },
       },
@@ -171,14 +171,14 @@ test('can add an action', () => {
     sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
   });
   topicRule.addAction({
-    bind: () => ({
+    _bind: () => ({
       configuration: {
         http: { url: 'http://example.com' },
       },
     }),
   });
   topicRule.addAction({
-    bind: () => ({
+    _bind: () => ({
       configuration: {
         lambda: { functionArn: 'test-functionArn' },
       },
@@ -203,7 +203,7 @@ test('cannot add an action as empty object', () => {
   });
 
   const emptyKeysAction: iot.IAction = {
-    bind: () => ({
+    _bind: () => ({
       configuration: {},
     }),
   };
@@ -220,7 +220,7 @@ test('cannot add an action that have multiple keys', () => {
   });
 
   const multipleKeysAction: iot.IAction = {
-    bind: () => ({
+    _bind: () => ({
       configuration: {
         http: { url: 'http://example.com' },
         lambda: { functionArn: 'test-functionArn' },
@@ -237,7 +237,7 @@ test('can set errorAction', () => {
   const stack = new cdk.Stack();
 
   const action: iot.IAction = {
-    bind: () => ({
+    _bind: () => ({
       configuration: {
         http: { url: 'http://example.com' },
       },
