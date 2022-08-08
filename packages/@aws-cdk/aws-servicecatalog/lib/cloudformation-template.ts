@@ -1,4 +1,5 @@
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { IBucket } from '@aws-cdk/aws-s3';
 import { Construct } from 'constructs';
 import { hashValues } from './private/util';
 import { ProductStack } from './product-stack';
@@ -46,9 +47,15 @@ export abstract class CloudFormationTemplate {
  */
 export interface CloudFormationTemplateConfig {
   /**
-    * The http url of the template in S3.
-    */
+  * The http url of the template in S3.
+  */
   readonly httpUrl: string;
+
+  /**
+  * The S3 bucket containing product stack assets.
+  * @default -
+  */
+  readonly assetBucket?: IBucket;
 }
 
 /**
@@ -108,6 +115,7 @@ class CloudFormationProductStackTemplate extends CloudFormationTemplate {
   public bind(_scope: Construct): CloudFormationTemplateConfig {
     return {
       httpUrl: this.productStack._getTemplateUrl(),
+      assetBucket: this.productStack._getAssetBucket(),
     };
   }
 }

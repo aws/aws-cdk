@@ -1,7 +1,8 @@
+import * as cdk from '@aws-cdk/core';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cdk from '@aws-cdk/core';
+import { IBucket } from '@aws-cdk/aws-s3';
 import { Construct } from 'constructs';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 import { ProductStackHistory } from './product-stack-history';
@@ -20,6 +21,7 @@ export class ProductStack extends cdk.Stack {
   private _parentProductStackHistory?: ProductStackHistory;
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
+  private assetBucket?: IBucket;
 
   constructor(scope: Construct, id: string) {
     super(scope, id, {
@@ -48,6 +50,33 @@ export class ProductStack extends cdk.Stack {
    */
   public _getTemplateUrl(): string {
     return cdk.Lazy.uncachedString({ produce: () => this._templateUrl });
+  }
+
+  /**
+   * Fetch the asset bucket.
+   *
+   * @internal
+   */
+  public _getAssetBucket(): IBucket | undefined {
+    return this.assetBucket;
+  }
+
+  /**
+   * Fetch the parent stack.
+   *
+   * @internal
+   */
+  public _getParentStack(): cdk.Stack {
+    return this._parentStack;
+  }
+
+  /**
+   * Set the asset bucket.
+   *
+   * @internal
+   */
+  public _setAssetBucket(assetBucket: IBucket) {
+    this.assetBucket = assetBucket;
   }
 
   /**
