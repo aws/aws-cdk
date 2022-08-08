@@ -5,7 +5,6 @@ import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { LogRetention, RetentionDays } from '../lib';
 
-
 /* eslint-disable quote-props */
 
 describe('log retention', () => {
