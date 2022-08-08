@@ -176,7 +176,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
         //Only allow deleting the specific log group.
         resources: [cdk.Stack.of(this).formatArn({
           service: 'logs',
-          resource: 'log-group'+':'+props.logGroupName+':'+'log-stream',
+          resource: `log-group:${props.logGroupName}:log-stream`,
           resourceName: '*',
           arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         })],
