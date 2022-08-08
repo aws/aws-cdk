@@ -185,6 +185,36 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 });
 ```
 
+You can now reference assets in a Product Stack. For example, we can add a handler to a Lambda function or a S3 Asset directly from a local asset file.
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+
+class LambdaProduct extends servicecatalog.ProductStack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    new lambda.Function(this, 'LambdaProduct', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset("./assets"),
+      handler: 'index.handler'
+    });
+  }
+}
+
+const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
+  productName: "My Product",
+  owner: "Product Owner",
+  productVersions: [
+    {
+      productVersionName: "v1",
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new LambdaProduct(this, 'LambdaFunctionProduct')),
+    },
+  ],
+});
+```
+
 ### Creating a Product from a stack with a history of previous versions
 
 The default behavior of Service Catalog is to overwrite each product version upon deployment.

@@ -8,19 +8,34 @@ import * as servicecatalog from '../lib';
 
 /* eslint-disable quote-props */
 describe('ProductStack', () => {
-  test('fails to add asset to a product stack', () => {
+  test('Asset bucket undefined in product stack without assets', () => {
     // GIVEN
     const app = new cdk.App();
-    const mainStack = new cdk.Stack(app, 'MyStack');
+    const mainStack = new cdk.Stack(app, 'MyStack', {
+      env: { account: '123456789876' },
+    });
     const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack');
 
     // THEN
-    expect(() => {
-      new s3_assets.Asset(productStack, 'testAsset', {
-        path: path.join(__dirname, 'product1.template.json'),
-      });
-    }).toThrow(/Service Catalog Product Stacks cannot use Assets/);
+    expect(productStack._getAssetBucket()).toBeUndefined();
   }),
+
+  test('Asset bucked defined in product stack with assets', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStack', {
+      env: { account: '123456789876' },
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack');
+
+    // WHEN
+    new s3_assets.Asset(productStack, 'testAsset', {
+      path: path.join(__dirname, 'product1.template.json'),
+    });
+
+    // THEN
+    expect(productStack._getAssetBucket()).toBeDefined();
+  });
 
   test('fails if defined at root', () => {
     // GIVEN

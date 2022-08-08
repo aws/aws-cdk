@@ -1,17 +1,24 @@
 import * as path from 'path';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 import { ProductStackHistory } from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-servicecatalog-product');
+const stack = new cdk.Stack(app, 'integ-servicecatalog-product', {
+  env: { account: '366234375154', region: 'us-east-1' },
+});
 
 class TestProductStack extends servicecatalog.ProductStack {
   constructor(scope: any, id: string) {
     super(scope, id);
 
     new sns.Topic(this, 'TopicProduct');
+
+    new s3_assets.Asset(this, 'testAsset', {
+      path: path.join(__dirname, 'products.template.zip'),
+    });
   }
 }
 
