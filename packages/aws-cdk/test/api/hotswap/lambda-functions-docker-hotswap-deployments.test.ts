@@ -119,8 +119,8 @@ test('calls the getFunction() API with a delay of 5', async () => {
   // THEN
   expect(mockMakeRequest).toHaveBeenCalledWith('getFunction', { FunctionName: 'my-function' });
   expect(hotswapMockSdkProvider.getLambdaApiWaiters()).toEqual(expect.objectContaining({
-    updateFunctionCodeToFinish: expect.objectContaining({
-      name: 'UpdateFunctionCodeToFinish',
+    updateFunctionPropertiesToFinish: expect.objectContaining({
+      name: 'UpdateFunctionPropertiesToFinish',
       delay: 5,
     }),
   }));
