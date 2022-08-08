@@ -1285,7 +1285,7 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
-  private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
+  private readonly logging?: { [key: string]: [ { [key: string]: any }, { [key: string]: any } ] };
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1347,11 +1347,27 @@ export class Cluster extends ClusterBase {
     // Get subnetIds for all selected subnets
     const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
+    // The value of clusterLoggingTypeDisabled should be invert of props.clusterLogging.
+    let clusterLoggingTypeDisabled: ClusterLoggingTypes[] = [];
+
+    // Find out type(s) to disable.
+    Object.values(ClusterLoggingTypes).forEach(function (key) {
+      let clusterLoggingTypeEnabled = Object.values(props.clusterLogging ? Object.values(props.clusterLogging) : []);
+      if (!Object.values(clusterLoggingTypeEnabled).includes(key)) {
+        clusterLoggingTypeDisabled.push(key);
+      };
+    });
+
+    // Leave it untouched as undefined if (props.clusterLogging === undefined).
     this.logging = props.clusterLogging ? {
       clusterLogging: [
         {
           enabled: true,
           types: Object.values(props.clusterLogging),
+        },
+        {
+          enabled: false,
+          types: Object.values(clusterLoggingTypeDisabled),
         },
       ],
     } : undefined;
