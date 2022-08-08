@@ -2,9 +2,6 @@ import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
-let mockUpdateLambdaConfiguration: (
-  params: Lambda.Types.UpdateFunctionConfigurationRequest
-) => Lambda.Types.FunctionConfiguration;
 let mockTagResource: (params: Lambda.Types.TagResourceRequest) => {};
 let mockUntagResource: (params: Lambda.Types.UntagResourceRequest) => {};
 let mockMakeRequest: (operation: string, params: any) => AWS.Request<any, AWS.AWSError>;
@@ -13,7 +10,6 @@ let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
-  mockUpdateLambdaConfiguration = jest.fn().mockReturnValue({});
   mockTagResource = jest.fn();
   mockUntagResource = jest.fn();
   mockMakeRequest = jest.fn().mockReturnValue({
@@ -23,7 +19,6 @@ beforeEach(() => {
   });
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
-    updateFunctionConfiguration: mockUpdateLambdaConfiguration,
     tagResource: mockTagResource,
     untagResource: mockUntagResource,
   }, {
@@ -598,8 +593,8 @@ test('calls getFunction() after function code is updated with delay 1', async ()
   // THEN
   expect(mockMakeRequest).toHaveBeenCalledWith('getFunction', { FunctionName: 'my-function' });
   expect(hotswapMockSdkProvider.getLambdaApiWaiters()).toEqual(expect.objectContaining({
-    updateFunctionPropertiesToFinish: expect.objectContaining({
-      name: 'UpdateFunctionPropertiesToFinish',
+    updateFunctionCodeToFinish: expect.objectContaining({
+      name: 'UpdateFunctionCodeToFinish',
       delay: 1,
     }),
   }));
@@ -659,8 +654,8 @@ test('calls getFunction() after function code is updated and VpcId is empty stri
 
   // THEN
   expect(hotswapMockSdkProvider.getLambdaApiWaiters()).toEqual(expect.objectContaining({
-    updateFunctionPropertiesToFinish: expect.objectContaining({
-      name: 'UpdateFunctionPropertiesToFinish',
+    updateFunctionCodeToFinish: expect.objectContaining({
+      name: 'UpdateFunctionCodeToFinish',
       delay: 1,
     }),
   }));
@@ -720,188 +715,9 @@ test('calls getFunction() after function code is updated on a VPC function with 
 
   // THEN
   expect(hotswapMockSdkProvider.getLambdaApiWaiters()).toEqual(expect.objectContaining({
-    updateFunctionPropertiesToFinish: expect.objectContaining({
-      name: 'UpdateFunctionPropertiesToFinish',
+    updateFunctionCodeToFinish: expect.objectContaining({
+      name: 'UpdateFunctionCodeToFinish',
       delay: 5,
     }),
   }));
-});
-
-
-test('calls the updateLambdaConfiguration() API when it receives difference in Description field of a Lambda function', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            S3Bucket: 's3-bucket',
-            S3Key: 's3-key',
-          },
-          FunctionName: 'my-function',
-          Description: 'Old Description',
-        },
-        Metadata: {
-          'aws:asset:path': 'asset-path',
-        },
-      },
-    },
-  });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Resources: {
-        Func: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Code: {
-              S3Bucket: 's3-bucket',
-              S3Key: 's3-key',
-            },
-            FunctionName: 'my-function',
-            Description: 'New Description',
-          },
-          Metadata: {
-            'aws:asset:path': 'asset-path',
-          },
-        },
-      },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  expect(mockUpdateLambdaConfiguration).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-    Description: 'New Description',
-  });
-});
-
-test('calls the updateLambdaConfiguration() API when it receives difference in Environment field of a Lambda function', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            S3Bucket: 's3-bucket',
-            S3Key: 's3-key',
-          },
-          FunctionName: 'my-function',
-          Environment: {
-            Variables: {
-              Key1: 'Value1',
-              Key2: 'Value2',
-            },
-          },
-        },
-        Metadata: {
-          'aws:asset:path': 'asset-path',
-        },
-      },
-    },
-  });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Resources: {
-        Func: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Code: {
-              S3Bucket: 's3-bucket',
-              S3Key: 's3-key',
-            },
-            FunctionName: 'my-function',
-            Environment: {
-              Variables: {
-                Key1: 'Value1',
-                Key2: 'Value2',
-                NewKey: 'NewValue',
-              },
-            },
-          },
-          Metadata: {
-            'aws:asset:path': 'asset-path',
-          },
-        },
-      },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  expect(mockUpdateLambdaConfiguration).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-    Environment: {
-      Variables: {
-        Key1: 'Value1',
-        Key2: 'Value2',
-        NewKey: 'NewValue',
-      },
-    },
-  });
-});
-
-test('calls both updateLambdaCode() and updateLambdaConfiguration() API when it receives both code and configuration change', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            S3Bucket: 'current-bucket',
-            S3Key: 'current-key',
-          },
-          FunctionName: 'my-function',
-          Description: 'Old Description',
-        },
-        Metadata: {
-          'aws:asset:path': 'asset-path',
-        },
-      },
-    },
-  });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Resources: {
-        Func: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Code: {
-              S3Bucket: 'new-bucket',
-              S3Key: 'new-key',
-            },
-            FunctionName: 'my-function',
-            Description: 'New Description',
-          },
-          Metadata: {
-            'aws:asset:path': 'asset-path',
-          },
-        },
-      },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  expect(mockUpdateLambdaConfiguration).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-    Description: 'New Description',
-  });
-  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-    S3Bucket: 'new-bucket',
-    S3Key: 'new-key',
-  });
 });
