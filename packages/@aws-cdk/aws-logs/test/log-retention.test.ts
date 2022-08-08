@@ -197,6 +197,7 @@ describe('log retention', () => {
       },
       'LogGroupName': 'group',
       'RetentionInDays': 1,
+      'RemovalPolicy': 'retain',
     });
   });
 

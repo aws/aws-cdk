@@ -99,8 +99,7 @@ export class LogRetention extends Construct {
           base: retryOptions.base?.toMilliseconds(),
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
-        //only add RemovalPolicy if it is set to DESTROY
-        RemovalPolicy: props.removalPolicy && props.removalPolicy === cdk.RemovalPolicy.DESTROY ? props.removalPolicy : undefined,
+        RemovalPolicy: props.removalPolicy,
       },
     });
 
@@ -167,7 +166,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
         resources: [cdk.Stack.of(this).formatArn({
           service: 'logs',
           resource: 'log-group',
-          resourceName: props.logGroupName+':*',
+          resourceName: `${props.logGroupName}:*`,
           arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         })],
       }));
