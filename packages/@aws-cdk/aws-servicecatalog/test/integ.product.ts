@@ -6,9 +6,7 @@ import * as servicecatalog from '../lib';
 import { ProductStackHistory } from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-servicecatalog-product', {
-  env: { account: '366234375154', region: 'us-east-1' },
-});
+const stack = new cdk.Stack(app, 'integ-servicecatalog-product');
 
 class TestProductStack extends servicecatalog.ProductStack {
   constructor(scope: any, id: string) {
