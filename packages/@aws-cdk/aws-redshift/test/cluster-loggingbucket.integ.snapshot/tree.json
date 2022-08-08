@@ -674,6 +674,69 @@
                   "fqn": "@aws-cdk/aws-s3.CfnBucket",
                   "version": "0.0.0"
                 }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "redshift-loggingbucket-integ/S3/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "redshift-loggingbucket-integ/S3/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "S3486F821D"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetBucketAcl",
+                                "s3:PutObject"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "redshift.amazonaws.com"
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "S3486F821D",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "S3486F821D",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {

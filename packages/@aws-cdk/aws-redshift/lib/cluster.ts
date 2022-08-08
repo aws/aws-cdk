@@ -490,6 +490,23 @@ export class Cluster extends ClusterBase {
         bucketName: props.loggingProperties.loggingBucket.bucketName,
         s3KeyPrefix: props.loggingProperties.loggingKeyPrefix,
       };
+      props.loggingProperties.loggingBucket.addToResourcePolicy(
+        new iam.PolicyStatement(
+          {
+            actions: [
+              's3:GetBucketAcl',
+              's3:PutObject',
+            ],
+            resources: [
+              props.loggingProperties.loggingBucket.arnForObjects('*'),
+              props.loggingProperties.loggingBucket.bucketArn,
+            ],
+            principals: [
+              new iam.ServicePrincipal('redshift.amazonaws.com'),
+            ],
+          },
+        ),
+      );
     }
 
     const cluster = new CfnCluster(this, 'Resource', {

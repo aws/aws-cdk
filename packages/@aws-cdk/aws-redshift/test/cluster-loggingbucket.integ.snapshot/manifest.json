@@ -159,6 +159,12 @@
             "data": "S3486F821D"
           }
         ],
+        "/redshift-loggingbucket-integ/S3/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3Policy2E4AA1D6"
+          }
+        ],
         "/redshift-loggingbucket-integ/Cluster/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
