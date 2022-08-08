@@ -126,7 +126,7 @@ test('deploy with all arguments', () => {
     ]),
     expect.objectContaining({
       env: expect.anything(),
-      stdio: ['ignore', 'pipe', 'inherit'],
+      stdio: ['ignore', 'pipe', 'pipe'],
       cwd: '/project',
     }),
   );
@@ -458,6 +458,28 @@ test('can synth fast', () => {
         CDK_OUTDIR: 'cdk.output',
         CDK_CONTEXT_JSON: '{\"CONTEXT\":\"value\"}',
       }),
+      cwd: '/project',
+    }),
+  );
+});
+
+test('can show output', () => {
+  // WHEN
+  const cdk = new CdkCliWrapper({
+    directory: '/project',
+    showOutput: true,
+  });
+  cdk.synthFast({
+    execCmd: ['node', 'bin/my-app.js'],
+  });
+
+  // THEN
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'node',
+    ['bin/my-app.js'],
+    expect.objectContaining({
+      env: expect.anything(),
+      stdio: ['ignore', 'pipe', 'inherit'],
       cwd: '/project',
     }),
   );
