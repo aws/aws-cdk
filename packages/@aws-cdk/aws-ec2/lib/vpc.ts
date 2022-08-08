@@ -1942,6 +1942,7 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
         domain: 'vpc',
       }).attrAllocationId,
     });
+    ngw.node.addDependency(this.internetConnectivityEstablished);
     return ngw;
   }
 }
