@@ -482,6 +482,12 @@ export interface SpecHttpApiProps {
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
    */
   readonly apiDefinition: ApiDefinition;
+
+  /**
+   * Name for the HTTP API resource
+   * @default - id of the HttpApi construct.
+   */
+  readonly apiName?: string;
 }
 
 /**
@@ -489,14 +495,20 @@ export interface SpecHttpApiProps {
  * @resource AWS::ApiGatewayV2::Api
  */
 export class SpecHttpApi extends HttpApiBase {
+  /**
+   * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
+   */
+  readonly httpApiName: string;
   readonly apiId: string;
   readonly httpApiId: string;
   readonly apiEndpoint: string;
 
   constructor(scope: Construct, id: string, props: SpecHttpApiProps) {
     super(scope, id);
+    this.httpApiName = props?.apiName ?? id;
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnApi(this, 'Resource', {
+      name: this.httpApiName,
       body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
     });

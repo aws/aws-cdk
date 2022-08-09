@@ -7,6 +7,6 @@ const stack = new cdk.Stack(app, 'aws-cdk-aws-apigatewayv2-from-open-api-spec');
 
 new apigw.SpecHttpApi(stack, 'oas-api', {
   apiDefinition: apigw.ApiDefinition.fromAsset('integ.oas.yaml'),
-})
+});
 
 app.synth();
