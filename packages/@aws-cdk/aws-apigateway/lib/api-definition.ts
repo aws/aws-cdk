@@ -102,7 +102,7 @@ export interface ApiDefinitionS3Location {
   /** The S3 key */
   readonly key: string;
   /**
-   * An optional version
+   * The S3 object version
    * @default - latest version
    */
   readonly version?: string;

@@ -35,8 +35,7 @@ export abstract class ApiDefinition {
    * Called when the specification is initialized to allow this object to bind
    * to the stack, add resources and have fun.
    *
-   * @param scope The binding scope. Don't be smart about trying to down-cast or
-   * assume it's initialized. You may just use it as a construct scope.
+   * @param scope The binding scope. You may just use it as a construct scope.
    */
   public abstract bind(scope: Construct): ApiDefinitionConfig;
 
@@ -59,7 +58,8 @@ export interface ApiDefinitionS3Location {
   /** The S3 key */
   readonly key: string;
   /**
-   * An optional version
+   * The S3 object version
+   *
    * @default - latest version
    */
   readonly version?: string;
