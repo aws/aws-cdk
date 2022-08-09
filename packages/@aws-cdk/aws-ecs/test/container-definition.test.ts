@@ -1790,11 +1790,6 @@ describe('container definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
-      const maxSwapValues = [-1, 30.5];
-      maxSwapValues.forEach(maxSwap => expect(() =>
-        new ecs.LinuxParameters(stack, `LinuxParametersWithMaxSwap(${maxSwap})`, { maxSwap }))
-        .toThrowError(`maxSwap: Must be a positive integer; received ${maxSwap}.`));
-
       const swappinessValues = [-1, 30.5, 101];
       swappinessValues.forEach(swappiness => expect(() =>
         new ecs.LinuxParameters(stack, `LinuxParametersWithSwappiness(${swappiness})`, { swappiness }))
@@ -1835,8 +1830,8 @@ describe('container definition', () => {
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
-        sharedMemorySize: 1024,
-        maxSwap: 5e3,
+        sharedMemorySize: cdk.Size.gibibytes(1),
+        maxSwap: cdk.Size.gibibytes(5),
         swappiness: 90,
       });
 
@@ -1861,7 +1856,7 @@ describe('container definition', () => {
                 Drop: ['KILL'],
               },
               InitProcessEnabled: true,
-              MaxSwap: 5000,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
               Swappiness: 90,
             },
@@ -1877,8 +1872,8 @@ describe('container definition', () => {
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
-        sharedMemorySize: 1024,
-        maxSwap: 5e3,
+        sharedMemorySize: cdk.Size.gibibytes(1),
+        maxSwap: cdk.Size.gibibytes(5),
         swappiness: 90,
       });
 
@@ -1905,7 +1900,7 @@ describe('container definition', () => {
                 Drop: ['SETUID'],
               },
               InitProcessEnabled: true,
-              MaxSwap: 5000,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
               Swappiness: 90,
             },
@@ -1921,8 +1916,8 @@ describe('container definition', () => {
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
-        sharedMemorySize: 1024,
-        maxSwap: 5e3,
+        sharedMemorySize: cdk.Size.gibibytes(1),
+        maxSwap: cdk.Size.gibibytes(5),
         swappiness: 90,
       });
 
@@ -1949,7 +1944,7 @@ describe('container definition', () => {
                 },
               ],
               InitProcessEnabled: true,
-              MaxSwap: 5000,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
               Swappiness: 90,
             },
@@ -1965,8 +1960,8 @@ describe('container definition', () => {
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
-        sharedMemorySize: 1024,
-        maxSwap: 5e3,
+        sharedMemorySize: cdk.Size.gibibytes(1),
+        maxSwap: cdk.Size.gibibytes(5),
         swappiness: 90,
       });
 
@@ -1995,7 +1990,7 @@ describe('container definition', () => {
                 },
               ],
               InitProcessEnabled: true,
-              MaxSwap: 5000,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
               Swappiness: 90,
             },

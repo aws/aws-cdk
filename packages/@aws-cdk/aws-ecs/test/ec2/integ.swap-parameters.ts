@@ -22,7 +22,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition', {
 
 // define linux parameters to enable swap
 const linuxParameters = new LinuxParameters(stack, 'LinuxParameters', {
-  maxSwap: 5e3,
+  maxSwap: cdk.Size.gibibytes(5),
   swappiness: 90,
 });
 

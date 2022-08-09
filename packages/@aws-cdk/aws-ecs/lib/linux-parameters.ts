@@ -14,14 +14,14 @@ export interface LinuxParametersProps {
   readonly initProcessEnabled?: boolean;
 
   /**
-   * The value for the size (in MiB) of the /dev/shm volume.
+   * The value for the size of the /dev/shm volume.
    *
    * @default No shared memory.
    */
-  readonly sharedMemorySize?: number;
+  readonly sharedMemorySize?: cdk.Size;
 
   /**
-   * The total amount of swap memory (in MiB) a container can use. This parameter
+   * The total amount of swap memory a container can use. This parameter
    * will be translated to the --memory-swap option to docker run.
    *
    * This parameter is only supported when you are using the EC2 launch type.
@@ -29,7 +29,7 @@ export interface LinuxParametersProps {
    *
    * @default No swap.
    */
-  readonly maxSwap?: number;
+  readonly maxSwap?: cdk.Size;
 
   /**
     * This allows you to tune a container's memory swappiness behavior. This parameter
@@ -59,12 +59,12 @@ export class LinuxParameters extends Construct {
   /**
    * The shared memory size. Not valid for Fargate launch type
    */
-  private readonly sharedMemorySize?: number;
+  private readonly sharedMemorySize?: cdk.Size;
 
   /**
    * The max swap memory (in MiB)
    */
-  private readonly maxSwap?: number;
+  private readonly maxSwap?: cdk.Size;
 
   /**
    * The swappiness behavior
@@ -106,11 +106,11 @@ export class LinuxParameters extends Construct {
   }
 
   private validateProps(props: LinuxParametersProps) {
-    if (!cdk.Token.isUnresolved(props.maxSwap) && props.maxSwap !== undefined && (!Number.isInteger(props.maxSwap) || props.maxSwap < 0)) {
-      throw new Error(`maxSwap: Must be a positive integer; received ${props.maxSwap}.`);
-    }
-
-    if (!cdk.Token.isUnresolved(props.swappiness) && props.swappiness !== undefined && (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)) {
+    if (
+      !cdk.Token.isUnresolved(props.swappiness) &&
+      props.swappiness !== undefined &&
+      (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)
+    ) {
       throw new Error(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`);
     }
   }
@@ -155,8 +155,8 @@ export class LinuxParameters extends Construct {
   public renderLinuxParameters(): CfnTaskDefinition.LinuxParametersProperty {
     return {
       initProcessEnabled: this.initProcessEnabled,
-      sharedMemorySize: this.sharedMemorySize,
-      maxSwap: this.maxSwap,
+      sharedMemorySize: this.sharedMemorySize?.toMebibytes(),
+      maxSwap: this.maxSwap?.toMebibytes(),
       swappiness: this.swappiness,
       capabilities: {
         add: cdk.Lazy.list({ produce: () => this.capAdd }, { omitEmpty: true }),
