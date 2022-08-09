@@ -44,6 +44,13 @@ export interface BundlingOptions {
   readonly volumes?: DockerVolume[];
 
   /**
+   * Where to mount the specified volumes from
+   *
+   * @default - the system running docker
+   */
+  readonly volumesFrom?: string;
+
+  /**
    * The environment variables to pass to the Docker container.
    *
    * @default - no environment variables.
@@ -209,6 +216,9 @@ export class BundlingDockerImage {
         : [],
       ...options.user
         ? ['-u', options.user]
+        : [],
+      ...options.volumesFrom
+        ? ['--volumes-from', options.volumesFrom]
         : [],
       ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${isSeLinux() ? 'z,' : ''}${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
@@ -440,6 +450,13 @@ export interface DockerRunOptions {
    * @default - no volumes are mounted
    */
   readonly volumes?: DockerVolume[];
+
+  /**
+   * Where to mount the specified volumes from
+   *
+   * @default - the system running docker
+   */
+  readonly volumesFrom?: string;
 
   /**
    * The environment variables to pass to the container.
