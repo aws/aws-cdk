@@ -1,0 +1,399 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
+        }
+      },
+      "restapi-metrics": {
+        "id": "restapi-metrics",
+        "path": "restapi-metrics",
+        "children": {
+          "Api": {
+            "id": "Api",
+            "path": "restapi-metrics/Api",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "restapi-metrics/Api/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "Api"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
+                  "version": "0.0.0"
+                }
+              },
+              "CloudWatchRole": {
+                "id": "CloudWatchRole",
+                "path": "restapi-metrics/Api/CloudWatchRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "restapi-metrics/Api/CloudWatchRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "apigateway.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Account": {
+                "id": "Account",
+                "path": "restapi-metrics/Api/Account",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Account",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudWatchRoleArn": {
+                      "Fn::GetAtt": [
+                        "ApiCloudWatchRole73EC6FC4",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "version": "0.0.0"
+                }
+              },
+              "Deployment": {
+                "id": "Deployment",
+                "path": "restapi-metrics/Api/Deployment",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "restapi-metrics/Api/Deployment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                      "aws:cdk:cloudformation:props": {
+                        "restApiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "description": "Automatically created by the RestApi construct"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.Deployment",
+                  "version": "0.0.0"
+                }
+              },
+              "DeploymentStage.prod": {
+                "id": "DeploymentStage.prod",
+                "path": "restapi-metrics/Api/DeploymentStage.prod",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "restapi-metrics/Api/DeploymentStage.prod/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "restApiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "deploymentId": {
+                          "Ref": "ApiDeploymentB17BE62Df672ad8455f9678e4a3db5854bdb8d73"
+                        },
+                        "stageName": "prod"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.Stage",
+                  "version": "0.0.0"
+                }
+              },
+              "Endpoint": {
+                "id": "Endpoint",
+                "path": "restapi-metrics/Api/Endpoint",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "restapi-metrics/Api/Default",
+                "children": {
+                  "GET": {
+                    "id": "GET",
+                    "path": "restapi-metrics/Api/Default/GET",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "restapi-metrics/Api/Default/GET/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                          "aws:cdk:cloudformation:props": {
+                            "httpMethod": "GET",
+                            "resourceId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "RootResourceId"
+                              ]
+                            },
+                            "restApiId": {
+                              "Ref": "ApiF70053CD"
+                            },
+                            "authorizationType": "NONE",
+                            "integration": {
+                              "type": "MOCK"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.Method",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.RestApi",
+              "version": "0.0.0"
+            }
+          },
+          "RestApiAlarm": {
+            "id": "RestApiAlarm",
+            "path": "restapi-metrics/RestApiAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "restapi-metrics/RestApiAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "dimensions": [
+                      {
+                        "name": "ApiName",
+                        "value": "Api"
+                      }
+                    ],
+                    "metricName": "4XXError",
+                    "namespace": "AWS/ApiGateway",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "MethodAlarm": {
+            "id": "MethodAlarm",
+            "path": "restapi-metrics/MethodAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "restapi-metrics/MethodAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "dimensions": [
+                      {
+                        "name": "ApiName",
+                        "value": "Api"
+                      },
+                      {
+                        "name": "Method",
+                        "value": "GET"
+                      },
+                      {
+                        "name": "Resource",
+                        "value": "/"
+                      },
+                      {
+                        "name": "Stage",
+                        "value": {
+                          "Ref": "ApiDeploymentStageprod3EB9684E"
+                        }
+                      }
+                    ],
+                    "metricName": "5XXError",
+                    "namespace": "AWS/ApiGateway",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "StageAlarm": {
+            "id": "StageAlarm",
+            "path": "restapi-metrics/StageAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "restapi-metrics/StageAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "dimensions": [
+                      {
+                        "name": "ApiName",
+                        "value": "Api"
+                      },
+                      {
+                        "name": "Stage",
+                        "value": {
+                          "Ref": "ApiDeploymentStageprod3EB9684E"
+                        }
+                      }
+                    ],
+                    "metricName": "Count",
+                    "namespace": "AWS/ApiGateway",
+                    "period": 300,
+                    "statistic": "SampleCount",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "MetricsTest": {
+        "id": "MetricsTest",
+        "path": "MetricsTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "MetricsTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "MetricsTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.33"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "MetricsTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

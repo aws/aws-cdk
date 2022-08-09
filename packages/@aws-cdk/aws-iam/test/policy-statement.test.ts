@@ -215,6 +215,22 @@ describe('IAM policy statement', () => {
       .toThrow(/Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/);
   });
 
+  test('multiple identical entries render to a scalar (instead of a singleton list)', () => {
+    const stack = new Stack();
+    const policyStatement = new PolicyStatement({
+      actions: ['aws:Action'],
+    });
+
+    policyStatement.addResources('asdf');
+    policyStatement.addResources('asdf');
+    policyStatement.addResources('asdf');
+
+    expect(stack.resolve(policyStatement.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      Action: 'aws:Action',
+      Resource: 'asdf',
+    });
+  });
 
   test('a frozen policy statement cannot be modified any more', () => {
     // GIVEN

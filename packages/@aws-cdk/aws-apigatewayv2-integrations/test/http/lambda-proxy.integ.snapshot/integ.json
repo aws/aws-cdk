@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "http/integ.lambda-proxy": {
+    "integ.lambda-proxy": {
       "stacks": [
         "integ-lambda-proxy"
       ],

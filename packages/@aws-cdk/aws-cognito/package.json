@@ -91,6 +91,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -102,6 +103,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",

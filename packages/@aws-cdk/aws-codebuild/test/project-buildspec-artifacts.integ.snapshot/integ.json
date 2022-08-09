@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-codebuild/test/integ.project-buildspec-artifacts": {
+    "integ.project-buildspec-artifacts": {
       "stacks": [
         "aws-cdk-codebuild-buildspec-artifact-name"
       ],

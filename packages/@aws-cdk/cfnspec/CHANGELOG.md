@@ -1,3 +1,331 @@
+# CloudFormation Resource Specification v83.0.0
+
+## New Resource Types
+
+* AWS::Synthetics::Group
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+## Unapplied changes
+
+* AWS::ConnectCampaigns is at 0.0.0
+* AWS::Rekognition is at 68.0.0
+* AWS::RolesAnywhere is at 0.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v82.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ElasticBeanstalk::Application Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-application.html
+* AWS::RDS::OptionGroup OptionGroupName (__added__)
+
+## Property Changes
+
+* AWS::DocDB::DBCluster RestoreToTime (__added__)
+* AWS::DocDB::DBCluster RestoreType (__added__)
+* AWS::DocDB::DBCluster SourceDBClusterIdentifier (__added__)
+* AWS::DocDB::DBCluster UseLatestRestorableTime (__added__)
+* AWS::ElasticBeanstalk::Application ApplicationName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html#cfn-elasticbeanstalk-application-name
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-application.html#cfn-elasticbeanstalk-application-applicationname
+* AWS::ElasticBeanstalk::Application Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html#cfn-elasticbeanstalk-application-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-application.html#cfn-elasticbeanstalk-application-description
+* AWS::ElasticBeanstalk::Application ResourceLifecycleConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html#cfn-elasticbeanstalk-application-resourcelifecycleconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-application.html#cfn-elasticbeanstalk-application-resourcelifecycleconfig
+* AWS::IoT::CACertificate RegistrationConfig.PrimitiveType (__deleted__)
+* AWS::IoT::CACertificate RegistrationConfig.Type (__added__)
+* AWS::IoT::ProvisioningTemplate TemplateType (__added__)
+* AWS::RDS::OptionGroup OptionConfigurations.DuplicatesAllowed (__deleted__)
+* AWS::RDS::OptionGroup OptionConfigurations.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::OptionGroup OptionConfigurations.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::OptionGroup Tags.DuplicatesAllowed (__deleted__)
+
+## Property Type Changes
+
+* AWS::GuardDuty::Detector.CFNMalwareProtectionConfiguration (__added__)
+* AWS::GuardDuty::Detector.CFNScanEc2InstanceWithFindingsConfiguration (__added__)
+* AWS::IoT::CACertificate.RegistrationConfig (__added__)
+* AWS::DLM::LifecyclePolicy.Parameters ExcludeDataVolumeTags (__added__)
+* AWS::GuardDuty::Detector.CFNDataSourceConfigurations MalwareProtection (__added__)
+* AWS::Lex::Bot.PromptSpecification MessageSelectionStrategy (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage IncludeIframeOnlyStream (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfigurationSessionStorage Mode.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RDS::OptionGroup.OptionConfiguration DBSecurityGroupMemberships.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfigurations-dbsecuritygroupmemberships
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-dbsecuritygroupmemberships
+* AWS::RDS::OptionGroup.OptionConfiguration DBSecurityGroupMemberships.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::OptionGroup.OptionConfiguration OptionName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfigurations-optionname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-optionname
+* AWS::RDS::OptionGroup.OptionConfiguration OptionSettings.DuplicatesAllowed (__deleted__)
+* AWS::RDS::OptionGroup.OptionConfiguration OptionSettings.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfigurations-optionsettings
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-optionsettings
+* AWS::RDS::OptionGroup.OptionConfiguration OptionVersion.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfiguration-optionversion
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-optionversion
+* AWS::RDS::OptionGroup.OptionConfiguration Port.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfigurations-port
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-port
+* AWS::RDS::OptionGroup.OptionConfiguration VpcSecurityGroupMemberships.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations.html#cfn-rds-optiongroup-optionconfigurations-vpcsecuritygroupmemberships
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfiguration.html#cfn-rds-optiongroup-optionconfiguration-vpcsecuritygroupmemberships
+* AWS::RDS::OptionGroup.OptionConfiguration VpcSecurityGroupMemberships.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::OptionGroup.OptionSetting Name.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations-optionsettings.html#cfn-rds-optiongroup-optionconfigurations-optionsettings-name
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionsetting.html#cfn-rds-optiongroup-optionsetting-name
+* AWS::RDS::OptionGroup.OptionSetting Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionconfigurations-optionsettings.html#cfn-rds-optiongroup-optionconfigurations-optionsettings-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-optiongroup-optionsetting.html#cfn-rds-optiongroup-optionsetting-value
+* AWS::WAFv2::RuleGroup.SqliMatchStatement SensitivityLevel (__added__)
+* AWS::WAFv2::WebACL.SqliMatchStatement SensitivityLevel (__added__)
+
+## Unapplied changes
+
+* AWS::ConnectCampaigns is at 0.0.0
+* AWS::DynamoDB is at 81.1.0
+* AWS::Rekognition is at 68.0.0
+* AWS::RolesAnywhere is at 0.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v81.1.0
+
+## New Resource Types
+
+* AWS::Evidently::Segment
+
+## Attribute Changes
+
+* AWS::ApiGateway::DocumentationPart DocumentationPartId (__added__)
+* AWS::IoT::Policy Id (__added__)
+
+## Property Changes
+
+* AWS::CloudWatch::CompositeAlarm ActionsSuppressor (__added__)
+* AWS::CloudWatch::CompositeAlarm ActionsSuppressorExtensionPeriod (__added__)
+* AWS::CloudWatch::CompositeAlarm ActionsSuppressorWaitPeriod (__added__)
+* AWS::EC2::Host InstanceFamily (__added__)
+* AWS::EC2::Host OutpostArn (__added__)
+* AWS::EC2::Host InstanceType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::VPCEndpointService ContributorInsightsEnabled (__added__)
+* AWS::GuardDuty::Detector Tags (__added__)
+* AWS::GuardDuty::Filter Tags (__added__)
+* AWS::GuardDuty::IPSet Tags (__added__)
+* AWS::GuardDuty::ThreatIntelSet Tags (__added__)
+* AWS::IoT::Policy PolicyDocument.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Location::GeofenceCollection KmsKeyId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Location::GeofenceCollection PricingPlanDataSource.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Location::Tracker PricingPlanDataSource.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSO::PermissionSet CustomerManagedPolicyReferences (__added__)
+* AWS::SSO::PermissionSet PermissionsBoundary (__added__)
+
+## Property Type Changes
+
+* AWS::SSO::PermissionSet.CustomerManagedPolicyReference (__added__)
+* AWS::SSO::PermissionSet.PermissionsBoundary (__added__)
+* AWS::Transfer::Server.As2Transport (__added__)
+* AWS::AppFlow::Flow.ScheduledTriggerProperties FirstExecutionFrom (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig DefaultCacheBehavior.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Transfer::Server.ProtocolDetails As2Transports (__added__)
+
+## Unapplied changes
+
+* AWS::ConnectCampaigns is at 0.0.0
+* AWS::Rekognition is at 68.0.0
+* AWS::RolesAnywhere is at 0.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v81.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Evidently::Experiment RemoveSegment (__added__)
+* AWS::Evidently::Experiment Segment (__added__)
+
+## Property Type Changes
+
+* AWS::Evidently::Launch.SegmentOverride (__added__)
+* AWS::Evidently::Launch.StepConfig SegmentOverrides (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v80.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::AutoScaling::ScalingPolicy Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html
+* AWS::AutoScaling::ScalingPolicy Arn (__added__)
+* AWS::AutoScaling::ScalingPolicy PolicyName (__added__)
+
+## Property Changes
+
+* AWS::AppStream::ImageBuilder AccessEndpoints.DuplicatesAllowed (__added__)
+* AWS::AppStream::ImageBuilder Tags.DuplicatesAllowed (__added__)
+* AWS::AutoScaling::ScalingPolicy AdjustmentType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html#cfn-as-scalingpolicy-adjustmenttype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html#cfn-autoscaling-scalingpolicy-adjustmenttype
+* AWS::AutoScaling::ScalingPolicy AutoScalingGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html#cfn-as-scalingpolicy-autoscalinggroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html#cfn-autoscaling-scalingpolicy-autoscalinggroupname
+* AWS::AutoScaling::ScalingPolicy AutoScalingGroupName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::ScalingPolicy Cooldown.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html#cfn-as-scalingpolicy-cooldown
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html#cfn-autoscaling-scalingpolicy-cooldown
+* AWS::AutoScaling::ScalingPolicy EstimatedInstanceWarmup.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html#cfn-as-scalingpolicy-estimatedinstancewarmup
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html#cfn-autoscaling-scalingpolicy-estimatedinstancewarmup
+* AWS::AutoScaling::ScalingPolicy MetricAggregationType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html#cfn-as-scalingpolicy-metricaggregationtype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html#cfn-autoscaling-scalingpolicy-metricaggregationtype
+* AWS::AutoScaling::ScalingPolicy MinAdjustmentMagnitude.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html#cfn-as-scalingpolicy-minadjustmentmagnitude
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html#cfn-autoscaling-scalingpolicy-minadjustmentmagnitude
+* AWS::AutoScaling::ScalingPolicy PolicyType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html#cfn-as-scalingpolicy-policytype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html#cfn-autoscaling-scalingpolicy-policytype
+* AWS::AutoScaling::ScalingPolicy PredictiveScalingConfiguration.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html#cfn-autoscaling-scalingpolicy-predictivescalingconfiguration
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html#cfn-autoscaling-scalingpolicy-predictivescalingconfiguration
+* AWS::AutoScaling::ScalingPolicy ScalingAdjustment.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html#cfn-as-scalingpolicy-scalingadjustment
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html#cfn-autoscaling-scalingpolicy-scalingadjustment
+* AWS::AutoScaling::ScalingPolicy StepAdjustments.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html#cfn-as-scalingpolicy-stepadjustments
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html#cfn-autoscaling-scalingpolicy-stepadjustments
+* AWS::AutoScaling::ScalingPolicy TargetTrackingConfiguration.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-policy.html#cfn-autoscaling-scalingpolicy-targettrackingconfiguration
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-scalingpolicy.html#cfn-autoscaling-scalingpolicy-targettrackingconfiguration
+* AWS::EC2::PlacementGroup SpreadLevel (__added__)
+
+## Property Type Changes
+
+* AWS::Config::ConfigRule.CustomPolicyDetails (__added__)
+* AWS::AppStream::ImageBuilder.VpcConfig SecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::AppStream::ImageBuilder.VpcConfig SubnetIds.DuplicatesAllowed (__added__)
+* AWS::AutoScaling::ScalingPolicy.StepAdjustment MetricIntervalLowerBound.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-stepadjustments.html#cfn-autoscaling-scalingpolicy-stepadjustment-metricintervallowerbound
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-stepadjustment.html#cfn-autoscaling-scalingpolicy-stepadjustment-metricintervallowerbound
+* AWS::AutoScaling::ScalingPolicy.StepAdjustment MetricIntervalUpperBound.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-stepadjustments.html#cfn-autoscaling-scalingpolicy-stepadjustment-metricintervalupperbound
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-stepadjustment.html#cfn-autoscaling-scalingpolicy-stepadjustment-metricintervalupperbound
+* AWS::AutoScaling::ScalingPolicy.StepAdjustment ScalingAdjustment.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-stepadjustments.html#cfn-autoscaling-scalingpolicy-stepadjustment-scalingadjustment
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-stepadjustment.html#cfn-autoscaling-scalingpolicy-stepadjustment-scalingadjustment
+* AWS::Config::ConfigRule.Source CustomPolicyDetails (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v79.0.0
+
+## New Resource Types
+
+* AWS::RedshiftServerless::Workgroup
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::IoT::CACertificate CertificateMode (__added__)
+* AWS::IoT::CACertificate CACertificatePem.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Logs::MetricFilter FilterName (__added__)
+* AWS::Logs::MetricFilter FilterPattern.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-filterpattern
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-logs-metricfilter-filterpattern
+* AWS::Logs::MetricFilter LogGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-loggroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-logs-metricfilter-loggroupname
+* AWS::Logs::MetricFilter MetricTransformations.DuplicatesAllowed (__deleted__)
+* AWS::Logs::MetricFilter MetricTransformations.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-metrictransformations
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-logs-metricfilter-metrictransformations
+* AWS::StepFunctions::StateMachine DefinitionSubstitutions.PrimitiveItemType (__changed__)
+  * Old: String
+  * New: Json
+
+## Property Type Changes
+
+* AWS::Logs::MetricFilter.Dimension (__added__)
+* AWS::CloudFormation::StackSet.DeploymentTargets AccountFilterType (__added__)
+* AWS::Logs::MetricFilter.MetricTransformation Dimensions (__added__)
+* AWS::Logs::MetricFilter.MetricTransformation Unit (__added__)
+* AWS::Logs::MetricFilter.MetricTransformation DefaultValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-defaultvalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-defaultvalue
+* AWS::Logs::MetricFilter.MetricTransformation MetricName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-metricname
+* AWS::Logs::MetricFilter.MetricTransformation MetricNamespace.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricnamespace
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-metricnamespace
+* AWS::Logs::MetricFilter.MetricTransformation MetricValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricvalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-metricvalue
+* AWS::SSMIncidents::ResponsePlan.IncidentTemplate IncidentTags (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
 # CloudFormation Resource Specification v78.1.0
 
 ## New Resource Types

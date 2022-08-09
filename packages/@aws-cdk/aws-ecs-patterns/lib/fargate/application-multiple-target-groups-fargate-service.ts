@@ -106,6 +106,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
 
   /**
    * The default target group for the service.
+   * @deprecated - Use `targetGroups` instead.
    */
   public readonly targetGroup: ApplicationTargetGroup;
 
@@ -134,9 +135,11 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
-        logging: this.logDriver,
+        cpu: props.cpu,
+        memoryLimitMiB: props.memoryLimitMiB,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
+        logging: this.logDriver,
         dockerLabels: taskImageOptions.dockerLabels,
       });
       if (taskImageOptions.containerPorts) {

@@ -60,22 +60,16 @@
         "/aws-cdk-lambda-1/Alias/FunctionUrl/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AliasFunctionUrlDC6EC566"
+            "data": "AliasFunctionUrlDC6EC566",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-lambda-1/Alias/invoke-function-url": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Aliasinvokefunctionurl4CA9917B"
-          }
-        ],
-        "MyLambdaCurrentVersionE7A382CCf9fac83eca6426eeed700cdc0106fc3d": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CCf9fac83eca6426eeed700cdc0106fc3d",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

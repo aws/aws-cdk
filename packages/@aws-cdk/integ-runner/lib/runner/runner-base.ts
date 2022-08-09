@@ -48,6 +48,13 @@ export interface IntegRunnerOptions {
    * @default - CdkCliWrapper
    */
   readonly cdk?: ICdk;
+
+  /**
+   * Show output from running integration tests
+   *
+   * @default false
+   */
+  readonly showOutput?: boolean;
 }
 
 /**
@@ -137,6 +144,7 @@ export abstract class IntegRunner {
 
     this.cdk = options.cdk ?? new CdkCliWrapper({
       directory: this.directory,
+      showOutput: options.showOutput,
       env: {
         ...options.env,
       },
@@ -204,7 +212,7 @@ export abstract class IntegRunner {
     } catch (e) {
       const testCases = LegacyIntegTestSuite.fromLegacy({
         cdk: this.cdk,
-        testName: this.testName,
+        testName: this.test.normalizedTestName,
         integSourceFilePath: this.test.fileName,
         listOptions: {
           ...this.defaultArgs,

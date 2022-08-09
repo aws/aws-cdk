@@ -18,27 +18,35 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 
 ## Create a new Secret in a Stack
 
-In order to have SecretsManager generate a new secret value automatically,
-you can get started with the following:
+To have SecretsManager generate a new secret value automatically,
+follow this example:
 
 ```ts
-// Default secret
+declare const vpc: ec2.Vpc;
+
+// Simple secret
 const secret = new secretsmanager.Secret(this, 'Secret');
-// Using the default secret
-new iam.User(this, 'User', {
-  password: secret.secretValue,
+// Using the secret
+const instance1 = new rds.DatabaseInstance(this, "PostgresInstance1", {
+  engine: rds.DatabaseInstanceEngine.POSTGRES,
+  credentials: rds.Credentials.fromSecret(secret),
+  vpc
 });
-// Templated secret
+// Templated secret with username and password fields
 const templatedSecret = new secretsmanager.Secret(this, 'TemplatedSecret', {
   generateSecretString: {
-    secretStringTemplate: JSON.stringify({ username: 'user' }),
+    secretStringTemplate: JSON.stringify({ username: 'postgres' }),
     generateStringKey: 'password',
   },
 });
-// Using the templated secret
-new iam.User(this, 'OtherUser', {
-  userName: templatedSecret.secretValueFromJson('username').toString(),
-  password: templatedSecret.secretValueFromJson('password'),
+// Using the templated secret as credentials
+const instance2 = new rds.DatabaseInstance(this, "PostgresInstance2", {
+  engine: rds.DatabaseInstanceEngine.POSTGRES,
+  credentials: {
+    username: templatedSecret.secretValueFromJson('username').toString(),
+    password: templatedSecret.secretValueFromJson('password')
+  },
+  vpc
 });
 ```
 
@@ -58,7 +66,7 @@ const secret = secretsmanager.Secret.fromSecretAttributes(this, 'ImportedSecret'
 SecretsManager secret values can only be used in select set of properties. For the
 list of properties, see [the CloudFormation Dynamic References documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html).
 
-A secret can set `RemovalPolicy`. If it set to `RETAIN`, that removing a secret will fail.
+A secret can set `RemovalPolicy`. If it set to `RETAIN`, removing that secret will fail.
 
 ## Grant permission to use the secret to a role
 
@@ -252,3 +260,36 @@ Alternatively, use `addReplicaRegion()`:
 const secret = new secretsmanager.Secret(this, 'Secret');
 secret.addReplicaRegion('eu-west-1');
 ```
+
+## Creating JSON Secrets
+
+Sometimes it is necessary to create a secret in SecretsManager that contains a JSON object.
+For example:
+
+```json
+{
+  "username": "myUsername",
+  "database": "foo",
+  "password": "mypassword"
+}
+```
+
+In order to create this type of secret, use the `secretObjectValue` input prop.
+
+```ts
+const user = new iam.User(stack, 'User');
+const accessKey = new iam.AccessKey(stack, 'AccessKey', { user });
+declare const stack: Stack;
+
+new secretsmanager.Secret(stack, 'Secret', {
+  secretObjectValue: {
+    username: SecretValue.unsafePlainText(user.userName),
+    database: SecretValue.unsafePlainText('foo'),
+    password: accessKey.secretAccessKey,
+  },
+})
+```
+
+In this case both the `username` and `database` are not a `Secret` so `SecretValue.unsafePlainText` needs to be used.
+This means that they will be rendered as plain text in the template, but in this case neither of those
+are actual "secrets".
