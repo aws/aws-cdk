@@ -474,7 +474,7 @@ export class HttpApi extends HttpApiBase {
 }
 
 /**
- * Props to instantiate a new SpecHttpApi
+ * Properties to initialize an instance of `SpecHttpApi`
  */
 export interface SpecHttpApiProps {
   /**
