@@ -1,39 +1,19 @@
 import * as chalk from 'chalk';
-import * as yargs from 'yargs';
+import * as minimatch from 'minimatch';
 import * as version from '../../lib/version';
 import { CommandOptions } from '../command-api';
-import { print } from '../logging';
-import { Context, PROJECT_CONFIG } from '../settings';
+import { print, error, warning } from '../logging';
+import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../settings';
 import { renderTable } from '../util';
-
-export const command = 'context';
-export const describe = 'Manage cached context values';
-export const builder = {
-  reset: {
-    alias: 'e',
-    desc: 'The context key (or its index) to reset',
-    type: 'string',
-    requiresArg: true,
-  },
-  clear: {
-    desc: 'Clear all context',
-    type: 'boolean',
-  },
-};
-
-export function handler(args: yargs.Arguments) {
-  args.commandHandler = realHandler;
-}
 
 export async function realHandler(options: CommandOptions): Promise<number> {
   const { configuration, args } = options;
-
   if (args.clear) {
     configuration.context.clear();
     await configuration.saveContext();
     print('All context values cleared.');
   } else if (args.reset) {
-    invalidateContext(configuration.context, args.reset as string);
+    invalidateContext(configuration.context, args.reset as string, args.force as boolean);
     await configuration.saveContext();
   } else {
     // List -- support '--json' flag
@@ -68,29 +48,92 @@ function listContext(context: Context) {
     const jsonWithoutNewlines = JSON.stringify(context.all[key], undefined, 2).replace(/\s+/g, ' ');
     data.push([i, key, jsonWithoutNewlines]);
   }
-
-  print(`Context found in ${chalk.blue(PROJECT_CONFIG)}:\n`);
-
+  print('Context found in %s:', chalk.blue(PROJECT_CONFIG));
+  print('');
   print(renderTable(data, process.stdout.columns));
 
   // eslint-disable-next-line max-len
   print(`Run ${chalk.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 
-function invalidateContext(context: Context, key: string) {
+function invalidateContext(context: Context, key: string, force: boolean) {
   const i = parseInt(key, 10);
   if (`${i}` === key) {
     // was a number and we fully parsed it.
     key = keyByNumber(context, i);
   }
-
   // Unset!
   if (context.has(key)) {
     context.unset(key);
-    print(`Context value ${chalk.blue(key)} reset. It will be refreshed on next synthesis`);
-  } else {
-    print(`No context value with key ${chalk.blue(key)}`);
+    // check if the value was actually unset.
+    if (!context.has(key)) {
+      print('Context value %s reset. It will be refreshed on next synthesis', chalk.blue(key));
+      return;
+    }
+
+    // Value must be in readonly bag
+    error('Only context values specified in %s can be reset through the CLI', chalk.blue(PROJECT_CONTEXT));
+    if (!force) {
+      throw new Error(`Cannot reset readonly context value with key: ${key}`);
+    }
   }
+
+  // check if value is expression matching keys
+  const matches = keysByExpression(context, key);
+
+  if (matches.length > 0) {
+
+    matches.forEach((match) => {
+      context.unset(match);
+    });
+
+    const { unset, readonly } = getUnsetAndReadonly(context, matches);
+
+    // output the reset values
+    printUnset(unset);
+
+    // warn about values not reset
+    printReadonly(readonly);
+
+    // throw when none of the matches were reset
+    if (!force && unset.length === 0) {
+      throw new Error('None of the matched context values could be reset');
+    }
+    return;
+  }
+  if (!force) {
+    throw new Error(`No context value matching key: ${key}`);
+  }
+}
+function printUnset(unset: string[]) {
+  if (unset.length === 0) return;
+  print('The following matched context values reset. They will be refreshed on next synthesis');
+  unset.forEach((match) => {
+    print('  %s', match);
+  });
+}
+function printReadonly(readonly: string[]) {
+  if (readonly.length === 0) return;
+  warning('The following matched context values could not be reset through the CLI');
+  readonly.forEach((match) => {
+    print('  %s', match);
+  });
+  print('');
+  print('This usually means they are configured in %s or %s', chalk.blue(PROJECT_CONFIG), chalk.blue(USER_DEFAULTS));
+}
+function keysByExpression(context: Context, expression: string) {
+  return context.keys.filter(minimatch.filter(expression));
+}
+
+function getUnsetAndReadonly(context: Context, matches: string[]) {
+  return matches.reduce<{ unset: string[], readonly: string[] }>((acc, match) => {
+    if (context.has(match)) {
+      acc.readonly.push(match);
+    } else {
+      acc.unset.push(match);
+    }
+    return acc;
+  }, { unset: [], readonly: [] });
 }
 
 function keyByNumber(context: Context, n: number) {

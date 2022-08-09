@@ -265,7 +265,8 @@ export class ClusterResourceHandler extends ResourceHandler {
 
   private generateClusterName() {
     const suffix = this.requestId.replace(/-/g, ''); // 32 chars
-    const prefix = this.logicalResourceId.substr(0, MAX_CLUSTER_NAME_LEN - suffix.length - 1);
+    const offset = MAX_CLUSTER_NAME_LEN - suffix.length - 1;
+    const prefix = this.logicalResourceId.slice(0, offset > 0 ? offset : 0);
     return `${prefix}-${suffix}`;
   }
 }
@@ -283,6 +284,14 @@ function parseProps(props: any): aws.EKS.CreateClusterRequest {
 
   if (typeof (parsed.resourcesVpcConfig?.endpointPublicAccess) === 'string') {
     parsed.resourcesVpcConfig.endpointPublicAccess = parsed.resourcesVpcConfig.endpointPublicAccess === 'true';
+  }
+
+  if (typeof (parsed.logging?.clusterLogging[0]?.enabled) === 'string') {
+    parsed.logging.clusterLogging[0].enabled = parsed.logging.clusterLogging[0].enabled === 'true';
+  }
+
+  if (typeof (parsed.logging?.clusterLogging[1]?.enabled) === 'string') {
+    parsed.logging.clusterLogging[1].enabled = parsed.logging.clusterLogging[1].enabled === 'false';
   }
 
   return parsed;

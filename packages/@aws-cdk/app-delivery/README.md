@@ -59,6 +59,10 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as cdk from '@aws-cdk/core';
 import * as cicd from '@aws-cdk/app-delivery';
+import * as iam from '@aws-cdk/aws-iam';
+
+class MyServiceStackA extends cdk.Stack {}
+class MyServiceStackB extends cdk.Stack {}
 
 const app = new cdk.App();
 
@@ -77,7 +81,9 @@ const sourceOutput = new codepipeline.Artifact();
 const source = new codepipeline_actions.GitHubSourceAction({
   actionName: 'GitHub',
   output: sourceOutput,
-  /* ... */
+  owner: 'myName',
+  repo: 'myRepo',
+  oauthToken: cdk.SecretValue.unsafePlainText('secret'),
 });
 pipeline.addStage({
   stageName: 'source',
@@ -129,10 +135,11 @@ deployStage.addAction(deployServiceAAction);
 // is passed to CloudFormation and needs the permissions necessary to deploy
 // stack. Alternatively you can enable [Administrator](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html#jf_administrator) permissions above,
 // users should understand the privileged nature of this role.
-deployServiceAAction.addToRolePolicy(new iam.PolicyStatement({
-    actions: ['service:SomeAction'],
-    resources: [myResource.myResourceArn],
-    // add more Action(s) and/or Resource(s) here, as needed
+const myResourceArn = 'arn:partition:service:region:account-id:resource-id';
+deployServiceAAction.addToDeploymentRolePolicy(new iam.PolicyStatement({
+  actions: ['service:SomeAction'],
+  resources: [myResourceArn],
+  // add more Action(s) and/or Resource(s) here, as needed
 }));
 
 const serviceStackB = new MyServiceStackB(app, 'ServiceStackB', { /* ... */ });

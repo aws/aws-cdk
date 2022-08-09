@@ -33,7 +33,8 @@ export interface CustomResourceProps {
    * });
    * ```
    *
-   * AWS Lambda function:
+   * AWS Lambda function (not recommended to use AWS Lambda Functions directly,
+   * see the module README):
    *
    * ```ts
    * // invoke an AWS Lambda function when a lifecycle event occurs:
@@ -42,7 +43,8 @@ export interface CustomResourceProps {
    * });
    * ```
    *
-   * SNS topic:
+   * SNS topic (not recommended to use AWS Lambda Functions directly, see the
+   * module README):
    *
    * ```ts
    * // publish lifecycle events to an SNS topic:
@@ -186,7 +188,7 @@ export class CustomResource extends Resource {
 function uppercaseProperties(props: { [key: string]: any }) {
   const ret: { [key: string]: any } = {};
   Object.keys(props).forEach(key => {
-    const upper = key.substr(0, 1).toUpperCase() + key.substr(1);
+    const upper = key.slice(0, 1).toUpperCase() + key.slice(1);
     ret[upper] = props[key];
   });
   return ret;
@@ -201,7 +203,7 @@ function renderResourceType(resourceType?: string) {
     throw new Error(`Custom resource type must begin with "Custom::" (${resourceType})`);
   }
 
-  const typeName = resourceType.substr(resourceType.indexOf('::') + 2);
+  const typeName = resourceType.slice(resourceType.indexOf('::') + 2);
   if (typeName.length > 60) {
     throw new Error(`Custom resource type length > 60 (${resourceType})`);
   }

@@ -1,5 +1,5 @@
 {
-  "$version": "53.0.0",
+  "$version": "83.0.0",
   "PropertyTypes": {
     "AWS::GlobalAccelerator::EndpointGroup.EndpointConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-globalaccelerator-endpointgroup-endpointconfiguration.html",
@@ -67,6 +67,10 @@
         },
         "DnsName": {
           "PrimitiveType": "String"
+        },
+        "Ipv4Addresses": {
+          "PrimitiveItemType": "String",
+          "Type": "List"
         }
       },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-globalaccelerator-accelerator.html",

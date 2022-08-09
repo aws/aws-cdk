@@ -1,0 +1,111 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.58"
+        }
+      },
+      "cdk-integ-opensearch-advancedsecurity": {
+        "id": "cdk-integ-opensearch-advancedsecurity",
+        "path": "cdk-integ-opensearch-advancedsecurity",
+        "children": {
+          "User": {
+            "id": "User",
+            "path": "cdk-integ-opensearch-advancedsecurity/User",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-opensearch-advancedsecurity/User/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "Domain": {
+            "id": "Domain",
+            "path": "cdk-integ-opensearch-advancedsecurity/Domain",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-opensearch-advancedsecurity/Domain/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
+                  "aws:cdk:cloudformation:props": {
+                    "advancedSecurityOptions": {
+                      "enabled": true,
+                      "internalUserDatabaseEnabled": false,
+                      "masterUserOptions": {
+                        "masterUserArn": {
+                          "Fn::GetAtt": [
+                            "User00B015A1",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "clusterConfig": {
+                      "dedicatedMasterEnabled": false,
+                      "instanceCount": 1,
+                      "instanceType": "r5.large.search",
+                      "zoneAwarenessEnabled": false
+                    },
+                    "domainEndpointOptions": {
+                      "enforceHttps": true,
+                      "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+                    },
+                    "ebsOptions": {
+                      "ebsEnabled": true,
+                      "volumeSize": 10,
+                      "volumeType": "gp2"
+                    },
+                    "encryptionAtRestOptions": {
+                      "enabled": true
+                    },
+                    "engineVersion": "Elasticsearch_7.1",
+                    "logPublishingOptions": {},
+                    "nodeToNodeEncryptionOptions": {
+                      "enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-opensearchservice.CfnDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-opensearchservice.Domain",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

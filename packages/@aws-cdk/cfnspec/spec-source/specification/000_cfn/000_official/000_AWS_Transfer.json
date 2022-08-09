@@ -1,6 +1,12 @@
 {
-  "$version": "53.0.0",
+  "$version": "83.0.0",
   "PropertyTypes": {
+    "AWS::Transfer::Server.As2Transport": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-as2transport.html",
+      "PrimitiveType": "String",
+      "Required": false,
+      "UpdateType": "Mutable"
+    },
     "AWS::Transfer::Server.EndpointDetails": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-endpointdetails.html",
       "Properties": {
@@ -69,13 +75,29 @@
       }
     },
     "AWS::Transfer::Server.Protocol": {
-      "PrimitiveType": "String"
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocol.html",
+      "PrimitiveType": "String",
+      "Required": false,
+      "UpdateType": "Mutable"
     },
     "AWS::Transfer::Server.ProtocolDetails": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocoldetails.html",
       "Properties": {
+        "As2Transports": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocoldetails.html#cfn-transfer-server-protocoldetails-as2transports",
+          "ItemType": "As2Transport",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "PassiveIp": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocoldetails.html#cfn-transfer-server-protocoldetails-passiveip",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "SetStatOption": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocoldetails.html#cfn-transfer-server-protocoldetails-setstatoption",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -159,7 +181,10 @@
       }
     },
     "AWS::Transfer::User.SshPublicKey": {
-      "PrimitiveType": "String"
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-sshpublickey.html",
+      "PrimitiveType": "String",
+      "Required": false,
+      "UpdateType": "Mutable"
     },
     "AWS::Transfer::Workflow.WorkflowStep": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-workflow-workflowstep.html",
@@ -247,6 +272,18 @@
         },
         "LoggingRole": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-transfer-server.html#cfn-transfer-server-loggingrole",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "PostAuthenticationLoginBanner": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-transfer-server.html#cfn-transfer-server-postauthenticationloginbanner",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "PreAuthenticationLoginBanner": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-transfer-server.html#cfn-transfer-server-preauthenticationloginbanner",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"

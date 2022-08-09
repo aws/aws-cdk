@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as core from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as inc from '../lib';
 
@@ -8,7 +9,7 @@ describe('CDK Include', () => {
   let stack: core.Stack;
 
   beforeEach(() => {
-    app = new core.App();
+    app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     stack = new core.Stack(app);
   });
 
@@ -78,10 +79,10 @@ describe('CDK Include', () => {
     }).toThrow(/Unsupported CloudFormation function 'Fn::ValueOfAll'/);
   });
 
-  test('throws a validation exception when encountering an unrecognized resource attribute', () => {
+  test('parses even the unrecognized attributes of resources', () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-attribute.json');
-    }).toThrow(/The 'NonExistentResourceAttribute' resource attribute is not supported by cloudformation-include yet/);
+    }).toThrow(/Element used in Ref expression with logical ID: 'NonExistentResource' not found/);
   });
 
   test("throws a validation exception when encountering a Ref-erence to a template element that doesn't exist", () => {
@@ -138,6 +139,12 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'short-form-get-att-no-dot.yaml');
     }).toThrow(/Short-form Fn::GetAtt must contain a '.' in its string argument, got: 'Bucket1Arn'/);
+  });
+
+  test('detects a cycle between resources in the template', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'cycle-in-resources.json');
+    }).toThrow(/Found a cycle between resources in the template: Bucket1 depends on Bucket2 depends on Bucket1/);
   });
 });
 

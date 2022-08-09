@@ -1,0 +1,102 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "MyStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MyStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/MyStack": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a",
+              "id": "f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a",
+              "packaging": "zip",
+              "sourceHash": "f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a",
+              "s3BucketParameter": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aS3Bucket93FB8681",
+              "s3KeyParameter": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aS3VersionKey64A4A72E",
+              "artifactHashParameter": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aArtifactHashE7245343"
+            }
+          }
+        ],
+        "/MyStack/Topic1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Topic198E71B3E"
+          }
+        ],
+        "/MyStack/Topic2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Topic269377B75"
+          }
+        ],
+        "/MyStack/MyFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionServiceRole3C357FF2"
+          }
+        ],
+        "/MyStack/MyFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction3BAA72D1"
+          }
+        ],
+        "/MyStack/MyFunction/Trigger/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionTriggerDB129D7B"
+          }
+        ],
+        "/MyStack/MyFunction/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionCurrentVersion197490AF2cb2bc11080c1ef11d3b49c1f1603957"
+          }
+        ],
+        "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A"
+          }
+        ],
+        "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderHandler97BECD91"
+          }
+        ],
+        "/MyStack/AssetParameters/f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aS3Bucket93FB8681"
+          }
+        ],
+        "/MyStack/AssetParameters/f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aS3VersionKey64A4A72E"
+          }
+        ],
+        "/MyStack/AssetParameters/f942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68a/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf942cf8dea09e8b74bc8da73a643a8b2639fe7f93c6eb60e338c56224decd68aArtifactHashE7245343"
+          }
+        ]
+      },
+      "displayName": "MyStack"
+    }
+  }
+}

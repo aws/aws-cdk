@@ -165,3 +165,23 @@ describe('ec2 instance', () => {
     });
   });
 });
+
+describe('s3 bucket level', () => {
+  test('public access prohibited', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new config.ManagedRule(stack, 'S3BucketLevelPublicAccessProhibited', {
+      identifier: config.ManagedRuleIdentifiers.S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
+      Source: {
+        Owner: 'AWS',
+        SourceIdentifier: config.ManagedRuleIdentifiers.S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED,
+      },
+    });
+  });
+});

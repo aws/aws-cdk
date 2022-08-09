@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -11,7 +11,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const version = fn.addVersion('1');
@@ -37,7 +37,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     new lambda.Alias(stack, 'Alias', {
@@ -58,7 +58,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const version = fn.addVersion('NewVersion');
@@ -84,7 +84,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const version1 = fn.addVersion('1');
@@ -114,7 +114,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const pce = 5;
@@ -147,7 +147,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const version = fn.currentVersion;
@@ -178,7 +178,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const version = fn.currentVersion;
@@ -221,7 +221,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN: Alias provisionedConcurrencyConfig less than 0
@@ -256,7 +256,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const version = fn.currentVersion;
@@ -273,7 +273,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const version = fn.currentVersion;
@@ -309,7 +309,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -355,7 +355,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
@@ -396,7 +396,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const alias = new lambda.Alias(stack, 'Alias', {
@@ -435,7 +435,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const alias = new lambda.Alias(stack, 'Alias', {
@@ -481,7 +481,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const alias = new lambda.Alias(stack, 'Alias', {
@@ -511,7 +511,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const alias = new lambda.Alias(stack, 'Alias', {
@@ -532,7 +532,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const alias = new lambda.Alias(stack, 'Alias', {
@@ -553,7 +553,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const alias = new lambda.Alias(stack, 'Alias', {
@@ -577,6 +577,84 @@ describe('alias', () => {
           ScheduledActionName: 'Scheduling',
         },
       ],
+    });
+  });
+
+  test('scheduled scaling shows warning when minute is not defined in cron', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version: fn.currentVersion,
+    });
+
+    // WHEN
+    const target = alias.addAutoScaling({ maxCapacity: 5 });
+    target.scaleOnSchedule('Scheduling', {
+      schedule: appscaling.Schedule.cron({}),
+      maxCapacity: 10,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/Alias/AliasScaling/Target', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+  });
+
+  test('scheduled scaling shows no warning when minute is * in cron', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version: fn.currentVersion,
+    });
+
+    // WHEN
+    const target = alias.addAutoScaling({ maxCapacity: 5 });
+    target.scaleOnSchedule('Scheduling', {
+      schedule: appscaling.Schedule.cron({ minute: '*' }),
+      maxCapacity: 10,
+    });
+
+    // THEN
+    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+    expect(annotations.length).toBe(0);
+  });
+
+  test('addFunctionUrl creates a function url', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+    const aliasName = 'prod';
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName,
+      version: fn.currentVersion,
+    });
+
+    // WHEN
+    alias.addFunctionUrl();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
+      AuthType: 'AWS_IAM',
+      TargetFunctionArn: {
+        'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+      },
+      Qualifier: aliasName,
     });
   });
 });

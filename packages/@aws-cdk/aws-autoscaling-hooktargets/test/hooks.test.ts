@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { arrayWith } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -27,7 +26,7 @@ describe('given an AutoScalingGroup and no role', () => {
   });
 
   afterEach(() => {
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -54,8 +53,8 @@ describe('given an AutoScalingGroup and no role', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -95,8 +94,8 @@ describe('given an AutoScalingGroup and no role', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'TopicBFC7AF6E' } });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'TopicBFC7AF6E' } });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -122,7 +121,7 @@ describe('given an AutoScalingGroup and no role', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.index',
     });
 
@@ -133,13 +132,13 @@ describe('given an AutoScalingGroup and no role', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' } });
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' } });
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'lambda',
       TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
       Endpoint: { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
     });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -166,7 +165,7 @@ describe('given an AutoScalingGroup and no role', () => {
     const key = new kms.Key(stack, 'key');
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.index',
     });
 
@@ -177,7 +176,7 @@ describe('given an AutoScalingGroup and no role', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::SNS::Topic', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
       KmsMasterKeyId: {
         'Fn::GetAtt': [
           'keyFEDD6EC0',
@@ -185,9 +184,9 @@ describe('given an AutoScalingGroup and no role', () => {
         ],
       },
     });
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(
+        Statement: Match.arrayWith([
           {
             Effect: 'Allow',
             Action: [
@@ -201,7 +200,7 @@ describe('given an AutoScalingGroup and no role', () => {
               ],
             },
           },
-        ),
+        ]),
       },
     });
   });
@@ -223,7 +222,7 @@ describe('given an AutoScalingGroup and a role', () => {
   });
 
   afterEach(() => {
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -253,7 +252,7 @@ describe('given an AutoScalingGroup and a role', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
   });
 
   test('can use topic as hook target with a role', () => {
@@ -271,8 +270,8 @@ describe('given an AutoScalingGroup and a role', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'TopicBFC7AF6E' } });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'TopicBFC7AF6E' } });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -298,7 +297,7 @@ describe('given an AutoScalingGroup and a role', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.index',
     });
     const myrole = new iam.Role(stack, 'MyRole', {
@@ -313,13 +312,13 @@ describe('given an AutoScalingGroup and a role', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' } });
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' } });
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'lambda',
       TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
       Endpoint: { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
     });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {

@@ -33,7 +33,7 @@ new lambda.PythonFunction(this, 'MyFunction', {
 });
 ```
 
-All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
+All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda).
 
 ## Python Layer
 
@@ -167,9 +167,34 @@ new lambda.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
-    buildArgs: { PIP_INDEX_URL: indexUrl },
+    environment: { PIP_INDEX_URL: indexUrl },
   },
 });
 ```
 
-This type of an example should work for `pip` and `poetry` based dependencies, but will not work for `pipenv`.
+The index URL or the token are only used during bundling and thus not included in the final asset. Setting only environment variable for `PIP_INDEX_URL` or `PIP_EXTRA_INDEX_URL` should work for accesing private Python repositories with `pip`, `pipenv` and `poetry` based dependencies.
+
+If you also want to use the Code Artifact repo for building the base Docker image for bundling, use `buildArgs`. However, note that setting custom build args for bundling will force the base bundling image to be rebuilt every time (i.e. skip the Docker cache). Build args can be customized as:
+
+```ts
+import { execSync } from 'child_process';
+
+const entry = '/path/to/function';
+const image = DockerImage.fromBuild(entry);
+
+const domain = 'my-domain';
+const domainOwner = '111122223333';
+const repoName = 'my_repo';
+const region = 'us-east-1';
+const codeArtifactAuthToken = execSync(`aws codeartifact get-authorization-token --domain ${domain} --domain-owner ${domainOwner} --query authorizationToken --output text`).toString().trim();
+
+const indexUrl = `https://aws:${codeArtifactAuthToken}@${domain}-${domainOwner}.d.codeartifact.${region}.amazonaws.com/pypi/${repoName}/simple/`;
+
+new lambda.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    buildArgs: { PIP_INDEX_URL: indexUrl },
+  },
+});
+```

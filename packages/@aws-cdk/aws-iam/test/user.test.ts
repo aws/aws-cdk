@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
-import { App, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { Template } from '@aws-cdk/assertions';
+import { App, CfnResource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { Group, ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 
 describe('IAM user', () => {
@@ -7,7 +7,7 @@ describe('IAM user', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new User(stack, 'MyUser');
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: { MyUserDC45028B: { Type: 'AWS::IAM::User' } },
     });
   });
@@ -16,10 +16,10 @@ describe('IAM user', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new User(stack, 'MyUser', {
-      password: SecretValue.plainText('1234'),
+      password: SecretValue.unsafePlainText('1234'),
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources:
       {
         MyUserDC45028B:
@@ -48,7 +48,7 @@ describe('IAM user', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::User', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
       ManagedPolicyArns: [
         { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] },
       ],
@@ -65,7 +65,7 @@ describe('IAM user', () => {
       permissionsBoundary,
     });
 
-    expect(stack).toHaveResource('AWS::IAM::User', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
       PermissionsBoundary: {
         'Fn::Join': [
           '',
@@ -212,7 +212,7 @@ describe('IAM user', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Users: ['john'],
       PolicyDocument: {
         Statement: [
@@ -243,7 +243,7 @@ describe('IAM user', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Users: ['john'],
       PolicyDocument: {
         Statement: [
@@ -270,7 +270,7 @@ describe('IAM user', () => {
     otherGroup.addUser(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::UserToGroupAddition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::UserToGroupAddition', {
       GroupName: {
         Ref: 'GroupC77FDACD',
       },
@@ -279,7 +279,7 @@ describe('IAM user', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::IAM::UserToGroupAddition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::UserToGroupAddition', {
       GroupName: {
         Ref: 'OtherGroup85E5C653',
       },
@@ -287,5 +287,34 @@ describe('IAM user', () => {
         'john',
       ],
     });
+  });
+});
+
+test('cross-env user ARNs include path', () => {
+  const app = new App();
+  const userStack = new Stack(app, 'user-stack', { env: { account: '123456789012', region: 'us-east-1' } });
+  const referencerStack = new Stack(app, 'referencer-stack', { env: { region: 'us-east-2' } });
+  const user = new User(userStack, 'User', {
+    path: '/sample/path/',
+    userName: 'sample-name',
+  });
+  new CfnResource(referencerStack, 'Referencer', {
+    type: 'Custom::UserReferencer',
+    properties: { UserArn: user.userArn },
+  });
+
+  Template.fromStack(referencerStack).hasResourceProperties('Custom::UserReferencer', {
+    UserArn: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':iam::123456789012:user/sample/path/sample-name',
+        ],
+      ],
+    },
   });
 });

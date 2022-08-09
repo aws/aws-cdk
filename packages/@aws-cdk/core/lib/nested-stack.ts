@@ -15,10 +15,6 @@ import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
-
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
 
 /**
@@ -72,6 +68,13 @@ export interface NestedStackProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * A description of the stack.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -116,12 +119,12 @@ export class NestedStack extends Stack {
     super(scope, id, {
       env: { account: parentStack.account, region: parentStack.region },
       synthesizer: new NestedStackSynthesizer(parentStack.synthesizer),
+      description: props.description,
     });
 
     this._parentStack = parentStack;
 
-    // @deprecate: remove this in v2.0 (redundent)
-    const parentScope = new CoreConstruct(scope, id + '.NestedStack');
+    const parentScope = new Construct(scope, id + '.NestedStack');
 
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
@@ -140,6 +143,7 @@ export class NestedStack extends Stack {
     this.resource.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
     this.nestedStackResource = this.resource;
+    this.node.defaultChild = this.resource;
 
     // context-aware stack name: if resolved from within this stack, return AWS::StackName
     // if resolved from the outer stack, use the { Ref } of the AWS::CloudFormation::Stack resource
@@ -204,6 +208,16 @@ export class NestedStack extends Stack {
     if (this._templateUrl) {
       return false;
     }
+
+    // When adding tags to nested stack, the tags need to be added to all the resources in
+    // in nested stack, which is handled by the `tags` property, But to tag the
+    //  tags have to be added in the parent stack CfnStack resource. The CfnStack resource created
+    // by this class dont share the same TagManager as that of the one exposed by the `tag` property of the
+    //  class, all the tags need to be copied to the CfnStack resource before synthesizing the resource.
+    // See https://github.com/aws/aws-cdk/pull/19128
+    Object.entries(this.tags.tagValues()).forEach(([key, value]) => {
+      this.resource.tags.setTag(key, value);
+    });
 
     const cfn = JSON.stringify(this._toCloudFormation());
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');

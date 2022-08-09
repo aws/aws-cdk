@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Match, Template, Annotations } from '@aws-cdk/assertions';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric } from '../lib';
@@ -46,6 +46,22 @@ describe('Alarm', () => {
 
     expect(() => {
       alarm.addAlarmAction(new Ec2TestAlarmAction('arn:aws:automate:us-east-1:ec2:reboot'));
+    }).toThrow(/EC2 alarm actions requires an EC2 Per-Instance Metric. \(.+ does not have an 'InstanceId' dimension\)/);
+  });
+
+  test('non ec2 instance related alarm does not accept EC2 action in other partitions', () => {
+    const stack = new Stack();
+    const alarm = new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      threshold: 1000,
+      evaluationPeriods: 2,
+    });
+
+    expect(() => {
+      alarm.addAlarmAction(new Ec2TestAlarmAction('arn:aws-us-gov:automate:us-east-1:ec2:reboot'));
+    }).toThrow(/EC2 alarm actions requires an EC2 Per-Instance Metric. \(.+ does not have an 'InstanceId' dimension\)/);
+    expect(() => {
+      alarm.addAlarmAction(new Ec2TestAlarmAction('arn:aws-cn:automate:us-east-1:ec2:reboot'));
     }).toThrow(/EC2 alarm actions requires an EC2 Per-Instance Metric. \(.+ does not have an 'InstanceId' dimension\)/);
   });
 
@@ -251,6 +267,22 @@ describe('Alarm', () => {
       Statistic: Match.absent(),
       ExtendedStatistic: 'tm99.9999999999',
     });
+  });
+
+  test('metric warnings are added to Alarm', () => {
+    const stack = new Stack(undefined, 'MyStack');
+    const m = new MathExpression({ expression: 'oops' });
+
+    // WHEN
+    new Alarm(stack, 'MyAlarm', {
+      metric: m,
+      evaluationPeriods: 1,
+      threshold: 1,
+    });
+
+    // THEN
+    const template = Annotations.fromStack(stack);
+    template.hasWarning('/MyStack/MyAlarm', Match.stringLikeRegexp("Math expression 'oops' references unknown identifiers"));
   });
 });
 

@@ -1,0 +1,94 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "sqs-bucket-notifications": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "sqs-bucket-notifications.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/sqs-bucket-notifications/Bucket1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket12520700A"
+          }
+        ],
+        "/sqs-bucket-notifications/Bucket1/Notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket1NotificationsBC5D9A45"
+          }
+        ],
+        "/sqs-bucket-notifications/MyQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueE6CA6235"
+          }
+        ],
+        "/sqs-bucket-notifications/MyQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueuePolicy6BBEDDAC"
+          }
+        ],
+        "/sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+          }
+        ],
+        "/sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36"
+          }
+        ],
+        "/sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
+          }
+        ],
+        "/sqs-bucket-notifications/Bucket2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket25524B414"
+          }
+        ],
+        "/sqs-bucket-notifications/Bucket2/Notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket2NotificationsD9BA2A77"
+          }
+        ],
+        "/sqs-bucket-notifications/EncryptedQueue/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EncryptedQueueKey6F4FD304"
+          }
+        ],
+        "/sqs-bucket-notifications/EncryptedQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EncryptedQueue0428C61A"
+          }
+        ],
+        "/sqs-bucket-notifications/EncryptedQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EncryptedQueuePolicy8AEB1708"
+          }
+        ]
+      },
+      "displayName": "sqs-bucket-notifications"
+    }
+  }
+}

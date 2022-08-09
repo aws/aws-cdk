@@ -1,0 +1,210 @@
+{
+ "Resources": {
+  "User00B015A1": {
+   "Type": "AWS::IAM::User"
+  },
+  "Domain66AC69E0": {
+   "Type": "AWS::Elasticsearch::Domain",
+   "Properties": {
+    "AdvancedSecurityOptions": {
+     "Enabled": true,
+     "InternalUserDatabaseEnabled": false,
+     "MasterUserOptions": {
+      "MasterUserARN": {
+       "Fn::GetAtt": [
+        "User00B015A1",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "CognitoOptions": {
+     "Enabled": false
+    },
+    "DomainEndpointOptions": {
+     "EnforceHTTPS": true,
+     "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+    },
+    "EBSOptions": {
+     "EBSEnabled": true,
+     "VolumeSize": 10,
+     "VolumeType": "gp2"
+    },
+    "ElasticsearchClusterConfig": {
+     "DedicatedMasterEnabled": false,
+     "InstanceCount": 1,
+     "InstanceType": "r5.large.elasticsearch",
+     "ZoneAwarenessEnabled": false
+    },
+    "ElasticsearchVersion": "7.1",
+    "EncryptionAtRestOptions": {
+     "Enabled": true
+    },
+    "LogPublishingOptions": {},
+    "NodeToNodeEncryptionOptions": {
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "apiC8550315": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "AuthenticationType": "API_KEY",
+    "Name": "api"
+   }
+  },
+  "apiSchema0EA92056": {
+   "Type": "AWS::AppSync::GraphQLSchema",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "apiC8550315",
+      "ApiId"
+     ]
+    },
+    "Definition": "type test {\n  version: String!\n}\ntype Query {\n  getTests: [test]!\n}\ntype Mutation {\n  addTest(version: String!): test\n}\n"
+   }
+  },
+  "apiDefaultApiKey6AB8D7C4": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "apiC8550315",
+      "ApiId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "apiSchema0EA92056"
+   ]
+  },
+  "apidsServiceRoleBDB08107": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appsync.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "apidsServiceRoleDefaultPolicy5634EFD0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "es:ESHttpDelete",
+        "es:ESHttpGet",
+        "es:ESHttpHead",
+        "es:ESHttpPatch",
+        "es:ESHttpPost",
+        "es:ESHttpPut"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Domain66AC69E0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Domain66AC69E0",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "apidsServiceRoleDefaultPolicy5634EFD0",
+    "Roles": [
+     {
+      "Ref": "apidsServiceRoleBDB08107"
+     }
+    ]
+   }
+  },
+  "apids4328272F": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "apiC8550315",
+      "ApiId"
+     ]
+    },
+    "Name": "ds",
+    "Type": "AMAZON_ELASTICSEARCH",
+    "ElasticsearchConfig": {
+     "AwsRegion": {
+      "Ref": "AWS::Region"
+     },
+     "Endpoint": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::GetAtt": [
+          "Domain66AC69E0",
+          "DomainEndpoint"
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "apidsServiceRoleBDB08107",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "apidsQuerygetTestsResolver5C6FBB59": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "apiC8550315",
+      "ApiId"
+     ]
+    },
+    "FieldName": "getTests",
+    "TypeName": "Query",
+    "DataSourceName": "ds",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50}}}",
+    "ResponseMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50,\"query\":{\"term\":{\"author\":\"$util.toJson($context.arguments.author)\"}}}}}"
+   },
+   "DependsOn": [
+    "apids4328272F",
+    "apiSchema0EA92056"
+   ]
+  }
+ }
+}

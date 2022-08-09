@@ -34,7 +34,7 @@ to the new version if possible.
 > allows more control of CodeBuild project generation; supports deployment
 > engines other than CodePipeline.
 >
-> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
+> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
 
 ## At a glance
 
@@ -49,9 +49,10 @@ them. You can deploy to the same account and Region, or to a different one,
 with the same amount of code. The *CDK Pipelines* library takes care of the
 details.
 
-CDK Pipelines supports multiple *deployment engines* (see below), and comes with
-a deployment engine that deploys CDK apps using AWS CodePipeline. To use the
-CodePipeline engine, define a `CodePipeline` construct.  The following
+CDK Pipelines supports multiple *deployment engines* (see
+[Using a different deployment engine](#using-a-different-deployment-engine)),
+and comes with a deployment engine that deploys CDK apps using AWS CodePipeline.
+To use the CodePipeline engine, define a `CodePipeline` construct.  The following
 example creates a CodePipeline that deploys an application from GitHub:
 
 ```ts
@@ -148,22 +149,10 @@ application stages in the source code, or new stacks to `MyApplication`, the
 pipeline will automatically reconfigure itself to deploy those new stages and
 stacks.
 
-(Note that have to *bootstrap* all environments before the above code
-will work, see the section **CDK Environment Bootstrapping** below).
-
-## CDK Versioning
-
-This library uses prerelease features of the CDK framework, which can be enabled
-by adding the following to `cdk.json`:
-
-```js
-{
-  // ...
-  "context": {
-    "@aws-cdk/core:newStyleStackSynthesis": true
-  }
-}
-```
+(Note that you have to *bootstrap* all environments before the above code
+will work, and switch on "Modern synthesis" if you are using
+CDKv1. See the section **CDK Environment Bootstrapping** below for
+more information).
 
 ## Provisioning the pipeline
 
@@ -225,9 +214,10 @@ const originalPipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
 
 ## Definining the pipeline
 
-This section of the documentation describes the AWS CodePipeline engine, which
-comes with this library. If you want to use a different deployment engine, read
-the section *Using a different deployment engine* below.
+This section of the documentation describes the AWS CodePipeline engine,
+which comes with this library. If you want to use a different deployment
+engine, read the section
+[Using a different deployment engine](#using-a-different-deployment-engine)below.
 
 ### Synth and sources
 
@@ -348,6 +338,40 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 
 You can adapt these examples to your own situation.
 
+#### Migrating from buildspec.yml files
+
+You may currently have the build instructions for your CodeBuild Projects in a
+`buildspec.yml` file in your source repository. In addition to your build
+commands, the CodeBuild Project's buildspec also controls some information that
+CDK Pipelines manages for you, like artifact identifiers, input artifact
+locations, Docker authorization, and exported variables.
+
+Since there is no way in general for CDK Pipelines to modify the file in your
+resource repository, CDK Pipelines configures the BuildSpec directly on the
+CodeBuild Project, instead of loading it from the `buildspec.yml` file.
+This requires a pipeline self-mutation to update.
+
+To avoid this, put your build instructions in a separate script, for example
+`build.sh`, and call that script from the build `commands` array:
+
+```ts
+declare const source: pipelines.IFileSetProducer;
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: source,
+    commands: [
+      // Abstract over doing the build
+      './build.sh',
+    ],
+  })
+});
+```
+
+Doing so keeps your exact build instructions in sync with your source code in
+the source repository where it belongs, and provides a convenient build script
+for developers at the same time.
+
 #### CodePipeline Sources
 
 In CodePipeline, *Sources* define where the source of your application lives.
@@ -400,6 +424,16 @@ triggered every time the file in S3 is changed:
 ```ts
 const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket');
 pipelines.CodePipelineSource.s3(bucket, 'my/source.zip');
+```
+
+##### ECR
+
+You can use a Docker image in ECR as the source of the pipeline. The pipeline will be
+triggered every time an image is pushed to ECR:
+
+```ts
+const repository = new ecr.Repository(this, 'Repository');
+pipelines.CodePipelineSource.ecr(repository);
 ```
 
 #### Additional inputs
@@ -691,8 +725,11 @@ new pipelines.CodeBuildStep('Synth', {
 
   // Control Elastic Network Interface creation
   vpc: vpc,
-  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
+  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
   securityGroups: [mySecurityGroup],
+
+  // Control caching
+  cache: codebuild.Cache.bucket(new s3.Bucket(this, 'Cache')),
 
   // Additional policy statements for the execution role
   rolePolicyStatements: [
@@ -736,7 +773,7 @@ new pipelines.CodePipeline(this, 'Pipeline', {
 
     // Control Elastic Network Interface creation
     vpc: vpc,
-    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
+    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
     securityGroups: [mySecurityGroup],
 
     // Additional policy statements for the execution role
@@ -766,6 +803,13 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
     private readonly input: pipelines.FileSet,
   ) {
     super('MyJenkinsStep');
+
+    // This is necessary if your step accepts parametres, like environment variables,
+    // that may contain outputs from other steps. It doesn't matter what the
+    // structure is, as long as it contains the values that may contain outputs.
+    this.discoverReferencedOutputs({
+      env: { /* ... */ }
+    });
   }
 
   public produceAction(stage: codepipeline.IStage, options: pipelines.ProduceActionOptions): pipelines.CodePipelineActionFactoryResult {
@@ -790,6 +834,34 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
   }
 }
 ```
+
+### Using an existing AWS Codepipeline
+
+If you wish to use an existing `CodePipeline.Pipeline` while using the modern API's
+methods and classes, you can pass in the existing `CodePipeline.Pipeline` to be built upon
+instead of having the `pipelines.CodePipeline` construct create a new `CodePipeline.Pipeline`.
+This also gives you more direct control over the underlying `CodePipeline.Pipeline` construct
+if the way the modern API creates it doesn't allow for desired configurations.
+
+Here's an example of passing in an existing pipeline:
+
+```ts
+declare const codePipeline: codepipeline.Pipeline;
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+    }),
+    commands: ['npm ci','npm run build','npx cdk synth'],
+  }),
+  codePipeline: codePipeline,
+});
+```
+
+Note that if you provide an existing pipeline, you cannot provide values for
+`pipelineName`, `crossAccountKeys`, `reuseCrossRegionSupportStacks`, or `role`
+because those values are passed in directly to the underlying `codepipeline.Pipeline`.
 
 ## Using Docker in the pipeline
 
@@ -944,22 +1016,30 @@ or future deployments to this environment will fail. If you want to upgrade
 the bootstrap stack to a newer version, do that by updating it in-place.
 
 > This library requires the *modern* bootstrapping stack which has
-> been updated specifically to support cross-account continuous delivery. Starting,
-> in CDK v2 this new bootstrapping stack will become the default, but for now it is still
-> opt-in.
+> been updated specifically to support cross-account continuous delivery.
 >
-> The commands below assume you are running `cdk bootstrap` in a directory
-> where `cdk.json` contains the `"@aws-cdk/core:newStyleStackSynthesis": true`
-> setting in its context, which will switch to the new bootstrapping stack
-> automatically.
+> If you are using CDKv2, you do not need to do anything else. Modern
+> bootstrapping and modern stack synthesis (also known as "default stack
+> synthesis") is the default.
 >
-> If run from another directory, be sure to run the bootstrap command with
-> the environment variable `CDK_NEW_BOOTSTRAP=1` set.
+> If you are using CDKv1, you need to opt in to modern bootstrapping and
+> modern stack synthesis using a feature flag. Make sure `cdk.json` includes:
+>
+> ```json
+> {
+>   "context": {
+>     "@aws-cdk/core:newStyleStackSynthesis": true
+>   }
+> }
+> ```
+>
+> And be sure to run `cdk bootstrap` in the same directory as the `cdk.json`
+> file.
 
 To bootstrap an environment for provisioning the pipeline:
 
 ```console
-$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+$ npx cdk bootstrap \
     [--profile admin-profile-1] \
     --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
     aws://111111111111/us-east-1
@@ -969,7 +1049,7 @@ To bootstrap a different environment for deploying CDK applications into using
 a pipeline in account `111111111111`:
 
 ```console
-$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+$ npx cdk bootstrap \
     [--profile admin-profile-2] \
     --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
     --trust 11111111111 \
@@ -980,7 +1060,7 @@ If you only want to trust an account to do lookups (e.g, when your CDK applicati
 `Vpc.fromLookup()` call), use the option `--trust-for-lookup`:
 
 ```console
-$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+$ npx cdk bootstrap \
     [--profile admin-profile-2] \
     --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
     --trust-for-lookup 11111111111 \
@@ -1203,6 +1283,17 @@ pipeline.addStage(stage, {
 **Note**: Manual Approvals notifications only apply when an application has security
 check enabled.
 
+## Using a different deployment engine
+
+CDK Pipelines supports multiple *deployment engines*, but this module vends a
+construct for only one such engine: AWS CodePipeline. It is also possible to
+use CDK Pipelines to build pipelines backed by other deployment engines.
+
+Here is a list of CDK Libraries that integrate CDK Pipelines with
+alternative deployment engines:
+
+* GitHub Workflows: [`cdk-pipelines-github`](https://github.com/cdklabs/cdk-pipelines-github)
+
 ## Troubleshooting
 
 Here are some common errors you may encounter while using this library.
@@ -1315,6 +1406,47 @@ const pipeline = new pipelines.CdkPipeline(this, 'MyPipeline', {
 After turning on `privilegedMode: true`, you will need to do a one-time manual cdk deploy of your
 pipeline to get it going again (as with a broken 'synth' the pipeline will not be able to self
 update to the right state).
+
+### Not authorized to perform sts:AssumeRole on arn:aws:iam::\*:role/\*-lookup-role-\*
+
+You may get an error like the following in the **Synth** step:
+
+```text
+Could not assume role in target account using current credentials (which are for account 111111111111). User:
+arn:aws:sts::111111111111:assumed-role/PipelineStack-PipelineBuildSynthCdkBuildProje-..../AWSCodeBuild-....
+is not authorized to perform: sts:AssumeRole on resource:
+arn:aws:iam::222222222222:role/cdk-hnb659fds-lookup-role-222222222222-us-east-1.
+Please make sure that this role exists in the account. If it doesn't exist, (re)-bootstrap the environment with
+the right '--trust', using the latest version of the CDK CLI.
+```
+
+This is a sign that the CLI is trying to do Context Lookups during the **Synth** step, which are failing
+because it cannot assume the right role. We recommend you don't rely on Context Lookups in the pipeline at
+all, and commit a file called `cdk.context.json` with the right lookup values in it to source control.
+
+If you do want to do lookups in the pipeline, the cause is one of the following:
+
+* The target environment has not been bootstrapped; OR
+* The target environment has been bootstrapped without the right `--trust` relationship; OR
+* The CodeBuild execution role does not have permissions to call `sts:AssumeRole`.
+
+See the section called **Context Lookups** for more information on using this feature.
+
+### IAM policies: Cannot exceed quota for PoliciesPerRole / Maximum policy size exceeded
+
+This happens as a result of having a lot of targets in the Pipeline: the IAM policies that
+get generated enumerate all required roles and grow too large.
+
+Make sure you are on version `2.26.0` or higher, and that your `cdk.json` contains the
+following:
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-iam:minimizePolicies": true
+  }
+}
+```
 
 ### S3 error: Access Denied
 

@@ -1,0 +1,100 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "IntegApiGatewayV2Iam": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegApiGatewayV2Iam.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/IntegApiGatewayV2Iam/User/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "User00B015A1"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/User/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserDefaultPolicy1F97781E"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/UserAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserAccessEC42ADF7"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/HttpApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiF5A9A8A7"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/HttpApi/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiDefaultStage3EEB07D6"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/HttpApi/ANY--foo/examplecom/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiANYfooexamplecom903F7A9F"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/HttpApi/ANY--foo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiANYfooD178456F"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/HttpApi/ANY--books--{book}/examplecom/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiANYbooksbookexamplecom5C333C98"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/HttpApi/ANY--books--{book}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiANYbooksbook2F78361C"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/API": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "API"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/TESTACCESSKEYID": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TESTACCESSKEYID"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/TESTSECRETACCESSKEY": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TESTSECRETACCESSKEY"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/TESTREGION": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TESTREGION"
+          }
+        ]
+      },
+      "displayName": "IntegApiGatewayV2Iam"
+    }
+  }
+}

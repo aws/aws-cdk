@@ -5,46 +5,63 @@ import { registerContextProvider } from '../../lib/context-providers';
 import { MockCloudExecutable } from '../util';
 
 describe('AWS::CDK::Metadata', () => {
-  test('is generated for relocatable stacks', async () => {
-    const cx = await testCloudExecutable({ env: `aws://${cxapi.UNKNOWN_ACCOUNT}/${cxapi.UNKNOWN_REGION}`, versionReporting: true });
-    const cxasm = await cx.synthesize();
+  test('is generated for relocatable stacks from old frameworks', async () => {
+    await withFakeCurrentCxVersion('2.0.0', async () => {
+      const cx = await testCloudExecutable({ env: `aws://${cxapi.UNKNOWN_ACCOUNT}/${cxapi.UNKNOWN_REGION}`, versionReporting: true });
+      const cxasm = await cx.synthesize();
 
-    const result = cxasm.stackById('withouterrors').firstStack;
-    const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
-    expect(metadata).toEqual({
-      Type: 'AWS::CDK::Metadata',
-      Properties: {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        Modules: `${require('../../package.json').name}=${require('../../package.json').version}`,
-      },
-      Condition: 'CDKMetadataAvailable',
-    });
+      const result = cxasm.stackById('withouterrors').firstStack;
+      const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
+      expect(metadata).toEqual({
+        Type: 'AWS::CDK::Metadata',
+        Properties: {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          Modules: `${require('../../package.json').name}=${require('../../package.json').version}`,
+        },
+        Condition: 'CDKMetadataAvailable',
+      });
 
-    expect(result.template.Conditions?.CDKMetadataAvailable).toBeDefined();
-  });
-
-  test('is generated for stacks in supported regions', async () => {
-    const cx = await testCloudExecutable({ env: 'aws://012345678912/us-east-1', versionReporting: true });
-    const cxasm = await cx.synthesize();
-
-    const result = cxasm.stackById('withouterrors').firstStack;
-    const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
-    expect(metadata).toEqual({
-      Type: 'AWS::CDK::Metadata',
-      Properties: {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        Modules: `${require('../../package.json').name}=${require('../../package.json').version}`,
-      },
+      expect(result.template.Conditions?.CDKMetadataAvailable).toBeDefined();
     });
   });
 
-  test('is not generated for stacks in unsupported regions', async () => {
-    const cx = await testCloudExecutable({ env: 'aws://012345678912/bermuda-triangle-1337', versionReporting: true });
-    const cxasm = await cx.synthesize();
+  test('is generated for stacks in supported regions from old frameworks', async () => {
+    await withFakeCurrentCxVersion('2.0.0', async () => {
+      const cx = await testCloudExecutable({ env: 'aws://012345678912/us-east-1', versionReporting: true });
+      const cxasm = await cx.synthesize();
 
-    const result = cxasm.stackById('withouterrors').firstStack;
-    const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
-    expect(metadata).toBeUndefined();
+      const result = cxasm.stackById('withouterrors').firstStack;
+      const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
+      expect(metadata).toEqual({
+        Type: 'AWS::CDK::Metadata',
+        Properties: {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          Modules: `${require('../../package.json').name}=${require('../../package.json').version}`,
+        },
+      });
+    });
+  });
+
+  test('is not generated for stacks in unsupported regions from old frameworks', async () => {
+    await withFakeCurrentCxVersion('2.0.0', async () => {
+      const cx = await testCloudExecutable({ env: 'aws://012345678912/bermuda-triangle-1337', versionReporting: true });
+      const cxasm = await cx.synthesize();
+
+      const result = cxasm.stackById('withouterrors').firstStack;
+      const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
+      expect(metadata).toBeUndefined();
+    });
+  });
+
+  test('is not generated for new frameworks', async () => {
+    await withFakeCurrentCxVersion('8.0.0', async () => {
+      const cx = await testCloudExecutable({ env: 'aws://012345678912/us-east-1', versionReporting: true });
+      const cxasm = await cx.synthesize();
+
+      const result = cxasm.stackById('withouterrors').firstStack;
+      const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
+      expect(metadata).toBeUndefined();
+    });
   });
 });
 
@@ -116,4 +133,15 @@ async function testCloudExecutable({ env, versionReporting = true }: { env?: str
   cloudExec.configuration.settings.set(['versionReporting'], versionReporting);
 
   return cloudExec;
+}
+
+
+async function withFakeCurrentCxVersion<A>(version: string, block: () => Promise<A>): Promise<A> {
+  const currentVersionFn = cxschema.Manifest.version;
+  cxschema.Manifest.version = () => version;
+  try {
+    return await block();
+  } finally {
+    cxschema.Manifest.version = currentVersionFn;
+  }
 }

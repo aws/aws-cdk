@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
@@ -13,8 +12,9 @@ describe('api key', () => {
     new apigateway.ApiKey(stack, 'my-api-key');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', undefined, ResourcePart.CompleteDefinition);
-    // should have an api key with no props defined.
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
+      Enabled: true,
+    });
   });
 
 
@@ -29,7 +29,7 @@ describe('api key', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
       Enabled: false,
       Value: 'arandomstringwithmorethantwentycharacters',
     });
@@ -53,7 +53,7 @@ describe('api key', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
       CustomerId: 'test-customer',
       StageKeys: [
         {
@@ -76,7 +76,7 @@ describe('api key', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
       Description: 'The most secret api key',
     });
   });
@@ -97,7 +97,7 @@ describe('api key', () => {
     usagePlan.addApiKey(importedKey);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::UsagePlanKey', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::UsagePlanKey', {
       KeyId: 'KeyIdabc',
       KeyType: 'API_KEY',
       UsagePlanId: {
@@ -125,7 +125,7 @@ describe('api key', () => {
     apiKey.grantRead(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -176,7 +176,7 @@ describe('api key', () => {
     apiKey.grantWrite(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -232,7 +232,7 @@ describe('api key', () => {
     apiKey.grantReadWrite(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -282,11 +282,11 @@ describe('api key', () => {
 
       // THEN
       // should have an api key with no props defined.
-      expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', undefined, ResourcePart.CompleteDefinition);
+      Template.fromStack(stack).hasResource('AWS::ApiGateway::ApiKey', Match.anyValue());
       // should not have a usage plan.
-      expect(stack).not.toHaveResource('AWS::ApiGateway::UsagePlan');
+      Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::UsagePlan', 0);
       // should not have a usage plan key.
-      expect(stack).not.toHaveResource('AWS::ApiGateway::UsagePlanKey');
+      Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::UsagePlanKey', 0);
     });
 
     test('only api key is created when rate limiting properties are not provided', () => {
@@ -306,7 +306,7 @@ describe('api key', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
         CustomerId: 'test-customer',
         StageKeys: [
           {
@@ -316,9 +316,9 @@ describe('api key', () => {
         ],
       });
       // should not have a usage plan.
-      expect(stack).not.toHaveResource('AWS::ApiGateway::UsagePlan');
+      Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::UsagePlan', 0);
       // should not have a usage plan key.
-      expect(stack).not.toHaveResource('AWS::ApiGateway::UsagePlanKey');
+      Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::UsagePlanKey', 0);
     });
 
     test('api key and usage plan are created and linked when rate limiting properties are provided', () => {
@@ -343,7 +343,7 @@ describe('api key', () => {
 
       // THEN
       // should have an api key
-      expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
         CustomerId: 'test-customer',
         StageKeys: [
           {
@@ -353,14 +353,14 @@ describe('api key', () => {
         ],
       });
       // should have a usage plan with specified quota.
-      expect(stack).toHaveResource('AWS::ApiGateway::UsagePlan', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::UsagePlan', {
         Quota: {
           Limit: 10000,
           Period: 'MONTH',
         },
-      }, ResourcePart.Properties);
+      });
       // should have a usage plan key linking the api key and usage plan
-      expect(stack).toHaveResource('AWS::ApiGateway::UsagePlanKey', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::UsagePlanKey', {
         KeyId: {
           Ref: 'testapikey998028B6',
         },
@@ -368,7 +368,7 @@ describe('api key', () => {
         UsagePlanId: {
           Ref: 'testapikeyUsagePlanResource66DB63D6',
         },
-      }, ResourcePart.Properties);
+      });
     });
   });
 });

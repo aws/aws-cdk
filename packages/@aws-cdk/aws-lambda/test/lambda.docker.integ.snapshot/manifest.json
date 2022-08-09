@@ -1,0 +1,47 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-ecr-docker": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-ecr-docker.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-ecr-docker": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "repositoryName": "aws-cdk/assets",
+              "imageTag": "768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610",
+              "id": "768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610",
+              "packaging": "container-image",
+              "path": "asset.768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610",
+              "sourceHash": "768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610"
+            }
+          }
+        ],
+        "/lambda-ecr-docker/MyLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaServiceRole4539ECB6"
+          }
+        ],
+        "/lambda-ecr-docker/MyLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCCE802FB"
+          }
+        ]
+      },
+      "displayName": "lambda-ecr-docker"
+    }
+  }
+}

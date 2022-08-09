@@ -1,0 +1,322 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "integ-parameter-arns": {
+        "id": "integ-parameter-arns",
+        "path": "integ-parameter-arns",
+        "children": {
+          "ParameterNameParameter": {
+            "id": "ParameterNameParameter",
+            "path": "integ-parameter-arns/ParameterNameParameter",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "StringAutogen": {
+            "id": "StringAutogen",
+            "path": "integ-parameter-arns/StringAutogen",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-parameter-arns/StringAutogen/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": "hello, world"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.StringParameter",
+              "version": "0.0.0"
+            }
+          },
+          "StringSimple": {
+            "id": "StringSimple",
+            "path": "integ-parameter-arns/StringSimple",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-parameter-arns/StringSimple/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": "hello, world",
+                    "name": "simple-name"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.StringParameter",
+              "version": "0.0.0"
+            }
+          },
+          "StringPath": {
+            "id": "StringPath",
+            "path": "integ-parameter-arns/StringPath",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-parameter-arns/StringPath/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": "hello, world",
+                    "name": "/path/name/foo/bar"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.StringParameter",
+              "version": "0.0.0"
+            }
+          },
+          "ListAutogen": {
+            "id": "ListAutogen",
+            "path": "integ-parameter-arns/ListAutogen",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-parameter-arns/ListAutogen/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "StringList",
+                    "value": "hello,world"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.StringListParameter",
+              "version": "0.0.0"
+            }
+          },
+          "ListSimple": {
+            "id": "ListSimple",
+            "path": "integ-parameter-arns/ListSimple",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-parameter-arns/ListSimple/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "StringList",
+                    "value": "hello,world",
+                    "name": "list-simple-name"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.StringListParameter",
+              "version": "0.0.0"
+            }
+          },
+          "ListPath": {
+            "id": "ListPath",
+            "path": "integ-parameter-arns/ListPath",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-parameter-arns/ListPath/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "StringList",
+                    "value": "hello,world",
+                    "name": "/list/path/name"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.StringListParameter",
+              "version": "0.0.0"
+            }
+          },
+          "ParameterizedSimple": {
+            "id": "ParameterizedSimple",
+            "path": "integ-parameter-arns/ParameterizedSimple",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-parameter-arns/ParameterizedSimple/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": "hello, world",
+                    "name": {
+                      "Ref": "ParameterNameParameter"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.StringParameter",
+              "version": "0.0.0"
+            }
+          },
+          "ParameterizedNonSimple": {
+            "id": "ParameterizedNonSimple",
+            "path": "integ-parameter-arns/ParameterizedNonSimple",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-parameter-arns/ParameterizedNonSimple/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": "hello, world",
+                    "name": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "/",
+                          {
+                            "Ref": "ParameterNameParameter"
+                          },
+                          "/non/simple"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.StringParameter",
+              "version": "0.0.0"
+            }
+          },
+          "StringAutogenArn": {
+            "id": "StringAutogenArn",
+            "path": "integ-parameter-arns/StringAutogenArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "StringSimpleArn": {
+            "id": "StringSimpleArn",
+            "path": "integ-parameter-arns/StringSimpleArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "StringPathArn": {
+            "id": "StringPathArn",
+            "path": "integ-parameter-arns/StringPathArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ListAutogenArn": {
+            "id": "ListAutogenArn",
+            "path": "integ-parameter-arns/ListAutogenArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ListSimpleArn": {
+            "id": "ListSimpleArn",
+            "path": "integ-parameter-arns/ListSimpleArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ListPathArn": {
+            "id": "ListPathArn",
+            "path": "integ-parameter-arns/ListPathArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ParameterizedSimpleArn": {
+            "id": "ParameterizedSimpleArn",
+            "path": "integ-parameter-arns/ParameterizedSimpleArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ParameterizedNonSimpleArn": {
+            "id": "ParameterizedNonSimpleArn",
+            "path": "integ-parameter-arns/ParameterizedNonSimpleArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

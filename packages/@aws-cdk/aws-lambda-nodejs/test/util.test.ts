@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { callsites, exec, extractDependencies, findUp, findUpMultiple } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -177,5 +177,40 @@ describe('extractDependencies', () => {
     });
 
     fs.unlinkSync(pkgPath);
+  });
+});
+
+describe('getTsconfigCompilerOptions', () => {
+  test('should extract compiler options and returns as string', () => {
+    const tsconfig = path.join(__dirname, '..', 'tsconfig.json');
+    const compilerOptions = getTsconfigCompilerOptions(tsconfig);
+    expect(compilerOptions).toEqual([
+      '--alwaysStrict',
+      '--charset utf8',
+      '--declaration',
+      '--declarationMap false',
+      '--experimentalDecorators',
+      '--incremental false',
+      '--inlineSourceMap',
+      '--inlineSources',
+      '--lib es2020',
+      '--module CommonJS',
+      '--newLine lf',
+      '--noEmitOnError',
+      '--noFallthroughCasesInSwitch',
+      '--noImplicitAny',
+      '--noImplicitReturns',
+      '--noImplicitThis',
+      '--noUnusedLocals',
+      '--noUnusedParameters',
+      '--outDir ./',
+      '--resolveJsonModule',
+      '--rootDir ./',
+      '--strict',
+      '--strictNullChecks',
+      '--strictPropertyInitialization',
+      '--stripInternal false',
+      '--target ES2020',
+    ].join(' '));
   });
 });

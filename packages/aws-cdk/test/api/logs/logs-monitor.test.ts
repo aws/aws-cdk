@@ -12,25 +12,55 @@ beforeEach(() => {
   sdk = new MockSdk();
 });
 
-afterAll(() => {
+afterEach(() => {
   stderrMock.mockRestore();
   monitor.deactivate();
 });
 
-let TIMESTAMP: number;
-let HUMAN_TIME: string;
-
-beforeAll(() => {
-  TIMESTAMP = new Date().getTime();
-  HUMAN_TIME = new Date(TIMESTAMP).toLocaleTimeString();
-});
-
-test('continue to the next page if it exists', async () => {
+test('process events', async () => {
   // GIVEN
+  const eventDate = new Date(T0 + 102 * 1000);
   sdk.stubCloudWatchLogs({
     filterLogEvents() {
       return {
-        events: [event(102, 'message')],
+        events: [event(102, 'message', eventDate)],
+      };
+    },
+  });
+  monitor.addLogGroups(
+    {
+      name: 'name',
+      account: '11111111111',
+      region: 'us-east-1',
+    },
+    sdk,
+    ['loggroup'],
+  );
+  // WHEN
+  monitor.activate();
+  // need time for the log processing to occur
+  await sleep(1000);
+
+  // THEN
+  const expectedLocaleTimeString = eventDate.toLocaleTimeString();
+  expect(stderrMock).toHaveBeenCalledTimes(1);
+  expect(stderrMock.mock.calls[0][0]).toContain(
+    `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} message`,
+  );
+});
+
+test('process truncated events', async () => {
+  // GIVEN
+  const eventDate = new Date(T0 + 102 * 1000);
+  const events: AWS.CloudWatchLogs.FilteredLogEvents = [];
+  for (let i = 0; i < 100; i++) {
+    events.push(event(102+i, 'message' + i, eventDate));
+  }
+
+  sdk.stubCloudWatchLogs({
+    filterLogEvents() {
+      return {
+        events,
         nextToken: 'some-token',
       };
     },
@@ -50,22 +80,23 @@ test('continue to the next page if it exists', async () => {
   await sleep(1000);
 
   // THEN
-  expect(stderrMock).toHaveBeenCalledTimes(2);
+  const expectedLocaleTimeString = eventDate.toLocaleTimeString();
+  expect(stderrMock).toHaveBeenCalledTimes(101);
   expect(stderrMock.mock.calls[0][0]).toContain(
-    `[${blue('loggroup')}] ${yellow(HUMAN_TIME)} message`,
+    `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} message`,
   );
-  expect(stderrMock.mock.calls[1][0]).toContain(
-    `[${blue('loggroup')}] ${yellow(new Date(T100).toLocaleTimeString())} >>> \`watch\` shows only the first 100 log messages - the rest have been truncated...`,
+  expect(stderrMock.mock.calls[100][0]).toContain(
+    `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} >>> \`watch\` shows only the first 100 log messages - the rest have been truncated...`,
   );
 });
 
 const T0 = 1597837230504;
 const T100 = T0 + 100 * 1000;
-function event(nr: number, message: string): AWS.CloudWatchLogs.FilteredLogEvent {
+function event(nr: number, message: string, timestamp: Date): AWS.CloudWatchLogs.FilteredLogEvent {
   return {
     eventId: `${nr}`,
     message,
-    timestamp: new Date(T0 * nr * 1000).getTime(),
-    ingestionTime: new Date(T0 * nr * 1000).getTime(),
+    timestamp: timestamp.getTime(),
+    ingestionTime: timestamp.getTime(),
   };
 }

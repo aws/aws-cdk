@@ -96,7 +96,7 @@ constructor(integTestDir, stackNamePrefix, output, aws) {
     this.stackNamePrefix = stackNamePrefix;
     this.output = output;
     this.aws = aws;
-    this.qualifier = randomString().substr(0, 10);
+    this.qualifier = randomString().slice(0, 10);
     this.bucketsToDelete = new Array();
 }
 log(s) {

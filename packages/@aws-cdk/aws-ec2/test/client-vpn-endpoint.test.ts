@@ -242,6 +242,35 @@ test('client vpn endpoint with custom route', () => {
   });
 });
 
+test('client vpn endpoint with custom session timeout', () => {
+  vpc.addClientVpnEndpoint('Endpoint', {
+    cidr: '10.100.0.0/16',
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
+    sessionTimeout: ec2.ClientVpnSessionTimeout.TEN_HOURS,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
+    SessionTimeoutHours: 10,
+  });
+});
+
+test('client vpn endpoint with client login banner', () => {
+  vpc.addClientVpnEndpoint('Endpoint', {
+    cidr: '10.100.0.0/16',
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
+    clientLoginBanner: 'Welcome!',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
+    ClientLoginBannerOptions: {
+      Enabled: true,
+      BannerText: 'Welcome!',
+    },
+  });
+});
+
 test('throws with more than 2 dns servers', () => {
   expect(() => vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',

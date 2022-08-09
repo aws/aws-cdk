@@ -1,0 +1,82 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "batch-events": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "batch-events.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/batch-events/ComputeEnvironment/Resource-Service-Instance-Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445"
+          }
+        ],
+        "/batch-events/ComputeEnvironment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ComputeEnvironmentC570994D"
+          }
+        ],
+        "/batch-events/MyQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueE6CA6235"
+          }
+        ],
+        "/batch-events/MyJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyJob8719E923"
+          }
+        ],
+        "/batch-events/MyJob/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyJobEventsRoleCF43C336"
+          }
+        ],
+        "/batch-events/MyJob/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyJobEventsRoleDefaultPolicy7266D3A7"
+          }
+        ],
+        "/batch-events/Timer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TimerBF6F831F"
+          }
+        ],
+        "/batch-events/Timer2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Timer2B6F162E9"
+          }
+        ],
+        "/batch-events/Queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue4A7E3555"
+          }
+        ],
+        "/batch-events/Queue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueuePolicy25439813"
+          }
+        ]
+      },
+      "displayName": "batch-events"
+    }
+  }
+}

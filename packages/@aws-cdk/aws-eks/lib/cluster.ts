@@ -25,10 +25,6 @@ import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
 const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
@@ -405,7 +401,7 @@ export interface CommonClusterOptions {
    *
    * For example, to only select private subnets, supply the following:
    *
-   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]`
+   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }]`
    *
    * @default - All public and private subnets
    */
@@ -564,7 +560,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'proxy-agent-layer', {
    *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
-   *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X],
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
    * });
    * ```
    *
@@ -616,6 +612,12 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - The controller is not installed.
    */
   readonly albController?: AlbControllerOptions;
+  /**
+   * The cluster log types which you want to enable.
+   *
+   * @default - none
+   */
+  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -765,21 +767,25 @@ export interface ClusterProps extends ClusterOptions {
 export class KubernetesVersion {
   /**
    * Kubernetes version 1.14
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_14 = KubernetesVersion.of('1.14');
 
   /**
    * Kubernetes version 1.15
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_15 = KubernetesVersion.of('1.15');
 
   /**
    * Kubernetes version 1.16
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_16 = KubernetesVersion.of('1.16');
 
   /**
    * Kubernetes version 1.17
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_17 = KubernetesVersion.of('1.17');
 
@@ -813,6 +819,32 @@ export class KubernetesVersion {
    * @param version cluster version number
    */
   private constructor(public readonly version: string) { }
+}
+
+/**
+ * EKS cluster logging types
+ */
+export enum ClusterLoggingTypes {
+  /**
+   * Logs pertaining to API requests to the cluster.
+   */
+  API = 'api',
+  /**
+   * Logs pertaining to cluster access via the Kubernetes API.
+   */
+  AUDIT = 'audit',
+  /**
+   * Logs pertaining to authentication requests into the cluster.
+   */
+  AUTHENTICATOR = 'authenticator',
+  /**
+   * Logs pertaining to state of cluster controllers.
+   */
+  CONTROLLER_MANAGER = 'controllerManager',
+  /**
+   * Logs pertaining to scheduling decisions.
+   */
+  SCHEDULER = 'scheduler',
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
@@ -909,7 +941,7 @@ abstract class ClusterBase extends Resource implements ICluster {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.13.2',
+        version: '0.18.0',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
@@ -1018,10 +1050,10 @@ abstract class ClusterBase extends Resource implements ICluster {
       this.addSpotInterruptHandler();
     }
 
-    if (this instanceof Cluster) {
+    if (this instanceof Cluster && this.albController) {
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
-      this.albController?.node.addDependency(autoScalingGroup);
+      Node.of(this.albController).addDependency(autoScalingGroup);
     }
   }
 }
@@ -1253,6 +1285,8 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
+  private readonly logging?: { [key: string]: [ { [key: string]: any }, { [key: string]: any } ] };
+
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
    * represents that the cluster is ready to receive "kubectl" commands.
@@ -1303,7 +1337,7 @@ export class Cluster extends ClusterBase {
       description: 'EKS Control Plane Security Group',
     });
 
-    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
+    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }];
 
     const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
@@ -1313,6 +1347,30 @@ export class Cluster extends ClusterBase {
     // Get subnetIds for all selected subnets
     const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
+    // The value of clusterLoggingTypeDisabled should be invert of props.clusterLogging.
+    let clusterLoggingTypeDisabled: ClusterLoggingTypes[] = [];
+
+    // Find out type(s) to disable.
+    Object.values(ClusterLoggingTypes).forEach(function (key) {
+      let clusterLoggingTypeEnabled = Object.values(props.clusterLogging ? Object.values(props.clusterLogging) : []);
+      if (!Object.values(clusterLoggingTypeEnabled).includes(key)) {
+        clusterLoggingTypeDisabled.push(key);
+      };
+    });
+
+    // Leave it untouched as undefined if (props.clusterLogging === undefined).
+    this.logging = props.clusterLogging ? {
+      clusterLogging: [
+        {
+          enabled: true,
+          types: Object.values(props.clusterLogging),
+        },
+        {
+          enabled: false,
+          types: Object.values(clusterLoggingTypeDisabled),
+        },
+      ],
+    } : undefined;
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
@@ -1379,6 +1437,7 @@ export class Cluster extends ClusterBase {
       clusterHandlerSecurityGroup: this.clusterHandlerSecurityGroup,
       onEventLayer: this.onEventLayer,
       tags: props.tags,
+      logging: this.logging,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
@@ -2006,6 +2065,7 @@ class ImportedCluster extends ClusterBase {
     this.clusterName = props.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
+    this.kubectlLambdaRole = props.kubectlLambdaRole;
     this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
@@ -2137,7 +2197,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
+  public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,
@@ -2236,8 +2296,9 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
   return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
-      CpuArch.X86_64;
+    INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
+      INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
+        CpuArch.X86_64;
 }
 
 function flatten<A>(xss: A[][]): A[] {

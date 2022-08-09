@@ -62,27 +62,27 @@ fi
 
 #----------------------------------------------------------------------
 
-# Compile examples with respect to "decdk" directory, as all packages will
+# Compile examples with respect to "aws-cdk-lib" directory, as all packages will
 # be symlinked there so they can all be included.
 echo "💎 Extracting code samples" >&2
 time $ROSETTA extract \
     --compile \
     --verbose \
     --cache ${rosetta_cache_file} \
-    --directory packages/decdk \
+    --directory packages/aws-cdk-lib \
     ${extract_opts} \
     $(cat $jsii_pkgs_file)
 
 if $infuse; then
     echo "💎 Generating synthetic examples for the remainder" >&2
-    time npx cdk-generate-synthetic-examples \
+    time npx cdk-generate-synthetic-examples@^0.1.14 \
         $(cat $jsii_pkgs_file)
 
     time $ROSETTA extract \
         --compile \
         --verbose \
         --cache ${rosetta_cache_file} \
-        --directory packages/decdk \
+        --directory packages/aws-cdk-lib \
         $(cat $jsii_pkgs_file)
 fi
 

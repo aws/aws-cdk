@@ -1,0 +1,480 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "StepFunctionsRestApiDeploymentStack": {
+        "id": "StepFunctionsRestApiDeploymentStack",
+        "path": "StepFunctionsRestApiDeploymentStack",
+        "children": {
+          "PassTask": {
+            "id": "PassTask",
+            "path": "StepFunctionsRestApiDeploymentStack/PassTask",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine": {
+            "id": "StateMachine",
+            "path": "StepFunctionsRestApiDeploymentStack/StateMachine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "StepFunctionsRestApiDeploymentStack/StateMachine/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "StepFunctionsRestApiDeploymentStack/StateMachine/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": {
+                                  "Fn::FindInMap": [
+                                    "ServiceprincipalMap",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    "states"
+                                  ]
+                                }
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "StepFunctionsRestApiDeploymentStack/StateMachine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
+                      ]
+                    },
+                    "definitionString": "{\"StartAt\":\"PassTask\",\"States\":{\"PassTask\":{\"Type\":\"Pass\",\"Result\":\"Hello\",\"End\":true}}}",
+                    "stateMachineType": "EXPRESS"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "StepFunctionsRestApi": {
+            "id": "StepFunctionsRestApi",
+            "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "StepFunctionsRestApi"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
+                  "version": "0.0.0"
+                }
+              },
+              "CloudWatchRole": {
+                "id": "CloudWatchRole",
+                "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/CloudWatchRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/CloudWatchRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "apigateway.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Account": {
+                "id": "Account",
+                "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Account",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Account",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudWatchRoleArn": {
+                      "Fn::GetAtt": [
+                        "StepFunctionsRestApiCloudWatchRoleB06ACDB9",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Default",
+                "children": {
+                  "ANY": {
+                    "id": "ANY",
+                    "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Default/ANY",
+                    "children": {
+                      "StartSyncExecutionRole": {
+                        "id": "StartSyncExecutionRole",
+                        "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "apigateway.amazonaws.com"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "states:StartSyncExecution",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Ref": "StateMachine2E01A3A5"
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "StepFunctionsRestApiANYStartSyncExecutionRoleDefaultPolicy7B6D0CED",
+                                    "roles": [
+                                      {
+                                        "Ref": "StepFunctionsRestApiANYStartSyncExecutionRole425C03BB"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.Policy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Role",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Default/ANY/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                          "aws:cdk:cloudformation:props": {
+                            "httpMethod": "ANY",
+                            "resourceId": {
+                              "Fn::GetAtt": [
+                                "StepFunctionsRestApiC6E3E883",
+                                "RootResourceId"
+                              ]
+                            },
+                            "restApiId": {
+                              "Ref": "StepFunctionsRestApiC6E3E883"
+                            },
+                            "authorizationType": "NONE",
+                            "integration": {
+                              "type": "AWS",
+                              "uri": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":apigateway:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":states:action/StartSyncExecution"
+                                  ]
+                                ]
+                              },
+                              "integrationHttpMethod": "POST",
+                              "requestTemplates": {
+                                "application/json": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = true)\n#set($includeQueryString = false)\n#set($includePath = false)\n#set($includeAuthorizer = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
+                                      {
+                                        "Ref": "StateMachine2E01A3A5"
+                                      },
+                                      "\",\n\n    #set($inputString = \"$inputString,@@body@@: $input.body\")\n\n    #if ($includeHeaders)\n        #set($inputString = \"$inputString, @@header@@:{\")\n        #foreach($paramName in $allParams.header.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.header.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n        \n    #end\n\n    #if ($includeQueryString)\n        #set($inputString = \"$inputString, @@querystring@@:{\")\n        #foreach($paramName in $allParams.querystring.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #if ($includePath)\n        #set($inputString = \"$inputString, @@path@@:{\")\n        #foreach($paramName in $allParams.path.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.path.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n    \n    #if ($includeAuthorizer)\n        #set($inputString = \"$inputString, @@authorizer@@:{\")\n        #foreach($paramName in $context.authorizer.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($context.authorizer.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #set($requestContext = \"{@@accountId@@:@@$context.identity.accountId@@,@@userArn@@:@@$context.identity.userArn@@}\")\n    ## Check if the request context should be included as part of the execution input\n    #if($requestContext && !$requestContext.empty)\n        #set($inputString = \"$inputString,\")\n        #set($inputString = \"$inputString @@requestContext@@: $requestContext\")\n    #end\n\n    #set($inputString = \"$inputString}\")\n    #set($inputString = $inputString.replaceAll(\"@@\",'\"'))\n    #set($len = $inputString.length() - 1)\n    \"input\": \"{$util.escapeJavaScript($inputString.substring(1,$len)).replaceAll(\"\\\\'\",\"'\")}\"\n}\n"
+                                    ]
+                                  ]
+                                }
+                              },
+                              "passthroughBehavior": "NEVER",
+                              "integrationResponses": [
+                                {
+                                  "statusCode": "200",
+                                  "responseTemplates": {
+                                    "application/json": "#set($inputRoot = $input.path('$'))\n#if($input.path('$.status').toString().equals(\"FAILED\"))\n#set($context.responseOverride.status = 500)\n{\n\"error\": \"$input.path('$.error')\",\n\"cause\": \"$input.path('$.cause')\"\n}\n#else\n$input.path('$.output')\n#end"
+                                  }
+                                },
+                                {
+                                  "selectionPattern": "4\\d{2}",
+                                  "statusCode": "400",
+                                  "responseTemplates": {
+                                    "application/json": "{\n            \"error\": \"Bad request!\"\n          }"
+                                  }
+                                },
+                                {
+                                  "selectionPattern": "5\\d{2}",
+                                  "statusCode": "500",
+                                  "responseTemplates": {
+                                    "application/json": "\"error\": $input.path('$.error')"
+                                  }
+                                }
+                              ],
+                              "credentials": {
+                                "Fn::GetAtt": [
+                                  "StepFunctionsRestApiANYStartSyncExecutionRole425C03BB",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            "methodResponses": [
+                              {
+                                "statusCode": "200",
+                                "responseModels": {
+                                  "application/json": "Empty"
+                                }
+                              },
+                              {
+                                "statusCode": "400",
+                                "responseModels": {
+                                  "application/json": "Error"
+                                }
+                              },
+                              {
+                                "statusCode": "500",
+                                "responseModels": {
+                                  "application/json": "Error"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.Method",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.StepFunctionsRestApi",
+              "version": "0.0.0"
+            }
+          },
+          "deployment": {
+            "id": "deployment",
+            "path": "StepFunctionsRestApiDeploymentStack/deployment",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "StepFunctionsRestApiDeploymentStack/deployment/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                  "aws:cdk:cloudformation:props": {
+                    "restApiId": {
+                      "Ref": "StepFunctionsRestApiC6E3E883"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.Deployment",
+              "version": "0.0.0"
+            }
+          },
+          "stage": {
+            "id": "stage",
+            "path": "StepFunctionsRestApiDeploymentStack/stage",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "StepFunctionsRestApiDeploymentStack/stage/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                  "aws:cdk:cloudformation:props": {
+                    "restApiId": {
+                      "Ref": "StepFunctionsRestApiC6E3E883"
+                    },
+                    "deploymentId": {
+                      "Ref": "deployment33381975b5dafda9a97138f301ea25da405640e8"
+                    },
+                    "stageName": "prod"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.Stage",
+              "version": "0.0.0"
+            }
+          },
+          "ApiEndpoint": {
+            "id": "ApiEndpoint",
+            "path": "StepFunctionsRestApiDeploymentStack/ApiEndpoint",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "Service-principalMap": {
+            "id": "Service-principalMap",
+            "path": "StepFunctionsRestApiDeploymentStack/Service-principalMap",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnMapping",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

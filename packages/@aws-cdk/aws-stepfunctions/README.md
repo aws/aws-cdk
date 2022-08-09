@@ -89,11 +89,112 @@ new sfn.StateMachine(this, 'StateMachine', {
 });
 ```
 
+State machines are made up of a sequence of **Steps**, which represent different actions
+taken in sequence. Some of these steps represent *control flow* (like `Choice`, `Map` and `Wait`)
+while others represent calls made against other AWS services (like `LambdaInvoke`).
+The second category are called `Task`s and they can all be found in the module [`aws-stepfunctions-tasks`].
+
+[`aws-stepfunctions-tasks`]: https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_stepfunctions_tasks-readme.html
+
 State machines execute using an IAM Role, which will automatically have all
 permissions added that are required to make all state machine tasks execute
 properly (for example, permissions to invoke any Lambda functions you add to
 your workflow). A role will be created by default, but you can supply an
 existing one as well.
+
+## State Machine Data
+
+An Execution represents each time the State Machine is run. Every Execution has [State Machine
+Data](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-state-machine-data.html):
+a JSON document containing keys and values that is fed into the state machine,
+gets modified by individual steps as the state machine progresses, and finally
+is produced as output.
+
+By default, the entire Data object is passed into every state, and the return data of the step
+becomes new the new Data object. This behavior can be modified by supplying values for `inputPath`,
+`resultSelector`, `resultPath` and `outputPath`.
+
+### Manipulating state machine data using inputPath, resultSelector, resultPath and outputPath
+
+These properties impact how each individual step interacts with the state machine data:
+
+* `inputPath`: the part of the data object that gets passed to the step (`itemsPath` for `Map` states)
+* `resultSelector`: the part of the step result that should be added to the state machine data
+* `resultPath`: where in the state machine data the step result should be inserted
+* `outputPath`: what part of the state machine data should be retained
+
+Their values should be a string indicating a [JSON path](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-paths.html) into the State Machine Data object (like `"$.MyKey"`). If absent, the values are treated as if they were `"$"`, which means the entire object.
+
+The following pseudocode shows how AWS Step Functions uses these parameters when executing a step:
+
+```js
+// Schematically show how Step Functions evaluates functions.
+// [] represents indexing into an object by a using JSON path.
+
+input = state[inputPath]
+
+result = invoke_step(select_parameters(input))
+
+state[resultPath] = result[resultSelector]
+
+state = state[outputPath]
+```
+
+Instead of a JSON path string, each of these paths can also have the special value `JsonPath.DISCARD`, which causes the corresponding indexing expression to return an empty object (`{}`). Effectively, that means there will be an empty input object, an empty result object, no effect on the state, or an empty state, respectively.
+
+Some steps (mostly Tasks) have *Parameters*, which are selected differently. See the next section.
+
+See the official documentation on [input and output processing in Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html).
+
+### Passing Parameters to Tasks
+
+Tasks take parameters, whose values can be taken from the State Machine Data object. For example, your
+workflow may want to start a CodeBuild with an environment variable that is taken from the State Machine data, or pass part of the State Machine Data into an AWS Lambda Function.
+
+In the original JSON-based states language used by AWS Step Functions, you would
+add `.$` to the end of a key to indicate that a value needs to be interpreted as
+a JSON path. In the CDK API you do not change the names of any keys. Instead, you
+pass special values. There are 3 types of task inputs to consider:
+
+* Tasks that accept a "payload" type of input (like AWS Lambda invocations, or posting messages to SNS topics or SQS queues), will take an object of type `TaskInput`, like `TaskInput.fromObject()` or `TaskInput.fromJsonPathAt()`.
+* When tasks expect individual string or number values to customize their behavior, you can also pass a value constructed by `JsonPath.stringAt()` or `JsonPath.numberAt()`.
+* When tasks expect strongly-typed resources and you want to vary the resource that is referenced based on a name from the State Machine Data, reference the resource as if it was external (using `JsonPath.stringAt()`). For example, for a Lambda function: `Function.fromFunctionName(this, 'ReferencedFunction', JsonPath.stringAt('$.MyFunctionName'))`.
+
+For example, to pass the value that's in the data key of `OrderId` to a Lambda
+function as you invoke it, use `JsonPath.stringAt('$.OrderId')`, like so:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+declare const orderFn: lambda.Function;
+
+const submitJob = new tasks.LambdaInvoke(this, 'InvokeOrderProcessor', {
+  lambdaFunction: orderFn,
+  payload: sfn.TaskInput.fromObject({
+    OrderId: sfn.JsonPath.stringAt('$.OrderId'),
+  }),
+});
+```
+
+The following methods are available:
+
+| Method | Purpose |
+|--------|---------|
+| `JsonPath.stringAt('$.Field')` | reference a field, return the type as a `string`. |
+| `JsonPath.listAt('$.Field')` | reference a field, return the type as a list of strings. |
+| `JsonPath.numberAt('$.Field')` | reference a field, return the type as a number. Use this for functions that expect a number argument. |
+| `JsonPath.objectAt('$.Field')` | reference a field, return the type as an `IResolvable`. Use this for functions that expect an object argument. |
+| `JsonPath.entirePayload` | reference the entire data object (equivalent to a path of `$`). |
+| `JsonPath.taskToken` | reference the [Task Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token), used for integration patterns that need to run for a long time. |
+
+You can also call [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) using the methods on `JsonPath`:
+
+| Method | Purpose |
+|--------|---------|
+| `JsonPath.array(JsonPath.stringAt('$.Field'), ...)` | make an array from other elements. |
+| `JsonPath.format('The value is {}.', JsonPath.stringAt('$.Value'))` | insert elements into a format string. |
+| `JsonPath.stringToJson(JsonPath.stringAt('$.ObjStr'))` | parse a JSON string to an object |
+| `JsonPath.jsonToString(JsonPath.objectAt('$.Obj'))` | stringify an object to a JSON string |
 
 ## Amazon States Language
 
@@ -117,13 +218,10 @@ information, see the States Language spec.
 
 ### Task
 
-A `Task` represents some work that needs to be done. The exact work to be
-done is determine by a class that implements `IStepFunctionsTask`, a collection
-of which can be found in the `@aws-cdk/aws-stepfunctions-tasks` module.
+A `Task` represents some work that needs to be done. Do not use the `Task` class directly.
 
-The tasks in the `@aws-cdk/aws-stepfunctions-tasks` module support the
-[service integration pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html) that integrates Step Functions with services
-directly in the Amazon States language.
+Instead, use one of the classes in the `@aws-cdk/aws-stepfunctions-tasks` module,
+which provide a much more ergonomic way to integrate with various AWS services.
 
 ### Pass
 
@@ -603,8 +701,8 @@ new cloudwatch.Alarm(this, 'ThrottledAlarm', {
 
 ## Error names
 
-Step Functions identifies errors in the Amazon States Language using case-sensitive strings, known as error names. 
-The Amazon States Language defines a set of built-in strings that name well-known errors, all beginning with the `States.` prefix. 
+Step Functions identifies errors in the Amazon States Language using case-sensitive strings, known as error names.
+The Amazon States Language defines a set of built-in strings that name well-known errors, all beginning with the `States.` prefix.
 
 * `States.ALL` - A wildcard that matches any known error name.
 * `States.Runtime` - An execution failed due to some exception that could not be processed. Often these are caused by errors at runtime, such as attempting to apply InputPath or OutputPath on a null JSON payload. A `States.Runtime` error is not retriable, and will always cause the execution to fail. A retry or catch on `States.ALL` will NOT catch States.Runtime errors.
@@ -776,14 +874,21 @@ stateMachine.grant(user, 'states:SendTaskSuccess');
 Any Step Functions state machine that has been created outside the stack can be imported
 into your CDK stack.
 
-State machines can be imported by their ARN via the `StateMachine.fromStateMachineArn()` API
+State machines can be imported by their ARN via the `StateMachine.fromStateMachineArn()` API.
+In addition, the StateMachine can be imported via the `StateMachine.fromStateMachineName()` method, as long as they are in the same account/region as the current construct.
 
 ```ts
 const app = new App();
 const stack = new Stack(app, 'MyStack');
 sfn.StateMachine.fromStateMachineArn(
   stack,
-  'ImportedStateMachine',
-  'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ',
+  "ViaArnImportedStateMachine",
+  "arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ"
+);
+
+sfn.StateMachine.fromStateMachineName(
+  stack,
+  "ViaResourceNameImportedStateMachine",
+  "StateMachine2E01A3A5-N5TJppzoevKQ"
 );
 ```

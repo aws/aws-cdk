@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "networkMultipleTargetGroupsFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ"
+      ],
+      "assertionStack": "networkMultipleTargetGroupsFargateServiceTestDefaultTestDeployAssertC9049A80"
+    }
+  }
+}

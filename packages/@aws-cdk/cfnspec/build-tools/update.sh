@@ -61,13 +61,17 @@ update-spec \
     spec-source/specification/000_cfn/000_official \
     true true
 
+old_version=$(cat cfn.version)
+new_version=$(node -p "require('${scriptdir}/../spec-source/specification/000_cfn/000_official/001_Version.json').ResourceSpecificationVersion")
 echo >&2 "Recording new version..."
 rm -f cfn.version
-node -p "require('${scriptdir}/../spec-source/specification/000_cfn/000_official/001_Version.json').ResourceSpecificationVersion" > cfn.version
+echo "$new_version" > cfn.version
 
-
-echo >&2 "Reporting outdated specs..."
-node build-tools/report-issues spec-source/specification/000_cfn/000_official/ outdated >> CHANGELOG.md.new
+# Only report outdated specs if we made changes, otherwise we're stuck reporting changes every time.
+if [[ "$new_version" != "$old_version" ]]; then
+    echo >&2 "Reporting outdated specs..."
+    node build-tools/report-issues spec-source/specification/000_cfn/000_official/ outdated >> CHANGELOG.md.new
+fi
 
 update-spec \
     "Serverless Application Model (SAM) Resource Specification" \
@@ -85,8 +89,7 @@ node ${scriptdir}/create-missing-libraries.js || {
     exit 1
 }
 
-# update decdk dep list
-(cd ${scriptdir}/../../../decdk && node ./deps.js || true)
+# update monocdk dep list
 (cd ${scriptdir}/../../../monocdk && yarn gen || true)
 
 # append old changelog after new and replace as the last step because otherwise we will not be idempotent

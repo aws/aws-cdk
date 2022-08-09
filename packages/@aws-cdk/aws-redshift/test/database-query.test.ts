@@ -64,7 +64,7 @@ describe('database query', () => {
         },
         masterUser: {
           masterUsername: 'admin',
-          masterPassword: cdk.SecretValue.plainText('INSECURE_NOT_FOR_PRODUCTION'),
+          masterPassword: cdk.SecretValue.unsafePlainText('INSECURE_NOT_FOR_PRODUCTION'),
         },
         publiclyAccessible: true,
       });
@@ -107,7 +107,7 @@ describe('database query', () => {
         },
         masterUser: {
           masterUsername: 'admin',
-          masterPassword: cdk.SecretValue.plainText('INSECURE_NOT_FOR_PRODUCTION'),
+          masterPassword: cdk.SecretValue.unsafePlainText('INSECURE_NOT_FOR_PRODUCTION'),
         },
         publiclyAccessible: true,
       });

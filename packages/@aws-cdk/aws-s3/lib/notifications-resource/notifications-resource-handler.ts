@@ -2,10 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+export class NotificationsResourceHandlerProps {
+  role?: iam.IRole;
+}
 
 /**
  * A Lambda-based custom resource handler that provisions S3 bucket
@@ -31,14 +32,14 @@ export class NotificationsResourceHandler extends Construct {
    *
    * @returns The ARN of the custom resource lambda function.
    */
-  public static singleton(context: Construct) {
+  public static singleton(context: Construct, props: NotificationsResourceHandlerProps = {}) {
     const root = cdk.Stack.of(context);
 
     // well-known logical id to ensure stack singletonity
     const logicalId = 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834';
     let lambda = root.node.tryFindChild(logicalId) as NotificationsResourceHandler;
     if (!lambda) {
-      lambda = new NotificationsResourceHandler(root, logicalId);
+      lambda = new NotificationsResourceHandler(root, logicalId, props);
     }
 
     return lambda;
@@ -53,19 +54,19 @@ export class NotificationsResourceHandler extends Construct {
   /**
    * The role of the handler's lambda function.
    */
-  public readonly role: iam.Role;
+  public readonly role: iam.IRole;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: NotificationsResourceHandlerProps = {}) {
     super(scope, id);
 
-    this.role = new iam.Role(this, 'Role', {
+    this.role = props.role ?? new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-      ],
     });
 
-    this.role.addToPolicy(new iam.PolicyStatement({
+    this.role.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+    );
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['s3:PutBucketNotification'],
       resources: ['*'],
     }));
@@ -80,11 +81,21 @@ export class NotificationsResourceHandler extends Construct {
         return properties;
       }
     }
+
+    const handlerSource = fs.readFileSync(path.join(__dirname, 'lambda/index.py'), 'utf8');
+
+    // Removing lines that starts with '#' (comment lines) in order to fit the 4096 limit
+    const handlerSourceWithoutComments = handlerSource.replace(/^ *#.*\n?/gm, '');
+
+    if (handlerSourceWithoutComments.length > 4096) {
+      throw new Error(`Source of Notifications Resource Handler is too large (${handlerSourceWithoutComments.length} > 4096)`);
+    }
+
     const resource = new InLineLambda(this, 'Resource', {
       type: resourceType,
       properties: {
         Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
-        Code: { ZipFile: fs.readFileSync(path.join(__dirname, 'lambda/index.py'), 'utf8') },
+        Code: { ZipFile: handlerSourceWithoutComments },
         Handler: 'index.handler',
         Role: this.role.roleArn,
         Runtime: 'python3.7',
@@ -94,5 +105,9 @@ export class NotificationsResourceHandler extends Construct {
     resource.node.addDependency(this.role);
 
     this.functionArn = resource.getAtt('Arn').toString();
+  }
+
+  public addToRolePolicy(statement: iam.PolicyStatement) {
+    this.role.addToPrincipalPolicy(statement);
   }
 }

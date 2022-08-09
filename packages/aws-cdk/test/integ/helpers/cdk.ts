@@ -4,7 +4,6 @@ import * as os from 'os';
 import * as path from 'path';
 import { outputFromStack, AwsClients } from './aws';
 import { memoize0 } from './memoize';
-import { findYarnPackages } from './monorepo';
 import { ResourcePool } from './resource-pool';
 import { TestContext } from './test-helpers';
 
@@ -12,7 +11,7 @@ const REGIONS = process.env.AWS_REGIONS
   ? process.env.AWS_REGIONS.split(',')
   : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
 
-const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION ?? '*';
+export const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION ?? '*';
 
 export let MAJOR_VERSION = FRAMEWORK_VERSION.split('.')[0];
 if (MAJOR_VERSION === '*') {
@@ -32,6 +31,34 @@ process.stdout.write(`Using framework version: ${FRAMEWORK_VERSION} (major versi
 
 const REGION_POOL = new ResourcePool(REGIONS);
 
+
+/**
+ * Cache monorepo discovery results, we only want to do this once per run
+ */
+const YARN_MONOREPO_CACHE: Record<string, any> = {};
+
+/**
+  * Return a { name -> directory } packages found in a Yarn monorepo
+  *
+  * Cached in YARN_MONOREPO_CACHE.
+  */
+export async function findYarnPackages(root: string): Promise<Record<string, string>> {
+  if (!(root in YARN_MONOREPO_CACHE)) {
+    const output: YarnWorkspacesOutput = JSON.parse(await shell(['yarn', 'workspaces', '--silent', 'info'], {
+      captureStderr: false,
+      cwd: root,
+    }));
+
+    const ret: Record<string, string> = {};
+    for (const [k, v] of Object.entries(output)) {
+      ret[k] = path.join(root, v.location);
+    }
+    YARN_MONOREPO_CACHE[root] = ret;
+  }
+  return YARN_MONOREPO_CACHE[root];
+}
+
+type YarnWorkspacesOutput = Record<string, { location: string }>;
 
 export type AwsContext = { readonly aws: AwsClients };
 
@@ -82,6 +109,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
         await installNpmPackages(fixture, {
           '@aws-cdk/core': installationVersion,
           '@aws-cdk/aws-sns': installationVersion,
+          '@aws-cdk/aws-sqs': installationVersion,
           '@aws-cdk/aws-iam': installationVersion,
           '@aws-cdk/aws-lambda': installationVersion,
           '@aws-cdk/aws-ssm': installationVersion,
@@ -195,6 +223,14 @@ export interface ShellOptions extends child_process.SpawnOptions {
    * Pass output here
    */
   output?: NodeJS.WritableStream;
+
+  /**
+   * Only return stderr. For example, this is used to validate
+   * that when CI=true, all logs are sent to stdout.
+   *
+   * @default false
+   */
+  onlyStderr?: boolean;
 }
 
 export interface CdkCliOptions extends ShellOptions {
@@ -270,7 +306,7 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
 }
 
 export class TestFixture {
-  public readonly qualifier = randomString().substr(0, 10);
+  public readonly qualifier = randomString().slice(0, 10);
   private readonly bucketsToDelete = new Array<string>();
 
   constructor(
@@ -601,7 +637,9 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     child.once('error', reject);
 
     child.once('close', code => {
-      const output = (Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim();
+      const stderrOutput = Buffer.concat(stderr).toString('utf-8');
+      const stdoutOutput = Buffer.concat(stdout).toString('utf-8');
+      const output = (options.onlyStderr ? stderrOutput : stdoutOutput + stderrOutput).trim();
       if (code === 0 || options.allowErrExit) {
         resolve(output);
       } else {
@@ -659,7 +697,7 @@ export function randomString() {
  * symlinked from the TARGET directory's `node_modules` directory (which is sufficient
  * for Node's dependency lookup mechanism).
  */
-async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
+export async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
   if (process.env.REPO_ROOT) {
     const monoRepo = await findYarnPackages(process.env.REPO_ROOT);
 
@@ -695,9 +733,7 @@ const installNpm7 = memoize0(async (): Promise<string> => {
   await shell(['rm', '-rf', installDir]);
   await shell(['mkdir', '-p', installDir]);
 
-  await shell(['npm', 'install',
-    '--prefix', installDir,
-    'npm@7']);
+  await shell(['npm', 'install', 'npm@7'], { cwd: installDir });
 
   return path.join(installDir, 'node_modules', '.bin', 'npm');
 });

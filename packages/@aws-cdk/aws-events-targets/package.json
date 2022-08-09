@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-events-targets",
   "version": "0.0.0",
+  "private": true,
   "description": "Event targets for Amazon EventBridge",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,14 +18,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Events.Targets",
         "packageId": "Amazon.CDK.AWS.Events.Targets",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-events-targets",
         "module": "aws_cdk.aws_events_targets",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -47,7 +48,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -84,12 +85,13 @@
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.5.2",
     "aws-sdk": "^2.848.0",
-    "aws-sdk-mock": "^5.5.1",
-    "jest": "^27.4.7"
+    "aws-sdk-mock": "5.6.0",
+    "jest": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
@@ -111,7 +113,7 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -134,10 +136,10 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "awslint": {

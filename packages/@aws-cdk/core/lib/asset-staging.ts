@@ -4,20 +4,16 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
-import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
 import { BundlingOptions, BundlingOutput } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
+import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
 import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
-
-const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
+const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 
 /**
  * A previously staged asset
@@ -72,7 +68,7 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  * The file/directory are staged based on their content hash (fingerprint). This
  * means that only if content was changed, copy will happen.
  */
-export class AssetStaging extends CoreConstruct {
+export class AssetStaging extends Construct {
   /**
    * The directory inside the bundling container into which the asset sources will be mounted.
    */
@@ -88,6 +84,7 @@ export class AssetStaging extends CoreConstruct {
    */
   public static clearAssetHashCache() {
     this.assetCache.clear();
+    clearLargeFileFingerprintCache();
   }
 
   /**
@@ -188,9 +185,7 @@ export class AssetStaging extends CoreConstruct {
     let skip = false;
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
-      const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
-      // bundlingStacks is of the form `Stage/Stack`, convert it to `Stage-Stack` before comparing to stack name
-      skip = !bundlingStacks.find(pattern => minimatch(Stack.of(this).stackName, pattern.replace('/', '-')));
+      skip = !Stack.of(this).bundlingRequired;
       const bundling = props.bundling;
       stageThisAsset = () => this.stageByBundling(bundling, skip);
     } else {
@@ -277,7 +272,7 @@ export class AssetStaging extends CoreConstruct {
     const assetHash = this.calculateHash(this.hashType);
     const stagedPath = this.stagingDisabled
       ? this.sourcePath
-      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, path.extname(this.sourcePath)));
+      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, getExtension(this.sourcePath)));
 
     if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
       throw new Error(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`);
@@ -289,7 +284,7 @@ export class AssetStaging extends CoreConstruct {
       assetHash,
       stagedPath,
       packaging: this.sourceStats.isDirectory() ? FileAssetPackaging.ZIP_DIRECTORY : FileAssetPackaging.FILE,
-      isArchive: this.sourceStats.isDirectory() || ARCHIVE_EXTENSIONS.includes(path.extname(this.sourcePath).toLowerCase()),
+      isArchive: this.sourceStats.isDirectory() || ARCHIVE_EXTENSIONS.includes(getExtension(this.sourcePath).toLowerCase()),
     };
   }
 
@@ -463,6 +458,7 @@ export class AssetStaging extends CoreConstruct {
           user,
           volumes,
           environment: options.environment,
+          entrypoint: options.entrypoint,
           workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
           securityOpt: options.securityOpt ?? '',
         });
@@ -583,7 +579,7 @@ function singleArchiveFile(directory: string): string | undefined {
   const content = fs.readdirSync(directory);
   if (content.length === 1) {
     const file = path.join(directory, content[0]);
-    const extension = path.extname(content[0]).toLowerCase();
+    const extension = getExtension(content[0]).toLowerCase();
     if (fs.statSync(file).isFile() && ARCHIVE_EXTENSIONS.includes(extension)) {
       return file;
     }
@@ -616,8 +612,23 @@ function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): B
       return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
     case BundlingOutput.ARCHIVED:
       if (!archiveFile) {
-        throw new Error('Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`');
+        throw new Error('Bundling output directory is expected to include only a single archive file when `output` is set to `ARCHIVED`');
       }
-      return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: path.extname(archiveFile) };
+      return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: getExtension(archiveFile) };
   }
 }
+
+/**
+* Return the extension name of a source path
+*
+* Loop through ARCHIVE_EXTENSIONS for valid archive extensions.
+*/
+function getExtension(source: string): string {
+  for ( const ext of ARCHIVE_EXTENSIONS ) {
+    if (source.toLowerCase().endsWith(ext)) {
+      return ext;
+    };
+  };
+
+  return path.extname(source);
+};

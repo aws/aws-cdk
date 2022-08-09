@@ -52,7 +52,7 @@ export class CfnResourceReflection {
   constructor(cls: reflect.ClassType) {
     this.classType = cls;
 
-    this.basename = cls.name.substr('Cfn'.length);
+    this.basename = cls.name.slice('Cfn'.length);
 
     // HACK: extract full CFN name from initializer docs
     const initializerDoc = (cls.initializer && cls.initializer.docs.docs.summary) || '';

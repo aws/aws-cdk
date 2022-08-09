@@ -1,12 +1,9 @@
 import { SecretValue } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerDefinition, Secret } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { ensureInRange, renderCommonLogDriverOptions, renderLogDriverSecretOptions, stringifyOptions } from './utils';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Log Message Format
@@ -150,9 +147,9 @@ export class SplunkLogDriver extends LogDriver {
   /**
    * Called when the log driver is configured on a container
    */
-  public bind(_scope: CoreConstruct, _containerDefinition: ContainerDefinition): LogDriverConfig {
+  public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     const options = stringifyOptions({
-      'splunk-token': this.props.token,
+      'splunk-token': this.props.token?.unsafeUnwrap(), // Safe usage
       'splunk-url': this.props.url,
       'splunk-source': this.props.source,
       'splunk-sourcetype': this.props.sourceType,

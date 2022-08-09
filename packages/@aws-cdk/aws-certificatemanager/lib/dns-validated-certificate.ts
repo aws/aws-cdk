@@ -47,6 +47,17 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
    */
   readonly customResourceRole?: iam.IRole;
 
+  /**
+   * When set to true, when the DnsValidatedCertificate is deleted,
+   * the associated Route53 validation records are removed.
+   *
+   * CAUTION: If multiple certificates share the same domains (and same validation records),
+   * this can cause the other certificates to fail renewal and/or not validate.
+   * Not recommended for production use.
+   *
+   * @default false
+   */
+  readonly cleanupRoute53Records?: boolean;
 }
 
 /**
@@ -88,7 +99,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
       handler: 'index.certificateRequestHandler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       timeout: cdk.Duration.minutes(15),
       role: props.customResourceRole,
     });
@@ -113,14 +124,18 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
+        // Custom resources properties are always converted to strings; might as well be explict here.
+        CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
         Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),
       },
     });
 
     this.certificateArn = certificate.getAtt('Arn').toString();
+
+    this.node.addValidation({ validate: () => this.validateDnsValidatedCertificate() });
   }
 
-  protected validate(): string[] {
+  private validateDnsValidatedCertificate(): string[] {
     const errors: string[] = [];
     // Ensure the zone name is a parent zone of the certificate domain name
     if (!cdk.Token.isUnresolved(this.normalizedZoneName) &&

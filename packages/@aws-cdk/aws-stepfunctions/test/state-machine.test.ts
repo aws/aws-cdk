@@ -277,4 +277,70 @@ describe('State Machine', () => {
       ],
     });
   });
+
+  describe('StateMachine.fromStateMachineArn()', () => {
+    let stack: cdk.Stack;
+
+    beforeEach(() => {
+      const app = new cdk.App();
+      stack = new cdk.Stack(app, 'Base', {
+        env: { account: '111111111111', region: 'stack-region' },
+      });
+    });
+
+    describe('for a state machine in a different account and region', () => {
+      let mach: stepfunctions.IStateMachine;
+
+      beforeEach(() => {
+        mach = stepfunctions.StateMachine.fromStateMachineArn(
+          stack,
+          'iMach',
+          'arn:aws:states:machine-region:222222222222:stateMachine:machine-name',
+        );
+      });
+
+      test("the state machine's region is taken from the ARN", () => {
+        expect(mach.env.region).toBe('machine-region');
+      });
+
+      test("the state machine's account is taken from the ARN", () => {
+        expect(mach.env.account).toBe('222222222222');
+      });
+    });
+  });
+
+  describe('StateMachine.fromStateMachineName()', () => {
+    let stack: cdk.Stack;
+
+    beforeEach(() => {
+      const app = new cdk.App();
+      stack = new cdk.Stack(app, 'Base', {
+        env: { account: '111111111111', region: 'stack-region' },
+      });
+    });
+
+    describe('for a state machine in the same account and region', () => {
+      let mach: stepfunctions.IStateMachine;
+
+      beforeEach(() => {
+        mach = stepfunctions.StateMachine.fromStateMachineName(
+          stack,
+          'iMach',
+          'machine-name',
+        );
+      });
+
+      test("the state machine's region is taken from the current stack", () => {
+        expect(mach.env.region).toBe('stack-region');
+      });
+
+      test("the state machine's account is taken from the current stack", () => {
+        expect(mach.env.account).toBe('111111111111');
+      });
+
+      test("the state machine's account is taken from the current stack", () => {
+        expect(mach.stateMachineArn.endsWith(':states:stack-region:111111111111:stateMachine:machine-name')).toBeTruthy();
+      });
+    });
+  });
 });

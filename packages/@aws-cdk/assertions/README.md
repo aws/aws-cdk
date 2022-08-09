@@ -9,6 +9,9 @@
 
 <!--END STABILITY BANNER-->
 
+If you're migrating from the old `assert` library, the migration guide can be found in
+[our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/assertions/MIGRATING.md).
+
 Functions for writing test asserting against CDK applications, with focus on CloudFormation templates.
 
 The `Template` class includes a set of methods for writing assertions against CloudFormation templates. Use one of the `Template.fromXxx()` static methods to create an instance of this class.
@@ -251,7 +254,7 @@ This matcher can be combined with any of the other matchers.
 // The following will NOT throw an assertion error
 template.hasResourceProperties('Foo::Bar', {
   Fred: {
-    Wobble: [ Match.anyValue(), "Flip" ],
+    Wobble: [ Match.anyValue(), Match.anyValue() ],
   },
 });
 
@@ -400,7 +403,7 @@ template.hasResourceProperties('Foo::Bar', {
 
 ## Capturing Values
 
-This matcher APIs documented above allow capturing values in the matching entry
+The matcher APIs documented above allow capturing values in the matching entry
 (Resource, Output, Mapping, etc.). The following code captures a string from a
 matching resource.
 
@@ -491,4 +494,75 @@ template.hasResourceProperties('Foo::Bar', {
 fredCapture.asString(); // returns "Flob"
 fredCapture.next();     // returns true
 fredCapture.asString(); // returns "Quib"
+```
+
+## Asserting Annotations
+
+In addition to template matching, we provide an API for annotation matching.
+[Annotations](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.Annotations.html)
+can be added via the [Aspects](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.Aspects.html)
+API. You can learn more about Aspects [here](https://docs.aws.amazon.com/cdk/v2/guide/aspects.html).
+
+Say you have a `MyAspect` and a `MyStack` that uses `MyAspect`:
+
+```ts nofixture
+import * as cdk from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
+
+class MyAspect implements cdk.IAspect {
+  public visit(node: IConstruct): void {
+    if (node instanceof cdk.CfnResource && node.cfnResourceType === 'Foo::Bar') {
+      this.error(node, 'we do not want a Foo::Bar resource');
+    }
+  }
+
+  protected error(node: IConstruct, message: string): void {
+    cdk.Annotations.of(node).addError(message);
+  }
+}
+
+class MyStack extends cdk.Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    const stack = new cdk.Stack();
+    new cdk.CfnResource(stack, 'Foo', {
+      type: 'Foo::Bar',
+      properties: {
+        Fred: 'Thud',
+      },
+    });
+    cdk.Aspects.of(stack).add(new MyAspect());
+  }
+}
+```
+
+We can then assert that the stack contains the expected Error:
+
+```ts
+// import { Annotations } from '@aws-cdk/assertions';
+
+Annotations.fromStack(stack).hasError(
+  '/Default/Foo',
+  'we do not want a Foo::Bar resource',
+);
+```
+
+Here are the available APIs for `Annotations`:
+
+- `hasError()`, `hasNoError()`, and `findError()`
+- `hasWarning()`, `hasNoWarning()`, and `findWarning()`
+- `hasInfo()`, `hasNoInfo()`, and `findInfo()`
+
+The corresponding `findXxx()` API is complementary to the `hasXxx()` API, except instead
+of asserting its presence, it returns the set of matching messages.
+
+In addition, this suite of APIs is compatable with `Matchers` for more fine-grained control.
+For example, the following assertion works as well:
+
+```ts
+Annotations.fromStack(stack).hasError(
+  '/Default/Foo',
+  Match.stringLikeRegexp('.*Foo::Bar.*'),
+);
 ```

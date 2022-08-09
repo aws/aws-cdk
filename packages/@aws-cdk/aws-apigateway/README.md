@@ -107,6 +107,21 @@ item.addMethod('GET');   // GET /items/{item}
 item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 ```
 
+Additionally, `integrationOptions` can be supplied to explicitly define
+options of the Lambda integration:
+
+```ts
+declare const backend: lambda.Function;
+
+const api = new apigateway.LambdaRestApi(this, 'myapi', {
+  handler: backend,
+  integrationOptions: {
+    allowTestInvoke: false,
+    timeout: Duration.seconds(1),
+  }
+})
+```
+
 ## AWS StepFunctions backed APIs
 
 You can use Amazon API Gateway with AWS Step Functions as the backend integration, specifically Synchronous Express Workflows.
@@ -126,7 +141,7 @@ Other metadata such as billing details, AWS account ID and resource ARNs are not
 
 By default, a `prod` stage is provisioned.
 
-In order to reduce the payload size sent to AWS Step Functions, `headers` are not forwarded to the Step Functions execution input. It is possible to choose whether `headers`,  `requestContext`, `path` and `querystring` are included or not. By default, `headers` are excluded in all requests.
+In order to reduce the payload size sent to AWS Step Functions, `headers` are not forwarded to the Step Functions execution input. It is possible to choose whether `headers`,  `requestContext`, `path`, `querystring`, and `authorizer` are included or not. By default, `headers` are excluded in all requests.
 
 More details about AWS Step Functions payload limit can be found at https://docs.aws.amazon.com/step-functions/latest/dg/limits-overview.html#service-limits-task-executions.
 
@@ -184,7 +199,7 @@ AWS Step Functions will receive the following execution input:
 }
 ```
 
-Additional information around the request such as the request context and headers can be included as part of the input
+Additional information around the request such as the request context, authorizer context, and headers can be included as part of the input
 forwarded to the state machine. The following example enables headers to be included in the input but not query string.
 
 ```ts fixture=stepfunctions
@@ -193,6 +208,7 @@ new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
   headers: true,
   path: false,
   querystring: false,
+  authorizer: false,
   requestContext: {
     caller: true,
     user: true,
@@ -425,7 +441,7 @@ have to define your models and mappings for the request, response, and integrati
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });
@@ -1289,13 +1305,19 @@ in your openApi file.
 ## Metrics
 
 The API Gateway service sends metrics around the performance of Rest APIs to Amazon CloudWatch.
-These metrics can be referred to using the metric APIs available on the `RestApi` construct.
-The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
-the method below refers to the client side errors metric for this API.
+These metrics can be referred to using the metric APIs available on the `RestApi`, `Stage` and `Method` constructs.
+Note that detailed metrics must be enabled for a stage to use the `Method` metrics.
+Read more about [API Gateway metrics](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-metrics-and-dimensions.html), including enabling detailed metrics.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example:
 
 ```ts
 const api = new apigateway.RestApi(this, 'my-api');
-const clientErrorMetric = api.metricClientError();
+const stage = api.deploymentStage;
+const method = api.root.addMethod('GET');
+
+const clientErrorApiMetric = api.metricClientError();
+const serverErrorStageMetric = stage.metricServerError();
+const latencyMethodMetric = method.metricLatency(stage);
 ```
 
 ## APIGateway v2

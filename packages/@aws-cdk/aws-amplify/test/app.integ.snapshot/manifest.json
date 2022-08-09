@@ -1,0 +1,55 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-amplify-app": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-amplify-app.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-amplify-app/App/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRole1AF9B530"
+          }
+        ],
+        "/cdk-amplify-app/App/AppBasicAuth/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppAppBasicAuthE743F015"
+          }
+        ],
+        "/cdk-amplify-app/App/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppF1B96344"
+          }
+        ],
+        "/cdk-amplify-app/App/main/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppmainF505BAED"
+          }
+        ],
+        "Appmaster71597E87": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Appmaster71597E87",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "cdk-amplify-app"
+    }
+  }
+}

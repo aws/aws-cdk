@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
@@ -42,10 +42,10 @@ describe('injecter', () => {
 
     // THEN
     // Ensure creation of provided topics
-    expect(stack).to(countResources('AWS::SNS::Topic', 2));
+    Template.fromStack(stack).resourceCountIs('AWS::SNS::Topic', 2);
 
     // Ensure the task role is given permissions to publish events to topics
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -65,10 +65,10 @@ describe('injecter', () => {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
 
     // Ensure that the topic ARNs have been correctly appended to the environment variables
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -109,6 +109,6 @@ describe('injecter', () => {
           ],
         },
       ],
-    }));
+    });
   });
 });

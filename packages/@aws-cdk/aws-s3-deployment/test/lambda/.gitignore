@@ -1,0 +1,4 @@
+# symlinked by debug.sh
+index.py
+__pycache__
+aws.out

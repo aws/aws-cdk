@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Construct } from '@aws-cdk/core';
+import { Annotations } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Use an SQS queue as a bucket notification destination
@@ -24,11 +25,15 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
     // if this queue is encrypted, we need to allow S3 to read messages since that's how
     // it verifies that the notification destination configuration is valid.
     if (this.queue.encryptionMasterKey) {
-      this.queue.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement({
+      const statement = new iam.PolicyStatement({
         principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
         actions: ['kms:GenerateDataKey*', 'kms:Decrypt'],
         resources: ['*'],
-      }), /* allowNoOp */ false);
+      });
+      const addResult = this.queue.encryptionMasterKey.addToResourcePolicy(statement, /* allowNoOp */ true);
+      if (!addResult.statementAdded) {
+        Annotations.of(this.queue.encryptionMasterKey).addWarning(`Can not change key policy of imported kms key. Ensure that your key policy contains the following permissions: \n${JSON.stringify(statement.toJSON(), null, 2)}`);
+      }
     }
 
     return {

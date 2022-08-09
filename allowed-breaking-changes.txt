@@ -75,7 +75,7 @@ strengthened:@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJobProps
 removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.cluster
 strengthened:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps
 
-# Remove IO2 from autoscaling EbsDeviceVolumeType. This value is not supported 
+# Remove IO2 from autoscaling EbsDeviceVolumeType. This value is not supported
 # at the moment and was not supported in the past.
 removed:@aws-cdk/aws-autoscaling.EbsDeviceVolumeType.IO2
 
@@ -83,12 +83,12 @@ removed:@aws-cdk/aws-autoscaling.EbsDeviceVolumeType.IO2
 removed:@aws-cdk/aws-stepfunctions-tasks.EmrCreateCluster.AutoTerminationPolicyProperty
 removed:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.autoTerminationPolicy
 
-# Changed property securityGroupId to optional because either securityGroupId or 
+# Changed property securityGroupId to optional because either securityGroupId or
 # securityGroupName is required. Therefore securityGroupId is no longer mandatory.
 weakened:@aws-cdk/cloud-assembly-schema.SecurityGroupContextQuery
 
 # refactor autoscaling lifecycle hook target bind() methods to make role optional by
-# having bind() methods create the role if it isn't passed to them 
+# having bind() methods create the role if it isn't passed to them
 incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.FunctionHook.bind
 incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.QueueHook.bind
 incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.TopicHook.bind
@@ -106,7 +106,7 @@ removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.maxRecord
 removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.parallelizationFactor
 removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.reportBatchItemFailures
 removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.retryAttempts
-removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.tumblingWindow 
+removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.tumblingWindow
 removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.bisectBatchOnError
 removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.maxRecordAge
 removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.parallelizationFactor
@@ -126,3 +126,21 @@ changed-type:@aws-cdk/aws-elasticloadbalancingv2.NetworkLoadBalancer.vpc
 removed:@aws-cdk/aws-s3.Bucket.enableEventBridgeNotification
 removed:@aws-cdk/aws-s3.BucketBase.enableEventBridgeNotification
 removed:@aws-cdk/aws-s3.BucketProps.eventBridgeEnabled
+
+# changed the type of RDS's SnapshotCredentials.secret from Secret to ISecret,
+# shouldn't matter
+changed-type:@aws-cdk/aws-rds.SnapshotCredentials.secret
+
+# removed property from kafka eventsources as they are not supported
+removed:@aws-cdk/aws-lambda-event-sources.BaseStreamEventSourceProps.onFailure
+removed:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps.onFailure
+removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.onFailure
+removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.onFailure
+
+# removed kubernetes version from EKS
+removed:@aws-cdk/aws-eks.KubernetesVersion.V1_22
+
+# changed the type of requiresBootstrapStackVersion to Optional<number> (formerly number)
+# to allow the CLI to skip validating the bootstrap stack when the stack is not needed
+changed-type:@aws-cdk/cx-api.AssetManifestArtifact.requiresBootstrapStackVersion
+

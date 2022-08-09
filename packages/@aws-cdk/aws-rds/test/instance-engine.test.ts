@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as rds from '../lib';
@@ -10,8 +10,6 @@ describe('instance engine', () => {
     const family = engine.parameterGroupFamily;
 
     expect(family).toEqual(undefined);
-
-
   });
 
   test('default parameterGroupFamily for versionless MySQL instance engine is not defined', () => {
@@ -20,8 +18,6 @@ describe('instance engine', () => {
     const family = engine.parameterGroupFamily;
 
     expect(family).toEqual(undefined);
-
-
   });
 
   test('default parameterGroupFamily for versionless PostgreSQL instance engine is not defined', () => {
@@ -30,8 +26,6 @@ describe('instance engine', () => {
     const family = engine.parameterGroupFamily;
 
     expect(family).toEqual(undefined);
-
-
   });
 
   test("default parameterGroupFamily for versionless Oracle SE instance engine is 'oracle-se-11.2'", () => {
@@ -40,8 +34,6 @@ describe('instance engine', () => {
     const family = engine.parameterGroupFamily;
 
     expect(family).toEqual('oracle-se-11.2');
-
-
   });
 
   test("default parameterGroupFamily for versionless Oracle SE 1 instance engine is 'oracle-se1-11.2'", () => {
@@ -50,8 +42,6 @@ describe('instance engine', () => {
     const family = engine.parameterGroupFamily;
 
     expect(family).toEqual('oracle-se1-11.2');
-
-
   });
 
   test('default parameterGroupFamily for versionless Oracle SE 2 instance engine is not defined', () => {
@@ -60,8 +50,14 @@ describe('instance engine', () => {
     const family = engine.parameterGroupFamily;
 
     expect(family).toEqual(undefined);
+  });
 
+  test('default parameterGroupFamily for versionless Oracle SE 2 (CDB) instance engine is not defined', () => {
+    const engine = rds.DatabaseInstanceEngine.ORACLE_SE2_CDB;
 
+    const family = engine.parameterGroupFamily;
+
+    expect(family).toEqual(undefined);
   });
 
   test('default parameterGroupFamily for versionless Oracle EE instance engine is not defined', () => {
@@ -70,8 +66,14 @@ describe('instance engine', () => {
     const family = engine.parameterGroupFamily;
 
     expect(family).toEqual(undefined);
+  });
 
+  test('default parameterGroupFamily for versionless Oracle EE (CDB) instance engine is not defined', () => {
+    const engine = rds.DatabaseInstanceEngine.ORACLE_EE_CDB;
 
+    const family = engine.parameterGroupFamily;
+
+    expect(family).toEqual(undefined);
   });
 
   test('default parameterGroupFamily for versionless SQL Server SE instance engine is not defined', () => {
@@ -80,8 +82,6 @@ describe('instance engine', () => {
     const family = engine.parameterGroupFamily;
 
     expect(family).toEqual(undefined);
-
-
   });
 
   test('default parameterGroupFamily for versionless SQL Server EX instance engine is not defined', () => {
@@ -90,8 +90,6 @@ describe('instance engine', () => {
     const family = engine.parameterGroupFamily;
 
     expect(family).toEqual(undefined);
-
-
   });
 
   test('default parameterGroupFamily for versionless SQL Server Web instance engine is not defined', () => {
@@ -100,8 +98,6 @@ describe('instance engine', () => {
     const family = engine.parameterGroupFamily;
 
     expect(family).toEqual(undefined);
-
-
   });
 
   test('default parameterGroupFamily for versionless SQL Server EE instance engine is not defined', () => {
@@ -110,8 +106,6 @@ describe('instance engine', () => {
     const family = engine.parameterGroupFamily;
 
     expect(family).toEqual(undefined);
-
-
   });
 
   describe('Oracle engine bindToInstance', () => {
@@ -122,8 +116,6 @@ describe('instance engine', () => {
       const engineConfig = engine.bindToInstance(new cdk.Stack(), {});
       expect(engineConfig.features?.s3Import).toEqual('S3_INTEGRATION');
       expect(engineConfig.features?.s3Export).toEqual('S3_INTEGRATION');
-
-
     });
 
     test('s3 import/export - creates an option group if needed', () => {
@@ -136,15 +128,13 @@ describe('instance engine', () => {
       });
 
       expect(engineConfig.optionGroup).toBeDefined();
-      expect(stack).toHaveResourceLike('AWS::RDS::OptionGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
         EngineName: 'oracle-se2',
         OptionConfigurations: [{
           OptionName: 'S3_INTEGRATION',
           OptionVersion: '1.0',
         }],
       });
-
-
     });
 
     test('s3 import/export - appends to an existing option group if it exists', () => {
@@ -163,7 +153,7 @@ describe('instance engine', () => {
       });
 
       expect(engineConfig.optionGroup).toEqual(optionGroup);
-      expect(stack).toHaveResourceLike('AWS::RDS::OptionGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
         EngineName: 'oracle-se2',
         OptionConfigurations: [{
           OptionName: 'MY_OPTION_CONFIG',
@@ -173,8 +163,6 @@ describe('instance engine', () => {
           OptionVersion: '1.0',
         }],
       });
-
-
     });
   });
 
@@ -185,8 +173,6 @@ describe('instance engine', () => {
       const engineConfig = engine.bindToInstance(new cdk.Stack(), {});
       expect(engineConfig.features?.s3Import).toEqual('S3_INTEGRATION');
       expect(engineConfig.features?.s3Export).toEqual('S3_INTEGRATION');
-
-
     });
 
     test('s3 import/export - throws if roles are not equal', () => {
@@ -200,8 +186,6 @@ describe('instance engine', () => {
       expect(() => engine.bindToInstance(new cdk.Stack(), { s3ImportRole })).not.toThrow();
       expect(() => engine.bindToInstance(new cdk.Stack(), { s3ExportRole })).not.toThrow();
       expect(() => engine.bindToInstance(new cdk.Stack(), { s3ImportRole, s3ExportRole: s3ImportRole })).not.toThrow();
-
-
     });
 
     test('s3 import/export - creates an option group if needed', () => {
@@ -214,7 +198,7 @@ describe('instance engine', () => {
       });
 
       expect(engineConfig.optionGroup).toBeDefined();
-      expect(stack).toHaveResourceLike('AWS::RDS::OptionGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
         EngineName: 'sqlserver-se',
         OptionConfigurations: [{
           OptionName: 'SQLSERVER_BACKUP_RESTORE',
@@ -224,8 +208,6 @@ describe('instance engine', () => {
           }],
         }],
       });
-
-
     });
 
     test('s3 import/export - appends to an existing option group if it exists', () => {
@@ -244,7 +226,7 @@ describe('instance engine', () => {
       });
 
       expect(engineConfig.optionGroup).toEqual(optionGroup);
-      expect(stack).toHaveResourceLike('AWS::RDS::OptionGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
         EngineName: 'sqlserver-se',
         OptionConfigurations: [{
           OptionName: 'MY_OPTION_CONFIG',
@@ -257,8 +239,6 @@ describe('instance engine', () => {
           }],
         }],
       });
-
-
     });
   });
 
@@ -269,8 +249,6 @@ describe('instance engine', () => {
       const engineConfig = engineNewerVersion.bindToInstance(new cdk.Stack(), {});
       expect(engineConfig.features?.s3Import).toEqual(undefined);
       expect(engineConfig.features?.s3Export).toEqual(undefined);
-
-
     });
 
     test('returns s3 import/export feature if the version supports it', () => {
@@ -279,8 +257,6 @@ describe('instance engine', () => {
       const engineConfig = engineNewerVersion.bindToInstance(new cdk.Stack(), {});
       expect(engineConfig.features?.s3Import).toEqual('s3Import');
       expect(engineConfig.features?.s3Export).toEqual('s3Export');
-
-
     });
   });
 });

@@ -1,8 +1,4 @@
-import {
-  expect as expectCDK,
-  haveResourceLike,
-} from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import {
@@ -30,23 +26,22 @@ describe('AutoScalingGroupRequireImdsv2Aspect', () => {
       machineImage: ec2.MachineImage.latestAmazonLinux(),
     });
     const launchConfig = asg.node.tryFindChild('LaunchConfig') as CfnLaunchConfiguration;
-    launchConfig.metadataOptions = fakeToken();
+    launchConfig.metadataOptions = cdk.Token.asAny({
+      httpEndpoint: 'https://bla.com',
+    } as CfnLaunchConfiguration.MetadataOptionsProperty);
     const aspect = new AutoScalingGroupRequireImdsv2Aspect();
 
     // WHEN
     cdk.Aspects.of(stack).add(aspect);
 
     // THEN
-    expectCDK(stack).notTo(haveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', Match.not({
       MetadataOptions: {
         HttpTokens: 'required',
       },
     }));
-    expect(asg.node.metadataEntry).toContainEqual({
-      data: expect.stringContaining('CfnLaunchConfiguration.MetadataOptions field is a CDK token.'),
-      type: 'aws:cdk:warning',
-      trace: undefined,
-    });
+
+    Annotations.fromStack(stack).hasWarning('/Stack/AutoScalingGroup', Match.stringLikeRegexp('.*CfnLaunchConfiguration.MetadataOptions field is a CDK token.'));
   });
 
   test('requires IMDSv2', () => {
@@ -62,18 +57,10 @@ describe('AutoScalingGroupRequireImdsv2Aspect', () => {
     cdk.Aspects.of(stack).add(aspect);
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       MetadataOptions: {
         HttpTokens: 'required',
       },
-    }));
+    });
   });
 });
-
-function fakeToken(): cdk.IResolvable {
-  return {
-    creationStack: [],
-    resolve: (_c) => {},
-    toString: () => '',
-  };
-}

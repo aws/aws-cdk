@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -77,6 +77,45 @@ describe('scalable target', () => {
         },
       ],
     });
+  });
+
+  test('scheduled scaling shows warning when minute is not defined in cron', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnSchedule('ScaleUp', {
+      schedule: appscaling.Schedule.cron({
+        hour: '8',
+        day: '1',
+      }),
+      maxCapacity: 50,
+      minCapacity: 1,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/Target', Match.stringLikeRegexp("cron: If you don't pass 'minute', by default the event runs every minute.*"));
+  });
+
+  test('scheduled scaling shows no warning when minute is * in cron', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnSchedule('ScaleUp', {
+      schedule: appscaling.Schedule.cron({
+        hour: '8',
+        day: '1',
+        minute: '*',
+      }),
+      maxCapacity: 50,
+      minCapacity: 1,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Default/Target', Match.stringLikeRegexp("cron: If you don't pass 'minute', by default the event runs every minute.*"));
   });
 
   test('step scaling on MathExpression', () => {

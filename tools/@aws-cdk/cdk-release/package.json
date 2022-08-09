@@ -32,13 +32,13 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/changelog-parser": "^2.8.1",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.5.2",
     "@types/yargs": "^15.0.14",
-    "jest": "^27.4.7"
+    "jest": "^27.5.1"
   },
   "dependencies": {
     "@lerna/project": "^4.0.0",
-    "changelog-parser": "^2.8.0",
+    "changelog-parser": "^2.8.1",
     "conventional-changelog": "^3.1.25",
     "conventional-changelog-config-spec": "^2.1.0",
     "conventional-changelog-preset-loader": "^2.3.4",
@@ -48,7 +48,7 @@
     "detect-newline": "^3.1.0",
     "fs-extra": "^9.1.0",
     "git-raw-commits": "^2.0.11",
-    "semver": "^7.3.5",
+    "semver": "^7.3.7",
     "stringify-package": "^1.0.1"
   },
   "keywords": [
@@ -61,7 +61,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "ubergen": {
     "exclude": true

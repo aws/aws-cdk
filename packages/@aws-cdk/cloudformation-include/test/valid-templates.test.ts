@@ -228,6 +228,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template using Fn::If in Tags, and output it unchanged', () => {
+    includeTestTemplate(stack, 'if-in-tags.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('if-in-tags.json'),
+    );
+  });
+
   test('can ingest a UserData script, and output it unchanged', () => {
     includeTestTemplate(stack, 'user-data.json');
 
@@ -605,6 +613,14 @@ describe('CDK Include', () => {
     expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
     Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('resource-attribute-update-policy.json'),
+    );
+  });
+
+  test('preserves unknown resource attributes', () => {
+    includeTestTemplate(stack, 'non-existent-resource-attribute.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('non-existent-resource-attribute.json'),
     );
   });
 
@@ -1079,6 +1095,14 @@ describe('CDK Include', () => {
 
     Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('properties-not-in-cfn-spec.json'),
+    );
+  });
+
+  test('roundtrip a fn-select with a fn-if/ref-novalue in it', () => {
+    includeTestTemplate(stack, 'fn-select-with-novalue.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('fn-select-with-novalue.json'),
     );
   });
 });

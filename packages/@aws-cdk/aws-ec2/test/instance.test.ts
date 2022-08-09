@@ -1,12 +1,24 @@
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
+import { Key } from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import {
-  AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
-  EbsDeviceVolumeType, InitCommand, Instance, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType, LaunchTemplate, UserData, Vpc,
+  AmazonLinuxImage,
+  BlockDeviceVolume,
+  CloudFormationInit,
+  EbsDeviceVolumeType,
+  InitCommand,
+  Instance,
+  InstanceArchitecture,
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  LaunchTemplate,
+  UserData,
+  Vpc,
 } from '../lib';
 
 let stack: Stack;
@@ -92,7 +104,7 @@ describe('instance', () => {
   test('instance architecture is correctly discerned for arm instances', () => {
     // GIVEN
     const sampleInstanceClasses = [
-      'a1', 't4g', 'c6g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd', 'g5g', 'im4gn', 'is4gen', // current Graviton-based instance classes
+      'a1', 't4g', 'c6g', 'c7g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd', 'g5g', 'im4gn', 'is4gen', // current Graviton-based instance classes
       'a13', 't11g', 'y10ng', 'z11ngd', // theoretical future Graviton-based instance classes
     ];
 
@@ -108,7 +120,7 @@ describe('instance', () => {
   });
   test('instance architecture is correctly discerned for x86-64 instance', () => {
     // GIVEN
-    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a', 'r6i']; // A sample of x86-64 instance classes
+    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a', 'r6i', 'r6a']; // A sample of x86-64 instance classes
 
     for (const instanceClass of sampleInstanceClasses) {
       // WHEN
@@ -120,38 +132,35 @@ describe('instance', () => {
 
 
   });
+
   test('instances with local NVME drive are correctly named', () => {
     // GIVEN
     const sampleInstanceClassKeys = [{
-      key: 'R5D',
+      key: InstanceClass.R5D,
       value: 'r5d',
     }, {
-      key: 'MEMORY5_NVME_DRIVE',
+      key: InstanceClass.MEMORY5_NVME_DRIVE,
       value: 'r5d',
     }, {
-      key: 'R5AD',
+      key: InstanceClass.R5AD,
       value: 'r5ad',
     }, {
-      key: 'MEMORY5_AMD_NVME_DRIVE',
+      key: InstanceClass.MEMORY5_AMD_NVME_DRIVE,
       value: 'r5ad',
     }, {
-      key: 'M5AD',
+      key: InstanceClass.M5AD,
       value: 'm5ad',
     }, {
-      key: 'STANDARD5_AMD_NVME_DRIVE',
+      key: InstanceClass.STANDARD5_AMD_NVME_DRIVE,
       value: 'm5ad',
     }]; // A sample of instances with NVME drives
 
     for (const instanceClass of sampleInstanceClassKeys) {
       // WHEN
-      const key = instanceClass.key as keyof(typeof InstanceClass);
-      const instanceType = InstanceClass[key];
-
+      const instanceType = InstanceType.of(instanceClass.key, InstanceSize.LARGE);
       // THEN
-      expect(instanceType).toBe(instanceClass.value);
+      expect(instanceType.toString().split('.')[0]).toBe(instanceClass.value);
     }
-
-
   });
   test('instance architecture throws an error when instance type is invalid', () => {
     // GIVEN
@@ -184,6 +193,7 @@ describe('instance', () => {
   describe('blockDeviceMappings', () => {
     test('can set blockDeviceMappings', () => {
       // WHEN
+      const kmsKey = new Key(stack, 'EbsKey');
       new Instance(stack, 'Instance', {
         vpc,
         machineImage: new AmazonLinuxImage(),
@@ -194,6 +204,25 @@ describe('instance', () => {
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
             encrypted: true,
+            volumeType: EbsDeviceVolumeType.IO1,
+            iops: 5000,
+          }),
+        }, {
+          deviceName: 'ebs-gp3',
+          mappingEnabled: true,
+          volume: BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            volumeType: EbsDeviceVolumeType.GP3,
+            iops: 5000,
+          }),
+        }, {
+          deviceName: 'ebs-cmk',
+          mappingEnabled: true,
+          volume: BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            kmsKey: kmsKey,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
@@ -219,6 +248,32 @@ describe('instance', () => {
             Ebs: {
               DeleteOnTermination: true,
               Encrypted: true,
+              Iops: 5000,
+              VolumeSize: 15,
+              VolumeType: 'io1',
+            },
+          },
+          {
+            DeviceName: 'ebs-gp3',
+            Ebs: {
+              DeleteOnTermination: true,
+              Encrypted: true,
+              Iops: 5000,
+              VolumeSize: 15,
+              VolumeType: 'gp3',
+            },
+          },
+          {
+            DeviceName: 'ebs-cmk',
+            Ebs: {
+              DeleteOnTermination: true,
+              Encrypted: true,
+              KmsKeyId: {
+                'Fn::GetAtt': [
+                  'EbsKeyD3FEE551',
+                  'Arn',
+                ],
+              },
               Iops: 5000,
               VolumeSize: 15,
               VolumeType: 'io1',
@@ -278,12 +333,29 @@ describe('instance', () => {
           }],
         });
       }).toThrow(/ops property is required with volumeType: EbsDeviceVolumeType.IO1/);
+    });
 
-
+    test('throws if volumeType === IO2 without iops', () => {
+      // THEN
+      expect(() => {
+        new Instance(stack, 'Instance', {
+          vpc,
+          machineImage: new AmazonLinuxImage(),
+          instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+          blockDevices: [{
+            deviceName: 'ebs',
+            volume: BlockDeviceVolume.ebs(15, {
+              deleteOnTermination: true,
+              encrypted: true,
+              volumeType: EbsDeviceVolumeType.IO2,
+            }),
+          }],
+        });
+      }).toThrow(/ops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2/);
     });
 
     test('warning if iops without volumeType', () => {
-      const instance = new Instance(stack, 'Instance', {
+      new Instance(stack, 'Instance', {
         vpc,
         machineImage: new AmazonLinuxImage(),
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
@@ -298,14 +370,11 @@ describe('instance', () => {
       });
 
       // THEN
-      expect(instance.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-      expect(instance.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-
-
+      Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3');
     });
 
-    test('warning if iops and volumeType !== IO1', () => {
-      const instance = new Instance(stack, 'Instance', {
+    test('warning if iops and invalid volumeType', () => {
+      new Instance(stack, 'Instance', {
         vpc,
         machineImage: new AmazonLinuxImage(),
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
@@ -321,10 +390,7 @@ describe('instance', () => {
       });
 
       // THEN
-      expect(instance.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-      expect(instance.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-
-
+      Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3');
     });
   });
 
@@ -375,6 +441,62 @@ describe('instance', () => {
       },
     });
   });
+
+  describe('Detailed Monitoring', () => {
+    test('instance with Detailed Monitoring enabled', () => {
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: new InstanceType('t2.micro'),
+        detailedMonitoring: true,
+      });
+
+      // Force stack synth so the Instance is applied
+      Template.fromStack(stack);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        Monitoring: true,
+      });
+    });
+
+    test('instance with Detailed Monitoring disabled', () => {
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: new InstanceType('t2.micro'),
+        detailedMonitoring: false,
+      });
+
+      // Force stack synth so the Instance is applied
+      Template.fromStack(stack);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        Monitoring: false,
+      });
+    });
+
+    test('instance with Detailed Monitoring unset falls back to disabled', () => {
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: new InstanceType('t2.micro'),
+      });
+
+      // Force stack synth so the Instance is applied
+      Template.fromStack(stack);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        Monitoring: Match.absent(),
+      });
+    });
+  });
+
 });
 
 test('add CloudFormation Init to instance', () => {
@@ -428,6 +550,13 @@ test('add CloudFormation Init to instance', () => {
 
 test('cause replacement from s3 asset in userdata', () => {
   // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
   const userData1 = UserData.forLinux();
   const asset1 = new Asset(stack, 'UserDataAssets1', {
     path: path.join(__dirname, 'asset-fixture', 'data.txt'),
@@ -462,8 +591,14 @@ test('cause replacement from s3 asset in userdata', () => {
   const hash = 'f88eace39faf39d7';
   Template.fromStack(stack).templateMatches(Match.objectLike({
     Resources: Match.objectLike({
-      [`InstanceOne5B821005${hash}`]: Match.objectLike({ Type: 'AWS::EC2::Instance', Properties: Match.anyValue() }),
-      [`InstanceTwoDC29A7A7${hash}`]: Match.objectLike({ Type: 'AWS::EC2::Instance', Properties: Match.anyValue() }),
+      [`InstanceOne5B821005${hash}`]: Match.objectLike({
+        Type: 'AWS::EC2::Instance',
+        Properties: Match.anyValue(),
+      }),
+      [`InstanceTwoDC29A7A7${hash}`]: Match.objectLike({
+        Type: 'AWS::EC2::Instance',
+        Properties: Match.anyValue(),
+      }),
     }),
   }));
 });

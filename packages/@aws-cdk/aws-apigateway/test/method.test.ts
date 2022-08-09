@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -24,7 +23,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       AuthorizationType: 'NONE',
       Integration: {
@@ -51,7 +50,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       ApiKeyRequired: true,
       OperationName: 'MyOperation',
     });
@@ -72,7 +71,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         IntegrationHttpMethod: 'POST',
         Type: 'AWS',
@@ -104,7 +103,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         IntegrationHttpMethod: 'POST',
         Type: 'AWS',
@@ -133,7 +132,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         IntegrationHttpMethod: 'GET',
       },
@@ -159,7 +158,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         Type: 'HTTP_PROXY',
         Uri: 'https://amazon.com',
@@ -325,7 +324,7 @@ describe('method', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         Credentials: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
       },
@@ -347,7 +346,7 @@ describe('method', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         Credentials: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::*:user/*']] },
       },
@@ -386,7 +385,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       MethodResponses: [{
         StatusCode: '200',
@@ -435,7 +434,7 @@ describe('method', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         IntegrationHttpMethod: 'POST',
         IntegrationResponses: [
@@ -467,9 +466,9 @@ describe('method', () => {
     api.root.addMethod('PUT');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', { HttpMethod: 'POST' });
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', { HttpMethod: 'GET' });
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', { HttpMethod: 'PUT' });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', { HttpMethod: 'POST' });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', { HttpMethod: 'GET' });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', { HttpMethod: 'PUT' });
 
   });
 
@@ -499,7 +498,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       RequestModels: {
         'application/json': { Ref: stack.getLogicalId(model.node.findChild('Resource') as cdk.CfnElement) },
@@ -549,7 +548,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       MethodResponses: [{
         StatusCode: '200',
@@ -593,10 +592,10 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       RequestValidatorId: { Ref: stack.getLogicalId(validator.node.findChild('Resource') as cdk.CfnElement) },
     });
-    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
@@ -626,7 +625,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       OperationName: 'defaultRequestParameters',
       RequestParameters: {
         'method.request.path.proxy': true,
@@ -644,7 +643,7 @@ describe('method', () => {
       authorizer: DUMMY_AUTHORIZER,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
       AuthorizationType: 'CUSTOM',
       AuthorizerId: DUMMY_AUTHORIZER.authorizerId,
@@ -659,7 +658,7 @@ describe('method', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const auth = new apigw.TokenAuthorizer(stack, 'myauthorizer1', {
@@ -674,7 +673,7 @@ describe('method', () => {
     });
     restApi.root.addMethod('ANY');
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Name: 'myauthorizer1',
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
@@ -732,7 +731,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       ApiKeyRequired: true,
       AuthorizationScopes: ['AuthScope1', 'AuthScope2'],
     });
@@ -761,7 +760,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       OperationName: 'defaultAuthScopes',
       AuthorizationScopes: ['DefaultAuth'],
     });
@@ -791,7 +790,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       ApiKeyRequired: true,
       AuthorizationScopes: ['MethodAuthScope'],
     });
@@ -817,9 +816,9 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       OperationName: 'authScopesAbsent',
-      AuthorizationScopes: ABSENT,
+      AuthorizationScopes: Match.absent(),
     });
 
 
@@ -844,7 +843,7 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RequestValidator', {
       RestApiId: stack.resolve(api.restApiId),
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
@@ -866,8 +865,8 @@ describe('method', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
-      RequestValidatorId: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      RequestValidatorId: Match.absent(),
     });
 
 
@@ -935,5 +934,144 @@ describe('method', () => {
     expect(method.api).toBeDefined();
 
 
+  });
+
+  describe('Metrics', () => {
+    test('metric', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const metricName = '4XXError';
+      const statistic = 'Sum';
+      const metric = method.metric(metricName, api.deploymentStage, { statistic });
+
+      // THEN
+      expect(metric.namespace).toEqual('AWS/ApiGateway');
+      expect(metric.metricName).toEqual(metricName);
+      expect(metric.statistic).toEqual(statistic);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricClientError', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricClientError(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('4XXError');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricServerError', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricServerError(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('5XXError');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricCacheHitCount', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricCacheHitCount(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('CacheHitCount');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricCacheMissCount', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricCacheMissCount(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('CacheMissCount');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricCount', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricCount(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('Count');
+      expect(metric.statistic).toEqual('SampleCount');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricIntegrationLatency', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricIntegrationLatency(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('IntegrationLatency');
+      expect(metric.statistic).toEqual('Average');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricLatency', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      const color = '#00ff00';
+      const metric = method.metricLatency(api.deploymentStage, { color });
+
+      // THEN
+      expect(metric.metricName).toEqual('Latency');
+      expect(metric.statistic).toEqual('Average');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
   });
 });

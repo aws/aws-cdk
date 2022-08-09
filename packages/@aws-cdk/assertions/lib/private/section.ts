@@ -43,6 +43,12 @@ function eachEntryInSection(
   }
 }
 
+export function formatAllMatches(matches: {[key: string]: any}): string {
+  return [
+    leftPad(JSON.stringify(matches, undefined, 2)),
+  ].join('\n');
+}
+
 export function formatFailure(closestResult: MatchResult): string {
   return [
     'The closest result is:',

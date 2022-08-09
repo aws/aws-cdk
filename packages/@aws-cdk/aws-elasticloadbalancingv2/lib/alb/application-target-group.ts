@@ -13,10 +13,6 @@ import { determineProtocolAndPort } from '../shared/util';
 import { IApplicationListener } from './application-listener';
 import { HttpCodeTarget } from './application-load-balancer';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Properties for defining an Application Target Group
  */
@@ -134,6 +130,17 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     this.protocol = protocol;
     this.port = port;
 
+    // this.targetType is lazy
+    this.node.addValidation({
+      validate: () => {
+        if (this.targetType === TargetType.LAMBDA && (this.port || this.protocol)) {
+          return ['port/protocol should not be specified for Lambda targets'];
+        } else {
+          return [];
+        }
+      },
+    });
+
     this.connectableMembers = [];
     this.listeners = [];
 
@@ -231,7 +238,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       listener.registerConnectable(member.connectable, member.portRange);
     }
     this.listeners.push(listener);
-    this.loadBalancerAttachedDependencies.add((associatingConstruct || listener) as CoreConstruct);
+    this.loadBalancerAttachedDependencies.add(associatingConstruct ?? listener);
   }
 
   /**
@@ -376,8 +383,8 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     });
   }
 
-  protected validate(): string[] {
-    const ret = super.validate();
+  protected validateTargetGroup(): string[] {
+    const ret = super.validateTargetGroup();
 
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
       && (this.protocol === undefined || this.port === undefined)) {

@@ -112,14 +112,14 @@ describe('tests', () => {
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
-    lb.addListener('Listener', {
+    const listener = lb.addListener('Listener', {
       port: 443,
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
     // THEN
-    const errors = cdk.ConstructNode.validate(stack.node);
-    expect(errors.map(e => e.message)).toEqual(['HTTPS Listener needs at least one certificate (call addCertificates)']);
+    const errors = listener.node.validate();
+    expect(errors).toEqual(['HTTPS Listener needs at least one certificate (call addCertificates)']);
   });
 
   test('HTTPS listener can add certificate after construction', () => {
@@ -474,7 +474,7 @@ describe('tests', () => {
     });
 
     // THEN
-    const validationErrors: string[] = (group as any).validate();
+    const validationErrors: string[] = group.node.validate();
     expect(validationErrors).toEqual(["Health check protocol 'TCP' is not supported. Must be one of [HTTP, HTTPS]"]);
   });
 
@@ -705,6 +705,85 @@ describe('tests', () => {
         },
       ],
     });
+  });
+
+  test('Can add actions to an imported listener', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stack2 = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc,
+    });
+    const listener = lb.addListener('Listener', {
+      port: 80,
+    });
+
+    // WHEN
+    listener.addAction('Default', {
+      action: elbv2.ListenerAction.fixedResponse(404, {
+        contentType: 'text/plain',
+        messageBody: 'Not Found',
+      }),
+    });
+
+    const importedListener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'listener', {
+      listenerArn: 'listener-arn',
+      defaultPort: 443,
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack2, 'SG', 'security-group-id', {
+        allowAllOutbound: false,
+      }),
+    });
+    importedListener.addAction('Hello', {
+      action: elbv2.ListenerAction.fixedResponse(503),
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+      priority: 10,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          FixedResponseConfig: {
+            ContentType: 'text/plain',
+            MessageBody: 'Not Found',
+            StatusCode: '404',
+          },
+          Type: 'fixed-response',
+        },
+      ],
+    });
+
+    Template.fromStack(stack2).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      ListenerArn: 'listener-arn',
+      Priority: 10,
+      Actions: [
+        {
+          FixedResponseConfig: {
+            StatusCode: '503',
+          },
+          Type: 'fixed-response',
+        },
+      ],
+    });
+  });
+
+  test('actions added to an imported listener must have a priority', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const importedListener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack, 'listener', {
+      listenerArn: 'listener-arn',
+      defaultPort: 443,
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'security-group-id', {
+        allowAllOutbound: false,
+      }),
+    });
+    expect(() => {
+      importedListener.addAction('Hello', {
+        action: elbv2.ListenerAction.fixedResponse(503),
+      });
+    }).toThrow(/priority must be set for actions added to an imported listener/);
   });
 
   testDeprecated('Can add redirect responses', () => {

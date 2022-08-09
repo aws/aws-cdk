@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { Metric, MetricOptions, MetricProps } from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -179,12 +180,36 @@ export interface CanaryProps {
    * @default - No environment variables.
    */
   readonly environmentVariables?: { [key: string]: string };
+
+  /**
+   * The VPC where this canary is run.
+   *
+   * Specify this if the canary needs to access resources in a VPC.
+   *
+   * @default - Not in VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Where to place the network interfaces within the VPC. You must provide `vpc` when using this prop.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The list of security groups to associate with the canary's network interfaces. You must provide `vpc` when using this prop.
+   *
+   * @default - If the canary is placed within a VPC and a security group is
+   * not specified a dedicated security group will be created for this canary.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
  * Define a new Canary
  */
-export class Canary extends cdk.Resource {
+export class Canary extends cdk.Resource implements ec2.IConnectable {
   /**
    * Execution role associated with this Canary.
    */
@@ -213,6 +238,14 @@ export class Canary extends cdk.Resource {
    */
   public readonly artifactsBucket: s3.IBucket;
 
+  /**
+   * Actual connections object for the underlying Lambda
+   *
+   * May be unset, in which case the canary Lambda is not configured for use in a VPC.
+   * @internal
+   */
+  private readonly _connections?: ec2.Connections;
+
   public constructor(scope: Construct, id: string, props: CanaryProps) {
     if (props.canaryName && !cdk.Token.isUnresolved(props.canaryName)) {
       validateName(props.canaryName);
@@ -229,7 +262,12 @@ export class Canary extends cdk.Resource {
       enforceSSL: true,
     });
 
-    this.role = props.role ?? this.createDefaultRole(props.artifactsBucketLocation?.prefix);
+    this.role = props.role ?? this.createDefaultRole(props);
+
+    if (props.vpc) {
+      // Security Groups are created and/or appended in `createVpcConfig`.
+      this._connections = new ec2.Connections({});
+    }
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
@@ -242,11 +280,25 @@ export class Canary extends cdk.Resource {
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
       code: this.createCode(props),
       runConfig: this.createRunConfig(props),
+      vpcConfig: this.createVpcConfig(props),
     });
 
     this.canaryId = resource.attrId;
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
+  }
+
+  /**
+   * Access the Connections object
+   *
+   * Will fail if not a VPC-enabled Canary
+   */
+  public get connections(): ec2.Connections {
+    if (!this._connections) {
+      // eslint-disable-next-line max-len
+      throw new Error('Only VPC-associated Canaries have security groups to manage. Supply the "vpc" parameter when creating the Canary.');
+    }
+    return this._connections;
   }
 
   /**
@@ -289,8 +341,9 @@ export class Canary extends cdk.Resource {
   /**
    * Returns a default role for the canary
    */
-  private createDefaultRole(prefix?: string): iam.IRole {
-    const { partition } = cdk.Stack.of(this);
+  private createDefaultRole(props: CanaryProps): iam.IRole {
+    const prefix = props.artifactsBucketLocation?.prefix;
+
     // Created role will need these policies to run the Canary.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-executionrolearn
     const policy = new iam.PolicyDocument({
@@ -300,8 +353,12 @@ export class Canary extends cdk.Resource {
           actions: ['s3:ListAllMyBuckets'],
         }),
         new iam.PolicyStatement({
+          resources: [this.artifactsBucket.bucketArn],
+          actions: ['s3:GetBucketLocation'],
+        }),
+        new iam.PolicyStatement({
           resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix+'/*' : '*'}`)],
-          actions: ['s3:PutObject', 's3:GetBucketLocation'],
+          actions: ['s3:PutObject'],
         }),
         new iam.PolicyStatement({
           resources: ['*'],
@@ -309,17 +366,34 @@ export class Canary extends cdk.Resource {
           conditions: { StringEquals: { 'cloudwatch:namespace': 'CloudWatchSynthetics' } },
         }),
         new iam.PolicyStatement({
-          resources: [`arn:${partition}:logs:::*`],
+          resources: [this.logGroupArn()],
           actions: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
         }),
       ],
     });
+
+    const managedPolicies: iam.IManagedPolicy[] = [];
+
+    if (props.vpc) {
+      // Policy that will have ENI creation permissions
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+    }
 
     return new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       inlinePolicies: {
         canaryPolicy: policy,
       },
+      managedPolicies,
+    });
+  }
+
+  private logGroupArn() {
+    return cdk.Stack.of(this).formatArn({
+      service: 'logs',
+      resource: 'log-group',
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: '/aws/lambda/cwsyn-*',
     });
   }
 
@@ -340,6 +414,15 @@ export class Canary extends cdk.Resource {
     };
   }
 
+  private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {
+    if (!props.environmentVariables) {
+      return undefined;
+    }
+    return {
+      environmentVariables: props.environmentVariables,
+    };
+  }
+
   /**
    * Returns a canary schedule object
    */
@@ -350,12 +433,36 @@ export class Canary extends cdk.Resource {
     };
   }
 
-  private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {
-    if (!props.environmentVariables) {
+  private createVpcConfig(props: CanaryProps): CfnCanary.VPCConfigProperty | undefined {
+    if (!props.vpc) {
+      if (props.vpcSubnets != null || props.securityGroups != null) {
+        throw new Error("You must provide the 'vpc' prop when using VPC-related properties.");
+      }
+
       return undefined;
     }
+
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    if (subnetIds.length < 1) {
+      throw new Error('No matching subnets found in the VPC.');
+    }
+
+    let securityGroups: ec2.ISecurityGroup[];
+    if (props.securityGroups && props.securityGroups.length > 0) {
+      securityGroups = props.securityGroups;
+    } else {
+      const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+        description: 'Automatic security group for Canary ' + cdk.Names.uniqueId(this),
+      });
+      securityGroups = [securityGroup];
+    }
+    this._connections!.addSecurityGroup(...securityGroups);
+
     return {
-      environmentVariables: props.environmentVariables,
+      vpcId: props.vpc.vpcId,
+      subnetIds,
+      securityGroupIds: cdk.Lazy.list({ produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId) }),
     };
   }
 

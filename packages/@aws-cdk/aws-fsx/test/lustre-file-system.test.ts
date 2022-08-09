@@ -3,7 +3,7 @@ import { Template } from '@aws-cdk/assertions';
 import { ISubnet, Port, SecurityGroup, Subnet, Vpc } from '@aws-cdk/aws-ec2';
 import { Key } from '@aws-cdk/aws-kms';
 import { Aws, Stack, Token } from '@aws-cdk/core';
-import { LustreConfiguration, LustreDeploymentType, LustreFileSystem, LustreMaintenanceTime, Weekday } from '../lib';
+import { LustreConfiguration, LustreDeploymentType, LustreAutoImportPolicy, LustreFileSystem, LustreMaintenanceTime, Weekday, LustreDataCompressionType } from '../lib';
 
 describe('FSx for Lustre File System', () => {
   let lustreConfiguration: LustreConfiguration;
@@ -281,6 +281,75 @@ describe('FSx for Lustre File System', () => {
       });
     });
 
+    describe('autoImportPolicy', () => {
+      test('autoImportPath unsupported with PERSISTENT_2', () => {
+        const importPath = 's3://import-bucket/import-prefix';
+
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_2,
+          autoImportPolicy: LustreAutoImportPolicy.NEW_CHANGED_DELETED,
+          importPath,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFilesystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrowError('autoImportPolicy is not supported with PERSISTENT_2 deployments');
+      });
+
+      test('autoImportPath requires importPath', () => {
+
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          autoImportPolicy: LustreAutoImportPolicy.NEW_CHANGED_DELETED,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFilesystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrowError('autoImportPolicy requires importPath to be defined');
+      });
+    });
+
+    describe('autoImportPolicy', () => {
+      test.each([
+        LustreAutoImportPolicy.NONE,
+        LustreAutoImportPolicy.NEW,
+        LustreAutoImportPolicy.NEW_CHANGED,
+        LustreAutoImportPolicy.NEW_CHANGED_DELETED,
+      ])('valid autoImportPolicy', (autoImportPolicy: LustreAutoImportPolicy) => {
+        const importPath = 's3://import-bucket/import-path';
+
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          importPath,
+          autoImportPolicy,
+        };
+
+        new LustreFileSystem(stack, 'FsxFileSystem', {
+          lustreConfiguration,
+          storageCapacityGiB: storageCapacity,
+          vpc,
+          vpcSubnet,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+          LustreConfiguration: {
+            AutoImportPolicy: autoImportPolicy,
+            DeploymentType: LustreDeploymentType.PERSISTENT_1,
+          },
+        });
+      });
+    });
+
     describe('importedFileChunkSize', () => {
       test.each([
         1,
@@ -410,6 +479,29 @@ describe('FSx for Lustre File System', () => {
       });
     });
 
+    describe('DataCompressionType', () => {
+      test('dataCompressionType enabled', () => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.SCRATCH_2,
+          dataCompressionType: LustreDataCompressionType.LZ4,
+        };
+
+        new LustreFileSystem(stack, 'FsxFileSystem', {
+          lustreConfiguration,
+          storageCapacityGiB: storageCapacity,
+          vpc,
+          vpcSubnet,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+          LustreConfiguration: {
+            DeploymentType: LustreDeploymentType.SCRATCH_2,
+            DataCompressionType: LustreDataCompressionType.LZ4,
+          },
+        });
+      });
+    });
+
     describe('perUnitStorageThroughput', () => {
       test.each([
         50,
@@ -436,10 +528,16 @@ describe('FSx for Lustre File System', () => {
         });
       });
 
-      test('invalid perUnitStorageThroughput', () => {
+      test.each([
+        1,
+        125,
+        250,
+        500,
+        1000,
+      ])('invalid perUnitStorageThroughput', (invalidValue: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_1,
-          perUnitStorageThroughput: 1,
+          perUnitStorageThroughput: invalidValue,
         };
 
         expect(() => {
@@ -449,7 +547,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB');
+        }).toThrowError('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 deployment type, got: ' + invalidValue);
       });
 
       test('setting perUnitStorageThroughput on wrong deploymentType', () => {
@@ -465,7 +563,57 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('perUnitStorageThroughput can only be set for the PERSISTENT_1 deployment type');
+        }).toThrowError('perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types');
+      });
+    });
+
+    describe('perUnitStorageThroughput_Persistent_2', () => {
+      test.each([
+        125,
+        250,
+        500,
+        1000,
+      ])('valid perUnitStorageThroughput of %d', (throughput: number) => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_2,
+          perUnitStorageThroughput: throughput,
+        };
+
+        new LustreFileSystem(stack, 'FsxFileSystem', {
+          lustreConfiguration,
+          storageCapacityGiB: storageCapacity,
+          vpc,
+          vpcSubnet,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+          LustreConfiguration: {
+            DeploymentType: LustreDeploymentType.PERSISTENT_2,
+            PerUnitStorageThroughput: throughput,
+          },
+        });
+      });
+
+      test.each([
+        1,
+        50,
+        100,
+        200,
+        550,
+      ])('invalid perUnitStorageThroughput', (invalidValue: number) => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_2,
+          perUnitStorageThroughput: invalidValue,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrowError('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ' + invalidValue);
       });
     });
 
@@ -477,6 +625,9 @@ describe('FSx for Lustre File System', () => {
         [1200, LustreDeploymentType.PERSISTENT_1],
         [2400, LustreDeploymentType.PERSISTENT_1],
         [4800, LustreDeploymentType.PERSISTENT_1],
+        [1200, LustreDeploymentType.PERSISTENT_2],
+        [2400, LustreDeploymentType.PERSISTENT_2],
+        [4800, LustreDeploymentType.PERSISTENT_2],
       ])('proper multiple for storage capacity of %d on %s', (value: number, deploymentType: LustreDeploymentType) => {
         lustreConfiguration = {
           deploymentType,
@@ -502,6 +653,8 @@ describe('FSx for Lustre File System', () => {
         [2401, LustreDeploymentType.SCRATCH_2],
         [1, LustreDeploymentType.PERSISTENT_1],
         [2401, LustreDeploymentType.PERSISTENT_1],
+        [1, LustreDeploymentType.PERSISTENT_2],
+        [2401, LustreDeploymentType.PERSISTENT_2],
       ])('invalid value of %d for storage capacity on %s', (invalidValue: number, deploymentType: LustreDeploymentType) => {
         lustreConfiguration = {
           deploymentType,

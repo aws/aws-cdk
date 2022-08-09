@@ -1,5 +1,5 @@
-import { Token } from '@aws-cdk/core';
-import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject } from './json-path';
+import { Token, IResolvable } from '@aws-cdk/core';
+import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject, renderInExpression, jsonPathFromAny } from './private/json-path';
 
 /**
  * Extract a field from the State Machine data or context
@@ -36,6 +36,14 @@ export class JsonPath {
   public static numberAt(path: string): number {
     validateJsonPath(path);
     return Token.asNumber(new JsonPathToken(path));
+  }
+
+  /**
+   * Reference a complete (complex) object in a JSON path location
+   */
+  public static objectAt(path: string): IResolvable {
+    validateJsonPath(path);
+    return new JsonPathToken(path);
   }
 
   /**
@@ -76,6 +84,82 @@ export class JsonPath {
    */
   public static get entireContext(): string {
     return new JsonPathToken('$$').toString();
+  }
+
+  /**
+   * Make an intrinsic States.Array expression
+   *
+   * Combine any number of string literals or JsonPath expressions into an array.
+   *
+   * Use this function if the value of an array element directly has to come
+   * from a JSON Path expression (either the State object or the Context object).
+   *
+   * If the array contains object literals whose values come from a JSON path
+   * expression, you do not need to use this function.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static array(...values: string[]): string {
+    return new JsonPathToken(`States.Array(${values.map(renderInExpression).join(', ')})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.Format expression
+   *
+   * This can be used to embed JSON Path variables inside a format string.
+   *
+   * For example:
+   *
+   * ```ts
+   * sfn.JsonPath.format('Hello, my name is {}.', sfn.JsonPath.stringAt('$.name'))
+   * ```
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static format(formatString: string, ...values: string[]): string {
+    const allArgs = [formatString, ...values];
+    return new JsonPathToken(`States.Format(${allArgs.map(renderInExpression).join(', ')})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.StringToJson expression
+   *
+   * During the execution of the Step Functions state machine, parse the given
+   * argument as JSON into its object form.
+   *
+   * For example:
+   *
+   * ```ts
+   * sfn.JsonPath.stringToJson(sfn.JsonPath.stringAt('$.someJsonBody'))
+   * ```
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static stringToJson(jsonString: string): IResolvable {
+    return new JsonPathToken(`States.StringToJson(${renderInExpression(jsonString)})`);
+  }
+
+  /**
+   * Make an intrinsic States.JsonToString expression
+   *
+   * During the execution of the Step Functions state machine, encode the
+   * given object into a JSON string.
+   *
+   * For example:
+   *
+   * ```ts
+   * sfn.JsonPath.jsonToString(sfn.JsonPath.objectAt('$.someObject'))
+   * ```
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static jsonToString(value: any): string {
+    const path = jsonPathFromAny(value);
+    if (!path) {
+      throw new Error('Argument to JsonPath.jsonToString() must be a JsonPath object');
+    }
+
+    return new JsonPathToken(`States.JsonToString(${path})`).toString();
   }
 
   private constructor() {}

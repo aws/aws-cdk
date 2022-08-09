@@ -1,0 +1,88 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-user-pool-resource-server": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool-resource-server.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-user-pool-resource-server/myuserpool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpool01998219"
+          }
+        ],
+        "/integ-user-pool-resource-server/myuserpool/myserver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolmyserver50C4D8E9"
+          }
+        ],
+        "/integ-user-pool-resource-server/myuserpool/client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolclientC5FA41EC"
+          }
+        ],
+        "/integ-user-pool-resource-server/pool-id": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolid"
+          }
+        ],
+        "/integ-user-pool-resource-server/client-id": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "clientid"
+          }
+        ],
+        "myuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyFAAD57F1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyFAAD57F1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myuserpoolclientDescribeCognitoUserPoolClient662FE3FB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolclientDescribeCognitoUserPoolClient662FE3FB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AWS679f53fac002430cb0da5b7982bd22872D164C4C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-resource-server"
+    }
+  }
+}

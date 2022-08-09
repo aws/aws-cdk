@@ -1,0 +1,34 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-opensearch-advancedsecurity": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-opensearch-advancedsecurity.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-opensearch-advancedsecurity/User/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "User00B015A1"
+          }
+        ],
+        "/cdk-integ-opensearch-advancedsecurity/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain66AC69E0"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-opensearch-advancedsecurity"
+    }
+  }
+}

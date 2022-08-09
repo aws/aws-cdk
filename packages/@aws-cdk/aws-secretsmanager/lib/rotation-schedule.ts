@@ -4,8 +4,16 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { ISecret } from './secret';
+import { ISecret, Secret } from './secret';
 import { CfnRotationSchedule } from './secretsmanager.generated';
+
+/**
+ * The default set of characters we exclude from generated passwords for database users.
+ * It's a combination of characters that have a tendency to cause problems in shell scripts,
+ * some engine-specific characters (for example, Oracle doesn't like '@' in its passwords),
+ * and some that trip up other services, like DMS.
+ */
+const DEFAULT_PASSWORD_EXCLUDE_CHARS = " %+~`#$&*()|[]{}:;<>?!'/@\"\\";
 
 /**
  * Options to add a rotation schedule to a secret.
@@ -28,6 +36,8 @@ export interface RotationScheduleOptions {
   /**
    * Specifies the number of days after the previous rotation before
    * Secrets Manager triggers the next automatic rotation.
+   *
+   * A value of zero will disable automatic rotation - `Duration.days(0)`.
    *
    * @default Duration.days(30)
    */
@@ -92,7 +102,7 @@ export class RotationSchedule extends Resource {
             'secretsmanager:PutSecretValue',
             'secretsmanager:UpdateSecretVersionStage',
           ],
-          resources: [props.secret.secretArn],
+          resources: [props.secret.secretFullArn ? props.secret.secretFullArn : `${props.secret.secretArn}-??????`],
         }),
       );
       props.rotationLambda.addToRolePolicy(
@@ -105,13 +115,23 @@ export class RotationSchedule extends Resource {
       );
     }
 
+    let automaticallyAfterDays: number | undefined = undefined;
+    if (props.automaticallyAfter?.toMilliseconds() !== 0) {
+      automaticallyAfterDays = props.automaticallyAfter?.toDays() || 30;
+    }
+
+    let rotationRules: CfnRotationSchedule.RotationRulesProperty | undefined = undefined;
+    if (automaticallyAfterDays !== undefined) {
+      rotationRules = {
+        automaticallyAfterDays,
+      };
+    }
+
     new CfnRotationSchedule(this, 'Resource', {
       secretId: props.secret.secretArn,
       rotationLambdaArn: props.rotationLambda?.functionArn,
       hostedRotationLambda: props.hostedRotation?.bind(props.secret, this),
-      rotationRules: {
-        automaticallyAfterDays: props.automaticallyAfter && props.automaticallyAfter.toDays() || 30,
-      },
+      rotationRules,
     });
 
     // Prevent secrets deletions when rotation is in place
@@ -150,6 +170,14 @@ export interface SingleUserHostedRotationOptions {
    * @default - the Vpc default strategy if not specified.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * A string of the characters that you don't want in the password
+   *
+   * @default the same exclude characters as the ones used for the
+   * secret or " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+   */
+  readonly excludeCharacters?: string,
 }
 
 /**
@@ -272,6 +300,10 @@ export class HostedRotation implements ec2.IConnectable {
       this.masterSecret.denyAccountRootDelete();
     }
 
+    const defaultExcludeCharacters = Secret.isSecret(secret)
+      ? secret.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS
+      : DEFAULT_PASSWORD_EXCLUDE_CHARS;
+
     return {
       rotationType: this.type.name,
       kmsKeyArn: secret.encryptionKey?.keyArn,
@@ -280,6 +312,7 @@ export class HostedRotation implements ec2.IConnectable {
       rotationLambdaName: this.props.functionName,
       vpcSecurityGroupIds: this._connections?.securityGroups?.map(s => s.securityGroupId).join(','),
       vpcSubnetIds: this.props.vpc?.selectSubnets(this.props.vpcSubnets).subnetIds.join(','),
+      excludeCharacters: this.props.excludeCharacters ?? defaultExcludeCharacters,
     };
   }
 

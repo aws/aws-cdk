@@ -1,0 +1,498 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "test-bucket-deployments-2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-bucket-deployments-2.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/test-bucket-deployments-2": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
+              "id": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
+              "packaging": "zip",
+              "sourceHash": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
+              "s3BucketParameter": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2",
+              "s3KeyParameter": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48",
+              "artifactHashParameter": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26ArtifactHashF709D3CB"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262.zip",
+              "id": "672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262",
+              "packaging": "file",
+              "sourceHash": "672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262",
+              "s3BucketParameter": "AssetParameters672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262S3Bucket2B5B33F4",
+              "s3KeyParameter": "AssetParameters672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262S3VersionKeyAD46A764",
+              "artifactHashParameter": "AssetParameters672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262ArtifactHash9E8C5685"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da",
+              "id": "f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da",
+              "packaging": "zip",
+              "sourceHash": "f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da",
+              "s3BucketParameter": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daS3BucketF23C0DE7",
+              "s3KeyParameter": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daS3VersionKey5E97B17D",
+              "artifactHashParameter": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daArtifactHashD85D28D8"
+            }
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e",
+              "id": "fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e",
+              "packaging": "zip",
+              "sourceHash": "fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e",
+              "s3BucketParameter": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A",
+              "s3KeyParameter": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C",
+              "artifactHashParameter": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eArtifactHash0E426313"
+            }
+          }
+        ],
+        "/test-bucket-deployments-2/Destination/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination920A3C57"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DestinationPolicy7982387E"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DestinationAutoDeleteObjectsCustomResource15E926BA"
+          }
+        ],
+        "/test-bucket-deployments-2/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/test-bucket-deployments-2/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26ArtifactHashF709D3CB"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262S3Bucket2B5B33F4"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262S3VersionKeyAD46A764"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters672cee2a3bc0f6f95dc287bbbcfca917f657efdac3d5cea83e0ceec6f1cdc262ArtifactHash9E8C5685"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daS3BucketF23C0DE7"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daS3VersionKey5E97B17D"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersf98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711daArtifactHashD85D28D8"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
+          }
+        ],
+        "/test-bucket-deployments-2/AssetParameters/fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eArtifactHash0E426313"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployMe/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMeAwsCliLayer5F9219E9"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployMe/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMeCustomResource4455EE35"
+          }
+        ],
+        "/test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+          }
+        ],
+        "/test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpc2605A3C4"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet1Subnet2EDC574A"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet1RouteTable67856EA2"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet1RouteTableAssociationDA9AACF2"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet1DefaultRoute84A6786F"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet1EIPCB8385DA"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet1NATGateway88242629"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet2SubnetAB52037C"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet2RouteTable053CA1F8"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet2RouteTableAssociation3DB8A2E6"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet2DefaultRoute9E9BF17A"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet2EIPFCFD7982"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPublicSubnet2NATGatewayB5A60DA8"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPrivateSubnet1Subnet0EC98BAD"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPrivateSubnet1RouteTable19DB57E6"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPrivateSubnet1RouteTableAssociation9D48EE22"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPrivateSubnet1DefaultRouteC56CB768"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPrivateSubnet2Subnet60DB7D03"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPrivateSubnet2RouteTableE3C67EFF"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPrivateSubnet2RouteTableAssociation6D6562EB"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcPrivateSubnet2DefaultRouteA98D214A"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcIGW515300DC"
+          }
+        ],
+        "/test-bucket-deployments-2/InlineVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineVpcVPCGWE98B1862"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployMeWithEfsStorage/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMeWithEfsStorageAwsCliLayer1619A3EE"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployMeWithEfsStorage/CustomResource-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMeWithEfsStorageCustomResourcec8e45d2d82aec23f89c7172e7e6f994ff3d9c444faC9646D53"
+          }
+        ],
+        "/test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
+          }
+        ],
+        "/test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroup8A6327B1"
+          }
+        ],
+        "/test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsSecurityGroup/from testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF:2049": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroupfromtestbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF20498CD714A7"
+          }
+        ],
+        "/test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget140913EA1"
+          }
+        ],
+        "/test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget215F1A11A"
+          }
+        ],
+        "/test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/AccessPoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faAccessPoint657AFA25"
+          }
+        ],
+        "/test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4"
+          }
+        ],
+        "/test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRoleDefaultPolicyDE2C8526"
+          }
+        ],
+        "/test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupD7C1D75A"
+          }
+        ],
+        "/test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa03838EC0"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination281A09BDF"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination2/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination2PolicyA94CC138"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination2/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination2AutoDeleteObjectsCustomResource8A5BE3F7"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployWithPrefix/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployWithPrefixAwsCliLayerC9DDB597"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployWithPrefix/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployWithPrefixCustomResource9CF7C694"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination3E3DC043D"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination3/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination3Policy685DA6C5"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination3/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination3AutoDeleteObjectsCustomResourceC26EC7B7"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployWithMetadata/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployWithMetadataAwsCliLayer2C774B41"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployWithMetadata/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployWithMetadataCustomResourceA73C95DC"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMeWithoutDeletingFilesOnDestinationAwsCliLayer4D54C41C"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMeWithoutDeletingFilesOnDestinationCustomResourceA390B02B"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMeWithExcludedFilesOnDestinationAwsCliLayer68F5E11D"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMeWithExcludedFilesOnDestinationCustomResource48D69581"
+          }
+        ]
+      },
+      "displayName": "test-bucket-deployments-2"
+    }
+  }
+}

@@ -12,7 +12,7 @@ beforeEach(() => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
   });
 });
@@ -38,7 +38,7 @@ test('create a branch', () => {
 test('with basic auth from credentials', () => {
   // WHEN
   app.addBranch('dev', {
-    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.plainText('password')),
+    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.unsafePlainText('password')),
   });
 
   // THEN
@@ -124,41 +124,21 @@ test('with asset deployment', () => {
       ],
     },
     BranchName: 'dev',
-    S3ObjectKey: {
-      'Fn::Join': [
-        '',
-        [
-          {
-            'Fn::Select': [
-              0,
-              {
-                'Fn::Split': [
-                  '||',
-                  {
-                    Ref: 'AssetParameters8c89eadc6be22019c81ed6b9c7d9929ae10de55679fd8e0e9fd4c00f8edc1cdaS3VersionKey70C0B407',
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            'Fn::Select': [
-              1,
-              {
-                'Fn::Split': [
-                  '||',
-                  {
-                    Ref: 'AssetParameters8c89eadc6be22019c81ed6b9c7d9929ae10de55679fd8e0e9fd4c00f8edc1cdaS3VersionKey70C0B407',
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      ],
-    },
+    S3ObjectKey: '8c89eadc6be22019c81ed6b9c7d9929ae10de55679fd8e0e9fd4c00f8edc1cda.zip',
     S3BucketName: {
-      Ref: 'AssetParameters8c89eadc6be22019c81ed6b9c7d9929ae10de55679fd8e0e9fd4c00f8edc1cdaS3Bucket83484C89',
+      'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
     },
+  });
+});
+
+test('with performance mode', () => {
+  // WHEN
+  app.addBranch('dev', {
+    performanceMode: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
+    EnablePerformanceMode: true,
   });
 });

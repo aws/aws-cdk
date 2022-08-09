@@ -1,0 +1,2593 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.33"
+        }
+      },
+      "aws-appsync-integ": {
+        "id": "aws-appsync-integ",
+        "path": "aws-appsync-integ",
+        "children": {
+          "Pool": {
+            "id": "Pool",
+            "path": "aws-appsync-integ/Pool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-integ/Pool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "userPoolName": "myPool",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "Api": {
+            "id": "Api",
+            "path": "aws-appsync-integ/Api",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-integ/Api/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+                    "name": "demoapi",
+                    "additionalAuthenticationProviders": [
+                      {
+                        "authenticationType": "API_KEY"
+                      }
+                    ],
+                    "userPoolConfig": {
+                      "userPoolId": {
+                        "Ref": "PoolD3F588B8"
+                      },
+                      "awsRegion": {
+                        "Ref": "AWS::Region"
+                      },
+                      "defaultAction": "ALLOW"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Schema": {
+                "id": "Schema",
+                "path": "aws-appsync-integ/Api/Schema",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "ApiF70053CD",
+                        "ApiId"
+                      ]
+                    },
+                    "definition": "type ServiceVersion @aws_api_key {\n  version: String!\n}\n\ntype Customer @aws_api_key {\n  id: String!\n  name: String!\n}\n\ninput SaveCustomerInput {\n  name: String!\n}\n\ntype Order @aws_api_key {\n  customer: String!\n  order: String!\n}\n\ntype Payment @aws_api_key {\n  id: String!\n  amount: String!\n}\n\ninput PaymentInput {\n  amount: String!\n}\n\ntype Query @aws_api_key {\n  getServiceVersion: ServiceVersion\n  getCustomers: [Customer]\n  getCustomersNotConsistent: [Customer]\n  getCustomersConsistent: [Customer]\n  getCustomer(id: String): Customer\n  getCustomerNotConsistent(id: String): Customer\n  getCustomerConsistent(id: String): Customer\n  getCustomerOrdersEq(customer: String): Order\n  getCustomerOrdersLt(customer: String): Order\n  getCustomerOrdersLe(customer: String): Order\n  getCustomerOrdersGt(customer: String): Order\n  getCustomerOrdersGe(customer: String): Order\n  getCustomerOrdersNotConsistentEq(customer: String): Order\n  getCustomerOrdersNotConsistentLt(customer: String): Order\n  getCustomerOrdersNotConsistentLe(customer: String): Order\n  getCustomerOrdersNotConsistentGt(customer: String): Order\n  getCustomerOrdersNotConsistentGe(customer: String): Order\n  getCustomerOrdersConsistentEq(customer: String): Order\n  getCustomerOrdersConsistentLt(customer: String): Order\n  getCustomerOrdersConsistentLe(customer: String): Order\n  getCustomerOrdersConsistentGt(customer: String): Order\n  getCustomerOrdersConsistentGe(customer: String): Order\n  getCustomerOrdersFilter(customer: String, order: String): Order\n  getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n  getOrderCustomersEq(order: String): [Customer]\n  getOrderCustomersLt(order: String): [Customer]\n  getOrderCustomersLe(order: String): [Customer]\n  getOrderCustomersGt(order: String): [Customer]\n  getOrderCustomersGe(order: String): [Customer]\n  getOrderCustomersNotConsistentEq(order: String): [Customer]\n  getOrderCustomersNotConsistentLt(order: String): [Customer]\n  getOrderCustomersNotConsistentLe(order: String): [Customer]\n  getOrderCustomersNotConsistentGt(order: String): [Customer]\n  getOrderCustomersNotConsistentGe(order: String): [Customer]\n  getOrderCustomersConsistentEq(order: String): [Customer]\n  getOrderCustomersConsistentLt(order: String): [Customer]\n  getOrderCustomersConsistentLe(order: String): [Customer]\n  getOrderCustomersConsistentGt(order: String): [Customer]\n  getOrderCustomersConsistentGe(order: String): [Customer]\n  getOrderCustomersFilter(order: String, customer: String): [Customer]\n  getOrderCustomersBetween(order: String, customer1: String, customer2: String): [Customer]\n  getPayment(id: String): Payment\n  getPaymentConsistent(id: String): Payment\n}\n\ninput FirstOrderInput {\n  product: String!\n  quantity: Int!\n}\n\ntype Mutation @aws_api_key {\n  addCustomer(customer: SaveCustomerInput!): Customer\n  saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n  removeCustomer(id: String!): Customer\n  saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order\n  savePayment(payment: PaymentInput!): Payment\n  doPostOnAws: String!\n}\n"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLSchema",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultApiKey": {
+                "id": "DefaultApiKey",
+                "path": "aws-appsync-integ/Api/DefaultApiKey",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "ApiF70053CD",
+                        "ApiId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              },
+              "none": {
+                "id": "none",
+                "path": "aws-appsync-integ/Api/none",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/Api/none/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "None",
+                        "type": "NONE"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetServiceVersionResolver": {
+                    "id": "QuerygetServiceVersionResolver",
+                    "path": "aws-appsync-integ/Api/none/QuerygetServiceVersionResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/none/QuerygetServiceVersionResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getServiceVersion",
+                            "typeName": "Query",
+                            "dataSourceName": "None",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\":\"2017-02-28\"}",
+                            "responseMappingTemplate": "{\"version\":\"v1\"}"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.NoneDataSource",
+                  "version": "0.0.0"
+                }
+              },
+              "customerDs": {
+                "id": "customerDs",
+                "path": "aws-appsync-integ/Api/customerDs",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "aws-appsync-integ/Api/customerDs/ServiceRole",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/customerDs/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-appsync-integ/Api/customerDs/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-appsync-integ/Api/customerDs/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "dynamodb:BatchGetItem",
+                                        "dynamodb:BatchWriteItem",
+                                        "dynamodb:ConditionCheckItem",
+                                        "dynamodb:DeleteItem",
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:GetItem",
+                                        "dynamodb:GetRecords",
+                                        "dynamodb:GetShardIterator",
+                                        "dynamodb:PutItem",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:UpdateItem"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "CustomerTable260DCC08",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Ref": "AWS::NoValue"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApicustomerDsServiceRoleDefaultPolicyF8E72AE7",
+                                "roles": [
+                                  {
+                                    "Ref": "ApicustomerDsServiceRole76CAD539"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/Api/customerDs/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "Customer",
+                        "type": "AMAZON_DYNAMODB",
+                        "dynamoDbConfig": {
+                          "tableName": {
+                            "Ref": "CustomerTable260DCC08"
+                          },
+                          "awsRegion": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "ApicustomerDsServiceRole76CAD539",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomersResolver": {
+                    "id": "QuerygetCustomersResolver",
+                    "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomersResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomersResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomers",
+                            "typeName": "Query",
+                            "dataSourceName": "Customer",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerResolver": {
+                    "id": "QuerygetCustomerResolver",
+                    "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomerResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomerResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomer",
+                            "typeName": "Query",
+                            "dataSourceName": "Customer",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomersNotConsistentResolver": {
+                    "id": "QuerygetCustomersNotConsistentResolver",
+                    "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomersNotConsistentResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomersNotConsistentResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomersNotConsistent",
+                            "typeName": "Query",
+                            "dataSourceName": "Customer",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerNotConsistentResolver": {
+                    "id": "QuerygetCustomerNotConsistentResolver",
+                    "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomerNotConsistentResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomerNotConsistentResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerNotConsistent",
+                            "typeName": "Query",
+                            "dataSourceName": "Customer",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomersConsistentResolver": {
+                    "id": "QuerygetCustomersConsistentResolver",
+                    "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomersConsistentResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomersConsistentResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomersConsistent",
+                            "typeName": "Query",
+                            "dataSourceName": "Customer",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": true}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerConsistentResolver": {
+                    "id": "QuerygetCustomerConsistentResolver",
+                    "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomerConsistentResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/customerDs/QuerygetCustomerConsistentResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerConsistent",
+                            "typeName": "Query",
+                            "dataSourceName": "Customer",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": true, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "MutationaddCustomerResolver": {
+                    "id": "MutationaddCustomerResolver",
+                    "path": "aws-appsync-integ/Api/customerDs/MutationaddCustomerResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/customerDs/MutationaddCustomerResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "addCustomer",
+                            "typeName": "Mutation",
+                            "dataSourceName": "Customer",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "MutationsaveCustomerResolver": {
+                    "id": "MutationsaveCustomerResolver",
+                    "path": "aws-appsync-integ/Api/customerDs/MutationsaveCustomerResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/customerDs/MutationsaveCustomerResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "saveCustomer",
+                            "typeName": "Mutation",
+                            "dataSourceName": "Customer",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($ctx.args.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "MutationsaveCustomerWithFirstOrderResolver": {
+                    "id": "MutationsaveCustomerWithFirstOrderResolver",
+                    "path": "aws-appsync-integ/Api/customerDs/MutationsaveCustomerWithFirstOrderResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/customerDs/MutationsaveCustomerWithFirstOrderResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "saveCustomerWithFirstOrder",
+                            "typeName": "Mutation",
+                            "dataSourceName": "Customer",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "\n      #set($input = $ctx.args.order)\n      $util.qr($input.put(\"referral\", referral))\n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"order\" : $util.dynamodb.toDynamoDBJson($util.autoId()),\"customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "MutationremoveCustomerResolver": {
+                    "id": "MutationremoveCustomerResolver",
+                    "path": "aws-appsync-integ/Api/customerDs/MutationremoveCustomerResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/customerDs/MutationremoveCustomerResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "removeCustomer",
+                            "typeName": "Mutation",
+                            "dataSourceName": "Customer",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"DeleteItem\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.DynamoDbDataSource",
+                  "version": "0.0.0"
+                }
+              },
+              "orderDs": {
+                "id": "orderDs",
+                "path": "aws-appsync-integ/Api/orderDs",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "aws-appsync-integ/Api/orderDs/ServiceRole",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-appsync-integ/Api/orderDs/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-appsync-integ/Api/orderDs/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "dynamodb:BatchGetItem",
+                                        "dynamodb:BatchWriteItem",
+                                        "dynamodb:ConditionCheckItem",
+                                        "dynamodb:DeleteItem",
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:GetItem",
+                                        "dynamodb:GetRecords",
+                                        "dynamodb:GetShardIterator",
+                                        "dynamodb:PutItem",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:UpdateItem"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "OrderTable416EB896",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "OrderTable416EB896",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              "/index/*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApiorderDsServiceRoleDefaultPolicy3315FCF4",
+                                "roles": [
+                                  {
+                                    "Ref": "ApiorderDsServiceRoleCC2040C0"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/Api/orderDs/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "Order",
+                        "type": "AMAZON_DYNAMODB",
+                        "dynamoDbConfig": {
+                          "tableName": {
+                            "Ref": "OrderTable416EB896"
+                          },
+                          "awsRegion": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "ApiorderDsServiceRoleCC2040C0",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersEqResolver": {
+                    "id": "QuerygetCustomerOrdersEqResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersEqResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersEqResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersEq",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersEqResolver": {
+                    "id": "QuerygetOrderCustomersEqResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersEqResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersEqResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersEq",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersLtResolver": {
+                    "id": "QuerygetCustomerOrdersLtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersLtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersLtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersLt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersLtResolver": {
+                    "id": "QuerygetOrderCustomersLtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersLtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersLtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersLt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersLeResolver": {
+                    "id": "QuerygetCustomerOrdersLeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersLeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersLeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersLe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersLeResolver": {
+                    "id": "QuerygetOrderCustomersLeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersLeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersLeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersLe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersGtResolver": {
+                    "id": "QuerygetCustomerOrdersGtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersGtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersGtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersGt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersGtResolver": {
+                    "id": "QuerygetOrderCustomersGtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersGtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersGtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersGt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersGeResolver": {
+                    "id": "QuerygetCustomerOrdersGeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersGeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersGeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersGe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersGeResolver": {
+                    "id": "QuerygetOrderCustomersGeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersGeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersGeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersGe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersNotConsistentEqResolver": {
+                    "id": "QuerygetCustomerOrdersNotConsistentEqResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentEqResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentEqResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersNotConsistentEq",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersNotConsistentEqResolver": {
+                    "id": "QuerygetOrderCustomersNotConsistentEqResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentEqResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentEqResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersNotConsistentEq",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersNotConsistentLtResolver": {
+                    "id": "QuerygetCustomerOrdersNotConsistentLtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentLtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentLtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersNotConsistentLt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersNotConsistentLtResolver": {
+                    "id": "QuerygetOrderCustomersNotConsistentLtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentLtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentLtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersNotConsistentLt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersNotConsistentLeResolver": {
+                    "id": "QuerygetCustomerOrdersNotConsistentLeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentLeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentLeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersNotConsistentLe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersNotConsistentLeResolver": {
+                    "id": "QuerygetOrderCustomersNotConsistentLeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentLeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentLeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersNotConsistentLe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersNotConsistentGtResolver": {
+                    "id": "QuerygetCustomerOrdersNotConsistentGtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentGtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentGtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersNotConsistentGt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersNotConsistentGtResolver": {
+                    "id": "QuerygetOrderCustomersNotConsistentGtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentGtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentGtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersNotConsistentGt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersNotConsistentGeResolver": {
+                    "id": "QuerygetCustomerOrdersNotConsistentGeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentGeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersNotConsistentGeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersNotConsistentGe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersNotConsistentGeResolver": {
+                    "id": "QuerygetOrderCustomersNotConsistentGeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentGeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersNotConsistentGeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersNotConsistentGe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersConsistentEqResolver": {
+                    "id": "QuerygetCustomerOrdersConsistentEqResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentEqResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentEqResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersConsistentEq",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersConsistentEqResolver": {
+                    "id": "QuerygetOrderCustomersConsistentEqResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentEqResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentEqResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersConsistentEq",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersConsistentLtResolver": {
+                    "id": "QuerygetCustomerOrdersConsistentLtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentLtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentLtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersConsistentLt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersConsistentLtResolver": {
+                    "id": "QuerygetOrderCustomersConsistentLtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentLtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentLtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersConsistentLt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersConsistentLeResolver": {
+                    "id": "QuerygetCustomerOrdersConsistentLeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentLeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentLeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersConsistentLe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersConsistentLeResolver": {
+                    "id": "QuerygetOrderCustomersConsistentLeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentLeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentLeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersConsistentLe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersConsistentGtResolver": {
+                    "id": "QuerygetCustomerOrdersConsistentGtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentGtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentGtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersConsistentGt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersConsistentGtResolver": {
+                    "id": "QuerygetOrderCustomersConsistentGtResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentGtResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentGtResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersConsistentGt",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersConsistentGeResolver": {
+                    "id": "QuerygetCustomerOrdersConsistentGeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentGeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersConsistentGeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersConsistentGe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersConsistentGeResolver": {
+                    "id": "QuerygetOrderCustomersConsistentGeResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentGeResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersConsistentGeResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersConsistentGe",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersFilterResolver": {
+                    "id": "QuerygetCustomerOrdersFilterResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersFilterResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersFilterResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersFilter",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer AND begins_with(#order, :order)\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetCustomerOrdersBetweenResolver": {
+                    "id": "QuerygetCustomerOrdersBetweenResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersBetweenResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetCustomerOrdersBetweenResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getCustomerOrdersBetween",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer AND #order BETWEEN :order1 AND :order2\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order1\" : $util.dynamodb.toDynamoDBJson($ctx.args.order1), \":order2\" : $util.dynamodb.toDynamoDBJson($ctx.args.order2)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersFilterResolver": {
+                    "id": "QuerygetOrderCustomersFilterResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersFilterResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersFilterResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersFilter",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#order = :order AND begins_with(#customer, :customer)\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetOrderCustomersBetweenResolver": {
+                    "id": "QuerygetOrderCustomersBetweenResolver",
+                    "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersBetweenResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/QuerygetOrderCustomersBetweenResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getOrderCustomersBetween",
+                            "typeName": "Query",
+                            "dataSourceName": "Order",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order AND #customer BETWEEN :customer1 AND :customer2\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer1\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer1), \":customer2\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer2)\n              }\n            }}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.DynamoDbDataSource",
+                  "version": "0.0.0"
+                }
+              },
+              "paymentDs": {
+                "id": "paymentDs",
+                "path": "aws-appsync-integ/Api/paymentDs",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "aws-appsync-integ/Api/paymentDs/ServiceRole",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/paymentDs/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-appsync-integ/Api/paymentDs/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-appsync-integ/Api/paymentDs/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "dynamodb:BatchGetItem",
+                                        "dynamodb:BatchWriteItem",
+                                        "dynamodb:ConditionCheckItem",
+                                        "dynamodb:DeleteItem",
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:GetItem",
+                                        "dynamodb:GetRecords",
+                                        "dynamodb:GetShardIterator",
+                                        "dynamodb:PutItem",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:UpdateItem"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":dynamodb:",
+                                              {
+                                                "Ref": "AWS::Region"
+                                              },
+                                              ":",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":table/PaymentTable"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Ref": "AWS::NoValue"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApipaymentDsServiceRoleDefaultPolicy528E42B0",
+                                "roles": [
+                                  {
+                                    "Ref": "ApipaymentDsServiceRole0DAC58D6"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/Api/paymentDs/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "Payment",
+                        "type": "AMAZON_DYNAMODB",
+                        "dynamoDbConfig": {
+                          "tableName": "PaymentTable",
+                          "awsRegion": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "ApipaymentDsServiceRole0DAC58D6",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetPaymentResolver": {
+                    "id": "QuerygetPaymentResolver",
+                    "path": "aws-appsync-integ/Api/paymentDs/QuerygetPaymentResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/paymentDs/QuerygetPaymentResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getPayment",
+                            "typeName": "Query",
+                            "dataSourceName": "Payment",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetPaymentConsistentResolver": {
+                    "id": "QuerygetPaymentConsistentResolver",
+                    "path": "aws-appsync-integ/Api/paymentDs/QuerygetPaymentConsistentResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/paymentDs/QuerygetPaymentConsistentResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getPaymentConsistent",
+                            "typeName": "Query",
+                            "dataSourceName": "Payment",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": true, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "MutationsavePaymentResolver": {
+                    "id": "MutationsavePaymentResolver",
+                    "path": "aws-appsync-integ/Api/paymentDs/MutationsavePaymentResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/paymentDs/MutationsavePaymentResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "savePayment",
+                            "typeName": "Mutation",
+                            "dataSourceName": "Payment",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "\n      #set($input = $ctx.args.payment)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.DynamoDbDataSource",
+                  "version": "0.0.0"
+                }
+              },
+              "ds": {
+                "id": "ds",
+                "path": "aws-appsync-integ/Api/ds",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "aws-appsync-integ/Api/ds/ServiceRole",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/ds/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/Api/ds/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "http",
+                        "type": "HTTP",
+                        "httpConfig": {
+                          "endpoint": "https://aws.amazon.com/"
+                        },
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "ApidsServiceRoleADC7D124",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "MutationdoPostOnAwsResolver": {
+                    "id": "MutationdoPostOnAwsResolver",
+                    "path": "aws-appsync-integ/Api/ds/MutationdoPostOnAwsResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/ds/MutationdoPostOnAwsResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "doPostOnAws",
+                            "typeName": "Mutation",
+                            "dataSourceName": "http",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\n    \"version\": \"2018-05-29\",\n    \"method\": \"POST\",\n    # if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts\n    \"resourcePath\": \"/path/123\",\n    \"params\":{\n        \"body\": $util.toJson($ctx.args),\n        \"headers\":{\n            \"Content-Type\": \"application/json\",\n            \"Authorization\": \"$ctx.request.headers.Authorization\"\n        }\n    }\n  }",
+                            "responseMappingTemplate": "\n    ## Raise a GraphQL field error in case of a datasource invocation error\n    #if($ctx.error)\n      $util.error($ctx.error.message, $ctx.error.type)\n    #end\n    ## if the response status code is not 200, then return an error. Else return the body **\n    #if($ctx.result.statusCode == 200)\n        ## If response is 200, return the body.\n        $ctx.result.body\n    #else\n        ## If response is not 200, append the response to error block.\n        $utils.appendError($ctx.result.body, \"$ctx.result.statusCode\")\n    #end\n  "
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.HttpDataSource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "CustomerTable": {
+            "id": "CustomerTable",
+            "path": "aws-appsync-integ/CustomerTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-integ/CustomerTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "id",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "id",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-appsync-integ/CustomerTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "OrderTable": {
+            "id": "OrderTable",
+            "path": "aws-appsync-integ/OrderTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-integ/OrderTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "customer",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "order",
+                        "keyType": "RANGE"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "customer",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "order",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "globalSecondaryIndexes": [
+                      {
+                        "indexName": "orderIndex",
+                        "keySchema": [
+                          {
+                            "attributeName": "order",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "customer",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-appsync-integ/OrderTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "PaymentTable": {
+            "id": "PaymentTable",
+            "path": "aws-appsync-integ/PaymentTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-integ/PaymentTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "id",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "id",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-appsync-integ/PaymentTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedPaymentTable": {
+            "id": "ImportedPaymentTable",
+            "path": "aws-appsync-integ/ImportedPaymentTable",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

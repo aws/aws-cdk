@@ -5,10 +5,10 @@ import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging } from '../cluster';
+import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
@@ -315,6 +315,46 @@ export interface IBaseService extends IService {
  */
 export abstract class BaseService extends Resource
   implements IBaseService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
+  /**
+   * Import an existing ECS/Fargate Service using the service cluster format.
+   * The format is the "new" format "arn:aws:ecs:region:aws_account_id:service/cluster-name/service-name".
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids
+   */
+  public static fromServiceArnWithCluster(scope: Construct, id: string, serviceArn: string): IBaseService {
+    const stack = Stack.of(scope);
+    const arn = stack.splitArn(serviceArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const resourceName = arn.resourceName;
+    if (!resourceName) {
+      throw new Error('Missing resource Name from service ARN: ${serviceArn}');
+    }
+    const resourceNameParts = resourceName.split('/');
+    if (resourceNameParts.length !== 2) {
+      throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
+    }
+    const clusterName = resourceNameParts[0];
+    const serviceName = resourceNameParts[1];
+
+    const clusterArn = Stack.of(scope).formatArn({
+      partition: arn.partition,
+      region: arn.region,
+      account: arn.account,
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: clusterName,
+    });
+
+    const cluster = Cluster.fromClusterArn(scope, `${id}Cluster`, clusterArn);
+
+    class Import extends Resource implements IBaseService {
+      public readonly serviceArn = serviceArn;
+      public readonly serviceName = serviceName;
+      public readonly cluster = cluster;
+    }
+
+    return new Import(scope, id, {
+      environmentFromArn: serviceArn,
+    });
+  }
 
   /**
    * The security groups which manage the allowed network traffic for the service.
@@ -470,7 +510,7 @@ export abstract class BaseService extends Resource
       resources: ['*'],
     }));
 
-    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
+    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
     this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'logs:CreateLogStream',
@@ -518,7 +558,7 @@ export abstract class BaseService extends Resource
         'kms:*',
       ],
       resources: ['*'],
-      principals: [new iam.ArnPrincipal(`arn:${this.stack.partition}:iam::${this.stack.account}:root`)],
+      principals: [new iam.ArnPrincipal(`arn:${this.stack.partition}:iam::${this.env.account}:root`)],
     }));
 
     if (logging === ExecuteCommandLogging.DEFAULT || this.cluster.executeCommandConfiguration?.logConfiguration?.cloudWatchEncryptionEnabled) {
@@ -531,9 +571,9 @@ export abstract class BaseService extends Resource
           'kms:Describe*',
         ],
         resources: ['*'],
-        principals: [new iam.ServicePrincipal(`logs.${this.stack.region}.amazonaws.com`)],
+        principals: [new iam.ServicePrincipal(`logs.${this.env.region}.amazonaws.com`)],
         conditions: {
-          ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:${this.stack.partition}:logs:${this.stack.region}:${this.stack.account}:*` },
+          ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:*` },
         },
       }));
     }

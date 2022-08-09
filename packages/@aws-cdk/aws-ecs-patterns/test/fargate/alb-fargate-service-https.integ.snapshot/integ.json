@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "albFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-alb-fg-https"
+      ],
+      "assertionStack": "albFargateServiceTestDefaultTestDeployAssert11CD2C41"
+    }
+  }
+}

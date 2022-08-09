@@ -447,6 +447,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   public readonly osType?: OperatingSystemType;
 
   /**
+   * The AMI ID of the image to use
+   *
+   * @attribute
+   */
+  public readonly imageId?: string;
+
+  /**
    * IAM Role assumed by instances that are launched from this template.
    *
    * @attribute
@@ -459,6 +466,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    * @attribute
    */
   public readonly userData?: UserData;
+
+  /**
+   * Type of instance to launch.
+   *
+   * @attribute
+   */
+  public readonly instanceType?: InstanceType;
 
   // =============================================
   //   Private/protected data members
@@ -525,7 +539,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
     if (imageConfig) {
       this.osType = imageConfig.osType;
+      this.imageId = imageConfig.imageId;
     }
+
+    this.instanceType = props.instanceType;
 
     let marketOptions: any = undefined;
     if (props?.spotOptions) {
@@ -546,6 +563,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     }
 
     this.tags = new TagManager(TagType.KEY_VALUE, 'AWS::EC2::LaunchTemplate');
+
     const tagsToken = Lazy.any({
       produce: () => {
         if (this.tags.hasTags()) {
@@ -563,6 +581,27 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
             },
             {
               resourceType: 'volume',
+              tags: lowerCaseRenderedTags,
+            },
+          ];
+        }
+        return undefined;
+      },
+    });
+
+    const ltTagsToken = Lazy.any({
+      produce: () => {
+        if (this.tags.hasTags()) {
+          const renderedTags = this.tags.renderTags();
+          const lowerCaseRenderedTags = renderedTags.map( (tag: { [key: string]: string}) => {
+            return {
+              key: tag.Key,
+              value: tag.Value,
+            };
+          });
+          return [
+            {
+              resourceType: 'launch-template',
               tags: lowerCaseRenderedTags,
             },
           ];
@@ -638,6 +677,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // placement: undefined,
 
       },
+      tagSpecifications: ltTagsToken,
     });
 
     Tags.of(this).add(NAME_TAG, this.node.path);

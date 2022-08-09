@@ -48,6 +48,8 @@ By default, the log group will be created in the same region as the stack. The `
 log groups in other regions. This is typically useful when controlling retention for log groups auto-created by global services that
 publish their log group to a specific region, such as AWS Chatbot creating a log group in `us-east-1`.
 
+By default, the log group created by LogRetention will be retained after the stack is deleted. If the RemovalPolicy is set to DESTROY, then the log group will be deleted when the stack is deleted.
+
 ## Resource Policy
 
 CloudWatch Resource Policies allow other AWS services or IAM Principals to put log events into the log groups.
@@ -68,6 +70,10 @@ Or more conveniently, write permissions to the log group can be granted as follo
 const logGroup = new logs.LogGroup(this, 'LogGroup');
 logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
+
+Be aware that any ARNs or tokenized values passed to the resource policy will be converted into AWS Account IDs.
+This is because CloudWatch Logs Resource Policies do not accept ARNs as principals, but they do accept
+Account ID strings. Non-ARN principals, like Service principals or Any princpals, are accepted by CloudWatch.
 
 ## Encrypting Log Groups
 
@@ -300,6 +306,23 @@ Example:
 const pattern = logs.FilterPattern.spaceDelimited('time', 'component', '...', 'result_code', 'latency')
   .whereString('component', '=', 'HttpServer')
   .whereNumber('result_code', '!=', 200);
+```
+
+## Logs Insights Query Definition
+
+Creates a query definition for CloudWatch Logs Insights.
+
+Example:
+
+```ts
+new logs.QueryDefinition(this, 'QueryDefinition', {
+  queryDefinitionName: 'MyQuery',
+  queryString: new logs.QueryString({
+    fields: ['@timestamp', '@message'],
+    sort: '@timestamp desc',
+    limit: 20,
+  }),
+});
 ```
 
 ## Notes

@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -21,7 +20,7 @@ describe('fargate', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-FargateProfile', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
       Config: {
         clusterName: { Ref: 'MyCluster8AD82BF8' },
         podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
@@ -43,7 +42,7 @@ describe('fargate', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-FargateProfile', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
       Config: {
         clusterName: { Ref: 'MyCluster8AD82BF8' },
         podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
@@ -67,7 +66,7 @@ describe('fargate', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-FargateProfile', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
       Config: {
         clusterName: { Ref: 'MyCluster8AD82BF8' },
         podExecutionRoleArn: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
@@ -91,7 +90,7 @@ describe('fargate', () => {
     Tags.of(cluster).add('propTag', '123');
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-FargateProfile', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
       Config: {
         selectors: [{ namespace: 'default' }],
         clusterName: { Ref: 'MyCluster8AD82BF8' },
@@ -122,7 +121,7 @@ describe('fargate', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-FargateProfile', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
       Config: {
         clusterName: { Ref: 'MyCluster8AD82BF8' },
         podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
@@ -161,7 +160,7 @@ describe('fargate', () => {
     new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'deployment/coredns',
       ResourceNamespace: 'kube-system',
       ApplyPatchJson: '{"spec":{"template":{"metadata":{"annotations":{"eks.amazonaws.com/compute-type":"fargate"}}}}}',
@@ -171,7 +170,7 @@ describe('fargate', () => {
       },
     });
 
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-FargateProfile', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
       Config: {
         clusterName: {
           Ref: 'FargateCluster019F03E8',
@@ -204,7 +203,7 @@ describe('fargate', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-FargateProfile', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
       Config: {
         clusterName: {
           Ref: 'FargateCluster019F03E8',
@@ -238,7 +237,7 @@ describe('fargate', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-FargateProfile', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
       Config: {
         clusterName: {
           Ref: 'FargateCluster019F03E8',
@@ -272,14 +271,14 @@ describe('fargate', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-FargateProfile', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
       Config: {
         clusterName: { Ref: 'MyCluster8AD82BF8' },
         podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfile1PodExecutionRole794E9E37', 'Arn'] },
         selectors: [{ namespace: 'namespace1' }],
       },
     });
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-FargateProfile', {
+    Template.fromStack(stack).hasResource('Custom::AWSCDK-EKS-FargateProfile', {
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [
@@ -298,7 +297,7 @@ describe('fargate', () => {
         'MyClusterfargateprofileMyProfile1PodExecutionRole794E9E37',
         'MyClusterfargateprofileMyProfile1879D501A',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
 
 
   });
@@ -311,7 +310,7 @@ describe('fargate', () => {
     new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesResource', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesResource', {
       Manifest: {
         'Fn::Join': [
           '',
@@ -353,7 +352,7 @@ describe('fargate', () => {
     new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -442,7 +441,7 @@ describe('fargate', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         encryptionConfig: [{
           provider: {
@@ -458,5 +457,102 @@ describe('fargate', () => {
       },
     });
 
+  });
+
+  test('supports cluster logging without FargateCluster', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    //THEN
+    Template.fromStack(stack).resourceCountIs('Custom::AWSCDK-EKS-Cluster::Config::logging', 0);
+  });
+
+  test('supports cluster partial logging enabled with FargateCluster', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+      clusterLogging: [
+        eks.ClusterLoggingTypes.API,
+        eks.ClusterLoggingTypes.AUTHENTICATOR,
+        eks.ClusterLoggingTypes.SCHEDULER,
+      ],
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        logging: {
+          clusterLogging: [
+            {
+              enabled: true,
+              types: [
+                'api',
+                'authenticator',
+                'scheduler',
+              ],
+            },
+            {
+              enabled: false,
+              types: [
+                'audit',
+                'controllerManager',
+              ],
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('supports cluster all logging enabled with FargateCluster', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+      clusterLogging: [
+        eks.ClusterLoggingTypes.API,
+        eks.ClusterLoggingTypes.AUDIT,
+        eks.ClusterLoggingTypes.AUTHENTICATOR,
+        eks.ClusterLoggingTypes.CONTROLLER_MANAGER,
+        eks.ClusterLoggingTypes.SCHEDULER,
+      ],
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        logging: {
+          clusterLogging: [
+            {
+              enabled: true,
+              types: [
+                'api',
+                'audit',
+                'authenticator',
+                'controllerManager',
+                'scheduler',
+              ],
+            },
+            {
+              enabled: false,
+              types: [],
+            },
+          ],
+        },
+      },
+    });
   });
 });

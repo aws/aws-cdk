@@ -39,7 +39,7 @@ describe('Matchers', () => {
         'Expected fred but received flob at [1]/waldo',
         'Expected flob but received fred at [1]/wobble',
       ]);
-      expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }, { waldo: 'fred' }], [/Missing key at \[1\]\/wobble/]);
+      expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }, { waldo: 'fred' }], [/Missing key.*at \[1\]\/wobble/]);
     });
 
     test('objects', () => {
@@ -49,7 +49,7 @@ describe('Matchers', () => {
       expectFailure(matcher, ['3', 5], [/Expected type object but received array/]);
       expectFailure(matcher, { baz: 'qux' }, [
         'Unexpected key at /baz',
-        'Missing key at /foo',
+        /Missing key.*at \/foo/,
       ]);
 
       matcher = Match.exact({ foo: 'bar', baz: 5 });
@@ -59,8 +59,8 @@ describe('Matchers', () => {
       matcher = Match.exact({ foo: [2, 3], bar: 'baz' });
       expectPass(matcher, { foo: [2, 3], bar: 'baz' });
       expectFailure(matcher, {}, [
-        'Missing key at /foo',
-        'Missing key at /bar',
+        /Missing key.*at \/foo/,
+        /Missing key.*at \/bar/,
       ]);
       expectFailure(matcher, { bar: [2, 3], foo: 'baz' }, [
         'Expected type array but received string at /foo',
@@ -155,7 +155,7 @@ describe('Matchers', () => {
       expectPass(matcher, { foo: 'bar' });
       expectFailure(matcher, { foo: 'baz' }, [/Expected bar but received baz at \/foo/]);
       expectFailure(matcher, { foo: ['bar'] }, [/Expected type string but received array at \/foo/]);
-      expectFailure(matcher, { bar: 'foo' }, [/Missing key at \/foo/]);
+      expectFailure(matcher, { bar: 'foo' }, [/Missing key.*at \/foo/]);
       expectPass(matcher, { foo: 'bar', baz: 'qux' });
     });
 
@@ -338,7 +338,7 @@ describe('Matchers', () => {
       expectPass(matcher, { foo: [1, 2] });
 
       expectFailure(matcher, { foo: null }, ['Expected a value but found none at /foo']);
-      expectFailure(matcher, {}, ['Missing key at /foo']);
+      expectFailure(matcher, {}, [/Missing key.*at \/foo/]);
     });
   });
 
@@ -358,7 +358,7 @@ describe('Matchers', () => {
       expectFailure(matcher, '{ "Foo": 4 }', ['Expected type string but received number at (serializedJson)/Foo']);
       expectFailure(matcher, '{ "Bar": "Baz" }', [
         'Unexpected key at (serializedJson)/Bar',
-        'Missing key at (serializedJson)/Foo',
+        /Missing key.*at \(serializedJson\)\/Foo/,
       ]);
     });
 
@@ -372,7 +372,7 @@ describe('Matchers', () => {
       expectPass(matcher, '{ "Foo": ["Bar", "Baz"], "Fred": "Waldo" }');
 
       expectFailure(matcher, '{ "Foo": ["Baz"] }', ['Missing element [Bar] at pattern index 0 at (serializedJson)/Foo']);
-      expectFailure(matcher, '{ "Bar": ["Baz"] }', ['Missing key at (serializedJson)/Foo']);
+      expectFailure(matcher, '{ "Bar": ["Baz"] }', [/Missing key.*at \(serializedJson\)\/Foo/]);
     });
 
     test('invalid json string', () => {

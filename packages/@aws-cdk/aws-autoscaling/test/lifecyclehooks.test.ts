@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -20,22 +19,22 @@ describe('lifecycle hooks', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
       LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING',
       DefaultResult: 'ABANDON',
       NotificationTargetARN: 'target:arn',
     });
 
     // Lifecycle Hook has a dependency on the policy object
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::LifecycleHook', {
       DependsOn: [
         'ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB',
         'ASGLifecycleHookTransitionRole3AAA6BB7',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
 
     // A default role is provided
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -51,7 +50,7 @@ describe('lifecycle hooks', () => {
     });
 
     // FakeNotificationTarget.bind() was executed
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -78,13 +77,13 @@ test('we can add a lifecycle hook to an ASG with no role and with no notificatio
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
     LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING',
     DefaultResult: 'ABANDON',
   });
 
   // A default role is NOT provided
-  expect(stack).not.toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', Match.not({
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -97,21 +96,10 @@ test('we can add a lifecycle hook to an ASG with no role and with no notificatio
         },
       ],
     },
-  });
+  }));
 
   // FakeNotificationTarget.bind() was NOT executed
-  expect(stack).not.toHaveResource('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Action: 'action:Work',
-          Effect: 'Allow',
-          Resource: '*',
-        },
-      ],
-    },
-  });
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
 });
 
 test('we can add a lifecycle hook to an ASG with a role and with a notificationTargetArn', () => {
@@ -131,14 +119,14 @@ test('we can add a lifecycle hook to an ASG with a role and with a notificationT
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
     NotificationTargetARN: 'target:arn',
     LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING',
     DefaultResult: 'ABANDON',
   });
 
   // the provided role (myrole), not the default role, is used
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [

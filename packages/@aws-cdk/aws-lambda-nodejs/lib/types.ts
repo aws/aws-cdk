@@ -59,7 +59,8 @@ export interface BundlingOptions {
   readonly loader?: { [ext: string]: string };
 
   /**
-   * Log level for esbuild
+   * Log level for esbuild. This is also propagated to the package manager and
+   * applies to its specific install command.
    *
    * @default LogLevel.WARNING
    */
@@ -203,11 +204,31 @@ export interface BundlingOptions {
   readonly esbuildVersion?: string;
 
   /**
+   * Build arguments to pass into esbuild.
+   *
+   * For example, to add the [--log-limit](https://esbuild.github.io/api/#log-limit) flag:
+   *
+   * ```text
+   * new NodejsFunction(scope, id, {
+   *   ...
+   *   bundling: {
+   *     esbuildArgs: {
+   *       "--log-limit": "0",
+   *     }
+   *   }
+   * });
+   * ```
+   *
+   * @default - no additional esbuild arguments are passed
+   */
+  readonly esbuildArgs?: { [key: string]: string | boolean };
+
+  /**
    * Build arguments to pass when building the bundling image.
    *
    * @default - no build arguments are passed
    */
-  readonly buildArgs?: { [key:string] : string };
+  readonly buildArgs?: { [key: string]: string };
 
   /**
    * Force bundling in a Docker container even if local bundling is
@@ -235,7 +256,7 @@ export interface BundlingOptions {
    * This image should have esbuild installed globally. If you plan to use `nodeModules`
    * it should also have `npm` or `yarn` depending on the lock file you're using.
    *
-   * See https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile
+   * See https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile
    * for the default image provided by @aws-cdk/aws-lambda-nodejs.
    *
    * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
@@ -278,6 +299,15 @@ export interface BundlingOptions {
    * @default ['main', 'module']
    */
   readonly mainFields?: string[];
+
+  /**
+   * This option allows you to automatically replace a global variable with an
+   * import from another file.
+   *
+   * @see https://esbuild.github.io/api/#inject
+   * @default - no code is injected
+   */
+  readonly inject?: string[]
 }
 
 /**
@@ -340,7 +370,7 @@ export interface ICommandHooks {
 }
 
 /**
- * Log level for esbuild
+ * Log levels for esbuild and package managers' install commands.
  */
 export enum LogLevel {
   /** Show everything */
