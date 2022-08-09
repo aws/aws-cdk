@@ -1,5 +1,5 @@
 {
-  "$version": "81.1.0",
+  "$version": "83.0.0",
   "PropertyTypes": {
     "AWS::MediaPackage::Asset.EgressEndpoint": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediapackage-asset-egressendpoint.html",
@@ -142,6 +142,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediapackage-originendpoint-dashpackage.html#cfn-mediapackage-originendpoint-dashpackage-encryption",
           "Required": false,
           "Type": "DashEncryption",
+          "UpdateType": "Mutable"
+        },
+        "IncludeIframeOnlyStream": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediapackage-originendpoint-dashpackage.html#cfn-mediapackage-originendpoint-dashpackage-includeiframeonlystream",
+          "PrimitiveType": "Boolean",
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "ManifestLayout": {
