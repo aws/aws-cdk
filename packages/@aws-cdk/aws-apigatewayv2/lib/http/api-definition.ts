@@ -3,7 +3,7 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { CfnApi } from '../apigatewayv2.generated';
-import { IHttpApi } from './httpapi';
+import { IHttpApi } from './api';
 
 /**
  * Represents an OpenAPI definition asset.
