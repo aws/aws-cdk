@@ -1240,3 +1240,34 @@ describe('key specs and key usages', () => {
       .toThrow('key rotation cannot be enabled on asymmetric keys');
   });
 });
+
+describe('Key.fromKeyArn()', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'Base', {
+      env: { account: '111111111111', region: 'stack-region' },
+    });
+  });
+
+  describe('for a state machine in a different account and region', () => {
+    let mach: kms.IKey;
+
+    beforeEach(() => {
+      mach = kms.Key.fromKeyArn(
+        stack,
+        'iMach',
+        'arn:aws:states:machine-region:222222222222:stateMachine:machine-name',
+      );
+    });
+
+    test("the key's region is taken from the ARN", () => {
+      expect(mach.env.region).toBe('machine-region');
+    });
+
+    test("the key's account is taken from the ARN", () => {
+      expect(mach.env.account).toBe('222222222222');
+    });
+  });
+});
