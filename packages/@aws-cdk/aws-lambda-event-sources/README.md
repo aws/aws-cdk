@@ -261,6 +261,9 @@ const topic = 'some-cool-topic';
 // The secret that allows access to your self hosted Kafka cluster
 declare const secret: Secret;
 
+// (Optional) The secret containing the root CA certificate that your Kafka brokers use for TLS encryption
+declare const encryption: Secret;
+
 declare const myFunction: lambda.Function;
 myFunction.addEventSource(new SelfManagedKafkaEventSource({
   bootstrapServers: bootstrapServers,
@@ -268,6 +271,7 @@ myFunction.addEventSource(new SelfManagedKafkaEventSource({
   secret: secret,
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  encryption: encryption // optional
 }));
 ```
 

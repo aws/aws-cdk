@@ -36,6 +36,7 @@
       "disable": true
     },
     "stripDeprecated": true,
+    "compressAssembly": true,
     "post": [
       "node ./scripts/verify-imports-resolve-same.js",
       "node ./scripts/verify-imports-shielded.js",
@@ -362,7 +363,7 @@
     "@types/node": "^14.18.23",
     "@types/jest": "^27.5.2",
     "constructs": "^10.0.0",
-    "esbuild": "^0.14.51",
+    "esbuild": "^0.14.53",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "jest": "^27.5.1",
