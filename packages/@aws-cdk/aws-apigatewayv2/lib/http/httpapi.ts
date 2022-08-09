@@ -78,13 +78,7 @@ export interface IHttpApi extends IApi {
 /**
  * Properties to initialize an instance of `HttpApi`.
  */
-export interface HttpApiProps {
-  /**
-   * Name for the HTTP API resource
-   * @default - id of the HttpApi construct.
-   */
-  readonly apiName?: string;
-
+export interface HttpApiPropsBase {
   /**
    * The description of the API.
    * @default - none
@@ -139,6 +133,17 @@ export interface HttpApiProps {
    * @default - no default authorization scopes
    */
   readonly defaultAuthorizationScopes?: string[];
+}
+
+/**
+ * Properties to initialize an instance of `HttpApi`.
+ */
+export interface HttpApiProps extends HttpApiPropsBase {
+  /**
+   * Name for the HTTP API resource
+   * @default - id of the HttpApi construct.
+   */
+  readonly apiName?: string;
 }
 
 /**
@@ -471,7 +476,7 @@ export class HttpApi extends HttpApiBase {
 /**
  * Props to instantiate a new SpecHttpApi
  */
-export interface SpecHttpApiProps extends HttpApiProps {
+export interface SpecHttpApiProps {
   /**
    * An OpenAPI definition compatible with API Gateway.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
@@ -492,7 +497,6 @@ export class SpecHttpApi extends HttpApiBase {
     super(scope, id);
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnApi(this, 'Resource', {
-      name: props.apiName,
       body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
     });
