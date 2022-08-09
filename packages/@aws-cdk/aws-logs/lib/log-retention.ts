@@ -39,6 +39,12 @@ export interface LogRetentionProps {
    * @default - AWS SDK default retry options
    */
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
+
+  /**
+   * The removalPolicy for the log group when the stack is deleted
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: cdk.RemovalPolicy;
 }
 
 /**
@@ -93,6 +99,7 @@ export class LogRetention extends Construct {
           base: retryOptions.base?.toMilliseconds(),
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
+        RemovalPolicy: props.removalPolicy,
       },
     });
 
@@ -151,6 +158,29 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       // creates a CF circular dependency.
       resources: ['*'],
     }));
+    // if removalPolicy is DESTROY, add action for DeleteLogGroup and DeleteLogStream
+    if (props.removalPolicy === cdk.RemovalPolicy.DESTROY) {
+      role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['logs:DeleteLogGroup'],
+        //Only allow deleting the specific log group.
+        resources: [cdk.Stack.of(this).formatArn({
+          service: 'logs',
+          resource: 'log-group',
+          resourceName: `${props.logGroupName}:*`,
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        })],
+      }));
+      role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['logs:DeleteLogStream'],
+        //Only allow deleting the specific log group.
+        resources: [cdk.Stack.of(this).formatArn({
+          service: 'logs',
+          resource: `log-group:${props.logGroupName}:log-stream`,
+          resourceName: '*',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        })],
+      }));
+    }
 
     // Lambda function
     const resource = new cdk.CfnResource(this, 'Resource', {
