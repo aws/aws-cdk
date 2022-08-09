@@ -149,11 +149,12 @@ export interface IntegTestOptions {
   readonly dryRun?: boolean;
 
   /**
-   * Whether to enable verbose logging
+   * The level of verbosity for logging.
+   * Higher number means more output.
    *
-   * @default false
+   * @default 0
    */
-  readonly verbose?: boolean;
+  readonly verbosity?: number;
 
   /**
    * If this is set to true then the stack update workflow will be disabled

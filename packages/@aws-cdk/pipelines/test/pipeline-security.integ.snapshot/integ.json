@@ -1,16 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.pipeline-security": {
+    "PipelineSecurityTest/DefaultTest": {
       "stacks": [
         "PipelineSecurityStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "PipelineSecurityTestDefaultTestDeployAssertEE246BCA"
     }
-  },
-  "synthContext": {
-    "@aws-cdk/core:newStyleStackSynthesis": "true"
-  },
-  "enableLookups": false
+  }
 }
