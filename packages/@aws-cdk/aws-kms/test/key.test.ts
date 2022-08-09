@@ -1251,7 +1251,7 @@ describe('Key.fromKeyArn()', () => {
     });
   });
 
-  describe('for a state machine in a different account and region', () => {
+  describe('for a key in a different account and region', () => {
     let key: kms.IKey;
 
     beforeEach(() => {
