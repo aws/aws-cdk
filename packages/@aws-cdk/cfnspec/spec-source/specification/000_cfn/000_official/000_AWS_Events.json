@@ -1,5 +1,5 @@
 {
-  "$version": "81.0.0",
+  "$version": "83.0.0",
   "PropertyTypes": {
     "AWS::Events::Connection.ApiKeyAuthParameters": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-connection-apikeyauthparameters.html",

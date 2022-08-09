@@ -1583,12 +1583,12 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
       logPublishingOptions: logPublishing,
-      cognitoOptions: {
-        enabled: props.cognitoDashboardsAuth != null,
+      cognitoOptions: props.cognitoDashboardsAuth ? {
+        enabled: true,
         identityPoolId: props.cognitoDashboardsAuth?.identityPoolId,
         roleArn: props.cognitoDashboardsAuth?.role.roleArn,
         userPoolId: props.cognitoDashboardsAuth?.userPoolId,
-      },
+      }: undefined,
       vpcOptions: cfnVpcOptions,
       snapshotOptions: props.automatedSnapshotStartHour
         ? { automatedSnapshotStartHour: props.automatedSnapshotStartHour }
