@@ -1,0 +1,63 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-assets-bundling-docker-opts": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-assets-bundling-docker-opts.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-assets-bundling-docker-opts": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22",
+              "id": "98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22",
+              "packaging": "zip",
+              "sourceHash": "98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22",
+              "s3BucketParameter": "AssetParameters98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22S3BucketC921DFA4",
+              "s3KeyParameter": "AssetParameters98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22S3VersionKey4EB943F1",
+              "artifactHashParameter": "AssetParameters98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22ArtifactHashA4014A8F"
+            }
+          }
+        ],
+        "/cdk-integ-assets-bundling-docker-opts/AssetParameters/98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22S3BucketC921DFA4"
+          }
+        ],
+        "/cdk-integ-assets-bundling-docker-opts/AssetParameters/98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22S3VersionKey4EB943F1"
+          }
+        ],
+        "/cdk-integ-assets-bundling-docker-opts/AssetParameters/98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22ArtifactHashA4014A8F"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-assets-bundling-docker-opts"
+    },
+    "cdkintegs3assetsbundlingdockeroptsDefaultTestDeployAssert7B7BC575": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdkintegs3assetsbundlingdockeroptsDefaultTestDeployAssert7B7BC575.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "cdk-integ-s3-assets-bundling-docker-opts/DefaultTest/DeployAssert"
+    }
+  }
+}

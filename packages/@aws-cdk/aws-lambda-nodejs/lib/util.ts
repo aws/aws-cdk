@@ -175,6 +175,8 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
     if (type === 'boolean') {
       if (value) {
         compilerOptionsString += option + ' ';
+      } else {
+        compilerOptionsString += option + ' false ';
       }
     } else if (type === 'string') {
       compilerOptionsString += option + ' ' + value + ' ';

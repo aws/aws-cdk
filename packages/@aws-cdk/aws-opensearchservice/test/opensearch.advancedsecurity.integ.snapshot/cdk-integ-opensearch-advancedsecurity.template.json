@@ -24,9 +24,6 @@
      "InstanceType": "r5.large.search",
      "ZoneAwarenessEnabled": false
     },
-    "CognitoOptions": {
-     "Enabled": false
-    },
     "DomainEndpointOptions": {
      "EnforceHTTPS": true,
      "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"

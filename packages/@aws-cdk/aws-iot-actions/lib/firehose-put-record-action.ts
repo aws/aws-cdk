@@ -70,7 +70,10 @@ export class FirehosePutRecordAction implements iot.IAction {
     this.role = props.role;
   }
 
-  bind(rule: iot.ITopicRule): iot.ActionConfig {
+  /**
+   * @internal
+   */
+  public _bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
     this.stream.grantPutRecords(role);
 

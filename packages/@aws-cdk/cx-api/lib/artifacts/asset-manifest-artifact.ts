@@ -38,7 +38,7 @@ export class AssetManifestArtifact extends CloudArtifact {
   /**
    * Version of bootstrap stack required to deploy this stack
    */
-  public readonly requiresBootstrapStackVersion: number;
+  public readonly requiresBootstrapStackVersion: number | undefined;
 
   /**
    * Name of SSM parameter with bootstrap stack version
@@ -55,7 +55,7 @@ export class AssetManifestArtifact extends CloudArtifact {
       throw new Error('Invalid AssetManifestArtifact. Missing "file" property');
     }
     this.file = path.resolve(this.assembly.directory, properties.file);
-    this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion ?? 1;
+    this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
     this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
   }
 }

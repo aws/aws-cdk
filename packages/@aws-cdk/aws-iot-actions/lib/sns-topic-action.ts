@@ -58,7 +58,10 @@ export class SnsTopicAction implements iot.IAction {
     this.messageFormat = props.messageFormat;
   }
 
-  bind(rule: iot.ITopicRule): iot.ActionConfig {
+  /**
+   * @internal
+   */
+  public _bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
     this.topic.grantPublish(role);
 

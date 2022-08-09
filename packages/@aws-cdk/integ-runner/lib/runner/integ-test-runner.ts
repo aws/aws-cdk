@@ -48,6 +48,13 @@ export interface RunOptions {
    * @default true
    */
   readonly updateWorkflow?: boolean;
+
+  /**
+   * The level of verbosity for logging.
+   *
+   * @default 0
+   */
+  readonly verbosity?: number;
 }
 
 /**
@@ -148,6 +155,11 @@ export class IntegTestRunner extends IntegRunner {
     const clean = options.clean ?? true;
     const updateWorkflowEnabled = (options.updateWorkflow ?? true)
       && (actualTestCase.stackUpdateWorkflow ?? true);
+    const enableForVerbosityLevel = (needed = 1) => {
+      const verbosity = options.verbosity ?? 0;
+      return (verbosity >= needed) ? true : undefined;
+    };
+
     try {
       if (!options.dryRun && (actualTestCase.cdkCommandOptions?.deploy?.enabled ?? true)) {
         assertionResults = this.deploy(
@@ -155,6 +167,8 @@ export class IntegTestRunner extends IntegRunner {
             ...this.defaultArgs,
             profile: this.profile,
             requireApproval: RequireApproval.NEVER,
+            verbose: enableForVerbosityLevel(3),
+            debug: enableForVerbosityLevel(4),
           },
           updateWorkflowEnabled,
           options.testCaseName,
@@ -189,6 +203,8 @@ export class IntegTestRunner extends IntegRunner {
             output: path.relative(this.directory, this.cdkOutDir),
             ...actualTestCase.cdkCommandOptions?.destroy?.args,
             context: this.getContext(actualTestCase.cdkCommandOptions?.destroy?.args?.context),
+            verbose: enableForVerbosityLevel(3),
+            debug: enableForVerbosityLevel(4),
           });
         }
       }

@@ -1,0 +1,137 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.58"
+        }
+      },
+      "cdk-integ-assets-bundling-docker-opts": {
+        "id": "cdk-integ-assets-bundling-docker-opts",
+        "path": "cdk-integ-assets-bundling-docker-opts",
+        "children": {
+          "BundledAsset": {
+            "id": "BundledAsset",
+            "path": "cdk-integ-assets-bundling-docker-opts/BundledAsset",
+            "children": {
+              "Stage": {
+                "id": "Stage",
+                "path": "cdk-integ-assets-bundling-docker-opts/BundledAsset/Stage",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "AssetBucket": {
+                "id": "AssetBucket",
+                "path": "cdk-integ-assets-bundling-docker-opts/BundledAsset/AssetBucket",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3-assets.Asset",
+              "version": "0.0.0"
+            }
+          },
+          "AssetParameters": {
+            "id": "AssetParameters",
+            "path": "cdk-integ-assets-bundling-docker-opts/AssetParameters",
+            "children": {
+              "98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22": {
+                "id": "98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22",
+                "path": "cdk-integ-assets-bundling-docker-opts/AssetParameters/98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "cdk-integ-assets-bundling-docker-opts/AssetParameters/98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "cdk-integ-assets-bundling-docker-opts/AssetParameters/98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "cdk-integ-assets-bundling-docker-opts/AssetParameters/98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.58"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.58"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-integ-s3-assets-bundling-docker-opts": {
+        "id": "cdk-integ-s3-assets-bundling-docker-opts",
+        "path": "cdk-integ-s3-assets-bundling-docker-opts",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-s3-assets-bundling-docker-opts/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-s3-assets-bundling-docker-opts/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.58"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-s3-assets-bundling-docker-opts/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

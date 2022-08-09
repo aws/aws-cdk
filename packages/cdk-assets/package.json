@@ -39,7 +39,7 @@
     "@types/yargs": "^15.0.14",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "jest": "^27.5.1",
-    "jszip": "^3.10.0",
+    "jszip": "^3.10.1",
     "mock-fs": "^4.14.0",
     "@aws-cdk/pkglint": "0.0.0"
   },

@@ -218,22 +218,30 @@ class EasyDkim extends DkimIdentity {
 
   public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IPublicHostedZone): DkimIdentityConfig | undefined {
     if (hostedZone) {
-      new route53.CnameRecord(emailIdentity, 'DkimDnsToken1', {
-        zone: hostedZone,
-        recordName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName1 }),
-        domainName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue1 }),
+      // Use CfnRecordSet instead of CnameRecord to avoid current bad handling of
+      // tokens in route53.determineFullyQualifiedDomainName() at https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-route53/lib/util.ts
+      new route53.CfnRecordSet(emailIdentity, 'DkimDnsToken1', {
+        hostedZoneId: hostedZone.hostedZoneId,
+        name: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName1 }),
+        type: 'CNAME',
+        resourceRecords: [Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue1 })],
+        ttl: '1800',
       });
 
-      new route53.CnameRecord(hostedZone, 'DkimDnsToken2', {
-        zone: hostedZone,
-        recordName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName2 }),
-        domainName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue2 }),
+      new route53.CfnRecordSet(emailIdentity, 'DkimDnsToken2', {
+        hostedZoneId: hostedZone.hostedZoneId,
+        name: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName2 }),
+        type: 'CNAME',
+        resourceRecords: [Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue2 })],
+        ttl: '1800',
       });
 
-      new route53.CnameRecord(hostedZone, 'DkimDnsToken3', {
-        zone: hostedZone,
-        recordName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName3 }),
-        domainName: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue3 }),
+      new route53.CfnRecordSet(emailIdentity, 'DkimDnsToken3', {
+        hostedZoneId: hostedZone.hostedZoneId,
+        name: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName3 }),
+        type: 'CNAME',
+        resourceRecords: [Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue3 })],
+        ttl: '1800',
       });
     }
 

@@ -139,3 +139,8 @@ removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.onFai
 
 # removed kubernetes version from EKS
 removed:@aws-cdk/aws-eks.KubernetesVersion.V1_22
+
+# changed the type of requiresBootstrapStackVersion to Optional<number> (formerly number)
+# to allow the CLI to skip validating the bootstrap stack when the stack is not needed
+changed-type:@aws-cdk/cx-api.AssetManifestArtifact.requiresBootstrapStackVersion
+

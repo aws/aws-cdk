@@ -28,7 +28,18 @@
        ]
       }
      ]
-    }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-asg-integ/MainLT"
+       }
+      ]
+     }
+    ]
    }
   },
   "T4gLT8FF7D308": {
@@ -59,7 +70,18 @@
        ]
       }
      ]
-    }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-asg-integ/T4gLT"
+       }
+      ]
+     }
+    ]
    }
   },
   "VPCB9E5F0B4": {
