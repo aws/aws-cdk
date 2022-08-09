@@ -60,14 +60,15 @@ export enum IgnoreMode {
 
 interface FileOptions {
   /**
-   * Glob patterns to exclude from the copy.
+   * File paths matching the patterns will be excluded. See `ignoreMode` to set the matching behavior.
+   * Has no effect on Assets bundled using the `bundling` property.
    *
    * @default - nothing is excluded
    */
   readonly exclude?: string[];
 
   /**
-   * The ignore behavior to use for exclude patterns.
+   * The ignore behavior to use for `exclude` patterns.
    *
    * @default IgnoreMode.GLOB
    */
