@@ -94,7 +94,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       physicalName: props.responseHeadersPolicyName,
     });
 
-    const responseHeadersPolicyName = props.responseHeadersPolicyName ?? Names.uniqueId(this);
+    const responseHeadersPolicyName = props.responseHeadersPolicyName ?? this.generateUniqueId();
 
     const resource = new CfnResponseHeadersPolicy(this, 'Resource', {
       responseHeadersPolicyConfig: {
@@ -139,6 +139,14 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       }: undefined,
       xssProtection: behavior.xssProtection,
     };
+  }
+
+  private generateUniqueId(): string {
+    const name = Names.uniqueId(this);
+    if (name.length > 128) {
+      return name.substring(0, 64) + name.substring(name.length - 64);
+    }
+    return name;
   }
 }
 
