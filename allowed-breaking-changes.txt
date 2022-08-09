@@ -139,3 +139,8 @@ removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.onFai
 
 # removed kubernetes version from EKS
 removed:@aws-cdk/aws-eks.KubernetesVersion.V1_22
+
+# change the type of vpcEndpoint from ec2.IInterfaceVpcEndpoint to ec2.InterfaceVpcEndpoint.
+# even though it accepted IInterfaceVpcEndpoint, the actual implementation required a
+# managed construct ec2.InterfaceVpcEndpoint
+incompatible-argument:@aws-cdk/aws-route53-targets.InterfaceVpcEndpointTarget.<initializer>
