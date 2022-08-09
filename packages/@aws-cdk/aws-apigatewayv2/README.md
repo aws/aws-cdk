@@ -457,8 +457,6 @@ OpenAPI](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gatewa
 The following code creates an HTTP API using an external OpenAPI definition JSON file -
 
 ```ts
-declare const integration: apigateway.Integration;
-
 const api = new apigwv2.SpecHttpApi(this, 'books-api', {
   apiDefinition: apigwv2.ApiDefinition.fromAsset('path-to-file.json')
 });
