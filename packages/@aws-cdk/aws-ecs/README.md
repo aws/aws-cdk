@@ -498,7 +498,7 @@ taskDefinition.addContainer('container', {
   linuxParameters: new ecs.LinuxParameters(this, 'LinuxParameters', {
     initProcessEnabled: true,
     sharedMemorySize: 1024,
-    maxSwap: 5e3,
+    maxSwap: 5000,
     swappiness: 90,
   }),
 });

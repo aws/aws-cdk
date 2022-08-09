@@ -106,11 +106,11 @@ export class LinuxParameters extends Construct {
   }
 
   private validateProps(props: LinuxParametersProps) {
-    if (props.maxSwap !== undefined && (!Number.isInteger(props.maxSwap) || props.maxSwap < 0)) {
+    if (!cdk.Token.isUnresolved(props.maxSwap) && props.maxSwap !== undefined && (!Number.isInteger(props.maxSwap) || props.maxSwap < 0)) {
       throw new Error(`maxSwap: Must be a positive integer; received ${props.maxSwap}.`);
     }
 
-    if (props.swappiness !== undefined && (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)) {
+    if (!cdk.Token.isUnresolved(props.swappiness) && props.swappiness !== undefined && (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)) {
       throw new Error(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`);
     }
   }
