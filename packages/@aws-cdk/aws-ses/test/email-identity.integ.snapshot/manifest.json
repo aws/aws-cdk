@@ -21,22 +21,22 @@
             "data": "HostedZoneDB99F866"
           }
         ],
-        "/cdk-ses-email-identity-integ/HostedZone/DkimDnsToken2/Resource": [
+        "/cdk-ses-email-identity-integ/EmailIdentity/DkimDnsToken1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HostedZoneDkimDnsToken2A07BC1AD"
+            "data": "EmailIdentityDkimDnsToken1BA32ACB3"
           }
         ],
-        "/cdk-ses-email-identity-integ/HostedZone/DkimDnsToken3/Resource": [
+        "/cdk-ses-email-identity-integ/EmailIdentity/DkimDnsToken2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HostedZoneDkimDnsToken34DA6A373"
+            "data": "EmailIdentityDkimDnsToken2BBEBB8EC"
           }
         ],
-        "/cdk-ses-email-identity-integ/EmailIdentity/DkimDnsToken1/Resource": [
+        "/cdk-ses-email-identity-integ/EmailIdentity/DkimDnsToken3": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EmailIdentityDkimDnsToken15F8EC787"
+            "data": "EmailIdentityDkimDnsToken3BB5E8A49"
           }
         ],
         "/cdk-ses-email-identity-integ/EmailIdentity/Resource": [
