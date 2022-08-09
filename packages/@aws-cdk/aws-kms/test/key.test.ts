@@ -1252,22 +1252,22 @@ describe('Key.fromKeyArn()', () => {
   });
 
   describe('for a state machine in a different account and region', () => {
-    let mach: kms.IKey;
+    let key: kms.IKey;
 
     beforeEach(() => {
-      mach = kms.Key.fromKeyArn(
+      key = kms.Key.fromKeyArn(
         stack,
-        'iMach',
-        'arn:aws:states:machine-region:222222222222:stateMachine:machine-name',
+        'iKey',
+        'arn:aws:kms:key-region:222222222222:key:key-name',
       );
     });
 
     test("the key's region is taken from the ARN", () => {
-      expect(mach.env.region).toBe('machine-region');
+      expect(key.env.region).toBe('key-region');
     });
 
     test("the key's account is taken from the ARN", () => {
-      expect(mach.env.account).toBe('222222222222');
+      expect(key.env.account).toBe('222222222222');
     });
   });
 });
