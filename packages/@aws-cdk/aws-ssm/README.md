@@ -13,20 +13,6 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-## Installation
-
-Install the module:
-
-```console
-$ npm i @aws-cdk/aws-ssm
-```
-
-Import it into your code:
-
-```ts nofixture
-import * as ssm from '@aws-cdk/aws-ssm';
-```
-
 ## Using existing SSM Parameters in your CDK app
 
 You can reference existing SSM Parameter Store values that you want to use in
