@@ -36,6 +36,13 @@ export interface BundlingProps extends BundlingOptions {
   readonly architecture?: Architecture;
 
   /**
+   * Where to mount the specified volumes from
+   *
+   * @default - the system running docker
+   */
+  readonly volumesFrom?: string;
+
+  /**
    * Whether or not the bundling process should be skipped
    *
    * @default - Does not skip bundling
@@ -59,6 +66,7 @@ export class Bundling implements CdkBundlingOptions {
   public readonly image: DockerImage;
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
+  public readonly volumesFrom?: string | undefined;
 
   constructor(props: BundlingProps) {
     const {
@@ -86,6 +94,7 @@ export class Bundling implements CdkBundlingOptions {
     });
     this.command = ['bash', '-c', chain(bundlingCommands)];
     this.environment = props.environment;
+    this.volumesFrom = props.volumesFrom;
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {
