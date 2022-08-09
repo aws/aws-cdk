@@ -93,10 +93,6 @@ export class S3ApiDefinition extends ApiDefinition {
   constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
     super();
 
-    if (!bucket.bucketName) {
-      throw new Error('bucketName is undefined for the provided bucket');
-    }
-
     this.bucketName = bucket.bucketName;
   }
 
