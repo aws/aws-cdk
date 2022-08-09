@@ -1,6 +1,6 @@
 import { testDeprecated, testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Fact } from '@aws-cdk/region-info';
+import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { Construct, Node } from 'constructs';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
@@ -865,6 +865,43 @@ describe('stack', () => {
 
     // THEN
     expect(stack.resolve(stack.region)).toEqual('es-norst-1');
+  });
+
+  describe('stack partition literal feature flag', () => {
+    // GIVEN
+    const featureFlag = { [cxapi.ENABLE_PARTITION_LITERALS]: true };
+    const envForRegion = (region: string) => { return { env: { account: '123456789012', region: region } }; };
+
+    // THEN
+    describe('does not change missing or unknown region behaviors', () => {
+      test('stacks with no region defined', () => {
+        const noRegionStack = new Stack(new App(), 'MissingRegion');
+        expect(noRegionStack.partition).toEqual(Aws.PARTITION);
+      });
+
+      test('stacks with an unknown region', () => {
+        const imaginaryRegionStack = new Stack(new App(), 'ImaginaryRegion', envForRegion('us-area51'));
+        expect(imaginaryRegionStack.partition).toEqual(Aws.PARTITION);
+      });
+    });
+
+    describe('changes known region behaviors only when enabled', () => {
+      test('(disabled)', () => {
+        const app = new App();
+        RegionInfo.regions.forEach(function(region) {
+          const regionStack = new Stack(app, `Region-${region.name}`, envForRegion(region.name));
+          expect(regionStack.partition).toEqual(Aws.PARTITION);
+        });
+      });
+
+      test('(enabled)', () => {
+        const app = new App({ context: featureFlag });
+        RegionInfo.regions.forEach(function(region) {
+          const regionStack = new Stack(app, `Region-${region.name}`, envForRegion(region.name));
+          expect(regionStack.partition).toEqual(RegionInfo.get(region.name).partition);
+        });
+      });
+    });
   });
 
   test('overrideLogicalId(id) can be used to override the logical ID of a resource', () => {
