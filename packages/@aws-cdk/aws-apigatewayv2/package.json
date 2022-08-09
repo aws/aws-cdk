@@ -104,6 +104,7 @@
     "constructs": "^10.0.0"
   },
   "peerDependencies": {
+    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",

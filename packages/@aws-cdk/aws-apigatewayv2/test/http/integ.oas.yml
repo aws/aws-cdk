@@ -1,0 +1,22 @@
+openapi: 3.0.0
+info:
+  version: 0.0.0
+paths:
+  /hello-world:
+    get:
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelloWorld'
+components:
+  schemas:
+    HelloWorld:
+      type: object
+      properties:
+        hello:
+          description: Email address
+          type: string
+          example: world
