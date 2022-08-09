@@ -7,20 +7,41 @@ const stack = new cdk.Stack(app, 'aws-cdk-aws-apigatewayv2-from-open-api-spec');
 
 new apigw.SpecHttpApi(stack, 'oas-api', {
   apiDefinition: apigw.ApiDefinition.fromInline({
-    openapi: '3.0.0',
-    info: {
-      version: '0.0.0',
-      title: 'Example API',
-      description: 'An example OpenAPI spec.',
-    },
+    openapi: '3.0.2',
     paths: {
-      '/list': {
+      '/pets': {
         get: {
-          responses: {
+          'responses': {
             200: {
-              description: 'Successful response',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Empty',
+                  },
+                },
+              },
             },
           },
+          'x-amazon-apigateway-integration': {
+            responses: {
+              default: {
+                statusCode: '200',
+              },
+            },
+            requestTemplates: {
+              'application/json': '{"statusCode": 200}',
+            },
+            passthroughBehavior: 'when_no_match',
+            type: 'mock',
+          },
+        },
+      },
+    },
+    components: {
+      schemas: {
+        Empty: {
+          title: 'Empty Schema',
+          type: 'object',
         },
       },
     },
