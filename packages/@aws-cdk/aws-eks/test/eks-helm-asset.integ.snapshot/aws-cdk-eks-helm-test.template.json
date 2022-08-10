@@ -668,13 +668,6 @@
                                     "authenticator",
                                     "scheduler"
                                 ]
-                            },
-                            {
-                                "enabled": false,
-                                "types": [
-                                    "audit",
-                                    "controllerManager"
-                                ]
                             }
                         ]
                     }
