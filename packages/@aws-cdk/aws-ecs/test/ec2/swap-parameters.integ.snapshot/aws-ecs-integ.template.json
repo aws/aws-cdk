@@ -876,7 +876,7 @@
       "Image": "amazon/amazon-ecs-sample",
       "LinuxParameters": {
        "Capabilities": {},
-       "MaxSwap": 5000,
+       "MaxSwap": 5120,
        "Swappiness": 90
       },
       "Memory": 256,
