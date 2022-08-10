@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.37.1](https://github.com/aws/aws-cdk/compare/v2.37.0...v2.37.1) (2022-08-10)
+
+### Bug Fixes
+
+* **eks:** revert "fix(eks): cannot disable cluster logging once it has been enabled" ([#21545](https://github.com/aws/aws-cdk/pull/21545)) ([5515ce4](https://github.com/aws/aws-cdk/commit/5515ce4b439d7917bbba662d852acc29fea9d8a4))
+
 ## [2.37.0](https://github.com/aws/aws-cdk/compare/v2.36.0...v2.37.0) (2022-08-09)
 
 
