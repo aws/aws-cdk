@@ -1,7 +1,8 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy } from '@aws-cdk/core';
+import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
@@ -152,7 +153,7 @@ export interface RestApiBaseProps {
   /**
    * Automatically configure an AWS CloudWatch role for API Gateway.
    *
-   * @default true
+   * @default - false if `@aws-cdk/aws-apigateway:disableCloudWatchRole` is enabled, true otherwise
    */
   readonly cloudWatchRole?: boolean;
 
@@ -525,10 +526,12 @@ export abstract class RestApiBase extends Resource implements IRestApi {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
     });
+    role.applyRemovalPolicy(RemovalPolicy.RETAIN);
 
     this.cloudWatchAccount = new CfnAccount(this, 'Account', {
       cloudWatchRoleArn: role.roleArn,
     });
+    this.cloudWatchAccount.applyRemovalPolicy(RemovalPolicy.RETAIN);
 
     this.cloudWatchAccount.node.addDependency(apiResource);
   }
@@ -657,7 +660,8 @@ export class SpecRestApi extends RestApiBase {
       this.addDomainName('CustomDomain', props.domainName);
     }
 
-    const cloudWatchRole = props.cloudWatchRole ?? true;
+    const cloudWatchRoleDefault = FeatureFlags.of(this).isEnabled(APIGATEWAY_DISABLE_CLOUDWATCH_ROLE) ? false : true;
+    const cloudWatchRole = props.cloudWatchRole ?? cloudWatchRoleDefault;
     if (cloudWatchRole) {
       this._configureCloudWatchRole(resource);
     }
@@ -755,7 +759,8 @@ export class RestApi extends RestApiBase {
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
 
-    const cloudWatchRole = props.cloudWatchRole ?? true;
+    const cloudWatchRoleDefault = FeatureFlags.of(this).isEnabled(APIGATEWAY_DISABLE_CLOUDWATCH_ROLE) ? false : true;
+    const cloudWatchRole = props.cloudWatchRole ?? cloudWatchRoleDefault;
     if (cloudWatchRole) {
       this._configureCloudWatchRole(resource);
     }

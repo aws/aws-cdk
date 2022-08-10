@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.63"
         }
       },
       "StepFunctionsRestApiDeploymentStack": {
@@ -112,7 +112,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -180,7 +180,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -371,25 +371,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                          "fqn": "@aws-cdk/core.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigateway.Method",
+                      "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                  "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigateway.StepFunctionsRestApi",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           },
@@ -409,13 +409,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigateway.Deployment",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           },
@@ -439,13 +439,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigateway.Stage",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           },

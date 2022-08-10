@@ -19,6 +19,7 @@ class Test extends cdk.Stack {
     });
 
     const api = new apigateway.RestApi(this, 'MyApi', {
+      cloudWatchRole: true,
       endpointConfiguration: {
         types: [apigateway.EndpointType.PRIVATE],
         vpcEndpoints: [vpcEndpoint],

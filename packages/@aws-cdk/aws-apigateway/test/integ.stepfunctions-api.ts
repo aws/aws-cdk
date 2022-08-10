@@ -25,6 +25,7 @@ class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
 
     const api = new apigw.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
       deploy: false,
+      cloudWatchRole: true,
       stateMachine: stateMachine,
       headers: true,
       path: false,

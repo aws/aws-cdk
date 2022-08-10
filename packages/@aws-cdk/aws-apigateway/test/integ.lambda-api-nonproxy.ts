@@ -14,6 +14,7 @@ class LambdaApiIntegrationOptionsNonProxyIntegrationStack extends Stack {
     });
 
     new LambdaRestApi(this, 'lambdarestapi', {
+      cloudWatchRole: true,
       handler: fn,
       integrationOptions: {
         proxy: false,

@@ -10,6 +10,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integtest-restapi-fromdefinition-inline');
 
 const api = new apigateway.SpecRestApi(stack, 'my-api', {
+  cloudWatchRole: true,
   apiDefinition: apigateway.ApiDefinition.fromInline({
     openapi: '3.0.2',
     info: {

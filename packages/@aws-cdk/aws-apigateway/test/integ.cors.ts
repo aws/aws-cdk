@@ -9,7 +9,9 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const api = new apigw.RestApi(this, 'cors-api-test');
+    const api = new apigw.RestApi(this, 'cors-api-test', {
+      cloudWatchRole: true,
+    });
 
     const handler = new lambda.Function(this, 'handler', {
       runtime: lambda.Runtime.NODEJS_14_X,

@@ -30,7 +30,7 @@ const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
   assumeRole: role,
 });
 
-const restapi = new RestApi(stack, 'MyRestApi');
+const restapi = new RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
 
 restapi.root.addMethod('ANY', new MockIntegration({
   integrationResponses: [

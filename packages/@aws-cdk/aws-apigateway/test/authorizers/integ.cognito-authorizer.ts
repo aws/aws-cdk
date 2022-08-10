@@ -25,7 +25,7 @@ const authorizer = new CognitoUserPoolsAuthorizer(stack, 'myauthorizer', {
   cognitoUserPools: [userPool],
 });
 
-const restApi = new RestApi(stack, 'myrestapi');
+const restApi = new RestApi(stack, 'myrestapi', { cloudWatchRole: true });
 restApi.root.addMethod('ANY', new MockIntegration({
   integrationResponses: [
     { statusCode: '200' },

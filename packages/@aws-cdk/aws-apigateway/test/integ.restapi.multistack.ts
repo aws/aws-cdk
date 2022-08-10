@@ -34,6 +34,7 @@ class SecondStack extends cdk.Stack {
     super(scope, id, props);
 
     const api = new apig.RestApi(this, 'BooksApi', {
+      cloudWatchRole: true,
       restApiName: 'SecondRestAPI',
     });
     api.root.addMethod('ANY');

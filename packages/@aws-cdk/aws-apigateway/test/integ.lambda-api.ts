@@ -15,6 +15,7 @@ class LambdaApiIntegrationOptionsStack extends Stack {
 
     new LambdaRestApi(this, 'lambdarestapi', {
       handler: fn,
+      cloudWatchRole: true,
       integrationOptions: {
         timeout: Duration.seconds(1),
       },

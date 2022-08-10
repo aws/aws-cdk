@@ -12,6 +12,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integtest-restapi-fromdefinition-asset');
 
 const api = new apigateway.SpecRestApi(stack, 'my-api', {
+  cloudWatchRole: true,
   apiDefinition: apigateway.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml')),
 });
 

@@ -12,10 +12,10 @@ class MultiStack extends cdk.Stack {
       code: lambda.Code.fromInline(`exports.handler = ${helloCode}`),
     }));
 
-    const api = new apigw.RestApi(this, 'hello-api');
+    const api = new apigw.RestApi(this, 'hello-api', { cloudWatchRole: true });
     api.root.resourceForPath('/hello').addMethod('GET', hello);
 
-    const api2 = new apigw.RestApi(this, 'second-api');
+    const api2 = new apigw.RestApi(this, 'second-api', { cloudWatchRole: true });
     api2.root.resourceForPath('/hello').addMethod('GET', hello);
   }
 }

@@ -24,7 +24,7 @@ class BookStack extends cdk.Stack {
       code: lambda.Code.fromInline(`exports.handler = ${helloCode}`),
     }));
 
-    const api = new apigw.RestApi(this, 'books-api');
+    const api = new apigw.RestApi(this, 'books-api', { cloudWatchRole: true });
     api.root.addMethod('ANY', hello);
 
     const books = api.root.addResource('books', {

@@ -844,7 +844,8 @@ AWS CloudWatch for all API calls:
 
 > By default, an IAM role will be created and associated with API Gateway to
 allow it to write logs and metrics to AWS CloudWatch unless `cloudWatchRole` is
-set to `false`.
+set to `false`. To change this default behavior you can enable the feature flag
+`@aws-cdk/aws-apigateway:disableCloudWatchRole`
 
 ```ts
 const api = new apigateway.RestApi(this, 'books', {
@@ -854,6 +855,12 @@ const api = new apigateway.RestApi(this, 'books', {
   }
 })
 ```
+
+> Note: there can only be a single apigateway.CfnAccount per AWS environment
+so if you create multiple `RestApi`s with `cloudWatchRole=true` each new `RestApi`
+will overwrite the `CfnAccount`. It is recommended to set `cloudWatchRole=false`
+(the default behavior if `@aws-cdk/aws-apigateway:disableCloudWatchRole` is enabled)
+and only create a single CloudWatch role and account per environment.
 
 ### Deep dive: Invalidation of deployments
 

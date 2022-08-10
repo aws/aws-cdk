@@ -14,6 +14,7 @@ class LateBoundDeploymentStageStack extends Stack {
     });
 
     const api = new LambdaRestApi(this, 'lambdarestapi', {
+      cloudWatchRole: true,
       deploy: false,
       handler: fn,
     });
