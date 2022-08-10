@@ -98,12 +98,29 @@ test('can use SSM Incident as alarm action', () => {
   });
 
   // WHEN
-  const responsePlanArn = 'arn:aws:ssm-incidents::123456789012:response-plan/ResponsePlanName';
-  alarm.addAlarmAction(new actions.SsmIncidentAction(responsePlanArn));
+  const responsePlanName = 'ResponsePlanName';
+  alarm.addAlarmAction(new actions.SsmIncidentAction(responsePlanName));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
-    AlarmActions: [responsePlanArn],
+    AlarmActions: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':ssm-incidents::',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            ':response-plan/ResponsePlanName',
+          ],
+        ],
+      },
+    ],
   });
 });
 
