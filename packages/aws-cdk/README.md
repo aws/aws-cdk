@@ -375,7 +375,8 @@ and that you have the necessary IAM permissions to update the resources that are
 Hotswapping is currently supported for the following changes
 (additional changes will be supported in the future):
 
-- Code asset (including Docker image and inline code) and tag changes of AWS Lambda functions.
+- Code asset (including Docker image and inline code), tag changes, and configuration changes (only
+  description and environment variables are supported) of AWS Lambda functions.
 - AWS Lambda Versions and Aliases changes.
 - Definition changes of AWS Step Functions State Machines.
 - Container asset changes of AWS ECS Services.
