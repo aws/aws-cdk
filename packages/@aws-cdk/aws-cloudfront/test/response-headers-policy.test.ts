@@ -149,7 +149,7 @@ describe('ResponseHeadersPolicy', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::ResponseHeadersPolicy', {
       ResponseHeadersPolicyConfig: {
-        Name: 'StackAVeryLongIdThatMightSeemRidiculousButSometimesHappensInCdkPtedWithTheRegionAreQuiteLongMuchLongerThanYouWouldExpect39083892',
+        Name: 'StackAVeryLongIdThatMightSeemRidiculousButSometimesHappensIntenatedWithTheRegionAreQuiteLongMuchLongerThanYouWouldExpect39083892',
       },
     });
   });
