@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import * as core from '../lib';
 import { getWarnings } from './util';
 import { Names } from '../lib';
+import { addDependency } from '../lib/deps';
 
 describe('cfn resource', () => {
   describe('._toCloudFormation', () => {
@@ -222,6 +223,73 @@ describe('cfn resource', () => {
       expect(() => {
         resource1.replaceDependsOn(resource2, resource3);
       }).toThrow(/ does not depend on /);
+    });
+
+    test('do nothing if source is target', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+      const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
+      resource1.addDependsOn(resource1);
+
+      expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
+        Resource1: {
+          Type: 'Test::Resource::Fake1',
+        },
+      });
+    });
+
+    test('do nothing if target does not synth', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+
+      class NoSynthResource extends core.CfnResource {
+        protected shouldSynthesize(): boolean {
+          return false;
+        }
+      }
+
+      const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new NoSynthResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
+      resource1.removeDependsOn(resource2);
+      resource1.addDependsOn(resource2);
+
+      expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
+        Resource1: {
+          Type: 'Test::Resource::Fake1',
+        },
+      });
+    });
+
+    test('replace throws an error if oldTarget is not depended on', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+
+      const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
+      const resource3 = new core.CfnResource(stack, 'Resource3', { type: 'Test::Resource::Fake3' });
+      expect(() => {
+        resource1.replaceDependsOn(resource2, resource3);
+      }).toThrow(/does not depend on/);
+    });
+
+    test('handle source being common stack', () => {
+      const app = new core.App();
+      const stack1 = new core.Stack(app, 'TestStack1');
+      const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
+
+      // If source is the common stack, this should be a noop
+      addDependency<core.Stack | core.CfnResource>(stack1, resource1);
+      expect(stack1.dependencies.length).toEqual(0);
+    });
+
+    test('throws error if target is common stack', () => {
+      const app = new core.App();
+      const stack1 = new core.Stack(app, 'TestStack1');
+      const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
+
+      expect(() => {
+        addDependency<core.Stack | core.CfnResource>(resource1, stack1);
+      }).toThrow(/cannot depend on /);
     });
   });
 
