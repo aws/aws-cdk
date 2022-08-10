@@ -68,7 +68,7 @@ its signature against our public signing key. To do so, you need
 the following things:
 
 * [GNU Privacy Guard](https://gnupg.org/) needs to be installed.
-* Download our public key: https://s3.amazonaws.com/aws-cdk-beta/cdk-team.asc
+* Download our public key: https://docs.aws.amazon.com/cdk/v2/guide/pgp-keys.html
 * Make sure you have downloaded both `aws-cdk-x.y.z.zip`
   and `aws-cdk-x.y.z.zip.sig`.
 

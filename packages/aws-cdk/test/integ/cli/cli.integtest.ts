@@ -135,6 +135,14 @@ integTest('automatic ordering', withDefaultFixture(async (fixture) => {
   await fixture.cdkDestroy('order-providing');
 }));
 
+integTest('automatic ordering with concurrency', withDefaultFixture(async (fixture) => {
+  // Deploy the consuming stack which will include the producing stack
+  await fixture.cdkDeploy('order-consuming', { options: ['--concurrency', '2'] });
+
+  // Destroy the providing stack which will include the consuming stack
+  await fixture.cdkDestroy('order-providing');
+}));
+
 integTest('context setting', withDefaultFixture(async (fixture) => {
   await fs.writeFile(path.join(fixture.integTestDir, 'cdk.context.json'), JSON.stringify({
     contextkey: 'this is the context value',
@@ -178,7 +186,17 @@ integTest('deploy', withDefaultFixture(async (fixture) => {
 integTest('deploy all', withDefaultFixture(async (fixture) => {
   const arns = await fixture.cdkDeploy('test-*', { captureStderr: false });
 
-  // verify that we only deployed a single stack (there's a single ARN in the output)
+  // verify that we only deployed both stacks (there are 2 ARNs in the output)
+  expect(arns.split('\n').length).toEqual(2);
+}));
+
+integTest('deploy all concurrently', withDefaultFixture(async (fixture) => {
+  const arns = await fixture.cdkDeploy('test-*', {
+    captureStderr: false,
+    options: ['--concurrency', '2'],
+  });
+
+  // verify that we only deployed both stacks (there are 2 ARNs in the output)
   expect(arns.split('\n').length).toEqual(2);
 }));
 
@@ -1094,6 +1112,38 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
     // Cleanup
     await fixture.cdkDestroy('importable-stack');
   }
+}));
+
+integTest('hotswap deployment supports Lambda function\'s description and environment variables', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('lambda-hotswap', {
+    captureStderr: false,
+    modEnv: {
+      DYNAMIC_LAMBDA_PROPERTY_VALUE: 'original value',
+    },
+  });
+
+  // WHEN
+  const deployOutput = await fixture.cdkDeploy('lambda-hotswap', {
+    options: ['--hotswap'],
+    captureStderr: true,
+    onlyStderr: true,
+    modEnv: {
+      DYNAMIC_LAMBDA_PROPERTY_VALUE: 'new value',
+    },
+  });
+
+  const response = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+  const functionName = response.Stacks?.[0].Outputs?.[0].OutputValue;
+
+  // THEN
+
+  // The deployment should not trigger a full deployment, thus the stack's status must remains
+  // "CREATE_COMPLETE"
+  expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+  expect(deployOutput).toContain(`Lambda Function '${functionName}' hotswapped!`);
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {

@@ -1,17 +1,11 @@
+import { Construct } from 'constructs';
 import { EventPattern } from './event-pattern';
 import { IRuleTarget } from './target';
 
 /**
- * Standard set of options for `onXxx` event handlers on construct
+ * Common options for Events.
  */
-export interface OnEventOptions {
-  /**
-   * The target to register for the event
-   *
-   * @default - No target is added to the rule. Use `addTarget()` to add a target.
-   */
-  readonly target?: IRuleTarget;
-
+export interface EventCommonOptions {
   /**
    * A description of the rule's purpose.
    *
@@ -39,4 +33,25 @@ export interface OnEventOptions {
    * https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html
    */
   readonly eventPattern?: EventPattern;
+
+  /**
+   * The scope to use if the source of the rule and its target are in different Stacks
+   * (but in the same account & region).
+   * This helps dealing with cycles that often arise in these situations.
+   *
+   * @default - none (the main scope will be used, even for cross-stack Events)
+   */
+  readonly crossStackScope?: Construct;
+}
+
+/**
+ * Standard set of options for `onXxx` event handlers on construct
+ */
+export interface OnEventOptions extends EventCommonOptions {
+  /**
+   * The target to register for the event
+   *
+   * @default - No target is added to the rule. Use `addTarget()` to add a target.
+   */
+  readonly target?: IRuleTarget;
 }

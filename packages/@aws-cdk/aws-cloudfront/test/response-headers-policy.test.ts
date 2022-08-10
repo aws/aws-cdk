@@ -143,4 +143,14 @@ describe('ResponseHeadersPolicy', () => {
       },
     });
   });
+
+  test('it truncates long auto-generated names', () => {
+    new ResponseHeadersPolicy(stack, 'AVeryLongIdThatMightSeemRidiculousButSometimesHappensInCdkPipelinesBecauseTheStageNamesConcatenatedWithTheRegionAreQuiteLongMuchLongerThanYouWouldExpect');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::ResponseHeadersPolicy', {
+      ResponseHeadersPolicyConfig: {
+        Name: 'StackAVeryLongIdThatMightSeemRidiculousButSometimesHappensIntenatedWithTheRegionAreQuiteLongMuchLongerThanYouWouldExpect39083892',
+      },
+    });
+  });
 });
