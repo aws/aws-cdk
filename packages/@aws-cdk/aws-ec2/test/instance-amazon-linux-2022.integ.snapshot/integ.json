@@ -1,0 +1,12 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "AmazonLinux2022Test/DefaultTest": {
+      "stacks": [
+        "DefaultValueForKernel",
+        "ExplicitKernel-KernelDefault"
+      ],
+      "assertionStack": "AmazonLinux2022TestDefaultTestDeployAssert9047BA37"
+    }
+  }
+}
