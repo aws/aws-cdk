@@ -212,7 +212,7 @@
    "Properties": {
     "Content": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclustertestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3Bucket81FF031ERef"
+      "Ref": "referencetoawscdkeksclustertestAssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3Bucket8CD406DDRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -225,7 +225,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclustertestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKeyA669A4EBRef"
+             "Ref": "referencetoawscdkeksclustertestAssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3VersionKeyF46DA6ECRef"
             }
            ]
           }
@@ -238,7 +238,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclustertestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKeyA669A4EBRef"
+             "Ref": "referencetoawscdkeksclustertestAssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3VersionKeyF46DA6ECRef"
             }
            ]
           }
@@ -439,7 +439,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -498,10 +498,10 @@
   "referencetoawscdkeksclustertestClusterD76DFF87ClusterSecurityGroupId": {
    "Type": "String"
   },
-  "referencetoawscdkeksclustertestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3Bucket81FF031ERef": {
+  "referencetoawscdkeksclustertestAssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3Bucket8CD406DDRef": {
    "Type": "String"
   },
-  "referencetoawscdkeksclustertestAssetParameters01e9cf93416a1f67b17dad851459445bdaaafcc2f3ab4390c03984fd57b2f476S3VersionKeyA669A4EBRef": {
+  "referencetoawscdkeksclustertestAssetParameters02927fd0ce5bb130cbc8d11f17469e74496526efe5186a9ab36e8a8138e9a557S3VersionKeyF46DA6ECRef": {
    "Type": "String"
   },
   "referencetoawscdkeksclustertestAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket1C5C92D4Ref": {

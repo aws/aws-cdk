@@ -30,10 +30,13 @@ new ec2.Instance(stack, 'Instance2', {
         ec2.InitPackage.yum('git'),
       ]),
       config: new ec2.InitConfig([
-        ec2.InitFile.fromObject('/tmp/file2', {
+        ec2.InitFile.fromObject('/tmp/file2.json', {
           stackId: stack.stackId,
           stackName: stack.stackName,
           region: stack.region,
+          intProperty: 18,
+          boolProperty: true,
+          numProperty: 58.23,
         }),
         ec2.InitGroup.fromName('group1'),
         ec2.InitGroup.fromName('group2', 42),

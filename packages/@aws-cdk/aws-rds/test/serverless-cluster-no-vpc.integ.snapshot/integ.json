@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ.serverless-cluster-no-vpc": {
+      "stacks": [
+        "aws-cdk-sls-cluster-no-vpc-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

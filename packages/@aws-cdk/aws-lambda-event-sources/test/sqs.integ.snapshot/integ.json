@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ.sqs": {
+      "stacks": [
+        "lambda-event-source-sqs"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

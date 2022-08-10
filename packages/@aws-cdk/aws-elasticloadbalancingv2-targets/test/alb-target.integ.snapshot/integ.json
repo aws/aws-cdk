@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ.alb-target": {
+      "stacks": [
+        "TestStack"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

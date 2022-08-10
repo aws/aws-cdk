@@ -1,0 +1,63 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "test-dynamodbv2-put-item-action-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-dynamodbv2-put-item-action-stack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/test-dynamodbv2-put-item-action-stack/TopicRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicRule40A4EA44"
+          }
+        ],
+        "/test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicRuleTopicRuleActionRole246C4F77"
+          }
+        ],
+        "/test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687"
+          }
+        ],
+        "/test-dynamodbv2-put-item-action-stack/MyTable": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "MyTable794EDED1"
+            }
+          }
+        ],
+        "/test-dynamodbv2-put-item-action-stack/MyTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTable794EDED1"
+          }
+        ]
+      },
+      "displayName": "test-dynamodbv2-put-item-action-stack"
+    },
+    "dynamodbv2integtestDefaultTestDeployAssertEF9A9A37": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "dynamodbv2integtestDefaultTestDeployAssertEF9A9A37.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "dynamodbv2-integtest/DefaultTest/DeployAssert"
+    }
+  }
+}

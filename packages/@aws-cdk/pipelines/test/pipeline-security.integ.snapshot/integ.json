@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "PipelineSecurityTest/DefaultTest": {
+      "stacks": [
+        "PipelineSecurityStack"
+      ],
+      "assertionStack": "PipelineSecurityTestDefaultTestDeployAssertEE246BCA"
+    }
+  }
+}

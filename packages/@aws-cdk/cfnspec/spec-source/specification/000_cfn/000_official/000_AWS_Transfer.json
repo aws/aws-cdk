@@ -1,6 +1,12 @@
 {
-  "$version": "66.1.0",
+  "$version": "83.0.0",
   "PropertyTypes": {
+    "AWS::Transfer::Server.As2Transport": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-as2transport.html",
+      "PrimitiveType": "String",
+      "Required": false,
+      "UpdateType": "Mutable"
+    },
     "AWS::Transfer::Server.EndpointDetails": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-endpointdetails.html",
       "Properties": {
@@ -77,8 +83,21 @@
     "AWS::Transfer::Server.ProtocolDetails": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocoldetails.html",
       "Properties": {
+        "As2Transports": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocoldetails.html#cfn-transfer-server-protocoldetails-as2transports",
+          "ItemType": "As2Transport",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "PassiveIp": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocoldetails.html#cfn-transfer-server-protocoldetails-passiveip",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "SetStatOption": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocoldetails.html#cfn-transfer-server-protocoldetails-setstatoption",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"

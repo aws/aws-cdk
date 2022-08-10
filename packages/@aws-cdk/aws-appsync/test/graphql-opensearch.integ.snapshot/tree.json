@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.58"
         }
       },
       "appsync-opensearch": {
@@ -65,9 +65,6 @@
                       "instanceCount": 1,
                       "instanceType": "r5.large.search",
                       "zoneAwarenessEnabled": false
-                    },
-                    "cognitoOptions": {
-                      "enabled": false
                     },
                     "domainEndpointOptions": {
                       "enforceHttps": true,

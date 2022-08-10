@@ -7,7 +7,7 @@ import * as cdk from '@aws-cdk/core';
  */
 export class InterfaceVpcEndpointTarget implements route53.IAliasRecordTarget {
   private readonly cfnVpcEndpoint: ec2.CfnVPCEndpoint;
-  constructor(private readonly vpcEndpoint: ec2.IInterfaceVpcEndpoint) {
+  constructor(private readonly vpcEndpoint: ec2.InterfaceVpcEndpoint) {
     this.cfnVpcEndpoint = this.vpcEndpoint.node.findChild('Resource') as ec2.CfnVPCEndpoint;
   }
 

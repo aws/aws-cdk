@@ -1,5 +1,5 @@
 {
-  "$version": "66.1.0",
+  "$version": "83.0.0",
   "PropertyTypes": {
     "AWS::MSK::Cluster.BrokerLogs": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-msk-cluster-brokerlogs.html",
@@ -535,7 +535,7 @@
         "Name": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-msk-configuration.html#cfn-msk-configuration-name",
           "PrimitiveType": "String",
-          "Required": false,
+          "Required": true,
           "UpdateType": "Immutable"
         },
         "ServerProperties": {

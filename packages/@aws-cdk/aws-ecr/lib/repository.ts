@@ -552,6 +552,8 @@ export class Repository extends RepositoryBase {
       resource: 'repository',
       resourceName: this.physicalName,
     });
+
+    this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
@@ -559,13 +561,7 @@ export class Repository extends RepositoryBase {
       this.policyDocument = new iam.PolicyDocument();
     }
     this.policyDocument.addStatements(statement);
-    return { statementAdded: false, policyDependable: this.policyDocument };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policyDocument?.validateForResourcePolicy() || []);
-    return errors;
+    return { statementAdded: true, policyDependable: this.policyDocument };
   }
 
   /**

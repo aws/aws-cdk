@@ -494,12 +494,12 @@ describe('User Pool', () => {
 
     const fn1 = new lambda.Function(stack, 'fn1', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
     });
     const fn2 = new lambda.Function(stack, 'fn2', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
     });
 
@@ -1821,12 +1821,73 @@ test('device tracking is configured correctly', () => {
   });
 });
 
+test('keep original attrs is configured correctly', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {
+    signInAliases: { username: true },
+    autoVerify: { email: true, phone: true },
+    keepOriginal: {
+      email: true,
+      phone: true,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserAttributeUpdateSettings: {
+      AttributesRequireVerificationBeforeUpdate: ['email', 'phone_number'],
+    },
+  });
+});
+
+test('grant', () => {
+  // GIVEN
+  const stack = new Stack();
+  const role = new Role(stack, 'Role', {
+    assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+  });
+
+  // WHEN
+  const userPool = new UserPool(stack, 'Pool');
+  userPool.grant(role, 'cognito-idp:AdminCreateUser', 'cognito-idp:ListUsers');
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'cognito-idp:AdminCreateUser',
+            'cognito-idp:ListUsers',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'PoolD3F588B8',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Roles: [
+      {
+        Ref: 'Role1ABCC5F0',
+      },
+    ],
+  });
+
+});
 
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
     functionName: name,
     code: lambda.Code.fromInline('foo'),
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
   });
 }

@@ -90,6 +90,14 @@ describe('cluster user', () => {
     });
   });
 
+  it('secret property is exposed', () => {
+    const user = new redshift.User(stack, 'User', databaseOptions);
+
+    expect(stack.resolve(user.secret.secretArn)).toStrictEqual({
+      Ref: 'UserSecretE2C04A69',
+    });
+  });
+
   it('uses username when provided', () => {
     const username = 'username';
 

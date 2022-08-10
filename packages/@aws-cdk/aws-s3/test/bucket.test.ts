@@ -2911,4 +2911,16 @@ describe('bucket', () => {
       },
     });
   });
+
+  test('Event Bridge notification can be enabled after the bucket is created', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    bucket.enableEventBridgeNotification();
+
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+      NotificationConfiguration: {
+        EventBridgeConfiguration: {},
+      },
+    });
+  });
 });

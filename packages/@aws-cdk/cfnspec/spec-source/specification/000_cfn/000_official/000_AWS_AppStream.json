@@ -1,5 +1,5 @@
 {
-  "$version": "66.1.0",
+  "$version": "83.0.0",
   "PropertyTypes": {
     "AWS::AppStream::AppBlock.S3Location": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appstream-appblock-s3location.html",
@@ -201,6 +201,7 @@
       "Properties": {
         "SecurityGroupIds": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appstream-imagebuilder-vpcconfig.html#cfn-appstream-imagebuilder-vpcconfig-securitygroupids",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -208,6 +209,7 @@
         },
         "SubnetIds": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appstream-imagebuilder-vpcconfig.html#cfn-appstream-imagebuilder-vpcconfig-subnetids",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -267,6 +269,17 @@
         },
         "ResourceIdentifier": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appstream-stack-storageconnector.html#cfn-appstream-stack-storageconnector-resourceidentifier",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::AppStream::Stack.StreamingExperienceSettings": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appstream-stack-streamingexperiencesettings.html",
+      "Properties": {
+        "PreferredProtocol": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appstream-stack-streamingexperiencesettings.html#cfn-appstream-stack-streamingexperiencesettings-preferredprotocol",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -487,6 +500,7 @@
         },
         "OrganizationalUnitDistinguishedNames": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appstream-directoryconfig.html#cfn-appstream-directoryconfig-organizationalunitdistinguishednames",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -688,6 +702,7 @@
       "Properties": {
         "AccessEndpoints": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appstream-imagebuilder.html#cfn-appstream-imagebuilder-accessendpoints",
+          "DuplicatesAllowed": true,
           "ItemType": "AccessEndpoint",
           "Required": false,
           "Type": "List",
@@ -755,6 +770,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appstream-imagebuilder.html#cfn-appstream-imagebuilder-tags",
+          "DuplicatesAllowed": true,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -839,6 +855,12 @@
           "ItemType": "StorageConnector",
           "Required": false,
           "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "StreamingExperienceSettings": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appstream-stack.html#cfn-appstream-stack-streamingexperiencesettings",
+          "Required": false,
+          "Type": "StreamingExperienceSettings",
           "UpdateType": "Mutable"
         },
         "Tags": {

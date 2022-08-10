@@ -1,20 +1,30 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import { App, Stack } from '@aws-cdk/core';
 import { CloudAssemblyBuilder } from '@aws-cdk/cx-api';
-import { IntegTestCase } from '../lib';
+import { IntegTestCase, IntegTest, IntegTestCaseStack } from '../lib';
 import { IntegManifestSynthesizer } from '../lib/manifest-synthesizer';
 import { IntegManifestWriter } from '../lib/manifest-writer';
+let write: jest.SpyInstance;
+let tmpDir: string;
+let assembly: CloudAssemblyBuilder;
+
+beforeEach(() => {
+  write = jest.spyOn(IntegManifestWriter, 'write');
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
+  assembly = new CloudAssemblyBuilder(tmpDir);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe(IntegManifestSynthesizer, () => {
-  it('synthesizes a multiple manifests', () => {
-    const write = jest.spyOn(IntegManifestWriter, 'write');
-
+  it('synthesizes multiple test cases', () => {
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
-    const assembly = new CloudAssemblyBuilder(tmpDir);
 
     const synthesizer = new IntegManifestSynthesizer([
       new IntegTestCase(stack, 'case1', {
@@ -31,15 +41,73 @@ describe(IntegManifestSynthesizer, () => {
     });
 
     expect(write).toHaveBeenCalledWith({
-      version: '17.0.0',
+      version: Manifest.version(),
       testCases: {
-        case1: {
+        ['stack/case1']: {
+          assertionStack: expect.stringMatching(/DeployAssert/),
           stacks: ['stack-under-test-1'],
         },
-        case2: {
+        ['stack/case2']: {
+          assertionStack: expect.stringMatching(/DeployAssert/),
           stacks: ['stack-under-test-2'],
         },
       },
     }, tmpDir);
+  });
+
+  test('default', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    // WHEN
+    new IntegTest(app, 'Integ', {
+      testCases: [stack],
+    });
+    const integAssembly = app.synth();
+    const integManifest = Manifest.loadIntegManifest(path.join(integAssembly.directory, 'integ.json'));
+
+    // THEN
+    expect(integManifest).toEqual({
+      version: Manifest.version(),
+      testCases: {
+        ['Integ/DefaultTest']: {
+          assertionStack: expect.stringMatching(/DeployAssert/),
+          stacks: ['stack'],
+        },
+      },
+    });
+  });
+
+  test('with IntegTestCaseStack', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const testCase = new IntegTestCaseStack(app, 'Case', {
+      diffAssets: true,
+    });
+
+    // WHEN
+    new IntegTest(app, 'Integ', {
+      testCases: [stack, testCase],
+    });
+    const integAssembly = app.synth();
+    const integManifest = Manifest.loadIntegManifest(path.join(integAssembly.directory, 'integ.json'));
+
+    // THEN
+    expect(integManifest).toEqual({
+      version: Manifest.version(),
+      testCases: {
+        ['Integ/DefaultTest']: {
+          assertionStack: expect.stringMatching(/DeployAssert/),
+          stacks: ['stack'],
+        },
+        ['Case/CaseTestCase']: {
+          assertionStack: expect.stringMatching(/DeployAssert/),
+          diffAssets: true,
+          stacks: ['Case'],
+        },
+      },
+    });
   });
 });

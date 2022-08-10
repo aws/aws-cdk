@@ -25,6 +25,34 @@ export interface IEc2Environment extends cdk.IResource {
 }
 
 /**
+ * The connection type used for connecting to an Amazon EC2 environment.
+ */
+export enum ConnectionType {
+  /**
+   * Connect through SSH
+   */
+  CONNECT_SSH = 'CONNECT_SSH',
+  /**
+   * Connect through AWS Systems Manager
+   */
+  CONNECT_SSM = 'CONNECT_SSM'
+}
+
+/**
+ * The image ID used for creating an Amazon EC2 environment.
+ */
+export enum ImageId {
+  /**
+   * Create using Amazon Linux 2
+   */
+  AMAZON_LINUX_2 = 'amazonlinux-2-x86_64',
+  /**
+   * Create using Ubunut 18.04
+   */
+  UBUNTU_18_04 = 'ubuntu-18.04-x86_64'
+}
+
+/**
  * Properties for Ec2Environment
  */
 export interface Ec2EnvironmentProps {
@@ -70,6 +98,21 @@ export interface Ec2EnvironmentProps {
    */
   // readonly clonedRepositories?: Cloud9Repository[];
   readonly clonedRepositories?: CloneRepository[];
+
+  /**
+   * The connection type used for connecting to an Amazon EC2 environment.
+   *
+   * Valid values are: CONNECT_SSH (default) and CONNECT_SSM (connected through AWS Systems Manager)
+   *
+   * @default - CONNECT_SSH
+   */
+  readonly connectionType?: ConnectionType
+
+  /**
+   * The image ID used for creating an Amazon EC2 environment.
+   *
+   */
+  readonly imageId: ImageId
 }
 
 /**
@@ -129,6 +172,10 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
       throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection');
     }
 
+    if (!props.imageId) {
+      throw new Error('No imageId specified, please specify imageId');
+    }
+
     const vpcSubnets = props.subnetSelection ?? { subnetType: ec2.SubnetType.PUBLIC };
     const c9env = new CfnEnvironmentEC2(this, 'Resource', {
       name: props.ec2EnvironmentName,
@@ -139,11 +186,13 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
         repositoryUrl: r.repositoryUrl,
         pathComponent: r.pathComponent,
       })) : undefined,
+      connectionType: props.connectionType ?? ConnectionType.CONNECT_SSH,
+      imageId: props.imageId,
     });
     this.environmentId = c9env.ref;
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();
     this.ec2EnvironmentName = c9env.getAtt('Name').toString();
-    this.ideUrl = `https://${this.stack.region}.console.aws.amazon.com/cloud9/ide/${this.environmentId}`;
+    this.ideUrl = `https://${this.env.region}.console.aws.amazon.com/cloud9/ide/${this.environmentId}`;
   }
 }
 

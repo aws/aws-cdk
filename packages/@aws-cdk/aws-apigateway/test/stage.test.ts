@@ -2,6 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
+import { ApiDefinition } from '../lib';
 
 describe('stage', () => {
   test('minimal setup', () => {
@@ -395,5 +396,162 @@ describe('stage', () => {
       deployment,
       accessLogFormat: testFormat,
     })).toThrow(/Access log format is specified without a destination/);
+  });
+
+  test('default throttling settings', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    new apigateway.SpecRestApi(stack, 'testapi', {
+      apiDefinition: ApiDefinition.fromInline({
+        openapi: '3.0.2',
+      }),
+      deployOptions: {
+        throttlingBurstLimit: 0,
+        throttlingRateLimit: 0,
+        metricsEnabled: false,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
+      MethodSettings: [{
+        DataTraceEnabled: false,
+        HttpMethod: '*',
+        ResourcePath: '/*',
+        ThrottlingBurstLimit: 0,
+        ThrottlingRateLimit: 0,
+      }],
+    });
+  });
+
+  describe('Metrics', () => {
+    test('metric', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigateway.RestApi(stack, 'test-api');
+      const metricName = '4XXError';
+      const statistic = 'Sum';
+      const metric = api.deploymentStage.metric(metricName, { statistic });
+
+      // THEN
+      expect(metric.namespace).toEqual('AWS/ApiGateway');
+      expect(metric.metricName).toEqual(metricName);
+      expect(metric.statistic).toEqual(statistic);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricClientError', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigateway.RestApi(stack, 'test-api');
+      const color = '#00ff00';
+      const metric = api.deploymentStage.metricClientError({ color });
+
+      // THEN
+      expect(metric.metricName).toEqual('4XXError');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricServerError', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigateway.RestApi(stack, 'test-api');
+      const color = '#00ff00';
+      const metric = api.deploymentStage.metricServerError({ color });
+
+      // THEN
+      expect(metric.metricName).toEqual('5XXError');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricCacheHitCount', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigateway.RestApi(stack, 'test-api');
+      const color = '#00ff00';
+      const metric = api.deploymentStage.metricCacheHitCount({ color });
+
+      // THEN
+      expect(metric.metricName).toEqual('CacheHitCount');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricCacheMissCount', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigateway.RestApi(stack, 'test-api');
+      const color = '#00ff00';
+      const metric = api.deploymentStage.metricCacheMissCount({ color });
+
+      // THEN
+      expect(metric.metricName).toEqual('CacheMissCount');
+      expect(metric.statistic).toEqual('Sum');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricCount', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigateway.RestApi(stack, 'test-api');
+      const color = '#00ff00';
+      const metric = api.deploymentStage.metricCount({ color });
+
+      // THEN
+      expect(metric.metricName).toEqual('Count');
+      expect(metric.statistic).toEqual('SampleCount');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricIntegrationLatency', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigateway.RestApi(stack, 'test-api');
+      const color = '#00ff00';
+      const metric = api.deploymentStage.metricIntegrationLatency({ color });
+
+      // THEN
+      expect(metric.metricName).toEqual('IntegrationLatency');
+      expect(metric.statistic).toEqual('Average');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Stage: api.deploymentStage.stageName });
+    });
+
+    test('metricLatency', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const api = new apigateway.RestApi(stack, 'test-api');
+      const color = '#00ff00';
+      const metric = api.deploymentStage.metricLatency({ color });
+
+      // THEN
+      expect(metric.metricName).toEqual('Latency');
+      expect(metric.statistic).toEqual('Average');
+      expect(metric.color).toEqual(color);
+      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Stage: api.deploymentStage.stageName });
+    });
   });
 });

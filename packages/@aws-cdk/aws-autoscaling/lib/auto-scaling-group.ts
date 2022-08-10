@@ -119,10 +119,10 @@ export interface CommonAutoScalingGroupProps {
    * This is applied when any of the settings on the ASG are changed that
    * affect how the instances should be created (VPC, instance type, startup
    * scripts, etc.). It indicates how the existing instances should be
-   * replaced with new instances matching the new config. By default, nothing
-   * is done and only new instances are launched with the new config.
+   * replaced with new instances matching the new config. By default,
+   * `updatePolicy` takes precedence over `updateType`.
    *
-   * @default UpdateType.None
+   * @default UpdateType.REPLACING_UPDATE, unless updatePolicy has been set
    * @deprecated Use `updatePolicy` instead
    */
   readonly updateType?: UpdateType;
@@ -1206,7 +1206,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       this._role = this.launchTemplate?.role;
       this.grantPrincipal = this._role || new iam.UnknownPrincipal({ resource: this });
 
-      this.osType = this.launchTemplate?.osType || ec2.OperatingSystemType.UNKNOWN;
+      this.osType = this.launchTemplate?.osType ?? ec2.OperatingSystemType.UNKNOWN;
     } else {
       if (!props.machineImage) {
         throw new Error('Setting \'machineImage\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
