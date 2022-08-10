@@ -1711,10 +1711,11 @@ export class Subnet extends Resource implements ISubnet {
     this.routeTable = { routeTableId: table.ref };
 
     // Associate the public route table for this subnet, to this subnet
-    new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
+    const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
       routeTableId: table.ref,
     });
+    this._internetConnectivityEstablished.add(routeAssoc);
 
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
   }
