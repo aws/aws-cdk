@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.65"
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
         }
       },
       "aws-cdk-ec2-vpc-endpoint": {
