@@ -58,6 +58,171 @@ describe('log retention', () => {
     });
   });
 
+  test('set the removalPolicy to DESTROY', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_DAY,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'logs:PutRetentionPolicy',
+              'logs:DeleteRetentionPolicy',
+            ],
+            'Effect': 'Allow',
+            'Resource': '*',
+          },
+          {
+            'Action': 'logs:DeleteLogGroup',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':logs:',
+                  {
+                    'Ref': 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':log-group:group:*',
+                ],
+              ],
+            },
+          },
+          {
+            'Action': 'logs:DeleteLogStream',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':logs:',
+                  {
+                    'Ref': 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':log-group:group:log-stream:*',
+                ],
+              ],
+            },
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      'Roles': [
+        {
+          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      'ServiceToken': {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      'LogGroupName': 'group',
+      'RetentionInDays': 1,
+      'RemovalPolicy': 'destroy',
+    });
+  });
+
+  test('set the removalPolicy to RETAIN', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_DAY,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'logs:PutRetentionPolicy',
+              'logs:DeleteRetentionPolicy',
+            ],
+            'Effect': 'Allow',
+            'Resource': '*',
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      'Roles': [
+        {
+          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      'ServiceToken': {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      'LogGroupName': 'group',
+      'RetentionInDays': 1,
+      'RemovalPolicy': 'retain',
+    });
+  });
+
+  test('the removalPolicy is not set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_DAY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      'ServiceToken': {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      'LogGroupName': 'group',
+      'RetentionInDays': 1,
+    });
+  });
+
   test('with imported role', () => {
     // GIVEN
     const stack = new cdk.Stack();
