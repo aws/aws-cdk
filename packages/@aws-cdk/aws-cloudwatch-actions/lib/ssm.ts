@@ -74,3 +74,20 @@ export class SsmAction implements cloudwatch.IAlarmAction {
   }
 }
 
+/**
+ * Use an SSM Incident Response Plan as an Alarm action
+ */
+export class SsmIncidentAction implements cloudwatch.IAlarmAction {
+  constructor(private readonly responsePlanName: string) {}
+
+  /**
+   * Returns an alarm action configuration to use an SSM Incident as an alarm action
+   * based on an Incident Manager Response Plan
+   */
+  bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
+    return {
+      alarmActionArn: `arn:${Stack.of(_scope).partition}:ssm-incidents::${Stack.of(_scope).account}:response-plan/${this.responsePlanName}`,
+    };
+  }
+}
+
