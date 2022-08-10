@@ -73,18 +73,12 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       this.taskDefinition = props.scheduledFargateTaskDefinitionOptions.taskDefinition;
     } else if (props.scheduledFargateTaskImageOptions) {
       const taskImageOptions = props.scheduledFargateTaskImageOptions;
-      const cpu = taskImageOptions.cpu || 256;
-      const memoryLimitMiB = taskImageOptions.memoryLimitMiB || 512;
-
       this.taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
-        memoryLimitMiB,
-        cpu,
-        runtimePlatform: props.runtimePlatform,
+        memoryLimitMiB: taskImageOptions.memoryLimitMiB || 512,
+        cpu: taskImageOptions.cpu || 256,
       });
       this.taskDefinition.addContainer('ScheduledContainer', {
         image: taskImageOptions.image,
-        memoryLimitMiB,
-        cpu,
         command: taskImageOptions.command,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,

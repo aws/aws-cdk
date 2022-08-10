@@ -82,11 +82,9 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
-        cpu: props.cpu,
-        memoryLimitMiB: props.memoryLimitMiB,
+        logging: logDriver,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
-        logging: logDriver,
         dockerLabels: taskImageOptions.dockerLabels,
       });
       container.addPortMappings({

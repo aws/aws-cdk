@@ -514,7 +514,6 @@
                       "aws:cdk:cloudformation:props": {
                         "containerDefinitions": [
                           {
-                            "cpu": 256,
                             "essential": true,
                             "image": {
                               "Fn::Join": [
@@ -535,7 +534,6 @@
                                 ]
                               ]
                             },
-                            "memory": 512,
                             "name": "ScheduledContainer",
                             "logConfiguration": {
                               "logDriver": "awslogs",
