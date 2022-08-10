@@ -1101,7 +1101,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return undefined;
     }
 
-    this.node.addDependency(props.vpc.selectSubnets(props.vpcSubnets).internetConnectivityEstablished);
 
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
       throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
@@ -1133,21 +1132,22 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     const allowPublicSubnet = props.allowPublicSubnet ?? false;
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
-    for (const subnetId of subnetIds) {
+    for (const subnetId of selectedSubnets.subnetIds) {
       if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
         throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
           'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true');
       }
     }
+    this.node.addDependency(selectedSubnets.internetConnectivityEstablished);
 
     // List can't be empty here, if we got this far you intended to put your Lambda
     // in subnets. We're going to guarantee that we get the nice error message by
     // making VpcNetwork do the selection again.
 
     return {
-      subnetIds,
+      subnetIds: selectedSubnets.subnetIds,
       securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
   }
