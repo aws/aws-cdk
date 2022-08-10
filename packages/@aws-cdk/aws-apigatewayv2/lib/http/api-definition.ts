@@ -111,16 +111,12 @@ export class S3ApiDefinition extends ApiDefinition {
  * OpenAPI specification from an inline JSON object.
  */
 export class InlineApiDefinition extends ApiDefinition {
-  constructor(private definition: any) {
+  /**
+   * 
+   * @param definition An object based on the OpenAPI specification.
+   */
+  constructor(private definition: object) {
     super();
-
-    if (typeof(definition) !== 'object') {
-      throw new Error('definition should be of type object');
-    }
-
-    if (Object.keys(definition).length === 0) {
-      throw new Error('JSON definition cannot be empty');
-    }
   }
 
   public bind(_scope: Construct): ApiDefinitionConfig {
@@ -167,7 +163,7 @@ export class AssetApiDefinition extends ApiDefinition {
     }
 
     if (!this.asset) {
-      throw new Error('bindToResource() must be called after bind()');
+      throw new Error('bindAfterCreate() must be called after bind()');
     }
 
     const child = Node.of(httpApi).defaultChild as CfnApi;
