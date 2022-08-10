@@ -251,8 +251,10 @@ export class Metric implements IMetric {
     });
   }
 
-  /** Dimensions of this metric */
+  /** Dimensions of this metric @deprecated Use 'dimensionsMap' instead*/
   public readonly dimensions?: DimensionHash;
+  /** Dimensions of this metric */
+  public readonly dimensionsMap?: DimensionsMap;
   /** Namespace of this metric */
   public readonly namespace: string;
   /** Name of this metric */
