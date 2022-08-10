@@ -993,6 +993,5 @@ function testStackWithAssetManifest() {
   });
 
   const assembly = builder.buildAssembly();
-  const stack = assembly.getStackArtifact('stack');
-  return stack;
+  return assembly.getStackArtifact('stack');
 }

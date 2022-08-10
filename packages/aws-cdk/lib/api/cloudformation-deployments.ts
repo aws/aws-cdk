@@ -238,7 +238,7 @@ export interface DeployStackOptions {
   readonly overrideTemplate?: any;
 
   /**
-   * Whether asset publishing should be disabled.
+   * Disable asset publishing
    *
    * @default false
    */
