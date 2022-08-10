@@ -314,6 +314,14 @@ export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLo
 export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption';
 
 /**
+* Enable this feature flag to change the default kernel of EC2 instances deployed with an AMAZON_LINUX_2022 image
+* to use the dynamic default kernel version. This version automatically changes with each major kernel version update.
+*
+* Previously AMAZON_LINUX_2022 EC2 instances were configured to default to a kernel specification that is now unavailable.
+*/
+export const EC2_AMAZON_LINUX_2022_DEFAULT_TO_DEFAULT_KERNEL = '@aws-cdk/aws-ec2:amazonLinux2022DefaultToDefaultKernel';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -346,6 +354,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
   [S3_CREATE_DEFAULT_LOGGING_POLICY]: true,
   [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
+  [EC2_AMAZON_LINUX_2022_DEFAULT_TO_DEFAULT_KERNEL]: true,
 };
 
 /**

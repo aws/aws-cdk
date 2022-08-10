@@ -1,6 +1,8 @@
 import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as ec2 from '../lib';
+import { AmazonLinuxKernel } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -245,24 +247,65 @@ test('throw error if virtualization param is set for Amazon Linux 2022', () => {
     }).getImage(stack).imageId;
   }).toThrow(/Virtualization parameter does not exist in smm parameter name for Amazon Linux 2022./);
 });
+describe('cached lookups of Amazon Linux 2022 with default kernel version', () => {
+  test.each`
+    featureFlag | expectedDefaultKernel
+    ${false}    | ${'kernel-5.10'}
+    ${true}     | ${'kernel-default'}
+`('feature flag is $featureFlag expecting kernel to be $defaultKernel', ({ featureFlag, expectedDefaultKernel: kernel }) => {
+  // GIVEN
+    const myFeatureFlag = { [cxapi.EC2_AMAZON_LINUX_2022_DEFAULT_TO_DEFAULT_KERNEL]: featureFlag };
+    app = new App({
+      context: myFeatureFlag,
+    });
+    stack = new Stack(app, 'Stack', {
+      env: { account: '1234', region: 'testregion' },
+    });
 
-test('cached lookups of Amazon Linux 2022 with default kernel version', () => {
+    // WHEN
+    const ami = ec2.MachineImage.latestAmazonLinux({
+      cachedInContext: true,
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+    }).getImage(stack).imageId;
+
+    // THEN
+    expect(ami).toEqual(`dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-${kernel}-x86_64`);
+    expect(app.synth().manifest.missing).toEqual([
+      {
+        key: `ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-${kernel}-x86_64:region=testregion`,
+        props: {
+          account: '1234',
+          lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+          region: 'testregion',
+          parameterName: `/aws/service/ami-amazon-linux-latest/al2022-ami-${kernel}-x86_64`,
+        },
+        provider: 'ssm',
+      },
+    ]);
+  });
+});
+
+test.each([
+  [AmazonLinuxKernel.KERNEL5_X],
+  [AmazonLinuxKernel.KERNEL_DEFAULT],
+])('cached lookups of Amazon Linux 2022 with explicit kernel %s', (kernel) => {
   // WHEN
   const ami = ec2.MachineImage.latestAmazonLinux({
     cachedInContext: true,
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+    kernel,
   }).getImage(stack).imageId;
 
   // THEN
-  expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-default-x86_64');
+  expect(ami).toEqual(`dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-${kernel}-x86_64`);
   expect(app.synth().manifest.missing).toEqual([
     {
-      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-default-x86_64:region=testregion',
+      key: `ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-${kernel}-x86_64:region=testregion`,
       props: {
         account: '1234',
         lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         region: 'testregion',
-        parameterName: '/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-default-x86_64',
+        parameterName: `/aws/service/ami-amazon-linux-latest/al2022-ami-${kernel}-x86_64`,
       },
       provider: 'ssm',
     },

@@ -1,6 +1,6 @@
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ContextProvider, CfnMapping, Aws, Stack, Token } from '@aws-cdk/core';
+import { ContextProvider, CfnMapping, Aws, Stack, Token, FeatureFlags, Lazy } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { UserData } from './user-data';
@@ -403,7 +403,12 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
     let storage: AmazonLinuxStorage | undefined;
 
     if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
-      kernel = AmazonLinuxKernel.KERNEL_DEFAULT;
+      kernel = kernel ?? Lazy.uncachedString({
+        produce: ({ scope }) => FeatureFlags.of(scope)
+          .isEnabled(cxapi.EC2_AMAZON_LINUX_2022_DEFAULT_TO_DEFAULT_KERNEL)
+          ? AmazonLinuxKernel.KERNEL_DEFAULT
+          : AmazonLinuxKernel.KERNEL5_X,
+      }) as AmazonLinuxKernel;
       if (props && props.storage) {
         throw new Error('Storage parameter does not exist in smm parameter name for Amazon Linux 2022.');
       }
@@ -440,7 +445,11 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.cachedInContext, this.parameterName);
+    const imageId = lookupImage(
+      scope,
+      this.cachedInContext,
+      Token.isUnresolved(this.parameterName) ? Stack.of(scope).resolve(this.parameterName) : this.parameterName,
+    );
 
     const osType = OperatingSystemType.LINUX;
     return {
