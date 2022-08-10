@@ -1,12 +1,13 @@
-import { FargateTaskDefinition, FargatePlatformVersion } from '@aws-cdk/aws-ecs';
+import { FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
 import { Construct } from 'constructs';
+import { FargateServiceBaseProps } from '../base/fargate-service-base';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
 
 /**
  * The properties for the ScheduledFargateTask task.
  */
-export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
+export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps, FargateServiceBaseProps {
   /**
    * The properties to define if using an existing TaskDefinition in this construct.
    * ScheduledFargateTaskDefinitionOptions or ScheduledFargateTaskImageOptions must be defined, but not both.
@@ -23,52 +24,13 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
    */
   readonly scheduledFargateTaskImageOptions?: ScheduledFargateTaskImageOptions;
 
-  /**
-   * The platform version on which to run your service.
-   *
-   * If one is not specified, the LATEST platform version is used by default. For more information, see
-   * [AWS Fargate Platform Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
-   * in the Amazon Elastic Container Service Developer Guide.
-   *
-   * @default Latest
-   */
-  readonly platformVersion?: FargatePlatformVersion;
 }
 
 /**
  * The properties for the ScheduledFargateTask using an image.
  */
-export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProps {
-  /**
-   * The number of cpu units used by the task.
-   *
-   * Valid values, which determines your range of valid values for the memory parameter:
-   *
-   * 256 (.25 vCPU) - Available memory values: 0.5GB, 1GB, 2GB
-   *
-   * 512 (.5 vCPU) - Available memory values: 1GB, 2GB, 3GB, 4GB
-   *
-   * 1024 (1 vCPU) - Available memory values: 2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB
-   *
-   * 2048 (2 vCPU) - Available memory values: Between 4GB and 16GB in 1GB increments
-   *
-   * 4096 (4 vCPU) - Available memory values: Between 8GB and 30GB in 1GB increments
-   *
-   * This default is set in the underlying FargateTaskDefinition construct.
-   *
-   * @default 256
-   */
-  readonly cpu?: number;
+export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProps, FargateServiceBaseProps {
 
-  /**
-   * The hard limit (in MiB) of memory to present to the container.
-   *
-   * If your container attempts to exceed the allocated memory, the container
-   * is terminated.
-   *
-   * @default 512
-   */
-  readonly memoryLimitMiB?: number;
 }
 
 /**
@@ -111,17 +73,12 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       this.taskDefinition = props.scheduledFargateTaskDefinitionOptions.taskDefinition;
     } else if (props.scheduledFargateTaskImageOptions) {
       const taskImageOptions = props.scheduledFargateTaskImageOptions;
-      const cpu = taskImageOptions.cpu || 256;
-      const memoryLimitMiB = taskImageOptions.memoryLimitMiB || 512;
-
       this.taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
-        memoryLimitMiB,
-        cpu,
+        memoryLimitMiB: taskImageOptions.memoryLimitMiB || 512,
+        cpu: taskImageOptions.cpu || 256,
       });
       this.taskDefinition.addContainer('ScheduledContainer', {
         image: taskImageOptions.image,
-        memoryLimitMiB,
-        cpu,
         command: taskImageOptions.command,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
