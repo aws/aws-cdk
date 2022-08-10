@@ -1443,7 +1443,7 @@
                         "memory": 256,
                         "name": "Container",
                         "linuxParameters": {
-                          "maxSwap": 5000,
+                          "maxSwap": 5120,
                           "swappiness": 90,
                           "capabilities": {}
                         }
