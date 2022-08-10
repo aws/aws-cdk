@@ -566,10 +566,6 @@ describe('cluster resource provider', () => {
                   types: ['api'],
                   enabled: true,
                 },
-                {
-                  types: ['audit', 'authenticator', 'controllerManager', 'scheduler'],
-                  enabled: false,
-                },
               ],
             },
           }, {
@@ -584,10 +580,6 @@ describe('cluster resource provider', () => {
                 {
                   types: ['api'],
                   enabled: true,
-                },
-                {
-                  types: ['audit', 'authenticator', 'controllerManager', 'scheduler'],
-                  enabled: false,
                 },
               ],
             },
@@ -630,10 +622,6 @@ describe('cluster resource provider', () => {
                   types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
                   enabled: true,
                 },
-                {
-                  types: [],
-                  enabled: false,
-                },
               ],
             },
             resourcesVpcConfig: {
@@ -655,10 +643,6 @@ describe('cluster resource provider', () => {
                 {
                   types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
                   enabled: true,
-                },
-                {
-                  types: [],
-                  enabled: false,
                 },
               ],
             },
