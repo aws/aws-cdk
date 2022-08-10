@@ -1100,6 +1100,9 @@ integTest('hotswap deployment supports Lambda function\'s description and enviro
   // GIVEN
   const stackArn = await fixture.cdkDeploy('lambda-hotswap', {
     captureStderr: false,
+    modEnv: {
+      DYNAMIC_LAMBDA_PROPERTY_VALUE: 'original value',
+    },
   });
 
   // WHEN
@@ -1107,6 +1110,9 @@ integTest('hotswap deployment supports Lambda function\'s description and enviro
     options: ['--hotswap'],
     captureStderr: true,
     onlyStderr: true,
+    modEnv: {
+      DYNAMIC_LAMBDA_PROPERTY_VALUE: 'new value',
+    },
   });
 
   const response = await fixture.aws.cloudFormation('describeStacks', {

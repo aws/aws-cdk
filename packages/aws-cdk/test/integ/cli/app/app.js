@@ -236,9 +236,9 @@ class LambdaHotswapStack extends cdk.Stack {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
-      description: new Date().toISOString(),
+      description: process.env.DYNAMIC_LAMBDA_PROPERTY_VALUE ?? "description",
       environment: {
-        SomeVariable: new Date().toISOString(),
+        SomeVariable: process.env.DYNAMIC_LAMBDA_PROPERTY_VALUE ?? "environment",
       }
     });
 
