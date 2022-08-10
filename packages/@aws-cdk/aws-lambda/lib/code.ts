@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
+import { zipDirectories } from './private/archive';
 import { Construct } from 'constructs';
 
 /**
@@ -53,6 +54,18 @@ export abstract class Code {
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
     return new AssetCode(path, options);
   }
+
+    /**
+   * Loads the function code from local disk paths.
+   *
+   * @param paths an array of directories with the Lambda code bundle
+   */
+     public static async fromMultiAsset(paths: string[], options?: s3_assets.AssetOptions): Promise<AssetCode> {
+      //create a zip file from paths in paths[]
+      const outputFileAddress = './cdk.out/directories.zip';
+      await zipDirectories(paths, outputFileAddress);
+      return new AssetCode(outputFileAddress, options);
+    }
 
   /**
    * Loads the function code from an asset created by a Docker build.
