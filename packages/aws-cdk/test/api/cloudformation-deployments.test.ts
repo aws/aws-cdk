@@ -62,7 +62,7 @@ function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
   mockToolkitInfoLookup.mockResolvedValue(ToolkitInfo.fromStack(fakeStack, sdkProvider.sdk));
 }
 
-test('asset publishing normally enabled', async () => {
+test('deployStack publishing asset', async () => {
   const stack = testStackWithAssetManifest();
 
   // WHEN
@@ -74,7 +74,7 @@ test('asset publishing normally enabled', async () => {
   expect(publishAssets).toHaveBeenCalled();
 });
 
-test('asset publishing can be disabled', async () => {
+test('deployStack with asset publishing disabled', async () => {
   // GIVEN
   const stack = testStackWithAssetManifest();
 
@@ -876,6 +876,31 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   });
 });
 
+test('publishing assets', async () => {
+  // GIVEN
+  const stack = testStackWithAssetManifest();
+
+  // WHEN
+  await deployments.publishStackAssets({
+    stack,
+  });
+
+  // THEN
+  const expectedAssetManifest = expect.objectContaining({
+    directory: stack.assembly.directory,
+    manifest: expect.objectContaining({
+      files: expect.objectContaining({
+        fake: expect.anything(),
+      }),
+    }),
+  });
+  const expectedEnvironment = expect.objectContaining({
+    account: 'account',
+    name: 'aws://account/region',
+    region: 'region',
+  });
+  expect(publishAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment);
+});
 
 function pushStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {
   if (!currentCfnStackResources[stackName]) {
@@ -925,7 +950,21 @@ function testStackWithAssetManifest() {
   const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out.'));
   fs.writeFileSync(path.join(outDir, 'assets.json'), JSON.stringify({
     version: '15.0.0',
-    file: {},
+    files: {
+      fake: {
+        source: {
+          path: 'fake.json',
+          packaging: 'file',
+        },
+        destinations: {
+          'current_account-current_region': {
+            bucketName: 'fake-bucket',
+            objectKey: 'fake.json',
+            assumeRoleArn: 'arn:fake',
+          },
+        },
+      },
+    },
     dockerImages: {},
   }));
   fs.writeFileSync(path.join(outDir, 'template.json'), JSON.stringify({

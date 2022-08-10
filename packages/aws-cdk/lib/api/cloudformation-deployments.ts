@@ -463,6 +463,9 @@ export class CloudFormationDeployments {
     };
   }
 
+  /**
+   * Publish a stack's assets.
+   */
   public async publishStackAssets(options: PublishStackAssetsOptions) {
     const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(options.stack, options.roleArn);
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
