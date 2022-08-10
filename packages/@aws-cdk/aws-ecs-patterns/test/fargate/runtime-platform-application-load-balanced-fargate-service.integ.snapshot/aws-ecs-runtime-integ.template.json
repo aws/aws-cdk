@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc"
+      "Value": "aws-ecs-runtime-integ/Vpc"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -146,7 +146,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PrivateSubnet1"
      }
     ]
    }
@@ -160,7 +160,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-runtime-integ/Vpc/PrivateSubnet1"
      }
     ]
    }
@@ -194,7 +194,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-fargate-integ/Vpc"
+      "Value": "aws-ecs-runtime-integ/Vpc"
      }
     ]
    }
@@ -333,7 +333,7 @@
       "Arn"
      ]
     },
-    "Family": "awsfargateintegScheduledFargateTaskScheduledTaskDefB0AD4F70",
+    "Family": "awsecsruntimeintegScheduledFargateTaskScheduledTaskDef2C9C1AED",
     "Memory": "512",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
@@ -502,7 +502,7 @@
   "ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-fargate-integ/ScheduledFargateTask/ScheduledTaskDef/SecurityGroup",
+    "GroupDescription": "aws-ecs-runtime-integ/ScheduledFargateTask/ScheduledTaskDef/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
