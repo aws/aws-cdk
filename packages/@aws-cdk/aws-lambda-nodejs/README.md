@@ -80,7 +80,7 @@ For monorepos, the reference architecture becomes:
 
 All properties of `lambda.Function` can be used to customize the underlying `lambda.Function`.
 
-See also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
+See also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda).
 
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
@@ -102,7 +102,7 @@ If `esbuild` is available it will be used to bundle your code in your environmen
 bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs12.x)
 with the Docker platform based on the target architecture of the Lambda function.
 
-For macOS the recommendend approach is to install `esbuild` as Docker volume performance is really poor.
+For macOS the recommended approach is to install `esbuild` as Docker volume performance is really poor.
 
 `esbuild` can be installed with:
 
@@ -304,7 +304,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 This image should have `esbuild` installed **globally**. If you plan to use `nodeModules` it
 should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using.
 
-Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
+Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
 
 ## Asset hash

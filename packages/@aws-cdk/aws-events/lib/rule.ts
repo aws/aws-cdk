@@ -1,9 +1,10 @@
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName, ArnFormat } from '@aws-cdk/core';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat } from '@aws-cdk/core';
 import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnEventBusPolicy, CfnRule } from './events.generated';
+import { EventCommonOptions } from './on-event-options';
 import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
@@ -12,22 +13,7 @@ import { mergeEventPattern, renderEventPattern, sameEnvDimension } from './util'
 /**
  * Properties for defining an EventBridge Rule
  */
-export interface RuleProps {
-  /**
-   * A description of the rule's purpose.
-   *
-   * @default - No description.
-   */
-  readonly description?: string;
-
-  /**
-   * A name for the rule.
-   *
-   * @default - AWS CloudFormation generates a unique physical ID and uses that ID
-   * for the rule name. For more information, see Name Type.
-   */
-  readonly ruleName?: string;
-
+export interface RuleProps extends EventCommonOptions {
   /**
    * Indicates whether the rule is enabled.
    *
@@ -37,33 +23,18 @@ export interface RuleProps {
 
   /**
    * The schedule or rate (frequency) that determines when EventBridge
-   * runs the rule. For more information, see Schedule Expression Syntax for
+   * runs the rule.
+   *
+   * You must specify this property, the `eventPattern` property, or both.
+   *
+   * For more information, see Schedule Expression Syntax for
    * Rules in the Amazon EventBridge User Guide.
    *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html
    *
-   * You must specify this property, the `eventPattern` property, or both.
-   *
    * @default - None.
    */
   readonly schedule?: Schedule;
-
-  /**
-   * Describes which events EventBridge routes to the specified target.
-   * These routed events are matched events. For more information, see Events
-   * and Event Patterns in the Amazon EventBridge User Guide.
-   *
-   * @see
-   * https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html
-   *
-   * You must specify this property (either via props or via
-   * `addEventPattern`), the `scheduleExpression` property, or both. The
-   * method `addEventPattern` can be used to add filter values to the event
-   * pattern.
-   *
-   * @default - None.
-   */
-  readonly eventPattern?: EventPattern;
 
   /**
    * Targets to invoke when this rule matches an event.
@@ -119,7 +90,7 @@ export class Rule extends Resource implements IRule {
   private readonly _xEnvTargetsAdded = new Set<string>();
 
   constructor(scope: Construct, id: string, props: RuleProps = { }) {
-    super(scope, id, {
+    super(determineRuleScope(scope, props), id, {
       physicalName: props.ruleName,
     });
 
@@ -155,6 +126,8 @@ export class Rule extends Resource implements IRule {
     for (const target of props.targets || []) {
       this.addTarget(target);
     }
+
+    this.node.addValidation({ validate: () => this.validateRule() });
   }
 
   /**
@@ -321,7 +294,7 @@ export class Rule extends Resource implements IRule {
     return renderEventPattern(this.eventPattern);
   }
 
-  protected validate() {
+  protected validateRule() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
       return ['Either \'eventPattern\' or \'schedule\' must be defined'];
     }
@@ -452,6 +425,24 @@ export class Rule extends Resource implements IRule {
   }
 }
 
+function determineRuleScope(scope: Construct, props: RuleProps): Construct {
+  if (!props.crossStackScope) {
+    return scope;
+  }
+  const scopeStack = Stack.of(scope);
+  const targetStack = Stack.of(props.crossStackScope);
+  if (scopeStack === targetStack) {
+    return scope;
+  }
+  // cross-region/account Events require their own setup,
+  // so we use the base scope in that case
+  const regionComparison = Token.compareStrings(scopeStack.region, targetStack.region);
+  const accountComparison = Token.compareStrings(scopeStack.account, targetStack.account);
+  const stacksInSameAccountAndRegion = (regionComparison === TokenComparison.SAME || regionComparison === TokenComparison.BOTH_UNRESOLVED) &&
+    (accountComparison === TokenComparison.SAME || accountComparison === TokenComparison.BOTH_UNRESOLVED);
+  return stacksInSameAccountAndRegion ? props.crossStackScope : scope;
+}
+
 /**
  * A rule that mirrors another rule
  */
@@ -465,13 +456,13 @@ class MirrorRule extends Rule {
   }
 
   /**
-   * Override validate to be a no-op
+   * Override validateRule to be a no-op
    *
    * The rules are never stored on this object so there's nothing to validate.
    *
    * Instead, we mirror the other rule at render time.
    */
-  protected validate(): string[] {
+  protected validateRule(): string[] {
     return [];
   }
 }

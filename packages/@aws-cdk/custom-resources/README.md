@@ -18,7 +18,17 @@ handles the event (e.g. creates a resource) and sends back a response to CloudFo
 
 The `@aws-cdk/custom-resources.Provider` construct is a "mini-framework" for
 implementing providers for AWS CloudFormation custom resources. The framework offers a high-level API which makes it easier to implement robust
-and powerful custom resources and includes the following capabilities:
+and powerful custom resources. If you are looking to implement a custom resource provider, we recommend
+you use this module unless you have good reasons not to. For an overview of different provider types you
+could be using, see the [Custom Resource Providers section in the core library documentation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#custom-resource-providers).
+
+> **N.B.**: if you use the provider framework in this module you will write AWS Lambda Functions that look a lot like, but aren't exactly the same as the Lambda Functions you would write if you wrote CloudFormation Custom Resources directly, without this framework.
+>
+> Specifically, to report success or failure, have your Lambda Function exit in the right way: return data for success, or throw an
+> exception for failure. *Do not* post the success or failure of your custom resource to an HTTPS URL as the CloudFormation
+> documentation tells you to do.
+
+The framework has the following capabilities:
 
 * Handles responses to AWS CloudFormation and protects against blocked
   deployments
@@ -85,6 +95,9 @@ def on_delete(event):
   # ...
 ```
 
+> When writing your handlers, there are a couple of non-obvious corner cases you need to
+> pay attention to. See the [important cases to handle](#important-cases-to-handle) section for more information.
+
 Users may also provide an additional handler called `isComplete`, for cases
 where the lifecycle operation cannot be completed immediately. The
 `isComplete` handler will be retried asynchronously after `onEvent` until it
@@ -102,6 +115,16 @@ def is_complete(event, context):
 
   return { 'IsComplete': is_ready }
 ```
+
+> **Security Note**: the Custom Resource Provider Framework will write the value of `ResponseURL`,
+> which is a pre-signed S3 URL used to report the success or failure of the Custom Resource execution
+> back to CloudFormation, in a readable form to the AWS Step Functions execution history.
+>
+> Anybody who can list and read AWS StepFunction executions in your account will be able to write
+> a fake response to this URL and make your CloudFormation deployments fail.
+>
+> Do not use this library if your threat model requires that you cannot trust actors who are able
+> to list StepFunction executions in your account.
 
 ### Handling Lifecycle Events: onEvent
 
@@ -299,8 +322,8 @@ This module includes a few examples for custom resource implementations:
 
 Provisions an object in an S3 bucket with textual contents. See the source code
 for the
-[construct](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
-[handler](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
+[construct](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
+[handler](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
 
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.
@@ -398,8 +421,9 @@ the `installLatestAwsSdk` prop to `false`.
 
 ### Custom Resource Execution Policy
 
-You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
-The library provides two factory methods to quickly configure this:
+The `policy` property defines the IAM Policy that will be applied to the API calls. This must be provided
+if an existing `role` is not specified and is optional otherwise. The library provides two factory methods
+to quickly configure this:
 
 * **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM
   Policy statements based on the configured SDK calls. Keep two things in mind
@@ -536,33 +560,6 @@ Note that even if you restrict the output of your custom resource you can still 
 path in `PhysicalResourceId.fromResponse()`.
 
 ### Custom Resource Examples
-
-#### Verify a domain with SES
-
-```ts
-import * as route53 from '@aws-cdk/aws-route53';
-
-const verifyDomainIdentity = new cr.AwsCustomResource(this, 'VerifyDomainIdentity', {
-  onCreate: {
-    service: 'SES',
-    action: 'verifyDomainIdentity',
-    parameters: {
-      Domain: 'example.com',
-    },
-    physicalResourceId: cr.PhysicalResourceId.fromResponse('VerificationToken'), // Use the token returned by the call as physical id
-  },
-  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-  }),
-});
-
-declare const zone: route53.HostedZone;
-new route53.TxtRecord(this, 'SESVerificationRecord', {
-  zone,
-  recordName: `_amazonses.example.com`,
-  values: [verifyDomainIdentity.getResponseField('VerificationToken')],
-});
-```
 
 #### Get the latest version of a secure SSM parameter
 

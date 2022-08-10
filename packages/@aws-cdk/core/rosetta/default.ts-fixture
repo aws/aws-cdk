@@ -18,13 +18,10 @@ import {
   CfnParameter,
   CfnResource,
   CfnResourceProps,
-  ConcreteDependable,
-  Construct,
   CustomResource,
   CustomResourceProvider,
   CustomResourceProviderRuntime,
   DefaultStackSynthesizer,
-  DependableTrait,
   Duration,
   Fn,
   IConstruct,
@@ -37,6 +34,10 @@ import {
   Stage,
   Token,
 } from '@aws-cdk/core';
+import {
+  Construct,
+  DependencyGroup, 
+} from 'constructs';
 
 declare const app: App;
 declare const arn: 'arn:partition:service:region:account-id:resource-id';

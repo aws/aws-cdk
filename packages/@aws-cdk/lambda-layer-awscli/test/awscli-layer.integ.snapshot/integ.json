@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "lambda-layer-awscli/test/integ.awscli-layer": {
+    "integ.awscli-layer": {
       "stacks": [
         "lambda-layer-awscli-integ-stack"
       ],

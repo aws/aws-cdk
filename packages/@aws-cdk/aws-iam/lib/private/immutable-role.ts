@@ -1,5 +1,5 @@
-import { ConcreteDependable, DependableTrait, Resource } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Resource } from '@aws-cdk/core';
+import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -36,9 +36,10 @@ export class ImmutableRole extends Resource implements IRole {
     });
 
     // implement IDependable privately
-    DependableTrait.implement(this, {
+    Dependable.implement(this, {
       dependencyRoots: [role],
     });
+    this.node.defaultChild = role.node.defaultChild;
   }
 
   public attachInlinePolicy(_policy: Policy): void {
@@ -57,7 +58,7 @@ export class ImmutableRole extends Resource implements IRole {
     // If we return `false`, the grants will try to add the statement to the resource
     // (if possible).
     const pretendSuccess = !this.addGrantsToResources;
-    return { statementAdded: pretendSuccess, policyDependable: new ConcreteDependable() };
+    return { statementAdded: pretendSuccess, policyDependable: new DependencyGroup() };
   }
 
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {

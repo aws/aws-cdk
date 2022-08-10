@@ -1,5 +1,5 @@
 {
-  "$version": "72.0.0",
+  "$version": "83.0.0",
   "PropertyTypes": {
     "AWS::Lex::Bot.AdvancedRecognitionSetting": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-advancedrecognitionsetting.html",
@@ -741,6 +741,12 @@
           "ItemType": "MessageGroup",
           "Required": true,
           "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "MessageSelectionStrategy": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-promptspecification.html#cfn-lex-bot-promptspecification-messageselectionstrategy",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Mutable"
         }
       }

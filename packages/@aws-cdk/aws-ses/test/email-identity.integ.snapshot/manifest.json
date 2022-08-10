@@ -1,0 +1,73 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-ses-email-identity-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-ses-email-identity-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-ses-email-identity-integ/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/EmailIdentity/DkimDnsToken1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmailIdentityDkimDnsToken1BA32ACB3"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/EmailIdentity/DkimDnsToken2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmailIdentityDkimDnsToken2BBEBB8EC"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/EmailIdentity/DkimDnsToken3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmailIdentityDkimDnsToken3BB5E8A49"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/EmailIdentity/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmailIdentity7187767D"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/EmailIdentity/MailFromMxRecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmailIdentityMailFromMxRecordCEAAECD0"
+          }
+        ],
+        "/cdk-ses-email-identity-integ/EmailIdentity/MailFromTxtRecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmailIdentityMailFromTxtRecordE6B5E5D0"
+          }
+        ]
+      },
+      "displayName": "cdk-ses-email-identity-integ"
+    },
+    "EmailIdentityIntegDefaultTestDeployAssert3F909307": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EmailIdentityIntegDefaultTestDeployAssert3F909307.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "EmailIdentityInteg/DefaultTest/DeployAssert"
+    }
+  }
+}

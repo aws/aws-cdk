@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-events-targets/test/aws-api/integ.aws-api": {
+    "integ.aws-api": {
       "stacks": [
         "aws-cdk-aws-api-target-integ"
       ],

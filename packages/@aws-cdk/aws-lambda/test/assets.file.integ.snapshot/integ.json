@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-lambda/test/integ.assets.file": {
+    "integ.assets.file": {
       "stacks": [
         "lambda-test-assets-file"
       ],

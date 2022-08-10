@@ -1,0 +1,61 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-opensearch-cognitodashboardsauth": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-opensearch-cognitodashboardsauth.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-opensearch-cognitodashboardsauth/IdentityPool": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IdentityPool"
+          }
+        ],
+        "/cdk-integ-opensearch-cognitodashboardsauth/UserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/cdk-integ-opensearch-cognitodashboardsauth/UserPool/UserPoolDomain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolUserPoolDomain9F01E991"
+          }
+        ],
+        "/cdk-integ-opensearch-cognitodashboardsauth/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/cdk-integ-opensearch-cognitodashboardsauth/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain66AC69E0"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-opensearch-cognitodashboardsauth"
+    },
+    "CognitoAuthForOpenSearchDashboardsDefaultTestDeployAssert4CCFA971": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CognitoAuthForOpenSearchDashboardsDefaultTestDeployAssert4CCFA971.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "CognitoAuthForOpenSearchDashboards/DefaultTest/DeployAssert"
+    }
+  }
+}

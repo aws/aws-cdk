@@ -25,7 +25,7 @@ publishing this tool so that it can be used by the community and we would love t
 on use cases that the tool should support, or issues that prevent the tool from being used in your
 library.
 
-This tool is meant to be used with the [integ-tests](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/integ-tests) library.
+This tool is meant to be used with the [integ-tests](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests) library.
 
 ## Usage
 
@@ -52,6 +52,7 @@ to be a self contained CDK app. The runner will execute the following for each f
   Destroy stacks after deploy (use `--no-clean` for debugging)
 - `--verbose` (default=`false`)
   verbose logging, including integration test metrics
+  (specify multiple times to increase verbosity)
 - `--parallel-regions` (default=`us-east-1`,`us-east-2`, `us-west-2`)
   List of regions to run tests in. If this is provided then all tests will
   be run in parallel across these regions

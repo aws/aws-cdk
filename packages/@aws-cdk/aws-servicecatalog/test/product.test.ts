@@ -14,7 +14,9 @@ describe('Product', () => {
 
   beforeEach(() => {
     app = new cdk.App();
-    stack = new cdk.Stack(app);
+    stack = new cdk.Stack(app, 'Stack', {
+      synthesizer: new cdk.LegacyStackSynthesizer(),
+    });
   });
 
   test('default product test', () => {
@@ -124,7 +126,7 @@ describe('Product', () => {
     const assembly = app.synth();
     expect(assembly.artifacts.length).toEqual(2);
     expect(assembly.stacks[0].assets.length).toBe(1);
-    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStack190B56DE.product.template.json');
   }),
 
   test('multiple product versions from product stack', () => {
@@ -155,8 +157,8 @@ describe('Product', () => {
     const assembly = app.synth();
 
     expect(assembly.stacks[0].assets.length).toBe(2);
-    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStackV1.product.template.json');
-    expect(assembly.stacks[0].assets[1].path).toEqual('ProductStackV2.product.template.json');
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStackV111F65963.product.template.json');
+    expect(assembly.stacks[0].assets[1].path).toEqual('StackProductStackV24832700A.product.template.json');
   }),
 
   test('identical product versions from product stack creates one asset', () => {
@@ -214,10 +216,40 @@ describe('Product', () => {
     const assembly = app.synth();
     expect(assembly.artifacts.length).toEqual(2);
     expect(assembly.stacks[0].assets.length).toBe(1);
-    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStack190B56DE.product.template.json');
 
-    const expectedTemplateFileKey = 'MyProductStackHistory.ProductStack.v1.product.template.json';
+    const expectedTemplateFileKey = 'StackMyProductStackHistory8F05371C.StackProductStack190B56DE.v1.product.template.json';
     const snapshotExists = fs.existsSync(path.join(DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY, expectedTemplateFileKey));
+    expect(snapshotExists).toBe(true);
+  }),
+
+  test('product test from product stack history with nested directory', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
+      productStack: productStack,
+      currentVersionName: 'v1',
+      currentVersionLocked: false,
+      directory: 'product-stack-snapshots/nested',
+    });
+
+    new sns.Topic(productStack, 'SNSTopicProductStack');
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        productStackHistory.currentVersion(),
+      ],
+    });
+
+    const assembly = app.synth();
+    expect(assembly.artifacts.length).toEqual(2);
+    expect(assembly.stacks[0].assets.length).toBe(1);
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStack190B56DE.product.template.json');
+
+    const expectedTemplateFileKey = 'StackMyProductStackHistory8F05371C.StackProductStack190B56DE.v1.product.template.json';
+    const snapshotExists = fs.existsSync(path.join('product-stack-snapshots/nested', expectedTemplateFileKey));
     expect(snapshotExists).toBe(true);
   }),
 
@@ -266,9 +298,9 @@ describe('Product', () => {
     const assembly = app.synth();
     expect(assembly.artifacts.length).toEqual(2);
     expect(assembly.stacks[0].assets.length).toBe(1);
-    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStack190B56DE.product.template.json');
 
-    const expectedTemplateFileKey = 'MyProductStackHistory.ProductStack.v1.product.template.json';
+    const expectedTemplateFileKey = 'StackMyProductStackHistory8F05371C.StackProductStack190B56DE.v1.product.template.json';
     const snapshotExists = fs.existsSync(path.join(DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY, expectedTemplateFileKey));
     expect(snapshotExists).toBe(true);
   }),
@@ -313,7 +345,7 @@ describe('Product', () => {
           productStackHistory.versionFromSnapshot('v3'),
         ],
       });
-    }).toThrowError('Template MyProductStackHistory.ProductStack.v3.product.template.json cannot be found in product-stack-snapshots');
+    }).toThrowError('Template StackMyProductStackHistory8F05371C.StackProductStack190B56DE.v3.product.template.json cannot be found in product-stack-snapshots');
   }),
 
   test('product test from multiple sources', () => {
@@ -373,7 +405,7 @@ describe('Product', () => {
         ],
         supportEmail: 'invalid email',
       });
-    }).toThrowError(/Invalid support email for resource Default\/MyProduct/);
+    }).toThrowError(/Invalid support email for resource Stack\/MyProduct/);
   }),
 
   test('fails product creation with invalid url', () => {
@@ -387,7 +419,7 @@ describe('Product', () => {
           },
         ],
       });
-    }).toThrowError(/Invalid provisioning template url for resource Default\/MyProduct/);
+    }).toThrowError(/Invalid provisioning template url for resource Stack\/MyProduct/);
   }),
 
   test('fails product creation with empty productVersions', () => {
@@ -397,8 +429,8 @@ describe('Product', () => {
         owner: 'testOwner',
         productVersions: [],
       });
-    }).toThrowError(/Invalid product versions for resource Default\/MyProduct/);
-  });
+    }).toThrowError(/Invalid product versions for resource Stack\/MyProduct/);
+  }),
 
   describe('adding and associating TagOptions to a product', () => {
     let product: servicecatalog.IProduct;

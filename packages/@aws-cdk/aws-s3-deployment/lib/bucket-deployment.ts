@@ -12,12 +12,9 @@ import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 // tag key has a limit of 128 characters
 const CUSTOM_RESOURCE_OWNER_TAG = 'aws-cdk:cr-owned';
+
 /**
  * Properties for `BucketDeployment`.
  */
@@ -81,7 +78,7 @@ export interface BucketDeploymentProps {
    * NOTICE: Configuring this to "false" might have operational implications. Please
    * visit to the package documentation referred below to make sure you fully understand those implications.
    *
-   * @see https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment#retain-on-delete
+   * @see https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment#retain-on-delete
    * @default true - when resource is deleted/updated, files are retained
    */
   readonly retainOnDelete?: boolean;
@@ -245,7 +242,7 @@ export interface BucketDeploymentProps {
  * `BucketDeployment` populates an S3 bucket with the contents of .zip files from
  * other S3 buckets or from local disk
  */
-export class BucketDeployment extends CoreConstruct {
+export class BucketDeployment extends Construct {
   private readonly cr: cdk.CustomResource;
   private _deployedBucket?: s3.IBucket;
   private requestDestinationArn: boolean = false;
@@ -302,7 +299,7 @@ export class BucketDeployment extends CoreConstruct {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
-      runtime: lambda.Runtime.PYTHON_3_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       environment: props.useEfs ? {
         MOUNT_PATH: mountPath,
       } : undefined,

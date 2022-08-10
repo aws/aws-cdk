@@ -14,12 +14,14 @@ import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+import { deployStacks } from './deploy';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
+import { validateSnsTopicArn } from './util/validate-notification-arn';
 
 export interface CdkToolkitProps {
 
@@ -112,7 +114,7 @@ export class CdkToolkit {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        const currentTemplate = await this.props.cloudFormation.readCurrentTemplateWithNestedStacks(stack);
+        const currentTemplate = await this.props.cloudFormation.readCurrentTemplateWithNestedStacks(stack, options.compareAgainstProcessedTemplate);
         diffs += options.securityOnly
           ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
           : printStackDiff(currentTemplate, stack, strict, contextLines, stream);
@@ -127,8 +129,16 @@ export class CdkToolkit {
       return this.watch(options);
     }
 
+    if (options.notificationArns) {
+      options.notificationArns.map( arn => {
+        if (!validateSnsTopicArn(arn)) {
+          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
+        }
+      });
+    }
+
     const startSynthTime = new Date().getTime();
-    const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
+    const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
@@ -154,11 +164,19 @@ export class CdkToolkit {
       warning('⚠️ It should only be used for development - never use it for your production Stacks!');
     }
 
+    const stacks = stackCollection.stackArtifacts;
+
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
-    for (const stack of stacks.stackArtifacts) {
-      if (stacks.stackCount !== 1) { highlight(stack.displayName); }
+    const concurrency = options.concurrency || 1;
+    const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
+    if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
+      warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
+    }
+
+    const deployStack = async (stack: cxapi.CloudFormationStackArtifact) => {
+      if (stackCollection.stackCount !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
         // eslint-disable-next-line max-len
         throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
@@ -175,9 +193,10 @@ export class CdkToolkit {
             force: true,
             roleArn: options.roleArn,
             fromDeploy: true,
+            ci: options.ci,
           });
         }
-        continue;
+        return;
       }
 
       if (requireApproval !== RequireApproval.Never) {
@@ -189,6 +208,13 @@ export class CdkToolkit {
             throw new Error(
               '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
               'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
+          }
+
+          // only talk to user if concurreny is 1 (otherwise, fail)
+          if (concurrency > 1) {
+            throw new Error(
+              '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
+              'but concurrency is greater than 1 so we are unable to get a confirmation from the user');
           }
 
           const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
@@ -219,7 +245,7 @@ export class CdkToolkit {
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
-          progress: options.progress,
+          progress,
           ci: options.ci,
           rollback: options.rollback,
           hotswap: options.hotswap,
@@ -268,6 +294,13 @@ export class CdkToolkit {
         }
       }
       print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
+    };
+
+    try {
+      await deployStacks(stacks, { concurrency, deployStack });
+    } catch (e) {
+      error('\n ❌ Deployment failed: %s', e);
+      throw e;
     }
   }
 
@@ -370,7 +403,7 @@ export class CdkToolkit {
     }
 
     if (!process.stdout.isTTY && !options.resourceMappingFile) {
-      throw new Error('--resource-mapping-file is required when input is not a terminal');
+      throw new Error('--resource-mapping is required when input is not a terminal');
     }
 
     const stack = stacks.stackArtifacts[0];
@@ -460,6 +493,7 @@ export class CdkToolkit {
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
+          ci: options.ci,
         });
         success(`\n ✅  %s: ${action}ed`, chalk.blue(stack.displayName));
       } catch (e) {
@@ -767,6 +801,14 @@ export interface DiffOptions {
    * @default false
    */
   securityOnly?: boolean;
+
+  /**
+   * Whether to run the diff against the template after the CloudFormation Transforms inside it have been executed
+   * (as opposed to the original template, the default, which contains the unprocessed Transforms).
+   *
+   * @default false
+   */
+  compareAgainstProcessedTemplate?: boolean;
 }
 
 interface CfnDeployOptions {
@@ -929,6 +971,14 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default - not monitoring CloudWatch logs
    */
   readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
+
+  /**
+   * Maximum number of simulatenous deployments (dependency permitting) to execute.
+   * The default is '1', which executes all deployments serially.
+   *
+   * @default 1
+   */
+  readonly concurrency?: number;
 }
 
 export interface ImportOptions extends CfnDeployOptions {
@@ -980,6 +1030,13 @@ export interface DestroyOptions {
    * Whether the destroy request came from a deploy.
    */
   fromDeploy?: boolean
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 /**

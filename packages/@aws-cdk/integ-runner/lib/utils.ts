@@ -40,3 +40,61 @@ export function flatten<T>(xs: T[][]): T[] {
 export function chain(commands: string[]): string {
   return commands.filter(c => !!c).join(' && ');
 }
+
+
+/**
+ * A class holding a set of items which are being crossed off in time
+ *
+ * If it takes too long to cross off a new item, print the list.
+ */
+export class WorkList<A> {
+  private readonly remaining = new Set(this.items);
+  private readonly timeout: number;
+  private timer?: NodeJS.Timeout;
+
+  constructor(private readonly items: A[], private readonly options: WorkListOptions<A> = {}) {
+    this.timeout = options.timeout ?? 60_000;
+    this.scheduleTimer();
+  }
+
+  public crossOff(item: A) {
+    this.remaining.delete(item);
+    this.stopTimer();
+    if (this.remaining.size > 0) {
+      this.scheduleTimer();
+    }
+  }
+
+  public done() {
+    this.remaining.clear();
+  }
+
+  private stopTimer() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+    }
+  }
+
+  private scheduleTimer() {
+    this.timer = setTimeout(() => this.report(), this.timeout);
+  }
+
+  private report() {
+    this.options.onTimeout?.(this.remaining);
+  }
+}
+
+export interface WorkListOptions<A> {
+  /**
+   * When to reply with remaining items
+   *
+   * @default 60000
+   */
+  readonly timeout?: number;
+
+  /**
+   * Function to call when timeout hits
+   */
+  readonly onTimeout?: (x: Set<A>) => void;
+}

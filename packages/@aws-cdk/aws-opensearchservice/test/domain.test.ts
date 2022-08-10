@@ -2,7 +2,7 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
-import { Vpc, EbsDeviceVolumeType, SecurityGroup } from '@aws-cdk/aws-ec2';
+import { Vpc, EbsDeviceVolumeType, Port, SecurityGroup } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
@@ -31,7 +31,7 @@ const readWriteActions = [
 
 const defaultVersion = EngineVersion.OPENSEARCH_1_0;
 
-test('connections throws if domain is placed inside a vpc', () => {
+test('connections throws if domain is not placed inside a vpc', () => {
 
   expect(() => {
     new Domain(stack, 'Domain', {
@@ -109,6 +109,32 @@ test('default subnets and security group when vpc is used', () => {
 
 });
 
+test('connections has no default port if enforceHttps is false', () => {
+
+  const vpc = new Vpc(stack, 'Vpc');
+  const domain = new Domain(stack, 'Domain', {
+    version: defaultVersion,
+    vpc,
+    enforceHttps: false,
+  });
+
+  expect(domain.connections.defaultPort).toBeUndefined();
+
+});
+
+test('connections has default port 443 if enforceHttps is true', () => {
+
+  const vpc = new Vpc(stack, 'Vpc');
+  const domain = new Domain(stack, 'Domain', {
+    version: defaultVersion,
+    vpc,
+    enforceHttps: true,
+  });
+
+  expect(domain.connections.defaultPort).toEqual(Port.tcp(443));
+
+});
+
 test('default removalpolicy is retain', () => {
   new Domain(stack, 'Domain', {
     version: defaultVersion,
@@ -161,9 +187,6 @@ test('minimal example renders correctly', () => {
   new Domain(stack, 'Domain', { version: defaultVersion });
 
   Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
-    CognitoOptions: {
-      Enabled: false,
-    },
     EBSOptions: {
       EBSEnabled: true,
       VolumeSize: 10,
@@ -1822,6 +1845,46 @@ describe('advanced options', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       AdvancedOptions: Match.absent(),
+    });
+  });
+});
+
+describe('cognito dashboards auth', () => {
+  test('cognito dashboards auth is not configured by default', () => {
+    new Domain(stack, 'Domain', { version: defaultVersion });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      CognitoOptions: Match.absent(),
+    });
+  });
+
+  test('cognito dashboards auth can be configured', () => {
+    const identityPoolId = 'test-identity-pool-id';
+    const userPoolId = 'test-user-pool-id';
+    const user = new iam.User(stack, 'testuser');
+    const role = new iam.Role(stack, 'testrole', { assumedBy: user });
+
+    new Domain(stack, 'Domain', {
+      version: defaultVersion,
+      cognitoDashboardsAuth: {
+        role,
+        identityPoolId,
+        userPoolId,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      CognitoOptions: {
+        Enabled: true,
+        IdentityPoolId: identityPoolId,
+        RoleArn: {
+          'Fn::GetAtt': [
+            'testroleFAA56B58',
+            'Arn',
+          ],
+        },
+        UserPoolId: userPoolId,
+      },
     });
   });
 });

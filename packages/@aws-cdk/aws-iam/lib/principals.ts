@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Default, FactName, RegionInfo } from '@aws-cdk/region-info';
+import { IDependable } from 'constructs';
 import { IOpenIdConnectProvider } from './oidc-provider';
 import { PolicyDocument } from './policy-document';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
@@ -137,7 +138,7 @@ export interface AddToPrincipalPolicyResult {
    *
    * @default - Required if `statementAdded` is true.
    */
-  readonly policyDependable?: cdk.IDependable;
+  readonly policyDependable?: IDependable;
 }
 
 /**
@@ -266,8 +267,15 @@ export class PrincipalWithConditions extends PrincipalAdapter {
    * Add a condition to the principal
    */
   public addCondition(key: string, value: Condition) {
+    validateConditionObject(value);
+
     const existingValue = this.additionalConditions[key];
-    this.additionalConditions[key] = existingValue ? { ...existingValue, ...value } : value;
+    if (!existingValue) {
+      this.additionalConditions[key] = value;
+    }
+    validateConditionObject(existingValue);
+
+    this.additionalConditions[key] = { ...existingValue, ...value };
   }
 
   /**
@@ -333,6 +341,9 @@ export class PrincipalWithConditions extends PrincipalAdapter {
       if (cdk.Token.isUnresolved(condition) || cdk.Token.isUnresolved(existing)) {
         throw new Error(`multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
       }
+
+      validateConditionObject(existing);
+      validateConditionObject(condition);
 
       mergedConditions[operator] = { ...existing, ...condition };
     });
@@ -604,18 +615,23 @@ export class FederatedPrincipal extends PrincipalBase {
   public readonly assumeRoleAction: string;
 
   /**
+   * The conditions under which the policy is in effect.
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
+   */
+  public readonly conditions: Conditions;
+
+  /**
    *
    * @param federated federated identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
-   * @param conditions The conditions under which the policy is in effect.
-   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
    * @param sessionTags Whether to enable session tagging (see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html)
    */
   constructor(
     public readonly federated: string,
-    public readonly conditions: Conditions,
+    conditions: Conditions = {},
     assumeRoleAction: string = 'sts:AssumeRole') {
     super();
 
+    this.conditions = conditions;
     this.assumeRoleAction = assumeRoleAction;
   }
 
@@ -905,5 +921,19 @@ class ServicePrincipalToken implements cdk.IResolvable {
    */
   public toJSON() {
     return `<${this.service}>`;
+  }
+}
+
+/**
+ * Validate that the given value is a valid Condition object
+ *
+ * The type of `Condition` should have been different, but it's too late for that.
+ *
+ * Also, the IAM library relies on being able to pass in a `CfnJson` instance for
+ * a `Condition`.
+ */
+export function validateConditionObject(x: unknown): asserts x is Record<string, unknown> {
+  if (!x || typeof x !== 'object' || Array.isArray(x)) {
+    throw new Error('A Condition should be represented as a map of operator to value');
   }
 }

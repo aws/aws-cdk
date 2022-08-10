@@ -29,7 +29,7 @@ describe('Rewritable Block Tests', () => {
 
   test('displayLines writes maximum lines based on lines length if rows is undefined', () => {
     const lines = Array.from(Array(5).keys()).map(line => line.toString());
-    process.stderr.rows = undefined;
+    process.stderr.rows = undefined as any;
     const output = stderr.inspectSync(() => {
       block.displayLines(lines);
     });

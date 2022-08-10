@@ -337,6 +337,41 @@ describe('key policies', () => {
     });
   });
 
+  testFutureBehavior('grant for an immutable role', flags, cdk.App, (app) => {
+    const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '0123456789012' } });
+    const principal = new iam.Role(principalStack, 'Role', {
+      assumedBy: new iam.AnyPrincipal(),
+      roleName: 'MyRolePhysicalName',
+    });
+
+    const keyStack = new cdk.Stack(app, 'KeyStack', { env: { account: '111111111111' } });
+    const key = new kms.Key(keyStack, 'Key');
+    principalStack.addDependency(keyStack);
+    key.grantEncrypt(principal.withoutPolicyUpdates());
+
+    Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([{
+          Action: 'kms:*',
+          Effect: 'Allow',
+          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::111111111111:root']] } },
+          Resource: '*',
+        },
+        {
+          Action: [
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Effect: 'Allow',
+          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:root']] } },
+          Resource: '*',
+        }]),
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   testFutureBehavior('additional key admins can be specified (with imported/immutable principal)', flags, cdk.App, (app) => {
     const stack = new cdk.Stack(app);
     const adminRole = iam.Role.fromRoleArn(stack, 'Admin', 'arn:aws:iam::123456789012:role/TrustedAdmin');
@@ -1203,5 +1238,36 @@ describe('key specs and key usages', () => {
 
     expect(() => new kms.Key(stack, 'Key', { enableKeyRotation: true, keySpec: kms.KeySpec.RSA_3072 }))
       .toThrow('key rotation cannot be enabled on asymmetric keys');
+  });
+});
+
+describe('Key.fromKeyArn()', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'Base', {
+      env: { account: '111111111111', region: 'stack-region' },
+    });
+  });
+
+  describe('for a key in a different account and region', () => {
+    let key: kms.IKey;
+
+    beforeEach(() => {
+      key = kms.Key.fromKeyArn(
+        stack,
+        'iKey',
+        'arn:aws:kms:key-region:222222222222:key:key-name',
+      );
+    });
+
+    test("the key's region is taken from the ARN", () => {
+      expect(key.env.region).toBe('key-region');
+    });
+
+    test("the key's account is taken from the ARN", () => {
+      expect(key.env.account).toBe('222222222222');
+    });
   });
 });

@@ -1241,7 +1241,11 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         vpc: props.vpc,
         description: `Security group for domain ${this.node.id}`,
       })];
-      this._connections = new ec2.Connections({ securityGroups });
+      if (props.enforceHttps) {
+        this._connections = new ec2.Connections({ securityGroups, defaultPort: ec2.Port.tcp(443) });
+      } else {
+        this._connections = new ec2.Connections({ securityGroups });
+      }
     }
 
     // If VPC options are supplied ensure that the number of subnets matches the number AZ
@@ -1579,12 +1583,12 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
       logPublishingOptions: logPublishing,
-      cognitoOptions: {
-        enabled: props.cognitoDashboardsAuth != null,
+      cognitoOptions: props.cognitoDashboardsAuth ? {
+        enabled: true,
         identityPoolId: props.cognitoDashboardsAuth?.identityPoolId,
         roleArn: props.cognitoDashboardsAuth?.role.roleArn,
         userPoolId: props.cognitoDashboardsAuth?.userPoolId,
-      },
+      }: undefined,
       vpcOptions: cfnVpcOptions,
       snapshotOptions: props.automatedSnapshotStartHour
         ? { automatedSnapshotStartHour: props.automatedSnapshotStartHour }

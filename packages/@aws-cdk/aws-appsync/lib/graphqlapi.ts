@@ -2,6 +2,7 @@ import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
+import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '@aws-cdk/aws-logs';
 import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
@@ -167,11 +168,6 @@ export interface OpenIdConnectConfig {
 export interface LambdaAuthorizerConfig {
   /**
    * The authorizer lambda function.
-   * Note: This Lambda function must have the following resource-based policy assigned to it.
-   * When configuring Lambda authorizers in the console, this is done for you.
-   * To do so with the AWS CLI, run the following:
-   *
-   * `aws lambda add-permission --function-name "arn:aws:lambda:us-east-2:111122223333:function:my-function" --statement-id "appsync" --principal appsync.amazonaws.com --action lambda:InvokeFunction`
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-lambdaauthorizerconfig.html
    */
@@ -253,6 +249,16 @@ export interface LogConfig {
    * @default - None
    */
   readonly role?: IRole;
+
+  /**
+  * The number of days log events are kept in CloudWatch Logs.
+  * By default AppSync keeps the logs infinitely. When updating this property,
+  * unsetting it doesn't remove the log retention policy.
+  * To remove the retention policy, set the value to `INFINITE`
+  *
+  * @default RetentionDays.INFINITE
+  */
+  readonly retention?: RetentionDays
 }
 
 /**
@@ -464,6 +470,11 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public readonly apiKey?: string;
 
+  /**
+   * the CloudWatch Log Group for this API
+   */
+  public readonly logGroup: ILogGroup;
+
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
@@ -499,16 +510,18 @@ export class GraphqlApi extends GraphqlApiBase {
     this.schemaResource = this.schema.bind(this);
 
     if (props.domainName) {
-      new CfnDomainName(this, 'DomainName', {
+      const domainName = new CfnDomainName(this, 'DomainName', {
         domainName: props.domainName.domainName,
         certificateArn: props.domainName.certificate.certificateArn,
         description: `domain for ${this.name} at ${this.graphqlUrl}`,
       });
 
-      new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
+      const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
         domainName: props.domainName.domainName,
         apiId: this.apiId,
       });
+
+      domainNameAssociation.addDependsOn(domainName);
     }
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
@@ -519,6 +532,27 @@ export class GraphqlApi extends GraphqlApiBase {
       this.apiKeyResource.addDependsOn(this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
+
+    if (modes.some((mode) => mode.authorizationType === AuthorizationType.LAMBDA)) {
+      const config = modes.find((mode: AuthorizationMode) => {
+        return mode.authorizationType === AuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
+      })?.lambdaAuthorizerConfig;
+      config?.handler.addPermission('appsync', {
+        principal: new ServicePrincipal('appsync.amazonaws.com'),
+        action: 'lambda:InvokeFunction',
+      });
+    }
+
+    const logGroupName = `/aws/appsync/apis/${this.apiId}`;
+
+    this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
+
+    if (props.logConfig?.retention) {
+      new LogRetention(this, 'LogRetention', {
+        logGroupName: this.logGroup.logGroupName,
+        retention: props.logConfig.retention,
+      });
+    };
   }
 
   /**
@@ -612,10 +646,11 @@ export class GraphqlApi extends GraphqlApiBase {
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
       ],
     }).roleArn;
+    const fieldLogLevel: FieldLogLevel = config.fieldLogLevel ?? FieldLogLevel.NONE;
     return {
       cloudWatchLogsRoleArn: logsRoleArn,
       excludeVerboseContent: config.excludeVerboseContent,
-      fieldLogLevel: config.fieldLogLevel,
+      fieldLogLevel: fieldLogLevel,
     };
   }
 
