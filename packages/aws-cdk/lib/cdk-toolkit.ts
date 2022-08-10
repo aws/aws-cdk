@@ -168,7 +168,7 @@ export class CdkToolkit {
 
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
-    
+
     // Asset pre-publishing phase.
     for (const stack of stacks) {
       // Check whether the stack has an asset manifest before trying to
