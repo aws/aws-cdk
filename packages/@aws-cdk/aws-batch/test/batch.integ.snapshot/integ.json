@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.batch": {
+    "batch-tests/DefaultTest": {
       "stacks": [
         "batch-stack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "batchtestsDefaultTestDeployAssertA73A8412"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
