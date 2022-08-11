@@ -475,7 +475,7 @@ export class GraphqlApi extends GraphqlApiBase {
    *
    * @default - no custom associated domain
    */
-  public readonly domainNameAppSyncDomainName?: string;
+  public readonly appSyncDomainName?: string;
 
   /**
    * the CloudWatch Log Group for this API
@@ -522,7 +522,7 @@ export class GraphqlApi extends GraphqlApiBase {
         certificateArn: props.domainName.certificate.certificateArn,
         description: `domain for ${this.name} at ${this.graphqlUrl}`,
       });
-      this.domainNameAppSyncDomainName = domainName.attrAppSyncDomainName;
+      this.appSyncDomainName = domainName.attrAppSyncDomainName;
       const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
         domainName: props.domainName.domainName,
         apiId: this.apiId,

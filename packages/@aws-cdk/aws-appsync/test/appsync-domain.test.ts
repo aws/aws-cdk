@@ -53,6 +53,6 @@ describe('Tests of AppSync Domain Name', () => {
       },
     });
 
-    expect(stack.resolve(api.domainNameAppSyncDomainName)).toEqual({ 'Fn::GetAtt': ['baseApiDomainName52E3D63D', 'AppSyncDomainName'] });
+    expect(stack.resolve(api.appSyncDomainName)).toEqual({ 'Fn::GetAtt': ['baseApiDomainName52E3D63D', 'AppSyncDomainName'] });
   });
 });
