@@ -18,6 +18,7 @@ import { deployStacks } from './deploy';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning } from './logging';
+import { publishAllStackAssets } from './publish';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
@@ -169,27 +170,32 @@ export class CdkToolkit {
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
-    // Asset pre-publishing phase.
-    for (const stack of stacks) {
-      // Check whether the stack has an asset manifest before trying to
-      // pre-build and publish.
-      if (!stack.dependencies.some(cxapi.AssetManifestArtifact.isAssetManifestArtifact)) {
-        continue;
-      }
+    const concurrency = options.concurrency || 1;
+    const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
+    if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
+      warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
+    }
 
-      print('🏭 Pre-building and publishing assets for %s\n', stack.displayName);
+    const publishStackAssets = async (stack: cxapi.CloudFormationStackArtifact) => {
+      // Check whether the stack has an asset manifest before trying to build and publish.
+      if (!stack.dependencies.some(cxapi.AssetManifestArtifact.isAssetManifestArtifact)) {
+        return;
+      };
+
+      print('%s: building and publishing assets...\n', chalk.bold(stack.displayName));
       await this.props.cloudFormation.publishStackAssets({
         stack,
         roleArn: options.roleArn,
         toolkitStackName: options.toolkitStackName,
       });
-      print('\n ✅  Assets published for %s\n', stack.displayName);
-    }
+      print('\n%s: assets published\n', chalk.bold(stack.displayName));
+    };
 
-    const concurrency = options.concurrency || 1;
-    const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
-    if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
-      warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
+    try {
+      await publishAllStackAssets(stacks, { concurrency, publishStackAssets });
+    } catch (e) {
+      error('\n ❌ Publishing assets failed: %s', e);
+      throw e;
     }
 
     const deployStack = async (stack: cxapi.CloudFormationStackArtifact) => {
