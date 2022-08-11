@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.37.1](https://github.com/aws/aws-cdk/compare/v2.37.0...v2.37.1) (2022-08-10)
+
+### Bug Fixes
+
+* **eks:** revert "fix(eks): cannot disable cluster logging once it has been enabled" ([#21545](https://github.com/aws/aws-cdk/pull/21545)) ([5515ce4](https://github.com/aws/aws-cdk/commit/5515ce4b439d7917bbba662d852acc29fea9d8a4))
+
+## [2.37.0](https://github.com/aws/aws-cdk/compare/v2.36.0...v2.37.0) (2022-08-09)
+
+
+### Features
+
+* **apigateway:** add metrics for Stage and Method constructs ([#20617](https://github.com/aws/aws-cdk/issues/20617)) ([3bf1361](https://github.com/aws/aws-cdk/commit/3bf1361e20e2b2d497fcc2197fa45dac91e7eee3))
+* **aws-cdk-lib:** aws-cdk-lib assembly file is compressed ([#21481](https://github.com/aws/aws-cdk/issues/21481)) ([0767873](https://github.com/aws/aws-cdk/commit/076787314f6e09c610b3d54a62aa1bff9678e111))
+* **cfnspec:** cloudformation spec v82.0.0 ([#21473](https://github.com/aws/aws-cdk/issues/21473)) ([1124cbf](https://github.com/aws/aws-cdk/commit/1124cbfbcdd0d95d2ad71c9116c1a4faf0330fc2))
+* **cfnspec:** cloudformation spec v83.0.0 ([#21498](https://github.com/aws/aws-cdk/issues/21498)) ([453b553](https://github.com/aws/aws-cdk/commit/453b553c9c5999ef8aa29e690118a63142d8bd1d))
+* **cli:** support hotswapping Lambda function's description and environment variables ([#21305](https://github.com/aws/aws-cdk/issues/21305)) ([fb92703](https://github.com/aws/aws-cdk/commit/fb9270312fc6781b5bf20a0c996ec9e9a2c62c86)), closes [#20787](https://github.com/aws/aws-cdk/issues/20787)
+* **cognito:** allow retrieval of UserPoolClient generated client secret ([#21262](https://github.com/aws/aws-cdk/issues/21262)) ([67a24ba](https://github.com/aws/aws-cdk/commit/67a24baf6bd6ed0405dbbe9f3beca40cb8df5b02))
+* **core:** add network option to docker run command ([#21450](https://github.com/aws/aws-cdk/issues/21450)) ([86e396a](https://github.com/aws/aws-cdk/commit/86e396a5a93b8f008bf6d0d60de2b8abfa1d9ca7)), closes [#21447](https://github.com/aws/aws-cdk/issues/21447)
+* **events:** complex event pattern matching with the `Match` class ([#21310](https://github.com/aws/aws-cdk/issues/21310)) ([fe7651f](https://github.com/aws/aws-cdk/commit/fe7651fdc5463d4834e7c9b3b67e96c73433f230))
+* **lambda:** add docker platform support for lambda ([#21405](https://github.com/aws/aws-cdk/issues/21405)) ([48178ac](https://github.com/aws/aws-cdk/commit/48178ac6c4d4d3bb6d85561860d552502a4ead01))
+* **lambda-event-sources:** add `rootCACertificate` to `SelfManagedKafkaEventSource` ([#21422](https://github.com/aws/aws-cdk/issues/21422)) ([82a597a](https://github.com/aws/aws-cdk/commit/82a597a117f2d6069d52c50c6f42fd4e9c8201dd))
+* **logs:** delete associated log group when stack is deleted ([#21113](https://github.com/aws/aws-cdk/issues/21113)) ([2bdd504](https://github.com/aws/aws-cdk/commit/2bdd5042fe7ed7bacd0f064da7e3668bb0137709))
+
+
+### Bug Fixes
+
+* **cli:** `--hotswap` does not handle `CfnOutput` change correctly ([#21461](https://github.com/aws/aws-cdk/issues/21461)) ([7ccc644](https://github.com/aws/aws-cdk/commit/7ccc644008d974c91bb789628d23f4f0b510075b)), closes [#19998](https://github.com/aws/aws-cdk/issues/19998) [40aws-cdk/cloudformation-diff/lib/diff/types.ts#L10-L21](https://github.com/40aws-cdk/cloudformation-diff/lib/diff/types.ts/issues/L10-L21)
+* **custom-resources:** AwsCustomResource requires a policy which updates immutable roles ([#20966](https://github.com/aws/aws-cdk/issues/20966)) ([a02ef9c](https://github.com/aws/aws-cdk/commit/a02ef9c1583d07b191a171263a6e77aadfb9f2ab)), closes [#13232](https://github.com/aws/aws-cdk/issues/13232)
+* **cx-api:** bootstrap stack is validated even if the custom synthesizer does not require it ([#21518](https://github.com/aws/aws-cdk/issues/21518)) ([afb1c2d](https://github.com/aws/aws-cdk/commit/afb1c2df82120a4eeba367bc3c3a3f6a07c6adc2)), closes [#21324](https://github.com/aws/aws-cdk/issues/21324) [40aws-cdk/cx-api/lib/artifacts/asset-manifest-artifact.ts#L38-L41](https://github.com/40aws-cdk/cx-api/lib/artifacts/asset-manifest-artifact.ts/issues/L38-L41) [40aws-cdk/cx-api/lib/artifacts/asset-manifest-artifact.ts#L58](https://github.com/40aws-cdk/cx-api/lib/artifacts/asset-manifest-artifact.ts/issues/L58)
+* **ec2:** launch template missing tags ([#21445](https://github.com/aws/aws-cdk/issues/21445)) ([3853728](https://github.com/aws/aws-cdk/commit/3853728c699bd9c47b60fcc24ac6a8b7d65306fe))
+* **ecs:** setting updatePolicy results in error due to updateType having default value  ([#21025](https://github.com/aws/aws-cdk/issues/21025)) ([3103784](https://github.com/aws/aws-cdk/commit/3103784889c51e63eda555a3941412dfc5789591))
+* **eks:** missing question marks cause update cluster setting failure ([#21463](https://github.com/aws/aws-cdk/issues/21463)) ([1000abe](https://github.com/aws/aws-cdk/commit/1000abe43b111ea933ed9b717c3ebe18f96a4d7b)), closes [#21185](https://github.com/aws/aws-cdk/issues/21185) [#21436](https://github.com/aws/aws-cdk/issues/21436)
+* **lambda:** Function allows specifying vpcSubnets without vpc ([#21369](https://github.com/aws/aws-cdk/issues/21369)) ([e9233fa](https://github.com/aws/aws-cdk/commit/e9233fae025ff5ee13cd47d35d22b4ec12fffa9e)), closes [#21357](https://github.com/aws/aws-cdk/issues/21357)
+* **opensearchservice:** access denied when creating a new domain in regions without cognito support ([#21395](https://github.com/aws/aws-cdk/issues/21395)) ([0e49aed](https://github.com/aws/aws-cdk/commit/0e49aedfc0518c2da0385434f5d4aeaabd993362)), closes [#21192](https://github.com/aws/aws-cdk/issues/21192)
+* **pipelines:** 'ConfirmPermissionsBroadening' incorrectly invokes lambda for AWS CLI v2 ([#21462](https://github.com/aws/aws-cdk/issues/21462)) ([a913d60](https://github.com/aws/aws-cdk/commit/a913d6038c7607659c5c5f5bc01774a605f08cf9))
+* **ses:** incorrect DKIM records for EmailIdentity ([#21318](https://github.com/aws/aws-cdk/issues/21318)) ([54bad4c](https://github.com/aws/aws-cdk/commit/54bad4cddc44185f48ae51d410343f24dea4a6f1)), closes [#21306](https://github.com/aws/aws-cdk/issues/21306)
+
+## [2.36.0](https://github.com/aws/aws-cdk/compare/v2.35.0...v2.36.0) (2022-08-08)
+
+
+### Features
+
+* **aws-cdk-lib:** aws-cdk-lib assembly file is compressed ([#21481](https://github.com/aws/aws-cdk/issues/21481)) ([2e97dfe](https://github.com/aws/aws-cdk/commit/2e97dfe81a9aef09f41648578d7b41c00f8c58e6))
+
 ## [2.35.0](https://github.com/aws/aws-cdk/compare/v2.34.2...v2.35.0) (2022-08-02)
 
 
