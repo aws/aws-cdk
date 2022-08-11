@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.51"
+          "version": "10.1.71"
         }
       },
       "AwsCdkFsxLustre": {
@@ -816,7 +816,7 @@
                 "path": "FsxLustreWithS3Test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.51"
+                  "version": "10.1.71"
                 }
               },
               "DeployAssert": {
