@@ -532,7 +532,6 @@
         }
        }
       },
-      "Memory": 512,
       "Name": "web",
       "PortMappings": [
        {
