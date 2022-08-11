@@ -14,7 +14,7 @@ import { AuthType, HttpMethod, CallApiGatewayRestApiEndpoint } from '../../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'CallRestApiInteg');
-const restApi = new apigateway.RestApi(stack, 'MyRestApi');
+const restApi = new apigateway.RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
 
 const hello = new apigateway.LambdaIntegration(new lambda.Function(stack, 'Hello', {
   runtime: lambda.Runtime.NODEJS_14_X,

@@ -7,7 +7,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'integ-cloudfront-rest-api-origin');
 
-const api = new apigateway.RestApi(stack, 'RestApi', { endpointTypes: [apigateway.EndpointType.REGIONAL] });
+const api = new apigateway.RestApi(stack, 'RestApi', { endpointTypes: [apigateway.EndpointType.REGIONAL], cloudWatchRole: true });
 api.root.addMethod('GET');
 
 new cloudfront.Distribution(stack, 'Distribution', {

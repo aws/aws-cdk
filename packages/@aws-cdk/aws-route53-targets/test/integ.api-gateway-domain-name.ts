@@ -29,6 +29,7 @@ class TestStack extends Stack {
     const certificate = acm.Certificate.fromCertificateArn(this, 'cert', certArn);
 
     const api = new apig.LambdaRestApi(this, 'api', {
+      cloudWatchRole: true,
       handler,
       domainName: {
         certificate,

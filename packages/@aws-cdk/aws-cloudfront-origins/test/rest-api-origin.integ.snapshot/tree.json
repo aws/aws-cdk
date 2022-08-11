@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.63"
         }
       },
       "integ-cloudfront-rest-api-origin": {
@@ -160,7 +160,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-apigateway.Stage",
                   "version": "0.0.0"
                 }
               },
@@ -221,7 +221,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-apigateway.RestApi",
               "version": "0.0.0"
             }
           },
@@ -233,8 +233,8 @@
                 "id": "Origin1",
                 "path": "integ-cloudfront-rest-api-origin/Distribution/Origin1",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.63"
                 }
               },
               "Resource": {
