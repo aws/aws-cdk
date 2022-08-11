@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.58"
+          "version": "10.1.65"
         }
       },
       "integ-init": {
@@ -1011,13 +1011,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.58"
+                  "version": "10.1.65"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.58"
+              "version": "10.1.65"
             }
           }
         },
