@@ -41,7 +41,7 @@ describe('Tests of AppSync Domain Name', () => {
     );
   });
 
-  test('domainNameAppSyncDomainName exposes the domain of the associated AWS::AppSync::DomainName', () => {
+  test('appSyncDomainName exposes the domain of the associated AWS::AppSync::DomainName', () => {
     const api = new appsync.GraphqlApi(stack, 'baseApi', {
       name: 'api',
       schema: appsync.Schema.fromAsset(
@@ -54,5 +54,16 @@ describe('Tests of AppSync Domain Name', () => {
     });
 
     expect(stack.resolve(api.appSyncDomainName)).toEqual({ 'Fn::GetAtt': ['baseApiDomainName52E3D63D', 'AppSyncDomainName'] });
+  });
+
+  test('appSyncDomainName should throw an error when no custom domain has been configured', () => {
+    const api = new appsync.GraphqlApi(stack, 'baseApi', {
+      name: 'api',
+      schema: appsync.Schema.fromAsset(
+        path.join(__dirname, 'appsync.test.graphql'),
+      ),
+    });
+
+    expect(() => api.appSyncDomainName).toThrow('Cannot retrieve the appSyncDomainName without a domainName configuration');
   });
 });
