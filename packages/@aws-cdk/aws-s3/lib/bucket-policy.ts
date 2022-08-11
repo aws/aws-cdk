@@ -1,8 +1,9 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
-import { RemovalPolicy, Resource } from '@aws-cdk/core';
+import { RemovalPolicy, Resource, Token, Tokenization } from '@aws-cdk/core';
+import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import { Construct } from 'constructs';
-import { IBucket } from './bucket';
-import { CfnBucketPolicy } from './s3.generated';
+import { Bucket, IBucket } from './bucket';
+import { CfnBucket, CfnBucketPolicy } from './s3.generated';
 
 export interface BucketPolicyProps {
   /**
@@ -33,6 +34,45 @@ export interface BucketPolicyProps {
  * Prefer to use `addToResourcePolicy()` instead.
  */
 export class BucketPolicy extends Resource {
+  /**
+   * Create a mutable {@link BucketPolicy} from a {@link CfnBucketPolicy}.
+   */
+  public static fromCfnBucketPolicy(cfnBucketPolicy: CfnBucketPolicy): BucketPolicy {
+    // use a "weird" id that has a higher chance of being unique
+    const id = '@FromCfnBucketPolicy';
+
+    // if fromCfnBucketPolicy() was already called on this CfnBucketPolicy,
+    // return the same L2
+    // (as different L2s would conflict, because of the mutation of the document property of the L1 below)
+    const existing = cfnBucketPolicy.node.tryFindChild(id);
+    if (existing) {
+      return <BucketPolicy>existing;
+    }
+
+    // resolve the Bucket this Policy references
+    let bucket: IBucket | undefined;
+    if (Token.isUnresolved(cfnBucketPolicy.bucket)) {
+      const bucketIResolvable = Tokenization.reverse(cfnBucketPolicy.bucket);
+      if (bucketIResolvable instanceof CfnReference) {
+        const cfnElement = bucketIResolvable.target;
+        if (cfnElement instanceof CfnBucket) {
+          bucket = Bucket.fromCfnBucket(cfnElement);
+        }
+      }
+    }
+    if (!bucket) {
+      bucket = Bucket.fromBucketName(cfnBucketPolicy, '@FromCfnBucket', cfnBucketPolicy.bucket);
+    }
+
+    const ret = new class extends BucketPolicy {
+      public readonly document = PolicyDocument.fromJson(cfnBucketPolicy.policyDocument);
+    }(cfnBucketPolicy, id, {
+      bucket,
+    });
+    // mark the Bucket as having this Policy
+    bucket.policy = ret;
+    return ret;
+  }
 
   /**
    * A policy document containing permissions to add to the specified bucket.
@@ -41,17 +81,18 @@ export class BucketPolicy extends Resource {
    */
   public readonly document = new PolicyDocument();
 
+  /** The Bucket this Policy applies to. */
+  public readonly bucket: IBucket;
+
   private resource: CfnBucketPolicy;
 
   constructor(scope: Construct, id: string, props: BucketPolicyProps) {
     super(scope, id);
 
-    if (!props.bucket.bucketName) {
-      throw new Error('Bucket doesn\'t have a bucketName defined');
-    }
+    this.bucket = props.bucket;
 
     this.resource = new CfnBucketPolicy(this, 'Resource', {
-      bucket: props.bucket.bucketName,
+      bucket: this.bucket.bucketName,
       policyDocument: this.document,
     });
 
@@ -67,5 +108,4 @@ export class BucketPolicy extends Resource {
   public applyRemovalPolicy(removalPolicy: RemovalPolicy) {
     this.resource.applyRemovalPolicy(removalPolicy);
   }
-
 }
