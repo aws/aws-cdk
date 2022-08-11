@@ -18,6 +18,7 @@ import {
   Stack,
   Tags,
   Token,
+  Tokenization,
 } from '@aws-cdk/core';
 import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
