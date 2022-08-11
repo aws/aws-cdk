@@ -612,6 +612,7 @@
     "./aws-xray": "./aws-xray/index.js",
     "./cloud-assembly-schema": "./cloud-assembly-schema/index.js",
     "./cloudformation-include": "./cloudformation-include/index.js",
+    "./core": "./core/index.js",
     "./core/lib/helpers-internal": "./core/lib/helpers-internal/index.js",
     "./custom-resources": "./custom-resources/index.js",
     "./cx-api": "./cx-api/index.js",
