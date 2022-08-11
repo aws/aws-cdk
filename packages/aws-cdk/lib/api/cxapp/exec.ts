@@ -247,7 +247,7 @@ function contextOverflowCleanup(location: string | undefined, assembly: cxapi.Cl
     const frameworkDoesNotSupportContextOverflow = some(tree, node => {
       const fqn = node.constructInfo?.fqn;
       const version = node.constructInfo?.version;
-      return (fqn === 'aws-cdk-lib.App' && version != null && semver.lte(version, '2.36.0'))
+      return (fqn === 'aws-cdk-lib.App' && version != null && semver.lte(version, '2.37.1'))
         || fqn === '@aws-cdk/core.App'; // v1
     });
 
