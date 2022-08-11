@@ -17,7 +17,10 @@ describe('publishAllStackAssets', () => {
     const publishStackAssets = jest.fn(() => sleep(1));
 
     // WHEN/THEN
-    await expect(publishAllStackAssets(toPublish, { concurrency, publishStackAssets })).resolves.toBeUndefined();
+    await expect(publishAllStackAssets(toPublish, { concurrency, publishStackAssets }))
+      .resolves
+      .toBeUndefined();
+
     expect(publishStackAssets).toBeCalledTimes(3);
     expect(publishStackAssets).toBeCalledWith(A);
     expect(publishStackAssets).toBeCalledWith(B);
@@ -26,9 +29,11 @@ describe('publishAllStackAssets', () => {
 
   test('errors', async () => {
     // GIVEN
-    const publishStackAssets = () => { throw new Error('Error'); };
+    const publishStackAssets = async () => { throw new Error('Message'); };
 
     // WHEN/THEN
-    await expect(publishAllStackAssets(toPublish, { concurrency, publishStackAssets })).rejects.toThrow('Publishing Assets Failed: Error');
+    await expect(publishAllStackAssets(toPublish, { concurrency, publishStackAssets }))
+      .rejects
+      .toThrow('Publishing Assets Failed: Error: Message, Error: Message, Error: Message');
   });
 });

@@ -23,6 +23,6 @@ export const publishAllStackAssets = async (stacks: cxapi.CloudFormationStackArt
   await queue.onIdle();
 
   if (publishingErrors.length) {
-    throw Error(`Publishing Assets Failed: ${publishingErrors}`);
+    throw Error(`Publishing Assets Failed: ${publishingErrors.join(', ')}`);
   }
 };

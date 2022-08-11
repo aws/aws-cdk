@@ -180,7 +180,7 @@ export class CdkToolkit {
       // Check whether the stack has an asset manifest before trying to build and publish.
       if (!stack.dependencies.some(cxapi.AssetManifestArtifact.isAssetManifestArtifact)) {
         return;
-      };
+      }
 
       print('%s: building and publishing assets...\n', chalk.bold(stack.displayName));
       await this.props.cloudFormation.publishStackAssets({
