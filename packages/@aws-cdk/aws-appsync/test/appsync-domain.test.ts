@@ -40,4 +40,19 @@ describe('Tests of AppSync Domain Name', () => {
       },
     );
   });
+
+  test('domainNameAppSyncDomainName exposes the domain of the associated AWS::AppSync::DomainName', () => {
+    const api = new appsync.GraphqlApi(stack, 'baseApi', {
+      name: 'api',
+      schema: appsync.Schema.fromAsset(
+        path.join(__dirname, 'appsync.test.graphql'),
+      ),
+      domainName: {
+        certificate,
+        domainName: 'aws.amazon.com',
+      },
+    });
+
+    expect(stack.resolve(api.domainNameAppSyncDomainName)).toEqual({ 'Fn::GetAtt': ['baseApiDomainName52E3D63D', 'AppSyncDomainName'] });
+  });
 });
