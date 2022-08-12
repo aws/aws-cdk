@@ -239,6 +239,12 @@ export class AuroraEngineVersion {
   public static readonly VER_1_22_1_3 = AuroraEngineVersion.builtIn_5_6('1.22.1.3');
   /** Version "5.6.mysql_aurora.1.22.2". */
   public static readonly VER_1_22_2 = AuroraEngineVersion.builtIn_5_6('1.22.2');
+  /** Version "5.6.mysql_aurora.1.22.3". */
+  public static readonly VER_1_22_3 = AuroraEngineVersion.builtIn_5_6('1.22.3');
+  /** Version "5.6.mysql_aurora.1.22.4". */
+  public static readonly VER_1_22_4 = AuroraEngineVersion.builtIn_5_6('1.22.4');
+  /** Version "5.6.mysql_aurora.1.22.5". */
+  public static readonly VER_1_22_5 = AuroraEngineVersion.builtIn_5_6('1.22.5');
 
   /**
    * Create a new AuroraEngineVersion with an arbitrary version.
@@ -300,6 +306,8 @@ class AuroraClusterEngine extends MySqlClusterEngineBase {
 /**
  * The versions for the Aurora MySQL cluster engine
  * (those returned by {@link DatabaseClusterEngine.auroraMysql}).
+ *
+ * https://docs.aws.amazon.com/AmazonRDS/latest/AuroraMySQLReleaseNotes/Welcome.html
  */
 export class AuroraMysqlEngineVersion {
   /** Version "5.7.12". */
@@ -338,12 +346,28 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_07_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.1');
   /** Version "5.7.mysql_aurora.2.07.2". */
   public static readonly VER_2_07_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.2');
+  /** Version "5.7.mysql_aurora.2.07.3". */
+  public static readonly VER_2_07_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.3');
+  /** Version "5.7.mysql_aurora.2.07.4". */
+  public static readonly VER_2_07_4 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.4');
+  /** Version "5.7.mysql_aurora.2.07.5". */
+  public static readonly VER_2_07_5 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.5');
+  /** Version "5.7.mysql_aurora.2.07.6". */
+  public static readonly VER_2_07_6 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.6');
+  /** Version "5.7.mysql_aurora.2.07.7". */
+  public static readonly VER_2_07_7 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.7');
+  /** Version "5.7.mysql_aurora.2.07.8". */
+  public static readonly VER_2_07_8 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.8');
   /** Version "5.7.mysql_aurora.2.08.0". */
   public static readonly VER_2_08_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.0');
   /** Version "5.7.mysql_aurora.2.08.1". */
   public static readonly VER_2_08_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.1');
   /** Version "5.7.mysql_aurora.2.08.2". */
   public static readonly VER_2_08_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.2');
+  /** Version "5.7.mysql_aurora.2.08.3". */
+  public static readonly VER_2_08_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.3');
+  /** Version "5.7.mysql_aurora.2.08.4". */
+  public static readonly VER_2_08_4 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.4');
   /** Version "5.7.mysql_aurora.2.09.0". */
   public static readonly VER_2_09_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.0');
   /** Version "5.7.mysql_aurora.2.09.1". */
@@ -459,6 +483,8 @@ export interface AuroraPostgresEngineFeatures {
 /**
  * The versions for the Aurora PostgreSQL cluster engine
  * (those returned by {@link DatabaseClusterEngine.auroraPostgres}).
+ *
+ * https://docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/AuroraPostgreSQL.Updates.html
  */
 export class AuroraPostgresEngineVersion {
   /** Version "9.6.8". */
@@ -545,6 +571,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_13_6 = AuroraPostgresEngineVersion.of('13.6', '13', { s3Import: true, s3Export: true });
   /** Version "13.7". */
   public static readonly VER_13_7 = AuroraPostgresEngineVersion.of('13.7', '13', { s3Import: true, s3Export: true });
+  /** Version "14.3". */
+  public static readonly VER_14_3 = AuroraPostgresEngineVersion.of('14.3', '14', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
