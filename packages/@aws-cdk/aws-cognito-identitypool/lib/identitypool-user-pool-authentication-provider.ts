@@ -109,8 +109,6 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   ): UserPoolAuthenticationProviderBindConfig {
     Node.of(identityPool).addDependency(this.userPool);
     Node.of(identityPool).addDependency(this.userPoolClient);
-    const region = Stack.of(scope).region;
-    const urlSuffix = Stack.of(scope).urlSuffix;
 
     return {
       clientId: this.userPoolClient.userPoolClientId,
