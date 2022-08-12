@@ -810,7 +810,7 @@ const stack = Stack.of(this);
 
 stack.account; // Returns the AWS::AccountId for this stack (or the literal value if known)
 stack.region;  // Returns the AWS::Region for this stack (or the literal value if known)
-stack.partition;
+stack.partition; // Returns the AWS::Partition for this stack (or the literal value if known)
 ```
 
 [cfn-pseudo-params]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html

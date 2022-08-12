@@ -209,11 +209,7 @@
          "Fn::Join": [
           "",
           [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
+           "arn:aws:iam::",
            {
             "Ref": "AWS::AccountId"
            },
@@ -321,11 +317,7 @@
          "Fn::Join": [
           "",
           [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
+           "arn:aws:iam::",
            {
             "Ref": "AWS::AccountId"
            },
@@ -400,11 +392,7 @@
         "Fn::Join": [
          "",
          [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":cloudformation:us-west-2:",
+          "arn:aws:cloudformation:us-west-2:",
           {
            "Ref": "AWS::AccountId"
           },
