@@ -7,7 +7,11 @@ export const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'batch-stack');
 
-const vpc = new ec2.Vpc(stack, 'vpc');
+const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 1 });
+
+const efaSecurityGroup = new ec2.SecurityGroup(stack, 'EFASecurityGroup', {
+  vpc,
+});
 
 // While this test specifies EFA, the same behavior occurs with
 // interfaceType: 'interface' as well
@@ -18,6 +22,7 @@ const launchTemplateEFA = new ec2.CfnLaunchTemplate(stack, 'ec2-launch-template-
       deviceIndex: 0,
       subnetId: vpc.privateSubnets[0].subnetId,
       interfaceType: 'efa',
+      groups: [efaSecurityGroup.securityGroupId],
     }],
   },
 });
@@ -26,7 +31,10 @@ const computeEnvironmentEFA = new batch.ComputeEnvironment(stack, 'EFABatch', {
   managed: true,
   computeResources: {
     type: batch.ComputeResourceType.ON_DEMAND,
-    instanceTypes: [new ec2.InstanceType('c5n')],
+    instanceTypes: [new ec2.InstanceType('c5n.18xlarge')],
+    // Security Groups explicitly set empty because they are in the
+    // launch template
+    securityGroups: batch.ComputeEnvironmentSecurityGroups.NONE,
     vpc,
     launchTemplate: {
       launchTemplateName: launchTemplateEFA.launchTemplateName as string,

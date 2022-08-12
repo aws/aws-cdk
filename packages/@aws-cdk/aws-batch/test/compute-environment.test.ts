@@ -1,5 +1,5 @@
 import { throws } from 'assert';
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
@@ -581,6 +581,57 @@ describe('Batch Compute Environment', () => {
             Type: batch.ComputeResourceType.ON_DEMAND,
           }),
         });
+      });
+    });
+
+    describe('with automatic securityGroups', () => {
+      test('should have SecurityGroupIds', () => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            securityGroups: batch.ComputeEnvironmentSecurityGroups.AUTOMATIC,
+          },
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties(
+          'AWS::Batch::ComputeEnvironment', {
+            ComputeResources: {
+              SecurityGroupIds: [
+                {
+                  'Fn::GetAtt': [
+                    'testcomputeenvResourceSecurityGroup7615BA87',
+                    'GroupId',
+                  ],
+                },
+              ],
+            },
+          },
+        );
+      });
+    });
+
+    describe('without securityGroups', () => {
+      test('should not have a SecurityGroupIds', () => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'efa-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            securityGroups: batch.ComputeEnvironmentSecurityGroups.NONE,
+          },
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties(
+          'AWS::Batch::ComputeEnvironment', {
+            ComputeResources: {
+              SecurityGroupIds: Match.absent(),
+            },
+          },
+        );
       });
     });
 
