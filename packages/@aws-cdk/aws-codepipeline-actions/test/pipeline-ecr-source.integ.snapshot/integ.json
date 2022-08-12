@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.pipeline-ecr-source": {
+    "ecr-source-action/DefaultTest": {
       "stacks": [
         "aws-cdk-codepipeline-ecr-source"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "ecrsourceactionDefaultTestDeployAssert981BA701"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
