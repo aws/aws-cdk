@@ -1,5 +1,6 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ecr from '@aws-cdk/aws-ecr';
+import { Rule } from '@aws-cdk/aws-events';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
 import { Names } from '@aws-cdk/core';
@@ -85,16 +86,27 @@ export class EcrSourceAction extends Action {
     };
   }
 
-  protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['ecr:DescribeImages'],
       resources: [this.props.repository.repositoryArn],
     }));
 
-    this.props.repository.onCloudTrailImagePushed(Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule', {
-      target: new targets.CodePipeline(stage.pipeline),
-      imageTag: this.props.imageTag === '' ? undefined : (this.props.imageTag ?? 'latest'),
+    new Rule(scope, Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule', {
+      targets: [
+        new targets.CodePipeline(stage.pipeline),
+      ],
+      eventPattern: {
+        detailType: ['ECR Image Action'],
+        source: ['aws.ecr'],
+        detail: {
+          'result': ['SUCCESS'],
+          'repository-name': [this.props.repository.repositoryName],
+          'image-tag': [this.props.imageTag === '' ? undefined : (this.props.imageTag ?? 'latest')],
+          'action-type': ['PUSH'],
+        },
+      },
     });
 
     // the Action Role also needs to write to the Pipeline's bucket

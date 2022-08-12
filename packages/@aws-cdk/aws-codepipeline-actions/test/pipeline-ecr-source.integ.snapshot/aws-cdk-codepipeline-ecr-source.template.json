@@ -260,6 +260,70 @@
     ]
    }
   },
+  "MyPipelineSourceECRSourceawscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRuleF3B28B14": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "detail-type": [
+      "ECR Image Action"
+     ],
+     "source": [
+      "aws.ecr"
+     ],
+     "detail": {
+      "result": [
+       "SUCCESS"
+      ],
+      "repository-name": [
+       {
+        "Ref": "MyEcrRepo767466D0"
+       }
+      ],
+      "image-tag": [
+       "latest"
+      ],
+      "action-type": [
+       "PUSH"
+      ]
+     }
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":codepipeline:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":",
+         {
+          "Ref": "MyPipelineAED38ECF"
+         }
+        ]
+       ]
+      },
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyPipelineEventsRoleFAB99F32",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
   "MyPipelineEventsRoleFAB99F32": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -356,67 +420,143 @@
    "Type": "AWS::ECR::Repository",
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "LoginCommand": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws ecr get-login-password --region ",
+      {
+       "Ref": "AWS::Region"
+      },
+      " | docker login --username AWS --password-stdin ",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ".dkr.ecr.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com"
+     ]
+    ]
+   }
   },
-  "MyEcrRepoawscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule911FDB6D": {
-   "Type": "AWS::Events::Rule",
-   "Properties": {
-    "EventPattern": {
-     "source": [
-      "aws.ecr"
-     ],
-     "detail-type": [
-      "AWS API Call via CloudTrail"
-     ],
-     "detail": {
-      "requestParameters": {
-       "repositoryName": [
+  "PushCommand": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "docker tag public.ecr.aws/lambda/provided ",
+      {
+       "Fn::Select": [
+        4,
         {
-         "Ref": "MyEcrRepo767466D0"
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "MyEcrRepo767466D0",
+            "Arn"
+           ]
+          }
+         ]
         }
-       ],
-       "imageTag": [
-        "latest"
        ]
       },
-      "eventName": [
-       "PutImage"
-      ]
-     }
-    },
-    "State": "ENABLED",
-    "Targets": [
-     {
-      "Arn": {
-       "Fn::Join": [
-        "",
-        [
-         "arn:",
-         {
-          "Ref": "AWS::Partition"
-         },
-         ":codepipeline:",
-         {
-          "Ref": "AWS::Region"
-         },
-         ":",
-         {
-          "Ref": "AWS::AccountId"
-         },
-         ":",
-         {
-          "Ref": "MyPipelineAED38ECF"
-         }
-        ]
+      ".dkr.ecr.",
+      {
+       "Fn::Select": [
+        3,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "MyEcrRepo767466D0",
+            "Arn"
+           ]
+          }
+         ]
+        }
        ]
       },
-      "Id": "Target0",
-      "RoleArn": {
-       "Fn::GetAtt": [
-        "MyPipelineEventsRoleFAB99F32",
-        "Arn"
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "MyEcrRepo767466D0"
+      },
+      ":latest && docker push ",
+      {
+       "Fn::Select": [
+        4,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "MyEcrRepo767466D0",
+            "Arn"
+           ]
+          }
+         ]
+        }
        ]
+      },
+      ".dkr.ecr.",
+      {
+       "Fn::Select": [
+        3,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "MyEcrRepo767466D0",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "MyEcrRepo767466D0"
+      },
+      ":latest"
+     ]
+    ]
+   }
+  },
+  "PipelineConsoleLink": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".console.aws.amazon.com/codesuite/codepipeline/pipelines/",
+      {
+       "Ref": "MyPipelineAED38ECF"
+      },
+      "/view?region=",
+      {
+       "Ref": "AWS::Region"
       }
-     }
+     ]
     ]
    }
   }
