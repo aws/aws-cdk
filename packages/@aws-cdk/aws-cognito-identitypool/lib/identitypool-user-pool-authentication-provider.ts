@@ -111,8 +111,25 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
 
     return {
       clientId: this.userPoolClient.userPoolClientId,
-      providerName: `cognito-idp.${region}.${urlSuffix}/${this.userPool.userPoolId}`,
+      providerName: this.providerName,
       serverSideTokenCheck: !this.disableServerSideTokenCheck,
     };
+      
+    /**
+     * The identity providers associated with the UserPool.
+     */
+    private get providerName(): str {
+      const region = Stack.of(scope).region;
+      const urlSuffix = Stack.of(scope).urlSuffix;
+
+      return `cognito-idp.${region}.${urlSuffix}/${this.userPool.userPoolId}`;
+    }
+      
+    /**
+     * The User Pool Provider Url.
+     */
+    public get providerUrl(): str {
+      return `${this.providerName}:${this.userPoolClient.userPoolClientId}`;
+    }
   }
 }
