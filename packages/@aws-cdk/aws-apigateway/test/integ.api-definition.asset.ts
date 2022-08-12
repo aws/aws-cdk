@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as apigateway from '../lib';
 
 /*
@@ -36,4 +37,6 @@ new cdk.CfnOutput(stack, 'BooksURL', {
   value: api.urlForPath('/books'),
 });
 
-app.synth();
+new IntegTest(app, 'restapi-fromdefinition', {
+  testCases: [stack],
+});

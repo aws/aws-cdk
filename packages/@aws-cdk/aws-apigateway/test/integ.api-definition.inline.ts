@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as apigateway from '../lib';
 
 /*
@@ -64,4 +65,6 @@ new cdk.CfnOutput(stack, 'PetsURL', {
   value: api.urlForPath('/pets'),
 });
 
-app.synth();
+new IntegTest(app, 'inline-api-definition', {
+  testCases: [stack],
+});

@@ -2,6 +2,7 @@ import * as apigateway from '@aws-cdk/aws-apigateway';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { AuthType, HttpMethod, CallApiGatewayRestApiEndpoint } from '../../lib';
 
 /*
@@ -40,4 +41,8 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
 
 new cdk.CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
+});
+
+new IntegTest(app, 'call-rest-api', {
+  testCases: [stack],
 });

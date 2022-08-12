@@ -1,5 +1,6 @@
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import { Deployment, LambdaRestApi, Stage } from '../lib';
 
@@ -28,4 +29,7 @@ class LateBoundDeploymentStageStack extends Stack {
 }
 
 const app = new App();
-new LateBoundDeploymentStageStack(app);
+const testCase = new LateBoundDeploymentStageStack(app);
+new IntegTest(app, 'lambda-api-latebound-deploymentstage', {
+  testCases: [testCase],
+});

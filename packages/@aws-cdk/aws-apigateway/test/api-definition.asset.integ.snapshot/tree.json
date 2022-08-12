@@ -393,6 +393,42 @@
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
         }
+      },
+      "restapi-fromdefinition": {
+        "id": "restapi-fromdefinition",
+        "path": "restapi-fromdefinition",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "restapi-fromdefinition/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "restapi-fromdefinition/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.63"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "restapi-fromdefinition/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
       }
     },
     "constructInfo": {

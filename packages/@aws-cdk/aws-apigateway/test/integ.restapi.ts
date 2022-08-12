@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as apigateway from '../lib';
 
 class Test extends cdk.Stack {
@@ -82,6 +83,8 @@ class Test extends cdk.Stack {
 
 const app = new cdk.App();
 
-new Test(app, 'test-apigateway-restapi');
+const testCase = new Test(app, 'test-apigateway-restapi');
+new IntegTest(app, 'apigateway-restapi', {
+  testCases: [testCase],
+});
 
-app.synth();

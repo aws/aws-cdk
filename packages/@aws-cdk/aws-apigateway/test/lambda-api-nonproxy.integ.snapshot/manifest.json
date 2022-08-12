@@ -107,6 +107,15 @@
         ]
       },
       "displayName": "LambdaApiIntegrationOptionsNonProxyIntegrationStack"
+    },
+    "lambdanonproxyintegrationDefaultTestDeployAssert31D3AA1B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdanonproxyintegrationDefaultTestDeployAssert31D3AA1B.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "lambda-non-proxy-integration/DefaultTest/DeployAssert"
     }
   }
 }

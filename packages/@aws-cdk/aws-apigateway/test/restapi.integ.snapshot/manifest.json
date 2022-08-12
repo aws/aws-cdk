@@ -179,6 +179,15 @@
         ]
       },
       "displayName": "test-apigateway-restapi"
+    },
+    "apigatewayrestapiDefaultTestDeployAssert6A9696A7": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apigatewayrestapiDefaultTestDeployAssert6A9696A7.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "apigateway-restapi/DefaultTest/DeployAssert"
     }
   }
 }

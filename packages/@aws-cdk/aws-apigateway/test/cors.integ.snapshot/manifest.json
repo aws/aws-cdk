@@ -163,6 +163,15 @@
         ]
       },
       "displayName": "cors-twitch-test"
+    },
+    "corsDefaultTestDeployAssert5CF8F851": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "corsDefaultTestDeployAssert5CF8F851.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "cors/DefaultTest/DeployAssert"
     }
   }
 }

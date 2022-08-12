@@ -1,5 +1,6 @@
 import * as cognito from '@aws-cdk/aws-cognito';
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { AuthorizationType, CognitoUserPoolsAuthorizer, MockIntegration, PassthroughBehavior, RestApi } from '../../lib';
 
 /*
@@ -40,4 +41,8 @@ restApi.root.addMethod('ANY', new MockIntegration({
   ],
   authorizer,
   authorizationType: AuthorizationType.COGNITO,
+});
+
+new IntegTest(app, 'cognito-authorizer', {
+  testCases: [stack],
 });

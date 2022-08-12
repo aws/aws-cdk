@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as apigateway from '../lib';
 
 /*
@@ -40,6 +41,9 @@ class Test extends cdk.Stack {
 
 const app = new cdk.App();
 
-new Test(app, 'test-apigateway-vpcendpoint');
+const testCase = new Test(app, 'test-apigateway-vpcendpoint');
+new IntegTest(app, 'apigateway-vpcendpoint', {
+  testCases: [testCase],
+});
 
 app.synth();
