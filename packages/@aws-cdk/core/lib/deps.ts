@@ -86,7 +86,7 @@ function operateOnDependency<T extends Element>(operation: DependencyOperation, 
   if (!commonStack) {
     const topLevelSource = sourcePath[0]; // first path element is the top-level stack
     const topLevelTarget = targetPath[0];
-    let reason = { description: reasonDescription, source: source, target: target };
+    const reason = { description: reasonDescription, source: source, target: target };
     switch (operation) {
       case DependencyOperation.ADD: {
         topLevelSource._addAssemblyDependency(topLevelTarget, reason);

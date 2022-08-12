@@ -17,8 +17,6 @@ import { App, Stack, CfnResource, NestedStack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 
-/* eslint-disable @aws-cdk/no-core-construct */
-
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
