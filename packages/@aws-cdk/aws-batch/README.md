@@ -187,6 +187,42 @@ const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
 });
 ```
 
+Note that if your launch template explicitly specifies network interfaces,
+for example to use an Elastic Fabric Adapter, you must explicitly tell CDK not to
+auto-create security groups in the `ComputeEnvironment` construct.  Instead, you must
+define them in the Launch Template.  For example:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const efaSecurityGroup = new ec2.SecurityGroup(stack, 'EFASecurityGroup', {
+  vpc,
+});
+
+const launchTemplateEFA = new ec2.CfnLaunchTemplate(stack, 'LaunchTemplate', {
+  launchTemplateName: 'LaunchTemplateName',
+  launchTemplateData: {
+    networkInterfaces: [{
+      deviceIndex: 0,
+      subnetId: vpc.privateSubnets[0].subnetId,
+      interfaceType: 'efa',
+      groups: [efaSecurityGroup.securityGroupId],
+    }],
+  },
+});
+
+const computeEnvironmentEFA = new batch.ComputeEnvironment(stack, 'EFAComputeEnv', {
+  managed: true,
+  computeResources: {
+    securityGroups: batch.ComputeEnvironmentSecurityGroups.NONE,
+    vpc,
+    launchTemplate: {
+      launchTemplateName: launchTemplateEFA.launchTemplateName as string,
+    },
+  },
+});
+```
+
 ### Importing an existing Compute Environment
 
 To import an existing batch compute environment, call `ComputeEnvironment.fromComputeEnvironmentArn()`.
