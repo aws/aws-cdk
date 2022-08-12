@@ -9,13 +9,25 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.71"
         }
       },
       "aws-cdk-redshift-cluster-database": {
         "id": "aws-cdk-redshift-cluster-database",
         "path": "aws-cdk-redshift-cluster-database",
         "children": {
+          "ElasticIPAddress": {
+            "id": "ElasticIPAddress",
+            "path": "aws-cdk-redshift-cluster-database/ElasticIPAddress",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+              "aws:cdk:cloudformation:props": {}
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+              "version": "0.0.0"
+            }
+          },
           "Vpc": {
             "id": "Vpc",
             "path": "aws-cdk-redshift-cluster-database/Vpc",
@@ -826,7 +838,9 @@
                     "clusterSubnetGroupName": {
                       "Ref": "ClusterSubnetsDCFA5CB7"
                     },
-                    "elasticIp": "10.123.123.123",
+                    "elasticIp": {
+                      "Ref": "ElasticIPAddress"
+                    },
                     "encrypted": true,
                     "numberOfNodes": 2,
                     "publiclyAccessible": true,
@@ -854,6 +868,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "aws-cdk-redshift-elastic-ip-test": {
+        "id": "aws-cdk-redshift-elastic-ip-test",
+        "path": "aws-cdk-redshift-elastic-ip-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.71"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
