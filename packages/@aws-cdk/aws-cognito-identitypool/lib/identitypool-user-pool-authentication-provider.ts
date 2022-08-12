@@ -122,8 +122,8 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
      * The identity providers associated with the UserPool.
      */
     private get providerName(): str {
-      const region = Stack.of(scope).region;
-      const urlSuffix = Stack.of(scope).urlSuffix;
+      const region = Stack.of(this.userPool).region;
+      const urlSuffix = Stack.of(this.userPool).urlSuffix;
 
       return `cognito-idp.${region}.${urlSuffix}/${this.userPool.userPoolId}`;
     }
