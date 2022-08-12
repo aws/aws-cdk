@@ -222,7 +222,13 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "myvpcingressSubnet1DefaultRoute6FCDFDDF",
+    "myvpcingressSubnet1RouteTableAssociation12FE9C06",
+    "myvpcingressSubnet2DefaultRouteBF3C1EC8",
+    "myvpcingressSubnet2RouteTableAssociation08B3BE06"
+   ]
   },
   "myhandlerSecurityGroupF566A239": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -238,14 +244,20 @@
     "VpcId": {
      "Ref": "myvpc9455A260"
     }
-   }
+   },
+   "DependsOn": [
+    "myvpcingressSubnet1DefaultRoute6FCDFDDF",
+    "myvpcingressSubnet1RouteTableAssociation12FE9C06",
+    "myvpcingressSubnet2DefaultRouteBF3C1EC8",
+    "myvpcingressSubnet2RouteTableAssociation08B3BE06"
+   ]
   },
   "myhandlerD202FA8E": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3Bucket4B2FECC5"
+      "Ref": "AssetParameters7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983bS3Bucket3A6D55B5"
      },
      "S3Key": {
       "Fn::Join": [
@@ -258,7 +270,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3VersionKey38A78B56"
+             "Ref": "AssetParameters7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983bS3VersionKey300CDB6A"
             }
            ]
           }
@@ -271,7 +283,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3VersionKey38A78B56"
+             "Ref": "AssetParameters7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983bS3VersionKey300CDB6A"
             }
            ]
           }
@@ -309,22 +321,26 @@
     }
    },
    "DependsOn": [
-    "myhandlerServiceRole77891068"
+    "myhandlerServiceRole77891068",
+    "myvpcingressSubnet1DefaultRoute6FCDFDDF",
+    "myvpcingressSubnet1RouteTableAssociation12FE9C06",
+    "myvpcingressSubnet2DefaultRouteBF3C1EC8",
+    "myvpcingressSubnet2RouteTableAssociation08B3BE06"
    ]
   }
  },
  "Parameters": {
-  "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3Bucket4B2FECC5": {
+  "AssetParameters7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983bS3Bucket3A6D55B5": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994\""
+   "Description": "S3 bucket for asset \"7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983b\""
   },
-  "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994S3VersionKey38A78B56": {
+  "AssetParameters7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983bS3VersionKey300CDB6A": {
    "Type": "String",
-   "Description": "S3 key for asset version \"74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994\""
+   "Description": "S3 key for asset version \"7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983b\""
   },
-  "AssetParameters74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994ArtifactHashF95C5182": {
+  "AssetParameters7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983bArtifactHash13A82E14": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"74cd930147f46b9b0701755e37f398b7740074ae12c4f50e1c9a6e26175ca994\""
+   "Description": "Artifact hash for asset \"7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983b\""
   }
  },
  "Outputs": {
