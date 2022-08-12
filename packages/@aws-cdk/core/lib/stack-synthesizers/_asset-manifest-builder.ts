@@ -114,6 +114,7 @@ export class AssetManifestBuilder {
       imageUri: cfnify(
         `${account}.dkr.ecr.${region}.${urlSuffix}/${repositoryName}:${imageTag}`,
       ),
+      imageTag: cfnify(imageTag)
     };
   }
 

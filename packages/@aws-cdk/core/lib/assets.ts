@@ -319,4 +319,9 @@ export interface DockerImageAssetLocation {
    * The name of the ECR repository.
    */
   readonly repositoryName: string;
+
+  /**
+   * The tag of the image in Amazon ECR.
+   */
+  readonly imageTag?: string;
 }
