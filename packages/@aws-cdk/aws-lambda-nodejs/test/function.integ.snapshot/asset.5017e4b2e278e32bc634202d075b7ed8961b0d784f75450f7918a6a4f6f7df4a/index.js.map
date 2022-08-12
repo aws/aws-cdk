@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../../integ-handlers/ts-handler.ts", "../../integ-handlers/util.ts"],
   "sourcesContent": ["import { mult } from './util';\n\nexport async function handler(): Promise<void> {\n  console.log(mult(3, 4)); // eslint-disable-line no-console\n}\n", "export function add(a: number, b: number): number {\n  return a + b;\n}\n\nexport function mult(a: number, b: number): number {\n  return a * b;\n}\n"],
-  "mappings": "4ZAAA,kDCIO,WAAc,EAAW,EAAmB,CACjD,MAAO,GAAI,CACb,CDJA,kBAA+C,CAC7C,QAAQ,IAAI,EAAK,EAAG,CAAC,CAAC,CACxB",
-  "names": []
+  "mappings": "yaAAA,IAAAA,EAAA,GAAAC,EAAAD,EAAA,aAAAE,IAAA,eAAAC,EAAAH,GCIO,SAASI,EAAKC,EAAWC,EAAmB,CACjD,OAAOD,EAAIC,CACb,CDJA,eAAsBC,GAAyB,CAC7C,QAAQ,IAAIC,EAAK,EAAG,CAAC,CAAC,CACxB",
+  "names": ["ts_handler_exports", "__export", "handler", "__toCommonJS", "mult", "a", "b", "handler", "mult"]
 }
