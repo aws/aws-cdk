@@ -6,7 +6,10 @@ import { Stack } from '@aws-cdk/core';
 import {
   Construct, Node,
 } from 'constructs';
-import { IIdentityPool } from './identitypool';
+import {
+  IdentityPoolProviderUrl,
+  IIdentityPool,
+} from './identitypool';
 
 /**
  * Represents the concept of a User Pool Authentication Provider.
@@ -128,8 +131,10 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     /**
      * The User Pool Provider Url.
      */
-    public get providerUrl(): str {
-      return `${this.providerName}:${this.userPoolClient.userPoolClientId}`;
+    public get providerUrl(): IdentityPoolProviderUrl {
+      return IdentityPoolProviderUrl.userPool(
+        `${this.providerName}:${this.userPoolClient.userPoolClientId}`
+      );
     }
   }
 }
