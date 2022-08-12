@@ -326,6 +326,33 @@ export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscri
 export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disableCloudWatchRole';
 
 /**
+ * Enable this feature flag to get partition names as string literals in Stacks with known regions defined in
+ * their environment, such as "aws" or "aws-cn".  Previously the CloudFormation intrinsic function
+ * "Ref: AWS::Partition" was used.  For example:
+ *
+ * ```yaml
+ * Principal:
+ *   AWS:
+ *     Fn::Join:
+ *       - ""
+ *       - - "arn:"
+ *         - Ref: AWS::Partition
+ *         - :iam::123456789876:root
+ * ```
+ *
+ * becomes:
+ *
+ * ```
+ * Principal:
+ *   AWS: "arn:aws:iam::123456789876:root"
+ * ```
+ *
+ * The intrinsic function will still be used in Stacks where no region is defined or the region's partition
+ * is unknown.
+ */
+export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -359,6 +386,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [S3_CREATE_DEFAULT_LOGGING_POLICY]: true,
   [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
   [APIGATEWAY_DISABLE_CLOUDWATCH_ROLE]: true,
+  [ENABLE_PARTITION_LITERALS]: true,
 };
 
 /**
