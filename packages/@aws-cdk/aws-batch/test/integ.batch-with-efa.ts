@@ -7,10 +7,13 @@ export const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'batch-stack');
 
-const vpc = new ec2.Vpc(stack, 'vpc');
+// Don't need multiAZ for this test
+const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 1 });
 
-const launchTemplate = new ec2.CfnLaunchTemplate(stack, 'ec2-launch-template', {
-  launchTemplateName: 'EC2LaunchTemplate',
+// While this test specifies EFA, the same behavior occurs with
+// interfaceType: 'interface' as well
+const launchTemplateEFA = new ec2.CfnLaunchTemplate(stack, 'ec2-launch-template-efa', {
+  launchTemplateName: 'EC2LaunchTemplateEFA',
   launchTemplateData: {
     networkInterfaces: [{
       deviceIndex: 0,
@@ -20,28 +23,29 @@ const launchTemplate = new ec2.CfnLaunchTemplate(stack, 'ec2-launch-template', {
   },
 });
 
-const computeEnvironment = new batch.ComputeEnvironment(stack, 'EFABatch', {
+const computeEnvironmentEFA = new batch.ComputeEnvironment(stack, 'EFABatch', {
   managed: true,
   computeResources: {
     type: batch.ComputeResourceType.ON_DEMAND,
     instanceTypes: [new ec2.InstanceType('c5n')],
     vpc,
     launchTemplate: {
-      launchTemplateName: launchTemplate.launchTemplateName as string,
+      launchTemplateName: launchTemplateEFA.launchTemplateName as string,
     },
   },
 });
 
+
 new batch.JobQueue(stack, 'batch-job-queue', {
   computeEnvironments: [
     {
-      computeEnvironment,
+      computeEnvironment: computeEnvironmentEFA,
       order: 1,
     },
   ],
 });
 
-new integ.IntegTest(app, 'BatchWithEFSTest', {
+new integ.IntegTest(app, 'BatchWithEFATest', {
   testCases: [stack],
 });
 
