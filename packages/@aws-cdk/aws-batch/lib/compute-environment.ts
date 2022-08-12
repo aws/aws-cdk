@@ -610,7 +610,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
     }
 
     if (securityGroups === undefined ||
-        securityGroups == ComputeEnvironmentSecurityGroups.AUTOMATIC) {
+        securityGroups === ComputeEnvironmentSecurityGroups.AUTOMATIC) {
       return new ec2.Connections({
         securityGroups: [
           new ec2.SecurityGroup(this, 'Resource-Security-Group', { vpc }),
