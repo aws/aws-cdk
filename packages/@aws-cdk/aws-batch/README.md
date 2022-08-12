@@ -195,11 +195,11 @@ define them in the Launch Template.  For example:
 ```ts
 declare const vpc: ec2.Vpc;
 
-const efaSecurityGroup = new ec2.SecurityGroup(stack, 'EFASecurityGroup', {
+const efaSecurityGroup = new ec2.SecurityGroup(this, 'EFASecurityGroup', {
   vpc,
 });
 
-const launchTemplateEFA = new ec2.CfnLaunchTemplate(stack, 'LaunchTemplate', {
+const launchTemplateEFA = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
   launchTemplateName: 'LaunchTemplateName',
   launchTemplateData: {
     networkInterfaces: [{
@@ -211,7 +211,7 @@ const launchTemplateEFA = new ec2.CfnLaunchTemplate(stack, 'LaunchTemplate', {
   },
 });
 
-const computeEnvironmentEFA = new batch.ComputeEnvironment(stack, 'EFAComputeEnv', {
+const computeEnvironmentEFA = new batch.ComputeEnvironment(this, 'EFAComputeEnv', {
   managed: true,
   computeResources: {
     securityGroups: batch.ComputeEnvironmentSecurityGroups.NONE,
