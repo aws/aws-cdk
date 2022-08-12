@@ -6,7 +6,7 @@ import {
   FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts, validateConditionObject,
 } from './principals';
 import { normalizeStatement } from './private/postprocess-policy-document';
-import { LITERAL_STRING_KEY, mergePrincipal, sum } from './util';
+import { LITERAL_STRING_KEY, mergePrincipal, sum } from './private/util';
 
 const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {

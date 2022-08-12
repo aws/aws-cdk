@@ -5,8 +5,8 @@ import { IOpenIdConnectProvider } from './oidc-provider';
 import { PolicyDocument } from './policy-document';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
+import { LITERAL_STRING_KEY, mergePrincipal } from './private/util';
 import { ISamlProvider } from './saml-provider';
-import { LITERAL_STRING_KEY, mergePrincipal } from './util';
 
 /**
  * Any object that has an associated principal that a permission can be granted to

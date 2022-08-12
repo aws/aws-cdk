@@ -444,6 +444,36 @@ describe('repository', () => {
     }).toThrow('encryptionKey is specified, so \'encryption\' must be set to KMS (value: AES256)');
   });
 
+  test('removal policy is "Retain" by default', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo');
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::ECR::Repository', {
+      'Type': 'AWS::ECR::Repository',
+      'DeletionPolicy': 'Retain',
+    });
+  });
+
+  test('"Delete" removal policy can be set explicitly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::ECR::Repository', {
+      'Type': 'AWS::ECR::Repository',
+      'DeletionPolicy': 'Delete',
+    });
+  });
+
   describe('events', () => {
     test('onImagePushed without imageTag creates the correct event', () => {
       const stack = new cdk.Stack();

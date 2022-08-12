@@ -77,52 +77,39 @@ describe('tag parameter container image', () => {
                 'Fn::Join': ['', [
                   'arn:',
                   { Ref: 'AWS::Partition' },
-                  ':iam::service-account:role/servicestackionexecutionrolee7e2d9a783a54eb795f4',
+                  ':iam::service-account:root',
                 ]],
               },
             },
           }],
         },
       });
-      Template.fromStack(serviceStack).hasResourceProperties('AWS::IAM::Role', {
-        RoleName: 'servicestackionexecutionrolee7e2d9a783a54eb795f4',
-      });
-      Template.fromStack(serviceStack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: [
-          Match.objectLike({
-            Image: {
-              'Fn::Join': ['', [
-                {
-                  'Fn::Select': [4, {
-                    'Fn::Split': [':', {
-                      'Fn::Join': ['', [
-                        'arn:',
-                        { Ref: 'AWS::Partition' },
-                        `:ecr:us-west-1:pipeline-account:repository/${repositoryName}`,
-                      ]],
-                    }],
-                  }],
-                },
-                '.dkr.ecr.',
-                {
-                  'Fn::Select': [3, {
-                    'Fn::Split': [':', {
-                      'Fn::Join': ['', [
-                        'arn:',
-                        { Ref: 'AWS::Partition' },
-                        `:ecr:us-west-1:pipeline-account:repository/${repositoryName}`,
-                      ]],
-                    }],
-                  }],
-                },
-                '.',
-                { Ref: 'AWS::URLSuffix' },
-                `/${repositoryName}:`,
-                { Ref: 'ServiceTaskDefinitionContainerImageTagParamCEC9D0BA' },
-              ]],
-            },
-          }),
-        ],
+
+      Template.fromStack(serviceStack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: Match.objectLike({
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: [
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  `:ecr:us-west-1:pipeline-account:repository/${repositoryName}`,
+                ]],
+              },
+            }),
+            Match.objectLike({
+              Action: 'ecr:GetAuthorizationToken',
+              Effect: 'Allow',
+              Resource: '*',
+            }),
+          ]),
+        }),
       });
     });
   });

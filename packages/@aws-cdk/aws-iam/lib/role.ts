@@ -11,7 +11,7 @@ import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFr
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
-import { AttachedPolicies, UniqueStringSet } from './util';
+import { AttachedPolicies, UniqueStringSet } from './private/util';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
