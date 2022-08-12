@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.restapi.multiuse": {
+    "restapi-multiuse/DefaultTest": {
       "stacks": [
         "restapi-multiuse-example"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "restapimultiuseDefaultTestDeployAssert47DF66CC"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.63"
         }
       },
       "test-apigateway-restapi": {
@@ -1070,6 +1070,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "apigateway-restapi": {
+        "id": "apigateway-restapi",
+        "path": "apigateway-restapi",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "apigateway-restapi/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "apigateway-restapi/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.63"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "apigateway-restapi/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
