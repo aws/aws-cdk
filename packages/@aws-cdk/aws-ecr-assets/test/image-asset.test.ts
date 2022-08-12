@@ -405,6 +405,30 @@ describe('image asset', () => {
     expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
     expect(asset2.assetHash).toEqual('b78978ca702a8eccd37804ce31d76cd83a695b557dbf95aeb109332ee8b1fd32');
   });
+
+  describe('stack synthesizers', () => { //synthesizedTag and assetHash
+    const stack1 = new Stack();
+    const stack2 = new Stack(undefined, undefined, {
+      synthesizer: new DefaultStackSynthesizer({
+        dockerTagPrefix: 'banana',
+      }),
+    });
+
+    const directory = path.join(__dirname, 'demo-image-custom-docker-file');
+
+    const asset1 = new DockerImageAsset(stack1, 'Asset1', { directory });
+    const asset2 = new DockerImageAsset(stack2, 'Asset2', { directory });
+
+    test('stack with default synthesizer', () => {
+      expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+      expect(asset1.synthesizedTag).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+    });
+
+    test('stack with overwritten synthesizer', () => {
+      expect(asset2.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+      expect(asset2.synthesizedTag).toEqual('banana13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+    });
+  });
 });
 
 function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app: App, ignoreMode?: IgnoreMode) {
