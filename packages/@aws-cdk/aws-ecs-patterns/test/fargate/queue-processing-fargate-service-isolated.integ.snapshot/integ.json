@@ -1,14 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs-patterns/test/fargate/integ.queue-processing-fargate-service-isolated": {
+    "isolatedQueueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [
         "aws-ecs-patterns-queue-isolated"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "isolatedQueueProcessingFargateServiceTestDefaultTestDeployAssert0132317A"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

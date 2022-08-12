@@ -1,0 +1,67 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-event-source-kafka-self-managed": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-kafka-self-managed.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-event-source-kafka-self-managed/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/lambda-event-source-kafka-self-managed/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
+          }
+        ],
+        "/lambda-event-source-kafka-self-managed/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/lambda-event-source-kafka-self-managed/F/KafkaEventSource:838c4d5ff3c99c1a617120adfca83e5b:my-test-topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FKafkaEventSource838c4d5ff3c99c1a617120adfca83e5bmytesttopic1E7A7798"
+          }
+        ],
+        "/lambda-event-source-kafka-self-managed/S/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S509448A1"
+          }
+        ],
+        "/lambda-event-source-kafka-self-managed/SC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SC0855C491"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-kafka-self-managed"
+    },
+    "LambdaEventSourceKafkaSelfManagedTestDefaultTestDeployAssertAF78BD0F": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LambdaEventSourceKafkaSelfManagedTestDefaultTestDeployAssertAF78BD0F.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "LambdaEventSourceKafkaSelfManagedTest/DefaultTest/DeployAssert"
+    }
+  }
+}

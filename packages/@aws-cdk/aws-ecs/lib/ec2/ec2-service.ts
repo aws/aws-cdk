@@ -1,8 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { ArnFormat, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
-import { fromServiceAttributes } from '../base/from-service-attributes';
+import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -128,7 +128,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
-      public readonly serviceName = Stack.of(scope).splitArn(ec2ServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+      public readonly serviceName = extractServiceNameFromArn(this, ec2ServiceArn);
     }
     return new Import(scope, id);
   }

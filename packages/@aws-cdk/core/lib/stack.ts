@@ -207,9 +207,9 @@ export class Stack extends Construct implements ITaggable {
    * This value is resolved according to the following rules:
    *
    * 1. The value provided to `env.region` when the stack is defined. This can
-   *    either be a concerete region (e.g. `us-west-2`) or the `Aws.region`
+   *    either be a concerete region (e.g. `us-west-2`) or the `Aws.REGION`
    *    token.
-   * 3. `Aws.region`, which is represents the CloudFormation intrinsic reference
+   * 3. `Aws.REGION`, which is represents the CloudFormation intrinsic reference
    *    `{ "Ref": "AWS::Region" }` encoded as a string token.
    *
    * Preferably, you should use the return value as an opaque string and not
@@ -229,9 +229,9 @@ export class Stack extends Construct implements ITaggable {
    * This value is resolved according to the following rules:
    *
    * 1. The value provided to `env.account` when the stack is defined. This can
-   *    either be a concerete account (e.g. `585695031111`) or the
-   *    `Aws.accountId` token.
-   * 3. `Aws.accountId`, which represents the CloudFormation intrinsic reference
+   *    either be a concrete account (e.g. `585695031111`) or the
+   *    `Aws.ACCOUNT_ID` token.
+   * 3. `Aws.ACCOUNT_ID`, which represents the CloudFormation intrinsic reference
    *    `{ "Ref": "AWS::AccountId" }` encoded as a string token.
    *
    * Preferably, you should use the return value as an opaque string and not
@@ -254,7 +254,7 @@ export class Stack extends Construct implements ITaggable {
    * environment.
    *
    * If either `stack.account` or `stack.region` are not concrete values (e.g.
-   * `Aws.account` or `Aws.region`) the special strings `unknown-account` and/or
+   * `Aws.ACCOUNT_ID` or `Aws.REGION`) the special strings `unknown-account` and/or
    * `unknown-region` will be used respectively to indicate this stack is
    * region/account-agnostic.
    */
@@ -501,7 +501,7 @@ export class Stack extends Construct implements ITaggable {
    * scheme based on the construct path to ensure uniqueness.
    *
    * If you wish to obtain the deploy-time AWS::StackName intrinsic,
-   * you can use `Aws.stackName` directly.
+   * you can use `Aws.STACK_NAME` directly.
    */
   public get stackName(): string {
     return this._stackName;
@@ -561,7 +561,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * The ARN will be formatted as follows:
    *
-   *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
+   *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
    *
    * The required ARN pieces that are omitted will be taken from the stack that
    * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
@@ -1315,7 +1315,7 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  */
 function makeStackName(components: string[]) {
   if (components.length === 1) { return components[0]; }
-  return makeUniqueId(components);
+  return makeUniqueResourceName(components, { maxLength: 128 });
 }
 
 function getCreateExportsScope(stack: Stack) {
@@ -1388,4 +1388,5 @@ import { Token, Tokenization } from './token';
 import { referenceNestedStackValueInParent } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
+import { makeUniqueResourceName } from './private/unique-resource-name';
 

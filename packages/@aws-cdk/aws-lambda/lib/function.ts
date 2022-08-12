@@ -133,6 +133,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * VPC network to place Lambda network interfaces
    *
    * Specify this if the Lambda function needs to access resources in a VPC.
+   * This is required when `vpcSubnets` is specified.
    *
    * @default - Function is not placed within a VPC.
    */
@@ -141,8 +142,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * Where to place the network interfaces within the VPC.
    *
-   * Only used if 'vpc' is supplied. Note: internet access for Lambdas
-   * requires a NAT gateway, so picking Public subnets is not allowed.
+   * This requires `vpc` to be specified in order for interfaces to actually be
+   * placed in the subnets. If `vpc` is not specify, this will raise an error.
+   *
+   * Note: Internet access for Lambda Functions requires a NAT Gateway, so picking
+   * public subnets is not allowed (unless `allowPublicSubnet` is set to `true`).
    *
    * @default - the Vpc default strategy if not specified
    */
@@ -369,7 +373,7 @@ export interface FunctionProps extends FunctionOptions {
    * The name of the method within your code that Lambda calls to execute
    * your function. The format includes the file name. It can also include
    * namespaces and other qualifiers, depending on the runtime.
-   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
+   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/foundation-progmodel.html.
    *
    * Use `Handler.FROM_IMAGE` when defining a function from a Docker image.
    *
@@ -1094,7 +1098,12 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
-    if (!props.vpc) { return undefined; }
+    if (!props.vpc) {
+      if (props.vpcSubnets) {
+        throw new Error('Cannot configure \'vpcSubnets\' without configuring a VPC');
+      }
+      return undefined;
+    }
 
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
       throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');

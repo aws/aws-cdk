@@ -146,7 +146,8 @@ async function parseCommandLineArguments() {
         desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
           "'true' by default, use --no-logs to turn off. " +
           "Only in effect if specified alongside the '--watch' option",
-      }),
+      })
+      .option('concurrency', { type: 'number', desc: 'Maximum number of simulatenous deployments (dependency permitting) to execute.', default: 1, requiresArg: true }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
@@ -227,7 +228,8 @@ async function parseCommandLineArguments() {
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false })
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
-      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false }))
+      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
+      .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
@@ -238,6 +240,7 @@ async function parseCommandLineArguments() {
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
+      .option('force', { alias: 'f', desc: 'Ignore missing key error', type: 'boolean', default: false })
       .option('clear', { desc: 'Clear all context', type: 'boolean' }))
     .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) => yargs
       .option('browser', {
@@ -416,8 +419,9 @@ async function initCommandLine() {
           strict: args.strict,
           contextLines: args.contextLines,
           securityOnly: args.securityOnly,
-          fail: args.fail || !enableDiffNoFail,
+          fail: args.fail != null ? args.fail : !enableDiffNoFail,
           stream: args.ci ? process.stdout : undefined,
+          compareAgainstProcessedTemplate: args.processed,
         });
 
       case 'bootstrap':
@@ -477,6 +481,7 @@ async function initCommandLine() {
           hotswap: args.hotswap,
           watch: args.watch,
           traceLogs: args.logs,
+          concurrency: args.concurrency,
         });
 
       case 'import':

@@ -23,7 +23,8 @@
     "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh",
     "gen": "./generate.sh",
     "build+extract": "yarn build",
-    "build+test+extract": "yarn build+test"
+    "build+test+extract": "yarn build+test",
+    "attributions:update": "yarn node-bundle validate --entrypoint lib/index.ts --dont-attribute \"^@aws-cdk/|^cdk-assets|^cdk-cli-wrapper$\" --fix"
   },
   "cdk-package": {
     "bundle": {
@@ -66,9 +67,9 @@
     "@types/jest": "^27.5.2",
     "@types/minimatch": "^3.0.5",
     "@types/mockery": "^1.4.30",
-    "@types/node": "^10.17.60",
+    "@types/node": "^14.18.23",
     "@types/promptly": "^3.0.2",
-    "@types/semver": "^7.3.9",
+    "@types/semver": "^7.3.10",
     "@types/sinon": "^9.0.11",
     "@types/table": "^6.0.0",
     "@types/uuid": "^8.3.4",
@@ -81,7 +82,7 @@
     "constructs": "^10.0.0",
     "make-runnable": "^1.3.10",
     "mockery": "^2.1.0",
-    "nock": "^13.2.6",
+    "nock": "^13.2.9",
     "@aws-cdk/pkglint": "0.0.0",
     "sinon": "^9.2.4",
     "ts-jest": "^27.1.5",
@@ -94,7 +95,7 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@jsii/check-node": "1.60.1",
+    "@jsii/check-node": "1.63.2",
     "archiver": "^5.3.1",
     "aws-sdk": "^2.1093.0",
     "camelcase": "^6.3.0",
@@ -106,6 +107,7 @@
     "glob": "^7.2.3",
     "json-diff": "^0.9.0",
     "minimatch": ">=3.1",
+    "p-queue": "^6.6.2",
     "promptly": "^3.2.0",
     "proxy-agent": "^5.0.0",
     "semver": "^7.3.7",

@@ -76,6 +76,7 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
@@ -127,7 +128,9 @@
       "docs-public-apis:@aws-cdk/aws-ecs-patterns.NetworkLoadBalancedFargateService.assignPublicIp",
       "docs-public-apis:@aws-cdk/aws-ecs-patterns.ApplicationLoadBalancedTaskImageOptions",
       "docs-public-apis:@aws-cdk/aws-ecs-patterns.NetworkLoadBalancedTaskImageOptions",
-      "docs-public-apis:@aws-cdk/aws-ecs-patterns.ScheduledTaskImageProps"
+      "docs-public-apis:@aws-cdk/aws-ecs-patterns.ScheduledTaskImageProps",
+      "docs-public-apis:@aws-cdk/aws-ecs-patterns.FargateServiceBase",
+      "docs-public-apis:@aws-cdk/aws-ecs-patterns.FargateServiceBaseProps"
     ]
   },
   "awscdkio": {

@@ -96,6 +96,24 @@ export interface Login {
 }
 
 /**
+ * Logging bucket and S3 prefix combination
+ */
+export interface LoggingProperties {
+  /**
+   * Bucket to send logs to.
+   * Logging information includes queries and connection attempts, for the specified Amazon Redshift cluster.
+   *
+   */
+  readonly loggingBucket: s3.IBucket
+
+  /**
+   * Prefix used for logging.
+   *
+   */
+  readonly loggingKeyPrefix: string
+}
+
+/**
  * Options to add the multi user rotation
  */
 export interface RotationMultiUserOptions {
@@ -294,19 +312,11 @@ export interface ClusterProps {
   readonly defaultDatabaseName?: string;
 
   /**
-   * Bucket to send logs to.
-   * Logging information includes queries and connection attempts, for the specified Amazon Redshift cluster.
+   * Bucket details for log files to be sent to, including prefix.
    *
-   * @default - No Logs
+   * @default - No logging bucket is used
    */
-  readonly loggingBucket?: s3.IBucket
-
-  /**
-   * Prefix used for logging
-   *
-   * @default - no prefix
-   */
-  readonly loggingKeyPrefix?: string
+  readonly loggingProperties?: LoggingProperties;
 
   /**
    * The removal policy to apply when the cluster and its instances are removed
@@ -322,6 +332,28 @@ export interface ClusterProps {
    * @default false
    */
   readonly publiclyAccessible?: boolean
+
+  /**
+   * If this flag is set, the cluster resizing type will be set to classic.
+   * When resizing a cluster, classic resizing will always provision a new cluster and transfer the data there.
+   *
+   * Classic resize takes more time to complete, but it can be useful in cases where the change in node count or
+   * the node type to migrate to doesn't fall within the bounds for elastic resize.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#elastic-resize
+   *
+   * @default - Elastic resize type
+   */
+  readonly classicResizing?: boolean
+
+  /**
+   * The Elastic IP (EIP) address for the cluster.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-clusters-vpc.html
+   *
+   * @default - No Elastic IP
+   */
+  readonly elasticIp?: string
 }
 
 /**
@@ -453,11 +485,28 @@ export class Cluster extends ClusterBase {
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
     let loggingProperties;
-    if (props.loggingBucket) {
+    if (props.loggingProperties) {
       loggingProperties = {
-        bucketName: props.loggingBucket.bucketName,
-        s3KeyPrefix: props.loggingKeyPrefix,
+        bucketName: props.loggingProperties.loggingBucket.bucketName,
+        s3KeyPrefix: props.loggingProperties.loggingKeyPrefix,
       };
+      props.loggingProperties.loggingBucket.addToResourcePolicy(
+        new iam.PolicyStatement(
+          {
+            actions: [
+              's3:GetBucketAcl',
+              's3:PutObject',
+            ],
+            resources: [
+              props.loggingProperties.loggingBucket.arnForObjects('*'),
+              props.loggingProperties.loggingBucket.bucketArn,
+            ],
+            principals: [
+              new iam.ServicePrincipal('redshift.amazonaws.com'),
+            ],
+          },
+        ),
+      );
     }
 
     const cluster = new CfnCluster(this, 'Resource', {
@@ -485,6 +534,8 @@ export class Cluster extends ClusterBase {
       // Encryption
       kmsKeyId: props.encryptionKey?.keyId,
       encrypted: props.encrypted ?? true,
+      classic: props.classicResizing,
+      elasticIp: props.elasticIp,
     });
 
     cluster.applyRemovalPolicy(removalPolicy, {

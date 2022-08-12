@@ -61,6 +61,13 @@ integTest('Construct with builtin Lambda function', withDefaultFixture(async (fi
   await fixture.cdkDestroy('builtin-lambda-function');
 }));
 
+// this is to ensure that asset bundling for apps under a stage does not break
+integTest('Stage with bundled Lambda function', withDefaultFixture(async (fixture) => {
+  await fixture.cdkDeploy('bundling-stage/BundlingStack');
+  fixture.log('Setup complete!');
+  await fixture.cdkDestroy('bundling-stage/BundlingStack');
+}));
+
 integTest('Two ways of showing the version', withDefaultFixture(async (fixture) => {
   const version1 = await fixture.cdk(['version'], { verbose: false });
   const version2 = await fixture.cdk(['--version'], { verbose: false });
@@ -128,6 +135,14 @@ integTest('automatic ordering', withDefaultFixture(async (fixture) => {
   await fixture.cdkDestroy('order-providing');
 }));
 
+integTest('automatic ordering with concurrency', withDefaultFixture(async (fixture) => {
+  // Deploy the consuming stack which will include the producing stack
+  await fixture.cdkDeploy('order-consuming', { options: ['--concurrency', '2'] });
+
+  // Destroy the providing stack which will include the consuming stack
+  await fixture.cdkDestroy('order-providing');
+}));
+
 integTest('context setting', withDefaultFixture(async (fixture) => {
   await fs.writeFile(path.join(fixture.integTestDir, 'cdk.context.json'), JSON.stringify({
     contextkey: 'this is the context value',
@@ -171,7 +186,17 @@ integTest('deploy', withDefaultFixture(async (fixture) => {
 integTest('deploy all', withDefaultFixture(async (fixture) => {
   const arns = await fixture.cdkDeploy('test-*', { captureStderr: false });
 
-  // verify that we only deployed a single stack (there's a single ARN in the output)
+  // verify that we only deployed both stacks (there are 2 ARNs in the output)
+  expect(arns.split('\n').length).toEqual(2);
+}));
+
+integTest('deploy all concurrently', withDefaultFixture(async (fixture) => {
+  const arns = await fixture.cdkDeploy('test-*', {
+    captureStderr: false,
+    options: ['--concurrency', '2'],
+  });
+
+  // verify that we only deployed both stacks (there are 2 ARNs in the output)
   expect(arns.split('\n').length).toEqual(2);
 }));
 
@@ -516,6 +541,43 @@ integTest('cdk diff', withDefaultFixture(async (fixture) => {
   // We can make it fail by passing --fail
   await expect(fixture.cdk(['diff', '--fail', fixture.fullStackName('test-1')]))
     .rejects.toThrow('exited with error');
+}));
+
+integTest('enableDiffNoFail', withDefaultFixture(async (fixture) => {
+  await diffShouldSucceedWith({ fail: false, enableDiffNoFail: false });
+  await diffShouldSucceedWith({ fail: false, enableDiffNoFail: true });
+  await diffShouldFailWith({ fail: true, enableDiffNoFail: false });
+  await diffShouldFailWith({ fail: true, enableDiffNoFail: true });
+  await diffShouldFailWith({ fail: undefined, enableDiffNoFail: false });
+  await diffShouldSucceedWith({ fail: undefined, enableDiffNoFail: true });
+
+  async function diffShouldSucceedWith(props: DiffParameters) {
+    await expect(diff(props)).resolves.not.toThrowError();
+  }
+
+  async function diffShouldFailWith(props: DiffParameters) {
+    await expect(diff(props)).rejects.toThrow('exited with error');
+  }
+
+  async function diff(props: DiffParameters): Promise<string> {
+    await updateContext(props.enableDiffNoFail);
+    const flag = props.fail != null
+      ? (props.fail ? '--fail' : '--no-fail')
+      : '';
+
+    return fixture.cdk(['diff', flag, fixture.fullStackName('test-1')]);
+  }
+
+  async function updateContext(enableDiffNoFail: boolean) {
+    const cdkJson = JSON.parse(await fs.readFile(path.join(fixture.integTestDir, 'cdk.json'), 'utf8'));
+    cdkJson.context = {
+      ...cdkJson.context,
+      'aws-cdk:enableDiffNoFail': enableDiffNoFail,
+    };
+    await fs.writeFile(path.join(fixture.integTestDir, 'cdk.json'), JSON.stringify(cdkJson));
+  }
+
+  type DiffParameters = { fail?: boolean, enableDiffNoFail: boolean };
 }));
 
 integTest('cdk diff --fail on multiple stacks exits with error if any of the stacks contains a diff', withDefaultFixture(async (fixture) => {
@@ -1050,6 +1112,38 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
     // Cleanup
     await fixture.cdkDestroy('importable-stack');
   }
+}));
+
+integTest('hotswap deployment supports Lambda function\'s description and environment variables', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('lambda-hotswap', {
+    captureStderr: false,
+    modEnv: {
+      DYNAMIC_LAMBDA_PROPERTY_VALUE: 'original value',
+    },
+  });
+
+  // WHEN
+  const deployOutput = await fixture.cdkDeploy('lambda-hotswap', {
+    options: ['--hotswap'],
+    captureStderr: true,
+    onlyStderr: true,
+    modEnv: {
+      DYNAMIC_LAMBDA_PROPERTY_VALUE: 'new value',
+    },
+  });
+
+  const response = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+  const functionName = response.Stacks?.[0].Outputs?.[0].OutputValue;
+
+  // THEN
+
+  // The deployment should not trigger a full deployment, thus the stack's status must remains
+  // "CREATE_COMPLETE"
+  expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+  expect(deployOutput).toContain(`Lambda Function '${functionName}' hotswapped!`);
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {

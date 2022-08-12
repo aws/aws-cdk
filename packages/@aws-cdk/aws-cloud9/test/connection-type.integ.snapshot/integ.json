@@ -1,14 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cloud9/test/integ.cloud9": {
+    "cloud-9-connection-type/DefaultTest": {
       "stacks": [
-        "C9Stack"
+        "C9ConnectionTypeStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cloud9connectiontypeDefaultTestDeployAssert401C3608"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

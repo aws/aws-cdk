@@ -431,12 +431,25 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
+   * Deprecated
+   * @deprecated use `updatedProperties`
+   *
    * Return properties modified after initiation
    *
    * Resources that expose mutable properties should override this function to
    * collect and return the properties object for this resource.
    */
   protected get updatedProperites(): { [key: string]: any } {
+    return this.updatedProperties;
+  }
+
+  /**
+   * Return properties modified after initiation
+   *
+   * Resources that expose mutable properties should override this function to
+   * collect and return the properties object for this resource.
+   */
+  protected get updatedProperties(): { [key: string]: any } {
     return this._cfnProperties;
   }
 
@@ -467,7 +480,7 @@ export enum TagType {
 export interface ICfnResourceOptions {
   /**
    * A condition to associate with this resource. This means that only if the condition evaluates to 'true' when the stack
-   * is deployed, the resource will be included. This is provided to allow CDK projects to produce legacy templates, but noramlly
+   * is deployed, the resource will be included. This is provided to allow CDK projects to produce legacy templates, but normally
    * there is no need to use it in CDK projects.
    */
   condition?: CfnCondition;

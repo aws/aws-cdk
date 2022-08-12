@@ -279,6 +279,42 @@
             "data": "batchjobfargatequeue5A12983E"
           }
         ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource-Security-Group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2ResourceSecurityGroupBEA8DDD5"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Ecs-Instance-Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2EcsInstanceRoleEE146754"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Instance-Profile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2InstanceProfileC5A36CBC"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource-Service-Instance-Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2ResourceServiceInstanceRole41CADAC1"
+          }
+        ],
+        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchdemandcomputeenvlaunchtemplate2E12D5CBC"
+          }
+        ],
+        "/batch-stack/batch-with-launch-template-id/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "batchwithlaunchtemplateid89A1A604"
+          }
+        ],
         "/batch-stack/batch-job-repo/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -323,6 +359,15 @@
         ]
       },
       "displayName": "batch-stack"
+    },
+    "batchtestsDefaultTestDeployAssertA73A8412": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "batchtestsDefaultTestDeployAssertA73A8412.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "batch-tests/DefaultTest/DeployAssert"
     }
   }
 }

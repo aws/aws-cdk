@@ -74,6 +74,22 @@ const spotEnvironment = new batch.ComputeEnvironment(this, 'MySpotEnvironment', 
 });
 ```
 
+### Compute Environments and Security Groups
+
+Compute Environments implement the `IConnectable` interface, which means you can use
+connections on other CDK resources to manipulate the security groups and allow access.
+
+For example, allowing a Compute Environment to access an EFS filesystem:
+
+```ts
+import * as efs from '@aws-cdk/aws-efs';
+
+declare const fileSystem: efs.FileSystem;
+declare const computeEnvironment: batch.ComputeEnvironment;
+
+fileSystem.connections.allowDefaultPortFrom(computeEnvironment);
+```
+
 ### Fargate Compute Environment
 
 It is possible to have AWS Batch submit jobs to be run on Fargate compute resources. Below is an example of how this can be done:
@@ -332,6 +348,8 @@ new batch.JobDefinition(this, 'batch-job-def-secrets', {
   },
 });
 ```
+
+It is common practice to invoke other AWS services from within AWS Batch jobs (e.g. using the AWS SDK). For this reason, the AWS_ACCOUNT and AWS_REGION environments are always provided by default to the JobDefinition construct with the values inferred from the current context. You can always overwrite them by setting these environment variables explicitly though.
 
 ### Importing an existing Job Definition
 

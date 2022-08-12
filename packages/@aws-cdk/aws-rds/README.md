@@ -63,9 +63,30 @@ new rds.DatabaseClusterFromSnapshot(this, 'Database', {
 });
 ```
 
+### Updating the database instances in a cluster
+
+Database cluster instances may be updated in bulk or on a rolling basis. 
+
+An update to all instances in a cluster may cause significant downtime. To reduce the downtime, set the `instanceUpdateBehavior` property in `DatabaseClusterBaseProps` to `InstanceUpdateBehavior.ROLLING`. This adds a dependency between each instance so the update is performed on only one instance at a time.
+
+Use `InstanceUpdateBehavior.BULK` to update all instances at once.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  instances: 2,
+  instanceProps: {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+    vpc,
+  },
+  instanceUpdateBehaviour: rds.InstanceUpdateBehaviour.ROLLING, // Optional - defaults to rds.InstanceUpdateBehaviour.BULK
+});
+```
+
 ## Starting an instance database
 
-To set up a instance database, define a `DatabaseInstance`. You must
+To set up an instance database, define a `DatabaseInstance`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
@@ -611,6 +632,7 @@ declare const vpc: ec2.Vpc;
 
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
+  copyTagsToSnapshot: true, // whether to save the cluster tags when creating the snapshot. Default is 'true'
   parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
   vpc,
   scaling: {

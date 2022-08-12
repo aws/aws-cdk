@@ -323,6 +323,21 @@ describe('lambda + vpc', () => {
       });
     }).toThrow(/Lambda Functions in a public subnet/);
   });
+
+  test('specifying vpcSubnets without a vpc throws an Error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => {
+      new lambda.Function(stack, 'Function', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_14_X,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      });
+    }).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');
+  });
 });
 
 class SomethingConnectable implements ec2.IConnectable {

@@ -4,9 +4,23 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags, Duration,
+  CustomResource,
+  CustomResourceProvider,
+  CustomResourceProviderRuntime,
+  Duration,
+  FeatureFlags,
+  Fn,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  ResourceProps,
+  Stack,
+  Tags,
+  Token,
+  Tokenization,
 } from '@aws-cdk/core';
+import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
@@ -1550,9 +1564,19 @@ export interface Tag {
  *
  * This bucket does not yet have all features that exposed by the underlying
  * BucketResource.
+ *
+ * @example
+ *
+ * new Bucket(scope, 'Bucket', {
+ *   blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+ *   encryption: BucketEncryption.S3_MANAGED,
+ *   enforceSSL: true,
+ *   versioned: true,
+ *   removalPolicy: RemovalPolicy.RETAIN,
+ * });
+ *
  */
 export class Bucket extends BucketBase {
-
   public static fromBucketArn(scope: Construct, id: string, bucketArn: string): IBucket {
     return Bucket.fromBucketAttributes(scope, id, { bucketArn });
   }
@@ -1616,6 +1640,64 @@ export class Bucket extends BucketBase {
       account: attrs.account,
       region: attrs.region,
     });
+  }
+
+  /**
+   * Create a mutable {@link IBucket} based on a low-level {@link CfnBucket}.
+   */
+  public static fromCfnBucket(cfnBucket: CfnBucket): IBucket {
+    // use a "weird" id that has a higher chance of being unique
+    const id = '@FromCfnBucket';
+
+    // if fromCfnBucket() was already called on this cfnBucket,
+    // return the same L2
+    // (as different L2s would conflict, because of the mutation of the policy property of the L1 below)
+    const existing = cfnBucket.node.tryFindChild(id);
+    if (existing) {
+      return <IBucket>existing;
+    }
+
+    // handle the KMS Key if the Bucket references one
+    let encryptionKey: kms.IKey | undefined;
+    if (cfnBucket.bucketEncryption) {
+      const serverSideEncryptionConfiguration = (cfnBucket.bucketEncryption as any).serverSideEncryptionConfiguration;
+      if (Array.isArray(serverSideEncryptionConfiguration) && serverSideEncryptionConfiguration.length === 1) {
+        const serverSideEncryptionRuleProperty = serverSideEncryptionConfiguration[0];
+        const serverSideEncryptionByDefault = serverSideEncryptionRuleProperty.serverSideEncryptionByDefault;
+        if (serverSideEncryptionByDefault && Token.isUnresolved(serverSideEncryptionByDefault.kmsMasterKeyId)) {
+          const kmsIResolvable = Tokenization.reverse(serverSideEncryptionByDefault.kmsMasterKeyId);
+          if (kmsIResolvable instanceof CfnReference) {
+            const cfnElement = kmsIResolvable.target;
+            if (cfnElement instanceof kms.CfnKey) {
+              encryptionKey = kms.Key.fromCfnKey(cfnElement);
+            }
+          }
+        }
+      }
+    }
+
+    return new class extends BucketBase {
+      public readonly bucketArn = cfnBucket.attrArn;
+      public readonly bucketName = cfnBucket.ref;
+      public readonly bucketDomainName = cfnBucket.attrDomainName;
+      public readonly bucketDualStackDomainName = cfnBucket.attrDualStackDomainName;
+      public readonly bucketRegionalDomainName = cfnBucket.attrRegionalDomainName;
+      public readonly bucketWebsiteUrl = cfnBucket.attrWebsiteUrl;
+      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', cfnBucket.attrWebsiteUrl));
+
+      public readonly encryptionKey = encryptionKey;
+      public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
+      public policy = undefined;
+      protected autoCreatePolicy = true;
+      protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
+        (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
+
+      constructor() {
+        super(cfnBucket, id);
+
+        this.node.defaultChild = cfnBucket;
+      }
+    }();
   }
 
   /**

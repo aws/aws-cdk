@@ -2,6 +2,7 @@ import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
+import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '@aws-cdk/aws-logs';
 import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
@@ -248,6 +249,16 @@ export interface LogConfig {
    * @default - None
    */
   readonly role?: IRole;
+
+  /**
+  * The number of days log events are kept in CloudWatch Logs.
+  * By default AppSync keeps the logs infinitely. When updating this property,
+  * unsetting it doesn't remove the log retention policy.
+  * To remove the retention policy, set the value to `INFINITE`
+  *
+  * @default RetentionDays.INFINITE
+  */
+  readonly retention?: RetentionDays
 }
 
 /**
@@ -459,9 +470,15 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public readonly apiKey?: string;
 
+  /**
+   * the CloudWatch Log Group for this API
+   */
+  public readonly logGroup: ILogGroup;
+
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
+  private domainNameResource?: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
@@ -494,16 +511,17 @@ export class GraphqlApi extends GraphqlApiBase {
     this.schemaResource = this.schema.bind(this);
 
     if (props.domainName) {
-      new CfnDomainName(this, 'DomainName', {
+      this.domainNameResource = new CfnDomainName(this, 'DomainName', {
         domainName: props.domainName.domainName,
         certificateArn: props.domainName.certificate.certificateArn,
         description: `domain for ${this.name} at ${this.graphqlUrl}`,
       });
-
-      new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
+      const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
         domainName: props.domainName.domainName,
         apiId: this.apiId,
       });
+
+      domainNameAssociation.addDependsOn(this.domainNameResource);
     }
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
@@ -525,6 +543,16 @@ export class GraphqlApi extends GraphqlApiBase {
       });
     }
 
+    const logGroupName = `/aws/appsync/apis/${this.apiId}`;
+
+    this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
+
+    if (props.logConfig?.retention) {
+      new LogRetention(this, 'LogRetention', {
+        logGroupName: this.logGroup.logGroupName,
+        retention: props.logConfig.retention,
+      });
+    };
   }
 
   /**
@@ -618,10 +646,11 @@ export class GraphqlApi extends GraphqlApiBase {
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
       ],
     }).roleArn;
+    const fieldLogLevel: FieldLogLevel = config.fieldLogLevel ?? FieldLogLevel.NONE;
     return {
       cloudWatchLogsRoleArn: logsRoleArn,
       excludeVerboseContent: config.excludeVerboseContent,
-      fieldLogLevel: config.fieldLogLevel,
+      fieldLogLevel: fieldLogLevel,
     };
   }
 
@@ -744,5 +773,16 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public addSubscription(fieldName: string, field: ResolvableField): ObjectType {
     return this.schema.addSubscription(fieldName, field);
+  }
+
+
+  /**
+   * The AppSyncDomainName of the associated custom domain
+   */
+  public get appSyncDomainName(): string {
+    if (!this.domainNameResource) {
+      throw new Error('Cannot retrieve the appSyncDomainName without a domainName configuration');
+    }
+    return this.domainNameResource.attrAppSyncDomainName;
   }
 }
