@@ -3,7 +3,7 @@ import type { IsCompleteRequest, IsCompleteResponse, OnEventRequest, OnEventResp
 import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 
 export async function onEventHandler(event: OnEventRequest): Promise<OnEventResponse> {
-  console.log('Event: %j', event);
+  console.log('Event: %j', { ...event, ResponseURL: '...' });
 
   const dynamodb = new DynamoDB();
 
@@ -50,7 +50,7 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
 }
 
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
-  console.log('Event: %j', event);
+  console.log('Event: %j', { ...event, ResponseURL: '...' });
 
   const dynamodb = new DynamoDB();
 
