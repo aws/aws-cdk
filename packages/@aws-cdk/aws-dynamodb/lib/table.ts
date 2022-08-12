@@ -635,6 +635,9 @@ abstract class TableBase extends Resource implements ITable {
 
   protected readonly regionalArns = new Array<string>();
 
+  //the indexes that the user wants to grant permission to
+  protected readonly indexes= new Array<string>();
+
   /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
@@ -651,11 +654,15 @@ abstract class TableBase extends Resource implements ITable {
       actions,
       resourceArns: [
         this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        //for each index the user specify, generate an arn
+        ...this.indexes.map(index => Lazy.string({
+          produce: () => this.indexes.length>0 ? `${this.tableArn}/index/${index}` : Aws.NO_VALUE,
         })),
+        ...(this.regionalArns.map(arn => this.indexes.length>0 ?
+          this.indexes.map((index)=>{
+            return Lazy.string({ produce: () => `${arn}/index/${index}` });
+          }).flat() : Aws.NO_VALUE)) as string[],
       ],
       scope: this,
     });
@@ -994,11 +1001,14 @@ abstract class TableBase extends Resource implements ITable {
   ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.indexes.map(index => Lazy.string({
+          produce: () => this.indexes.length>0 ? `${this.tableArn}/index/${index}` : Aws.NO_VALUE,
+        })),
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        }))];
+        ...(this.regionalArns.map(arn => this.indexes.length>0 ?
+          this.indexes.map((index)=>{
+            return Lazy.string({ produce: () => `${arn}/index/${index}` });
+          }).flat() : Aws.NO_VALUE)) as string[]];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,
@@ -1091,9 +1101,12 @@ export class Table extends TableBase {
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
       //change hasIndex to a string array which contains specific indexes
-      protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
-        (attrs.globalIndexes ?? []).length > 0 ||
-        (attrs.localIndexes ?? []).length > 0;
+      // protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
+      //   (attrs.globalIndexes ?? []).length > 0 ||
+      //   (attrs.localIndexes ?? []).length > 0;
+      protected readonly hasIndex = attrs.grantIndexPermissions ?? false;
+      // the indexes that the user want to grant permission to
+      protected readonly indexes = ([] as string[]).concat(attrs.globalIndexes ?? []).concat(attrs.localIndexes?? []);
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
         super(scope, id);

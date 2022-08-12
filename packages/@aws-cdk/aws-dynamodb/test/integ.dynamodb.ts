@@ -129,6 +129,11 @@ tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
 
 const user = new iam.User(stack, 'User');
 table.grantReadData(user);
-tableWithGlobalAndLocalSecondaryIndex.grantReadData(user);
+//tableWithGlobalAndLocalSecondaryIndex.grantReadData(user);
+
+Table.fromTableAttributes(tableWithGlobalAndLocalSecondaryIndex, 'TestIndexTable', {
+  tableName: 'TestIndexTable',
+  globalIndexes: [GSI_TEST_CASE_1, GSI_TEST_CASE_3],
+}).grantReadData(user);
 
 app.synth();
