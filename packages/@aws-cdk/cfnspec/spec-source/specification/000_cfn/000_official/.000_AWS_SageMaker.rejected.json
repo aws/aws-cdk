@@ -3531,7 +3531,7 @@
       }
     }
   },
-  "ResourceSpecificationVersion": "83.0.0",
+  "ResourceSpecificationVersion": "84.0.0",
   "ResourceTypes": {
     "AWS::SageMaker::App": {
       "Attributes": {
