@@ -272,7 +272,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly enableExecuteCommand?: boolean;
 
   /**
-   * The load balancer idle timeout, in seconds
+   * The load balancer idle timeout, in seconds. Can be between 1 and 4000 seconds
    *
    * @default - CloudFormation sets idle timeout to 60 seconds
    */
