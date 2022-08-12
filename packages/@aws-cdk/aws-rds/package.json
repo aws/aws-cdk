@@ -127,6 +127,10 @@
     "exclude": [
       "attribute-tag:@aws-cdk/aws-rds.DatabaseSecret.secretFullArn",
       "attribute-tag:@aws-cdk/aws-rds.DatabaseSecret.secretName",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseClusterFromSnapshot.dbInstanceEndpointHostedZoneId",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstance.dbInstanceEndpointHostedZoneId",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshot.dbInstanceEndpointHostedZoneId",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstanceReadReplica.dbInstanceEndpointHostedZoneId",
       "props-physical-name:@aws-cdk/aws-rds.ParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterFromSnapshotProps",
