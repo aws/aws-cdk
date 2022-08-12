@@ -182,7 +182,12 @@ export class SdkProvider {
     // account.
     if (options?.assumeRoleArn === undefined) {
       if (baseCreds.source === 'incorrectDefault') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
-      return { sdk: new SDK(baseCreds.credentials, env.region, this.sdkOptions), didAssumeRole: false };
+
+      // Our current credentials must be valid and not expired. Confirm that before we get into doing
+      // actual CloudFormation calls, which might take a long time to hang.
+      const sdk = new SDK(baseCreds.credentials, env.region, this.sdkOptions);
+      await sdk.validateCredentials();
+      return { sdk, didAssumeRole: false };
     }
 
     // We will proceed to AssumeRole using whatever we've been given.
