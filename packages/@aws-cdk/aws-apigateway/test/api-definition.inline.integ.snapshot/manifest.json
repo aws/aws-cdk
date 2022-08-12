@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -59,6 +59,15 @@
         ]
       },
       "displayName": "integtest-restapi-fromdefinition-inline"
+    },
+    "inlineapidefinitionDefaultTestDeployAssert923CAC29": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "inlineapidefinitionDefaultTestDeployAssert923CAC29.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "inline-api-definition/DefaultTest/DeployAssert"
     }
   }
 }

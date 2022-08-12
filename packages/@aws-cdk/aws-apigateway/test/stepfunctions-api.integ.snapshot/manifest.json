@@ -1,5 +1,5 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -89,6 +89,15 @@
         ]
       },
       "displayName": "StepFunctionsRestApiDeploymentStack"
+    },
+    "stepfunctionsrestapiDefaultTestDeployAssert53C3797F": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "stepfunctionsrestapiDefaultTestDeployAssert53C3797F.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "step-functions-restapi/DefaultTest/DeployAssert"
     }
   }
 }

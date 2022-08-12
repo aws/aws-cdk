@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -176,18 +176,18 @@
             "type": "aws:cdk:logicalId",
             "data": "MyHandler6B74D312"
           }
-        ],
-        "myapiUsagePlanUsagePlanKeyResource050D133F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiUsagePlanUsagePlanKeyResource050D133F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "test-apigateway-restapi"
+    },
+    "apigatewayrestapiDefaultTestDeployAssert6A9696A7": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apigatewayrestapiDefaultTestDeployAssert6A9696A7.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "apigateway-restapi/DefaultTest/DeployAssert"
     }
   }
 }

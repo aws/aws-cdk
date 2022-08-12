@@ -20,7 +20,7 @@ const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.request-authorizer.handler')),
 });
 
-const restapi = new RestApi(stack, 'MyRestApi');
+const restapi = new RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
 
 const authorizer = new RequestAuthorizer(stack, 'MyAuthorizer', {
   handler: authorizerFn,

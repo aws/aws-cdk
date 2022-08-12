@@ -314,6 +314,18 @@ export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLo
 export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption';
 
 /**
+ * Enable this feature flag to change the default behavior for aws-apigateway.RestApi and aws-apigateway.SpecRestApi
+ * to _not_ create a CloudWatch role and Account. There is only a single ApiGateway account per AWS
+ * environment which means that each time you create a RestApi in your account the ApiGateway account
+ * is overwritten. If at some point the newest RestApi is deleted, the ApiGateway Account and CloudWatch
+ * role will also be deleted, breaking any existing ApiGateways that were depending on them.
+ *
+ * When this flag is enabled you should either create the ApiGateway account and CloudWatch role
+ * separately _or_ only enable the cloudWatchRole on a single RestApi.
+ */
+export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disableCloudWatchRole';
+
+/**
  * Enable this feature flag to get partition names as string literals in Stacks with known regions defined in
  * their environment, such as "aws" or "aws-cn".  Previously the CloudFormation intrinsic function
  * "Ref: AWS::Partition" was used.  For example:
@@ -373,6 +385,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
   [S3_CREATE_DEFAULT_LOGGING_POLICY]: true,
   [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
+  [APIGATEWAY_DISABLE_CLOUDWATCH_ROLE]: true,
   [ENABLE_PARTITION_LITERALS]: true,
 };
 

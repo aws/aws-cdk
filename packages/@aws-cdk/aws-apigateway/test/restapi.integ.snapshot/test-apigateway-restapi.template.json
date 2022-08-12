@@ -35,7 +35,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "myapiAccountEC421A0A": {
    "Type": "AWS::ApiGateway::Account",
@@ -49,7 +51,9 @@
    },
    "DependsOn": [
     "myapi4C7BF186"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5": {
    "Type": "AWS::ApiGateway::Deployment",

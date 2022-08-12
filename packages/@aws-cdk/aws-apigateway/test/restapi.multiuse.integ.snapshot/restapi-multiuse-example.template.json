@@ -85,7 +85,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "helloapiAccountD8C38BCE": {
    "Type": "AWS::ApiGateway::Account",
@@ -99,7 +101,9 @@
    },
    "DependsOn": [
     "helloapi4446A35B"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "helloapiDeploymentFA89AEEC3622d8c965f356a33fd95586d24bf138": {
    "Type": "AWS::ApiGateway::Deployment",
@@ -297,7 +301,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "secondapiAccountDF729874": {
    "Type": "AWS::ApiGateway::Account",
@@ -311,7 +317,9 @@
    },
    "DependsOn": [
     "secondapi730EF3C7"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "secondapiDeployment20F2C70088fa5a027620045bea3e5043c6d31f5a": {
    "Type": "AWS::ApiGateway::Deployment",

@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as apigw from '../lib';
 
 class MultiStack extends cdk.Stack {
@@ -12,21 +13,20 @@ class MultiStack extends cdk.Stack {
       code: lambda.Code.fromInline(`exports.handler = ${helloCode}`),
     }));
 
-    const api = new apigw.RestApi(this, 'hello-api');
+    const api = new apigw.RestApi(this, 'hello-api', { cloudWatchRole: true });
     api.root.resourceForPath('/hello').addMethod('GET', hello);
 
-    const api2 = new apigw.RestApi(this, 'second-api');
+    const api2 = new apigw.RestApi(this, 'second-api', { cloudWatchRole: true });
     api2.root.resourceForPath('/hello').addMethod('GET', hello);
   }
 }
 
-class MultiApp extends cdk.App {
-  constructor() {
-    super();
+const app = new cdk.App();
+const testCase = new MultiStack(app, 'restapi-multiuse-example');
 
-    new MultiStack(this, 'restapi-multiuse-example');
-  }
-}
+new IntegTest(app, 'restapi-multiuse', {
+  testCases: [testCase],
+});
 
 function helloCode(_event: any, _context: any, callback: any) {
   return callback(undefined, {
@@ -35,4 +35,3 @@ function helloCode(_event: any, _context: any, callback: any) {
   });
 }
 
-new MultiApp().synth();

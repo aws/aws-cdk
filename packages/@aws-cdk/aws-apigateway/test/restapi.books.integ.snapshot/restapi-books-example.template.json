@@ -185,7 +185,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "booksapiAccountDBA98FB9": {
    "Type": "AWS::ApiGateway::Account",
@@ -199,7 +201,9 @@
    },
    "DependsOn": [
     "booksapiE1885304"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "booksapiDeployment308B08F132cc25cf8168bd5e99b9e6d4915866b5": {
    "Type": "AWS::ApiGateway::Deployment",

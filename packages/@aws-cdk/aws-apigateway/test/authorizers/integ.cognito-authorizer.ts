@@ -1,5 +1,6 @@
 import * as cognito from '@aws-cdk/aws-cognito';
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { AuthorizationType, CognitoUserPoolsAuthorizer, MockIntegration, PassthroughBehavior, RestApi } from '../../lib';
 
 /*
@@ -25,7 +26,7 @@ const authorizer = new CognitoUserPoolsAuthorizer(stack, 'myauthorizer', {
   cognitoUserPools: [userPool],
 });
 
-const restApi = new RestApi(stack, 'myrestapi');
+const restApi = new RestApi(stack, 'myrestapi', { cloudWatchRole: true });
 restApi.root.addMethod('ANY', new MockIntegration({
   integrationResponses: [
     { statusCode: '200' },
@@ -40,4 +41,8 @@ restApi.root.addMethod('ANY', new MockIntegration({
   ],
   authorizer,
   authorizationType: AuthorizationType.COGNITO,
+});
+
+new IntegTest(app, 'cognito-authorizer', {
+  testCases: [stack],
 });

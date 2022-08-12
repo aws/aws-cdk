@@ -1,15 +1,15 @@
 {
   "version": "20.0.0",
   "files": {
-    "2ea05cc9ad78e1bdf0e32b4b0421585a64ea8c70a59ee1ff69dd251f4a108988": {
+    "d2917ea4195aa0183538531b99a1ccb6369a7a90926d79378d84278263b33b46": {
       "source": {
-        "path": "CallRestApiInteg.template.json",
+        "path": "LambdaApiIntegrationOptionsStack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2ea05cc9ad78e1bdf0e32b4b0421585a64ea8c70a59ee1ff69dd251f4a108988.json",
+          "objectKey": "d2917ea4195aa0183538531b99a1ccb6369a7a90926d79378d84278263b33b46.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

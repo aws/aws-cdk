@@ -4,12 +4,15 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as apigw from '../lib';
+import { IntegTest } from '@aws-cdk/integ-tests';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const api = new apigw.RestApi(this, 'cors-api-test');
+    const api = new apigw.RestApi(this, 'cors-api-test', {
+      cloudWatchRole: true,
+    });
 
     const handler = new lambda.Function(this, 'handler', {
       runtime: lambda.Runtime.NODEJS_14_X,
@@ -28,5 +31,8 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cors-twitch-test');
+const testCase = new TestStack(app, 'cors-twitch-test');
+new IntegTest(app, 'cors', {
+  testCases: [testCase],
+});
 app.synth();
