@@ -7,8 +7,7 @@ export const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'batch-stack');
 
-// Don't need multiAZ for this test
-const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 1 });
+const vpc = new ec2.Vpc(stack, 'vpc');
 
 // While this test specifies EFA, the same behavior occurs with
 // interfaceType: 'interface' as well
