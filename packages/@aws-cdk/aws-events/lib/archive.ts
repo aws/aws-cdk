@@ -74,5 +74,6 @@ export class Archive extends Resource {
 
     this.archiveArn = archive.attrArn;
     this.archiveName = archive.attrArchiveName;
+    this.node.defaultChild = archive;
   }
 }

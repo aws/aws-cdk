@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -15,6 +15,20 @@
         "validateOnSynth": false
       },
       "metadata": {
+        "/integ-user-pool-client-explicit-props": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
+              "id": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
+              "packaging": "zip",
+              "sourceHash": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
+              "s3BucketParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A",
+              "s3KeyParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5",
+              "artifactHashParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC"
+            }
+          }
+        ],
         "/integ-user-pool-client-explicit-props/myuserpool/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -25,6 +39,54 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myuserpoolmyuserpoolclientAFB2274E"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyF83BED40"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/DescribeCognitoUserPoolClient/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientEA733B32"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretA720EF05"
           }
         ]
       },
