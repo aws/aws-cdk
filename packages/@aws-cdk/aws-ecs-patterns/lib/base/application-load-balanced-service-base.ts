@@ -443,7 +443,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     const internetFacing = props.publicLoadBalancer ?? true;
 
     if (props.idleTimeout) {
-      if (props.idleTimeout > Duration.seconds(4000) || props.idleTimeout < Duration.seconds(1)) {
+      const idleTimeout = props.idleTimeout.toSeconds();
+      if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
         throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
       }
     }
