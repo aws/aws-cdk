@@ -1,4 +1,4 @@
-# CDK Construct Libray for AWS XXX
+# AWS CloudWatch Logs Subscription Destination Library
 <!--BEGIN STABILITY BANNER-->
 
 ---
