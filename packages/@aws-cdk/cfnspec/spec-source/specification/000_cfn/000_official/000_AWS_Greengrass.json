@@ -1,5 +1,5 @@
 {
-  "$version": "84.0.0",
+  "$version": "83.0.0",
   "PropertyTypes": {
     "AWS::Greengrass::ConnectorDefinition.Connector": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrass-connectordefinition-connector.html",
