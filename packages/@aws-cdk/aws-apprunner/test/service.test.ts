@@ -673,12 +673,60 @@ test('specifying a vpcConnector should assign the service to it and set the egre
   });
 });
 
-test('create a service with an observability configuration', () => {
+test('create a service with an observability configuration using x-ray', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
 
   const observabilityConfiguration = new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', { traceConfiguration: TracingVendor.AWSXRAY });
+  // WHEN
+  new Service(stack, 'DemoService', {
+    source: Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    observabilityConfiguration,
+  });
+  // we should have the service and observability configuration
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {},
+      ImageRepository: {
+        ImageConfiguration: {
+          Port: '8000',
+        },
+        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
+    ObservabilityConfiguration: {
+      ObservabilityConfigurationArn: {
+        'Fn::GetAtt': [
+          'ObservabilityConfiguration68CE4C7A',
+          'ObservabilityConfigurationArn',
+        ],
+      },
+      ObservabilityEnabled: true,
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {
+    TraceConfiguration: {
+      Vendor: 'AWSXRAY',
+    },
+  });
+});
+
+test('create a service with an observability configuration using no tracing vendor', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  const observabilityConfiguration = new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', { traceConfiguration: TracingVendor.NONE });
   // WHEN
   new Service(stack, 'DemoService', {
     source: Source.fromEcrPublic({
@@ -714,4 +762,5 @@ test('create a service with an observability configuration', () => {
       ObservabilityEnabled: true,
     },
   });
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {});
 });
