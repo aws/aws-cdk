@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnObservabilityConfiguration } from './apprunner.generated';
 
@@ -38,26 +39,6 @@ export interface ObservabilityConfigurationProps {
 }
 
 /**
- * Attributes for the Observability Configuration
- */
-export interface ObservabilityConfigurationAttributes {
-  /**
-   * The ARN of the Observability Configuration.
-   */
-  readonly observabilityConfigurationArn: string;
-
-  /**
-   * The name of the Observability Configuration.
-   */
-  readonly observabilityConfigurationName: string;
-
-  /**
-   * The revision of the Observability Configuration.
-   */
-  readonly observabilityConfigurationRevision: number;
-}
-
-/**
  * Represents the AppRunner Observability Configuration
  */
 export interface IObservabilityConfiguration extends cdk.IResource {
@@ -72,12 +53,6 @@ export interface IObservabilityConfiguration extends cdk.IResource {
    * @attribute
    */
   readonly observabilityConfigurationName: string;
-
-  /**
-   * The revision of the Observability Configuration.
-   * @attribute
-   */
-  readonly observabilityConfigurationRevision: number;
 }
 
 /**
@@ -87,21 +62,30 @@ export interface IObservabilityConfiguration extends cdk.IResource {
  */
 export class ObservabilityConfiguration extends cdk.Resource implements IObservabilityConfiguration {
   /**
-   * Import from VPC connector attributes.
+   * Import an observability configuration by ARN.
    */
-  // eslint-disable-next-line max-len
-  public static fromObservabilityConfigurationAttributes(scope: Construct, id: string, attrs: ObservabilityConfigurationAttributes): IObservabilityConfiguration {
-    class Import extends cdk.Resource {
-      public readonly observabilityConfigurationArn = attrs.observabilityConfigurationArn
-      public readonly observabilityConfigurationName = attrs.observabilityConfigurationName
-      public readonly observabilityConfigurationRevision = attrs.observabilityConfigurationRevision
+  public static fromObservabilityConfigurationArn(scope: Construct, id: string, configurationArn: string): IObservabilityConfiguration {
+    class Import extends cdk.Resource implements IObservabilityConfiguration {
+      public readonly observabilityConfigurationArn = configurationArn;
+      public readonly observabilityConfigurationName = configurationArn.split('/')[1];
     }
 
     return new Import(scope, id);
   }
 
   /**
-   * rue for the configuration with the revision revision among all configurations that share the same name.
+   * Import an observability configuration by name.
+   */
+  public static fromObservabilityConfigurationName(scope: Construct, id: string, configurationName: string): IObservabilityConfiguration {
+    return ObservabilityConfiguration.fromObservabilityConfigurationArn(scope, id, Stack.of(scope).formatArn({
+      service: 'apprunner',
+      resource: 'observabilityconfiguration',
+      resourceName: configurationName,
+    }));
+  }
+
+  /**
+   * True if this configuration is the latest revision among all configurations that share the same name.
    * @attribute
    */
   readonly latest: cdk.IResolvable;
