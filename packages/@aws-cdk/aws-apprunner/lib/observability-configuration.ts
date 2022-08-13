@@ -88,25 +88,25 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
    * True if this configuration is the latest revision among all configurations that share the same name.
    * @attribute
    */
-  readonly latest: cdk.IResolvable;
+  public readonly latest: cdk.IResolvable;
 
   /**
     * The ARN of the Observability Configuration.
     * @attribute
     */
-  readonly observabilityConfigurationArn: string;
+  public readonly observabilityConfigurationArn: string;
 
   /**
     * The name of the Observability Configuration.
     * @attribute
     */
-  readonly observabilityConfigurationName: string;
+  public readonly observabilityConfigurationName: string;
 
   /**
    * The revision of the Observability Configuration.
    * @attribute
    */
-  readonly observabilityConfigurationRevision: number;
+  public readonly observabilityConfigurationRevision: number;
 
   public constructor(scope: Construct, id: string, props?: ObservabilityConfigurationProps) {
     super(scope, id, {
