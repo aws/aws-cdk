@@ -9,7 +9,7 @@ import { CfnObservabilityConfiguration } from './apprunner.generated';
  */
 export enum Vendor {
   /**
-   * None
+   * No Tracing Vendor
    */
   NONE = 'NONE',
 
@@ -119,8 +119,8 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
     });
 
     this.latest = resource.attrLatest;
-    this.observabilityConfigurationArn = resource.attrObservabilityConfigurationArn;
-    this.observabilityConfigurationName = resource.ref;
+    this.observabilityConfigurationArn = this.getResourceArnAttribute('arn', { service: 'apprunner', resource: 'observabilityconfiguration' });
+    this.observabilityConfigurationName = this.getResourceNameAttribute('ref');
     this.observabilityConfigurationRevision = resource.attrObservabilityConfigurationRevision;
   }
 }
