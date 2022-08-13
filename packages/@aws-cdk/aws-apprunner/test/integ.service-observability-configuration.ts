@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { ObservabilityConfiguration, Service, Source, Vendor } from '../lib';
+import { ObservabilityConfiguration, Service, Source, TracingVendor } from '../lib';
 
 
 const app = new cdk.App();
@@ -7,7 +7,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-apprunner');
 
 // Scenario 8: Create the service from ECR public with an Observabiliy Configuration
-const observabilityConfiguration = new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', { traceConfiguration: Vendor.AWSXRAY });
+const observabilityConfiguration = new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', { traceConfiguration: TracingVendor.AWSXRAY });
 
 const service8 = new Service(stack, 'Service8', {
   source: Source.fromEcrPublic({

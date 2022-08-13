@@ -167,7 +167,8 @@ To enable X-Ray tracing for an App Runner service, specify an observability conf
 
 ```ts
 const observabilityConfiguration = new apprunner.ObservabilityConfiguration(this, 'ObservabilityConfiguration', {
-  xrayTracing: true
+  traceConfiguration: apprunner.TracingVendor.AWSXRAY,
+  observabilityConfigurationName: 'MyObservabilityConfiguration'
 });
 
 new apprunner.Service(this, 'Service', {

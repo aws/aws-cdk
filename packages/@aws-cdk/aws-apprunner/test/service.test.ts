@@ -5,7 +5,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Service, GitHubConnection, Runtime, Source, Cpu, Memory, ConfigurationSourceType, VpcConnector, ObservabilityConfiguration, Vendor } from '../lib';
+import { Service, GitHubConnection, Runtime, Source, Cpu, Memory, ConfigurationSourceType, VpcConnector, ObservabilityConfiguration, TracingVendor } from '../lib';
 
 test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () => {
   // GIVEN
@@ -678,7 +678,7 @@ test('create a service with an observability configuration', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
 
-  const observabilityConfiguration = new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', { traceConfiguration: Vendor.AWSXRAY });
+  const observabilityConfiguration = new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', { traceConfiguration: TracingVendor.AWSXRAY });
   // WHEN
   new Service(stack, 'DemoService', {
     source: Source.fromEcrPublic({

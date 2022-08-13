@@ -1,13 +1,13 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { ObservabilityConfiguration, Vendor } from '../lib';
+import { ObservabilityConfiguration, TracingVendor } from '../lib';
 
 test('create an observability configuration with xray trace configuration vendor', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', { traceConfiguration: Vendor.AWSXRAY });
+  new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', { traceConfiguration: TracingVendor.AWSXRAY });
   // we should have the observability configuration
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {
     TraceConfiguration: {
@@ -22,7 +22,7 @@ test('create an observability configuration with a custom name and xray as a tra
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
   new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
-    traceConfiguration: Vendor.AWSXRAY,
+    traceConfiguration: TracingVendor.AWSXRAY,
     observabilityConfigurationName: 'MyObservabilityConfiguration',
   });
   // we should have the observability configuration
@@ -41,7 +41,7 @@ test('create an observability configuration with no trace configuration vendor',
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
   new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
-    traceConfiguration: Vendor.NONE,
+    traceConfiguration: TracingVendor.NONE,
   });
   // we should have the observability configuration
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {});
