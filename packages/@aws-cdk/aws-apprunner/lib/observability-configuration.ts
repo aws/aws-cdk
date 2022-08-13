@@ -108,14 +108,14 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
    */
   public readonly observabilityConfigurationRevision: number;
 
-  public constructor(scope: Construct, id: string, props?: ObservabilityConfigurationProps) {
+  public constructor(scope: Construct, id: string, props: ObservabilityConfigurationProps) {
     super(scope, id, {
-      physicalName: props?.observabilityConfigurationName,
+      physicalName: props.observabilityConfigurationName,
     });
 
     const resource = new CfnObservabilityConfiguration(this, 'Resource', {
       observabilityConfigurationName: this.physicalName,
-      ...(props?.traceConfiguration && props.traceConfiguration != Vendor.NONE ? { traceConfiguration: { vendor: props?.traceConfiguration } } : {}),
+      ...(props.traceConfiguration && props.traceConfiguration != Vendor.NONE ? { traceConfiguration: { vendor: props?.traceConfiguration } } : {}),
     });
 
     this.latest = resource.attrLatest;
