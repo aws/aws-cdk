@@ -206,6 +206,11 @@ export enum QueueEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+
+  /**
+   * Server-side encryption with a master key managed by SQS.
+   */
+  SQS_MANAGED = 'SQSMANAGED',
 }
 
 /**
@@ -402,6 +407,14 @@ export class Queue extends QueueBase {
         };
       }
 
+      if (encryption === QueueEncryption.SQS_MANAGED) {
+        return {
+          encryptionProps: {
+            sqsManagedSseEnabled: true,
+          },
+        };
+      }
+
       throw new Error(`Unexpected 'encryptionType': ${encryption}`);
     }
   }
@@ -459,4 +472,5 @@ interface FifoProps {
 interface EncryptionProps {
   readonly kmsMasterKeyId?: string;
   readonly kmsDataKeyReusePeriodSeconds?: number;
+  readonly sqsManagedSseEnabled?: boolean;
 }

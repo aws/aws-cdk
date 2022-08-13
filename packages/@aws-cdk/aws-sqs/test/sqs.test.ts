@@ -429,6 +429,24 @@ describe('queue encryption', () => {
       },
     });
   });
+
+  test('it is possible to use sqs managed server side encryption', () => {
+    const stack = new Stack();
+
+    new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.SQS_MANAGED });
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'SqsManagedSseEnabled': true,
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
+  });
 });
 
 test('test ".fifo" suffixed queues register as fifo', () => {

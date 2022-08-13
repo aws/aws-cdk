@@ -54,6 +54,11 @@ new sqs.Queue(this, 'Queue', {
   encryption: sqs.QueueEncryption.KMS,
   encryptionMasterKey: myKey,
 });
+
+// Use SQS managed server side encryption
+new sqs.Queue(this, 'Queue', {
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
+});
 ```
 
 ## First-In-First-Out (FIFO) queues
