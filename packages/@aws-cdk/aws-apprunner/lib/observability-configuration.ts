@@ -64,10 +64,10 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
   /**
    * Import an observability configuration by ARN.
    */
-  public static fromObservabilityConfigurationArn(scope: Construct, id: string, configurationArn: string): IObservabilityConfiguration {
+  public static fromObservabilityConfigurationArn(scope: Construct, id: string, observabilityConfigurationArn: string): IObservabilityConfiguration {
     class Import extends cdk.Resource implements IObservabilityConfiguration {
-      public readonly observabilityConfigurationArn = configurationArn;
-      public readonly observabilityConfigurationName = configurationArn.split('/')[1];
+      public readonly observabilityConfigurationArn = observabilityConfigurationArn;
+      public readonly observabilityConfigurationName = observabilityConfigurationArn.split('/')[1];
     }
 
     return new Import(scope, id);
@@ -76,11 +76,12 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
   /**
    * Import an observability configuration by name.
    */
-  public static fromObservabilityConfigurationName(scope: Construct, id: string, configurationName: string): IObservabilityConfiguration {
+  public static fromObservabilityConfigurationName(scope: Construct, id: string, observabilityConfigurationName: string):
+  IObservabilityConfiguration {
     return ObservabilityConfiguration.fromObservabilityConfigurationArn(scope, id, Stack.of(scope).formatArn({
       service: 'apprunner',
       resource: 'observabilityconfiguration',
-      resourceName: configurationName,
+      resourceName: observabilityConfigurationName,
     }));
   }
 
@@ -108,7 +109,7 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
    */
   public readonly observabilityConfigurationRevision: number;
 
-  public constructor(scope: Construct, id: string, props: ObservabilityConfigurationProps) {
+  public constructor(scope: Construct, id: string, props: ObservabilityConfigurationProps = {}) {
     super(scope, id, {
       physicalName: props.observabilityConfigurationName,
     });
@@ -119,8 +120,11 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
     });
 
     this.latest = resource.attrLatest;
-    this.observabilityConfigurationArn = this.getResourceArnAttribute('arn', { service: 'apprunner', resource: 'observabilityconfiguration' });
-    this.observabilityConfigurationName = this.getResourceNameAttribute('ref');
+    this.observabilityConfigurationArn = this.getResourceArnAttribute(resource.attrObservabilityConfigurationArn, {
+      service: 'apprunner',
+      resource: 'observabilityconfiguration',
+    });
+    this.observabilityConfigurationName = this.getResourceNameAttribute(resource.ref);
     this.observabilityConfigurationRevision = resource.attrObservabilityConfigurationRevision;
   }
 }
