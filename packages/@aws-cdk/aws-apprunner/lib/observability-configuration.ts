@@ -2,16 +2,32 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnObservabilityConfiguration } from './apprunner.generated';
 
+
+/**
+ * The implementation provider for tracing App Runner services.
+ */
+export enum Vendor {
+  /**
+   * None
+   */
+  NONE = 'NONE',
+
+  /**
+   * AWS X-Ray
+   */
+  AWSXRAY = 'AWSXRAY'
+}
+
 /**
  * Properties of the AppRunner Observability Configuration
  */
 export interface ObservabilityConfigurationProps {
   /**
-   * Whether to enable X-Ray tracing on the observability configuration.
+   * The implementation provider for tracing App Runner services.
    *
-   * @default true
+   * @default Vendor.None
    */
-  readonly xrayTracing?: boolean;
+  readonly traceConfiguration?: Vendor;
 
   /**
     * The name for the Observability Configuration.
@@ -115,7 +131,7 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
 
     const resource = new CfnObservabilityConfiguration(this, 'Resource', {
       observabilityConfigurationName: this.physicalName,
-      ...(props?.xrayTracing ?? true ? { traceConfiguration: { vendor: 'AWSXRAY' } } : {}),
+      ...(props?.traceConfiguration && props.traceConfiguration != Vendor.NONE ? { traceConfiguration: { vendor: props?.traceConfiguration } } : {}),
     });
 
     this.latest = resource.attrLatest;
