@@ -2,6 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { RemovalPolicy, Stack, App } from '@aws-cdk/core';
 import * as s3 from '../lib';
+import { CfnBucketPolicy } from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
@@ -149,5 +150,49 @@ describe('bucket policy', () => {
     }));
 
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+  });
+
+  describe('fromCfnBucketPolicy()', () => {
+    const stack = new Stack();
+
+    test('correctly extracts the Document and Bucket from the L1', () => {
+      const cfnBucket = new s3.CfnBucket(stack, 'CfnBucket');
+      const cfnBucketPolicy = bucketPolicyForBucketNamed(cfnBucket.ref);
+      const bucketPolicy = s3.BucketPolicy.fromCfnBucketPolicy(cfnBucketPolicy);
+
+      expect(bucketPolicy.document).not.toBeUndefined();
+      expect(bucketPolicy.document.isEmpty).toBeFalsy();
+
+      expect(bucketPolicy.bucket).not.toBeUndefined();
+      expect(bucketPolicy.bucket.policy).not.toBeUndefined();
+      expect(bucketPolicy.bucket.policy?.document.isEmpty).toBeFalsy();
+    });
+
+    test('correctly references a bucket by name', () => {
+      const cfnBucketPolicy = bucketPolicyForBucketNamed('hardcoded-name');
+      const bucketPolicy = s3.BucketPolicy.fromCfnBucketPolicy(cfnBucketPolicy);
+
+      expect(bucketPolicy.bucket).not.toBeUndefined();
+      expect(bucketPolicy.bucket.bucketName).toBe('hardcoded-name');
+    });
+
+    function bucketPolicyForBucketNamed(name: string): CfnBucketPolicy {
+      return new s3.CfnBucketPolicy(stack, `CfnBucketPolicy-${name}`, {
+        policyDocument: {
+          'Statement': [
+            {
+              'Action': 's3:*',
+              'Effect': 'Deny',
+              'Principal': {
+                'AWS': '*',
+              },
+              'Resource': '*',
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+        bucket: name,
+      });
+    }
   });
 });

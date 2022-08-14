@@ -160,7 +160,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "MyRestApiAccount2FB6DB7A": {
    "Type": "AWS::ApiGateway::Account",
@@ -174,7 +176,9 @@
    },
    "DependsOn": [
     "MyRestApi2D1F47A9"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "MyRestApiDeploymentB555B582dcff966d69deeda8d47e3bf409ce29cb": {
    "Type": "AWS::ApiGateway::Deployment",
