@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -352,11 +353,20 @@ export class CustomRule extends RuleNew {
         messageType: 'ScheduledNotification',
       });
     }
-
-    props.lambdaFunction.addPermission('Permission', {
-      principal: new iam.ServicePrincipal('config.amazonaws.com'),
-      sourceAccount: this.env.account,
-    });
+    const hash = createHash('sha256')
+      .update(JSON.stringify({
+        fnName: props.lambdaFunction.functionName.toString,
+        accountId: this.env.account,
+        region: this.env.region,
+      }), 'utf8')
+      .digest('base64');
+    const customRulePermissionId: string = `customRulePermission-${hash}`;
+    if (!props.lambdaFunction.permissionsNode.tryFindChild(customRulePermissionId)) {
+      props.lambdaFunction.addPermission(customRulePermissionId, {
+        principal: new iam.ServicePrincipal('config.amazonaws.com'),
+        sourceAccount: this.env.account,
+      });
+    };
 
     if (props.lambdaFunction.role) {
       props.lambdaFunction.role.addManagedPolicy(

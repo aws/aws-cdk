@@ -16,6 +16,7 @@ class ConfigStack extends cdk.Stack {
       code: lambda.AssetCode.fromInline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
+      functionName: 'coolrule',
     });
 
     new config.CustomRule(this, 'Custom', {
@@ -38,5 +39,7 @@ class ConfigStack extends cdk.Stack {
   }
 }
 
-new ConfigStack(app, 'aws-cdk-config-rule-integ');
+new ConfigStack(app, 'aws-cdk-config-rule-integ', {
+  env: { account: '123456789012', region: 'us-east-1' },
+});
 app.synth();

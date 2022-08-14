@@ -42,6 +42,7 @@ describe('rule', () => {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
+      functionName: 'coolname',
     });
 
     // WHEN
@@ -91,11 +92,6 @@ describe('rule', () => {
         },
         MaximumExecutionFrequency: 'Six_Hours',
       },
-      DependsOn: [
-        'FunctionPermissionEC8FE997',
-        'Function76856677',
-        'FunctionServiceRole675BB04A',
-      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
@@ -417,4 +413,47 @@ describe('rule', () => {
     });
   });
 
+  test('create two custom rule and one function', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.AssetCode.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+
+    // WHEN
+    new config.CustomRule(stack, 'Rule1', {
+      configurationChanges: true,
+      description: 'really cool rule',
+      lambdaFunction: fn,
+      maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS,
+      configRuleName: 'cool rule 1',
+      periodic: true,
+    });
+    new config.CustomRule(stack, 'Rule2', {
+      configurationChanges: true,
+      description: 'really cool rule',
+      lambdaFunction: fn,
+      configRuleName: 'cool rule 2',
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::Config::ConfigRule', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn',
+        ],
+      },
+      Principal: 'config.amazonaws.com',
+      SourceAccount: {
+        Ref: 'AWS::AccountId',
+      },
+    });
+  });
 });

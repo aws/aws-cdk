@@ -56,13 +56,14 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs14.x",
+    "FunctionName": "coolrule"
    },
    "DependsOn": [
     "CustomFunctionServiceRoleD3F73B79"
    ]
   },
-  "CustomFunctionPermission41887A5E": {
+  "CustomFunctioncustomRulePermissionXogMcOcBfKkfAgTC3zxpecyWNuSNTUwy6QrCZdRtCdw9047B881": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -73,9 +74,7 @@
      ]
     },
     "Principal": "config.amazonaws.com",
-    "SourceAccount": {
-     "Ref": "AWS::AccountId"
-    }
+    "SourceAccount": "123456789012"
    }
   },
   "Custom8166710A": {
@@ -107,7 +106,7 @@
     }
    },
    "DependsOn": [
-    "CustomFunctionPermission41887A5E",
+    "CustomFunctioncustomRulePermissionXogMcOcBfKkfAgTC3zxpecyWNuSNTUwy6QrCZdRtCdw9047B881",
     "CustomFunctionBADD59E7",
     "CustomFunctionServiceRoleD3F73B79"
    ]
