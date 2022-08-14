@@ -40,8 +40,6 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     const localTagName = await builder.build();
 
     if (localTagName === undefined || this.host.aborted) { return; }
-
-    this.host.emitMessage(EventType.UPLOAD, `Push ${initOnce.imageUri}`);
     if (this.host.aborted) { return; }
 
     await dockerForBuilding.tag(localTagName, initOnce.imageUri);

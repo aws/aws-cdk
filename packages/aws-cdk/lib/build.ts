@@ -10,19 +10,19 @@ export async function buildAllStackAssets(stacks: cxapi.CloudFormationStackArtif
   const { concurrency, buildStackAssets } = options;
 
   const queue = new PQueue({ concurrency });
-  const publishingErrors: Error[] = [];
+  const buildingErrors: Error[] = [];
 
   for (const stack of stacks) {
     queue.add(async () => {
       await buildStackAssets(stack);
     }).catch((err) => {
-      publishingErrors.push(err);
+      buildingErrors.push(err);
     });
   }
 
   await queue.onIdle();
 
-  if (publishingErrors.length) {
-    throw Error(`Publishing Assets Failed: ${publishingErrors.join(', ')}`);
+  if (buildingErrors.length) {
+    throw Error(`Building Assets Failed: ${buildingErrors.join(', ')}`);
   }
 }

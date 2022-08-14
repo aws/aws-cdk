@@ -3,7 +3,7 @@ import { buildAllStackAssets } from '../lib/build';
 
 type Stack = cxapi.CloudFormationStackArtifact;
 
-describe('publishAllStackAssets', () => {
+describe('buildAllStackAssets', () => {
   const A = { id: 'A' };
   const B = { id: 'B' };
   const C = { id: 'C' };
@@ -12,19 +12,19 @@ describe('publishAllStackAssets', () => {
 
   const sleep = async (duration: number) => new Promise<void>((resolve) => setTimeout(() => resolve(), duration));
 
-  test('publish', async () => {
+  test('build', async () => {
     // GIVEN
-    const publishStackAssets = jest.fn(() => sleep(1));
+    const buildStackAssets = jest.fn(() => sleep(1));
 
     // WHEN/THEN
-    await expect(buildAllStackAssets(toPublish, { concurrency, buildStackAssets: publishStackAssets }))
+    await expect(buildAllStackAssets(toPublish, { concurrency, buildStackAssets }))
       .resolves
       .toBeUndefined();
 
-    expect(publishStackAssets).toBeCalledTimes(3);
-    expect(publishStackAssets).toBeCalledWith(A);
-    expect(publishStackAssets).toBeCalledWith(B);
-    expect(publishStackAssets).toBeCalledWith(C);
+    expect(buildStackAssets).toBeCalledTimes(3);
+    expect(buildStackAssets).toBeCalledWith(A);
+    expect(buildStackAssets).toBeCalledWith(B);
+    expect(buildStackAssets).toBeCalledWith(C);
   });
 
   test('errors', async () => {
@@ -34,6 +34,6 @@ describe('publishAllStackAssets', () => {
     // WHEN/THEN
     await expect(buildAllStackAssets(toPublish, { concurrency, buildStackAssets }))
       .rejects
-      .toThrow('Publishing Assets Failed: Error: Message, Error: Message, Error: Message');
+      .toThrow('Building Assets Failed: Error: Message, Error: Message, Error: Message');
   });
 });
