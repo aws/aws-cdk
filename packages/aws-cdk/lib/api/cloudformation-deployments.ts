@@ -259,7 +259,7 @@ export interface BuildStackAssetsOptions {
   readonly toolkitStackName?: string;
 
   /**
-   * Execution role for the publishing.
+   * Execution role for the building.
    *
    * @default - Current role
    */

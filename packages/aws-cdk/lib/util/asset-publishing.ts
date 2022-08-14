@@ -37,7 +37,7 @@ export async function publishAssets(
     targetEnv.region === undefined ||
     targetEnv.account === cxapi.UNKNOWN_REGION
   ) {
-    throw new Error(`Asset publishing requires resolved account and region, got ${JSON.stringify( targetEnv)}`);
+    throw new Error(`Asset publishing requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
   }
 
   const publisher = new cdk_assets.AssetPublishing(manifest, {
@@ -78,7 +78,7 @@ export async function buildAssets(
     targetEnv.region === undefined ||
     targetEnv.account === cxapi.UNKNOWN_REGION
   ) {
-    throw new Error(`Asset publishing requires resolved account and region, got ${JSON.stringify( targetEnv)}`);
+    throw new Error(`Asset building requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
   }
 
   const publisher = new cdk_assets.AssetPublishing(manifest, {
@@ -91,7 +91,7 @@ export async function buildAssets(
   });
   await publisher.publish();
   if (publisher.hasFailures) {
-    throw new Error('Failed to publish one or more assets. See the error messages above for more information.');
+    throw new Error('Failed to build one or more assets. See the error messages above for more information.');
   }
 }
 
