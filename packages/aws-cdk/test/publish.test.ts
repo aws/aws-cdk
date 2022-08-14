@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { publishAllStackAssets } from '../lib/publish';
+import { buildAllStackAssets } from '../lib/build';
 
 type Stack = cxapi.CloudFormationStackArtifact;
 
@@ -17,7 +17,7 @@ describe('publishAllStackAssets', () => {
     const publishStackAssets = jest.fn(() => sleep(1));
 
     // WHEN/THEN
-    await expect(publishAllStackAssets(toPublish, { concurrency, publishStackAssets }))
+    await expect(buildAllStackAssets(toPublish, { concurrency, buildStackAssets: publishStackAssets }))
       .resolves
       .toBeUndefined();
 
@@ -29,10 +29,10 @@ describe('publishAllStackAssets', () => {
 
   test('errors', async () => {
     // GIVEN
-    const publishStackAssets = async () => { throw new Error('Message'); };
+    const buildStackAssets = async () => { throw new Error('Message'); };
 
     // WHEN/THEN
-    await expect(publishAllStackAssets(toPublish, { concurrency, publishStackAssets }))
+    await expect(buildAllStackAssets(toPublish, { concurrency, buildStackAssets }))
       .rejects
       .toThrow('Publishing Assets Failed: Error: Message, Error: Message, Error: Message');
   });

@@ -3,18 +3,18 @@ import PQueue from 'p-queue';
 
 type Options = {
   concurrency: number;
-  publishStackAssets: (stack: cxapi.CloudFormationStackArtifact) => Promise<void>;
+  buildStackAssets: (stack: cxapi.CloudFormationStackArtifact) => Promise<void>;
 };
 
-export const publishAllStackAssets = async (stacks: cxapi.CloudFormationStackArtifact[], options: Options): Promise<void> => {
-  const { concurrency, publishStackAssets } = options;
+export const buildAllStackAssets = async (stacks: cxapi.CloudFormationStackArtifact[], options: Options): Promise<void> => {
+  const { concurrency, buildStackAssets } = options;
 
   const queue = new PQueue({ concurrency });
   const publishingErrors: Error[] = [];
 
   for (const stack of stacks) {
     queue.add(async () => {
-      await publishStackAssets(stack);
+      await buildStackAssets(stack);
     }).catch((err) => {
       publishingErrors.push(err);
     });

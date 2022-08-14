@@ -439,3 +439,61 @@ test('logging in twice for two repository domains (containing account id & regio
   expectAllSpawns();
   expect(true).toBeTruthy(); // Expect no exception, satisfy linter
 });
+
+test('building only', async () => {
+  const pub = new AssetPublishing(AssetManifest.fromPath('/multi/cdk.out'), {
+    aws,
+    throwOnError: false,
+    buildAssets: true,
+    publishAssets: false,
+  });
+
+  aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
+  aws.mockEcr.getAuthorizationToken = mockedApiResult({
+    authorizationData: [
+      { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+    ],
+  });
+
+  const expectAllSpawns = mockSpawn(
+    { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
+    { commandLine: ['docker', 'inspect', 'cdkasset-theasset1'], exitCode: 1 },
+    { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset1', '.'], cwd: '/multi/cdk.out/dockerdir' },
+    { commandLine: ['docker', 'tag', 'cdkasset-theasset1', '12345.amazonaws.com/repo:theAsset1'] },
+    { commandLine: ['docker', 'inspect', 'cdkasset-theasset2'], exitCode: 1 },
+    { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset2', '.'], cwd: '/multi/cdk.out/dockerdir' },
+    { commandLine: ['docker', 'tag', 'cdkasset-theasset2', '12345.amazonaws.com/repo:theAsset2'] },
+  );
+
+  await pub.publish();
+
+  expectAllSpawns();
+  expect(true).toBeTruthy(); // Expect no exception, satisfy linter
+});
+
+test('publishing only', async () => {
+  const pub = new AssetPublishing(AssetManifest.fromPath('/multi/cdk.out'), {
+    aws,
+    throwOnError: false,
+    buildAssets: false,
+    publishAssets: true,
+  });
+
+  aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
+  aws.mockEcr.getAuthorizationToken = mockedApiResult({
+    authorizationData: [
+      { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+    ],
+  });
+
+  const expectAllSpawns = mockSpawn(
+    { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
+    { commandLine: ['docker', 'push', '12345.amazonaws.com/aws-cdk/assets:theAsset1'] },
+    { commandLine: ['docker', 'push', '12345.amazonaws.com/aws-cdk/assets:theAsset2'] },
+  );
+
+  await pub.publish();
+
+  expectAllSpawns();
+  expect(true).toBeTruthy(); // Expect no exception, satisfy linter
+});

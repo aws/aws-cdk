@@ -71,21 +71,10 @@ test('deployStack publishing asset', async () => {
   });
 
   // THEN
-  expect(publishAssets).toHaveBeenCalled();
-});
-
-test('deployStack with asset publishing disabled', async () => {
-  // GIVEN
-  const stack = testStackWithAssetManifest();
-
-  // WHEN
-  await deployments.deployStack({
-    stack,
-    disableAssetPublishing: true,
-  });
-
-  // THEN
-  expect(publishAssets).not.toHaveBeenCalled();
+  expect(publishAssets).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), expect.objectContaining({
+    buildAssets: false,
+    publishAssets: true,
+  }));
 });
 
 test('passes through hotswap=true to deployStack()', async () => {
@@ -881,7 +870,7 @@ test('publishing assets', async () => {
   const stack = testStackWithAssetManifest();
 
   // WHEN
-  await deployments.publishStackAssets({
+  await deployments.buildStackAssets({
     stack,
   });
 
@@ -899,7 +888,11 @@ test('publishing assets', async () => {
     name: 'aws://account/region',
     region: 'region',
   });
-  expect(publishAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment);
+  const expectedOptions = expect.objectContaining({
+    buildAssets: true,
+    publishAssets: false,
+  });
+  expect(publishAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment, expectedOptions);
 });
 
 function pushStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {

@@ -18,7 +18,7 @@ import { deployStacks } from './deploy';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning } from './logging';
-import { publishAllStackAssets } from './publish';
+import { buildAllStackAssets } from './build';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
@@ -176,25 +176,25 @@ export class CdkToolkit {
       warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
     }
 
-    const publishStackAssets = async (stack: cxapi.CloudFormationStackArtifact) => {
+    const buildStackAssets = async (stack: cxapi.CloudFormationStackArtifact) => {
       // Check whether the stack has an asset manifest before trying to build and publish.
       if (!stack.dependencies.some(cxapi.AssetManifestArtifact.isAssetManifestArtifact)) {
         return;
       }
 
-      print('%s: building and publishing assets...\n', chalk.bold(stack.displayName));
-      await this.props.cloudFormation.publishStackAssets({
+      print('%s: building assets...\n', chalk.bold(stack.displayName));
+      await this.props.cloudFormation.buildStackAssets({
         stack,
         roleArn: options.roleArn,
         toolkitStackName: options.toolkitStackName,
       });
-      print('\n%s: assets published\n', chalk.bold(stack.displayName));
+      print('\n%s: assets built\n', chalk.bold(stack.displayName));
     };
 
     try {
-      await publishAllStackAssets(stacks, { concurrency, publishStackAssets });
+      await buildAllStackAssets(stacks, { concurrency, buildStackAssets });
     } catch (e) {
-      error('\n ❌ Publishing assets failed: %s', e);
+      error('\n ❌ Building assets failed: %s', e);
       throw e;
     }
 
@@ -273,7 +273,6 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
-          disableAssetPublishing: true,
         });
 
         const message = result.noOp
