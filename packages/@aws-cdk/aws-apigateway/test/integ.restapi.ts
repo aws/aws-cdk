@@ -8,7 +8,6 @@ class Test extends cdk.Stack {
 
     const api = new apigateway.RestApi(this, 'my-api', {
       retainDeployments: true,
-      disableExecuteApiEndpoint: true,
       deployOptions: {
         cacheClusterEnabled: true,
         stageName: 'beta',
