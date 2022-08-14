@@ -11,7 +11,7 @@ import { CloudFormationDeployments } from '../../lib/api/cloudformation-deployme
 import { deployStack } from '../../lib/api/deploy-stack';
 import { EcrRepositoryInfo, ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
-import { publishAssets } from '../../lib/util/asset-publishing';
+import { buildAssets, publishAssets } from '../../lib/util/asset-publishing';
 import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
 import { FakeCloudformationStack } from './fake-cloudformation-stack';
@@ -71,10 +71,7 @@ test('deployStack publishing asset', async () => {
   });
 
   // THEN
-  expect(publishAssets).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), expect.objectContaining({
-    buildAssets: false,
-    publishAssets: true,
-  }));
+  expect(publishAssets).toHaveBeenCalled();
 });
 
 test('passes through hotswap=true to deployStack()', async () => {
@@ -865,7 +862,7 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   });
 });
 
-test('publishing assets', async () => {
+test('building assets', async () => {
   // GIVEN
   const stack = testStackWithAssetManifest();
 
@@ -888,11 +885,7 @@ test('publishing assets', async () => {
     name: 'aws://account/region',
     region: 'region',
   });
-  const expectedOptions = expect.objectContaining({
-    buildAssets: true,
-    publishAssets: false,
-  });
-  expect(publishAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment, expectedOptions);
+  expect(buildAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment);
 });
 
 function pushStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {

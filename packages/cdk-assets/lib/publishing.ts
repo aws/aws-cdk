@@ -98,7 +98,7 @@ export class AssetPublishing implements IPublishProgress {
         return {
           startMessagePrefix: 'Building and publishing',
           successMessagePrefix: 'Built and published',
-          errorMessagePrefix: 'Error publishing',
+          errorMessagePrefix: 'Error building and publishing',
         };
       } else if (this.buildAssets) {
         return {
@@ -109,7 +109,7 @@ export class AssetPublishing implements IPublishProgress {
       } else {
         return {
           startMessagePrefix: 'Publishing',
-          successMessagePrefix: 'published',
+          successMessagePrefix: 'Published',
           errorMessagePrefix: 'Error publishing',
         };
       }

@@ -6,7 +6,7 @@ type Options = {
   buildStackAssets: (stack: cxapi.CloudFormationStackArtifact) => Promise<void>;
 };
 
-export const buildAllStackAssets = async (stacks: cxapi.CloudFormationStackArtifact[], options: Options): Promise<void> => {
+export async function buildAllStackAssets(stacks: cxapi.CloudFormationStackArtifact[], options: Options): Promise<void> {
   const { concurrency, buildStackAssets } = options;
 
   const queue = new PQueue({ concurrency });
@@ -25,4 +25,4 @@ export const buildAllStackAssets = async (stacks: cxapi.CloudFormationStackArtif
   if (publishingErrors.length) {
     throw Error(`Publishing Assets Failed: ${publishingErrors.join(', ')}`);
   }
-};
+}

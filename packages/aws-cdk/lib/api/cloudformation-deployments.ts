@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
 import { Tag } from '../cdk-toolkit';
 import { debug, warning } from '../logging';
-import { publishAssets } from '../util/asset-publishing';
+import { buildAssets, publishAssets } from '../util/asset-publishing';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { SdkProvider } from './aws-auth/sdk-provider';
@@ -238,6 +238,27 @@ export interface DeployStackOptions {
   readonly overrideTemplate?: any;
 }
 
+export interface BuildStackAssetsOptions {
+  /**
+   * Stack with assets to build.
+   */
+  readonly stack: cxapi.CloudFormationStackArtifact;
+
+  /**
+   * Name of the toolkit stack, if not the default name.
+   *
+   * @default 'CDKToolkit'
+   */
+  readonly toolkitStackName?: string;
+
+  /**
+   * Execution role for the deployment.
+   *
+   * @default - Current role
+   */
+  readonly roleArn?: string;
+}
+
 export interface DestroyStackOptions {
   stack: cxapi.CloudFormationStackArtifact;
   deployName?: string;
@@ -454,7 +475,7 @@ export class CloudFormationDeployments {
   /**
    * Build a stack's assets.
    */
-  public async buildStackAssets(options: PublishStackAssetsOptions) {
+  public async buildStackAssets(options: BuildStackAssetsOptions) {
     const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(options.stack, options.roleArn);
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
 
@@ -469,10 +490,7 @@ export class CloudFormationDeployments {
         toolkitInfo);
 
       const manifest = AssetManifest.fromFile(assetArtifact.file);
-      await publishAssets(manifest, this.sdkProvider, stackEnv, {
-        buildAssets: true,
-        publishAssets: false,
-      });
+      await buildAssets(manifest, this.sdkProvider, stackEnv);
     }
   }
 
@@ -491,10 +509,7 @@ export class CloudFormationDeployments {
         toolkitInfo);
 
       const manifest = AssetManifest.fromFile(assetArtifact.file);
-      await publishAssets(manifest, this.sdkProvider, stackEnv, {
-        buildAssets: false,
-        publishAssets: true,
-      });
+      await publishAssets(manifest, this.sdkProvider, stackEnv);
     }
   }
 

@@ -184,7 +184,7 @@ describe('with a complete manifest', () => {
   test('Displays an error if the ECR repository cannot be found', async () => {
     aws.mockEcr.describeImages = mockedApiFailure('RepositoryNotFoundException', 'Repository not Found');
 
-    await expect(pub.publish()).rejects.toThrow('Error publishing: Repository not Found');
+    await expect(pub.publish()).rejects.toThrow('Error building and publishing: Repository not Found');
   });
 
   test('successful run does not need to query account ID', async () => {

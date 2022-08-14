@@ -91,6 +91,13 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     return this.init;
   }
 
+  /**
+   * Check whether the image already exists in the ECR repo
+   *
+   * Use the fields from the destination to do the actual check. The imageUri
+   * should correspond to that, but is only used to print Docker image location
+   * for user benefit (the format is slightly different).
+   */
   private async destinationAlreadyExists(ecr: AWS.ECR, destination: DockerImageDestination, imageUri: string): Promise<boolean> {
     this.host.emitMessage(EventType.CHECK, `Check ${imageUri}`);
     if (await imageExists(ecr, destination.repositoryName, destination.imageTag)) {
