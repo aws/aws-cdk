@@ -27,6 +27,7 @@
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
                   "aws:cdk:cloudformation:props": {
                     "name": "my-api"
+                    "disableExecuteApiEndpoint": true
                   }
                 },
                 "constructInfo": {
