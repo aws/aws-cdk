@@ -3,8 +3,7 @@
   "myapi4C7BF186": {
    "Type": "AWS::ApiGateway::RestApi",
    "Properties": {
-    "Name": "my-api",
-    "DisableExecuteApiEndpoint": true
+    "Name": "my-api"
    }
   },
   "myapiCloudWatchRole095452E5": {
