@@ -11,6 +11,13 @@ export interface PublishAssetsOptions {
    * Print progress at 'debug' level
    */
   readonly quiet?: boolean;
+
+  /**
+   * Whether to build assets before publishing.
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly buildAssets?: boolean;
 }
 
 /**
@@ -38,7 +45,7 @@ export async function publishAssets(
     progressListener: new PublishingProgressListener(options.quiet ?? false),
     throwOnError: false,
     publishInParallel: true,
-    buildAssets: false,
+    buildAssets: options.buildAssets ?? true,
     publishAssets: true,
   });
   await publisher.publish();

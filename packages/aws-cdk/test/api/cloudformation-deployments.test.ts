@@ -62,7 +62,7 @@ function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
   mockToolkitInfoLookup.mockResolvedValue(ToolkitInfo.fromStack(fakeStack, sdkProvider.sdk));
 }
 
-test('deployStack publishing asset', async () => {
+test('deployStack builds assets by default for backward compatibility', async () => {
   const stack = testStackWithAssetManifest();
 
   // WHEN
@@ -71,7 +71,26 @@ test('deployStack publishing asset', async () => {
   });
 
   // THEN
-  expect(publishAssets).toHaveBeenCalled();
+  const expectedOptions = expect.objectContaining({
+    buildAssets: true,
+  });
+  expect(publishAssets).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), expectedOptions);
+});
+
+test('deployStack can disable asset building for prebuilds', async () => {
+  const stack = testStackWithAssetManifest();
+
+  // WHEN
+  await deployments.deployStack({
+    stack,
+    buildAssets: false,
+  });
+
+  // THEN
+  const expectedOptions = expect.objectContaining({
+    buildAssets: false,
+  });
+  expect(publishAssets).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), expectedOptions);
 });
 
 test('passes through hotswap=true to deployStack()', async () => {

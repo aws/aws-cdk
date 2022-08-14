@@ -236,6 +236,13 @@ export interface DeployStackOptions {
    * @default - Use the stored template
    */
   readonly overrideTemplate?: any;
+
+  /**
+   * Whether to build assets before publishing.
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly buildAssets?: boolean;
 }
 
 export interface BuildStackAssetsOptions {
@@ -252,11 +259,20 @@ export interface BuildStackAssetsOptions {
   readonly toolkitStackName?: string;
 
   /**
-   * Execution role for the deployment.
+   * Execution role for the publishing.
    *
    * @default - Current role
    */
   readonly roleArn?: string;
+}
+
+interface PublishStackAssetsOptions {
+  /**
+   * Whether to build assets before publishing.
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly buildAssets?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -361,7 +377,9 @@ export class CloudFormationDeployments {
 
     // Publish any assets before doing the actual deploy (do not publish any assets on import operation)
     if (options.resourcesToImport === undefined) {
-      await this.publishStackAssets(options.stack, toolkitInfo);
+      await this.publishStackAssets(options.stack, toolkitInfo, {
+        buildAssets: options.buildAssets ?? true,
+      });
     }
 
     // Do a verification of the bootstrap stack version
@@ -497,7 +515,7 @@ export class CloudFormationDeployments {
   /**
    * Publish all asset manifests that are referenced by the given stack
    */
-  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo) {
+  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo, options: PublishStackAssetsOptions = {}) {
     const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
     const assetArtifacts = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
 
@@ -509,7 +527,9 @@ export class CloudFormationDeployments {
         toolkitInfo);
 
       const manifest = AssetManifest.fromFile(assetArtifact.file);
-      await publishAssets(manifest, this.sdkProvider, stackEnv);
+      await publishAssets(manifest, this.sdkProvider, stackEnv, {
+        buildAssets: options.buildAssets ?? true,
+      });
     }
   }
 
@@ -530,28 +550,4 @@ export class CloudFormationDeployments {
       throw new Error(`${stackName}: ${e.message}`);
     }
   }
-}
-
-/**
- * Options for publishing stack assets.
- */
-export interface PublishStackAssetsOptions {
-  /**
-   * Stack to publish assets for
-   */
-  readonly stack: cxapi.CloudFormationStackArtifact;
-
-  /**
-   * Execution role for publishing assets
-   *
-   * @default - Current role
-   */
-  readonly roleArn?: string;
-
-  /**
-   * Name of the toolkit stack, if not the default name
-   *
-   * @default 'CDKToolkit'
-   */
-  readonly toolkitStackName?: string;
 }

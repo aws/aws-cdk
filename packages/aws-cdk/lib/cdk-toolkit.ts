@@ -273,6 +273,7 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
+          buildAssets: false,
         });
 
         const message = result.noOp
