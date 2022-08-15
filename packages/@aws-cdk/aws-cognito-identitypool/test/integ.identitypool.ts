@@ -68,6 +68,11 @@ const idPool = new IdentityPool(stack, 'identitypool', {
       providerUrl: IdentityPoolProviderUrl.userPool(Fn.importValue('ProviderUrl')),
       useToken: true,
     },
+    {
+      mappingKey: 'cognito',
+      providerUrl: new UserPoolAuthenticationProvider({ userPool }).providerUrl,
+      useToken: true,
+    },
   ],
   allowClassicFlow: true,
   identityPoolName: 'my-id-pool',
