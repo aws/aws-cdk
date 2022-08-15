@@ -4,9 +4,6 @@ import {
 } from '@aws-cdk/aws-cognito';
 import { Stack } from '@aws-cdk/core';
 import {
-  Construct, Node,
-} from 'constructs';
-import {
   IdentityPoolProviderUrl,
   IIdentityPool,
 } from './identitypool';
@@ -22,7 +19,6 @@ export interface IUserPoolAuthenticationProvider {
    * (for the first time) to an Identity Pool.
    */
   bind(
-    scope: Construct,
     identityPool: IIdentityPool,
     options?: UserPoolAuthenticationProviderBindOptions
   ): UserPoolAuthenticationProviderBindConfig;
@@ -103,7 +99,6 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   }
 
   public bind(
-    scope: Construct,
     identityPool: IIdentityPool,
     _options?: UserPoolAuthenticationProviderBindOptions,
   ): UserPoolAuthenticationProviderBindConfig {

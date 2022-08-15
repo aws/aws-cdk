@@ -391,7 +391,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       physicalName: props.identityPoolName,
     });
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
-    const providers = authProviders.userPools ? authProviders.userPools.map(userPool => userPool.bind(this, this)) : undefined;
+    const providers = authProviders.userPools ? authProviders.userPools.map(userPool => userPool.bind(this)) : undefined;
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
     const openIdConnectProviderArns = authProviders.openIdConnectProviders ?
       authProviders.openIdConnectProviders.map(openIdProvider =>
@@ -449,7 +449,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
    * Add a User Pool to the IdentityPool and configure User Pool Client to handle identities
    */
   public addUserPoolAuthentication(userPool: IUserPoolAuthenticationProvider): void {
-    const providers = userPool.bind(this, this);
+    const providers = userPool.bind(this);
     this.cognitoIdentityProviders = this.cognitoIdentityProviders.concat(providers);
   }
 
