@@ -112,6 +112,10 @@ export class HostedZone extends Resource implements IHostedZone {
    * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
   public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
+    if (!query.domainName) {
+      throw new Error('Cannot use undefined value for attribute `domainName`');
+    }
+
     const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
       Id: 'DUMMY',
       Name: query.domainName,
