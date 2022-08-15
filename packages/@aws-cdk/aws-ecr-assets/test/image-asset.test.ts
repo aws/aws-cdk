@@ -406,7 +406,7 @@ describe('image asset', () => {
     expect(asset2.assetHash).toEqual('b78978ca702a8eccd37804ce31d76cd83a695b557dbf95aeb109332ee8b1fd32');
   });
 
-  describe('imageTag is correct for different stack synthesizers', () => {
+  describe('synthesizedTag is correct for different stack synthesizers', () => {
     const stack1 = new Stack();
     const stack2 = new Stack(undefined, undefined, {
       synthesizer: new DefaultStackSynthesizer({
