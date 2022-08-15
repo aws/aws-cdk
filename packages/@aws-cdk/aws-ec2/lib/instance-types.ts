@@ -1182,7 +1182,7 @@ export class InstanceType {
       [InstanceClass.P3]: 'p3',
       [InstanceClass.PARALLEL3_NVME_DRIVE_HIGH_PERFORMANCE]: 'p3dn',
       [InstanceClass.P3DN]: 'p3dn',
-      [InstanceClass.PARALLEL4_NVME_DRIVE_EXTENDED]: 'p4dE',
+      [InstanceClass.PARALLEL4_NVME_DRIVE_EXTENDED]: 'p4de',
       [InstanceClass.P4DE]: 'p4de',
       [InstanceClass.PARALLEL4]: 'p4d',
       [InstanceClass.P4D]: 'p4d',
