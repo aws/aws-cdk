@@ -137,7 +137,7 @@ describe('image asset', () => {
 
   });
 
-  describe('synthesizedTag is correct for different stack synthesizers', () => {
+  describe('imageTag is correct for different stack synthesizers', () => {
     const stack1 = new Stack();
     const stack2 = new Stack(undefined, undefined, {
       synthesizer: new DefaultStackSynthesizer({
@@ -153,12 +153,12 @@ describe('image asset', () => {
 
     test('stack with default synthesizer', () => {
       expect(asset1.assetHash).toEqual('95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df');
-      expect(asset1.synthesizedTag).toEqual('95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df');
+      expect(asset1.imageTag).toEqual('95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df');
     });
 
     test('stack with overwritten synthesizer', () => {
       expect(asset2.assetHash).toEqual('95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df');
-      expect(asset2.synthesizedTag).toEqual('banana95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df');
+      expect(asset2.imageTag).toEqual('banana95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df');
     });
   });
 
