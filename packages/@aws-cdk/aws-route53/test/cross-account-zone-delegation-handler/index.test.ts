@@ -147,6 +147,118 @@ test('calls listHostedZonesByName to get zoneId if ParentZoneId is not provided'
   });
 });
 
+test('calls change resource record set with Delete and Upsert for Update event', async () => {
+  // GIVEN
+  mockStsClient.promise.mockResolvedValue({
+    Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' },
+  });
+  mockRoute53Client.promise.mockResolvedValueOnce({});
+
+  // WHEN
+  const event = getCfnEvent({
+    RequestType: 'Update',
+    OldResourceProperties: {
+      ServiceToken: 'Foo',
+      AssumeRoleArn: 'roleArn2',
+      ParentZoneId: '1',
+      DelegatedZoneName: 'recordName',
+      DelegatedZoneNameServers: ['oldone', 'oldtwo'],
+      TTL: 172800,
+    },
+  });
+  await invokeHandler(event);
+
+  // THEN
+  // The old and new records can be called with a different roleArn
+  expect(mockStsClient.assumeRole).toHaveBeenCalledTimes(2);
+
+  expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledTimes(2);
+
+  // check first call to delete old NS record
+  expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenNthCalledWith(1, {
+    HostedZoneId: '1',
+    ChangeBatch: {
+      Changes: [
+        {
+          Action: 'DELETE',
+          ResourceRecordSet: {
+            Name: 'recordName',
+            Type: 'NS',
+            TTL: 172800,
+            ResourceRecords: [{ Value: 'oldone' }, { Value: 'oldtwo' }],
+          },
+        },
+      ],
+    },
+  });
+
+  // check second call to create new NS record
+  expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenNthCalledWith(2, {
+    HostedZoneId: '1',
+    ChangeBatch: {
+      Changes: [
+        {
+          Action: 'UPSERT',
+          ResourceRecordSet: {
+            Name: 'recordName',
+            Type: 'NS',
+            TTL: 172800,
+            ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('calls change resource record set with DELETE for Update event with bad old roleArn', async () => {
+  // GIVEN
+  mockStsClient.promise.mockResolvedValueOnce({
+    Credentials: undefined,
+  });
+  mockStsClient.promise.mockResolvedValue({
+    Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' },
+  });
+  mockRoute53Client.promise.mockResolvedValueOnce({});
+
+  // WHEN
+  const event = getCfnEvent({
+    RequestType: 'Update',
+    OldResourceProperties: {
+      ServiceToken: 'Foo',
+      AssumeRoleArn: 'badRoleArn',
+      ParentZoneId: '1',
+      DelegatedZoneName: 'recordName',
+      DelegatedZoneNameServers: ['oldone', 'oldtwo'],
+      TTL: 172800,
+    },
+  });
+  await invokeHandler(event);
+
+  // THEN
+  // The old and new records can be called with a different roleArn
+  expect(mockStsClient.assumeRole).toHaveBeenCalledTimes(2);
+
+  expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledTimes(1);
+
+  // check for second call when we UPSET the new NS record
+  expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledWith({
+    HostedZoneId: '1',
+    ChangeBatch: {
+      Changes: [{
+        Action: 'UPSERT',
+        ResourceRecordSet: {
+          Name: 'recordName',
+          Type: 'NS',
+          TTL: 172800,
+          ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
+        },
+      }],
+    },
+  });
+});
+
+
 test('throws if more than one HostedZones are returnd for the provided ParentHostedZone', async () => {
   // GIVEN
   const parentZoneName = 'some.zone';

@@ -15,7 +15,24 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
   switch (event.RequestType) {
     case 'Create':
+      return cfnEventHandler(resourceProps, false);
     case 'Update':
+      // We handle updates in two parts, first attempt to delete the old NS record, second create
+      // the new resource.
+
+      // DELETE old Resources
+      try {
+        const oldResourceProps = event.OldResourceProperties as unknown as ResourceProperties;
+
+        await cfnEventHandler(oldResourceProps, true);
+      } catch (e) {
+        // it is possible that the user removed the old role manually before this call,
+        // additionally, it is possible that the old record set was manually deleted. We
+        // want to ignore if this errors and continue execution and attempt to create the
+        // new resource, and not block the user.
+      }
+
+      // UPSERT new Resources
       return cfnEventHandler(resourceProps, false);
     case 'Delete':
       return cfnEventHandler(resourceProps, true);
