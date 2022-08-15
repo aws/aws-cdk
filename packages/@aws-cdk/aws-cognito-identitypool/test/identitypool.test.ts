@@ -214,10 +214,10 @@ describe('identity pool', () => {
   test('user pools auth provider properly generates URL', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
-    const authProvider  = new UserPoolAuthenticationProvider({ userPool: pool })
+    const authProvider = new UserPoolAuthenticationProvider({ userPool: pool });
     expect(authProvider.providerUrl).toEqual('');
   });
-  
+
   test('user pools are properly configured', () => {
     const stack = new Stack();
     const poolProvider = UserPoolIdentityProvider.fromProviderName(stack, 'poolProvider', 'poolProvider');
