@@ -36,7 +36,7 @@ If you intend to use the `tableStreamArn` (including indirectly, for example by 
 `@aws-cdk/aws-lambda-event-source.DynamoEventSource` on the imported table), you *must* use the
 `Table.fromTableAttributes` method and the `tableStreamArn` property *must* be populated.
 
-In order to grant permissions to indexes on imported tables you can either set `grantIndexPermissions` to `true`, or you can provide the indexes via the `globalIndexes` or `localIndexes` properties. This will enable `grant*` methods to also grant permissions to *all* table indexes.
+In order to grant permissions to indexes on imported tables you can either set `grantIndexPermissions` to `true`, This will enable `grant*` methods to also grant permissions to *all* table indexes; or you can provide the indexes via the `globalIndexes` or `localIndexes` properties, this will enable `grant*` methods to also grant permissions to specific table indexes that you provide.
 
 ## Keys
 
