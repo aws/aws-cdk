@@ -322,7 +322,7 @@ export interface DockerImageAssetLocation {
 
   /**
    * The tag of the image in Amazon ECR.
-   * @default - dockerTagPrefix + asset.sourceHash
+   * @default - the hash of the asset, or the `dockerTagPrefix` concatenated with the asset hash if a `dockerTagPrefix` is specified in the stack synthesizer
    */
   readonly imageTag?: string;
 }
