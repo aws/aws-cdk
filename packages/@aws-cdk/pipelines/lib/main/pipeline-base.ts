@@ -2,6 +2,8 @@ import { Aspects, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AddStageOpts as StageOptions, WaveOptions, Wave, IFileSetProducer, ShellStep, FileSet } from '../blueprint';
 
+const PIPELINE_SYMBOL = Symbol.for('@aws-cdk/pipelines.PipelineBase');
+
 /**
  * Properties for a `Pipeline`
  */
@@ -33,6 +35,15 @@ export interface PipelineBaseProps {
  */
 export abstract class PipelineBase extends Construct {
   /**
+   * Return whether the given object extends {@link PipelineBase}.
+   *
+   * We do attribute detection since we can't reliably use 'instanceof'.
+   */
+  public static isPipeline(x: any): x is PipelineBase {
+    return x !== null && typeof (x) === 'object' && PIPELINE_SYMBOL in x;
+  }
+
+  /**
    * The build step that produces the CDK Cloud Assembly
    */
   public readonly synth: IFileSetProducer;
@@ -53,6 +64,8 @@ export abstract class PipelineBase extends Construct {
 
   constructor(scope: Construct, id: string, props: PipelineBaseProps) {
     super(scope, id);
+
+    Object.defineProperty(this, PIPELINE_SYMBOL, { value: true });
 
     if (props.synth instanceof ShellStep && !props.synth.primaryOutput) {
       props.synth.primaryOutputDirectory('cdk.out');
