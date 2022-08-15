@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.nlb": {
+    "elbv2-integ/DefaultTest": {
       "stacks": [
         "aws-cdk-elbv2-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "elbv2integDefaultTestDeployAssert6120E394"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
