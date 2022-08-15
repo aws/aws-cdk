@@ -355,14 +355,15 @@ cannot be references. For example:
 
 ```ts
 import { UserPool } from '@aws-cdk/aws-cognito';
-import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool';
+import { IdentityPoolProviderUrl, UserPoolAuthenticationProvider } from '@aws-cdk/aws-cognito-identitypool';
 
 declare const userPool : UserPool;
+const userPoolProvider = new UserPoolAuthenticationProvider({userPool});
 new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   roleMappings: [{
     mappingKey: 'cognito',
-    providerUrl: IdentityPoolProviderUrl.userPool(userPool.userPoolProviderUrl),
+    providerUrl: userPoolProvider.providerUrl,
     useToken: true,
   }],
 });
