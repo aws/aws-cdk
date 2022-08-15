@@ -60,7 +60,7 @@ export interface UserPoolAuthenticationProviderBindConfig {
   /**
    * Client Id of the Associated User Pool Client
    */
-  readonly clientId: string
+  readonly clientId: string;
 
   /**
    * The identity providers associated with the UserPool
@@ -102,8 +102,8 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     identityPool: IIdentityPool,
     _options?: UserPoolAuthenticationProviderBindOptions,
   ): UserPoolAuthenticationProviderBindConfig {
-    Node.of(identityPool).addDependency(this.userPool);
-    Node.of(identityPool).addDependency(this.userPoolClient);
+    identityPool.node.addDependency(this.userPool);
+    identityPool.node.addDependency(this.userPoolClient);
 
     return {
       clientId: this.userPoolClient.userPoolClientId,
