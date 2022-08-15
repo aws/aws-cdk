@@ -55,7 +55,7 @@ export interface UserPoolAuthenticationProviderProps {
 /**
  * Represents UserPoolAuthenticationProvider Bind Options
  */
-export interface UserPoolAuthenticationProviderBindOptions {}
+export interface UserPoolAuthenticationProviderBindOptions { }
 
 /**
  * Represents a UserPoolAuthenticationProvider Bind Configuration
@@ -115,25 +115,25 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
       providerName: this.getProviderName(scope),
       serverSideTokenCheck: !this.disableServerSideTokenCheck,
     };
-      
-    /**
-     * The identity providers associated with the UserPool.
-     */
-    private getProviderName(scope: Construct): string {
-      const region = Stack.of(scope).region;
-      const urlSuffix = Stack.of(scope).urlSuffix;
+  }
 
-      return `cognito-idp.${region}.${urlSuffix}/${this.userPool.userPoolId}`;
-    }
-      
-    /**
-     * The User Pool Provider Url.
-     */
-    public get providerUrl(): IdentityPoolProviderUrl {
-      const providerName = this.getProviderName(this.construct.scope);
-      const userPoolClientId = this.userPoolClient.userPoolClientId;
-      
-      return IdentityPoolProviderUrl.userPool(`${providerName}:${userPoolClientId}`);
-    }
+  /**
+   * The identity providers associated with the UserPool.
+   */
+  private getProviderName(scope: Construct): string {
+    const region = Stack.of(scope).region;
+    const urlSuffix = Stack.of(scope).urlSuffix;
+
+    return `cognito-idp.${region}.${urlSuffix}/${this.userPool.userPoolId}`;
+  }
+
+  /**
+   * The User Pool Provider Url.
+   */
+  public get providerUrl(): IdentityPoolProviderUrl {
+    const providerName = this.getProviderName(this.construct.scope);
+    const userPoolClientId = this.userPoolClient.userPoolClientId;
+
+    return IdentityPoolProviderUrl.userPool(`${providerName}:${userPoolClientId}`);
   }
 }
