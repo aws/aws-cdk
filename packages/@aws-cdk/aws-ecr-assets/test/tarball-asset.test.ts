@@ -137,7 +137,7 @@ describe('image asset', () => {
 
   });
 
-  describe('stack synthesizers', () => { //synthesizedTag and assetHash
+  describe('synthesizedTag is correct for different stack synthesizers', () => {
     const stack1 = new Stack();
     const stack2 = new Stack(undefined, undefined, {
       synthesizer: new DefaultStackSynthesizer({
