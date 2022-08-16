@@ -108,7 +108,7 @@ productionVariant.metricDiskUtilization().createAlarm(stack, 'DiskUtilizationAla
   threshold: 16,
   evaluationPeriods: 17,
 });
-productionVariant.metricCPUUtilization().createAlarm(stack, 'CPUUtilizationAlarm', {
+productionVariant.metricCpuUtilization().createAlarm(stack, 'CPUUtilizationAlarm', {
   threshold: 19,
   evaluationPeriods: 20,
 });
@@ -116,11 +116,11 @@ productionVariant.metricMemoryUtilization().createAlarm(stack, 'MemoryUtilizatio
   threshold: 22,
   evaluationPeriods: 23,
 });
-productionVariant.metricGPUUtilization().createAlarm(stack, 'GPUUtilizationAlarm', {
+productionVariant.metricGpuUtilization().createAlarm(stack, 'GPUUtilizationAlarm', {
   threshold: 25,
   evaluationPeriods: 26,
 });
-productionVariant.metricGPUMemoryUtilization().createAlarm(stack, 'GPUMemoryUtilizationAlarm', {
+productionVariant.metricGpuMemoryUtilization().createAlarm(stack, 'GPUMemoryUtilizationAlarm', {
   threshold: 28,
   evaluationPeriods: 29,
 });

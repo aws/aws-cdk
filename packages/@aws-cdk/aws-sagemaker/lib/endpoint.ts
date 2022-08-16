@@ -97,7 +97,7 @@ export interface IEndpointProductionVariant {
    *
    * @default - average over 5 minutes
    */
-  metricCPUUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
   /**
    * Metric for memory utilization
    *
@@ -109,13 +109,13 @@ export interface IEndpointProductionVariant {
    *
    * @default - average over 5 minutes
    */
-  metricGPUUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricGpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
   /**
    * Metric for GPU memory utilization
    *
    * @default - average over 5 minutes
    */
-  metricGPUMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricGpuMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
   /**
    * Enable autoscaling for SageMaker Endpoint production variant
    *
@@ -189,7 +189,7 @@ class EndpointProductionVariant implements IEndpointProductionVariant {
     });
   }
 
-  public metricCPUUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('/aws/sagemaker/Endpoints', 'CPUUtilization', {
       statistic: 'Average',
       ...props,
@@ -203,14 +203,14 @@ class EndpointProductionVariant implements IEndpointProductionVariant {
     });
   }
 
-  public metricGPUUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricGpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('/aws/sagemaker/Endpoints', 'GPUUtilization', {
       statistic: 'Average',
       ...props,
     });
   }
 
-  public metricGPUMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricGpuMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('/aws/sagemaker/Endpoints', 'GPUMemoryUtilization', {
       statistic: 'Average',
       ...props,
