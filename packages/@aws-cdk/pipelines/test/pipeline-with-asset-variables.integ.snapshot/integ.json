@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "AssetVariablePipelineTest/DefaultTest": {
+      "stacks": [
+        "AssetVariablePipelineStack"
+      ],
+      "assertionStack": "AssetVariablePipelineTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AssetVariablePipelineTestDefaultTestDeployAssertF50D981C"
+    }
+  }
+}

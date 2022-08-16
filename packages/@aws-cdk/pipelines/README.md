@@ -344,7 +344,7 @@ You may currently have the build instructions for your CodeBuild Projects in a
 `buildspec.yml` file in your source repository. In addition to your build
 commands, the CodeBuild Project's buildspec also controls some information that
 CDK Pipelines manages for you, like artifact identifiers, input artifact
-locations, Docker authorization, and exported variables.
+locations, Docker authorization, and exported variables. 
 
 Since there is no way in general for CDK Pipelines to modify the file in your
 resource repository, CDK Pipelines configures the BuildSpec directly on the
@@ -462,6 +462,75 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   })
 });
 ```
+
+
+
+
+#### Exporting and using variables in pipeline
+
+Pipelines module offers a simple way to export values from created 
+`CodeBuildStep`:
+
+```ts
+declare const pipeline: pipelines.CodePipeline;
+
+const producer = new pipeline.CodeBuildStep('Produce', {
+    commands: ['export MY_VAR=hello'],
+  });
+
+  const consumer = new pipeline.CodeBuildStep('Consume', {
+    env: {
+      THE_VAR: producer.exportedVariable('MY_VAR'),
+    },
+    commands: [
+      'echo "The variable was: $THE_VAR"',
+    ],
+  });
+```
+
+Similar functionality is available also within `LambdaInvokeAction` as a
+function `variable`.
+
+It's also possible to export values from steps that are inside `Assets` stage
+which are automatically created at synth time by CDK. Export can be done like
+this:
+
+```ts
+const pipeline: pipelines.CodePipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    commands: [
+      'mkdir cdk.out',
+      'touch cdk.out/test',
+    ],
+  }),
+  assetPublishingCodeBuildDefaults: {
+    partialBuildSpec: codebuild.BuildSpec.fromObject({
+      phases: {
+        post_build: {
+          commands: [
+            'export ASSET_OUTPUT_VAR="Hello from assets steps"',
+          ],
+        },
+      },
+    }),
+  },
+});
+
+const consumer = new pipeline.CodeBuildStep('Consume', {
+  env: {
+    THE_VAR: pipeline.assetStepExportedVariable('ASSET_OUTPUT_VAR'),
+  },
+  commands: [
+    'echo "The variable was: $THE_VAR"',
+  ],
+});
+```
+
+Value is exported from each Asset step and provided as comma separated to
+the consumer. Using exported variables from Asset steps can speed up the
+pipeline if it includes some fast actions that use most of the time to
+provision runners. This kind of action can be e.g. security scanning of the
+created asset.
 
 ### CDK application deployments
 

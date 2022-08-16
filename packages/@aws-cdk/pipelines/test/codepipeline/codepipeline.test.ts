@@ -1,4 +1,5 @@
 import { Template, Annotations, Match } from '@aws-cdk/assertions';
+import { BuildSpec } from '@aws-cdk/aws-codebuild';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import { Pipeline } from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
@@ -8,7 +9,7 @@ import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoFileAssetsApp } from '../testhelpers';
 
 let app: TestApp;
 
@@ -99,6 +100,164 @@ describe('Providing codePipeline parameter and prop(s) of codePipeline parameter
         assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
       }),
     }).create()).toThrowError('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+});
+
+describe('Asset step variables can be exported', () => {
+
+  test('from single asset step', () => {
+    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      crossAccountKeys: true,
+      assetPublishingCodeBuildDefaults: {
+        partialBuildSpec: BuildSpec.fromObject({
+          phases: {
+            post_build: {
+              commands: [
+                'export ASSET_EXPORT_VAR="Hello 1 from assets steps"',
+              ],
+            },
+          },
+        }),
+      },
+    });
+    pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
+
+    const consumer = new cdkp.CodeBuildStep('Consume', {
+      env: {
+        ASSET_VAR: pipeline.assetStepExportedVariable('ASSET_EXPORT_VAR'),
+      },
+      commands: [
+        'echo "The variable was: $ASSET_VAR"',
+      ],
+    });
+
+    // WHEN
+    pipeline.addWave('MyWave', {
+      post: [consumer],
+    });
+
+    // THEN
+    const template = Template.fromStack(pipelineStack);
+
+    // There should be correct namespace added to Pipeline action
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: 'FileAsset1',
+            Namespace: 'Assets@FileAsset1',
+          }),
+        ]),
+        Name: 'Assets',
+      }]),
+    });
+
+    // There should be export added to CodeBuild project used in asset stage
+    template.hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: Match.objectLike({
+        BuildSpec: Match.stringLikeRegexp('.*ASSET_EXPORT_VAR.*'),
+      }),
+      Description: Match.stringLikeRegexp('.*FileAsset1'),
+    });
+
+    // There should be reference to asset exported variable added to CodeBuild Action in pipeline
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.stringLikeRegexp('.*ASSET_VAR.*#{Assets@FileAsset1.ASSET_EXPORT_VAR}.*'),
+            }),
+            Name: 'Consume',
+          }),
+        ]),
+        Name: 'MyWave',
+      }]),
+    });
+  });
+
+  test('from multiple asset steps as comma separated', () => {
+    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      crossAccountKeys: true,
+      assetPublishingCodeBuildDefaults: {
+        partialBuildSpec: BuildSpec.fromObject({
+          phases: {
+            post_build: {
+              commands: [
+                'export ASSET_EXPORT_VAR="Hello 1 from assets steps"',
+              ],
+            },
+          },
+        }),
+      },
+    });
+    pipeline.addStage(new TwoFileAssetsApp(pipelineStack, 'App', {}));
+
+    const consumer = new cdkp.CodeBuildStep('Consume', {
+      env: {
+        ASSET_VAR: pipeline.assetStepExportedVariable('ASSET_EXPORT_VAR'),
+      },
+      commands: [
+        'echo "The variable was: $ASSET_VAR"',
+      ],
+    });
+
+    // WHEN
+    pipeline.addWave('MyWave', {
+      post: [consumer],
+    });
+
+    // THEN
+    const template = Template.fromStack(pipelineStack);
+
+    // There should be correct namespace added to Pipeline action
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: 'FileAsset1',
+            Namespace: 'Assets@FileAsset1',
+          }),
+          Match.objectLike({
+            Name: 'FileAsset2',
+            Namespace: 'Assets@FileAsset2',
+          }),
+        ]),
+        Name: 'Assets',
+      }]),
+    });
+
+    // There should be export added to CodeBuild project used in asset stage
+    template.hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: Match.objectLike({
+        BuildSpec: Match.stringLikeRegexp('.*ASSET_EXPORT_VAR.*'),
+      }),
+      Description: Match.stringLikeRegexp('.*FileAsset1'),
+    });
+
+    template.hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: Match.objectLike({
+        BuildSpec: Match.stringLikeRegexp('.*ASSET_EXPORT_VAR.*'),
+      }),
+      Description: Match.stringLikeRegexp('.*FileAsset2'),
+    });
+
+    // There should be reference to asset exported variable added to CodeBuild Action in pipeline
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.stringLikeRegexp('.*ASSET_VAR.*#{Assets@FileAsset1.ASSET_EXPORT_VAR},#{Assets@FileAsset2.ASSET_EXPORT_VAR}.*'),
+            }),
+            Name: 'Consume',
+          }),
+        ]),
+        Name: 'MyWave',
+      }]),
+    });
   });
 });
 
@@ -241,7 +400,7 @@ interface ReuseCodePipelineStackProps extends cdk.StackProps {
   reuseCrossRegionSupportStacks?: boolean;
 }
 class ReuseCodePipelineStack extends cdk.Stack {
-  public constructor(scope: Construct, id: string, props: ReuseCodePipelineStackProps ) {
+  public constructor(scope: Construct, id: string, props: ReuseCodePipelineStackProps) {
     super(scope, id, props);
     const repo = new ccommit.Repository(this, 'Repo', {
       repositoryName: 'MyRepo',

@@ -10,6 +10,7 @@ import { Construct } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
+import { AssetStepOutput } from '../helpers-internal/asset-step-output';
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { CachedFnSub } from '../private/cached-fnsub';
@@ -23,7 +24,7 @@ import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
 import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
-import { namespaceStepOutputs } from './private/outputs';
+import { namespaceStepOutputs, namespaceName, makeCodePipelineOutputForAssetStep } from './private/outputs';
 
 
 /**
@@ -328,6 +329,25 @@ export class CodePipeline extends PipelineBase {
   }
 
   /**
+   * Add exporting of variable to asset stage's steps.
+   *
+   * Variable creation and export can be set within
+   * `CodePipelineProps.assetPublishingCodeBuildDefaults.partialBuildSpec`.
+   *
+   * Note that in case of multiple Asset steps consumer gets variables in
+   * single environment variable as comma separated.
+   *
+   * @param variableName the name of the variable to export from Asset steps
+   */
+  public assetStepExportedVariable(variableName: string) {
+    if (this._pipeline) {
+      throw new Error('Pipeline already created');
+    }
+
+    return makeCodePipelineOutputForAssetStep(variableName);
+  }
+
+  /**
    * The CodeBuild project that performs the Synth
    *
    * Only available after the pipeline has been built.
@@ -439,9 +459,11 @@ export class CodePipeline extends PipelineBase {
             const nodeType = this.nodeTypeFromNode(node);
             const name = actionName(node, sharedParent);
 
+            const assetExportedVariables = node.data?.type === 'publish-assets' && AssetStepOutput.hasAssetStepExports();
+            // Generate namespace name for steps and asset steps that export variablas
             const variablesNamespace = node.data?.type === 'step'
               ? namespaceStepOutputs(node.data.step, pipelineStage, name)
-              : undefined;
+              : assetExportedVariables ? namespaceName(pipelineStage.stageName, name): undefined;
 
             const result = factory.produceAction(pipelineStage, {
               actionName: name,
@@ -707,6 +729,12 @@ export class CodePipeline extends PipelineBase {
         privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
       },
       role,
+    });
+
+    // Export variables from asset steps
+    AssetStepOutput.getAssetStepExportedVariables().forEach( (variable: string) => {
+      script.exportedVariable(variable);
+      AssetStepOutput.addAssetStepExporter(node.id, variable);
     });
 
     // Customizations that are not accessible to regular users

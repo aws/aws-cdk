@@ -1,11 +1,16 @@
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Step } from '../../blueprint/step';
 import { StepOutput } from '../../helpers-internal';
+import { AssetStepOutput } from '../../helpers-internal/asset-step-output';
 
 const CODEPIPELINE_ENGINE_NAME = 'codepipeline';
 
 export function makeCodePipelineOutput(step: Step, variableName: string) {
   return new StepOutput(step, CODEPIPELINE_ENGINE_NAME, variableName).toString();
+}
+
+export function makeCodePipelineOutputForAssetStep(variableName: string) {
+  return new AssetStepOutput(CODEPIPELINE_ENGINE_NAME, variableName).toString();
 }
 
 /**
@@ -14,7 +19,7 @@ export function makeCodePipelineOutput(step: Step, variableName: string) {
 export function namespaceStepOutputs(step: Step, stage: cp.IStage, name: string): string | undefined {
   let ret: string | undefined;
   for (const output of StepOutput.producedStepOutputs(step)) {
-    ret = namespaceName(stage, name);
+    ret = namespaceName(stage.stageName, name);
     if (output.engineName !== CODEPIPELINE_ENGINE_NAME) {
       throw new Error(`Found unrecognized output type: ${output.engineName}`);
     }
@@ -33,6 +38,6 @@ export function namespaceStepOutputs(step: Step, stage: cp.IStage, name: string)
  * Variable namespaces cannot have '.', but they can have '@'. Other than that,
  * action names are more limited so they translate easily.
  */
-export function namespaceName(stage: cp.IStage, name: string) {
-  return `${stage.stageName}/${name}`.replace(/[^a-zA-Z0-9@_-]/g, '@');
+export function namespaceName(stageName: string, name: string) {
+  return `${stageName}/${name}`.replace(/[^a-zA-Z0-9@_-]/g, '@');
 }

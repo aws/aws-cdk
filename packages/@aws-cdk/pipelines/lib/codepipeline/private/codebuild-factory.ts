@@ -8,6 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Stack, Token } from '@aws-cdk/core';
 import { Construct, IDependable, Node } from 'constructs';
 import { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
+import { AssetStepOutput } from '../../helpers-internal/asset-step-output';
 import { PipelineQueries } from '../../helpers-internal/pipeline-queries';
 import { StepOutput } from '../../helpers-internal/step-output';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
@@ -234,7 +235,6 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const env = noUndefined(this.props.env ?? {});
 
     const [actionEnvs, projectEnvs] = partition(Object.entries(env ?? {}), ([, v]) => containsPipelineVariable(v));
-
     const environment = mergeBuildEnvironments(
       projectOptions?.buildEnvironment ?? {},
       {
@@ -477,7 +477,7 @@ function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
  * Whether the given string contains a reference to a CodePipeline variable
  */
 function containsPipelineVariable(s: string) {
-  return !!s.match(/#\{[^}]+\}/) || StepOutput.findAll(s).length > 0;
+  return !!s.match(/#\{[^}]+\}/) || StepOutput.findAll(s).length > 0 || AssetStepOutput.isAssetStepOutputToken(s);
 }
 
 /**

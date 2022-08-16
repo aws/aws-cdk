@@ -1,59 +1,53 @@
 {
   "version": "21.0.0",
   "artifacts": {
-    "PipelineStackBetaStack1E6541489.assets": {
+    "AssetVariablePipelineStackPreProdStack5CE09125.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "PipelineStackBetaStack1E6541489.assets.json",
+        "file": "AssetVariablePipelineStackPreProdStack5CE09125.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "PipelineStackBetaStack1E6541489": {
+    "AssetVariablePipelineStackPreProdStack5CE09125": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "PipelineStackBetaStack1E6541489.template.json",
+        "templateFile": "AssetVariablePipelineStackPreProdStack5CE09125.template.json",
         "validateOnSynth": true,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b0251342ce12f30650bbf24424c57aba9857cc654420b1deff1533588801ceb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "PipelineStackBetaStack1E6541489.assets"
+          "AssetVariablePipelineStackPreProdStack5CE09125.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         },
-        "stackName": "Beta-Stack1"
+        "stackName": "PreProd-Stack"
       },
       "dependencies": [
-        "PipelineStackBetaStack1E6541489.assets"
+        "AssetVariablePipelineStackPreProdStack5CE09125.assets"
       ],
       "metadata": {
-        "/PipelineStack/Beta/Stack1/OtherQueue/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OtherQueue60B686DC"
-          }
-        ],
-        "/PipelineStack/Beta/Stack1/BootstrapVersion": [
+        "/AssetVariablePipelineStack/PreProd/Stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/PipelineStack/Beta/Stack1/CheckBootstrapVersion": [
+        "/AssetVariablePipelineStack/PreProd/Stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "PipelineStack/Beta/Stack1"
+      "displayName": "AssetVariablePipelineStack/PreProd/Stack"
     }
   }
 }
