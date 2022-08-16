@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -153,6 +153,24 @@
             "data": "StackVPCGWFFCB6290"
           }
         ],
+        "/integ-cognito/PrivateZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateZone27242E85"
+          }
+        ],
+        "/integ-cognito/CNAME/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CNAMEC70A2D52"
+          }
+        ],
+        "/integ-cognito/Certificate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Certificate4E7ABB08"
+          }
+        ],
         "/integ-cognito/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -197,6 +215,15 @@
         ]
       },
       "displayName": "integ-cognito"
+    },
+    "cognitointegtestDefaultTestDeployAssert8573307C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cognitointegtestDefaultTestDeployAssert8573307C.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "cognito-integ-test/DefaultTest/DeployAssert"
     }
   }
 }
