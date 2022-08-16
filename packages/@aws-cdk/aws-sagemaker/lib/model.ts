@@ -164,14 +164,14 @@ export interface ModelProps {
   readonly modelName?: string;
 
   /**
-   * The VPC to deploy the endpoint to.
+   * The VPC to deploy model containers to.
    *
    * @default - none
    */
   readonly vpc?: ec2.IVpc;
 
   /**
-   * The VPC subnets to deploy the endpoints.
+   * The VPC subnets to use when deploying model containers.
    *
    * @default - none
    */
