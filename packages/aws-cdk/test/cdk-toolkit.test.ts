@@ -642,6 +642,18 @@ describe('watch', () => {
     expect(excludeArgs[1]).toBe('**/my-dir2');
   });
 
+  test('allows watching with deploy concurrency', async () => {
+    cloudExecutable.configuration.settings.set(['watch'], {});
+    const toolkit = defaultToolkitSetup();
+    const cdkDeployMock = jest.fn();
+    toolkit.deploy = cdkDeployMock;
+
+    await toolkit.watch({ selector: { patterns: [] }, concurrency: 3 });
+    fakeChokidarWatcherOn.readyCallback();
+
+    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ concurrency: 3 }));
+  });
+
   describe('with file change events', () => {
     let toolkit: CdkToolkit;
     let cdkDeployMock: jest.Mock;
