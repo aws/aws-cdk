@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.71"
         }
       },
       "aws-cdk-codepipeline-lambda": {
@@ -81,7 +81,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                       "aws:cdk:cloudformation:props": {
-                        "aliasName": "alias/codepipeline-awscdkcodepipelinelambdapipeline87a4b3d3",
+                        "aliasName": "alias/codepipeline-aws-cdk-codepipeline-lambda-pipeline-87a4b3d3",
                         "targetKeyId": {
                           "Fn::GetAtt": [
                             "PipelineArtifactsBucketEncryptionKey01D58D69",
@@ -619,13 +619,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.71"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.71"
                 }
               },
               "EventsRole": {
@@ -850,13 +850,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.71"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.71"
                 }
               }
             },
@@ -1165,7 +1165,8 @@
                       }
                     ],
                     "includeGlobalServiceEvents": true,
-                    "isMultiRegionTrail": true
+                    "isMultiRegionTrail": true,
+                    "isOrganizationTrail": false
                   }
                 },
                 "constructInfo": {
