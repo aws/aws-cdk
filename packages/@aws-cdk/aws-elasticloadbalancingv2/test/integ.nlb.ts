@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
