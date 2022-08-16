@@ -19,16 +19,16 @@ class Fixture extends cdk.Stack {
     const modelData2 = sagemaker.ModelData.fromBucket(bucket, 'path/to/artifact/file2.tar.gz');
     const modelData3 = sagemaker.ModelData.fromBucket(bucket, 'path/to/artifact/file3.tar.gz');
     const modelA = new sagemaker.Model(this, 'ContainerModelA', {
-      container: {
+      containers: [{
         image: image,
         modelData: modelData,
-      }
+      }]
     });
     const modelB = new sagemaker.Model(this, 'ContainerModelB', {
-      container: {
+      containers: [{
         image: image,
         modelData: modelData,
-      }
+      }]
     });
 
     /// here

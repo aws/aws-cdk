@@ -46,23 +46,25 @@ const modelData = sagemaker.ModelData.fromAsset(stack, 'ModelData',
   path.join(__dirname, 'test-artifacts', 'valid-artifact.tar.gz'));
 
 const modelWithArtifactAndVpc = new sagemaker.Model(stack, 'ModelWithArtifactAndVpc', {
-  container: { image, modelData },
+  containers: [{ image, modelData }],
   vpc: new ec2.Vpc(stack, 'VPC'),
 });
 const modelWithoutArtifactAndVpc = new sagemaker.Model(stack, 'ModelWithoutArtifactAndVpc', {
-  container: { image },
+  containers: [{ image }],
 });
 
 const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-  productionVariant: {
-    model: modelWithArtifactAndVpc,
-    variantName: 'firstVariant',
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
-  },
-  extraProductionVariants: [{
-    model: modelWithArtifactAndVpc,
-    variantName: 'secondVariant',
-  }],
+  productionVariants: [
+    {
+      model: modelWithArtifactAndVpc,
+      variantName: 'firstVariant',
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+    },
+    {
+      model: modelWithArtifactAndVpc,
+      variantName: 'secondVariant',
+    },
+  ],
 });
 endpointConfig.addProductionVariant({
   model: modelWithoutArtifactAndVpc,

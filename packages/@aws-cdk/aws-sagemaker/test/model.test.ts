@@ -11,20 +11,30 @@ describe('When instantiating SageMaker Model', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
-    const container = { image: sagemaker.ContainerImage.fromEcrRepository(testRepo) };
-    const extraContainers: sagemaker.ContainerDefinition[] = [];
+    const containers = [{ image: sagemaker.ContainerImage.fromEcrRepository(testRepo) }];
     for (let i = 0; i < 5; i++) {
       const containerDefinition = {
         image: sagemaker.ContainerImage.fromEcrRepository(testRepo),
       };
-      extraContainers.push(containerDefinition);
+      containers.push(containerDefinition);
     }
 
     // WHEN
-    const when = () => new sagemaker.Model(stack, 'Model', { container, extraContainers });
+    const when = () => new sagemaker.Model(stack, 'Model', { containers });
 
     // THEN
     expect(when).toThrow(/Cannot have more than 5 containers in inference pipeline/);
+  });
+
+  test('with no containers, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const when = () => new sagemaker.Model(stack, 'Model');
+
+    // THEN
+    expect(when).toThrow(/Must configure at least 1 container for model/);
   });
 
   test('with a ContainerImage implementation which adds constructs of its own, the new constructs are present', () => {
@@ -43,9 +53,9 @@ describe('When instantiating SageMaker Model', () => {
 
     // WHEN
     new sagemaker.Model(stack, 'Model', {
-      container: {
+      containers: [{
         image: new ConstructCreatingContainerImage(),
-      },
+      }],
     });
 
     // THEN
@@ -64,7 +74,7 @@ describe('When instantiating SageMaker Model', () => {
 
       // WHEN
       new sagemaker.Model(stack, 'Model', {
-        container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
+        containers: [{ image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) }],
         vpc,
         securityGroups: [new ec2.SecurityGroup(stack, 'SG', { vpc })],
       });
@@ -81,7 +91,7 @@ describe('When instantiating SageMaker Model', () => {
 
       // WHEN
       new sagemaker.Model(stack, 'Model', {
-        container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
+        containers: [{ image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) }],
         vpc: new ec2.Vpc(stack, 'testVPC'),
       });
 
@@ -99,7 +109,7 @@ describe('When instantiating SageMaker Model', () => {
       // WHEN
       const when = () =>
         new sagemaker.Model(stack, 'Model', {
-          container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
+          containers: [{ image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) }],
           vpc,
           securityGroups: [new ec2.SecurityGroup(stack, 'SG', { vpc })],
           allowAllOutbound: false,
@@ -119,7 +129,7 @@ describe('When instantiating SageMaker Model', () => {
       // WHEN
       const when = () =>
         new sagemaker.Model(stack, 'Model', {
-          container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
+          containers: [{ image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) }],
           securityGroups: [new ec2.SecurityGroup(stack, 'SG', { vpc: vpcNotSpecified })],
         });
 
@@ -134,7 +144,7 @@ describe('When instantiating SageMaker Model', () => {
       // WHEN
       const when = () =>
         new sagemaker.Model(stack, 'Model', {
-          container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
+          containers: [{ image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) }],
           allowAllOutbound: false,
         });
 
@@ -149,7 +159,7 @@ describe('When accessing Connections object', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const modelWithoutVpc = new sagemaker.Model(stack, 'Model', {
-      container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
+      containers: [{ image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) }],
     });
 
     // WHEN
@@ -179,7 +189,7 @@ test('When adding security group after model instantiation, it is reflected in V
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'testVPC');
   const model = new sagemaker.Model(stack, 'Model', {
-    container: { image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) },
+    containers: [{ image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) }],
     vpc,
   });
 

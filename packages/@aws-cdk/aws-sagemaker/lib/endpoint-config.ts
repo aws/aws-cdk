@@ -125,16 +125,12 @@ export interface EndpointConfigProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * A ProductionVariantProps object.
-   */
-  readonly productionVariant: ProductionVariantProps;
-
-  /**
-   * An optional list of extra ProductionVariantProps objects.
+   * A list of production variants. You can always add more variants later by calling
+   * {@link EndpointConfig#addProductionVariant}.
    *
    * @default - none
    */
-  readonly extraProductionVariants?: ProductionVariantProps[];
+  readonly productionVariants?: ProductionVariantProps[];
 }
 
 /**
@@ -190,7 +186,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
 
   private readonly _productionVariants: { [key: string]: ProductionVariant; } = {};
 
-  constructor(scope: Construct, id: string, props: EndpointConfigProps) {
+  constructor(scope: Construct, id: string, props: EndpointConfigProps = {}) {
     super(scope, id, {
       physicalName: props.endpointConfigName,
     });
@@ -198,7 +194,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     // apply a name tag to the endpoint config resource
     cdk.Tags.of(this).add(NAME_TAG, this.node.path);
 
-    [props.productionVariant, ...props.extraProductionVariants || []].map(p => this.addProductionVariant(p));
+    (props.productionVariants || []).map(p => this.addProductionVariant(p));
 
     // create the endpoint configuration resource
     const endpointConfig = new CfnEndpointConfig(this, 'EndpointConfig', {

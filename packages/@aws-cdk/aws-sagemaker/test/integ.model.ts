@@ -103,18 +103,16 @@ const localModelData = sagemaker.ModelData.fromAsset(stack, 'LocalModelData', ar
  */
 
 new sagemaker.Model(stack, 'PrimaryContainerModel', {
-  container: {
+  containers: [{
     image: ecrImage,
     modelData: s3ModelData,
-  },
+  }],
   vpc: new ec2.Vpc(stack, 'VPC'),
 });
 
 new sagemaker.Model(stack, 'InferencePipelineModel', {
-  container: {
-    image: localImage,
-  },
-  extraContainers: [
+  containers: [
+    { image: localImage },
     { image: localImage, modelData: localModelData },
     { image: localImage, modelData: localModelData },
   ],

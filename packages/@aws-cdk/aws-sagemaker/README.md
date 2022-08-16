@@ -71,10 +71,12 @@ const modelData = sagemaker.ModelData.fromAsset(this, 'ModelData',
   path.join('path', 'to', 'artifact', 'file.tar.gz'));
 
 const model = new sagemaker.Model(this, 'PrimaryContainerModel', {
-  container: {
-    image: image,
-    modelData: modelData,
-  }
+  containers: [
+    {
+      image: image,
+      modelData: modelData,
+    }
+  ]
 });
 ```
 
@@ -85,17 +87,14 @@ five containers that process requests for inferences on data. You use an inferen
 define and deploy any combination of pretrained Amazon SageMaker built-in algorithms and your own
 custom algorithms packaged in Docker containers. You can use an inference pipeline to combine
 preprocessing, predictions, and post-processing data science tasks. Inference pipelines are fully
-managed. To define an inference pipeline, you can provide additional containers for your model via
-the `extraContainers` property:
+managed. To define an inference pipeline, you can provide additional containers for your model:
 
 ```typescript fixture=with-assets
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
 const model = new sagemaker.Model(this, 'InferencePipelineModel', {
-  container: {
-    image: image1, modelData: modelData1
-  },
-  extraContainers: [
+  containers: [
+    { image: image1, modelData: modelData1 },
     { image: image2, modelData: modelData2 },
     { image: image3, modelData: modelData3 }
   ],
@@ -183,16 +182,18 @@ traffic to Model A, and one-third to model B:
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
 const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
-  productionVariant: {
-    model: modelA,
-    variantName: 'modelA',
-    initialVariantWeight: 2.0,
-  },
-  extraProductionVariants: [{
-    model: modelB,
-    variantName: 'variantB',
-    initialVariantWeight: 1.0,
-  }]
+  productionVariants: [
+    {
+      model: modelA,
+      variantName: 'modelA',
+      initialVariantWeight: 2.0,
+    },
+    {
+      model: modelB,
+      variantName: 'variantB',
+      initialVariantWeight: 1.0,
+    },
+  ]
 });
 ```
 

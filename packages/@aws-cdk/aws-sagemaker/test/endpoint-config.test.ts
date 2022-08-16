@@ -8,10 +8,10 @@ describe('When validating stack containing an EndpointConfig', () => {
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariant: {
+      productionVariants: [{
         variantName: 'variant',
         model,
-      },
+      }],
     });
     for (let i = 0; i < 10; i++) {
       endpointConfig.addProductionVariant({ variantName: `variant-${i}`, model });
@@ -30,7 +30,7 @@ describe('When adding a production variant to an EndpointConfig', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariants: [{ variantName: 'variant', model }] });
 
     // WHEN
     const when = () =>
@@ -48,7 +48,7 @@ describe('When adding a production variant to an EndpointConfig', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariants: [{ variantName: 'variant', model }] });
 
     // WHEN
     const when = () =>
@@ -66,7 +66,7 @@ describe('When adding a production variant to an EndpointConfig', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariants: [{ variantName: 'variant', model }] });
 
     // WHEN
     const when = () =>
@@ -84,7 +84,7 @@ describe('When adding a production variant to an EndpointConfig', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariants: [{ variantName: 'variant', model }] });
 
     // WHEN
     const when = () => endpointConfig.addProductionVariant({ variantName: 'variant', model });
@@ -99,7 +99,7 @@ describe('When searching an EndpointConfig for a production variant', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariants: [{ variantName: 'variant', model }] });
 
     // WHEN
     const variant = endpointConfig.findProductionVariant('variant');
@@ -112,7 +112,7 @@ describe('When searching an EndpointConfig for a production variant', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariant: { variantName: 'variant', model } });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariants: [{ variantName: 'variant', model }] });
 
     // WHEN
     const when = () => endpointConfig.findProductionVariant('missing-variant');

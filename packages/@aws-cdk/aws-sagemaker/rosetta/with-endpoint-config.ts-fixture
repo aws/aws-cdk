@@ -13,29 +13,31 @@ class Fixture extends cdk.Stack {
     const bucket = new s3.Bucket(this, 'MyBucket');
     const modelData = sagemaker.ModelData.fromBucket(bucket, 'path/to/artifact/file.tar.gz');
     const modelA = new sagemaker.Model(this, 'ContainerModelA', {
-      container: {
+      containers: [{
         image: image,
         modelData: modelData,
-      }
+      }]
     });
     const modelB = new sagemaker.Model(this, 'ContainerModelB', {
-      container: {
+      containers: [{
         image: image,
         modelData: modelData,
-      }
+      }]
     });
 
     const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
-      productionVariant: {
-        model: modelA,
-        variantName: 'modelA',
-        initialVariantWeight: 2.0,
-      },
-      extraProductionVariants: [{
-        model: modelB,
-        variantName: 'variantB',
-        initialVariantWeight: 1.0,
-      }]
+      productionVariants: [
+        {
+          model: modelA,
+          variantName: 'modelA',
+          initialVariantWeight: 2.0,
+        },
+        {
+          model: modelB,
+          variantName: 'variantB',
+          initialVariantWeight: 1.0,
+        },
+      ]
     });
 
     /// here

@@ -186,18 +186,12 @@ export interface ModelProps {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * Specifies the primary container or the first container in an inference pipeline. Additional
-   * containers for an inference pipeline can be provided using the "extraContainers" property.
-   *
-   */
-  readonly container: ContainerDefinition;
-
-  /**
-   * Specifies additional containers for an inference pipeline.
+   * Specifies the container definitions for this model, consisting of either a single primary
+   * container or an inference pipeline of multiple containers.
    *
    * @default - none
    */
-  readonly extraContainers?: ContainerDefinition[];
+  readonly containers?: ContainerDefinition[];
 
   /**
    * Whether to allow the SageMaker Model to send all network traffic
@@ -282,14 +276,16 @@ export class Model extends ModelBase {
   public readonly grantPrincipal: iam.IPrincipal;
   private readonly subnets: ec2.SelectedSubnets | undefined;
 
-  constructor(scope: Construct, id: string, props: ModelProps) {
+  constructor(scope: Construct, id: string, props: ModelProps = {}) {
     super(scope, id, {
       physicalName: props.modelName,
     });
 
     // validate containers
-    const containers = [props.container, ...props.extraContainers || []];
-    if (containers.length > 5) {
+    const containers = props.containers || [];
+    if (containers.length < 1) {
+      throw new RangeError('Must configure at least 1 container for model');
+    } else if (containers.length > 5) {
       throw new RangeError('Cannot have more than 5 containers in inference pipeline');
     }
 
