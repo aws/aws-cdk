@@ -18,23 +18,25 @@ describe('When instantiating SageMaker Model', () => {
       };
       containers.push(containerDefinition);
     }
+    new sagemaker.Model(stack, 'Model', { containers });
 
     // WHEN
-    const when = () => new sagemaker.Model(stack, 'Model', { containers });
+    const errors = cdk.ConstructNode.validate(stack.node);
 
     // THEN
-    expect(when).toThrow(/Cannot have more than 15 containers in inference pipeline/);
+    expect(errors.map(e => e.message)).toEqual(['Cannot have more than 15 containers in inference pipeline']);
   });
 
-  test('with no containers, an exception is thrown', () => {
+  test('with no containers, an error is recorded', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    new sagemaker.Model(stack, 'Model');
 
     // WHEN
-    const when = () => new sagemaker.Model(stack, 'Model');
+    const errors = cdk.ConstructNode.validate(stack.node);
 
     // THEN
-    expect(when).toThrow(/Must configure at least 1 container for model/);
+    expect(errors.map(e => e.message)).toEqual(['Must configure at least 1 container for model']);
   });
 
   test('with a ContainerImage implementation which adds constructs of its own, the new constructs are present', () => {

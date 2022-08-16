@@ -275,19 +275,12 @@ export class Model extends ModelBase {
    */
   public readonly grantPrincipal: iam.IPrincipal;
   private readonly subnets: ec2.SelectedSubnets | undefined;
+  private readonly containers: CfnModel.ContainerDefinitionProperty[] = [];
 
   constructor(scope: Construct, id: string, props: ModelProps = {}) {
     super(scope, id, {
       physicalName: props.modelName,
     });
-
-    // validate containers
-    const containers = props.containers || [];
-    if (containers.length < 1) {
-      throw new RangeError('Must configure at least 1 container for model');
-    } else if (containers.length > 15) {
-      throw new RangeError('Cannot have more than 15 containers in inference pipeline');
-    }
 
     this._connections = this.configureNetworking(props);
     this.subnets = (props.vpc) ? props.vpc.selectSubnets(props.vpcSubnets) : undefined;
@@ -296,17 +289,17 @@ export class Model extends ModelBase {
     this.role = props.role || this.createSageMakerRole();
     this.grantPrincipal = this.role;
 
+    (props.containers || []).map(c => this.addContainer(c));
+
     // apply a name tag to the model resource
     cdk.Tags.of(this).add(NAME_TAG, this.node.path);
 
     const model = new CfnModel(this, 'Model', {
       executionRoleArn: this.role.roleArn,
       modelName: this.physicalName,
-      primaryContainer: (containers.length === 1) ?
-        this.renderContainer(containers[0]) : undefined,
+      primaryContainer: cdk.Lazy.any({ produce: () => this.renderPrimaryContainer() }),
       vpcConfig: cdk.Lazy.any({ produce: () => this.renderVpcConfig() }),
-      containers: (containers.length === 1) ?
-        undefined : containers.map(c => this.renderContainer(c)),
+      containers: cdk.Lazy.any({ produce: () => this.renderContainers() }),
     });
     this.modelName = this.getResourceNameAttribute(model.attrModelName);
     this.modelArn = this.getResourceArnAttribute(model.ref, {
@@ -322,6 +315,36 @@ export class Model extends ModelBase {
      * AWS::IAM::Policy resource are deployed prior to model creation.
      */
     model.node.addDependency(this.role);
+  }
+
+  /**
+   * Add containers to the model.
+   *
+   * @param container The container definition to add.
+   */
+  public addContainer(container: ContainerDefinition): void {
+    this.containers.push(this.renderContainer(container));
+  }
+
+  protected validate(): string[] {
+    const result = super.validate();
+
+    // validate number of containers
+    if (this.containers.length < 1) {
+      result.push('Must configure at least 1 container for model');
+    } else if (this.containers.length > 15) {
+      result.push('Cannot have more than 15 containers in inference pipeline');
+    }
+
+    return result;
+  }
+
+  private renderPrimaryContainer(): CfnModel.ContainerDefinitionProperty | undefined {
+    return (this.containers.length === 1) ? this.containers[0] : undefined;
+  }
+
+  private renderContainers(): CfnModel.ContainerDefinitionProperty[] | undefined {
+    return (this.containers.length === 1) ? undefined : this.containers;
   }
 
   private renderContainer(container: ContainerDefinition): CfnModel.ContainerDefinitionProperty {
