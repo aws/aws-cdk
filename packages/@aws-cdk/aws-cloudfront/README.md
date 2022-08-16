@@ -527,6 +527,20 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+### HTTP Versions
+
+You can configure CloudFront to use a particular version of the HTTP protocol. By default,
+newly created distributions use HTTP/2 but can be configured to use both HTTP/2 and HTTP/3 or
+just HTTP/3. For all supported HTTP versions, see the `HttpVerson` enum.
+
+```ts
+// Configure a distribution to use HTTP/2 and HTTP/3
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com'); },
+  httpVersion: cloudfront.HttpVersion.HTTP2_AND_3,
+});
+```
+
 ### Importing Distributions
 
 Existing distributions can be imported as well; note that like most imported constructs, an imported distribution cannot be modified.
