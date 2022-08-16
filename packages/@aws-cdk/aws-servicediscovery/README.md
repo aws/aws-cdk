@@ -35,7 +35,7 @@ registers an instance to it:
 The following example creates an AWS Cloud Map namespace that
 supports both API calls and DNS queries within a vpc, creates a
 service in that namespace, and registers a loadbalancer as an
-instance,
+instance.
 
 A secondary service is also configured which only supports API based discovery, a
 non ip based resource is registered to this service:
