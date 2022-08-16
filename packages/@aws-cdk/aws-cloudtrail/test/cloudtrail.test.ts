@@ -640,6 +640,28 @@ describe('cloudtrail', () => {
           ],
         });
       });
+
+      test('isOrganizationTrail is passed correctly', () => {
+        const stack = getTestStack();
+
+        new Trail(stack, 'OrganizationTrail', {
+          isOrganizationTrail: true,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+          IsOrganizationTrail: true,
+        });
+      });
+
+      test('isOrganizationTrail defaults to false', () => {
+        const stack = getTestStack();
+
+        new Trail(stack, 'OrganizationTrail');
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+          IsOrganizationTrail: false,
+        });
+      });
     });
   });
 
