@@ -34,7 +34,7 @@ const computeEnvironmentEFA = new batch.ComputeEnvironment(stack, 'EFABatch', {
     instanceTypes: [new ec2.InstanceType('c5n.18xlarge')],
     // Security Groups explicitly set empty because they are in the
     // launch template
-    securityGroups: batch.ComputeEnvironmentSecurityGroups.NONE,
+    securityGroups: [],
     vpc,
     launchTemplate: {
       launchTemplateName: launchTemplateEFA.launchTemplateName as string,

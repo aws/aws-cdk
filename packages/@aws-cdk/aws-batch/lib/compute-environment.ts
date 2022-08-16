@@ -33,25 +33,6 @@ export enum ComputeResourceType {
    */
   FARGATE_SPOT = 'FARGATE_SPOT',
 }
-/**
- * Flag to determine whether or not the ComputeEnvironment should
- * autocreate Security Groups.
- */
-export enum ComputeEnvironmentSecurityGroups {
-  /**
-   * The Compute Environment will not create any security groups
-   *
-   * This is needed if you are instead assigning security groups
-   * to network interfaces defined in a launch template
-   */
-  NONE = 'NONE',
-  /**
-   * The Compute Environment will create security groups if none
-   * are explicity specified
-   * to network interfaces defined in a launch template
-   */
-  AUTOMATIC = 'AUTOMATIC',
-}
 
 /**
  * Properties for how to prepare compute resources
@@ -159,9 +140,15 @@ export interface ComputeResources {
   /**
    * The EC2 security group(s) associated with instances launched in the compute environment.
    *
+   * If this is set to the empty list, no SecurityGroupIds will be emitted.
+   * You are unlikely to want to do this unless you need to specify security
+   * groups elsewhere (such as in a launch template network interface)
+   *
+   * If it is undefined, a default security group will be created
+   *
    * @default - AWS default security group.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[] | ComputeEnvironmentSecurityGroups;
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The VPC network that all compute resources will be connected to.
@@ -603,25 +590,19 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
     return instanceTypes.map((type: ec2.InstanceType) => type.toString());
   }
 
-  private buildConnections(vpc?: ec2.IVpc, securityGroups?:ec2.ISecurityGroup[] | ComputeEnvironmentSecurityGroups ): ec2.Connections {
+  private buildConnections(vpc?: ec2.IVpc, securityGroups?:ec2.ISecurityGroup[]): ec2.Connections {
 
     if (vpc === undefined) {
       return new ec2.Connections({});
     }
 
-    if (securityGroups === undefined ||
-        securityGroups === ComputeEnvironmentSecurityGroups.AUTOMATIC) {
+    if (securityGroups === undefined) {
       return new ec2.Connections({
         securityGroups: [
           new ec2.SecurityGroup(this, 'Resource-Security-Group', { vpc }),
         ],
       });
     }
-
-    if (securityGroups === ComputeEnvironmentSecurityGroups.NONE) {
-      return new ec2.Connections({});
-    }
-
     return new ec2.Connections({ securityGroups });
   };
 

@@ -584,35 +584,6 @@ describe('Batch Compute Environment', () => {
       });
     });
 
-    describe('with automatic securityGroups', () => {
-      test('should have SecurityGroupIds', () => {
-        // WHEN
-        new batch.ComputeEnvironment(stack, 'test-compute-env', {
-          managed: true,
-          computeResources: {
-            vpc,
-            securityGroups: batch.ComputeEnvironmentSecurityGroups.AUTOMATIC,
-          },
-        });
-
-        // THEN
-        Template.fromStack(stack).hasResourceProperties(
-          'AWS::Batch::ComputeEnvironment', {
-            ComputeResources: {
-              SecurityGroupIds: [
-                {
-                  'Fn::GetAtt': [
-                    'testcomputeenvResourceSecurityGroup7615BA87',
-                    'GroupId',
-                  ],
-                },
-              ],
-            },
-          },
-        );
-      });
-    });
-
     describe('without securityGroups', () => {
       test('should not have a SecurityGroupIds', () => {
         // WHEN
@@ -620,7 +591,7 @@ describe('Batch Compute Environment', () => {
           managed: true,
           computeResources: {
             vpc,
-            securityGroups: batch.ComputeEnvironmentSecurityGroups.NONE,
+            securityGroups: [],
           },
         });
 
