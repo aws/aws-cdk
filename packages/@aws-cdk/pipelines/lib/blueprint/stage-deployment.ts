@@ -6,6 +6,25 @@ import { StackDeployment } from './stack-deployment';
 import { StackSteps, Step } from './step';
 
 /**
+ * Properties to define if stack has specific prepare setting
+ */
+export interface StackDeploymentPrepareProps {
+  /**
+   * Name of the stack having specific prepare setting.
+   *
+   * Normally in format `<stage id>-<stack id>`.
+   */
+  readonly stackName: string;
+  /**
+   * Add a "prepare" step for stack which can be used to create the change
+   * set. If this is disabled, only the "execute" step will be included.
+   *
+   * @default - use value from stage
+   */
+  readonly prepareStep: boolean;
+}
+
+/**
  * Properties for a `StageDeployment`
  */
 export interface StageDeploymentProps {
@@ -36,6 +55,22 @@ export interface StageDeploymentProps {
    * @default - No additional instructions
    */
   readonly stackSteps?: StackSteps[];
+
+  /**
+   * Add a "prepare" step for each stack which can be used to create the change
+   * set. If this is disabled, only the "execute" step will be included.
+   *
+   * @default - use value from pipeline
+   */
+  readonly prepareStep?: boolean;
+
+  /**
+   * Define need to have prepare step in stacks inside stage. If no special
+   * handling added, uses one from stage.
+   *
+   * @default - use value from stage
+   */
+  readonly prepareStepForStacks?: StackDeploymentPrepareProps[];
 }
 
 /**
@@ -117,6 +152,17 @@ export class StageDeployment {
    */
   public readonly stackSteps: StackSteps[];
 
+  /**
+   * Determine if all stacks in stage should be deployed with prepare
+   * step or not.
+   */
+  public readonly prepareStep?: boolean;
+
+  /**
+   * Stack specific deployment options
+   */
+  public readonly prepareStepForStacks?: StackDeploymentPrepareProps[];
+
   private constructor(
     /** The stacks deployed in this stage */
     public readonly stacks: StackDeployment[], props: StageDeploymentProps = {}) {
@@ -124,6 +170,8 @@ export class StageDeployment {
     this.pre = props.pre ?? [];
     this.post = props.post ?? [];
     this.stackSteps = props.stackSteps ?? [];
+    this.prepareStep = props.prepareStep;
+    this.prepareStepForStacks = props.prepareStepForStacks;
   }
 
   /**

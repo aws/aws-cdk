@@ -1,0 +1,59 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "PreparelessPipelineStageStackStackMyStageStack2MyApp2Stack37AA0E2A.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PreparelessPipelineStageStackStackMyStageStack2MyApp2Stack37AA0E2A.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PreparelessPipelineStageStackStackMyStageStack2MyApp2Stack37AA0E2A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PreparelessPipelineStageStackStackMyStageStack2MyApp2Stack37AA0E2A.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1fd92c49dfa8050744f5e5169a7c3739923777fad154ba6b7275118191534ffc.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PreparelessPipelineStageStackStackMyStageStack2MyApp2Stack37AA0E2A.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "MyStage-MyApp2-Stack"
+      },
+      "dependencies": [
+        "PreparelessPipelineStageStackStackMyStageStack2MyApp2Stack37AA0E2A.assets"
+      ],
+      "metadata": {
+        "/PreparelessPipelineStageStackStack/MyStage/Stack2/MyApp2/Stack/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/PreparelessPipelineStageStackStack/MyStage/Stack2/MyApp2/Stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PreparelessPipelineStageStackStack/MyStage/Stack2/MyApp2/Stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PreparelessPipelineStageStackStack/MyStage/Stack2/MyApp2/Stack"
+    }
+  }
+}

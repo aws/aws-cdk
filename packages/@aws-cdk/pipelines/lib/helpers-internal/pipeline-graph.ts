@@ -1,4 +1,4 @@
-import { AssetType, FileSet, ShellStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
+import { AssetType, FileSet, ShellStep, StackAsset, StackDeployment, StageDeployment, Step, Wave, StackDeploymentPrepareProps } from '../blueprint';
 import { PipelineBase } from '../main/pipeline-base';
 import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 import { PipelineQueries } from './pipeline-queries';
@@ -134,11 +134,12 @@ export class PipelineGraph {
 
     for (const stack of stage.stacks) {
       const stackGraph: AGraph = Graph.of(this.simpleStackName(stack.stackName, stage.stageName), { type: 'stack-group', stack });
-      const prepareNode: AGraphNode | undefined = this.prepareStep ? GraphNode.of('Prepare', { type: 'prepare', stack }) : undefined;
+      const prepareNode: AGraphNode | undefined = this.shouldPrepareStepBeAdded(stage, stack) ? GraphNode.of('Prepare', { type: 'prepare', stack }) : undefined;
       const deployNode: AGraphNode = GraphNode.of('Deploy', {
         type: 'execute',
         stack,
         captureOutputs: this.queries.stackOutputsReferenced(stack).length > 0,
+        withoutChangeset: !this.shouldPrepareStepBeAdded(stage, stack),
       });
 
       retGraph.add(stackGraph);
@@ -324,6 +325,18 @@ export class PipelineGraph {
   private simpleStackName(stackName: string, stageName: string) {
     return stripPrefix(stackName, `${stageName}-`);
   }
+
+  private shouldPrepareStepBeAdded(stage: StageDeployment, stack: StackDeployment): boolean {
+    const stackSpecificPrepare = stage.prepareStepForStacks?.
+      find((stackPrepare: StackDeploymentPrepareProps) => stackPrepare.stackName === stack.stackName);
+    if (stackSpecificPrepare !== undefined) {
+      return stackSpecificPrepare.prepareStep;
+    } else if (stage.prepareStep !== undefined) {
+      return stage.prepareStep;
+    } else {
+      return this.prepareStep;
+    }
+  }
 }
 
 type GraphAnnotation =
@@ -333,7 +346,7 @@ type GraphAnnotation =
   | { readonly type: 'step'; readonly step: Step; isBuildStep?: boolean }
   | { readonly type: 'self-update' }
   | { readonly type: 'prepare'; readonly stack: StackDeployment }
-  | { readonly type: 'execute'; readonly stack: StackDeployment; readonly captureOutputs: boolean }
+  | { readonly type: 'execute'; readonly stack: StackDeployment; readonly captureOutputs: boolean; readonly withoutChangeset?: boolean }
   ;
 
 // Type aliases for the graph nodes tagged with our specific annotation type

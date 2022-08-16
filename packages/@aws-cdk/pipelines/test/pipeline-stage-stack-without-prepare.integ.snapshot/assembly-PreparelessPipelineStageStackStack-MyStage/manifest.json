@@ -1,0 +1,115 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "assembly-PreparelessPipelineStageStackStack-MyStage-Stack1-MyApp1": {
+      "type": "cdk:cloud-assembly",
+      "properties": {
+        "directoryName": "assembly-PreparelessPipelineStageStackStack-MyStage-Stack1-MyApp1",
+        "displayName": "PreparelessPipelineStageStackStack/MyStage/Stack1/MyApp1"
+      }
+    },
+    "assembly-PreparelessPipelineStageStackStack-MyStage-Stack2-MyApp2": {
+      "type": "cdk:cloud-assembly",
+      "properties": {
+        "directoryName": "assembly-PreparelessPipelineStageStackStack-MyStage-Stack2-MyApp2",
+        "displayName": "PreparelessPipelineStageStackStack/MyStage/Stack2/MyApp2"
+      }
+    },
+    "PreparelessPipelineStageStackStackMyStageStack1668CCE56.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PreparelessPipelineStageStackStackMyStageStack1668CCE56.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PreparelessPipelineStageStackStackMyStageStack1668CCE56": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PreparelessPipelineStageStackStackMyStageStack1668CCE56.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PreparelessPipelineStageStackStackMyStageStack1668CCE56.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "MyStage-Stack1"
+      },
+      "dependencies": [
+        "PreparelessPipelineStageStackStackMyStageStack1668CCE56.assets"
+      ],
+      "metadata": {
+        "/PreparelessPipelineStageStackStack/MyStage/Stack1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PreparelessPipelineStageStackStack/MyStage/Stack1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PreparelessPipelineStageStackStack/MyStage/Stack1"
+    },
+    "PreparelessPipelineStageStackStackMyStageStack2360C1BCE.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PreparelessPipelineStageStackStackMyStageStack2360C1BCE.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PreparelessPipelineStageStackStackMyStageStack2360C1BCE": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PreparelessPipelineStageStackStackMyStageStack2360C1BCE.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PreparelessPipelineStageStackStackMyStageStack2360C1BCE.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "MyStage-Stack2"
+      },
+      "dependencies": [
+        "PreparelessPipelineStageStackStackMyStageStack2360C1BCE.assets"
+      ],
+      "metadata": {
+        "/PreparelessPipelineStageStackStack/MyStage/Stack2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PreparelessPipelineStageStackStack/MyStage/Stack2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PreparelessPipelineStageStackStack/MyStage/Stack2"
+    }
+  }
+}

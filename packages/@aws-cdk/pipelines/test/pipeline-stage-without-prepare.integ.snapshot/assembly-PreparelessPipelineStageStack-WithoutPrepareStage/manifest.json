@@ -1,0 +1,60 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "assembly-PreparelessPipelineStageStack-WithoutPrepareStage-Stack-MyApp": {
+      "type": "cdk:cloud-assembly",
+      "properties": {
+        "directoryName": "assembly-PreparelessPipelineStageStack-WithoutPrepareStage-Stack-MyApp",
+        "displayName": "PreparelessPipelineStageStack/WithoutPrepareStage/Stack/MyApp"
+      }
+    },
+    "PreparelessPipelineStageStackWithoutPrepareStageStack9BD78E0D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PreparelessPipelineStageStackWithoutPrepareStageStack9BD78E0D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PreparelessPipelineStageStackWithoutPrepareStageStack9BD78E0D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PreparelessPipelineStageStackWithoutPrepareStageStack9BD78E0D.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PreparelessPipelineStageStackWithoutPrepareStageStack9BD78E0D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "WithoutPrepareStage-Stack"
+      },
+      "dependencies": [
+        "PreparelessPipelineStageStackWithoutPrepareStageStack9BD78E0D.assets"
+      ],
+      "metadata": {
+        "/PreparelessPipelineStageStack/WithoutPrepareStage/Stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PreparelessPipelineStageStack/WithoutPrepareStage/Stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PreparelessPipelineStageStack/WithoutPrepareStage/Stack"
+    }
+  }
+}

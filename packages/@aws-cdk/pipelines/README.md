@@ -544,6 +544,79 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 });
 ```
 
+#### Deploying without change sets
+
+Deployment is done by default with `CodePipeline` engine using change sets, 
+i.e. to first create a change set and then execute it. This allows you to:
+
+- have approval before actual deployment happens
+- include [dynamic references](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html) 
+to external values 
+
+On the other hand, this 2-step approach prevents retrying the 
+deployment, as the change set can't be re-generated if the execution of it fails for
+any reason. This might happen especially if using custom resources.
+
+Deployment can be done as a single step by setting 
+`CodePipelineProps.prepareStep` to false (for whole pipeline). It's also 
+possible to change default functionality per stage (with 
+`StageOptions.prepareStep`) or per stack in stage (with
+`StageOptions.prepareStepForStacks`). The way of deployment can be set following
+way:
+
+```ts
+class MyStage extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+
+    const stack1 = new Stack(this, 'Stack1', {
+      ...props,
+      synthesizer: new DefaultStackSynthesizer(),
+    });
+
+    const stack2 = new Stack(this, 'Stack2', {
+      ...props,
+      synthesizer: new DefaultStackSynthesizer(),
+    });
+
+    new PlainStackApp(stack1, 'MyApp1');
+    new PlainStackApp(stack2, 'MyApp2');
+  }
+}
+
+class PipelineStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+    const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+      synth: new pipelines.ShellStep('Synth', {
+        input: pipelines.CodePipelineSource.s3(sourceBucket, 'key'),
+        commands: ['mkdir cdk.out', 'touch cdk.out/dummy'],
+      }),
+      selfMutation: false,
+      // Disable change set cretion and make deployments in pipeline as single step
+      prepareStep: false,
+    });
+
+    pipeline.addStage(new MyStage(this, 'MyStage', {}), {
+      // Enable deployment with change set at this stage. Overrides pipeline level setting.
+      prepareStep: true,
+      prepareStepForStacks: [
+        {
+          // Disable change set creation at specific stack. Overrides pipeline and stage level setting.
+          prepareStep: false,
+          stackName: 'MyStage-Stack1',
+        },
+      ],
+    });
+  }
+}
+```
+
 ### Validation
 
 Every `addStage()` and `addWave()` command takes additional options. As part of these options,
@@ -867,11 +940,11 @@ because those values are passed in directly to the underlying `codepipeline.Pipe
 
 Docker can be used in 3 different places in the pipeline:
 
-* If you are using Docker image assets in your application stages: Docker will
+- If you are using Docker image assets in your application stages: Docker will
   run in the asset publishing projects.
-* If you are using Docker image assets in your stack (for example as
+- If you are using Docker image assets in your stack (for example as
   images for your CodeBuild projects): Docker will run in the self-mutate project.
-* If you are using Docker to bundle file assets anywhere in your project (for
+- If you are using Docker to bundle file assets anywhere in your project (for
   example, if you are using such construct libraries as
   `@aws-cdk/aws-lambda-nodejs`): Docker will run in the
   *synth* project.
@@ -1069,26 +1142,26 @@ $ npx cdk bootstrap \
 
 These command lines explained:
 
-* `npx`: means to use the CDK CLI from the current NPM install. If you are using
+- `npx`: means to use the CDK CLI from the current NPM install. If you are using
   a global install of the CDK CLI, leave this out.
-* `--profile`: should indicate a profile with administrator privileges that has
+- `--profile`: should indicate a profile with administrator privileges that has
   permissions to provision a pipeline in the indicated account. You can leave this
   flag out if either the AWS default credentials or the `AWS_*` environment
   variables confer these permissions.
-* `--cloudformation-execution-policies`: ARN of the managed policy that future CDK
+- `--cloudformation-execution-policies`: ARN of the managed policy that future CDK
   deployments should execute with. By default this is `AdministratorAccess`, but
   if you also specify the `--trust` flag to give another Account permissions to
   deploy into the current account, you must specify a value here.
-* `--trust`: indicates which other account(s) should have permissions to deploy
+- `--trust`: indicates which other account(s) should have permissions to deploy
   CDK applications into this account. In this case we indicate the Pipeline's account,
   but you could also use this for developer accounts (don't do that for production
   application accounts though!).
-* `--trust-for-lookup`: gives a more limited set of permissions to the
+- `--trust-for-lookup`: gives a more limited set of permissions to the
   trusted account, only allowing it to look up values such as availability zones, EC2 images and
   VPCs. `--trust-for-lookup` does not give permissions to modify anything in the account.
   Note that `--trust` implies `--trust-for-lookup`, so you don't need to specify
   the same acocunt twice.
-* `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
+- `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
 
 > Be aware that anyone who has access to the trusted Accounts **effectively has all
 > permissions conferred by the configured CloudFormation execution policies**,
@@ -1126,10 +1199,10 @@ The "new" bootstrap stack (obtained by running `cdk bootstrap` with
 `CDK_NEW_BOOTSTRAP=1`) is slightly more elaborate than the "old" stack. It
 contains:
 
-* An S3 bucket and ECR repository with predictable names, so that we can reference
+- An S3 bucket and ECR repository with predictable names, so that we can reference
   assets in these storage locations *without* the use of CloudFormation template
   parameters.
-* A set of roles with permissions to access these asset locations and to execute
+- A set of roles with permissions to access these asset locations and to execute
   CloudFormation, assumable from whatever accounts you specify under `--trust`.
 
 It is possible and safe to migrate from the old bootstrap stack to the new
@@ -1209,15 +1282,15 @@ very nature the library cannot take care of everything.
 
 We therefore expect you to mind the following:
 
-* Maintain dependency hygiene and vet 3rd-party software you use. Any software you
+- Maintain dependency hygiene and vet 3rd-party software you use. Any software you
   run on your build machine has the ability to change the infrastructure that gets
   deployed. Be careful with the software you depend on.
 
-* Use dependency locking to prevent accidental upgrades! The default `CdkSynths` that
+- Use dependency locking to prevent accidental upgrades! The default `CdkSynths` that
   come with CDK Pipelines will expect `package-lock.json` and `yarn.lock` to
   ensure your dependencies are the ones you expect.
 
-* Credentials to production environments should be short-lived. After
+- Credentials to production environments should be short-lived. After
   bootstrapping and the initial pipeline provisioning, there is no more need for
   developers to have access to any of the account credentials; all further
   changes can be deployed through git. Avoid the chances of credentials leaking
@@ -1292,7 +1365,7 @@ use CDK Pipelines to build pipelines backed by other deployment engines.
 Here is a list of CDK Libraries that integrate CDK Pipelines with
 alternative deployment engines:
 
-* GitHub Workflows: [`cdk-pipelines-github`](https://github.com/cdklabs/cdk-pipelines-github)
+- GitHub Workflows: [`cdk-pipelines-github`](https://github.com/cdklabs/cdk-pipelines-github)
 
 ## Troubleshooting
 
@@ -1329,11 +1402,11 @@ If you see this error during the **Synth** step, it means that CodeBuild
 is expecting to find a `cdk.out` directory in the root of your CodeBuild project,
 but the directory wasn't there. There are two common causes for this:
 
-* `cdk synth` is not being executed: `cdk synth` used to be run
+- `cdk synth` is not being executed: `cdk synth` used to be run
   implicitly for you, but you now have to explicitly include the command.
   For NPM-based projects, add `npx cdk synth` to the end of the `commands`
   property, for other languages add `npm install -g aws-cdk` and `cdk synth`.
-* Your CDK project lives in a subdirectory: you added a `cd <somedirectory>` command
+- Your CDK project lives in a subdirectory: you added a `cd <somedirectory>` command
   to the list of commands; don't forget to tell the `ScriptStep` about the
   different location of `cdk.out`, by passing `primaryOutputDirectory: '<somedirectory>/cdk.out'`.
 
@@ -1426,9 +1499,9 @@ all, and commit a file called `cdk.context.json` with the right lookup values in
 
 If you do want to do lookups in the pipeline, the cause is one of the following:
 
-* The target environment has not been bootstrapped; OR
-* The target environment has been bootstrapped without the right `--trust` relationship; OR
-* The CodeBuild execution role does not have permissions to call `sts:AssumeRole`.
+- The target environment has not been bootstrapped; OR
+- The target environment has been bootstrapped without the right `--trust` relationship; OR
+- The CodeBuild execution role does not have permissions to call `sts:AssumeRole`.
 
 See the section called **Context Lookups** for more information on using this feature.
 
@@ -1452,8 +1525,8 @@ following:
 
 An "S3 Access Denied" error can have two causes:
 
-* Asset hashes have changed, but self-mutation has been disabled in the pipeline.
-* You have deleted and recreated the bootstrap stack, or changed its qualifier.
+- Asset hashes have changed, but self-mutation has been disabled in the pipeline.
+- You have deleted and recreated the bootstrap stack, or changed its qualifier.
 
 #### Self-mutation step has been removed
 
@@ -1495,7 +1568,7 @@ The most automated way to solve the issue is to introduce a secondary bootstrap 
 that the pipeline stack looks for, a change will be detected and the impacted policies and resources will be updated.
 A hypothetical recovery workflow would look something like this:
 
-* First, for all impacted environments, create a secondary bootstrap stack:
+- First, for all impacted environments, create a secondary bootstrap stack:
 
 ```sh
 $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
@@ -1504,7 +1577,7 @@ $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
     aws://111111111111/us-east-1
 ```
 
-* Update all impacted stacks in the pipeline to use this new qualifier.
+- Update all impacted stacks in the pipeline to use this new qualifier.
 See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more info.
 
 ```ts
@@ -1516,11 +1589,11 @@ new Stack(this, 'MyStack', {
 });
 ```
 
-* Deploy the updated stacks. This will update the stacks to use the roles created in the new bootstrap stack.
-* (Optional) Restore back to the original state:
-  * Revert the change made in step #2 above
-  * Re-deploy the pipeline to use the original qualifier.
-  * Delete the temporary bootstrap stack(s)
+- Deploy the updated stacks. This will update the stacks to use the roles created in the new bootstrap stack.
+- (Optional) Restore back to the original state:
+  - Revert the change made in step #2 above
+  - Re-deploy the pipeline to use the original qualifier.
+  - Delete the temporary bootstrap stack(s)
 
 ##### Manual Alternative
 
@@ -1568,14 +1641,14 @@ versions.
 There are some usability issues that are caused by underlying technology, and
 cannot be remedied by CDK at this point. They are reproduced here for completeness.
 
-* **Console links to other accounts will not work**: the AWS CodePipeline
+- **Console links to other accounts will not work**: the AWS CodePipeline
   console will assume all links are relative to the current account. You will
   not be able to use the pipeline console to click through to a CloudFormation
   stack in a different account.
-* **If a change set failed to apply the pipeline must restarted**: if a change
+- **If a change set failed to apply the pipeline must restarted**: if a change
   set failed to apply, it cannot be retried. The pipeline must be restarted from
   the top by clicking **Release Change**.
-* **A stack that failed to create must be deleted manually**: if a stack
+- **A stack that failed to create must be deleted manually**: if a stack
   failed to create on the first attempt, you must delete it using the
   CloudFormation console before starting the pipeline again by clicking
   **Release Change**.

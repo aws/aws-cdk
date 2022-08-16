@@ -1,0 +1,59 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "PreparelessPipelineStageStackWithoutPrepareStageStackMyAppStackF6C7B59B.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PreparelessPipelineStageStackWithoutPrepareStageStackMyAppStackF6C7B59B.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PreparelessPipelineStageStackWithoutPrepareStageStackMyAppStackF6C7B59B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PreparelessPipelineStageStackWithoutPrepareStageStackMyAppStackF6C7B59B.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1fd92c49dfa8050744f5e5169a7c3739923777fad154ba6b7275118191534ffc.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PreparelessPipelineStageStackWithoutPrepareStageStackMyAppStackF6C7B59B.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "WithoutPrepareStage-MyApp-Stack"
+      },
+      "dependencies": [
+        "PreparelessPipelineStageStackWithoutPrepareStageStackMyAppStackF6C7B59B.assets"
+      ],
+      "metadata": {
+        "/PreparelessPipelineStageStack/WithoutPrepareStage/Stack/MyApp/Stack/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/PreparelessPipelineStageStack/WithoutPrepareStage/Stack/MyApp/Stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PreparelessPipelineStageStack/WithoutPrepareStage/Stack/MyApp/Stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PreparelessPipelineStageStack/WithoutPrepareStage/Stack/MyApp/Stack"
+    }
+  }
+}

@@ -214,6 +214,14 @@ export interface CodePipelineProps {
    * @default - A new role is created
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Add a "prepare" step for each stack which can be used to create the change
+   * set. If this is disabled, only the "execute" step will be included.
+   *
+   * @default true
+   */
+  readonly prepareStep?: boolean;
 }
 
 /**
@@ -299,6 +307,7 @@ export class CodePipeline extends PipelineBase {
   private artifacts = new ArtifactMap();
   private _synthProject?: cb.IProject;
   private readonly selfMutation: boolean;
+  private readonly prepareStep: boolean;
   private _myCxAsmRoot?: string;
   private readonly dockerCredentials: DockerCredential[];
   private readonly cachedFnSub = new CachedFnSub();
@@ -325,6 +334,7 @@ export class CodePipeline extends PipelineBase {
     this.dockerCredentials = props.dockerCredentials ?? [];
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
     this.cliVersion = props.cliVersion ?? preferredCliVersion();
+    this.prepareStep = props.prepareStep ?? true;
   }
 
   /**
@@ -389,6 +399,7 @@ export class CodePipeline extends PipelineBase {
     const graphFromBp = new PipelineGraph(this, {
       selfMutation: this.selfMutation,
       singlePublisherPerAssetType: this.singlePublisherPerAssetType,
+      prepareStep: this.prepareStep,
     });
     this._cloudAssemblyFileSet = graphFromBp.cloudAssemblyFileSet;
 
@@ -519,7 +530,9 @@ export class CodePipeline extends PipelineBase {
         return this.createChangeSetAction(node.data.stack);
 
       case 'execute':
-        return this.executeChangeSetAction(node.data.stack, node.data.captureOutputs);
+        return node.data.withoutChangeset ?
+          this.executeDeploymentAction(node.data.stack, node.data.captureOutputs):
+          this.executeChangeSetAction(node.data.stack, node.data.captureOutputs);
 
       case 'step':
         return this.actionFromStep(node, node.data.step);
@@ -622,6 +635,38 @@ export class CodePipeline extends PipelineBase {
           stackName: stack.stackName,
           role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
           region: region,
+          variablesNamespace: captureOutputs ? stackVariableNamespace(stack) : undefined,
+        }));
+
+        return { runOrdersConsumed: 1 };
+      },
+    };
+  }
+
+  private executeDeploymentAction(stack: StackDeployment, captureOutputs: boolean): ICodePipelineActionFactory {
+    const templateArtifact = this.artifacts.toCodePipeline(this._cloudAssemblyFileSet!);
+    const templateConfigurationPath = this.writeTemplateConfiguration(stack);
+
+    const region = stack.region !== Stack.of(this).region ? stack.region : undefined;
+    const account = stack.account !== Stack.of(this).account ? stack.account : undefined;
+
+    const relativeTemplatePath = path.relative(this.myCxAsmRoot, stack.absoluteTemplatePath);
+
+    return {
+      produceAction: (stage, options) => {
+        stage.addAction(new cpa.CloudFormationCreateUpdateStackAction({
+          actionName: options.actionName,
+          runOrder: options.runOrder,
+          stackName: stack.stackName,
+          templatePath: templateArtifact.atPath(toPosixPath(relativeTemplatePath)),
+          adminPermissions: true,
+          role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
+          deploymentRole: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.executionRoleArn),
+          region: region,
+          templateConfiguration: templateConfigurationPath
+            ? templateArtifact.atPath(toPosixPath(templateConfigurationPath))
+            : undefined,
+          cfnCapabilities: [CfnCapabilities.NAMED_IAM, CfnCapabilities.AUTO_EXPAND],
           variablesNamespace: captureOutputs ? stackVariableNamespace(stack) : undefined,
         }));
 
