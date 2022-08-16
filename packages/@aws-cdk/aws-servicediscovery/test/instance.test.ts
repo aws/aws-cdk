@@ -413,7 +413,40 @@ describe('instance', () => {
 
   });
 
-  test('Throws when registering NonIpInstance for an Public namespace', () => {
+  test('Register NonIpInstance, DNS Namespace, API Only service', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(
+      stack,
+      'MyNamespace',
+      {
+        name: 'http',
+      },
+    );
+
+    const service = namespace.createService('MyService', { discoveryType: servicediscovery.DiscoveryType.API } );
+
+    service.registerNonIpInstance('NonIpInstance', {
+      customAttributes: { dogs: 'good' },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::ServiceDiscovery::Instance',
+      {
+        InstanceAttributes: {
+          dogs: 'good',
+        },
+        ServiceId: {
+          'Fn::GetAtt': ['MyNamespaceMyService365E2470', 'Id'],
+        },
+        InstanceId: 'MyNamespaceMyServiceNonIpInstance7EFD703A',
+      },
+    );
+  });
+
+  test('Throws when registering NonIpInstance for an DNS discoverable service', () => {
     // GIVEN
     const stack = new cdk.Stack();
 

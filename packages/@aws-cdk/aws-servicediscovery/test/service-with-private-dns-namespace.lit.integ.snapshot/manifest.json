@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -169,6 +169,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NamespaceServiceLoadbalancerD271391A"
+          }
+        ],
+        "/aws-servicediscovery-integ/Namespace/ArnService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamespaceArnService1F427735"
+          }
+        ],
+        "/aws-servicediscovery-integ/Namespace/ArnService/NonIpInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamespaceArnServiceNonIpInstance91BB57CE"
           }
         ],
         "/aws-servicediscovery-integ/LB/Resource": [

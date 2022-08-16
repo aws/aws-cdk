@@ -23,4 +23,12 @@ const loadbalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, inter
 
 service.registerLoadBalancer('Loadbalancer', loadbalancer);
 
+const arnService = namespace.createService('ArnService', {
+  discoveryType: servicediscovery.DiscoveryType.API,
+});
+
+arnService.registerNonIpInstance('NonIpInstance', {
+  customAttributes: { arn: 'arn://' },
+});
+
 app.synth();
