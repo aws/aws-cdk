@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.71"
         }
       },
       "aws-cdk-asg-integ": {
@@ -51,7 +51,18 @@
                           ]
                         }
                       ]
-                    }
+                    },
+                    "tagSpecifications": [
+                      {
+                        "resourceType": "launch-template",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-asg-integ/MainLT"
+                          }
+                        ]
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -116,7 +127,18 @@
                           ]
                         }
                       ]
-                    }
+                    },
+                    "tagSpecifications": [
+                      {
+                        "resourceType": "launch-template",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-asg-integ/T4gLT"
+                          }
+                        ]
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
