@@ -1,15 +1,15 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "files": {
-    "26ccd3bf4d70f3a3d93ba25dda6e7050ccbb8dd879a7828708b8d8774abf0292": {
+    "e844f3b4c9b696adb45b069b99230e7d794390a9c9847d246b0d6f2d06b6191c": {
       "source": {
-        "path": "aws-cdk-codepipeline-ecr-source.template.json",
+        "path": "test-apigateway-restapi-defaults.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "26ccd3bf4d70f3a3d93ba25dda6e7050ccbb8dd879a7828708b8d8774abf0292.json",
+          "objectKey": "e844f3b4c9b696adb45b069b99230e7d794390a9c9847d246b0d6f2d06b6191c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
