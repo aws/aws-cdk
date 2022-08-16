@@ -165,4 +165,45 @@ describe('Test Reports Groups', () => {
       "Type": "TEST",
     });
   });
+
+  test.each([
+    [ReportGroupType.CODE_COVERAGE, 'codebuild:BatchPutCodeCoverages'],
+    [ReportGroupType.TEST, 'codebuild:BatchPutTestCases'],
+  ])('has correct policy when type is %s', (type: ReportGroupType, policyStatement: string) => {
+    const stack = new cdk.Stack();
+
+    const reportGroup = new codebuild.ReportGroup(stack, 'ReportGroup', {
+      type,
+    });
+
+    const project = new codebuild.Project(stack, 'TestProject', {
+      buildSpec: {
+        toBuildSpec: () => '',
+        isImmediate: true,
+      },
+    });
+    reportGroup.grantWrite(project);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              "codebuild:CreateReport",
+              "codebuild:UpdateReport",
+              policyStatement,
+            ],
+            Effect: "Allow",
+            Resource: {
+              "Fn::GetAtt": [
+                "ReportGroup8A84C76D",
+                "Arn",
+              ],
+            },
+          },
+        ]),
+        Version: "2012-10-17",
+      },
+    });
+  });
 });
