@@ -15,6 +15,12 @@
         "validateOnSynth": false
       },
       "metadata": {
+        "/cdk-integ-opensearch-vpc/ServiceLinkedRole": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceLinkedRole"
+          }
+        ],
         "/cdk-integ-opensearch-vpc/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -167,6 +173,15 @@
         ]
       },
       "displayName": "cdk-integ-opensearch-vpc"
+    },
+    "cdkintegopensearchvpctestDefaultTestDeployAssertF8864CE2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdkintegopensearchvpctestDefaultTestDeployAssertF8864CE2.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "cdk-integ-opensearch-vpc-test/DefaultTest/DeployAssert"
     }
   }
 }
