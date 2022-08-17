@@ -188,7 +188,7 @@ export class CdkToolkit {
         } else {
           warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
           await this.destroy({
-            selector: { patterns: [stack.stackName] },
+            selector: { patterns: [stack.hierarchicalId] },
             exclusively: true,
             force: true,
             roleArn: options.roleArn,
