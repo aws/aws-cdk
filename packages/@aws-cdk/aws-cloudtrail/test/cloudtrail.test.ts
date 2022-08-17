@@ -653,14 +653,19 @@ describe('cloudtrail', () => {
         });
       });
 
-      test('isOrganizationTrail defaults to false', () => {
+      test('isOrganizationTrail defaults to not defined', () => {
         const stack = getTestStack();
 
         new Trail(stack, 'OrganizationTrail');
 
-        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
-          IsOrganizationTrail: false,
-        });
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', Match.objectEquals({
+          IsLogging: true,
+          S3BucketName: Match.anyValue(),
+          EnableLogFileValidation: true,
+          EventSelectors: [],
+          IncludeGlobalServiceEvents: true,
+          IsMultiRegionTrail: true,
+        }));
       });
     });
   });

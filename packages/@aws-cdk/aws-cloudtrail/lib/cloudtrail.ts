@@ -118,12 +118,11 @@ export interface TrailProps {
 
   /**
    * Specifies whether the trail is applied to all accounts in an organization in AWS Organizations, or only for the current AWS account.
-   * The default is false, and cannot be true unless the call is made on behalf of an AWS account that is the management accountfor an organization in AWS Organizations.
-   * If the trail is not an organization trail and this is set to true, the trail will be created in all AWS accounts that belong to the organization.
-   * If the trail is an organization trail and this is set to false, the trail will remain in the current AWS account but be deleted from all member accounts in the organization.
+   *
+   * If this is set to true and the current account is a management account for an organization in AWS Organizations, the trail will be created in all AWS accounts that belong to the organization.
+   * If this is set to false, the trail will remain in the current AWS account but be deleted from all member accounts in the organization.
    *
    * @default - false
-   *
    */
   readonly isOrganizationTrail?: boolean
 }
@@ -296,7 +295,7 @@ export class Trail extends Resource {
       cloudWatchLogsRoleArn: logsRole?.roleArn,
       snsTopicName: this.topic?.topicName,
       eventSelectors: this.eventSelectors,
-      isOrganizationTrail: props.isOrganizationTrail ?? false,
+      isOrganizationTrail: props.isOrganizationTrail,
     });
 
     this.trailArn = this.getResourceArnAttribute(trail.attrArn, {

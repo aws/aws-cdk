@@ -398,8 +398,7 @@
      }
     ],
     "IncludeGlobalServiceEvents": true,
-    "IsMultiRegionTrail": true,
-    "IsOrganizationTrail": false
+    "IsMultiRegionTrail": true
    },
    "DependsOn": [
     "S3Policy2E4AA1D6"

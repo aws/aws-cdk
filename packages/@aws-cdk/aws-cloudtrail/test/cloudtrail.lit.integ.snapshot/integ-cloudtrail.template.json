@@ -397,7 +397,6 @@
     ],
     "IncludeGlobalServiceEvents": true,
     "IsMultiRegionTrail": true,
-    "IsOrganizationTrail": false,
     "SnsTopicName": {
      "Fn::GetAtt": [
       "TopicBFC7AF6E",

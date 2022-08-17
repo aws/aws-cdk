@@ -508,8 +508,7 @@
                       }
                     ],
                     "includeGlobalServiceEvents": true,
-                    "isMultiRegionTrail": true,
-                    "isOrganizationTrail": false
+                    "isMultiRegionTrail": true
                   }
                 },
                 "constructInfo": {
