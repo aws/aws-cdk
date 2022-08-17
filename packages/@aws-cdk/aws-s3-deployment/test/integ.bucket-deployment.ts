@@ -2,11 +2,13 @@ import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
+import { Construct } from 'constructs';
 import * as s3deploy from '../lib';
 
 class TestBucketDeployment extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const destinationBucket = new s3.Bucket(this, 'Destination', {
       websiteIndexDocument: 'index.html',
@@ -74,7 +76,9 @@ class TestBucketDeployment extends cdk.Stack {
 }
 
 const app = new cdk.App();
-
-new TestBucketDeployment(app, 'test-bucket-deployments-2');
+const testCase = new TestBucketDeployment(app, 'test-bucket-deployments-2');
+new integ.IntegTest(app, 'integ-test-bucket-deployments', {
+  testCases: [testCase],
+});
 
 app.synth();
