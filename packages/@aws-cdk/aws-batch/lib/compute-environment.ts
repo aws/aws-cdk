@@ -128,6 +128,17 @@ export interface ComputeResources {
   readonly launchTemplate?: LaunchTemplateSpecification;
 
   /**
+   * Use security groups defined in the launch template network interfaces
+   *
+   * In some cases, such as specifying Elastic Fabric Adapters, network
+   * network interfaces must be used to specify security groups.  This
+   * parameter is mutually exclusive with securityGroups
+   *
+   * @default - false
+   */
+  readonly useLaunchTemplateNetworkInterface?: boolean;
+
+  /**
    * The types of EC2 instances that may be launched in the compute environment. You can specify instance
    * families to launch any instance type within those families (for example, c4 or p3), or you can specify
    * specific sizes within a family (such as c4.8xlarge). You can also choose optimal to pick instance types
@@ -138,15 +149,11 @@ export interface ComputeResources {
   readonly instanceTypes?: ec2.InstanceType[];
 
   /**
-   * The EC2 security group(s) associated with instances launched in the compute environment.
+   * Up to 5 EC2 security group(s) associated with instances launched in the compute environment.
    *
-   * If this is set to the empty list, no SecurityGroupIds will be emitted.
-   * You are unlikely to want to do this unless you need to specify security
-   * groups elsewhere (such as in a launch template network interface)
+   * This parameter is mutually exclusive with useLaunchTemplateInterface
    *
-   * If it is undefined, a default security group will be created
-   *
-   * @default - AWS default security group.
+   * @default - Create a single default security group.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -381,7 +388,9 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
     const spotFleetRole = this.getSpotFleetRole(props);
     let computeResources: CfnComputeEnvironment.ComputeResourcesProperty | undefined;
 
-    this.connections = this.buildConnections(props.computeResources?.vpc, props.computeResources?.securityGroups);
+    const useLaunchTemplateNetworkInterface = props.computeResources?.useLaunchTemplateNetworkInterface ? true : false;
+
+    this.connections = this.buildConnections(useLaunchTemplateNetworkInterface, props.computeResources?.vpc, props.computeResources?.securityGroups);
 
     // Only allow compute resources to be set when using MANAGED type
     if (props.computeResources && this.isManaged(props)) {
@@ -394,7 +403,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
         launchTemplate: props.computeResources.launchTemplate,
         maxvCpus: props.computeResources.maxvCpus || 256,
         placementGroup: props.computeResources.placementGroup,
-        securityGroupIds: this.getSecurityGroupIds(),
+        securityGroupIds: this.getSecurityGroupIds(useLaunchTemplateNetworkInterface),
         spotIamFleetRole: spotFleetRole?.roleArn,
         subnets: props.computeResources.vpc.selectSubnets(props.computeResources.vpcSubnets).subnetIds,
         tags: props.computeResources.computeResourcesTags,
@@ -526,6 +535,11 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
         if (props.computeResources.spotFleetRole !== undefined) {
           throw new Error('Spot fleet role must not be set for Fargate compute environments');
         }
+
+        // useNetworkInterfaces cannot be specified for Fargate
+        if (props.computeResources.useLaunchTemplateNetworkInterface !== undefined) {
+          throw new Error('LaunchTemplate network interfaces must not be set for Fargate compute environments');
+        }
       } else {
         // VALIDATE FOR ON_DEMAND AND SPOT
         if (props.computeResources.minvCpus) {
@@ -551,6 +565,18 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
         if (props.computeResources.launchTemplate &&
           (!props.computeResources.launchTemplate.launchTemplateId && !props.computeResources.launchTemplate.launchTemplateName)) {
           throw new Error('You must specify either the launch template ID or launch template name in the request.');
+        }
+
+        //useLaunchTemplateNetworkInterface requires a launch template
+        if (props.computeResources.useLaunchTemplateNetworkInterface &&
+          !props.computeResources.launchTemplate ) {
+          throw new Error('useLaunchTemplateNetworkInterfaces requires launchTemplate to be specified');
+        }
+
+        // useLaunchTemplateNetworkInteface cannot have securityGroups defined
+        if (props.computeResources.useLaunchTemplateNetworkInterface &&
+            props.computeResources.securityGroups ) {
+          throw new Error('securityGroups cannot be specified if useLaunchTemplateNetworkInterfaces is true');
         }
 
         // Setting a bid percentage is only allowed on SPOT resources +
@@ -590,9 +616,9 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
     return instanceTypes.map((type: ec2.InstanceType) => type.toString());
   }
 
-  private buildConnections(vpc?: ec2.IVpc, securityGroups?:ec2.ISecurityGroup[]): ec2.Connections {
+  private buildConnections(useLaunchTemplateNetworkInterface: boolean, vpc?: ec2.IVpc, securityGroups?:ec2.ISecurityGroup[]): ec2.Connections {
 
-    if (vpc === undefined) {
+    if (vpc === undefined || useLaunchTemplateNetworkInterface ) {
       return new ec2.Connections({});
     }
 
@@ -606,9 +632,9 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
     return new ec2.Connections({ securityGroups });
   };
 
-  private getSecurityGroupIds(): string[] | undefined {
+  private getSecurityGroupIds(useLaunchTemplateInterface: boolean): string[] | undefined {
     if (this.connections === undefined ||
-        this.connections.securityGroups.length < 1) {
+      useLaunchTemplateInterface ) {
       return undefined;
     }
 

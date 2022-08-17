@@ -584,14 +584,47 @@ describe('Batch Compute Environment', () => {
       });
     });
 
-    describe('without securityGroups', () => {
-      test('should not have a SecurityGroupIds', () => {
+    describe('without useLaunchTemplateNetworkInterface', () => {
+      test('should not have securityGroups', () => {
+        // THEN
+        throws(() => {
+          // WHEN
+          new batch.ComputeEnvironment(stack, 'test-compute-env', {
+            managed: true,
+            computeResources: {
+              vpc,
+              useLaunchTemplateNetworkInterface: true,
+              launchTemplate: {
+                launchTemplateName: 'dummyname',
+              },
+              securityGroups: [],
+            },
+          });
+        });
+      });
+      test('should have a launch template', () => {
+        // THEN
+        throws(() => {
+          // WHEN
+          new batch.ComputeEnvironment(stack, 'test-compute-env', {
+            managed: true,
+            computeResources: {
+              vpc,
+              useLaunchTemplateNetworkInterface: true,
+            },
+          });
+        });
+      });
+      test('should not have a SecurityGroupIds output', () => {
         // WHEN
         new batch.ComputeEnvironment(stack, 'efa-compute-env', {
           managed: true,
           computeResources: {
             vpc,
-            securityGroups: [],
+            useLaunchTemplateNetworkInterface: true,
+            launchTemplate: {
+              launchTemplateName: 'dummyname',
+            },
           },
         });
 
