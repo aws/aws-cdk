@@ -442,7 +442,19 @@
     }
    },
    "DependsOn": [
-    "VPCIGWB7E252D3"
+    "VPCIGWB7E252D3",
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1EIP6AD938E8",
+    "VPCPublicSubnet1NATGatewayE0556630",
+    "VPCPublicSubnet1RouteTableFEE4B781",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+    "VPCPublicSubnet1SubnetB4246D30",
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2EIP4947BC00",
+    "VPCPublicSubnet2NATGateway3C070193",
+    "VPCPublicSubnet2RouteTable6F1A15F1",
+    "VPCPublicSubnet2RouteTableAssociation5A808732",
+    "VPCPublicSubnet2Subnet74179F39"
    ]
   }
  }

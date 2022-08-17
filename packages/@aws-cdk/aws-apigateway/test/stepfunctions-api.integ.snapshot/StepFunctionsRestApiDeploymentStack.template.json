@@ -76,7 +76,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "StepFunctionsRestApiAccountBD0CCC0E": {
    "Type": "AWS::ApiGateway::Account",
@@ -90,7 +92,9 @@
    },
    "DependsOn": [
     "StepFunctionsRestApiC6E3E883"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "StepFunctionsRestApiANYStartSyncExecutionRole425C03BB": {
    "Type": "AWS::IAM::Role",
