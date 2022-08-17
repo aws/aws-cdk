@@ -49,11 +49,6 @@ export interface UserPoolAuthenticationProviderProps {
 }
 
 /**
- * Represents UserPoolAuthenticationProvider Bind Options
- */
-export interface UserPoolAuthenticationProviderBindOptions { }
-
-/**
  * Represents a UserPoolAuthenticationProvider Bind Configuration
  */
 export interface UserPoolAuthenticationProviderBindConfig {
@@ -98,10 +93,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ?? false;
   }
 
-  public bind(
-    identityPool: IIdentityPool,
-    _options?: UserPoolAuthenticationProviderBindOptions,
-  ): UserPoolAuthenticationProviderBindConfig {
+  public bind(identityPool: IIdentityPool): UserPoolAuthenticationProviderBindConfig {
     identityPool.node.addDependency(this.userPool);
     identityPool.node.addDependency(this.userPoolClient);
 
