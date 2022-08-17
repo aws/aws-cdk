@@ -1,0 +1,583 @@
+{
+ "Resources": {
+  "Stack8A423254": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack"
+     }
+    ]
+   }
+  },
+  "StackPublicSubnet1Subnet0AD81D22": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "StackPublicSubnet1RouteTable5057189D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "StackPublicSubnet1RouteTableAssociation74F1C1B6": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "StackPublicSubnet1RouteTable5057189D"
+    },
+    "SubnetId": {
+     "Ref": "StackPublicSubnet1Subnet0AD81D22"
+    }
+   }
+  },
+  "StackPublicSubnet1DefaultRoute16154E3D": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "StackPublicSubnet1RouteTable5057189D"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "StackIGW2F0A1126"
+    }
+   },
+   "DependsOn": [
+    "StackVPCGWFFCB6290"
+   ]
+  },
+  "StackPublicSubnet1EIPBDAAB2A5": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "StackPublicSubnet1NATGatewayD2E1ABF7": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "StackPublicSubnet1Subnet0AD81D22"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "StackPublicSubnet1EIPBDAAB2A5",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "StackPublicSubnet2Subnet3C7D2288": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "StackPublicSubnet2RouteTableCD306445": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "StackPublicSubnet2RouteTableAssociation5E8F73F1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "StackPublicSubnet2RouteTableCD306445"
+    },
+    "SubnetId": {
+     "Ref": "StackPublicSubnet2Subnet3C7D2288"
+    }
+   }
+  },
+  "StackPublicSubnet2DefaultRoute0319539B": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "StackPublicSubnet2RouteTableCD306445"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "StackIGW2F0A1126"
+    }
+   },
+   "DependsOn": [
+    "StackVPCGWFFCB6290"
+   ]
+  },
+  "StackPublicSubnet2EIP8CDBC8C2": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "StackPublicSubnet2NATGatewayA8E03AB3": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "StackPublicSubnet2Subnet3C7D2288"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "StackPublicSubnet2EIP8CDBC8C2",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "StackPrivateSubnet1Subnet47AC2BC7": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "StackPrivateSubnet1RouteTable8ADA6A0C": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "StackPrivateSubnet1RouteTableAssociationFFE38495": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "StackPrivateSubnet1RouteTable8ADA6A0C"
+    },
+    "SubnetId": {
+     "Ref": "StackPrivateSubnet1Subnet47AC2BC7"
+    }
+   }
+  },
+  "StackPrivateSubnet1DefaultRouteFBF81BA5": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "StackPrivateSubnet1RouteTable8ADA6A0C"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "StackPublicSubnet1NATGatewayD2E1ABF7"
+    }
+   }
+  },
+  "StackPrivateSubnet2SubnetA2F8EDD8": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "StackPrivateSubnet2RouteTableA5546697": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "StackPrivateSubnet2RouteTableAssociation68ACB8C1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "StackPrivateSubnet2RouteTableA5546697"
+    },
+    "SubnetId": {
+     "Ref": "StackPrivateSubnet2SubnetA2F8EDD8"
+    }
+   }
+  },
+  "StackPrivateSubnet2DefaultRoute22004492": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "StackPrivateSubnet2RouteTableA5546697"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "StackPublicSubnet2NATGatewayA8E03AB3"
+    }
+   }
+  },
+  "StackIGW2F0A1126": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Stack"
+     }
+    ]
+   }
+  },
+  "StackVPCGWFFCB6290": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    },
+    "InternetGatewayId": {
+     "Ref": "StackIGW2F0A1126"
+    }
+   }
+  },
+  "LB8A12904C": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "LBSecurityGroup8A41EA2B",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "StackPublicSubnet1Subnet0AD81D22"
+     },
+     {
+      "Ref": "StackPublicSubnet2Subnet3C7D2288"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "StackPublicSubnet1DefaultRoute16154E3D",
+    "StackPublicSubnet2DefaultRoute0319539B"
+   ]
+  },
+  "LBSecurityGroup8A41EA2B": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB integcognitoLBFBBBA626",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 443",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
+   }
+  },
+  "LBListener49E825B4": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "AuthenticateCognitoConfig": {
+       "UserPoolArn": {
+        "Fn::GetAtt": [
+         "UserPool6BA7E5F2",
+         "Arn"
+        ]
+       },
+       "UserPoolClientId": {
+        "Ref": "Client4A7F64DF"
+       },
+       "UserPoolDomain": {
+        "Ref": "Domain66AC69E0"
+       }
+      },
+      "Order": 1,
+      "Type": "authenticate-cognito"
+     },
+     {
+      "FixedResponseConfig": {
+       "ContentType": "text/plain",
+       "MessageBody": "Authenticated",
+       "StatusCode": "200"
+      },
+      "Order": 2,
+      "Type": "fixed-response"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "LB8A12904C"
+    },
+    "Certificates": [
+     {
+      "CertificateArn": ""
+     }
+    ],
+    "Port": 443,
+    "Protocol": "HTTPS"
+   }
+  },
+  "UserPool6BA7E5F2": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "Client4A7F64DF": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "UserPoolId": {
+     "Ref": "UserPool6BA7E5F2"
+    },
+    "AllowedOAuthFlows": [
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "email",
+     "openid"
+    ],
+    "CallbackURLs": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::GetAtt": [
+          "LB8A12904C",
+          "DNSName"
+         ]
+        },
+        "/oauth2/idpresponse"
+       ]
+      ]
+     }
+    ],
+    "ExplicitAuthFlows": [
+     "ALLOW_USER_PASSWORD_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "GenerateSecret": true,
+    "RefreshTokenValidity": 1,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ]
+   }
+  },
+  "Domain66AC69E0": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "test-cdk-prefix",
+    "UserPoolId": {
+     "Ref": "UserPool6BA7E5F2"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "DNS": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LB8A12904C",
+     "DNSName"
+    ]
+   }
+  }
+ }
+}
