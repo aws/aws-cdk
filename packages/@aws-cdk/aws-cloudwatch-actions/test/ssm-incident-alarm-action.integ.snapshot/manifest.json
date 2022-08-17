@@ -1,0 +1,43 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "SsmIncidentAlarmActionIntegrationTestStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SsmIncidentAlarmActionIntegrationTestStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/SsmIncidentAlarmActionIntegrationTestStack/ResponsePlan": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResponsePlan"
+          }
+        ],
+        "/SsmIncidentAlarmActionIntegrationTestStack/Alarm1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm1F9009D71"
+          }
+        ]
+      },
+      "displayName": "SsmIncidentAlarmActionIntegrationTestStack"
+    },
+    "SsmIncidentManagerAlarmActionTestDefaultTestDeployAssert9DC05EC0": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SsmIncidentManagerAlarmActionTestDefaultTestDeployAssert9DC05EC0.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "SsmIncidentManagerAlarmActionTest/DefaultTest/DeployAssert"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "DistributionHttpVersion/DefaultTest": {
+      "stacks": [
+        "integ-distribution-http-version"
+      ],
+      "assertionStack": "DistributionHttpVersionDefaultTestDeployAssert506965CB"
+    }
+  }
+}

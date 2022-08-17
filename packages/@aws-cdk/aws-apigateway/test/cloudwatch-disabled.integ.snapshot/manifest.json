@@ -1,0 +1,61 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "default-api": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "default-api.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/default-api/my-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapi4C7BF186"
+          }
+        ],
+        "/default-api/my-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a"
+          }
+        ],
+        "/default-api/my-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeploymentStageprod298F01AF"
+          }
+        ],
+        "/default-api/my-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiEndpoint3628AFE3"
+          }
+        ],
+        "/default-api/my-api/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiGETF990CE3C"
+          }
+        ]
+      },
+      "displayName": "default-api"
+    },
+    "cloudwatchlogsdisabledDefaultTestDeployAssert6C87D47C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cloudwatchlogsdisabledDefaultTestDeployAssert6C87D47C.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "cloudwatch-logs-disabled/DefaultTest/DeployAssert"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -209,6 +209,15 @@
         ]
       },
       "displayName": "test-apigateway-vpcendpoint"
+    },
+    "apigatewayvpcendpointDefaultTestDeployAssert95ED9392": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apigatewayvpcendpointDefaultTestDeployAssert95ED9392.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "apigateway-vpcendpoint/DefaultTest/DeployAssert"
     }
   }
 }

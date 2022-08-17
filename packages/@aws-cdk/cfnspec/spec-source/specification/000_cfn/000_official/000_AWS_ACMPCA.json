@@ -1,5 +1,5 @@
 {
-  "$version": "83.0.0",
+  "$version": "84.0.0",
   "PropertyTypes": {
     "AWS::ACMPCA::Certificate.ApiPassthrough": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificate-apipassthrough.html",

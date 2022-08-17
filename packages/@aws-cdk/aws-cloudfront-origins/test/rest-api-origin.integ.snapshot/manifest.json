@@ -1,5 +1,5 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -65,6 +65,15 @@
         ]
       },
       "displayName": "integ-cloudfront-rest-api-origin"
+    },
+    "restapioriginDefaultTestDeployAssert6BBA15BA": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "restapioriginDefaultTestDeployAssert6BBA15BA.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "rest-api-origin/DefaultTest/DeployAssert"
     }
   }
 }

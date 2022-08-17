@@ -1,5 +1,10 @@
 {
  "Resources": {
+  "ElasticIPAddress": {
+   "Type": "AWS::EC2::EIP",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -525,7 +530,9 @@
     "ClusterSubnetGroupName": {
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
-    "ElasticIp": "10.123.123.123",
+    "ElasticIp": {
+     "Ref": "ElasticIPAddress"
+    },
     "Encrypted": true,
     "NumberOfNodes": 2,
     "PubliclyAccessible": true,

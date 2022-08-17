@@ -98,6 +98,5 @@
   "maturity": "experimental",
   "publishConfig": {
     "tag": "latest"
-  },
-  "private": true
+  }
 }

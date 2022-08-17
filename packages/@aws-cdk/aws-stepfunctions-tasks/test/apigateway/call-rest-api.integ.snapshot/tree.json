@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.63"
         }
       },
       "CallRestApiInteg": {
@@ -606,6 +606,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "call-rest-api": {
+        "id": "call-rest-api",
+        "path": "call-rest-api",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "call-rest-api/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "call-rest-api/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.63"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "call-rest-api/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

@@ -35,7 +35,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ApiAccountA18C9B29": {
    "Type": "AWS::ApiGateway::Account",
@@ -49,7 +51,9 @@
    },
    "DependsOn": [
     "ApiF70053CD"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ApiDeploymentB17BE62Df672ad8455f9678e4a3db5854bdb8d73": {
    "Type": "AWS::ApiGateway::Deployment",

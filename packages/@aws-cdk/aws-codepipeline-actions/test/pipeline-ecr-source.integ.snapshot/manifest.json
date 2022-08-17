@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -51,6 +51,12 @@
             "data": "MyPipelineSourceECRSourceCodePipelineActionRoleDefaultPolicy7646B7FE"
           }
         ],
+        "/aws-cdk-codepipeline-ecr-source/MyPipeline/Source/ECR_Source/awscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineSourceECRSourceawscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRuleF3B28B14"
+          }
+        ],
         "/aws-cdk-codepipeline-ecr-source/MyPipeline/EventsRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -75,14 +81,35 @@
             "data": "MyEcrRepo767466D0"
           }
         ],
-        "/aws-cdk-codepipeline-ecr-source/MyEcrRepo/awscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule/Resource": [
+        "/aws-cdk-codepipeline-ecr-source/LoginCommand": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyEcrRepoawscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule911FDB6D"
+            "data": "LoginCommand"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/PushCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PushCommand"
+          }
+        ],
+        "/aws-cdk-codepipeline-ecr-source/PipelineConsoleLink": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineConsoleLink"
           }
         ]
       },
       "displayName": "aws-cdk-codepipeline-ecr-source"
+    },
+    "ecrsourceactionDefaultTestDeployAssert981BA701": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ecrsourceactionDefaultTestDeployAssert981BA701.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "ecr-source-action/DefaultTest/DeployAssert"
     }
   }
 }

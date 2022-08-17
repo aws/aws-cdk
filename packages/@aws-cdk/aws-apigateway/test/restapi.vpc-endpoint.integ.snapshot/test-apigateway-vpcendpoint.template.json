@@ -528,7 +528,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "MyApiAccount13882D84": {
    "Type": "AWS::ApiGateway::Account",
@@ -542,7 +544,9 @@
    },
    "DependsOn": [
     "MyApi49610EDF"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "MyApiDeploymentECB0D05E58dcfc85d01f2b81270e177f5347476d": {
    "Type": "AWS::ApiGateway::Deployment",

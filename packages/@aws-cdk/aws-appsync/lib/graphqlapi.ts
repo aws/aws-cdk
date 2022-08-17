@@ -478,6 +478,7 @@ export class GraphqlApi extends GraphqlApiBase {
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
+  private domainNameResource?: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
@@ -510,18 +511,17 @@ export class GraphqlApi extends GraphqlApiBase {
     this.schemaResource = this.schema.bind(this);
 
     if (props.domainName) {
-      const domainName = new CfnDomainName(this, 'DomainName', {
+      this.domainNameResource = new CfnDomainName(this, 'DomainName', {
         domainName: props.domainName.domainName,
         certificateArn: props.domainName.certificate.certificateArn,
         description: `domain for ${this.name} at ${this.graphqlUrl}`,
       });
-
       const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
         domainName: props.domainName.domainName,
         apiId: this.apiId,
       });
 
-      domainNameAssociation.addDependsOn(domainName);
+      domainNameAssociation.addDependsOn(this.domainNameResource);
     }
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
@@ -773,5 +773,16 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public addSubscription(fieldName: string, field: ResolvableField): ObjectType {
     return this.schema.addSubscription(fieldName, field);
+  }
+
+
+  /**
+   * The AppSyncDomainName of the associated custom domain
+   */
+  public get appSyncDomainName(): string {
+    if (!this.domainNameResource) {
+      throw new Error('Cannot retrieve the appSyncDomainName without a domainName configuration');
+    }
+    return this.domainNameResource.attrAppSyncDomainName;
   }
 }

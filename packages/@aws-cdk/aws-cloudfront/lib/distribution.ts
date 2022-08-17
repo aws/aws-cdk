@@ -486,7 +486,11 @@ export enum HttpVersion {
   /** HTTP 1.1 */
   HTTP1_1 = 'http1.1',
   /** HTTP 2 */
-  HTTP2 = 'http2'
+  HTTP2 = 'http2',
+  /** HTTP 2 and HTTP 3 */
+  HTTP2_AND_3 = 'http2and3',
+  /** HTTP 3 */
+  HTTP3 = 'http3'
 }
 
 /**

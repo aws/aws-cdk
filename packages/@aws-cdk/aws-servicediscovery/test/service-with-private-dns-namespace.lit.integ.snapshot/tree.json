@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.65"
         }
       },
       "aws-servicediscovery-integ": {
@@ -757,6 +757,69 @@
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-servicediscovery.AliasTargetInstance",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicediscovery.Service",
+                  "version": "0.0.0"
+                }
+              },
+              "ArnService": {
+                "id": "ArnService",
+                "path": "aws-servicediscovery-integ/Namespace/ArnService",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-servicediscovery-integ/Namespace/ArnService/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::Service",
+                      "aws:cdk:cloudformation:props": {
+                        "namespaceId": {
+                          "Fn::GetAtt": [
+                            "Namespace9B63B8C8",
+                            "Id"
+                          ]
+                        },
+                        "type": "HTTP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicediscovery.CfnService",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NonIpInstance": {
+                    "id": "NonIpInstance",
+                    "path": "aws-servicediscovery-integ/Namespace/ArnService/NonIpInstance",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-servicediscovery-integ/Namespace/ArnService/NonIpInstance/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::Instance",
+                          "aws:cdk:cloudformation:props": {
+                            "instanceAttributes": {
+                              "arn": "arn://"
+                            },
+                            "serviceId": {
+                              "Fn::GetAtt": [
+                                "NamespaceArnService1F427735",
+                                "Id"
+                              ]
+                            },
+                            "instanceId": "awsservicediscoveryintegNamespaceArnServiceNonIpInstance80DE1A4E"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-servicediscovery.CfnInstance",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicediscovery.NonIpInstance",
                       "version": "0.0.0"
                     }
                   }

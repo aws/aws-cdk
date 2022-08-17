@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "SsmIncidentManagerAlarmActionTest/DefaultTest": {
+      "stacks": [
+        "SsmIncidentAlarmActionIntegrationTestStack"
+      ],
+      "assertionStack": "SsmIncidentManagerAlarmActionTestDefaultTestDeployAssert9DC05EC0"
+    }
+  }
+}

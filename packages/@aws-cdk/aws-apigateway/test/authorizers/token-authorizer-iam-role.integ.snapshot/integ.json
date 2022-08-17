@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.token-authorizer-iam-role": {
+    "iam-token-authorizer/DefaultTest": {
       "stacks": [
         "TokenAuthorizerIAMRoleInteg"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "iamtokenauthorizerDefaultTestDeployAssert87D47FBB"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

@@ -511,10 +511,15 @@ export class Stack extends Construct implements ITaggable {
    * The partition in which this stack is defined
    */
   public get partition(): string {
-    // Always return a non-scoped partition intrinsic. These will usually
-    // be used to construct an ARN, but there are no cross-partition
-    // calls anyway.
-    return Aws.PARTITION;
+    // Return a non-scoped partition intrinsic when the stack's region is
+    // unresolved or unknown.  Otherwise we will return the partition name as
+    // a literal string.
+    if (!FeatureFlags.of(this).isEnabled(cxapi.ENABLE_PARTITION_LITERALS) || Token.isUnresolved(this.region)) {
+      return Aws.PARTITION;
+    } else {
+      const partition = RegionInfo.get(this.region).partition;
+      return partition ?? Aws.PARTITION;
+    }
   }
 
   /**

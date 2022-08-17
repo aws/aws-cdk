@@ -1,0 +1,83 @@
+{
+ "Resources": {
+  "myapi4C7BF186": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "my-api"
+   }
+  },
+  "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "Description": "Automatically created by the RestApi construct"
+   },
+   "DependsOn": [
+    "myapiGETF990CE3C"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "myapiDeploymentStageprod298F01AF": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "DeploymentId": {
+     "Ref": "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a"
+    },
+    "StageName": "prod"
+   }
+  },
+  "myapiGETF990CE3C": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "HttpMethod": "GET",
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "myapi4C7BF186",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "AuthorizationType": "NONE",
+    "Integration": {
+     "Type": "MOCK"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "myapiEndpoint3628AFE3": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "myapi4C7BF186"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "myapiDeploymentStageprod298F01AF"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ }
+}

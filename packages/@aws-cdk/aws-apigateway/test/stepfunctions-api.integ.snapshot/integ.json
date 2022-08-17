@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.stepfunctions-api": {
+    "step-functions-restapi/DefaultTest": {
       "stacks": [
         "StepFunctionsRestApiDeploymentStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "stepfunctionsrestapiDefaultTestDeployAssert53C3797F"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
