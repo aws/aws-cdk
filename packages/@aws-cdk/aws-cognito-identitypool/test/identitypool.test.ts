@@ -215,8 +215,6 @@ describe('identity pool', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
     const authProvider = new UserPoolAuthenticationProvider({ userPool: pool });
-    // eslint-disable-next-line no-console
-    console.log(Template.fromStack(stack));
     expect(authProvider.providerUrl.value)
       .toEqual('cognito-idp.my-idp-region.amazonaws.com/my-idp-region_abcdefghi:app_client_id');
   });
