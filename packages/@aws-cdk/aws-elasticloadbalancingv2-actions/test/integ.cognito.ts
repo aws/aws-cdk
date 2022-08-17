@@ -2,12 +2,13 @@ import * as cognito from '@aws-cdk/aws-cognito';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as actions from '../lib';
 
+// This test can only be run as a dry-run at this time due to requiring a certificate
 class CognitoStack extends Stack {
 
-  /// !hide
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
@@ -19,7 +20,6 @@ class CognitoStack extends Stack {
       certificateArn: process.env.SELF_SIGNED_CERT_ARN ?? '',
     };
 
-    /// !show
     const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
       vpc,
       internetFacing: true,
@@ -76,5 +76,9 @@ class CognitoStack extends Stack {
 }
 
 const app = new App();
-new CognitoStack(app, 'integ-cognito');
+const testCase = new CognitoStack(app, 'integ-cognito');
+new integ.IntegTest(app, 'integ-test-cognito', {
+  testCases: [testCase],
+});
+
 app.synth();
