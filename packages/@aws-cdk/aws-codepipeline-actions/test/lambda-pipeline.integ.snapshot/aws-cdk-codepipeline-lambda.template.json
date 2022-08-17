@@ -809,8 +809,7 @@
      }
     ],
     "IncludeGlobalServiceEvents": true,
-    "IsMultiRegionTrail": true,
-    "IsOrganizationTrail": false
+    "IsMultiRegionTrail": true
    },
    "DependsOn": [
     "CloudTrailS3PolicyEA49A03E"
