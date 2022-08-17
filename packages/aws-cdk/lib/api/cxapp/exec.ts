@@ -12,8 +12,6 @@ import { splitBySize } from '../../util/objects';
 import { versionNumber } from '../../version';
 import { SdkProvider } from '../aws-auth';
 
-const ENV_VARIABLE_SIZE_LIMIT = 32760; // ~32KiB (Windows limit)
-
 /** Invokes the cloud executable and returns JSON output */
 export async function execProgram(aws: SdkProvider, config: Configuration): Promise<cxapi.CloudAssembly> {
   const env: { [key: string]: string } = { };
@@ -88,7 +86,8 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   debug('env:', env);
 
-  const [smallContext, overflow] = splitBySize(context, spaceAvailableForContext(env));
+  const envVariableSizeLimit = os.platform() === 'win32' ? 32760 : 131072;
+  const [smallContext, overflow] = splitBySize(context, spaceAvailableForContext(env, envVariableSizeLimit));
 
   // Store the safe part in the environment variable
   env[cxapi.CONTEXT_ENV] = JSON.stringify(smallContext);
@@ -247,7 +246,7 @@ function contextOverflowCleanup(location: string | undefined, assembly: cxapi.Cl
     const frameworkDoesNotSupportContextOverflow = some(tree, node => {
       const fqn = node.constructInfo?.fqn;
       const version = node.constructInfo?.version;
-      return (fqn === 'aws-cdk-lib.App' && version != null && semver.lte(version, '2.37.1'))
+      return (fqn === 'aws-cdk-lib.App' && version != null && semver.lte(version, '2.38.0'))
         || fqn === '@aws-cdk/core.App'; // v1
     });
 
@@ -259,12 +258,12 @@ function contextOverflowCleanup(location: string | undefined, assembly: cxapi.Cl
   }
 }
 
-function spaceAvailableForContext(env: { [key: string]: string }) {
+function spaceAvailableForContext(env: { [key: string]: string }, limit: number) {
   const size = (value: string) => value != null ? Buffer.byteLength(value) : 0;
 
   const usedSpace = Object.entries(env)
     .map(([k, v]) => k === cxapi.CONTEXT_ENV ? size(k) : size(k) + size(v))
     .reduce((a, b) => a + b, 0);
 
-  return Math.max(0, ENV_VARIABLE_SIZE_LIMIT - usedSpace);
+  return Math.max(0, limit - usedSpace);
 }
