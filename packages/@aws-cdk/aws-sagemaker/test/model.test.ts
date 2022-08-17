@@ -7,12 +7,12 @@ import * as constructs from 'constructs';
 import * as sagemaker from '../lib';
 
 describe('When instantiating SageMaker Model', () => {
-  test('with more than 5 containers, an exception is thrown', () => {
+  test('with more than 15 containers, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
     const containers = [{ image: sagemaker.ContainerImage.fromEcrRepository(testRepo) }];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 15; i++) {
       const containerDefinition = {
         image: sagemaker.ContainerImage.fromEcrRepository(testRepo),
       };
@@ -23,7 +23,7 @@ describe('When instantiating SageMaker Model', () => {
     const when = () => new sagemaker.Model(stack, 'Model', { containers });
 
     // THEN
-    expect(when).toThrow(/Cannot have more than 5 containers in inference pipeline/);
+    expect(when).toThrow(/Cannot have more than 15 containers in inference pipeline/);
   });
 
   test('with no containers, an exception is thrown', () => {

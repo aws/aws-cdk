@@ -285,8 +285,8 @@ export class Model extends ModelBase {
     const containers = props.containers || [];
     if (containers.length < 1) {
       throw new RangeError('Must configure at least 1 container for model');
-    } else if (containers.length > 5) {
-      throw new RangeError('Cannot have more than 5 containers in inference pipeline');
+    } else if (containers.length > 15) {
+      throw new RangeError('Cannot have more than 15 containers in inference pipeline');
     }
 
     this._connections = this.configureNetworking(props);
