@@ -6,7 +6,7 @@
         "FlowLogsTestStack",
         "FlowLogsFeatureFlag"
       ],
-      "assertionStack": "FlowLogsDefaultTestDeployAssert6AFD1854"
+      "assertionStack": "FlowLogs/DefaultTest/DeployAssert"
     }
   }
 }

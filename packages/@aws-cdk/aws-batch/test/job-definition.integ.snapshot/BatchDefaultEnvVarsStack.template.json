@@ -8,15 +8,11 @@
      "Environment": [
       {
        "Name": "AWS_REGION",
-       "Value": {
-        "Ref": "AWS::Region"
-       }
+       "Value": "eu-west-1"
       },
       {
        "Name": "AWS_ACCOUNT",
-       "Value": {
-        "Ref": "AWS::AccountId"
-       }
+       "Value": "202865745565"
       }
      ],
      "Image": "docker/whalesay",
