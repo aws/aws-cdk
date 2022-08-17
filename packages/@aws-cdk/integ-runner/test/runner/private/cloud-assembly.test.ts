@@ -287,7 +287,7 @@ describe('cloud assembly manifest reader', () => {
   test('can get assets from assembly manifest', () => {
     // WHEN
     const manifest = AssemblyManifestReader.fromFile(manifestFile);
-    const assets = manifest.getAssetsForStack('test-stack2');
+    const assets = manifest.getAssetLocationsForStack('test-stack2');
 
     // THEN
     expect(assets).toEqual([
