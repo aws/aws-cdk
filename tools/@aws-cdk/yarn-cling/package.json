@@ -40,7 +40,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^10.17.60",
-    "@types/semver": "^7.3.10",
+    "@types/semver": "^7.3.12",
     "@types/yarnpkg__lockfile": "^1.1.5",
     "jest": "^27.5.1",
     "typescript": "~3.9.10"
