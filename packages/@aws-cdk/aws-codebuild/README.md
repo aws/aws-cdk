@@ -509,6 +509,8 @@ declare const reportGroup: codebuild.ReportGroup;
 reportGroup.grantWrite(project);
 ```
 
+The created policy will adjust to the report group type. If no type is specified when creating the report group the created policy will contain the action for the test report group type.
+
 For more information on the test reports feature,
 see the [AWS CodeBuild documentation](https://docs.aws.amazon.com/codebuild/latest/userguide/test-reporting.html).
 
