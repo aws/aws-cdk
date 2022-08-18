@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "3d99811cf4d8b2d453d889e936569b925ead97bdb93a86d122b34d68818be01d": {
+      "source": {
+        "path": "aws-cdk-metricfilter-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3d99811cf4d8b2d453d889e936569b925ead97bdb93a86d122b34d68818be01d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

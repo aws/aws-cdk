@@ -17,6 +17,12 @@
     },
     "MetricTransformations": [
      {
+      "Dimensions": [
+       {
+        "Key": "ErrorCode",
+        "Value": "$.errorCode"
+       }
+      ],
       "MetricName": "Latency",
       "MetricNamespace": "MyApp",
       "MetricValue": "$.latency"
