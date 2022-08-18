@@ -537,7 +537,6 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
         if (props.computeResources.spotFleetRole !== undefined) {
           throw new Error('Spot fleet role must not be set for Fargate compute environments');
         }
-
       } else {
         // VALIDATE FOR ON_DEMAND AND SPOT
         if (props.computeResources.minvCpus) {
@@ -565,7 +564,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
           throw new Error('You must specify either the launch template ID or launch template name in the request.');
         }
 
-        // useLaunchTemplateNetworkInteface cannot have securityGroups defined
+        // useNetworkInterfaceSecurityGroups cannot have securityGroups defined
         if (props.computeResources.launchTemplate?.useNetworkInterfaceSecurityGroups &&
             props.computeResources.securityGroups ) {
           throw new Error('securityGroups cannot be specified if launchTemplate useNetworkInterfaceSecurityGroups is active');

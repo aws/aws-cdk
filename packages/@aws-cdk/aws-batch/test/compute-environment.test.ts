@@ -584,7 +584,7 @@ describe('Batch Compute Environment', () => {
       });
     });
 
-    describe('without useLaunchTemplateNetworkInterface', () => {
+    describe('without useNetworkInterfaceSecurityGroups', () => {
       test('should not have securityGroups', () => {
         // THEN
         throws(() => {
