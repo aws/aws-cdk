@@ -40,7 +40,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "RestApiAccount7C83CF5A": {
    "Type": "AWS::ApiGateway::Account",
@@ -54,7 +56,9 @@
    },
    "DependsOn": [
     "RestApi0C43BF4B"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "RestApiDeployment180EC50368af6d4b358eff290c08cb2de07c4042": {
    "Type": "AWS::ApiGateway::Deployment",
