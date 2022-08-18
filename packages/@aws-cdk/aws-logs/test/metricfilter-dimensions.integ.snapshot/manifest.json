@@ -1,0 +1,43 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-metricfilter-dimensions-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-metricfilter-dimensions-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-metricfilter-dimensions-integ/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogGroupF5B46931"
+          }
+        ],
+        "/aws-cdk-metricfilter-dimensions-integ/MetricFilter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MetricFilter1B93B6E5"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-metricfilter-dimensions-integ"
+    },
+    "metricfilterdimensionsDefaultTestDeployAssertF7E39B09": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "metricfilterdimensionsDefaultTestDeployAssertF7E39B09.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "metricfilter-dimensions/DefaultTest/DeployAssert"
+    }
+  }
+}
