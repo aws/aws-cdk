@@ -216,8 +216,7 @@ async function parseCommandLineArguments() {
         default: true,
         desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
           "'true' by default, use --no-logs to turn off",
-      })
-      .option('concurrency', { type: 'number', desc: 'Maximum number of simulatenous deployments (dependency permitting) to execute.', default: 1, requiresArg: true }),
+      }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', (yargs: Argv) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Destroy all available stacks' })
@@ -517,7 +516,6 @@ async function initCommandLine() {
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
           traceLogs: args.logs,
-          concurrency: args.concurrency,
         });
 
       case 'destroy':
