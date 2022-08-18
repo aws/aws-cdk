@@ -9,7 +9,7 @@
     },
     "BatchDefaultEnvVarsStack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://202865745565/eu-west-1",
+      "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "BatchDefaultEnvVarsStack.template.json",
         "validateOnSynth": false
