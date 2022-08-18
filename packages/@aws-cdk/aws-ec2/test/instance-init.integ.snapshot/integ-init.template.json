@@ -117,11 +117,7 @@
       "Value": "integ-init/IntegInitVpc/PublicSubnet1"
      }
     ]
-   },
-   "DependsOn": [
-    "IntegInitVpcPublicSubnet1DefaultRoute5BB90E8C",
-    "IntegInitVpcPublicSubnet1RouteTableAssociation00D33741"
-   ]
+   }
   },
   "IntegInitVpcPublicSubnet2Subnet9A384F16": {
    "Type": "AWS::EC2::Subnet",
@@ -225,11 +221,7 @@
       "Value": "integ-init/IntegInitVpc/PublicSubnet2"
      }
     ]
-   },
-   "DependsOn": [
-    "IntegInitVpcPublicSubnet2DefaultRoute2393995F",
-    "IntegInitVpcPublicSubnet2RouteTableAssociationB816F9F3"
-   ]
+   }
   },
   "IntegInitVpcPrivateSubnet1Subnet259B51C1": {
    "Type": "AWS::EC2::Subnet",
