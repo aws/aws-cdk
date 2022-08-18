@@ -56,7 +56,7 @@ jest.mock('../lib/logging', () => ({
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Bootstrapper } from '../lib/api/bootstrap';
-import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudformation-deployments';
+import { CloudFormationDeployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
@@ -558,6 +558,21 @@ describe('deploy', () => {
   });
 });
 
+describe('destroy', () => {
+  test('destroy correct stack', async () => {
+    const toolkit = defaultToolkitSetup();
+
+    await expect(() => {
+      return toolkit.destroy({
+        selector: { patterns: ['Test-Stack-A/Test-Stack-C'] },
+        exclusively: true,
+        force: true,
+        fromDeploy: true,
+      });
+    }).resolves;
+  });
+});
+
 describe('watch', () => {
   test("fails when no 'watch' settings are found", async () => {
     const toolkit = defaultToolkitSetup();
@@ -929,6 +944,11 @@ class FakeCloudFormation extends CloudFormationDeployments {
       outputs: { StackName: options.stack.stackName },
       stackArtifact: options.stack,
     });
+  }
+
+  public destroyStack(options: DestroyStackOptions): Promise<void> {
+    expect(options.stack).toBeDefined();
+    return Promise.resolve();
   }
 
   public readCurrentTemplate(stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
