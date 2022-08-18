@@ -191,8 +191,6 @@ In order to deploy them, you can list the stacks you want to deploy. If your app
 
 If you want to deploy all of them, you can use the flag `--all` or the wildcard `*` to deploy all stacks in an app. Please note that, if you have a hierarchy of stacks as described above, `--all` and `*` will only match the stacks on the top level. If you want to match all the stacks in the hierarchy, use `**`. You can also combine these patterns. For example, if you want to deploy all stacks in the `Prod` stage, you can use `cdk deploy PipelineStack/Prod/**`.
 
-`--concurrency N` allows deploying multiple stacks in parallel while respecting inter-stack dependencies to speed up deployments. It does not protect against CloudFormation and other AWS account rate limiting.
-
 #### Parameters
 
 Pass parameters to your template during deployment by using `--parameters

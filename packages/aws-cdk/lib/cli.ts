@@ -146,8 +146,7 @@ async function parseCommandLineArguments() {
         desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
           "'true' by default, use --no-logs to turn off. " +
           "Only in effect if specified alongside the '--watch' option",
-      })
-      .option('concurrency', { type: 'number', desc: 'Maximum number of simulatenous deployments (dependency permitting) to execute.', default: 1, requiresArg: true }),
+      }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
@@ -482,7 +481,6 @@ async function initCommandLine() {
           hotswap: args.hotswap,
           watch: args.watch,
           traceLogs: args.logs,
-          concurrency: args.concurrency,
         });
 
       case 'import':
