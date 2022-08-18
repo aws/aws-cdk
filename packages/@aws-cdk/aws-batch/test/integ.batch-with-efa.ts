@@ -32,9 +32,9 @@ const computeEnvironmentEFA = new batch.ComputeEnvironment(stack, 'EFABatch', {
   computeResources: {
     type: batch.ComputeResourceType.ON_DEMAND,
     instanceTypes: [new ec2.InstanceType('c5n.18xlarge')],
-    useLaunchTemplateNetworkInterface: true,
     vpc,
     launchTemplate: {
+      useNetworkInterfaceSecurityGroups: true,
       launchTemplateName: launchTemplateEFA.launchTemplateName as string,
     },
   },

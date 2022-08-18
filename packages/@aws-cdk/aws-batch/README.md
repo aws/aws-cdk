@@ -188,9 +188,10 @@ const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
 ```
 
 Note that if your launch template explicitly specifies network interfaces,
-for example to use an Elastic Fabric Adapter, you must explicitly tell CDK not to
-auto-create security groups in the `ComputeEnvironment` construct.  Instead, you must
-define them in the Launch Template, and set `useLaunchTemplateNetworkInterface`.  For example:
+for example to use an Elastic Fabric Adapter, you must use those security groups rather
+than allow the `ComputeEnvironment` to define them.  This is done by setting
+`useNetworkInterfaceSecurityGroups` in the launch template property of the environment.
+For example:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -214,10 +215,10 @@ const launchTemplateEFA = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
 const computeEnvironmentEFA = new batch.ComputeEnvironment(this, 'EFAComputeEnv', {
   managed: true,
   computeResources: {
-    useLaunchTemplateNetworkInterface: true,
     vpc,
     launchTemplate: {
       launchTemplateName: launchTemplateEFA.launchTemplateName as string,
+      useNetworkInterfaceSecurityGroups: true,
     },
   },
 });
