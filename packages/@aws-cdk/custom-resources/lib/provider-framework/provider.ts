@@ -72,7 +72,15 @@ export interface ProviderProps {
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
-
+  
+  /**
+   * Don't emit any extra information. By default any environment variables or 
+   * extra props are emitted with console.info.
+   *
+   * @default false
+   */
+  readonly noInfoLogs?: boolean;
+  
   /**
    * The vpc to provision the lambda functions in.
    *
@@ -168,7 +176,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
 
     this.role = props.role;
 
-    const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.providerFunctionName);
+    const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.providerFunctionName, props.noInfoLogs);
 
     if (this.isCompleteHandler) {
       const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME);
@@ -201,7 +209,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
     };
   }
 
-  private createFunction(entrypoint: string, name?: string) {
+  private createFunction(entrypoint: string, name?: string, nologs?: boolean) {
     const fn = new lambda.Function(this, `framework-${entrypoint}`, {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH, {
         exclude: ['*.ts'],
@@ -216,6 +224,9 @@ export class Provider extends Construct implements ICustomResourceProvider {
       securityGroups: this.securityGroups,
       role: this.role,
       functionName: name,
+      environment: {
+        NO_INFO_LOGS: nologs ? "true" : "false"
+      },
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);
