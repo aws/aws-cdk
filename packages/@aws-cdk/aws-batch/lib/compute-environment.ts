@@ -86,8 +86,10 @@ export interface LaunchTemplateSpecification {
   /**
    * Use security groups defined in the launch template network interfaces
    *
-   * In some cases, such as specifying Elastic Fabric Adapters, network
+   * In some cases, such as specifying Elastic Fabric Adapters,
    * network interfaces must be used to specify security groups.  This
+   * parameter tells the Compute Environment construct that this is your
+   * intention, and stops it from creating its own security groups.  This
    * parameter is mutually exclusive with securityGroups in the Compute
    * Environment
    *
