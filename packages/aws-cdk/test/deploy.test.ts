@@ -110,6 +110,14 @@ describe('DeployStacks', () => {
       ],
       expected: ['C', 'D', 'A', 'B'],
     },
+    {
+      scenario: 'A -> B, A not selected',
+      concurrency: 1,
+      toDeploy: [
+        { id: 'B', dependencies: [{ id: 'A' }] },
+      ],
+      expected: ['B'],
+    },
   ])('Success - Concurrency: $concurrency - $scenario', async ({ concurrency, expected, toDeploy }) => {
     await expect(deployStacks(toDeploy as unknown as Stack[], { concurrency, deployStack })).resolves.toBeUndefined();
 
