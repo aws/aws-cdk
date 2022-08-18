@@ -206,4 +206,40 @@ describe('Test Reports Groups', () => {
       },
     });
   });
+
+  test('has policy for type test when type is not defined', () => {
+    const stack = new cdk.Stack();
+
+    const reportGroup = new codebuild.ReportGroup(stack, 'ReportGroup');
+
+    const project = new codebuild.Project(stack, 'TestProject', {
+      buildSpec: {
+        toBuildSpec: () => '',
+        isImmediate: true,
+      },
+    });
+    reportGroup.grantWrite(project);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              "codebuild:CreateReport",
+              "codebuild:UpdateReport",
+              "codebuild:BatchPutTestCases",
+            ],
+            Effect: "Allow",
+            Resource: {
+              "Fn::GetAtt": [
+                "ReportGroup8A84C76D",
+                "Arn",
+              ],
+            },
+          },
+        ]),
+        Version: "2012-10-17",
+      },
+    });
+  });
 });
