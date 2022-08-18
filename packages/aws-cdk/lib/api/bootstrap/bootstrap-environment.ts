@@ -190,7 +190,7 @@ export class Bootstrapper {
 }
 
 /**
- * Predefined value that will cause the bootstrap-template.yml to NOT create a CMK but use the default keyo
+ * Predefined value that will cause the bootstrap-template.yml to NOT create a CMK but use the default key
  */
 const USE_AWS_MANAGED_KEY = 'AWS_MANAGED_KEY';
 
