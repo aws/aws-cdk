@@ -737,7 +737,6 @@ export class CdkToolkit {
       cacheCloudAssembly: false,
       hotswap: hotswap,
       extraUserAgent: `cdk-watch/hotswap-${hotswap ? 'on' : 'off'}`,
-      concurrency: options.concurrency,
     };
 
     try {
@@ -901,14 +900,6 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    * @default - false
    */
   readonly traceLogs?: boolean;
-
-  /**
-   * Maximum number of simulatenous deployments (dependency permitting) to execute.
-   * The default is '1', which executes all deployments serially.
-   *
-   * @default 1
-   */
-  readonly concurrency?: number;
 }
 
 export interface DeployOptions extends CfnDeployOptions, WatchOptions {
