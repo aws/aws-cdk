@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [2.38.1](https://github.com/aws/aws-cdk/compare/v2.38.0...v2.38.1) (2022-08-18)
 
+### Reverts
+
+* cli: revert "feat(cli): --concurrency option" ([#21664](https://github.com/aws/aws-cdk/pull/21664)) ([2ad2163b](https://github.com/aws/aws-cdk/commit/2ad2163b96254f9715dff405100a047d6c2c5958))
+* cli: revert "feat(cli): cdk watch --concurrency" ([#21665](https://github.com/aws/aws-cdk/pull/21665)) ([6048d4fc](https://github.com/aws/aws-cdk/commit/6048d4fc37239bcd5193d5487464590c786bf56b))
+
 ## [2.38.0](https://github.com/aws/aws-cdk/compare/v2.37.1...v2.38.0) (2022-08-17)
 
 
