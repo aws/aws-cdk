@@ -5,7 +5,7 @@
       "stacks": [
         "aws-stepfunctions-tasks-eventbridge-put-events-integ"
       ],
-      "assertionStack": "PutEventsDefaultTestDeployAssert1A6BA3F3"
+      "assertionStack": "PutEvents/DefaultTest/DeployAssert"
     }
   }
 }
