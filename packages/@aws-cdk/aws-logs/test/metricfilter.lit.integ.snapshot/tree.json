@@ -30,13 +30,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           },
@@ -58,25 +58,19 @@
                       {
                         "metricNamespace": "MyApp",
                         "metricName": "Latency",
-                        "metricValue": "$.latency",
-                        "dimensions": [
-                          {
-                            "key": "ErrorCode",
-                            "value": "$.errorCode"
-                          }
-                        ]
+                        "metricValue": "$.latency"
                       }
                     ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnMetricFilter",
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-logs.MetricFilter",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           }
