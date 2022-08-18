@@ -75,6 +75,11 @@ export enum PythonVersion {
    * Python 3 (the exact version depends on GlueVersion and JobCommand used)
    */
   THREE = '3',
+
+  /**
+   * Python 3.9 (the exact version depends on GlueVersion and JobCommand used)
+   */
+  THREE_NINE = '3.9',
 }
 
 /**
