@@ -438,6 +438,39 @@ describe('bundling', () => {
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
+  test('adding user provided volume options', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const image = DockerImage.fromRegistry('alpine');
+
+    // GIVEN
+    image.run({
+      command: ['cool', 'command'],
+      volumesFrom: process.env.HOSTNAME,
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    expect(spawnSyncStub.calledWith('docker', [
+      'run', '--rm',
+      '--volumes-from', process.env.HOSTNAME ?? 'foo',
+      '-u', 'user:group',
+      '-v', '/host-path:/container-path:delegated',
+      '-w', '/working-directory',
+      'alpine',
+      'cool', 'command',
+    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
   test('ensure selinux docker mount', () => {
     // GIVEN
     sinon.stub(process, 'platform').value('linux');

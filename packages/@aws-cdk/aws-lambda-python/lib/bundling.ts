@@ -37,8 +37,8 @@ export interface BundlingProps extends BundlingOptions {
 
   /**
    * Where to mount the specified volumes from
-   *
-   * @default - the system running docker
+   * Docker [volumes-from option](https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from)
+   * @default - no volumes-from options
    */
   readonly volumesFrom?: string;
 

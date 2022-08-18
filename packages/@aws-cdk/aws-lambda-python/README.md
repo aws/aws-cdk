@@ -145,6 +145,18 @@ new lambda.PythonFunction(this, 'function', {
 });
 ```
 
+You can also pass additional options to configure Docker for situations where the docker daemon is not running in the same system as you are bundling from.
+
+ ```ts
+const entry = '/path/to/function';
+
+new lambda.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: { volumesFrom: process.env.HOSTNAME },
+});
+```
+
 ## Custom Bundling with Code Artifact
 
 To use a Code Artifact PyPI repo, the `PIP_INDEX_URL` for bundling the function can be customized (requires AWS CLI in the build environment):
