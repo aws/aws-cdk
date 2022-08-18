@@ -136,6 +136,51 @@ describe('IntegTest runSnapshotTests', () => {
     }]);
   });
 
+  test('dont diff new asset hashes', () => {
+    // WHEN
+    const integTest = new IntegSnapshotRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: path.join(__dirname, '../test-data/xxxxx.test-with-new-assets-diff.js'),
+        discoveryRoot: 'test/test-data',
+      }),
+      integOutDir: 'test/test-data/cdk-integ.out.test-with-new-assets',
+    });
+    const results = integTest.testSnapshot();
+    expect(results.diagnostics).toEqual([]);
+
+    // THEN
+    expect(synthFastMock).toHaveBeenCalledTimes(2);
+    expect(synthFastMock).toHaveBeenCalledWith({
+      execCmd: ['node', 'xxxxx.test-with-new-assets-diff.js'],
+      env: expect.objectContaining({
+        CDK_INTEG_ACCOUNT: '12345678',
+        CDK_INTEG_REGION: 'test-region',
+      }),
+      output: 'cdk-integ.out.test-with-new-assets',
+    });
+  });
+
+  test('diff new asset hashes', () => {
+    // WHEN
+    const integTest = new IntegSnapshotRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: path.join(__dirname, '../test-data/xxxxx.test-with-new-assets.js'),
+        discoveryRoot: 'test/test-data',
+      }),
+      integOutDir: 'test/test-data/cdk-integ.out.test-with-new-assets-diff',
+    });
+    const results = integTest.testSnapshot();
+
+    // THEN
+    expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
+      reason: DiagnosticReason.SNAPSHOT_FAILED,
+      testName: integTest.testName,
+      message: expect.stringContaining('S3Key'),
+    })]));
+  });
+
   test('dont diff asset hashes', () => {
     // WHEN
     const integTest = new IntegSnapshotRunner({
@@ -146,9 +191,8 @@ describe('IntegTest runSnapshotTests', () => {
       }),
       integOutDir: 'test/test-data/test-with-snapshot-assets.integ.snapshot',
     });
-    expect(() => {
-      integTest.testSnapshot();
-    }).not.toThrow();
+    const results = integTest.testSnapshot();
+    expect(results.diagnostics).toEqual([]);
 
     // THEN
     expect(synthFastMock).toHaveBeenCalledTimes(2);

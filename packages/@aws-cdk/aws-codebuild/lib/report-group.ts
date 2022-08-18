@@ -38,14 +38,16 @@ abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
   public abstract readonly reportGroupArn: string;
   public abstract readonly reportGroupName: string;
   protected abstract readonly exportBucket?: s3.IBucket;
+  protected abstract readonly type?: ReportGroupType;
 
   public grantWrite(identity: iam.IGrantable): iam.Grant {
+    const typeAction = this.type === ReportGroupType.CODE_COVERAGE ? 'codebuild:BatchPutCodeCoverages' : 'codebuild:BatchPutTestCases';
     const ret = iam.Grant.addToPrincipal({
       grantee: identity,
       actions: [
         'codebuild:CreateReport',
         'codebuild:UpdateReport',
-        'codebuild:BatchPutTestCases',
+        typeAction,
       ],
       resourceArns: [this.reportGroupArn],
     });
@@ -134,6 +136,7 @@ export class ReportGroup extends ReportGroupBase {
       public readonly reportGroupName = reportGroupName;
       public readonly reportGroupArn = renderReportGroupArn(scope, reportGroupName);
       protected readonly exportBucket = undefined;
+      protected readonly type = undefined;
     }
 
     return new Import(scope, id);
@@ -142,14 +145,15 @@ export class ReportGroup extends ReportGroupBase {
   public readonly reportGroupArn: string;
   public readonly reportGroupName: string;
   protected readonly exportBucket?: s3.IBucket;
+  protected readonly type?: ReportGroupType;
 
   constructor(scope: Construct, id: string, props: ReportGroupProps = {}) {
     super(scope, id, {
       physicalName: props.reportGroupName,
     });
-
+    this.type = props.type ? props.type : ReportGroupType.TEST;
     const resource = new CfnReportGroup(this, 'Resource', {
-      type: props.type ? props.type : ReportGroupType.TEST,
+      type: this.type,
       exportConfig: {
         exportConfigType: props.exportBucket ? 'S3' : 'NO_EXPORT',
         s3Destination: props.exportBucket
