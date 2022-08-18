@@ -183,7 +183,7 @@ export class CdkToolkit {
     };
 
     try {
-      await buildAllStackAssets(stacks.stackArtifacts, { concurrency: 1, buildStackAssets });
+      await buildAllStackAssets(stacks.stackArtifacts, { buildStackAssets });
     } catch (e) {
       error('\n ❌ Building assets failed: %s', e);
       throw e;

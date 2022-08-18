@@ -7,7 +7,6 @@ describe('buildAllStackAssets', () => {
   const A = { id: 'A' };
   const B = { id: 'B' };
   const C = { id: 'C' };
-  const concurrency = 3;
   const toPublish = [A, B, C] as unknown as Stack[];
 
   const sleep = async (duration: number) => new Promise<void>((resolve) => setTimeout(() => resolve(), duration));
@@ -17,7 +16,7 @@ describe('buildAllStackAssets', () => {
     const buildStackAssets = jest.fn(() => sleep(1));
 
     // WHEN/THEN
-    await expect(buildAllStackAssets(toPublish, { concurrency, buildStackAssets }))
+    await expect(buildAllStackAssets(toPublish, { buildStackAssets }))
       .resolves
       .toBeUndefined();
 
@@ -32,7 +31,7 @@ describe('buildAllStackAssets', () => {
     const buildStackAssets = async () => { throw new Error('Message'); };
 
     // WHEN/THEN
-    await expect(buildAllStackAssets(toPublish, { concurrency, buildStackAssets }))
+    await expect(buildAllStackAssets(toPublish, { buildStackAssets }))
       .rejects
       .toThrow('Building Assets Failed: Error: Message, Error: Message, Error: Message');
   });
