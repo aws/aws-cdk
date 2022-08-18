@@ -72,15 +72,15 @@ export interface ProviderProps {
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
-  
+
   /**
-   * Don't emit any extra information. By default any environment variables or 
+   * Don't emit any extra information. By default any environment variables or
    * extra props are emitted with console.info.
    *
    * @default false
    */
   readonly noInfoLogs?: boolean;
-  
+
   /**
    * The vpc to provision the lambda functions in.
    *
@@ -225,7 +225,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
       role: this.role,
       functionName: name,
       environment: {
-        NO_INFO_LOGS: nologs ? "true" : "false"
+        NO_INFO_LOGS: nologs ? 'true' : 'false',
       },
     });
 

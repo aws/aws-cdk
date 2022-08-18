@@ -9,5 +9,5 @@ export function getEnv(name: string): string {
 }
 
 export function log(title: any, ...args: any[]) {
-  if (process.env['NO_INFO_LOGS']) console.log('[provider-framework]', title, ...args.map(x => typeof(x) === 'object' ? JSON.stringify(x, undefined, 2) : x));
+  if (process.env.NO_INFO_LOGS === 'false') console.log('[provider-framework]', title, ...args.map(x => typeof(x) === 'object' ? JSON.stringify(x, undefined, 2) : x));
 }
