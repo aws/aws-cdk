@@ -85,7 +85,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "lambdarestapiAccount856938D8": {
    "Type": "AWS::ApiGateway::Account",
@@ -99,7 +101,9 @@
    },
    "DependsOn": [
     "lambdarestapiF559E4F2"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "lambdarestapiDeployment2E401BD85ca559db3bb9b4a52bf7250ba64df032": {
    "Type": "AWS::ApiGateway::Deployment",
