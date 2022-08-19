@@ -61,6 +61,6 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
   // We shouldn't be able to get here, but check it anyway
   const neverUnblocked = Object.entries(deploymentStates).filter(([_, s]) => s === 'pending').map(([n, _]) => n);
   if (neverUnblocked.length > 0) {
-    throw new Error(`The following stacks never became unblocked: ${neverUnblocked.join(', ')}`);
+    throw new Error(`The following stacks never became unblocked: ${neverUnblocked.join(', ')}. Please report this at https://github.com/aws/aws-cdk/issues`);
   }
 };
