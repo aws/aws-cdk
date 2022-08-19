@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc"
      }
     ]
    }
@@ -21,15 +21,8 @@
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     },
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.0.0/18",
+    "AvailabilityZone": "us-west-2a",
+    "CidrBlock": "10.0.0.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -42,7 +35,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet1"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +49,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet1"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1"
      }
     ]
    }
@@ -87,40 +80,49 @@
     "MyVpcVPCGW488ACE0D"
    ]
   },
-  "MyVpcPublicSubnet1EIP096967CB": {
-   "Type": "AWS::EC2::EIP",
+  "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB": {
+   "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
-    "Domain": "vpc",
-    "Tags": [
+    "Roles": [
      {
-      "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet1"
+      "Ref": "MyVpcNatRoleF1616EE9"
      }
     ]
    }
   },
-  "MyVpcPublicSubnet1NATGatewayAD3400C1": {
-   "Type": "AWS::EC2::NatGateway",
+  "MyVpcPublicSubnet1NatInstance8E94E5F7": {
+   "Type": "AWS::EC2::Instance",
    "Properties": {
+    "AvailabilityZone": "us-west-2a",
+    "IamInstanceProfile": {
+     "Ref": "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB"
+    },
+    "ImageId": "ami-0bc50b53fc59f31e0",
+    "InstanceType": "t3.small",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "MyVpcNatSecurityGroupAA76397E",
+       "GroupId"
+      ]
+     }
+    ],
+    "SourceDestCheck": false,
     "SubnetId": {
      "Ref": "MyVpcPublicSubnet1SubnetF6608456"
-    },
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "MyVpcPublicSubnet1EIP096967CB",
-      "AllocationId"
-     ]
     },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet1"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/NatInstance"
      }
-    ]
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
+    }
    },
    "DependsOn": [
-    "MyVpcPublicSubnet1DefaultRoute95FDF9EB",
-    "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB"
+    "MyVpcNatRoleF1616EE9"
    ]
   },
   "MyVpcPublicSubnet2Subnet492B6BFB": {
@@ -129,15 +131,8 @@
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     },
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.64.0/18",
+    "AvailabilityZone": "us-west-2b",
+    "CidrBlock": "10.0.32.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -150,7 +145,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet2"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2"
      }
     ]
    }
@@ -164,7 +159,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet2"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2"
      }
     ]
    }
@@ -195,40 +190,114 @@
     "MyVpcVPCGW488ACE0D"
    ]
   },
-  "MyVpcPublicSubnet2EIP8CCBA239": {
-   "Type": "AWS::EC2::EIP",
+  "MyVpcPublicSubnet2NatInstanceInstanceProfile5AB09EF6": {
+   "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
-    "Domain": "vpc",
-    "Tags": [
+    "Roles": [
      {
-      "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet2"
+      "Ref": "MyVpcNatRoleF1616EE9"
      }
     ]
    }
   },
-  "MyVpcPublicSubnet2NATGateway91BFBEC9": {
-   "Type": "AWS::EC2::NatGateway",
+  "MyVpcPublicSubnet2NatInstance04BCE4E3": {
+   "Type": "AWS::EC2::Instance",
    "Properties": {
+    "AvailabilityZone": "us-west-2b",
+    "IamInstanceProfile": {
+     "Ref": "MyVpcPublicSubnet2NatInstanceInstanceProfile5AB09EF6"
+    },
+    "ImageId": "ami-0bc50b53fc59f31e0",
+    "InstanceType": "t3.small",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "MyVpcNatSecurityGroupAA76397E",
+       "GroupId"
+      ]
+     }
+    ],
+    "SourceDestCheck": false,
     "SubnetId": {
      "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
-    },
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "MyVpcPublicSubnet2EIP8CCBA239",
-      "AllocationId"
-     ]
     },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet2"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/NatInstance"
      }
-    ]
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
+    }
    },
    "DependsOn": [
-    "MyVpcPublicSubnet2DefaultRoute052936F6",
-    "MyVpcPublicSubnet2RouteTableAssociation227DE78D"
+    "MyVpcNatRoleF1616EE9"
+   ]
+  },
+  "MyVpcPublicSubnet3Subnet57EEE236": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    },
+    "AvailabilityZone": "us-west-2c",
+    "CidrBlock": "10.0.64.0/19",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet3"
+     }
+    ]
+   }
+  },
+  "MyVpcPublicSubnet3RouteTable15028F08": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet3"
+     }
+    ]
+   }
+  },
+  "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
+    },
+    "SubnetId": {
+     "Ref": "MyVpcPublicSubnet3Subnet57EEE236"
+    }
+   }
+  },
+  "MyVpcPublicSubnet3DefaultRoute3A83AB36": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "MyVpcIGW5C4A4F63"
+    }
+   },
+   "DependsOn": [
+    "MyVpcVPCGW488ACE0D"
    ]
   },
   "MyVpcPrivateSubnet1Subnet5057CF7E": {
@@ -237,15 +306,8 @@
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     },
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.128.0/18",
+    "AvailabilityZone": "us-west-2a",
+    "CidrBlock": "10.0.96.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -258,7 +320,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet1"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet1"
      }
     ]
    }
@@ -272,7 +334,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet1"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet1"
      }
     ]
    }
@@ -295,8 +357,8 @@
      "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
     },
     "DestinationCidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Ref": "MyVpcPublicSubnet1NATGatewayAD3400C1"
+    "InstanceId": {
+     "Ref": "MyVpcPublicSubnet1NatInstance8E94E5F7"
     }
    }
   },
@@ -306,15 +368,8 @@
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     },
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.192.0/18",
+    "AvailabilityZone": "us-west-2b",
+    "CidrBlock": "10.0.128.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -327,7 +382,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet2"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet2"
      }
     ]
    }
@@ -341,7 +396,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet2"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet2"
      }
     ]
    }
@@ -364,8 +419,70 @@
      "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
     },
     "DestinationCidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Ref": "MyVpcPublicSubnet2NATGateway91BFBEC9"
+    "InstanceId": {
+     "Ref": "MyVpcPublicSubnet2NatInstance04BCE4E3"
+    }
+   }
+  },
+  "MyVpcPrivateSubnet3Subnet772D6AD7": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    },
+    "AvailabilityZone": "us-west-2c",
+    "CidrBlock": "10.0.160.0/19",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet3"
+     }
+    ]
+   }
+  },
+  "MyVpcPrivateSubnet3RouteTableB790927C": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet3"
+     }
+    ]
+   }
+  },
+  "MyVpcPrivateSubnet3RouteTableAssociationD951741C": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "MyVpcPrivateSubnet3RouteTableB790927C"
+    },
+    "SubnetId": {
+     "Ref": "MyVpcPrivateSubnet3Subnet772D6AD7"
+    }
+   }
+  },
+  "MyVpcPrivateSubnet3DefaultRouteEC11C0C5": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "MyVpcPrivateSubnet3RouteTableB790927C"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "InstanceId": {
+     "Ref": "MyVpcPublicSubnet1NatInstance8E94E5F7"
     }
    }
   },
@@ -375,7 +492,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc/MyVpc"
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc"
      }
     ]
    }
@@ -391,10 +508,10 @@
     }
    }
   },
-  "SGADB53937": {
+  "MyVpcNatSecurityGroupAA76397E": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-ec2-vpc/SG",
+    "GroupDescription": "Security Group for NAT instances",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -405,50 +522,42 @@
     "SecurityGroupIngress": [
      {
       "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:ICMP Type 8",
-      "FromPort": 8,
-      "IpProtocol": "icmp",
-      "ToPort": -1
-     },
+      "Description": "from 0.0.0.0/0:ALL TRAFFIC",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
      {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:ICMP Type 128",
-      "FromPort": 128,
-      "IpProtocol": "icmp",
-      "ToPort": -1
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:ALL ICMP",
-      "FromPort": -1,
-      "IpProtocol": "icmp",
-      "ToPort": -1
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:UDP ALL PORTS",
-      "FromPort": 0,
-      "IpProtocol": "udp",
-      "ToPort": 65535
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:UDP 123",
-      "FromPort": 123,
-      "IpProtocol": "udp",
-      "ToPort": 123
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:UDP 800-801",
-      "FromPort": 800,
-      "IpProtocol": "udp",
-      "ToPort": 801
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc"
      }
     ],
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     }
+   }
+  },
+  "MyVpcNatRoleF1616EE9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-nat-instances/MyVpc"
+     }
+    ]
    }
   }
  }
