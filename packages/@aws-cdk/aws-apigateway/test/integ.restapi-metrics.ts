@@ -5,7 +5,7 @@ import * as apigw from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'restapi-metrics');
-const restApi = new apigw.RestApi(stack, 'Api');
+const restApi = new apigw.RestApi(stack, 'Api', { cloudWatchRole: true });
 const stage = restApi.deploymentStage;
 const method = restApi.root.addMethod('GET');
 

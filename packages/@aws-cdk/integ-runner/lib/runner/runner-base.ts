@@ -268,7 +268,7 @@ export abstract class IntegRunner {
     const stacks = this.actualTestSuite.getStacksWithoutUpdateWorkflow() ?? [];
     const manifest = AssemblyManifestReader.fromPath(this.snapshotDir);
     const assets = flatten(stacks.map(stack => {
-      return manifest.getAssetsForStack(stack) ?? [];
+      return manifest.getAssetLocationsForStack(stack) ?? [];
     }));
 
     assets.forEach(asset => {

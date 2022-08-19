@@ -58,6 +58,27 @@ _cdk.json_
 }
 ```
 
+* @aws-cdk/aws-apigateway:disableCloudWatchRole
+
+Enable this feature flag to change the default behavior for aws-apigateway.RestApi and aws-apigateway.SpecRestApi
+to _not_ create a CloudWatch role and Account. There is only a single ApiGateway account per AWS
+environment which means that each time you create a RestApi in your account the ApiGateway account
+is overwritten. If at some point the newest RestApi is deleted, the ApiGateway Account and CloudWatch
+role will also be deleted, breaking any existing ApiGateways that were depending on them.
+
+When this flag is enabled you should either create the ApiGateway account and CloudWatch role
+separately _or_ only enable the cloudWatchRole on a single RestApi.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-apigateway:disableCloudWatchRole": true
+  }
+}
+```
+
 * `@aws-cdk/core:enablePartitionLiterals`
 
 Enable this feature flag to have `Stack.partition` return a literal string for a stack's partition
