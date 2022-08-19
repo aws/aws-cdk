@@ -92,7 +92,10 @@
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "dynamodb:*",
+                                  "Action": [
+                                    "dynamodb:DescribeTable",
+                                    "dynamodb:UpdateTable"
+                                  ],
                                   "Effect": "Allow",
                                   "Resource": [
                                     {
@@ -250,7 +253,7 @@
                               {
                                 "Fn::GetAtt": [
                                   "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-                                  "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref"
+                                  "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3E8625F3Ref"
                                 ]
                               }
                             ]
@@ -1525,9 +1528,9 @@
                   "version": "0.0.0"
                 }
               },
-              "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref": {
-                "id": "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref",
-                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref",
+              "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3E8625F3Ref": {
+                "id": "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3E8625F3Ref",
+                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3E8625F3Ref",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"

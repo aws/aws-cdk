@@ -1583,14 +1583,11 @@ export class Table extends TableBase {
 
     const provider = ReplicaProvider.getOrCreate(this, { timeout });
 
-    // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
-    // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
-
     const onEventHandlerPolicy = new SourceTableAttachedPolicy(this, provider.onEventHandler.role!);
     const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
 
     // Permissions in the source region
-    this.grant(onEventHandlerPolicy, 'dynamodb:*');
+    this.grant(onEventHandlerPolicy, 'dynamodb:DescribeTable', 'dynamodb:UpdateTable');
     this.grant(isCompleteHandlerPolicy, 'dynamodb:DescribeTable');
 
     let previousRegion: CustomResource | undefined;
@@ -1662,7 +1659,7 @@ export class Table extends TableBase {
     // Permissions in the destination regions (outside of the loop to
     // minimize statements in the policy)
     onEventHandlerPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['dynamodb:*'],
+      actions: ['dynamodb:DescribeTable', 'dynamodb:UpdateTable'],
       resources: this.regionalArns,
     }));
   }

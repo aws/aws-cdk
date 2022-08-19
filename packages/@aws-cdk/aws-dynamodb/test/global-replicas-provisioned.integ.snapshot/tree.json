@@ -77,7 +77,10 @@
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "dynamodb:*",
+                                  "Action": [
+                                    "dynamodb:DescribeTable",
+                                    "dynamodb:UpdateTable"
+                                  ],
                                   "Effect": "Allow",
                                   "Resource": [
                                     {
@@ -188,7 +191,10 @@
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "dynamodb:DescribeTable",
+                                  "Action": [ 
+                                    "dynamodb:DescribeTable",
+                                    "dynamodb:UpdateTable"
+                                  ],
                                   "Effect": "Allow",
                                   "Resource": [
                                     {
