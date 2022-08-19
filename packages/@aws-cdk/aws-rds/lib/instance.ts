@@ -644,6 +644,11 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   protected enableIamAuthentication?: boolean;
 
+  /**
+   * List of LogGroups when CloudWatch log output is enabled.
+   */
+  public abstract readonly logGroups: logs.ILogGroup[];
+
   constructor(scope: Construct, id: string, props: DatabaseInstanceNewProps) {
     // RDS always lower-cases the ID of the database, so use that for the physical name
     // (which is the name used for cross-environment access, so it needs to be correct,
@@ -762,16 +767,20 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     };
   }
 
-  protected setLogRetention() {
+  protected setLogRetention(): logs.ILogGroup[] {
+    const logGroups: logs.ILogGroup[] = [];
     if (this.cloudwatchLogsExports && this.cloudwatchLogsRetention) {
       for (const log of this.cloudwatchLogsExports) {
+        const logGroupName = `/aws/rds/instance/${this.instanceIdentifier}/${log}`;
+        logGroups.push(logs.LogGroup.fromLogGroupName(this, `LogGroup${this.instanceIdentifier}${log}`, logGroupName));
         new logs.LogRetention(this, `LogRetention${log}`, {
-          logGroupName: `/aws/rds/instance/${this.instanceIdentifier}/${log}`,
+          logGroupName,
           retention: this.cloudwatchLogsRetention,
           role: this.cloudwatchLogsRetentionRole,
         });
       }
     }
+    return logGroups;
   }
 }
 
@@ -1006,6 +1015,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
+  public readonly logGroups: logs.ILogGroup[];
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
@@ -1036,7 +1046,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       this.secret = secret.attach(this);
     }
 
-    this.setLogRetention();
+    this.logGroups = this.setLogRetention();
   }
 }
 
@@ -1073,6 +1083,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
+  public readonly logGroups: logs.ILogGroup[];
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
@@ -1113,7 +1124,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       this.secret = secret.attach(this);
     }
 
-    this.setLogRetention();
+    this.logGroups = this.setLogRetention();
   }
 }
 
@@ -1161,6 +1172,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly engine?: IInstanceEngine = undefined;
+  public readonly logGroups: logs.ILogGroup[];
   protected readonly instanceType: ec2.InstanceType;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
@@ -1197,7 +1209,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
     instance.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
-    this.setLogRetention();
+    this.logGroups = this.setLogRetention();
   }
 }
 

@@ -1684,6 +1684,26 @@ describe('instance', () => {
       Engine: 'postgres',
     });
   });
+
+  test('If log output is enabled, expected logGroups Properties can be obtained', () => {
+    // GIVEN
+    const cloudwatchLogsExports = ['error', 'general', 'slowquery', 'audit'];
+
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_26 }),
+      vpc,
+      cloudwatchLogsExports,
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    // THEN
+    expect(instance.logGroups.length).toEqual(cloudwatchLogsExports.length);
+
+    instance.logGroups.forEach((logGroup, i) => {
+      expect(logGroup.logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchLogsExports[i]}`);
+    });
+  });
 });
 
 test.each([
