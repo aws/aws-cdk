@@ -110,5 +110,25 @@ describe('JobExecutable', () => {
         })).toThrow(`Specified GlueVersion ${glueVersion.name} does not support PythonVersion 2`);
       });
     });
+
+    test('with PythonVersion set to PythonVersion.THREE_NINE and JobType not pythonshell should throw', () => {
+      expect(() => glue.JobExecutable.of({
+        type: glue.JobType.ETL,
+        language: glue.JobLanguage.PYTHON,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
+        script,
+        glueVersion: glue.GlueVersion.V1_0,
+      })).toThrow('Specified PythonVersion PythonVersion.THREE_NINE is only supported for JobType Python Shell');
+    });
+
+    test('with PythonVersion PythonVersion.THREE_NINE and JobType pythonshell should succeed', () => {
+      expect(glue.JobExecutable.of({
+        type: glue.JobType.PYTHON_SHELL,
+        glueVersion: glue.GlueVersion.V1_0,
+        language: glue.JobLanguage.PYTHON,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
+        script,
+      })).toBeDefined();
+    });
   });
 });
