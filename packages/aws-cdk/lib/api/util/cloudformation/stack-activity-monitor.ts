@@ -398,6 +398,8 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
 
   protected readonly failures = new Array<StackActivity>();
 
+  protected hookFailureMap = new Map<string, string>();;
+
   protected readonly stream: NodeJS.WriteStream;
 
   constructor(protected readonly props: PrinterProps) {
@@ -413,6 +415,7 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
 
   public addActivity(activity: StackActivity) {
     const status = activity.event.ResourceStatus;
+    const hookStatus = activity.event.HookStatus;
     if (!status || !activity.event.LogicalResourceId) { return; }
 
     if (status === 'ROLLBACK_IN_PROGRESS' || status === 'UPDATE_ROLLBACK_IN_PROGRESS') {
@@ -454,6 +457,10 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
         }
       }
       this.resourcesPrevCompleteState[activity.event.LogicalResourceId] = status;
+    }
+
+    if (hookStatus!== undefined && hookStatus.endsWith('_COMPLETE_FAILED') && activity.event.LogicalResourceId != undefined) {
+      this.hookFailureMap.set(activity.event.LogicalResourceId, activity.event.HookStatusReason ?? '');
     }
   }
 
@@ -701,9 +708,15 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     return '[' + color(fullChars + partialChar) + filler + `] (${this.resourcesDone}/${this.resourcesTotal})`;
   }
 
+  private addHookFailedReason(activity: StackActivity) {
+    const resourceStatusReason = activity.event.ResourceStatusReason ?? '';
+    const logicalResourceId = activity.event.LogicalResourceId ?? '';
+    return resourceStatusReason.includes('The following hook(s) failed')? resourceStatusReason + ' : ' + this.hookFailureMap.get(logicalResourceId) ?? '' : resourceStatusReason;
+  }
+
   private failureReasonOnNextLine(activity: StackActivity) {
     return hasErrorMessage(activity.event.ResourceStatus ?? '')
-      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${chalk.red(activity.event.ResourceStatusReason ?? '')}`
+      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${chalk.red(this.addHookFailedReason(activity) ?? '')}`
       : '';
   }
 }
@@ -717,6 +730,7 @@ const PROGRESSBAR_EXTRA_SPACE = 2 /* leading spaces */ + 2 /* brackets */ + 4 /*
 function hasErrorMessage(status: string) {
   return status.endsWith('_FAILED') || status === 'ROLLBACK_IN_PROGRESS' || status === 'UPDATE_ROLLBACK_IN_PROGRESS';
 }
+
 
 function colorFromStatusResult(status?: string) {
   if (!status) {
@@ -767,3 +781,4 @@ function shorten(maxWidth: number, p: string) {
 
 const TIMESTAMP_WIDTH = 12;
 const STATUS_WIDTH = 20;
+
