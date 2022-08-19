@@ -195,7 +195,6 @@
     "@aws-cdk/aws-ecs-patterns": "0.0.0",
     "@aws-cdk/aws-efs": "0.0.0",
     "@aws-cdk/aws-eks": "0.0.0",
-    "@aws-cdk/aws-eks-legacy": "0.0.0",
     "@aws-cdk/aws-elasticache": "0.0.0",
     "@aws-cdk/aws-elasticbeanstalk": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancing": "0.0.0",
