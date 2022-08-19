@@ -581,7 +581,7 @@ describe('staging', () => {
     ]);
   });
 
-  test('bundling throws when /asset-ouput is empty', () => {
+  test('bundling throws when /asset-output is empty', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
