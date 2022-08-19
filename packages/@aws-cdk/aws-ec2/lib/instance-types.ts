@@ -753,6 +753,17 @@ export enum InstanceClass {
    */
   P3DN = 'p3dn',
 
+
+  /**
+   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation (in developer preview)
+   */
+  PARALLEL4_NVME_DRIVE_EXTENDED = 'parallel4-nvme-drive-extended',
+
+  /**
+   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation (in developer preview)
+   */
+  P4DE = 'p4de',
+
   /**
    * Parallel-processing optimized instances, 4th generation
    */
@@ -1171,6 +1182,8 @@ export class InstanceType {
       [InstanceClass.P3]: 'p3',
       [InstanceClass.PARALLEL3_NVME_DRIVE_HIGH_PERFORMANCE]: 'p3dn',
       [InstanceClass.P3DN]: 'p3dn',
+      [InstanceClass.PARALLEL4_NVME_DRIVE_EXTENDED]: 'p4de',
+      [InstanceClass.P4DE]: 'p4de',
       [InstanceClass.PARALLEL4]: 'p4d',
       [InstanceClass.P4D]: 'p4d',
       [InstanceClass.ARM1]: 'a1',

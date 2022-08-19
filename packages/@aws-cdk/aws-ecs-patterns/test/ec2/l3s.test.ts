@@ -880,7 +880,7 @@ test('passes when idleTimeout is between 1 and 4000 seconds', () => {
           streamPrefix: 'TestStream',
         }),
       },
-      idleTimeout: Duration.seconds(120),
+      idleTimeout: Duration.seconds(4000),
       desiredCount: 2,
     });
   }).toBeTruthy();

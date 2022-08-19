@@ -90,28 +90,52 @@ export class AssemblyManifestReader {
   }
 
   /**
-   * For a given stackId return a list of assets that belong to the stack
+   * Return a list of assets for a given stack
    */
-  public getAssetsForStack(stackId: string): string[] {
+  public getAssetIdsForStack(stackId: string): string[] {
     const assets: string[] = [];
     for (const artifact of Object.values(this.manifest.artifacts ?? {})) {
       if (artifact.type === ArtifactType.ASSET_MANIFEST && (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`) {
-        assets.push(...this.assetsFromAssetManifest(artifact));
+        assets.push(...this.assetsFromAssetManifest(artifact).map(asset => asset.id.assetId));
       } else if (artifact.type === ArtifactType.AWS_CLOUDFORMATION_STACK) {
-        assets.push(...this.assetsFromAssemblyManifest(artifact));
+        assets.push(...this.assetsFromAssemblyManifest(artifact).map(asset => asset.id));
       }
     }
     return assets;
   }
 
-  private assetsFromAssemblyManifest(artifact: ArtifactManifest): string[] {
+  /**
+   * For a given stackId return a list of assets that belong to the stack
+   */
+  public getAssetLocationsForStack(stackId: string): string[] {
     const assets: string[] = [];
+    for (const artifact of Object.values(this.manifest.artifacts ?? {})) {
+      if (artifact.type === ArtifactType.ASSET_MANIFEST && (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`) {
+        assets.push(...this.assetsFromAssetManifest(artifact).map(asset => {
+          if (asset.type === 'file') {
+            return asset.source.path!;
+          } else {
+            return asset.source.directory!;
+          }
+        }));
+      } else if (artifact.type === ArtifactType.AWS_CLOUDFORMATION_STACK) {
+        assets.push(...this.assetsFromAssemblyManifest(artifact).map(asset => asset.path));
+      }
+    }
+    return assets;
+  }
+
+  /**
+   * Get a list of assets from the assembly manifest
+   */
+  private assetsFromAssemblyManifest(artifact: ArtifactManifest): (ContainerImageAssetMetadataEntry | FileAssetMetadataEntry)[] {
+    const assets: (ContainerImageAssetMetadataEntry | FileAssetMetadataEntry)[] = [];
     for (const metadata of Object.values(artifact.metadata ?? {})) {
       metadata.forEach(data => {
         if (data.type === ArtifactMetadataEntryType.ASSET) {
-          const assetPath = (data.data as ContainerImageAssetMetadataEntry | FileAssetMetadataEntry).path;
-          if (assetPath.startsWith('asset.')) {
-            assets.push(assetPath);
+          const asset = (data.data as ContainerImageAssetMetadataEntry | FileAssetMetadataEntry);
+          if (asset.path.startsWith('asset.')) {
+            assets.push(asset);
           }
         }
       });
@@ -119,20 +143,23 @@ export class AssemblyManifestReader {
     return assets;
   }
 
-  private assetsFromAssetManifest(artifact: ArtifactManifest): string[] {
-    const assets: string[] = [];
+  /**
+   * Get a list of assets from the asset manifest
+   */
+  private assetsFromAssetManifest(artifact: ArtifactManifest): (FileManifestEntry | DockerImageManifestEntry)[] {
+    const assets: (FileManifestEntry | DockerImageManifestEntry)[] = [];
     const fileName = (artifact.properties as AssetManifestProperties).file;
     const assetManifest = AssetManifest.fromFile(path.join(this.directory, fileName));
     assetManifest.entries.forEach(entry => {
       if (entry.type === 'file') {
         const source = (entry as FileManifestEntry).source;
         if (source.path && source.path.startsWith('asset.')) {
-          assets.push((entry as FileManifestEntry).source.path!);
+          assets.push(entry as FileManifestEntry);
         }
       } else if (entry.type === 'docker-image') {
         const source = (entry as DockerImageManifestEntry).source;
         if (source.directory && source.directory.startsWith('asset.')) {
-          assets.push((entry as DockerImageManifestEntry).source.directory!);
+          assets.push(entry as DockerImageManifestEntry);
         }
       }
     });

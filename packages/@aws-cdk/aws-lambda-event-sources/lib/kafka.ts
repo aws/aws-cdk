@@ -101,7 +101,7 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
    *
    * @default - none
    */
-  readonly rootCACertificate?: secretsmanager.Secret;
+  readonly rootCACertificate?: secretsmanager.ISecret;
 }
 
 /**

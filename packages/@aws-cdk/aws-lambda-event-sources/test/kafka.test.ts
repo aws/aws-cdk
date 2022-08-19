@@ -601,6 +601,38 @@ describe('KafkaEventSource', () => {
       });
     });
 
+    test('rootCACertificate can be ISecret', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const mockRootCACertificateSecretArn = 'arn:aws:secretsmanager:us-east-1:012345678901:secret:mock';
+      const rootCACertificate = Secret.fromSecretPartialArn(stack, 'RootCASecret', mockRootCACertificateSecretArn);
+      const bootstrapServers = ['kafka-broker:9092'];
+      const sg = SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789');
+      const vpc = new Vpc(stack, 'Vpc');
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          vpc: vpc,
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          securityGroup: sg,
+          rootCACertificate: rootCACertificate,
+        }));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SourceAccessConfigurations: Match.arrayWith([
+          {
+            Type: 'SERVER_ROOT_CA_CERTIFICATE',
+            URI: mockRootCACertificateSecretArn,
+          },
+        ]),
+      });
+    });
 
     test('ManagedKafkaEventSource name conforms to construct id rules', () => {
       // GIVEN

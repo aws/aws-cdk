@@ -14,7 +14,7 @@ import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { deployStacks } from './deploy';
+import { buildAllStackAssets } from './build';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning } from './logging';
@@ -138,7 +138,7 @@ export class CdkToolkit {
     }
 
     const startSynthTime = new Date().getTime();
-    const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
+    const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
@@ -164,19 +164,33 @@ export class CdkToolkit {
       warning('⚠️ It should only be used for development - never use it for your production Stacks!');
     }
 
-    const stacks = stackCollection.stackArtifacts;
-
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
-    const concurrency = options.concurrency || 1;
-    const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
-    if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
-      warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
+    const buildStackAssets = async (stack: cxapi.CloudFormationStackArtifact) => {
+      // Check whether the stack has an asset manifest before trying to build and publish.
+      if (!stack.dependencies.some(cxapi.AssetManifestArtifact.isAssetManifestArtifact)) {
+        return;
+      }
+
+      print('%s: building assets...\n', chalk.bold(stack.displayName));
+      await this.props.cloudFormation.buildStackAssets({
+        stack,
+        roleArn: options.roleArn,
+        toolkitStackName: options.toolkitStackName,
+      });
+      print('\n%s: assets built\n', chalk.bold(stack.displayName));
+    };
+
+    try {
+      await buildAllStackAssets(stacks.stackArtifacts, { buildStackAssets });
+    } catch (e) {
+      error('\n ❌ Building assets failed: %s', e);
+      throw e;
     }
 
-    const deployStack = async (stack: cxapi.CloudFormationStackArtifact) => {
-      if (stackCollection.stackCount !== 1) { highlight(stack.displayName); }
+    for (const stack of stacks.stackArtifacts) {
+      if (stacks.stackCount !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
         // eslint-disable-next-line max-len
         throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
@@ -188,7 +202,7 @@ export class CdkToolkit {
         } else {
           warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
           await this.destroy({
-            selector: { patterns: [stack.stackName] },
+            selector: { patterns: [stack.hierarchicalId] },
             exclusively: true,
             force: true,
             roleArn: options.roleArn,
@@ -196,7 +210,7 @@ export class CdkToolkit {
             ci: options.ci,
           });
         }
-        return;
+        continue;
       }
 
       if (requireApproval !== RequireApproval.Never) {
@@ -208,13 +222,6 @@ export class CdkToolkit {
             throw new Error(
               '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
               'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
-          }
-
-          // only talk to user if concurreny is 1 (otherwise, fail)
-          if (concurrency > 1) {
-            throw new Error(
-              '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
-              'but concurrency is greater than 1 so we are unable to get a confirmation from the user');
           }
 
           const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
@@ -245,11 +252,12 @@ export class CdkToolkit {
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
-          progress,
+          progress: options.progress,
           ci: options.ci,
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
+          buildAssets: false,
         });
 
         const message = result.noOp
@@ -294,13 +302,6 @@ export class CdkToolkit {
         }
       }
       print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
-    };
-
-    try {
-      await deployStacks(stacks, { concurrency, deployStack });
-    } catch (e) {
-      error('\n ❌ Deployment failed: %s', e);
-      throw e;
     }
   }
 
@@ -971,14 +972,6 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default - not monitoring CloudWatch logs
    */
   readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
-
-  /**
-   * Maximum number of simulatenous deployments (dependency permitting) to execute.
-   * The default is '1', which executes all deployments serially.
-   *
-   * @default 1
-   */
-  readonly concurrency?: number;
 }
 
 export interface ImportOptions extends CfnDeployOptions {
