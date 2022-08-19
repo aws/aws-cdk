@@ -9,7 +9,7 @@ import { AwsCliCompatible } from './awscli-compatible';
 import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
 import { Mode } from './credentials';
-import { ISDK, SDK } from './sdk';
+import { ISDK, SDK, isUnrecoverableAwsError } from './sdk';
 
 
 // Some configuration that can only be achieved by setting
@@ -553,11 +553,4 @@ function fmtObtainedCredentials(
 
       return msg.join('');
   }
-}
-
-/**
- * Return whether an error should not be recovered from
- */
-export function isUnrecoverableAwsError(e: Error) {
-  return (e as any).code === 'ExpiredToken';
 }
