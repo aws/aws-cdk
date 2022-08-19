@@ -689,6 +689,8 @@ export interface InterfaceVpcEndpointAttributes {
   /**
    * The security groups associated with the interface VPC endpoint.
    *
+   * If you wish to manage the network connections associated with this endpoint,
+   * you will need to specify its security groups.
    */
   readonly securityGroups?: ISecurityGroup[];
 
