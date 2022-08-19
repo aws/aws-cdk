@@ -1,3 +1,94 @@
+# CloudFormation Resource Specification v85.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::RDS::DBParameterGroup Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html
+* AWS::RDS::DBParameterGroup DBParameterGroupName (__deleted__)
+
+## Property Changes
+
+* AWS::Connect::ContactFlow Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::LaunchTemplate VersionDescription (__added__)
+* AWS::Lambda::EventSourceMapping AmazonManagedKafkaEventSourceConfig (__added__)
+* AWS::Lambda::EventSourceMapping SelfManagedKafkaEventSourceConfig (__added__)
+* AWS::OpenSearchService::Domain AdvancedSecurityOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBInstance AvailabilityZone.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBParameterGroup Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+* AWS::RDS::DBParameterGroup Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBParameterGroup Family.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+* AWS::RDS::DBParameterGroup Family.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveType (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.DuplicatesAllowed (__added__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveItemType (__added__)
+* AWS::RDS::DBParameterGroup Parameters.Type (__added__)
+* AWS::RDS::DBParameterGroup Parameters.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+* AWS::RDS::DBParameterGroup Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+* AWS::Redshift::EndpointAccess ClusterIdentifier.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Redshift::EndpointAccess SubnetGroupName.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Property Type Changes
+
+* AWS::EC2::NetworkInsightsAnalysis.AdditionalDetail (__added__)
+* AWS::Lambda::EventSourceMapping.AmazonManagedKafkaEventSourceConfig (__added__)
+* AWS::Lambda::EventSourceMapping.SelfManagedKafkaEventSourceConfig (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.AnalysisRouteTableRoute State (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.Explanation ComponentAccount (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.Explanation ComponentRegion (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.PathComponent AdditionalDetails (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.PathComponent ElasticLoadBalancerListener (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.PathComponent Explanations (__added__)
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput InternalUserDatabaseEnabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput MasterUserOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::OpenSearchService::Domain.EBSOptions Throughput (__added__)
+* AWS::OpenSearchService::Domain.MasterUserOptions MasterUserARN.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::OpenSearchService::Domain.MasterUserOptions MasterUserName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::OpenSearchService::Domain.MasterUserOptions MasterUserPassword.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+
 # CloudFormation Resource Specification v84.0.0
 
 ## New Resource Types
