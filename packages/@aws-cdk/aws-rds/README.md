@@ -544,6 +544,10 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
   // ...
 });
+
+instance.logGroups.foreach(logGroup => {
+  // You can get log group
+})
 ```
 
 ## Option Groups
