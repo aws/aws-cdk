@@ -244,6 +244,11 @@ export class DockerImageAsset extends Construct implements IAsset {
   public readonly assetHash: string;
 
   /**
+   * The tag of this asset when it is uploaded to ECR. The tag may differ from the assetHash if a stack synthesizer adds a dockerTagPrefix.
+   */
+  public readonly imageTag: string;
+
+  /**
    * The path to the asset, relative to the current Cloud Assembly
    *
    * If asset staging is disabled, this will just be the original path.
@@ -362,6 +367,7 @@ export class DockerImageAsset extends Construct implements IAsset {
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     this.imageUri = location.imageUri;
+    this.imageTag = location.imageTag ?? this.assetHash;
   }
 
   /**
