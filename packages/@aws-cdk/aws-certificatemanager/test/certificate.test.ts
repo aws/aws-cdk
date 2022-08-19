@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as route53 from '@aws-cdk/aws-route53';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
-import { Certificate, CertificateValidation } from '../lib';
+import { Certificate, CertificateValidation, TransparencyLoggingPreference } from '../lib';
 
 test('apex domain selection by default', () => {
   const stack = new Stack();
@@ -320,5 +320,47 @@ test('CertificateValidation.fromDnsMultiZone', () => {
       },
     ],
     ValidationMethod: 'DNS',
+  });
+});
+
+describe('Transparency logging settings', () => {
+  test('leaves transparency logging untouched by default', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+    });
+
+    const certificateNodes = Template.fromStack(stack).findResources('AWS::CertificateManager::Certificate');
+    expect(certificateNodes.Certificate4E7ABB08).toBeDefined();
+    expect(certificateNodes.Certificate4E7ABB08.CertificateTransparencyLoggingPreference).toBeUndefined();
+  });
+
+  test('can enable transparency logging', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      certificateTransparencyLoggingPreference: TransparencyLoggingPreference.ENABLED,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      CertificateTransparencyLoggingPreference: 'ENABLED',
+    });
+  });
+
+  test('can disable transparency logging', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      certificateTransparencyLoggingPreference: TransparencyLoggingPreference.DISABLED,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      CertificateTransparencyLoggingPreference: 'DISABLED',
+    });
   });
 });

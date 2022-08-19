@@ -72,6 +72,13 @@ export interface CertificateProps {
    * @default CertificateValidation.fromEmail()
    */
   readonly validation?: CertificateValidation;
+
+  /**
+   * Enable or disable transparency logging for this certificate
+   *
+   * @default TransparencyLoggingPreference.ENABLED
+   */
+  readonly certificateTransparencyLoggingPreference?: TransparencyLoggingPreference;
 }
 
 /**
@@ -214,11 +221,17 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
+    let certificateTransparencyLoggingPreference: TransparencyLoggingPreference | undefined;
+    if (props.certificateTransparencyLoggingPreference) {
+      certificateTransparencyLoggingPreference = props.certificateTransparencyLoggingPreference;
+    }
+
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: renderDomainValidation(validation, allDomainNames),
       validationMethod: validation.method,
+      certificateTransparencyLoggingPreference,
     });
 
     this.certificateArn = cert.ref;
@@ -242,6 +255,23 @@ export enum ValidationMethod {
    * @see https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html
    */
   DNS = 'DNS',
+}
+
+/**
+ * Value to enable or disable transparency logging
+ *
+ * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency
+ */
+export enum TransparencyLoggingPreference {
+  /**
+   * Enable transparency logging
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Disable transparency logging
+   */
+  DISABLED = 'DISABLED',
 }
 
 // eslint-disable-next-line max-len

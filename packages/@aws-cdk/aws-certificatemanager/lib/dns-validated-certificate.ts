@@ -121,6 +121,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
       properties: {
         DomainName: props.domainName,
         SubjectAlternativeNames: cdk.Lazy.list({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
+        CertificateTransparencyLoggingPreference: props.certificateTransparencyLoggingPreference,
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,

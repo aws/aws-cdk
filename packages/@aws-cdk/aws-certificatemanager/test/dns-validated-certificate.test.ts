@@ -2,6 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, Stack, Token, Tags } from '@aws-cdk/core';
+import { TransparencyLoggingPreference } from '../lib';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
 test('creates CloudFormation Custom Resource', () => {
@@ -222,5 +223,33 @@ test('works with imported role', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Role: 'arn:aws:iam::account-id:role/role-name',
+  });
+});
+
+test('test transparency logging settings is passed to the custom resource', () => {
+  const stack = new Stack();
+
+  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+    zoneName: 'example.com',
+  });
+
+  new DnsValidatedCertificate(stack, 'Cert', {
+    domainName: 'example.com',
+    hostedZone: exampleDotComZone,
+    certificateTransparencyLoggingPreference: TransparencyLoggingPreference.DISABLED,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    ServiceToken: {
+      'Fn::GetAtt': [
+        'CertCertificateRequestorFunction98FDF273',
+        'Arn',
+      ],
+    },
+    DomainName: 'example.com',
+    HostedZoneId: {
+      Ref: 'ExampleDotCom4D1B83AA',
+    },
+    CertificateTransparencyLoggingPreference: 'DISABLED',
   });
 });
