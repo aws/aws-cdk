@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.71"
         }
       },
       "aws-cdk-elbv2-integ": {
@@ -771,6 +771,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "elbv2-integ": {
+        "id": "elbv2-integ",
+        "path": "elbv2-integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "elbv2-integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "elbv2-integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.71"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "elbv2-integ/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
