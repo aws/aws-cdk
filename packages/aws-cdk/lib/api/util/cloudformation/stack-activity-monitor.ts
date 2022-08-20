@@ -708,7 +708,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     return '[' + color(fullChars + partialChar) + filler + `] (${this.resourcesDone}/${this.resourcesTotal})`;
   }
 
-  private addHookFailedReason(activity: StackActivity) {
+  private failureReason(activity: StackActivity) {
     const resourceStatusReason = activity.event.ResourceStatusReason ?? '';
     const logicalResourceId = activity.event.LogicalResourceId ?? '';
     return resourceStatusReason.includes('The following hook(s) failed')? resourceStatusReason + ' : ' + this.hookFailureMap.get(logicalResourceId) ?? '' : resourceStatusReason;
@@ -716,7 +716,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
   private failureReasonOnNextLine(activity: StackActivity) {
     return hasErrorMessage(activity.event.ResourceStatus ?? '')
-      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${chalk.red(this.addHookFailedReason(activity) ?? '')}`
+      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${chalk.red(this.failureReason(activity) ?? '')}`
       : '';
   }
 }
