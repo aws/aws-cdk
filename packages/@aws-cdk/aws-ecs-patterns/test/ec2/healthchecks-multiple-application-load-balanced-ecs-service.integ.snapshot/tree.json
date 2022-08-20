@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.51"
+          "version": "10.1.78"
         }
       },
       "aws-ecs-integ": {
@@ -1269,7 +1269,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.51"
+                      "version": "10.1.78"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1600,7 +1600,7 @@
                               "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                               "aws:cdk:cloudformation:props": {
                                 "healthCheckIntervalSeconds": 30,
-                                "healthCheckPort": "8050",
+                                "healthCheckPort": "traffic-port",
                                 "healthCheckProtocol": "HTTP",
                                 "healthCheckTimeoutSeconds": 10,
                                 "healthyThresholdCount": 2,
@@ -1808,7 +1808,7 @@
                               "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                               "aws:cdk:cloudformation:props": {
                                 "healthCheckIntervalSeconds": 30,
-                                "healthCheckPort": "8050",
+                                "healthCheckPort": "traffic-port",
                                 "healthCheckProtocol": "HTTP",
                                 "healthCheckTimeoutSeconds": 10,
                                 "healthyThresholdCount": 2,
@@ -2168,7 +2168,7 @@
                 "path": "Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.51"
+                  "version": "10.1.78"
                 }
               },
               "DeployAssert": {
