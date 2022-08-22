@@ -996,7 +996,7 @@
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "HealthCheckIntervalSeconds": 30,
-    "HealthCheckPort": "traffic-port",
+    "HealthCheckPort": "8050",
     "HealthCheckProtocol": "HTTP",
     "HealthCheckTimeoutSeconds": 10,
     "HealthyThresholdCount": 2,
@@ -1114,7 +1114,7 @@
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "HealthCheckIntervalSeconds": 30,
-    "HealthCheckPort": "traffic-port",
+    "HealthCheckPort": "8050",
     "HealthCheckProtocol": "HTTP",
     "HealthCheckTimeoutSeconds": 10,
     "HealthyThresholdCount": 2,

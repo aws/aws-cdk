@@ -1600,7 +1600,7 @@
                               "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                               "aws:cdk:cloudformation:props": {
                                 "healthCheckIntervalSeconds": 30,
-                                "healthCheckPort": "traffic-port",
+                                "healthCheckPort": "8050",
                                 "healthCheckProtocol": "HTTP",
                                 "healthCheckTimeoutSeconds": 10,
                                 "healthyThresholdCount": 2,
@@ -1808,7 +1808,7 @@
                               "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                               "aws:cdk:cloudformation:props": {
                                 "healthCheckIntervalSeconds": 30,
-                                "healthCheckPort": "traffic-port",
+                                "healthCheckPort": "8050",
                                 "healthCheckProtocol": "HTTP",
                                 "healthCheckTimeoutSeconds": 10,
                                 "healthyThresholdCount": 2,
