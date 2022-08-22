@@ -520,6 +520,9 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
   /**
    * The DNS entries for the interface VPC endpoint.
+   * Each entry is a combination of the hosted zone ID and the DNS name. 
+   * The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. 
+   * This order is not enforced for AWS Marketplace services.
    * @attribute
    */
   public readonly vpcEndpointDnsEntries: string[];
