@@ -15,6 +15,24 @@ export interface LinuxUserDataOptions {
 }
 
 /**
+ * Options when constructing UserData for Windows
+ */
+export interface WindowsUserDataOptions {
+  /**
+   * Set to true to set this userdata to persist through an instance reboot; allowing
+   * it to run on every instance start.
+   * By default, UserData is run only once during the first instance launch.
+   *
+   * For more information, see:
+   * https://aws.amazon.com/premiumsupport/knowledge-center/execute-user-data-ec2/
+   * https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html#user-data-scripts
+   *
+   * @default false
+   */
+  readonly persist?: boolean;
+}
+
+/**
  * Options when downloading files from S3
  */
 export interface S3DownloadOptions {
@@ -78,8 +96,8 @@ export abstract class UserData {
   /**
    * Create a userdata object for Windows hosts
    */
-  public static forWindows(): UserData {
-    return new WindowsUserData();
+  public static forWindows(options: WindowsUserDataOptions = {}): UserData {
+    return new WindowsUserData(options);
   }
 
   /**
@@ -197,7 +215,7 @@ class WindowsUserData extends UserData {
   private readonly lines: string[] = [];
   private readonly onExitLines: string[] = [];
 
-  constructor() {
+  constructor(private readonly props: WindowsUserDataOptions = {}) {
     super();
   }
 
@@ -214,7 +232,7 @@ class WindowsUserData extends UserData {
       [...(this.renderOnExitLines()),
         ...this.lines,
         ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] )].join('\n')
-    }</powershell>`;
+    }</powershell>${(this.props.persist ?? false) ? '<persist>true</persist>' : ''}`;
   }
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
@@ -281,6 +299,7 @@ class CustomUserData extends UserData {
   public addSignalOnExitCommand(): void {
     throw new Error('CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.');
   }
+
 }
 
 /**
@@ -573,4 +592,5 @@ export class MultipartUserData extends UserData {
       throw new Error(MultipartUserData.USE_PART_ERROR);
     }
   }
+
 }

@@ -1404,6 +1404,21 @@ instance.userData.addExecuteFileCommand({
 asset.grantRead(instance.role);
 ```
 
+### Persisting user data
+
+By default, EC2 UserData is run once on only the first time that an instance is started. It is possible to make the
+user data script run on every start of the instance. 
+
+When creating a Windows UserData you can use the `persist` option to set whether or not to add 
+`<persist>true</persist>` [to the user data script](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html#user-data-scripts). it can be used as follows:
+
+```ts
+const windowsUserData = UserData.forWindows({ persist: true });
+```
+
+For a Linux instance, this can be accomplished by using a Multipart user data to configure cloud-config as detailed
+in: https://aws.amazon.com/premiumsupport/knowledge-center/execute-user-data-ec2/
+
 ### Multipart user data
 
 In addition, to above the `MultipartUserData` can be used to change instance startup behavior. Multipart user data are composed
