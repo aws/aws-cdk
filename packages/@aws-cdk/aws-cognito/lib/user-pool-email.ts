@@ -51,8 +51,6 @@ export interface UserPoolSESOptions {
    * region in which the UserPool is deployed, you must specify that
    * region here.
    *
-   * Must be 'us-east-1', 'us-west-2', or 'eu-west-1'
-   *
    * @default - The same region as the Cognito UserPool
    */
   readonly sesRegion?: string;

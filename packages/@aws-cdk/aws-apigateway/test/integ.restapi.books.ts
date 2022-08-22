@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as apigw from '../lib';
 
 class BookStack extends cdk.Stack {
@@ -24,7 +25,7 @@ class BookStack extends cdk.Stack {
       code: lambda.Code.fromInline(`exports.handler = ${helloCode}`),
     }));
 
-    const api = new apigw.RestApi(this, 'books-api');
+    const api = new apigw.RestApi(this, 'books-api', { cloudWatchRole: true });
     api.root.addMethod('ANY', hello);
 
     const books = api.root.addResource('books', {
@@ -45,13 +46,12 @@ class BookStack extends cdk.Stack {
   }
 }
 
-class BookApp extends cdk.App {
-  constructor() {
-    super();
+const app = new cdk.App();
 
-    new BookStack(this, 'restapi-books-example');
-  }
-}
+const testCase = new BookStack(app, 'restapi-books-example');
+new IntegTest(app, 'restapi-books', {
+  testCases: [testCase],
+});
 
 function echoHandlerCode(event: any, _: any, callback: any) {
   return callback(undefined, {
@@ -68,5 +68,3 @@ function helloCode(_event: any, _context: any, callback: any) {
     body: 'hello, world!',
   });
 }
-
-new BookApp().synth();

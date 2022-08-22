@@ -4,10 +4,10 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as batch from '../lib/';
 
-export const app = new cdk.App();
-
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'batch-stack');
 
 const vpc = new ec2.Vpc(stack, 'vpc');
@@ -63,26 +63,10 @@ new batch.JobQueue(stack, 'batch-job-queue', {
       }),
       order: 3,
     },
-    {
-      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-demand-compute-env-launch-template-2', {
-        managed: true,
-        computeResources: {
-          type: batch.ComputeResourceType.ON_DEMAND,
-          vpc,
-          launchTemplate: {
-            launchTemplateId: launchTemplate.ref as string,
-          },
-          computeResourcesTags: {
-            'compute-env-tag': '123XYZ',
-          },
-        },
-      }),
-      order: 4,
-    },
   ],
 });
 
-// Split out into two job queues because each queue
+// Split out into multiple job queues because each queue
 // supports a max of 3 compute environments
 new batch.JobQueue(stack, 'batch-job-fargate-queue', {
   computeEnvironments: [
@@ -105,6 +89,27 @@ new batch.JobQueue(stack, 'batch-job-fargate-queue', {
         },
       }),
       order: 2,
+    },
+  ],
+});
+
+new batch.JobQueue(stack, 'batch-with-launch-template-id', {
+  computeEnvironments: [
+    {
+      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-demand-compute-env-launch-template-2', {
+        managed: true,
+        computeResources: {
+          type: batch.ComputeResourceType.ON_DEMAND,
+          vpc,
+          launchTemplate: {
+            launchTemplateId: launchTemplate.ref as string,
+          },
+          computeResourcesTags: {
+            'compute-env-tag': '123XYZ',
+          },
+        },
+      }),
+      order: 1,
     },
   ],
 });
@@ -138,3 +143,9 @@ new batch.JobDefinition(stack, 'batch-job-def-fargate', {
     },
   },
 });
+
+new integ.IntegTest(app, 'batch-tests', {
+  testCases: [stack],
+});
+
+app.synth();

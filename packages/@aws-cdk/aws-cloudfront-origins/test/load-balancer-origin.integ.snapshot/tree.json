@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.78"
         }
       },
       "cloudfront-load-balancer-origin": {
@@ -750,8 +750,8 @@
                 "id": "Origin1",
                 "path": "cloudfront-load-balancer-origin/Distribution/Origin1",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.78"
                 }
               },
               "Resource": {
