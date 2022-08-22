@@ -5,7 +5,7 @@
       "stacks": [
         "PortsTestStack"
       ],
-      "assertionStack": "PortsDefaultTestDeployAssert044B81BF"
+      "assertionStack": "Ports/DefaultTest/DeployAssert"
     }
   }
 }

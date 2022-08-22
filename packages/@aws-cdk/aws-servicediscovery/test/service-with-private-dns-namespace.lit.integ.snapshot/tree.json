@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.65"
+          "version": "10.1.71"
         }
       },
       "aws-servicediscovery-integ": {

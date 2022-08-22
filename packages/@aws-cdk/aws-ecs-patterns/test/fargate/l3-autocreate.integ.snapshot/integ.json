@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ-l3-autocreate"
       ],
-      "assertionStack": "autoCreateNlbFargateTestDefaultTestDeployAssertD6693011"
+      "assertionStack": "autoCreateNlbFargateTest/DefaultTest/DeployAssert"
     }
   }
 }

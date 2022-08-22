@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.65"
+          "version": "10.1.78"
         }
       },
       "aws-ecs-runtime-integ": {
@@ -923,7 +923,7 @@
                 "path": "Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.65"
+                  "version": "10.1.78"
                 }
               },
               "DeployAssert": {

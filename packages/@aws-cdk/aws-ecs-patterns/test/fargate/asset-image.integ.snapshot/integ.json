@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ"
       ],
-      "assertionStack": "fargateAssetImageTestDefaultTestDeployAssert15DE6C40"
+      "assertionStack": "fargateAssetImageTest/DefaultTest/DeployAssert"
     }
   }
 }

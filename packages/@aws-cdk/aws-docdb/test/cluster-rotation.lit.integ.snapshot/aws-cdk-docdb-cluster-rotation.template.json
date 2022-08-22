@@ -118,7 +118,11 @@
       "Value": "aws-cdk-docdb-cluster-rotation/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -222,7 +226,11 @@
       "Value": "aws-cdk-docdb-cluster-rotation/VPC/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
   },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
@@ -589,7 +597,9 @@
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
-    "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

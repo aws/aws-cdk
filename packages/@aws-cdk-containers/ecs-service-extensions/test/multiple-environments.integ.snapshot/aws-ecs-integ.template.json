@@ -117,7 +117,11 @@
       "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "productionenvironmentvpcPublicSubnet1DefaultRoute524C894D",
+    "productionenvironmentvpcPublicSubnet1RouteTableAssociationA8117374"
+   ]
   },
   "productionenvironmentvpcPublicSubnet2Subnet298E6C31": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "productionenvironmentvpcPublicSubnet2DefaultRoute92CD697D",
+    "productionenvironmentvpcPublicSubnet2RouteTableAssociation0A7549F3"
+   ]
   },
   "productionenvironmentvpcPrivateSubnet1Subnet53F632E6": {
    "Type": "AWS::EC2::Subnet",
@@ -512,7 +520,11 @@
       "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "developmentenvironmentvpcPublicSubnet1DefaultRoute2BAA794D",
+    "developmentenvironmentvpcPublicSubnet1RouteTableAssociation8F257A0C"
+   ]
   },
   "developmentenvironmentvpcPublicSubnet2SubnetC2026CD3": {
    "Type": "AWS::EC2::Subnet",
@@ -616,7 +628,11 @@
       "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "developmentenvironmentvpcPublicSubnet2DefaultRoute2C5118B5",
+    "developmentenvironmentvpcPublicSubnet2RouteTableAssociation6630985C"
+   ]
   },
   "developmentenvironmentvpcPrivateSubnet1SubnetAAECD171": {
    "Type": "AWS::EC2::Subnet",

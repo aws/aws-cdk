@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ-ecs"
       ],
-      "assertionStack": "scheduledEc2TaskTestDefaultTestDeployAssertF02313CA"
+      "assertionStack": "scheduledEc2TaskTest/DefaultTest/DeployAssert"
     }
   }
 }

@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ-lb-fargate"
       ],
-      "assertionStack": "l3FargateTestDefaultTestDeployAssert3391A20B"
+      "assertionStack": "l3FargateTest/DefaultTest/DeployAssert"
     }
   }
 }

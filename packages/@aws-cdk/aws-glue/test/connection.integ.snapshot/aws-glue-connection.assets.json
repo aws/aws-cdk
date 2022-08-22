@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "f076d8bcdf0c659b5885c5698672513188f149a0fe66e8f214a4ff4eaf97fda9": {
+      "source": {
+        "path": "aws-glue-connection.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f076d8bcdf0c659b5885c5698672513188f149a0fe66e8f214a4ff4eaf97fda9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -117,7 +117,11 @@
       "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
   },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
@@ -413,58 +421,6 @@
     "Name": "aws-cdk.dev."
    }
   },
-  "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "ec2:ModifyVpcEndpointServiceConfiguration",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         ":",
-         [
-          "arn",
-          {
-           "Ref": "AWS::Partition"
-          },
-          "ec2",
-          {
-           "Ref": "AWS::Region"
-          },
-          {
-           "Ref": "AWS::AccountId"
-          },
-          {
-           "Fn::Join": [
-            "/",
-            [
-             "vpc-endpoint-service",
-             {
-              "Ref": "VPCES3AE7D565"
-             }
-            ]
-           ]
-          }
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB",
-    "Roles": [
-     {
-      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-     }
-    ]
-   },
-   "DependsOn": [
-    "VPCES3AE7D565"
-   ]
-  },
   "EndpointDomainEnableDnsDACBF5A6": {
    "Type": "Custom::AWS",
    "Properties": {
@@ -519,20 +475,48 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "EndpointDomainGetNamesCustomResourcePolicy141775B1": {
+  "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "ec2:DescribeVpcEndpointServiceConfigurations",
+       "Action": "ec2:ModifyVpcEndpointServiceConfiguration",
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": {
+        "Fn::Join": [
+         ":",
+         [
+          "arn",
+          {
+           "Ref": "AWS::Partition"
+          },
+          "ec2",
+          {
+           "Ref": "AWS::Region"
+          },
+          {
+           "Ref": "AWS::AccountId"
+          },
+          {
+           "Fn::Join": [
+            "/",
+            [
+             "vpc-endpoint-service",
+             {
+              "Ref": "VPCES3AE7D565"
+             }
+            ]
+           ]
+          }
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "EndpointDomainGetNamesCustomResourcePolicy141775B1",
+    "PolicyName": "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -540,8 +524,6 @@
     ]
    },
    "DependsOn": [
-    "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB",
-    "EndpointDomainEnableDnsDACBF5A6",
     "VPCES3AE7D565"
    ]
   },
@@ -589,6 +571,32 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "EndpointDomainGetNamesCustomResourcePolicy141775B1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ec2:DescribeVpcEndpointServiceConfigurations",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EndpointDomainGetNamesCustomResourcePolicy141775B1",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB",
+    "EndpointDomainEnableDnsDACBF5A6",
+    "VPCES3AE7D565"
+   ]
+  },
   "EndpointDomainDnsVerificationRecord66623BDA": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
@@ -630,59 +638,6 @@
     "TTL": "1800"
    },
    "DependsOn": [
-    "VPCES3AE7D565"
-   ]
-  },
-  "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "ec2:StartVpcEndpointServicePrivateDnsVerification",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         ":",
-         [
-          "arn",
-          {
-           "Ref": "AWS::Partition"
-          },
-          "ec2",
-          {
-           "Ref": "AWS::Region"
-          },
-          {
-           "Ref": "AWS::AccountId"
-          },
-          {
-           "Fn::Join": [
-            "/",
-            [
-             "vpc-endpoint-service",
-             {
-              "Ref": "VPCES3AE7D565"
-             }
-            ]
-           ]
-          }
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6",
-    "Roles": [
-     {
-      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-     }
-    ]
-   },
-   "DependsOn": [
-    "EndpointDomainDnsVerificationRecord66623BDA",
     "VPCES3AE7D565"
    ]
   },
@@ -769,6 +724,59 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ec2:StartVpcEndpointServicePrivateDnsVerification",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         ":",
+         [
+          "arn",
+          {
+           "Ref": "AWS::Partition"
+          },
+          "ec2",
+          {
+           "Ref": "AWS::Region"
+          },
+          {
+           "Ref": "AWS::AccountId"
+          },
+          {
+           "Fn::Join": [
+            "/",
+            [
+             "vpc-endpoint-service",
+             {
+              "Ref": "VPCES3AE7D565"
+             }
+            ]
+           ]
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "EndpointDomainDnsVerificationRecord66623BDA",
+    "VPCES3AE7D565"
+   ]
+  },
   "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -805,7 +813,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F"
+      "Ref": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A"
      },
      "S3Key": {
       "Fn::Join": [
@@ -818,7 +826,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
+             "Ref": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5"
             }
            ]
           }
@@ -831,7 +839,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
+             "Ref": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5"
             }
            ]
           }
@@ -857,17 +865,17 @@
   }
  },
  "Parameters": {
-  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F": {
+  "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
+   "Description": "S3 bucket for asset \"105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286\""
   },
-  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058": {
+  "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5": {
    "Type": "String",
-   "Description": "S3 key for asset version \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
+   "Description": "S3 key for asset version \"105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286\""
   },
-  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90ArtifactHashC00C7285": {
+  "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
+   "Description": "Artifact hash for asset \"105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286\""
   }
  }
 }

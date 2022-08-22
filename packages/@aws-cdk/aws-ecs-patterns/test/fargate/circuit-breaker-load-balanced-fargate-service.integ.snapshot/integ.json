@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ"
       ],
-      "assertionStack": "circuitBreakerAlbFargateTestDefaultTestDeployAssert8EB02B4E"
+      "assertionStack": "circuitBreakerAlbFargateTest/DefaultTest/DeployAssert"
     }
   }
 }

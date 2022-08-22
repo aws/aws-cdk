@@ -117,7 +117,11 @@
       "Value": "aws-cdk-codebuild-file-system-locations/MyVPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "MyVPCPublicSubnet1DefaultRouteAF81AA9B",
+    "MyVPCPublicSubnet1RouteTableAssociation8A950D8E"
+   ]
   },
   "MyVPCPrivateSubnet1Subnet641543F4": {
    "Type": "AWS::EC2::Subnet",

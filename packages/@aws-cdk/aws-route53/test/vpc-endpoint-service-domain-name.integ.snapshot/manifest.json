@@ -19,13 +19,13 @@
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
-              "id": "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
+              "path": "asset.105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
+              "id": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
               "packaging": "zip",
-              "sourceHash": "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
-              "s3BucketParameter": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F",
-              "s3KeyParameter": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058",
-              "artifactHashParameter": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90ArtifactHashC00C7285"
+              "sourceHash": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
+              "s3BucketParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A",
+              "s3KeyParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5",
+              "artifactHashParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC"
             }
           }
         ],
@@ -185,22 +185,16 @@
             "data": "PHZ45BE903D"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/EnableDns/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB"
-          }
-        ],
         "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/EnableDns/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EndpointDomainEnableDnsDACBF5A6"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/GetNames/CustomResourcePolicy/Resource": [
+        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/EnableDns/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EndpointDomainGetNamesCustomResourcePolicy141775B1"
+            "data": "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB"
           }
         ],
         "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/GetNames/Resource/Default": [
@@ -209,22 +203,28 @@
             "data": "EndpointDomainGetNames9E697ED2"
           }
         ],
+        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/GetNames/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EndpointDomainGetNamesCustomResourcePolicy141775B1"
+          }
+        ],
         "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/DnsVerificationRecord/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EndpointDomainDnsVerificationRecord66623BDA"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/StartVerification/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6"
-          }
-        ],
         "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/StartVerification/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EndpointDomainStartVerification05E2F7A3"
+          }
+        ],
+        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/StartVerification/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6"
           }
         ],
         "/aws-cdk-vpc-endpoint-dns-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -239,22 +239,22 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3Bucket": [
+        "/aws-cdk-vpc-endpoint-dns-integ/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F"
+            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3VersionKey": [
+        "/aws-cdk-vpc-endpoint-dns-integ/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
+            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/ArtifactHash": [
+        "/aws-cdk-vpc-endpoint-dns-integ/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90ArtifactHashC00C7285"
+            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC"
           }
         ]
       },

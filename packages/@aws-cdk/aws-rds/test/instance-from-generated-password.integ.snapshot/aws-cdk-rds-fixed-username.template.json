@@ -117,7 +117,11 @@
       "Value": "aws-cdk-rds-fixed-username/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "aws-cdk-rds-fixed-username/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+   ]
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -452,10 +460,10 @@
   "InstanceC1063A87": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.small",
     "AllocatedStorage": "100",
     "BackupRetentionPeriod": 0,
     "CopyTagsToSnapshot": true,
+    "DBInstanceClass": "db.t3.small",
     "DBName": "CDKDB",
     "DBSubnetGroupName": {
      "Ref": "InstanceSubnetGroupF2CBA54F"
