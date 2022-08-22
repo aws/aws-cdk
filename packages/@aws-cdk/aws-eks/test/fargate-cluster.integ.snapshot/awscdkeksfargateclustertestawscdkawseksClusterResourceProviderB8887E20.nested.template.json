@@ -103,7 +103,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksfargateclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3Bucket147ABE63Ref"
+      "Ref": "referencetoawscdkeksfargateclustertestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3Bucket9B7944C2Ref"
      },
      "S3Key": {
       "Fn::Join": [
@@ -116,7 +116,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyD40A22F2Ref"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKeyADDB2123Ref"
             }
            ]
           }
@@ -129,7 +129,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyD40A22F2Ref"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKeyADDB2123Ref"
             }
            ]
           }
@@ -224,7 +224,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksfargateclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3Bucket147ABE63Ref"
+      "Ref": "referencetoawscdkeksfargateclustertestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3Bucket9B7944C2Ref"
      },
      "S3Key": {
       "Fn::Join": [
@@ -237,7 +237,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyD40A22F2Ref"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKeyADDB2123Ref"
             }
            ]
           }
@@ -250,7 +250,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyD40A22F2Ref"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKeyADDB2123Ref"
             }
            ]
           }
@@ -391,7 +391,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksfargateclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketA8B33C0FRef"
+      "Ref": "referencetoawscdkeksfargateclustertestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket28F5FEFCRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -404,7 +404,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey10EBAC4DRef"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyD9BF9E2DRef"
             }
            ]
           }
@@ -417,7 +417,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey10EBAC4DRef"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyD9BF9E2DRef"
             }
            ]
           }
@@ -560,7 +560,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksfargateclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketA8B33C0FRef"
+      "Ref": "referencetoawscdkeksfargateclustertestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket28F5FEFCRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -573,7 +573,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey10EBAC4DRef"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyD9BF9E2DRef"
             }
            ]
           }
@@ -586,7 +586,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey10EBAC4DRef"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyD9BF9E2DRef"
             }
            ]
           }
@@ -726,7 +726,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksfargateclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketA8B33C0FRef"
+      "Ref": "referencetoawscdkeksfargateclustertestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket28F5FEFCRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -739,7 +739,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey10EBAC4DRef"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyD9BF9E2DRef"
             }
            ]
           }
@@ -752,7 +752,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey10EBAC4DRef"
+             "Ref": "referencetoawscdkeksfargateclustertestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyD9BF9E2DRef"
             }
            ]
           }
@@ -1033,16 +1033,16 @@
   "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
    "Type": "String"
   },
-  "referencetoawscdkeksfargateclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3Bucket147ABE63Ref": {
+  "referencetoawscdkeksfargateclustertestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3Bucket9B7944C2Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksfargateclustertestAssetParametersd47e2f3698e3b8daac9abf2ead86e6cc10782d761e194fce8d54874fab7a76deS3VersionKeyD40A22F2Ref": {
+  "referencetoawscdkeksfargateclustertestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKeyADDB2123Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksfargateclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketA8B33C0FRef": {
+  "referencetoawscdkeksfargateclustertestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket28F5FEFCRef": {
    "Type": "String"
   },
-  "referencetoawscdkeksfargateclustertestAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey10EBAC4DRef": {
+  "referencetoawscdkeksfargateclustertestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyD9BF9E2DRef": {
    "Type": "String"
   }
  }
