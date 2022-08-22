@@ -36,14 +36,12 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
 
           deploymentStates[stack.id] = 'deploying';
 
-          await deployStack(stack).catch((err) => {
-            deploymentStates[stack.id] = 'failed';
-            throw err;
-          });
+          await deployStack(stack);
 
           deploymentStates[stack.id] = 'completed';
           enqueueStackDeploys();
         }).catch((err) => {
+          deploymentStates[stack.id] = 'failed';
           deploymentErrors.push(err);
         });
       }
