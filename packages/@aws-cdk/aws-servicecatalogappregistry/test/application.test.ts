@@ -1,4 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appreg from '../lib';
 
@@ -214,6 +215,112 @@ describe('Application', () => {
       application.associateStack(resource);
 
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
+    });
+  });
+
+  describe('Resource sharing of an application', () => {
+    let application: appreg.Application;
+
+    beforeEach(() => {
+      application = new appreg.Application(stack, 'MyApplication', {
+        applicationName: 'MyApplication',
+      });
+    });
+
+    test('fails for sharing application without principals', () => {
+      expect(() => {
+        application.shareApplication({});
+      }).toThrow(/An entity must be provided for the share/);
+    });
+
+    test('share application with an organization', () => {
+      application.shareApplication({
+        organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: false,
+        Name: 'RAMSharee6e0e560e6f8',
+        Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+      });
+    });
+
+    test('share application with an account', () => {
+      application.shareApplication({
+        accounts: ['123456789012'],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: false,
+        Name: 'RAMSharee6e0e560e6f8',
+        Principals: ['123456789012'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+      });
+    });
+
+    test('share application with an IAM role', () => {
+      const myRole = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/myRole');
+
+      application.shareApplication({
+        roles: [myRole],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: false,
+        Name: 'RAMSharee6e0e560e6f8',
+        Principals: ['arn:aws:iam::123456789012:role/myRole'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+      });
+    });
+
+    test('share application with an IAM user', () => {
+      const myUser = iam.User.fromUserArn(stack, 'MyUser', 'arn:aws:iam::123456789012:user/myUser');
+
+      application.shareApplication({
+        users: [myUser],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: false,
+        Name: 'RAMSharee6e0e560e6f8',
+        Principals: ['arn:aws:iam::123456789012:user/myUser'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+      });
+    });
+
+    test('share application with organization, give explicit read only access to an application', () => {
+      application.shareApplication({
+        organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        sharePermission: appreg.SharePermission.READ_ONLY,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: false,
+        Name: 'RAMSharee6e0e560e6f8',
+        Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+      });
+    });
+
+    test('share application with organization, allow access to associate resources and attribute group with an application', () => {
+      application.shareApplication({
+        organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        sharePermission: appreg.SharePermission.ALLOW_ACCESS,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
+        AllowExternalPrincipals: false,
+        Name: 'RAMSharee6e0e560e6f8',
+        Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
+        ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
+        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation'],
+      });
     });
   });
 });

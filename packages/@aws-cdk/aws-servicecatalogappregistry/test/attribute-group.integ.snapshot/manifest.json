@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -19,6 +19,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TestAttributeGroupB1CB284F"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMSharec67f7d80e5ba": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAttributeGroupRAMSharec67f7d80e5baA10EFB4E"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/MyRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRoleF48FFE04"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/MySecondRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecondRoleB9F57405"
           }
         ]
       },
