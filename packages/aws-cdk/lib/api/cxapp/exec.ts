@@ -40,7 +40,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
   }
 
-  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['*'];
+  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['**'];
   context[cxapi.BUNDLING_STACKS] = bundlingStacks;
 
   debug('context:', context);
