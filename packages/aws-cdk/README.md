@@ -286,7 +286,7 @@ are written to the same output file where each stack artifact ID is a key in the
 
 
 ```console
-$ cdk deploy '*' --outputs-file "/Users/code/myproject/outputs.json"
+$ cdk deploy '**' --outputs-file "/Users/code/myproject/outputs.json"
 ```
 
 Example `outputs.json` after deployment of multiple stacks
