@@ -1,0 +1,37 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-cloudwatch-singlevaluewidget-sparkline-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-cloudwatch-singlevaluewidget-sparkline-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-cloudwatch-singlevaluewidget-sparkline-integ/Dashboard/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Dashboard9E4231ED"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-cloudwatch-singlevaluewidget-sparkline-integ"
+    },
+    "singlevaluewidgetwithsparklineDefaultTestDeployAssert6B085881": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "singlevaluewidgetwithsparklineDefaultTestDeployAssert6B085881.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "singlevaluewidget-with-sparkline/DefaultTest/DeployAssert"
+    }
+  }
+}
