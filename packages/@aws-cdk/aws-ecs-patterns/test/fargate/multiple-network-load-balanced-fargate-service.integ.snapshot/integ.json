@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ"
       ],
-      "assertionStack": "networkMultipleTargetGroupsFargateServiceTestDefaultTestDeployAssertC9049A80"
+      "assertionStack": "networkMultipleTargetGroupsFargateServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

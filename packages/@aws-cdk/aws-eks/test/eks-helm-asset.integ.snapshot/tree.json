@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.71"
+          "version": "10.1.78"
         }
       },
       "aws-cdk-eks-helm-test": {
@@ -946,7 +946,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2578,7 +2578,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.71"
+                      "version": "10.1.78"
                     }
                   }
                 },
@@ -2757,7 +2757,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.71"
+              "version": "10.1.78"
             }
           },
           "AssetParameters": {
@@ -2795,7 +2795,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6": {
@@ -2829,7 +2829,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671": {
@@ -2863,7 +2863,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "d01d4b7367b49a3e222279017fe50e41d6b2272d436b2e82038d0036deb2cdcb": {
@@ -2897,16 +2897,16 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
-              "2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1f": {
-                "id": "2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1f",
-                "path": "aws-cdk-eks-helm-test/AssetParameters/2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1f",
+              "1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284fa": {
+                "id": "1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284fa",
+                "path": "aws-cdk-eks-helm-test/AssetParameters/1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284fa",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-eks-helm-test/AssetParameters/2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1f/S3Bucket",
+                    "path": "aws-cdk-eks-helm-test/AssetParameters/1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284fa/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2914,7 +2914,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-eks-helm-test/AssetParameters/2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1f/S3VersionKey",
+                    "path": "aws-cdk-eks-helm-test/AssetParameters/1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284fa/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2922,7 +2922,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-eks-helm-test/AssetParameters/2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1f/ArtifactHash",
+                    "path": "aws-cdk-eks-helm-test/AssetParameters/1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284fa/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -2931,7 +2931,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed": {
@@ -2965,7 +2965,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "d65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbf": {
@@ -2999,7 +2999,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "23d9aaecaaac25aa00c2d4d0cf6a87da7efc67db9a8d6b8e44987e7ffd30a895": {
@@ -3033,16 +3033,16 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
-              "1f8c810dcdda44772604005acc12eaf255e7ac360e93d8b6c9566dc04dd65f4c": {
-                "id": "1f8c810dcdda44772604005acc12eaf255e7ac360e93d8b6c9566dc04dd65f4c",
-                "path": "aws-cdk-eks-helm-test/AssetParameters/1f8c810dcdda44772604005acc12eaf255e7ac360e93d8b6c9566dc04dd65f4c",
+              "cc722d01b8c6e985ff265f50e54d1dcf7d47d8da8a52298988c04f4ef435a025": {
+                "id": "cc722d01b8c6e985ff265f50e54d1dcf7d47d8da8a52298988c04f4ef435a025",
+                "path": "aws-cdk-eks-helm-test/AssetParameters/cc722d01b8c6e985ff265f50e54d1dcf7d47d8da8a52298988c04f4ef435a025",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-eks-helm-test/AssetParameters/1f8c810dcdda44772604005acc12eaf255e7ac360e93d8b6c9566dc04dd65f4c/S3Bucket",
+                    "path": "aws-cdk-eks-helm-test/AssetParameters/cc722d01b8c6e985ff265f50e54d1dcf7d47d8da8a52298988c04f4ef435a025/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3050,7 +3050,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-eks-helm-test/AssetParameters/1f8c810dcdda44772604005acc12eaf255e7ac360e93d8b6c9566dc04dd65f4c/S3VersionKey",
+                    "path": "aws-cdk-eks-helm-test/AssetParameters/cc722d01b8c6e985ff265f50e54d1dcf7d47d8da8a52298988c04f4ef435a025/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3058,7 +3058,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-eks-helm-test/AssetParameters/1f8c810dcdda44772604005acc12eaf255e7ac360e93d8b6c9566dc04dd65f4c/ArtifactHash",
+                    "path": "aws-cdk-eks-helm-test/AssetParameters/cc722d01b8c6e985ff265f50e54d1dcf7d47d8da8a52298988c04f4ef435a025/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3067,13 +3067,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.71"
+              "version": "10.1.78"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -3401,7 +3401,7 @@
                       "aws:cdk:cloudformation:props": {
                         "content": {
                           "s3Bucket": {
-                            "Ref": "referencetoawscdkekshelmtestAssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3Bucket592D9D6DRef"
+                            "Ref": "referencetoawscdkekshelmtestAssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3Bucket6B12FFD0Ref"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -3414,7 +3414,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawscdkekshelmtestAssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3VersionKeyDF046BF1Ref"
+                                          "Ref": "referencetoawscdkekshelmtestAssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3VersionKey5A27E2CBRef"
                                         }
                                       ]
                                     }
@@ -3427,7 +3427,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawscdkekshelmtestAssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3VersionKeyDF046BF1Ref"
+                                          "Ref": "referencetoawscdkekshelmtestAssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3VersionKey5A27E2CBRef"
                                         }
                                       ]
                                     }
@@ -3864,17 +3864,17 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkekshelmtestAssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3Bucket592D9D6DRef": {
-                "id": "reference-to-awscdkekshelmtestAssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3Bucket592D9D6DRef",
-                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestAssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3Bucket592D9D6DRef",
+              "reference-to-awscdkekshelmtestAssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3Bucket6B12FFD0Ref": {
+                "id": "reference-to-awscdkekshelmtestAssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3Bucket6B12FFD0Ref",
+                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestAssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3Bucket6B12FFD0Ref",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkekshelmtestAssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3VersionKeyDF046BF1Ref": {
-                "id": "reference-to-awscdkekshelmtestAssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3VersionKeyDF046BF1Ref",
-                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestAssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3VersionKeyDF046BF1Ref",
+              "reference-to-awscdkekshelmtestAssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3VersionKey5A27E2CBRef": {
+                "id": "reference-to-awscdkekshelmtestAssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3VersionKey5A27E2CBRef",
+                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestAssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3VersionKey5A27E2CBRef",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
@@ -3942,7 +3942,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters1f8c810dcdda44772604005acc12eaf255e7ac360e93d8b6c9566dc04dd65f4cS3BucketCA0BB1D1"
+                            "Ref": "AssetParameterscc722d01b8c6e985ff265f50e54d1dcf7d47d8da8a52298988c04f4ef435a025S3Bucket92C63AF8"
                           },
                           "/",
                           {
@@ -3952,7 +3952,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters1f8c810dcdda44772604005acc12eaf255e7ac360e93d8b6c9566dc04dd65f4cS3VersionKey48C7C8E3"
+                                    "Ref": "AssetParameterscc722d01b8c6e985ff265f50e54d1dcf7d47d8da8a52298988c04f4ef435a025S3VersionKey2A6C744C"
                                   }
                                 ]
                               }
@@ -3965,7 +3965,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters1f8c810dcdda44772604005acc12eaf255e7ac360e93d8b6c9566dc04dd65f4cS3VersionKey48C7C8E3"
+                                    "Ref": "AssetParameterscc722d01b8c6e985ff265f50e54d1dcf7d47d8da8a52298988c04f4ef435a025S3VersionKey2A6C744C"
                                   }
                                 ]
                               }
@@ -4008,11 +4008,11 @@
                           "ClusterSecurityGroupId"
                         ]
                       },
-                      "referencetoawscdkekshelmtestAssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3Bucket592D9D6DRef": {
-                        "Ref": "AssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3Bucket77E96E4C"
+                      "referencetoawscdkekshelmtestAssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3Bucket6B12FFD0Ref": {
+                        "Ref": "AssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3Bucket4457F0E8"
                       },
-                      "referencetoawscdkekshelmtestAssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3VersionKeyDF046BF1Ref": {
-                        "Ref": "AssetParameters2cbb4c8a663eb2c903e9cef3ad44c9b47d48b0a2cd35dfc270a23bf93b2ecf1fS3VersionKeyEAB8574C"
+                      "referencetoawscdkekshelmtestAssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3VersionKey5A27E2CBRef": {
+                        "Ref": "AssetParameters1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284faS3VersionKeyD347D3A4"
                       },
                       "referencetoawscdkekshelmtestAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket8229D3A2Ref": {
                         "Ref": "AssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket83B8778F"
@@ -4037,7 +4037,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.71"
+              "version": "10.1.78"
             }
           },
           "ChartAsset": {
