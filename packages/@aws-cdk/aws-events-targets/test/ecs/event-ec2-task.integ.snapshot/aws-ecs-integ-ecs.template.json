@@ -117,7 +117,11 @@
       "Value": "aws-ecs-integ-ecs/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",

@@ -21,7 +21,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-eks-call-integ');
 
 const cluster = new eks.Cluster(stack, 'EksCluster', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_21,
   clusterName: 'eksCluster',
 });
 

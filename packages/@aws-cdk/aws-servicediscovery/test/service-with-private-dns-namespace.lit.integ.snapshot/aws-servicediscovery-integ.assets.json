@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "files": {
-    "d0b994983cc3cd6c314558cfe207b6dee3d75c2b30ac611f4cf4e2a657af5375": {
+    "97a579c830419a5af500e74a5c84ccc3eb3b5e9171fdb3f6d56d8b87232a998e": {
       "source": {
         "path": "aws-servicediscovery-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d0b994983cc3cd6c314558cfe207b6dee3d75c2b30ac611f4cf4e2a657af5375.json",
+          "objectKey": "97a579c830419a5af500e74a5c84ccc3eb3b5e9171fdb3f6d56d8b87232a998e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
