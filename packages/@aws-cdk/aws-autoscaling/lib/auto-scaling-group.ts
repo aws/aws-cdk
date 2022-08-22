@@ -80,6 +80,8 @@ export interface CommonAutoScalingGroupProps {
   /**
    * Name of SSH keypair to grant access to instances
    *
+   * Cannot specify this property when `launchTemplate` or `mixedInstancesPolicy` are specified
+   *
    * @default - No SSH access will be possible.
    */
   readonly keyName?: string;
@@ -190,6 +192,8 @@ export interface CommonAutoScalingGroupProps {
    * Whether instances in the Auto Scaling Group should have public
    * IP addresses associated with them.
    *
+   * Cannot specify this property when `launchTemplate` or `mixedInstancesPolicy` are specified
+   *
    * @default - Use subnet setting.
    */
   readonly associatePublicIpAddress?: boolean;
@@ -197,6 +201,8 @@ export interface CommonAutoScalingGroupProps {
   /**
    * The maximum hourly price (in USD) to be paid for any Spot Instance launched to fulfill the request. Spot Instances are
    * launched when the price you specify exceeds the current Spot market price.
+   *
+   * Cannot specify this property when `launchTemplate` or `mixedInstancesPolicy` are specified
    *
    * @default none
    */
@@ -216,6 +222,8 @@ export interface CommonAutoScalingGroupProps {
    * either an Amazon EBS volume or an instance store volume.
    * You can use block device mappings to specify additional EBS volumes or
    * instance store volumes to attach to an instance when it is launched.
+   *
+   * Cannot specify this property when `launchTemplate` or `mixedInstancesPolicy` are specified
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
    *
@@ -242,6 +250,8 @@ export interface CommonAutoScalingGroupProps {
    *
    * When detailed monitoring is enabled, Amazon CloudWatch generates metrics every minute and your account
    * is charged a fee. When you disable detailed monitoring, CloudWatch generates metrics every 5 minutes.
+   *
+   * Cannot specify this property when `launchTemplate` or `mixedInstancesPolicy` are specified
    *
    * @see https://docs.aws.amazon.com/autoscaling/latest/userguide/as-instance-monitoring.html#enable-as-instance-metrics
    *
@@ -543,7 +553,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * Type of instance to launch
    *
-   * `launchTemplate` must not be specified when this property is specified.
+   * Cannot specify this property when `launchTemplate` or `mixedInstancesPolicy` are specified
    *
    * @default - Do not provide any instance type
    */
@@ -552,7 +562,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * AMI to launch
    *
-   * `launchTemplate` must not be specified when this property is specified.
+   * Cannot specify this property when `launchTemplate` or `mixedInstancesPolicy` are specified
    *
    * @default - Do not provide any machine image
    */
@@ -561,7 +571,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * Security group to launch the instances in.
    *
-   * `launchTemplate` must not be specified when this property is specified.
+   * Cannot specify this property when `launchTemplate` or `mixedInstancesPolicy` are specified
    *
    * @default - A SecurityGroup will be created if none is specified.
    */
@@ -572,7 +582,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * The UserData may still be mutated after creation.
    *
-   * `launchTemplate` must not be specified when this property is specified.
+   * Cannot specify this property when `launchTemplate` or `mixedInstancesPolicy` are specified
    *
    * @default - A UserData object appropriate for the MachineImage's
    * Operating System is created.
@@ -584,7 +594,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * The role must be assumable by the service principal `ec2.amazonaws.com`:
    *
-   * `launchTemplate` must not be specified when this property is specified.
+   * Cannot specify this property when `launchTemplate` or `mixedInstancesPolicy` are specified
    *
    * @example
    *
@@ -1523,7 +1533,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (props.instanceMonitoring) {
       throw new Error('Setting \'instanceMonitoring\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
     }
-    if (props.associatePublicIpAddress) {
+    if (props.associatePublicIpAddress || props.associatePublicIpAddress === false) {
       throw new Error('Setting \'associatePublicIpAddress\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
     }
     if (props.spotPrice) {
