@@ -139,3 +139,6 @@ removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.onFai
 
 # removed kubernetes version from EKS
 removed:@aws-cdk/aws-eks.KubernetesVersion.V1_22
+
+#configFileValue is unnecessarily required; not a breaking change
+weakened:@aws-cdk/aws-ecs.FirelensOptions
