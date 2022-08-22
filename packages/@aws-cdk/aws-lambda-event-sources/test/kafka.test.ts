@@ -240,7 +240,7 @@ describe('KafkaEventSource', () => {
             topic: kafkaTopic,
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
             vpc: vpc,
-            vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+            vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             securityGroup: sg,
           }));
 
@@ -300,7 +300,7 @@ describe('KafkaEventSource', () => {
             secret: secret,
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
             vpc: vpc,
-            vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+            vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             securityGroup: sg,
           }));
 
@@ -411,7 +411,7 @@ describe('KafkaEventSource', () => {
               secret: secret,
               startingPosition: lambda.StartingPosition.TRIM_HORIZON,
               vpc: vpc,
-              vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+              vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             }));
         }).toThrow(/securityGroup must be set/);
 
@@ -437,7 +437,7 @@ describe('KafkaEventSource', () => {
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.SASL_SCRAM_256_AUTH,
         }));
@@ -472,7 +472,7 @@ describe('KafkaEventSource', () => {
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.BASIC_AUTH,
         }));
@@ -507,7 +507,7 @@ describe('KafkaEventSource', () => {
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
         }));
@@ -543,7 +543,7 @@ describe('KafkaEventSource', () => {
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
           rootCACertificate: rootCACertificate,
@@ -584,7 +584,7 @@ describe('KafkaEventSource', () => {
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           rootCACertificate: rootCACertificate,
         }));
@@ -619,7 +619,7 @@ describe('KafkaEventSource', () => {
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           rootCACertificate: rootCACertificate,
         }));

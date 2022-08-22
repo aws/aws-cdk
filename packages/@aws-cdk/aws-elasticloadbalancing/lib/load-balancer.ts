@@ -477,7 +477,7 @@ function loadBalancerSubnets(props: LoadBalancerProps): SelectedSubnets {
     });
   } else {
     return props.vpc.selectSubnets({
-      subnetType: SubnetType.PRIVATE_WITH_NAT,
+      subnetType: SubnetType.PRIVATE_WITH_EGRESS,
     });
   }
 }
