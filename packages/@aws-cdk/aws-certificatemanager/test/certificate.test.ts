@@ -84,15 +84,11 @@ test('can configure validation method', () => {
 test('throws when domain name is longer than 64 characters', () => {
   const stack = new Stack();
 
-  new Certificate(stack, 'Certificate', {
-    domainName: 'test.example.com'.repeat(7),
-  });
-  
   expect(() => {
     new Certificate(stack, 'Certificate', {
       domainName: 'example.com'.repeat(7),
     });
-  }).toThrow(/Domain name must be less than 64 characters/);
+  }).toThrow(/Domain name must be 64 characters or less/);
 })
 
 test('needs validation domain supplied if domain contains a token', () => {
@@ -337,3 +333,47 @@ test('CertificateValidation.fromDnsMultiZone', () => {
   });
 });
 
+<<<<<<< HEAD
+=======
+describe('Transparency logging settings', () => {
+  test('leaves transparency logging untouched by default', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+    });
+
+    const certificateNodes = Template.fromStack(stack).findResources('AWS::CertificateManager::Certificate');
+    expect(certificateNodes.Certificate4E7ABB08).toBeDefined();
+    expect(certificateNodes.Certificate4E7ABB08.CertificateTransparencyLoggingPreference).toBeUndefined();
+  });
+
+  test('can enable transparency logging', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      transparencyLoggingEnabled: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      CertificateTransparencyLoggingPreference: 'ENABLED',
+    });
+  });
+
+  test('can disable transparency logging', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      transparencyLoggingEnabled: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      CertificateTransparencyLoggingPreference: 'DISABLED',
+    });
+  });
+});
+>>>>>>> 85b6db054 (feat(certificatemanager): Allow opting out of transparency logging (#21686))
