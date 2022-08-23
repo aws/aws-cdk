@@ -133,7 +133,7 @@ Transparency logging can be opted out of for AWS Certificate Manager certificate
 ```ts
 new acm.Certificate(this, 'Certificate', {
   domainName: 'test.example.com',
-  certificateTransparencyLoggingPreference: acm.TransparencyLoggingPreference.DISABLED,
+  transparencyLoggingEnabled: false,
 });
 ```
 
