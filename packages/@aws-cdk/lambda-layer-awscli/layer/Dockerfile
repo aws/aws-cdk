@@ -31,8 +31,7 @@ RUN mv /opt/awscli/bin/aws /opt/awscli
 RUN rm -rf \
     /opt/awscli/pip* \
     /opt/awscli/setuptools* \
-    && cd /opt/awscli/awscli/examples \
-    && rm -rf $(ls | grep -v global_options.rst)
+    $(ls -d /opt/awscli/awscli/examples | grep -v global_options.rst)
 
 #
 # Test that the CLI works
