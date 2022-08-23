@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.51"
+          "version": "10.1.78"
         }
       },
       "aws-ecs-integ": {
@@ -1269,7 +1269,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.51"
+                      "version": "10.1.78"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -2168,7 +2168,7 @@
                 "path": "Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.51"
+                  "version": "10.1.78"
                 }
               },
               "DeployAssert": {
