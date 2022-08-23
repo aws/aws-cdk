@@ -1,0 +1,21 @@
+{
+ "Resources": {
+  "Dashboard9E4231ED": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":0,\"properties\":{\"view\":\"singleValue\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"sparkline\":true,\"metrics\":[[\"CDK/Test\",\"Metric\"]]}}]}"
+      ]
+     ]
+    }
+   }
+  }
+ }
+}

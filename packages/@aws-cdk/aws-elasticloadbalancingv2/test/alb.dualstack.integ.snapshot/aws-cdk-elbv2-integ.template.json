@@ -142,7 +142,11 @@
       "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
   },
   "VPCPublicSubnet1IPv6DefaultFD18367E": {
    "Type": "AWS::EC2::Route",
@@ -283,7 +287,11 @@
       "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
   },
   "VPCPublicSubnet2IPv6DefaultDD0476C2": {
    "Type": "AWS::EC2::Route",
@@ -497,7 +505,9 @@
    },
    "DependsOn": [
     "VPCPublicSubnet1DefaultRoute91CEF279",
-    "VPCPublicSubnet2DefaultRouteB7481BBA"
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
    ]
   },
   "LBSecurityGroup8A41EA2B": {

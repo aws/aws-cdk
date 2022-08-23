@@ -180,6 +180,15 @@
         ]
       },
       "displayName": "aws-ecs-integ-fargate"
+    },
+    "EcsFargateTestDefaultTestDeployAssert36341BFB": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EcsFargateTestDefaultTestDeployAssert36341BFB.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "EcsFargateTest/DefaultTest/DeployAssert"
     }
   }
 }

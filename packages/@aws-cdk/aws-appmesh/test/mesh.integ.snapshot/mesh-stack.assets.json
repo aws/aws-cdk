@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "files": {
-    "be244c434fce5ce2d030a96121c147910d423314d1807320ddf66a562a53550d": {
+    "ec4bc0974fc8b71ab8d34be8fe53f41a594bd0c03588e03d5a46ac8919288992": {
       "source": {
         "path": "mesh-stack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "be244c434fce5ce2d030a96121c147910d423314d1807320ddf66a562a53550d.json",
+          "objectKey": "ec4bc0974fc8b71ab8d34be8fe53f41a594bd0c03588e03d5a46ac8919288992.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
