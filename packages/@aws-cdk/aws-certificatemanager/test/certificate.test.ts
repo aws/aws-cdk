@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as route53 from '@aws-cdk/aws-route53';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
-import { Certificate, CertificateValidation, TransparencyLoggingPreference } from '../lib';
+import { Certificate, CertificateValidation } from '../lib';
 
 test('apex domain selection by default', () => {
   const stack = new Stack();
@@ -341,7 +341,7 @@ describe('Transparency logging settings', () => {
 
     new Certificate(stack, 'Certificate', {
       domainName: 'test.example.com',
-      certificateTransparencyLoggingPreference: TransparencyLoggingPreference.ENABLED,
+      transparencyLoggingEnabled: true,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
@@ -355,7 +355,7 @@ describe('Transparency logging settings', () => {
 
     new Certificate(stack, 'Certificate', {
       domainName: 'test.example.com',
-      certificateTransparencyLoggingPreference: TransparencyLoggingPreference.DISABLED,
+      transparencyLoggingEnabled: false,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {

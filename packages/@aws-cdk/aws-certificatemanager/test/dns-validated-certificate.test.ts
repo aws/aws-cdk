@@ -2,7 +2,6 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, Stack, Token, Tags } from '@aws-cdk/core';
-import { TransparencyLoggingPreference } from '../lib';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
 test('creates CloudFormation Custom Resource', () => {
@@ -236,7 +235,7 @@ test('test transparency logging settings is passed to the custom resource', () =
   new DnsValidatedCertificate(stack, 'Cert', {
     domainName: 'example.com',
     hostedZone: exampleDotComZone,
-    certificateTransparencyLoggingPreference: TransparencyLoggingPreference.DISABLED,
+    transparencyLoggingEnabled: false,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {

@@ -76,9 +76,17 @@ export interface CertificateProps {
   /**
    * Enable or disable transparency logging for this certificate
    *
-   * @default TransparencyLoggingPreference.ENABLED
+   * Once a certificate has been logged, it cannot be removed from the log.
+   * Opting out at that point will have no effect. If you opt out of logging
+   * when you request a certificate and then choose later to opt back in,
+   * your certificate will not be logged until it is renewed.
+   * If you want the certificate to be logged immediately, we recommend that you issue a new one.
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency
+   *
+   * @default true
    */
-  readonly certificateTransparencyLoggingPreference?: TransparencyLoggingPreference;
+  readonly transparencyLoggingEnabled?: boolean;
 }
 
 /**
@@ -221,9 +229,9 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
-    let certificateTransparencyLoggingPreference: TransparencyLoggingPreference | undefined;
-    if (props.certificateTransparencyLoggingPreference) {
-      certificateTransparencyLoggingPreference = props.certificateTransparencyLoggingPreference;
+    let certificateTransparencyLoggingPreference: string | undefined;
+    if (props.transparencyLoggingEnabled !== undefined) {
+      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
     }
 
     const cert = new CfnCertificate(this, 'Resource', {
@@ -255,23 +263,6 @@ export enum ValidationMethod {
    * @see https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html
    */
   DNS = 'DNS',
-}
-
-/**
- * Value to enable or disable transparency logging
- *
- * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency
- */
-export enum TransparencyLoggingPreference {
-  /**
-   * Enable transparency logging
-   */
-  ENABLED = 'ENABLED',
-
-  /**
-   * Disable transparency logging
-   */
-  DISABLED = 'DISABLED',
 }
 
 // eslint-disable-next-line max-len
