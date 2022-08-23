@@ -98,6 +98,7 @@ export interface QueueProcessingServiceBaseProps {
    * The maximum number of times that a message can be received by consumers.
    * When this value is exceeded for a message the message will be automatically sent to the Dead Letter Queue.
    *
+   * If the queue construct is specified, maxReceiveCount should be omitted.
    * @default 3
    */
   readonly maxReceiveCount?: number;
@@ -106,6 +107,7 @@ export interface QueueProcessingServiceBaseProps {
    * Timeout of processing a single message. After dequeuing, the processor has this much time to handle the message and delete it from the queue
    * before it becomes visible again for dequeueing by another processor. Values must be between 0 and (12 hours).
    *
+   * If the queue construct is specified, visibilityTimeout should be omitted.
    * @default Duration.seconds(30)
    */
   readonly visibilityTimeout?: Duration;
@@ -113,6 +115,7 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The number of seconds that Dead Letter Queue retains a message.
    *
+   * If the queue construct is specified, retentionPeriod should be omitted.
    * @default Duration.days(14)
    */
   readonly retentionPeriod?: Duration;
@@ -288,6 +291,9 @@ export abstract class QueueProcessingServiceBase extends Construct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
+    if (props.queue && (props.retentionPeriod || props.visibilityTimeout || props.maxReceiveCount)) {
+      throw new Error('retentionPeriod, visibilityTimeout and maxReceiveCount can be set only when queue is not set. Specify them in the QueueProps of the queue');
+    }
     // Create the SQS queue and it's corresponding DLQ if one is not provided
     if (props.queue) {
       this.sqsQueue = props.queue;
