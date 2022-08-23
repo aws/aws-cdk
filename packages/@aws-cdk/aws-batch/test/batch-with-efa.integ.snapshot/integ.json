@@ -5,7 +5,7 @@
       "stacks": [
         "batch-stack"
       ],
-      "assertionStack": "BatchWithEFATestDefaultTestDeployAssertDAD33663"
+      "assertionStack": "BatchWithEFATest/DefaultTest/DeployAssert"
     }
   }
 }
