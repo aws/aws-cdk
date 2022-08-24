@@ -292,7 +292,8 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
     if (props.queue && (props.retentionPeriod || props.visibilityTimeout || props.maxReceiveCount)) {
-      throw new Error('retentionPeriod, visibilityTimeout and maxReceiveCount can be set only when queue is not set. Specify them in the QueueProps of the queue');
+      const errorProps = ['retentionPeriod', 'visibilityTimeout', 'maxReceiveCount'].filter(prop => props.hasOwnProperty(prop));
+      throw new Error(`${errorProps.join(', ')} can be set only when queue is not set. Specify them in the QueueProps of the queue`);
     }
     // Create the SQS queue and it's corresponding DLQ if one is not provided
     if (props.queue) {
