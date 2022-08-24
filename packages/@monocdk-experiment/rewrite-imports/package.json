@@ -38,7 +38,7 @@
   "devDependencies": {
     "@types/glob": "^7.2.0",
     "@types/jest": "^27.5.2",
-    "@types/node": "^14.18.24",
+    "@types/node": "^14.18.26",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0"
   },
