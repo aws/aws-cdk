@@ -6,12 +6,7 @@ import { JobDefinition } from "../lib";
 
 const app = new App();
 
-const stack = new Stack(app, "BatchDefaultEnvVarsStack", {
-  env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION,
-  },
-});
+const stack = new Stack(app, "BatchDefaultEnvVarsStack");
 
 new JobDefinition(stack, "JobDefinition", {
   container: {

@@ -1,0 +1,30 @@
+{
+ "Resources": {
+  "Bucket83908E77": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefBucket83908E7781C90AC0": {
+   "Value": {
+    "Ref": "Bucket83908E77"
+   },
+   "Export": {
+    "Name": "BucketStack:ExportsOutputRefBucket83908E7781C90AC0"
+   }
+  },
+  "ExportsOutputFnGetAttBucket83908E77Arn063C8555": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Bucket83908E77",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "BucketStack:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+   }
+  }
+ }
+}

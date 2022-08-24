@@ -120,7 +120,11 @@
       "Value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "FargateClusterVpcPublicSubnet1DefaultRoute80086690",
+    "FargateClusterVpcPublicSubnet1RouteTableAssociation80F1442F"
+   ]
   },
   "FargateClusterVpcPublicSubnet2Subnet24C0F9D8": {
    "Type": "AWS::EC2::Subnet",
@@ -224,7 +228,11 @@
       "Value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "FargateClusterVpcPublicSubnet2DefaultRoute8E847CD2",
+    "FargateClusterVpcPublicSubnet2RouteTableAssociation3EFA74DC"
+   ]
   },
   "FargateClusterVpcPrivateSubnet1Subnet9127625F": {
    "Type": "AWS::EC2::Subnet",

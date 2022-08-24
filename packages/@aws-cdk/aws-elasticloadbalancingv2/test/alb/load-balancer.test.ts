@@ -47,7 +47,9 @@ describe('tests', () => {
     Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       DependsOn: [
         'StackPublicSubnet1DefaultRoute16154E3D',
+        'StackPublicSubnet1RouteTableAssociation74F1C1B6',
         'StackPublicSubnet2DefaultRoute0319539B',
+        'StackPublicSubnet2RouteTableAssociation5E8F73F1',
       ],
     });
   });

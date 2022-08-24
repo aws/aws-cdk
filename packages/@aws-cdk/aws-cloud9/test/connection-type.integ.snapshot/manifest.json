@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,166 +7,175 @@
         "file": "tree.json"
       }
     },
-    "C9Stack": {
+    "C9ConnectionTypeStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "C9Stack.template.json",
+        "templateFile": "C9ConnectionTypeStack.template.json",
         "validateOnSynth": false
       },
       "metadata": {
-        "/C9Stack/VPC/Resource": [
+        "/C9ConnectionTypeStack/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/Subnet": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/RouteTable": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/DefaultRoute": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/EIP": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/NATGateway": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet2/Subnet": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet2/RouteTable": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet2/DefaultRoute": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet1/Subnet": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet1/RouteTable": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet1/DefaultRoute": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet2/Subnet": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet2/RouteTable": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet2/DefaultRoute": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/C9Stack/VPC/IGW": [
+        "/C9ConnectionTypeStack/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/C9Stack/VPC/VPCGW": [
+        "/C9ConnectionTypeStack/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/C9Stack/Repo/Resource": [
+        "/C9ConnectionTypeStack/Repo/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Repo02AC86CF"
           }
         ],
-        "/C9Stack/C9Env/Resource": [
+        "/C9ConnectionTypeStack/C9Env/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "C9EnvF05FC3BE"
           }
         ],
-        "/C9Stack/URL": [
+        "/C9ConnectionTypeStack/URL": [
           {
             "type": "aws:cdk:logicalId",
             "data": "URL"
           }
         ],
-        "/C9Stack/ARN": [
+        "/C9ConnectionTypeStack/ARN": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ARN"
           }
         ]
       },
-      "displayName": "C9Stack"
+      "displayName": "C9ConnectionTypeStack"
+    },
+    "cloud9connectiontypeDefaultTestDeployAssert401C3608": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cloud9connectiontypeDefaultTestDeployAssert401C3608.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "cloud-9-connection-type/DefaultTest/DeployAssert"
     }
   }
 }

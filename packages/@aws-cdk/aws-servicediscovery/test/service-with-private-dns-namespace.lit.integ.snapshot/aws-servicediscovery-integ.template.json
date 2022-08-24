@@ -117,7 +117,11 @@
       "Value": "aws-servicediscovery-integ/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "aws-servicediscovery-integ/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+   ]
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -442,6 +450,33 @@
     "InstanceId": "awsservicediscoveryintegNamespaceServiceLoadbalancerA3D252B2"
    }
   },
+  "NamespaceArnService1F427735": {
+   "Type": "AWS::ServiceDiscovery::Service",
+   "Properties": {
+    "NamespaceId": {
+     "Fn::GetAtt": [
+      "Namespace9B63B8C8",
+      "Id"
+     ]
+    },
+    "Type": "HTTP"
+   }
+  },
+  "NamespaceArnServiceNonIpInstance91BB57CE": {
+   "Type": "AWS::ServiceDiscovery::Instance",
+   "Properties": {
+    "InstanceAttributes": {
+     "arn": "arn://"
+    },
+    "ServiceId": {
+     "Fn::GetAtt": [
+      "NamespaceArnService1F427735",
+      "Id"
+     ]
+    },
+    "InstanceId": "awsservicediscoveryintegNamespaceArnServiceNonIpInstance80DE1A4E"
+   }
+  },
   "LB8A12904C": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
@@ -472,7 +507,9 @@
    },
    "DependsOn": [
     "VpcPublicSubnet1DefaultRoute3DA9E72A",
-    "VpcPublicSubnet2DefaultRoute97F91067"
+    "VpcPublicSubnet1RouteTableAssociation97140677",
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
    ]
   },
   "LBSecurityGroup8A41EA2B": {

@@ -1,5 +1,12 @@
 {
  "Resources": {
+  "ServiceLinkedRole": {
+   "Type": "AWS::IAM::ServiceLinkedRole",
+   "Properties": {
+    "AWSServiceName": "opensearchservice.amazonaws.com",
+    "Description": "Role for OpenSearch VPC Test"
+   }
+  },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -117,7 +124,11 @@
       "Value": "cdk-integ-opensearch-vpc/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +232,11 @@
       "Value": "cdk-integ-opensearch-vpc/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+   ]
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -397,7 +412,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "ServiceLinkedRole"
+   ]
   },
   "Domain66AC69E0": {
    "Type": "AWS::OpenSearchService::Domain",
@@ -447,6 +465,9 @@
      ]
     }
    },
+   "DependsOn": [
+    "ServiceLinkedRole"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }

@@ -82,10 +82,11 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "@types/lodash": "^4.14.182",
+    "@types/lodash": "^4.14.183",
     "jest": "^27.5.1",
     "lodash": "^4.17.21"
   },

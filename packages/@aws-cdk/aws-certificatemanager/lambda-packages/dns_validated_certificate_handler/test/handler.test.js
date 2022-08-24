@@ -133,7 +133,10 @@ describe('DNS Validated Certificate Handler', () => {
       .expectResolve(() => {
         sinon.assert.calledWith(requestCertificateFake, sinon.match({
           DomainName: testDomainName,
-          ValidationMethod: 'DNS'
+          ValidationMethod: 'DNS',
+          Options: {
+            CertificateTransparencyLoggingPreference: undefined
+          }
         }));
         sinon.assert.calledWith(changeResourceRecordSetsFake, sinon.match({
           ChangeBatch: {
@@ -726,6 +729,72 @@ describe('DNS Validated Certificate Handler', () => {
         sinon.assert.neverCalledWith(addTagsToCertificateFake, sinon.match({
           "CertificateArn": testCertificateArn,
           "Tags": testTagsValue,
+        }));
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
+  test('Create operation with `CertificateTransparencyLoggingPreference` requests a certificate with that preference set', () => {
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+
+    const describeCertificateFake = sinon.stub();
+    describeCertificateFake.onFirstCall().resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn
+      }
+    });
+    describeCertificateFake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+        DomainValidationOptions: [{
+          ValidationStatus: 'SUCCESS',
+          ResourceRecord: {
+            Name: testRRName,
+            Type: 'CNAME',
+            Value: testRRValue
+          }
+        }]
+      }
+    });
+
+    const addTagsToCertificateFake = sinon.fake.resolves({});
+
+    const changeResourceRecordSetsFake = sinon.fake.resolves({
+      ChangeInfo: {
+        Id: 'bogus'
+      }
+    });
+
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+    AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
+    AWS.mock('ACM', 'addTagsToCertificate', addTagsToCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'SUCCESS';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1',
+          CertificateTransparencyLoggingPreference: 'DISABLED',
+          Tags: testTags
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
+          DomainName: testDomainName,
+          ValidationMethod: 'DNS',
+          Options: {
+            CertificateTransparencyLoggingPreference: 'DISABLED'
+          }
         }));
         expect(request.isDone()).toBe(true);
       });

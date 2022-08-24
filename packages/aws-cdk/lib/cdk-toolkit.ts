@@ -14,6 +14,7 @@ import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+import { buildAllStackAssets } from './build';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning } from './logging';
@@ -166,6 +167,28 @@ export class CdkToolkit {
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
+    const buildStackAssets = async (stack: cxapi.CloudFormationStackArtifact) => {
+      // Check whether the stack has an asset manifest before trying to build and publish.
+      if (!stack.dependencies.some(cxapi.AssetManifestArtifact.isAssetManifestArtifact)) {
+        return;
+      }
+
+      print('%s: building assets...\n', chalk.bold(stack.displayName));
+      await this.props.cloudFormation.buildStackAssets({
+        stack,
+        roleArn: options.roleArn,
+        toolkitStackName: options.toolkitStackName,
+      });
+      print('\n%s: assets built\n', chalk.bold(stack.displayName));
+    };
+
+    try {
+      await buildAllStackAssets(stacks.stackArtifacts, { buildStackAssets });
+    } catch (e) {
+      error('\n ❌ Building assets failed: %s', e);
+      throw e;
+    }
+
     for (const stack of stacks.stackArtifacts) {
       if (stacks.stackCount !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
@@ -179,7 +202,7 @@ export class CdkToolkit {
         } else {
           warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
           await this.destroy({
-            selector: { patterns: [stack.stackName] },
+            selector: { patterns: [stack.hierarchicalId] },
             exclusively: true,
             force: true,
             roleArn: options.roleArn,
@@ -234,6 +257,7 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
+          buildAssets: false,
         });
 
         const message = result.noOp

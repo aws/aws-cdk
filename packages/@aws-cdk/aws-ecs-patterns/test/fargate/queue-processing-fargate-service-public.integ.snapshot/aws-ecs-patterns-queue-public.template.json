@@ -117,7 +117,11 @@
       "Value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
   },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
@@ -461,7 +469,6 @@
    "Properties": {
     "ContainerDefinitions": [
      {
-      "Cpu": 256,
       "Environment": [
        {
         "Name": "QUEUE_NAME",
@@ -514,7 +521,6 @@
         }
        }
       },
-      "Memory": 512,
       "Name": "QueueProcessingContainer"
      }
     ],
