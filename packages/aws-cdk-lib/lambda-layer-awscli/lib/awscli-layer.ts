@@ -19,7 +19,8 @@ export class AwsCliLayer implements lambda.ILayerVersion {
   constructor(scope: Construct, id: string) {
     // eslint-disable-next-line no-console
     console.log('loading package');
-    console.log(require.resolve('@aws-cdk/lambda-layer-awscli'));
+    // automatically get this version from version.v2.json.version-1
+    console.log(require.resolve('@aws-cdk/lambda-layer-awscli@2.36.0'));
     // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
     this.package = require('@aws-cdk/lambda-layer-awscli');
     console.log(Object.keys(this.package));
