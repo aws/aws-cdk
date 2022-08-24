@@ -1106,7 +1106,7 @@ cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
 - The `cdk.json` file via the `context` key:
 ```json
 {
-  context: {
+  "context": {
     "@aws-cdk/core:newStyleStackSynthesis": true
   }
 }
@@ -1122,7 +1122,7 @@ cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
 - The `~/.cdk.json` file via the `context` key:
 ```json
 {
-  context: {
+  "context": {
     "@aws-cdk/core:newStyleStackSynthesis": true
   }
 }
