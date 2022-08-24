@@ -1084,12 +1084,14 @@ where context can be specified. They are listed below in the order they are eval
 top take precedence over those below).
 
 - The `node.setContext()` method
+
 ```ts
 const app = new App();
-app.node.setContext('@aws-cdk/core:newStyleStackSynthesis': true);
+app.node.setContext('@aws-cdk/core:newStyleStackSynthesis', true);
 ```
 
 - The `finalContext` prop when you create an `App`
+
 ```ts
 new App({
   finalContext: {
@@ -1099,11 +1101,13 @@ new App({
 ```
 
 - The CLI via the `--context` CLI argument
+
 ```console
 cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
 ```
 
 - The `cdk.json` file via the `context` key:
+
 ```json
 {
   "context": {
@@ -1113,6 +1117,7 @@ cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
 ```
 
 - The `cdk.context.json` file:
+
 ```json
 {
   "@aws-cdk/core:newStyleStackSynthesis": true
@@ -1120,6 +1125,7 @@ cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
 ```
 
 - The `~/.cdk.json` file via the `context` key:
+
 ```json
 {
   "context": {
@@ -1129,6 +1135,7 @@ cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
 ```
 
 - The `context` prop when you create an `App`
+
 ```ts
 new App({
   context: {

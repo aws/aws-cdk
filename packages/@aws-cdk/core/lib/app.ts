@@ -80,10 +80,12 @@ export interface AppProps {
    * This property is recommended over the {@link AppProps.context} property since you
    * can make final decision over which context value to take in your app.
    *
+   * Context can be read from any construct using `node.getContext(key)`.
+   *
    * @example
    * // context from the CLI and from `cdk.json` are stored in the
    * // CDK_CONTEXT env variable
-   * const cliContext = process.env.CDK_CONTEXT;
+   * const cliContext = JSON.parse(process.env.CDK_CONTEXT!);
    *
    * // determine whether to take the context passed in the CLI or not
    * const determineValue = process.env.PROD ? cliContext.SOMEKEY : 'my-prod-value';
@@ -92,8 +94,6 @@ export interface AppProps {
    *     SOMEKEY: determineValue,
    *   },
    * });
-   *
-   * Context can be read from any construct using `node.getContext(key)`.
    *
    * @default - no additional context
    */
