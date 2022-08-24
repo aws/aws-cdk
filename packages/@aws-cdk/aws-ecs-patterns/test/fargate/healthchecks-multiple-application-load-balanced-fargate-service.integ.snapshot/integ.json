@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ"
       ],
-      "assertionStack": "IntegDefaultTestDeployAssert4E6713E1"
+      "assertionStack": "Integ/DefaultTest/DeployAssert"
     }
   }
 }
