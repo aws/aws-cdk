@@ -1,7 +1,14 @@
 import * as path from 'path';
+<<<<<<< HEAD
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib/core';
 import * as cr from 'aws-cdk-lib/custom-resources';
+=======
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
+import * as integ from '@aws-cdk/integ-tests';
+>>>>>>> main
 
 import { AwsCliLayer } from '../lib';
 
@@ -10,7 +17,6 @@ import { AwsCliLayer } from '../lib';
  */
 
 const app = new cdk.App();
-
 const stack = new cdk.Stack(app, 'lambda-layer-awscli-integ-stack');
 const layer = new AwsCliLayer(stack, 'AwsCliLayer');
 
@@ -35,5 +41,9 @@ for (const runtime of runtimes) {
     serviceToken: provider.serviceToken,
   });
 }
+
+new integ.IntegTest(app, 'lambda-layer-awscli-integ-test', {
+  testCases: [stack],
+});
 
 app.synth();

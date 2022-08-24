@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.51"
+          "version": "10.1.78"
         }
       },
       "aws-ecs-integ": {
@@ -1150,7 +1150,6 @@
                           {
                             "essential": true,
                             "image": "amazon/amazon-ecs-sample",
-                            "memory": 512,
                             "name": "web",
                             "portMappings": [
                               {
@@ -1512,7 +1511,7 @@
                 "path": "Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.51"
+                  "version": "10.1.78"
                 }
               },
               "DeployAssert": {

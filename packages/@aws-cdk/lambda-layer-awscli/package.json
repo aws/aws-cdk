@@ -74,6 +74,7 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "aws-cdk-lib": "2.0.0",
     "constructs": "^10.0.0",

@@ -1,5 +1,5 @@
 {
-  "$version": "83.0.0",
+  "$version": "85.0.0",
   "PropertyTypes": {
     "AWS::Pinpoint::ApplicationSettings.CampaignHook": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpoint-applicationsettings-campaignhook.html",

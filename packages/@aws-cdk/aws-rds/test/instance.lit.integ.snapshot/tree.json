@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.78"
         }
       },
       "aws-cdk-rds-instance": {
@@ -742,6 +742,7 @@
                   "aws:cdk:cloudformation:props": {
                     "engineName": "oracle-se2",
                     "majorEngineVersion": "19",
+                    "optionGroupDescription": "Option group for oracle-se2 19",
                     "optionConfigurations": [
                       {
                         "optionName": "LOCATOR"
@@ -758,8 +759,7 @@
                           }
                         ]
                       }
-                    ],
-                    "optionGroupDescription": "Option group for oracle-se2 19"
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1130,11 +1130,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
-                    "dbInstanceClass": "db.t3.medium",
                     "allocatedStorage": "100",
                     "autoMinorVersionUpgrade": true,
                     "backupRetentionPeriod": 7,
                     "copyTagsToSnapshot": true,
+                    "dbInstanceClass": "db.t3.medium",
                     "dbName": "ORCL",
                     "dbParameterGroupName": {
                       "Ref": "ParameterGroup5E32DECB"
@@ -1645,20 +1645,20 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.33"
+              "version": "10.1.78"
             }
           },
           "AssetParameters": {
             "id": "AssetParameters",
             "path": "aws-cdk-rds-instance/AssetParameters",
             "children": {
-              "af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b": {
-                "id": "af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b",
-                "path": "aws-cdk-rds-instance/AssetParameters/af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b",
+              "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347": {
+                "id": "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
+                "path": "aws-cdk-rds-instance/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-rds-instance/AssetParameters/af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b/S3Bucket",
+                    "path": "aws-cdk-rds-instance/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -1666,7 +1666,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-rds-instance/AssetParameters/af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b/S3VersionKey",
+                    "path": "aws-cdk-rds-instance/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -1674,7 +1674,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-rds-instance/AssetParameters/af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b/ArtifactHash",
+                    "path": "aws-cdk-rds-instance/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -1683,13 +1683,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.33"
+                  "version": "10.1.78"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.33"
+              "version": "10.1.78"
             }
           },
           "HighCPU": {
