@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "ObjectLockTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-object-lock"
+      ],
+      "assertionStack": "ObjectLockTest/DefaultTest/DeployAssert"
+    }
+  }
+}

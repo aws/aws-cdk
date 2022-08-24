@@ -589,3 +589,33 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
   }]
 });
 ```
+
+## Object Lock
+
+**Note:** Only can be enabled on new buckets. Enabling this on an existing bucket will result in a replacement of this bucket. To enable this on an existing bucket, please contact AWS Support.
+
+[S3 Object Lock](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html) can be enabled on a bucket.
+
+Enable S3 Object Lock on a new bucket simply by passing `objectLockEnabled` in the constructor:
+
+```ts
+new s3.Bucket(this, 'MyObjectLockBucket', {
+  objectLockEnabled: true
+});
+```
+
+A rule can be added to a new bucket or an existing bucket which already has object lock enabled, to make the object lock apply to new objects. Be aware that removing the object lock configuration again is not possible.
+
+```ts
+new s3.Bucket(this, 'MyObjectLockBucketWithDefaultRetention', {
+  objectLockEnabled: true,
+  objectLockConfiguration: {
+    rule: {
+      defaultRetention: {
+        days: cdk.Duration.days(90),
+        mode: s3.DefaultRetentionMode.GOVERNANCE,
+      },
+    },
+  },
+});
+```

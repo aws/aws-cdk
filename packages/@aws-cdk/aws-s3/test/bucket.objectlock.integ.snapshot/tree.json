@@ -1,0 +1,100 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.78"
+        }
+      },
+      "aws-cdk-s3-object-lock": {
+        "id": "aws-cdk-s3-object-lock",
+        "path": "aws-cdk-s3-object-lock",
+        "children": {
+          "MyBucket": {
+            "id": "MyBucket",
+            "path": "aws-cdk-s3-object-lock/MyBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-s3-object-lock/MyBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "objectLockConfiguration": {
+                      "objectLockEnabled": "Enabled",
+                      "rule": {
+                        "defaultRetention": {
+                          "mode": "GOVERNANCE",
+                          "days": 7
+                        }
+                      }
+                    },
+                    "objectLockEnabled": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ObjectLockTest": {
+        "id": "ObjectLockTest",
+        "path": "ObjectLockTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ObjectLockTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ObjectLockTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.78"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ObjectLockTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

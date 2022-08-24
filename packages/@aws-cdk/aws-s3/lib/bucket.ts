@@ -1322,6 +1322,76 @@ export interface IntelligentTieringConfiguration {
   readonly deepArchiveAccessTierTime?: Duration;
 }
 
+/**
+ * Enum type for object lock retention modes
+ */
+export enum DefaultRetentionMode {
+  /**
+   * In compliance mode, a protected object version can't be overwritten or deleted by any user, including the root user in your AWS account.
+   *
+   * @default whatever
+   */
+  COMPLIANCE = 'COMPLIANCE',
+  /**
+   * In governance mode, users can't overwrite or delete an object version or alter its lock settings unless they have special permissions.
+   */
+  GOVERNANCE = 'GOVERNANCE',
+}
+
+/**
+ * The container element for specifying the default Object Lock retention settings for new objects placed in the specified bucket.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/API/API_DefaultRetention.html
+ */
+export interface DefaultRetention {
+  /**
+   * The number of days that you want to specify for the default retention period.
+   *
+   * @default - If Object Lock is turned on, you must specify Mode and specify either Days or Years.
+   */
+  readonly days?: Duration;
+  /**
+   * The number of years that you want to specify for the default retention period.
+   *
+   * @default - If Object Lock is turned on, you must specify Mode and specify either Days or Years.
+   */
+  readonly years?: number;
+  /**
+   * The default Object Lock retention mode you want to apply to new objects placed in the specified bucket.
+   *
+   * @default - If Object Lock is turned on, you must specify Mode and specify either Days or Years.
+   */
+  readonly mode?: DefaultRetentionMode;
+}
+
+/**
+ * Specifies the Object Lock rule for the specified object.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/API/API_ObjectLockRule.html
+ */
+export interface ObjectLockRule {
+  /**
+   * The default Object Lock retention mode and period that you want to apply to new objects placed in the specified bucket.
+   *
+   * @default - No default retention
+   */
+  readonly defaultRetention?: DefaultRetention;
+}
+
+/**
+ * The container element for Object Lock configuration parameters.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/API/API_ObjectLockConfiguration.html
+ */
+export interface ObjectLockConfiguration {
+  /**
+   * Specifies the Object Lock rule for the specified object. Enable this rule when you apply ObjectLockConfiguration to a bucket.
+   *
+   * @default - No object lock rule
+   */
+  readonly rule?: ObjectLockRule;
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1509,6 +1579,7 @@ export interface BucketProps {
    * @default - No inventory configuration
    */
   readonly inventories?: Inventory[];
+
   /**
    * The objectOwnership of the bucket.
    *
@@ -1541,6 +1612,22 @@ export interface BucketProps {
    * @default No Intelligent Tiiering Configurations.
    */
   readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
+
+  /**
+   * Whether Object Lock is enabled for this bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html
+   *
+   * @default - false
+   */
+  readonly objectLockEnabled?: boolean;
+
+  /**
+   * Object Lock Configuration
+   *
+   * @default - No object lock configuration
+   */
+  readonly objectLockConfiguration?: ObjectLockConfiguration;
 }
 
 
@@ -1550,7 +1637,7 @@ export interface BucketProps {
 export interface Tag {
 
   /**
-   * key to e tagged
+   * key to be tagged
    */
   readonly key: string;
   /**
@@ -1701,7 +1788,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Thrown an exception if the given bucket name is not valid.
+   * Throw an exception if the given bucket name is not valid.
    *
    * @param physicalName name of the bucket.
    */
@@ -1782,6 +1869,8 @@ export class Bucket extends BucketBase {
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
 
+    const { objectLockEnabled, objectLockConfiguration } = this.parseObjectLock(props);
+
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketEncryption,
@@ -1797,6 +1886,8 @@ export class Bucket extends BucketBase {
       ownershipControls: this.parseOwnershipControls(props),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
+      objectLockEnabled,
+      objectLockConfiguration,
     });
     this._resource = resource;
 
@@ -1859,6 +1950,12 @@ export class Bucket extends BucketBase {
     if (this.eventBridgeEnabled) {
       this.enableEventBridgeNotification();
     }
+
+    // if versioned is explictly set to false, objectLockEnabled cannot be true at the same time
+    if (this.versioned !== undefined && !this.versioned && props.objectLockEnabled) {
+      throw new Error('Cannot enable ObjectLock with versioning explicitly set to false');
+    }
+
   }
 
   /**
@@ -2138,6 +2235,47 @@ export class Bucket extends BucketBase {
       };
     });
   }
+
+  private parseObjectLock({ objectLockEnabled, objectLockConfiguration }: BucketProps): {
+    objectLockEnabled?: boolean | undefined,
+    objectLockConfiguration?: CfnBucket.ObjectLockConfigurationProperty | undefined
+  } {
+
+    if (!objectLockEnabled && !objectLockConfiguration) {
+      return { objectLockEnabled: undefined, objectLockConfiguration: undefined };
+    };
+
+    if (objectLockEnabled === undefined || !objectLockEnabled) {
+      if (objectLockConfiguration) {
+        throw new Error('Object Lock configuration cannot be enabled on existing buckets');
+      }
+    };
+
+    if (objectLockConfiguration?.rule?.defaultRetention?.days && objectLockConfiguration.rule.defaultRetention.years) {
+      throw new Error('Days and Years cannot be specified at the same time');
+    };
+
+    if (objectLockConfiguration?.rule?.defaultRetention?.mode && !(
+      objectLockConfiguration.rule.defaultRetention.days || objectLockConfiguration.rule.defaultRetention.years)) {
+      throw new Error('Days or Years should be specified when using a default retention mode');
+    };
+
+    // we always set objectLockEnabled within the objectLockConfiguration to Enabled as it does not take any other value
+    // leaving it out gives "The XML you provided was not well-formed or did not validate against our published schema"
+    return {
+      objectLockEnabled: objectLockEnabled,
+      objectLockConfiguration: {
+        objectLockEnabled: 'Enabled',
+        rule: {
+          defaultRetention: {
+            mode: objectLockConfiguration?.rule?.defaultRetention?.mode,
+            days: objectLockConfiguration?.rule?.defaultRetention?.days?.toDays(),
+            years: objectLockConfiguration?.rule?.defaultRetention?.years,
+          },
+        },
+      },
+    };
+  };
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
     if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirect && !props.websiteRoutingRules) {
