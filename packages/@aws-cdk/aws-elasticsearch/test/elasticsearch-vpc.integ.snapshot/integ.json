@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.elasticsearch-vpc": {
+    "cdk-integ-elasticsearch-vpc-test/DefaultTest": {
       "stacks": [
         "cdk-integ-elasticsearch-vpc"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdkintegelasticsearchvpctestDefaultTestDeployAssert0B044175"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
