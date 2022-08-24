@@ -1076,4 +1076,65 @@ It's possible to synthesize the project with more Resources than the allowed (or
 
 Set the context key `@aws-cdk/core:stackResourceLimit` with the proper value, being 0 for disable the limit of resources.
 
+## App Context
+
+[Context values](https://docs.aws.amazon.com/cdk/v2/guide/context.html) are key-value pairs that can be associated with an app, stack, or construct.
+One common use case for context is to use it for enabling/disabling [feature flags](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html). There are several places
+where context can be specified. They are listed below in the order they are evaluated (items at the
+top take precedence over those below).
+
+- The `node.setContext()` method
+```ts
+const app = new App();
+app.node.setContext('@aws-cdk/core:newStyleStackSynthesis': true);
+```
+
+- The `finalContext` prop when you create an `App`
+```ts
+new App({
+  finalContext: {
+    '@aws-cdk/core:newStyleStackSynthesis': true,
+  },
+});
+```
+
+- The CLI via the `--context` CLI argument
+```console
+cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
+```
+
+- The `cdk.json` file via the `context` key:
+```json
+{
+  context: {
+    "@aws-cdk/core:newStyleStackSynthesis": true
+  }
+}
+```
+
+- The `cdk.context.json` file:
+```json
+{
+  "@aws-cdk/core:newStyleStackSynthesis": true
+}
+```
+
+- The `~/.cdk.json` file via the `context` key:
+```json
+{
+  context: {
+    "@aws-cdk/core:newStyleStackSynthesis": true
+  }
+}
+```
+
+- The `context` prop when you create an `App`
+```ts
+new App({
+  context: {
+    '@aws-cdk/core:newStyleStackSynthesis': true,
+  },
+});
+```
+
 <!--END CORE DOCUMENTATION-->

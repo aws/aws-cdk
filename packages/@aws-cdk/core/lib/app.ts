@@ -69,6 +69,37 @@ export interface AppProps {
   readonly context?: { [key: string]: any };
 
   /**
+   * Additional context values for the application.
+   *
+   * Context provided here has precedence over context set by:
+   *
+   * - The CLI via --context
+   * - The `context` key in `cdk.json`
+   * - The {@link AppProps.context} property
+   *
+   * This property is recommended over the {@link AppProps.context} property since you
+   * can make final decision over which context value to take in your app.
+   *
+   * @example
+   * // context from the CLI and from `cdk.json` are stored in the
+   * // CDK_CONTEXT env variable
+   * const cliContext = process.env.CDK_CONTEXT;
+   *
+   * // determine whether to take the context passed in the CLI or not
+   * const determineValue = process.env.PROD ? cliContext.SOMEKEY : 'my-prod-value';
+   * new App({
+   *   finalContext: {
+   *     SOMEKEY: determineValue,
+   *   },
+   * });
+   *
+   * Context can be read from any construct using `node.getContext(key)`.
+   *
+   * @default - no additional context
+   */
+  readonly finalContext?: { [key: string]: any };
+
+  /**
    * Include construct tree metadata as part of the Cloud Assembly.
    *
    * @default true
@@ -112,7 +143,7 @@ export class App extends Stage {
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });
 
-    this.loadContext(props.context);
+    this.loadContext(props.context, props.finalContext);
 
     if (props.stackTraces === false) {
       this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
@@ -136,7 +167,7 @@ export class App extends Stage {
     }
   }
 
-  private loadContext(defaults: { [key: string]: string } = { }) {
+  private loadContext(defaults: { [key: string]: string } = { }, final: { [key: string]: string } = {}) {
     // prime with defaults passed through constructor
     for (const [k, v] of Object.entries(defaults)) {
       this.node.setContext(k, v);
@@ -149,6 +180,11 @@ export class App extends Stage {
       : { };
 
     for (const [k, v] of Object.entries(contextFromEnvironment)) {
+      this.node.setContext(k, v);
+    }
+
+    // finalContext passed through constructor overwrites
+    for (const [k, v] of Object.entries(final)) {
       this.node.setContext(k, v);
     }
   }
