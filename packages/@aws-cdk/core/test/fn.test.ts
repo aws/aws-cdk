@@ -280,6 +280,29 @@ test('Fn.toJsonString with resolved value', () => {
   expect(Fn.toJsonString({ key: 'value' })).toEqual('{\"key\":\"value\"}');
 });
 
+test('Fn.len', () => {
+  const stack = new Stack();
+  const token = Fn.split('|', Token.asString({ ThisIsASplittable: 'list' }));
+
+  expect(stack.resolve(Fn.len(token))).toEqual({
+    'Fn::Length': {
+      'Fn::Split': [
+        '|',
+        {
+          ThisIsASplittable: 'list',
+        },
+      ],
+    },
+  });
+  expect(stack.templateOptions.transforms).toEqual(expect.arrayContaining([
+    'AWS::LanguageExtensions',
+  ]));
+});
+
+test('Fn.len with resolved value', () => {
+  expect(Fn.len(Fn.split('|', 'a|b|c'))).toBe(3);
+});
+
 function stringListToken(o: any): string[] {
   return Token.asList(new Intrinsic(o));
 }
