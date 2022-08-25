@@ -92,7 +92,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/aws-lambda": "^8.10.102",
     "@types/jest": "^27.5.2",
-    "@types/lodash": "^4.14.182",
+    "@types/lodash": "^4.14.184",
     "jest": "^27.5.1",
     "lodash": "^4.17.21"
   },
