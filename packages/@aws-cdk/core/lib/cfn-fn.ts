@@ -3,6 +3,7 @@ import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
 import { Reference } from './reference';
 import { IResolvable, IResolveContext } from './resolvable';
+import { Stack } from './stack';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
@@ -410,6 +411,20 @@ export class Fn {
    */
   public static valueOfAll(parameterType: string, attribute: string): string[] {
     return Token.asList(new FnValueOfAll(parameterType, attribute));
+  }
+
+  /**
+   * The Fn::ToJsonString intrinsic function converts an object or array to its
+   * corresponding JSON string.
+   *
+   * @param object The object or array to stringify
+   */
+  public static toJsonString(object: any): string {
+    // short-circut if object is not a token
+    if (!Token.isUnresolved(object)) {
+      return JSON.stringify(object);
+    }
+    return new FnToJsonString(object).toString();
   }
 
   private constructor() { }
@@ -826,6 +841,34 @@ class FnJoin implements IResolvable {
   private resolveValues(context: IResolveContext) {
     const resolvedValues = this.listOfValues.map(x => Reference.isReference(x) ? x : context.resolve(x));
     return minimalCloudFormationJoin(this.delimiter, resolvedValues);
+  }
+}
+
+/**
+ * The Fn::ToJsonString intrinsic function converts an object or array to its
+ * corresponding JSON string.
+ */
+class FnToJsonString implements IResolvable {
+  public readonly creationStack: string[];
+
+  private readonly object: any;
+
+  constructor(object: any) {
+    this.object = object;
+    this.creationStack = captureStackTrace();
+  }
+
+  public resolve(context: IResolveContext): any {
+    Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+    return { 'Fn::ToJsonString': this.object };
+  }
+
+  public toString() {
+    return Token.asString(this, { displayHint: 'Fn::ToJsonString' });
+  }
+
+  public toJSON() {
+    return '<Fn::ToJsonString>';
   }
 }
 
