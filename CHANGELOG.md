@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.170.0](https://github.com/aws/aws-cdk/compare/v1.169.0...v1.170.0) (2022-08-25)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v85.0.0 ([#21680](https://github.com/aws/aws-cdk/issues/21680)) ([c6776f2](https://github.com/aws/aws-cdk/commit/c6776f23c6ab70e0ed354d72ec4892e99a7e2d18))
+
+
+### Bug Fixes
+
+* **ecs:** firelens configFileValue is unnecessarily required (backport [#20636](https://github.com/aws/aws-cdk/issues/20636)) ([#21710](https://github.com/aws/aws-cdk/issues/21710)) ([e2c48da](https://github.com/aws/aws-cdk/commit/e2c48dacbf5f8c09c7c143b043ba2622987e42d9))
+
 ## [1.169.0](https://github.com/aws/aws-cdk/compare/v1.168.0...v1.169.0) (2022-08-17)
 
 
