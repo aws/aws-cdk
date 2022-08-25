@@ -86,9 +86,9 @@ export function transformObjectKeys(val: any, transform: (str: string) => string
     if (childExclude === true) {
       // we don't transform this object if the key is specified in exclude
       ret[transform(k)] = v;
-      continue;
+    } else {
+      ret[transform(k)] = transformObjectKeys(v, transform, childExclude);
     }
-    ret[transform(k)] = transformObjectKeys(v, transform, childExclude);
   }
   return ret;
 }
