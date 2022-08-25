@@ -1,0 +1,238 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-cognito": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-cognito.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-cognito/Stack/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Stack8A423254"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1Subnet0AD81D22"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1RouteTable5057189D"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1RouteTableAssociation74F1C1B6"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1DefaultRoute16154E3D"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1EIPBDAAB2A5"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1NATGatewayD2E1ABF7"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2Subnet3C7D2288"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2RouteTableCD306445"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2RouteTableAssociation5E8F73F1"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2DefaultRoute0319539B"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2EIP8CDBC8C2"
+          }
+        ],
+        "/integ-cognito/Stack/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2NATGatewayA8E03AB3"
+          }
+        ],
+        "/integ-cognito/Stack/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet1Subnet47AC2BC7"
+          }
+        ],
+        "/integ-cognito/Stack/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet1RouteTable8ADA6A0C"
+          }
+        ],
+        "/integ-cognito/Stack/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet1RouteTableAssociationFFE38495"
+          }
+        ],
+        "/integ-cognito/Stack/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet1DefaultRouteFBF81BA5"
+          }
+        ],
+        "/integ-cognito/Stack/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet2SubnetA2F8EDD8"
+          }
+        ],
+        "/integ-cognito/Stack/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet2RouteTableA5546697"
+          }
+        ],
+        "/integ-cognito/Stack/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet2RouteTableAssociation68ACB8C1"
+          }
+        ],
+        "/integ-cognito/Stack/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet2DefaultRoute22004492"
+          }
+        ],
+        "/integ-cognito/Stack/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackIGW2F0A1126"
+          }
+        ],
+        "/integ-cognito/Stack/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackVPCGWFFCB6290"
+          }
+        ],
+        "/integ-cognito/LB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LB8A12904C"
+          }
+        ],
+        "/integ-cognito/LB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LBSecurityGroup8A41EA2B"
+          }
+        ],
+        "/integ-cognito/LB/Listener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LBListener49E825B4"
+          }
+        ],
+        "/integ-cognito/UserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/integ-cognito/Client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Client4A7F64DF"
+          }
+        ],
+        "/integ-cognito/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain66AC69E0"
+          }
+        ],
+        "/integ-cognito/DNS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DNS"
+          }
+        ],
+        "PrivateZone27242E85": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateZone27242E85",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "CNAMEC70A2D52": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CNAMEC70A2D52",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Certificate4E7ABB08": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Certificate4E7ABB08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "integ-cognito"
+    },
+    "integtestcognitoDefaultTestDeployAssert6F2623C9": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestcognitoDefaultTestDeployAssert6F2623C9.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "integ-test-cognito/DefaultTest/DeployAssert"
+    }
+  }
+}

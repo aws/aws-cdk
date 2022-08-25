@@ -31,6 +31,9 @@ enables organizations to create and manage repositores of applications and assoc
 - [Associations](#associations)
   - [Associating application with an attribute group](#attribute-group-association)
   - [Associating application with a stack](#resource-association)
+- [Sharing](#sharing)
+  - [Sharing an application](#sharing-an-application)
+  - [Sharing an attribute group](#sharing-an-attribute-group)
 
 The `@aws-cdk/aws-servicecatalogappregistry` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
@@ -123,4 +126,60 @@ const myStack = new Stack(app, 'MyStack');
 
 declare const application: appreg.Application;
 application.associateStack(myStack);
+```
+
+## Sharing
+
+You can share your AppRegistry applications and attribute groups with AWS Organizations, Organizational Units (OUs), AWS accounts within an organization, as well as IAM roles and users. AppRegistry requires that AWS Organizations is enabled in an account before deploying a share of an application or attribute group.
+
+### Sharing an application
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+declare const application: appreg.Application;
+declare const myRole: iam.IRole;
+declare const myUser: iam.IUser;
+application.shareApplication({
+  accounts: ['123456789012'],
+  organizationArns: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
+  roles: [myRole],
+  users: [myUser],
+});
+```
+
+E.g., sharing an application with multiple accounts and allowing the accounts to associate resources to the application.
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+declare const application: appreg.Application;
+application.shareApplication({
+  accounts: ['123456789012', '234567890123'],
+  sharePermission: appreg.SharePermission.ALLOW_ACCESS,
+});
+```
+
+### Sharing an attribute group
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+declare const attributeGroup: appreg.AttributeGroup;
+declare const myRole: iam.IRole;
+declare const myUser: iam.IUser;
+attributeGroup.shareAttributeGroup({
+  accounts: ['123456789012'],
+  organizationArns: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
+  roles: [myRole],
+  users: [myUser],
+});
+```
+
+E.g., sharing an application with multiple accounts and allowing the accounts to associate applications to the attribute group.
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+declare const attributeGroup: appreg.AttributeGroup;
+attributeGroup.shareAttributeGroup({
+  accounts: ['123456789012', '234567890123'],
+  sharePermission: appreg.SharePermission.ALLOW_ACCESS,
+});
 ```

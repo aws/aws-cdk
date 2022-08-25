@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "BatchWithEFATest/DefaultTest": {
+      "stacks": [
+        "batch-stack"
+      ],
+      "assertionStack": "BatchWithEFATest/DefaultTest/DeployAssert"
+    }
+  }
+}

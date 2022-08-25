@@ -120,7 +120,11 @@
       "Value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "Ec2ClusterVpcPublicSubnet1DefaultRouteC7FBE273",
+    "Ec2ClusterVpcPublicSubnet1RouteTableAssociation9C78F646"
+   ]
   },
   "Ec2ClusterVpcPublicSubnet2Subnet207D9E5E": {
    "Type": "AWS::EC2::Subnet",
@@ -224,7 +228,11 @@
       "Value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "Ec2ClusterVpcPublicSubnet2DefaultRouteEBA52256",
+    "Ec2ClusterVpcPublicSubnet2RouteTableAssociation7615C6B2"
+   ]
   },
   "Ec2ClusterVpcPrivateSubnet1Subnet0AE9B91E": {
    "Type": "AWS::EC2::Subnet",

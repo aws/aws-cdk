@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.78"
         }
       },
       "PipelineStack": {
@@ -1298,13 +1298,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.78"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.78"
                     }
                   },
                   "Build": {
@@ -1742,13 +1742,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.78"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.78"
                     }
                   },
                   "UpdatePipeline": {
@@ -1760,13 +1760,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.78"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.78"
                     }
                   },
                   "Assets": {
@@ -1778,7 +1778,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.78"
                         }
                       },
                       "FileAsset2": {
@@ -1786,13 +1786,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset2",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.78"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.78"
                     }
                   },
                   "Beta": {
@@ -1804,7 +1804,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Beta/Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.78"
                         }
                       },
                       "Deploy": {
@@ -1812,36 +1812,44 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Beta/Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.78"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.78"
                     }
                   },
-                  "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
-                    "id": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-                    "path": "PipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+                  "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
+                    "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+                    "path": "PipelineStack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
                     }
                   },
-                  "ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
-                    "id": "ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-                    "path": "PipelineStack/Pipeline/Pipeline/ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+                  "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
+                    "id": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+                    "path": "PipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                     "children": {
                       "8389e75f-0810-4838-bf64-d6f85a95cf83": {
                         "id": "8389e75f-0810-4838-bf64-d6f85a95cf83",
-                        "path": "PipelineStack/Pipeline/Pipeline/ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
+                        "path": "PipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.0.9"
+                          "version": "10.1.78"
                         }
                       }
                     },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
+                    "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+                    "path": "PipelineStack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -1850,14 +1858,6 @@
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
                     "id": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
-                    "id": "ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-                    "path": "PipelineStack/Pipeline/Pipeline/ImmutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -2449,7 +2449,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.78"
                 }
               },
               "Assets": {
@@ -2978,7 +2978,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.78"
                 }
               }
             },

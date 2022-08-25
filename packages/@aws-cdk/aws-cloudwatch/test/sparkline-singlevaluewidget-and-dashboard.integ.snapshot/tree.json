@@ -1,0 +1,102 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.78"
+        }
+      },
+      "aws-cdk-cloudwatch-singlevaluewidget-sparkline-integ": {
+        "id": "aws-cdk-cloudwatch-singlevaluewidget-sparkline-integ",
+        "path": "aws-cdk-cloudwatch-singlevaluewidget-sparkline-integ",
+        "children": {
+          "Dashboard": {
+            "id": "Dashboard",
+            "path": "aws-cdk-cloudwatch-singlevaluewidget-sparkline-integ/Dashboard",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-cloudwatch-singlevaluewidget-sparkline-integ/Dashboard/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Dashboard",
+                  "aws:cdk:cloudformation:props": {
+                    "dashboardBody": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":0,\"properties\":{\"view\":\"singleValue\",\"region\":\"",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "\",\"sparkline\":true,\"metrics\":[[\"CDK/Test\",\"Metric\"]]}}]}"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnDashboard",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Dashboard",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "singlevaluewidget-with-sparkline": {
+        "id": "singlevaluewidget-with-sparkline",
+        "path": "singlevaluewidget-with-sparkline",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "singlevaluewidget-with-sparkline/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "singlevaluewidget-with-sparkline/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.78"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "singlevaluewidget-with-sparkline/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

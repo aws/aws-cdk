@@ -520,6 +520,18 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
   /**
    * The DNS entries for the interface VPC endpoint.
+   * Each entry is a combination of the hosted zone ID and the DNS name.
+   * The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS.
+   * This order is not enforced for AWS Marketplace services.
+   *
+   * The following is an example. In the first entry, the hosted zone ID is Z1HUB23UULQXV
+   * and the DNS name is vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com.
+   *
+   * ["Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com",
+   * "Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3-us-east-1a.ec2.us-east-1.vpce.amazonaws.com",
+   * "Z1C12344VYDITB0:ec2.us-east-1.amazonaws.com"]
+   *
+   * If you update the PrivateDnsEnabled or SubnetIds properties, the DNS entries in the list will change.
    * @attribute
    */
   public readonly vpcEndpointDnsEntries: string[];
@@ -689,6 +701,8 @@ export interface InterfaceVpcEndpointAttributes {
   /**
    * The security groups associated with the interface VPC endpoint.
    *
+   * If you wish to manage the network connections associated with this endpoint,
+   * you will need to specify its security groups.
    */
   readonly securityGroups?: ISecurityGroup[];
 

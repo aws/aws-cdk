@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -200,10 +200,7 @@
         "/aws-ecs-integ/Publisher-task-definition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublishertaskdefinitionA4324C64",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PublishertaskdefinitionA4324C64"
           }
         ],
         "/aws-ecs-integ/Publisher-task-definition/ExecutionRole/Resource": [
@@ -293,10 +290,7 @@
         "/aws-ecs-integ/Worker-task-definition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WorkertaskdefinitionBF93A675",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "WorkertaskdefinitionBF93A675"
           }
         ],
         "/aws-ecs-integ/Worker-task-definition/ExecutionRole/Resource": [

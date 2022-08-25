@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "64eba615428f03dd777ce50d1a15c1aef1a15139921dd5382cb894edfc6a05f3": {
+      "source": {
+        "path": "aws-ecs-integ-capacity-provider.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "64eba615428f03dd777ce50d1a15c1aef1a15139921dd5382cb894edfc6a05f3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

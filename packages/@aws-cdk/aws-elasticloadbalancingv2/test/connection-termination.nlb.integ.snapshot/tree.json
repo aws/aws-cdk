@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.71"
         }
       },
       "aws-cdk-elbv2-integ": {
@@ -791,7 +791,7 @@
                 "path": "targetGroupTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.33"
+                  "version": "10.1.71"
                 }
               },
               "DeployAssert": {

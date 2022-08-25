@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.63"
+          "version": "10.1.71"
         }
       },
       "test-apigateway-vpcendpoint": {
@@ -1028,7 +1028,7 @@
                 "path": "apigateway-vpcendpoint/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.63"
+                  "version": "10.1.71"
                 }
               },
               "DeployAssert": {

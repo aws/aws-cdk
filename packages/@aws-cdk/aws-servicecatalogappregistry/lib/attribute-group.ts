@@ -1,7 +1,13 @@
+import { CfnResourceShare } from '@aws-cdk/aws-ram';
 import * as cdk from '@aws-cdk/core';
+import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { Construct } from 'constructs';
 import { InputValidator } from './private/validation';
 import { CfnAttributeGroup } from './servicecatalogappregistry.generated';
+import { Names } from '@aws-cdk/core';
+
+const ATTRIBUTE_GROUP_READ_ONLY_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly';
+const ATTRIBUTE_GROUP_ALLOW_ACCESS_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupAllowAssociation';
 
 /**
  * A Service Catalog AppRegistry Attribute Group.
@@ -18,6 +24,13 @@ export interface IAttributeGroup extends cdk.IResource {
    * @attribute
    */
   readonly attributeGroupId: string;
+
+  /**
+   * Share the attribute group resource with other IAM entities, accounts, or OUs.
+   *
+   * @param shareOptions The options for the share.
+   */
+  shareAttributeGroup(shareOptions: ShareOptions): void;
 }
 
 /**
@@ -45,6 +58,33 @@ export interface AttributeGroupProps {
 abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGroup {
   public abstract readonly attributeGroupArn: string;
   public abstract readonly attributeGroupId: string;
+
+  public shareAttributeGroup(shareOptions: ShareOptions): void {
+    const principals = getPrincipalsforSharing(shareOptions);
+    const shareName = `RAMShare${hashValues(Names.nodeUniqueId(this.node), this.node.children.length.toString())}`;
+    new CfnResourceShare(this, shareName, {
+      name: shareName,
+      allowExternalPrincipals: false,
+      principals: principals,
+      resourceArns: [this.attributeGroupArn],
+      permissionArns: [this.getAttributeGroupSharePermissionARN(shareOptions)],
+    });
+  }
+
+  /**
+   * Get the correct permission ARN based on the SharePermission
+   */
+  protected getAttributeGroupSharePermissionARN(shareOptions: ShareOptions): string {
+    switch (shareOptions.sharePermission) {
+      case SharePermission.ALLOW_ACCESS:
+        return ATTRIBUTE_GROUP_ALLOW_ACCESS_RAM_PERMISSION_ARN;
+      case SharePermission.READ_ONLY:
+        return ATTRIBUTE_GROUP_READ_ONLY_RAM_PERMISSION_ARN;
+
+      default:
+        return shareOptions.sharePermission ?? ATTRIBUTE_GROUP_READ_ONLY_RAM_PERMISSION_ARN;
+    }
+  }
 }
 
 /**

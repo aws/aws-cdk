@@ -186,3 +186,14 @@ const amazingFunction = new lambda.Function(this, 'AnAmazingFunction', {
 // Add an event selector to log data events for the provided Lambda functions.
 trail.addLambdaEventSelector([ amazingFunction ]);
 ```
+
+## Organization Trail
+
+It is possible to create a trail that will be applied to all accounts in an organization if the current account manages an organization.
+To enable this, the property `isOrganizationTrail` must be set. If this property is set and the current account does not manage an organization, the created trail will be created only for the account.
+
+```ts
+new cloudtrail.Trail(this, 'OrganizationTrail', {
+  isOrganizationTrail: true,
+});
+```

@@ -103,7 +103,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3Bucket0849589DRef"
+      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3BucketC46FBCFBRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -116,7 +116,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey75C4235ARef"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKeyA2051428Ref"
             }
            ]
           }
@@ -129,7 +129,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey75C4235ARef"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKeyA2051428Ref"
             }
            ]
           }
@@ -224,7 +224,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3Bucket0849589DRef"
+      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3BucketC46FBCFBRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -237,7 +237,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey75C4235ARef"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKeyA2051428Ref"
             }
            ]
           }
@@ -250,7 +250,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey75C4235ARef"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKeyA2051428Ref"
             }
            ]
           }
@@ -391,7 +391,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketF1A8BC02Ref"
+      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket8B31952BRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -404,7 +404,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey67C32B17Ref"
             }
            ]
           }
@@ -417,7 +417,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey67C32B17Ref"
             }
            ]
           }
@@ -560,7 +560,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketF1A8BC02Ref"
+      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket8B31952BRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -573,7 +573,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey67C32B17Ref"
             }
            ]
           }
@@ -586,7 +586,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey67C32B17Ref"
             }
            ]
           }
@@ -726,7 +726,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketF1A8BC02Ref"
+      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket8B31952BRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -739,7 +739,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey67C32B17Ref"
             }
            ]
           }
@@ -752,7 +752,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
+             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey67C32B17Ref"
             }
            ]
           }
@@ -1033,16 +1033,16 @@
   "referencetoawsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterCreationRole78F8A91EArn": {
    "Type": "String"
   },
-  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3Bucket0849589DRef": {
+  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3BucketC46FBCFBRef": {
    "Type": "String"
   },
-  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey75C4235ARef": {
+  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKeyA2051428Ref": {
    "Type": "String"
   },
-  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketF1A8BC02Ref": {
+  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket8B31952BRef": {
    "Type": "String"
   },
-  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref": {
+  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey67C32B17Ref": {
    "Type": "String"
   }
  }

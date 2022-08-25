@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.78"
         }
       },
       "aws-ecs-integ": {
@@ -1211,7 +1211,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.33"
+                      "version": "10.1.78"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1819,13 +1819,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.33"
+                  "version": "10.1.78"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.33"
+              "version": "10.1.78"
             }
           },
           "SsmParameterValue:--aws--service--aws-for-fluent-bit--2.1.0:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {

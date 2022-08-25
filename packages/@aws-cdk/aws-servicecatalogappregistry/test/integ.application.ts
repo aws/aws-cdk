@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appreg from '../lib';
 
@@ -32,6 +33,11 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
 
 application.associateStack(stack);
 application.associateAttributeGroup(attributeGroup);
+const myRole = new iam.Role(stack, 'MyRole', {
+  assumedBy: new iam.AccountPrincipal(stack.account),
+});
+application.shareApplication({
+  roles: [myRole],
+});
 
 app.synth();
-

@@ -117,7 +117,11 @@
       "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "myVpcAutoPublicSubnet1DefaultRoute2791173D",
+    "myVpcAutoPublicSubnet1RouteTableAssociationB3A6EFAC"
+   ]
   },
   "myVpcAutoPublicSubnet2Subnet297C7839": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "myVpcAutoPublicSubnet2DefaultRouteE9454F16",
+    "myVpcAutoPublicSubnet2RouteTableAssociationE21B7B6C"
+   ]
   },
   "myVpcAutoPrivateSubnet1SubnetCF0D49B2": {
    "Type": "AWS::EC2::Subnet",

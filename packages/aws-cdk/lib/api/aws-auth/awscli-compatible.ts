@@ -345,4 +345,3 @@ async function tokenCodeFn(serialArn: string, cb: (err?: Error, token?: string) 
     cb(err);
   }
 }
-

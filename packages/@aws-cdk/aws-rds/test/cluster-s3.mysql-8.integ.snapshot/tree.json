@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.78"
         }
       },
       "aws-cdk-rds-s3-mysql-8-integ": {
@@ -946,10 +946,10 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
-                    "dbInstanceClass": "db.t3.medium",
                     "dbClusterIdentifier": {
                       "Ref": "DatabaseB269D8BB"
                     },
+                    "dbInstanceClass": "db.t3.medium",
                     "dbSubnetGroupName": {
                       "Ref": "DatabaseSubnets56F17B9A"
                     },

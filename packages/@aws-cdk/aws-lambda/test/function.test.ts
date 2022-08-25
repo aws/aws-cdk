@@ -2561,6 +2561,10 @@ describe('function', () => {
           'LambdaSGtoEfsEfsSecurityGroupFCE2954020499719694A',
           'MyFunctionServiceRoleDefaultPolicyB705ABD4',
           'MyFunctionServiceRole3C357FF2',
+          'VpcPrivateSubnet1DefaultRouteBE02A9ED',
+          'VpcPrivateSubnet1RouteTableAssociation70C59FA6',
+          'VpcPrivateSubnet2DefaultRoute060D2087',
+          'VpcPrivateSubnet2RouteTableAssociationA89CAD56',
         ],
       });
     });

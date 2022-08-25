@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.78"
         }
       },
       "aws-ecs-integ": {
@@ -21,7 +21,7 @@
             "path": "aws-ecs-integ/production",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.0.9"
+              "version": "10.1.78"
             }
           },
           "production-environment-vpc": {
@@ -47,7 +47,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
                   "version": "0.0.0"
                 }
               },
@@ -91,7 +91,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -121,7 +121,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -140,7 +140,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -160,7 +160,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -180,7 +180,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -208,13 +208,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -258,7 +258,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -288,7 +288,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -307,7 +307,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -327,7 +327,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -347,7 +347,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -375,13 +375,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -425,7 +425,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -455,7 +455,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -474,7 +474,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -494,13 +494,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -544,7 +544,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -574,7 +574,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -593,7 +593,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -613,13 +613,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -638,7 +638,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
               },
@@ -657,13 +657,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ec2.Vpc",
               "version": "0.0.0"
             }
           },
@@ -679,7 +679,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ecs.CfnCluster",
                   "version": "0.0.0"
                 }
               },
@@ -700,19 +700,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-servicediscovery.CfnPrivateDnsNamespace",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-servicediscovery.PrivateDnsNamespace",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ecs.Cluster",
               "version": "0.0.0"
             }
           },
@@ -721,7 +721,7 @@
             "path": "aws-ecs-integ/development",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.0.9"
+              "version": "10.1.78"
             }
           },
           "development-environment-vpc": {
@@ -747,7 +747,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
                   "version": "0.0.0"
                 }
               },
@@ -791,7 +791,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -821,7 +821,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -840,7 +840,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -860,7 +860,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -880,7 +880,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -908,13 +908,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -958,7 +958,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -988,7 +988,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -1007,7 +1007,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -1027,7 +1027,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -1047,7 +1047,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -1075,13 +1075,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -1125,7 +1125,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -1155,7 +1155,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -1174,7 +1174,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -1194,13 +1194,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -1244,7 +1244,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -1274,7 +1274,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -1293,7 +1293,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -1313,13 +1313,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -1338,7 +1338,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
               },
@@ -1357,13 +1357,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ec2.Vpc",
               "version": "0.0.0"
             }
           },
@@ -1379,7 +1379,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ecs.CfnCluster",
                   "version": "0.0.0"
                 }
               },
@@ -1400,19 +1400,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-servicediscovery.CfnPrivateDnsNamespace",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-servicediscovery.PrivateDnsNamespace",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ecs.Cluster",
               "version": "0.0.0"
             }
           },
@@ -1431,13 +1431,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-appmesh.CfnMesh",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-appmesh.Mesh",
               "version": "0.0.0"
             }
           },
@@ -1456,13 +1456,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-appmesh.CfnMesh",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-appmesh.Mesh",
               "version": "0.0.0"
             }
           },
@@ -1471,7 +1471,7 @@
             "path": "aws-ecs-integ/name-production",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.0.9"
+              "version": "10.1.78"
             }
           },
           "name-production-task-definition": {
@@ -1712,7 +1712,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ecs.CfnTaskDefinition",
                   "version": "0.0.0"
                 }
               },
@@ -1720,8 +1720,8 @@
                 "id": "app",
                 "path": "aws-ecs-integ/name-production-task-definition/app",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "0.0.0"
                 }
               },
               "ExecutionRole": {
@@ -1869,25 +1869,25 @@
                           "aws:cdk:cloudformation:props": {}
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "@aws-cdk/aws-logs.LogGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ecs.TaskDefinition",
               "version": "0.0.0"
             }
           },
@@ -1906,70 +1906,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
-                }
-              },
-              "envoy": {
-                "id": "envoy",
-                "path": "aws-ecs-integ/name-production-task-definition/envoy",
-                "children": {
-                  "LogGroup": {
-                    "id": "LogGroup",
-                    "path": "aws-ecs-integ/name-production-task-definition/envoy/LogGroup",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-ecs-integ/name-production-task-definition/envoy/LogGroup/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                          "aws:cdk:cloudformation:props": {}
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
-            }
-          },
-          "name-production-logs": {
-            "id": "name-production-logs",
-            "path": "aws-ecs-integ/name-production-logs",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-ecs-integ/name-production-logs/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "logGroupName": "name-production-logs",
-                    "retentionInDays": 30
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
               "version": "0.0.0"
             }
           },
@@ -2087,7 +2030,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ecs.CfnService",
                   "version": "0.0.0"
                 }
               },
@@ -2129,13 +2072,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-servicediscovery.CfnService",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-servicediscovery.Service",
                   "version": "0.0.0"
                 }
               },
@@ -2163,19 +2106,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ecs.FargateService",
               "version": "0.0.0"
             }
           },
@@ -2220,13 +2163,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualNode",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-appmesh.VirtualNode",
               "version": "0.0.0"
             }
           },
@@ -2260,7 +2203,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualRouter",
                   "version": "0.0.0"
                 }
               },
@@ -2310,19 +2253,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-appmesh.Route",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-appmesh.VirtualRouter",
               "version": "0.0.0"
             }
           },
@@ -2358,13 +2301,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualService",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-appmesh.VirtualService",
               "version": "0.0.0"
             }
           },
@@ -2373,7 +2316,7 @@
             "path": "aws-ecs-integ/name-development",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.0.9"
+              "version": "10.1.78"
             }
           },
           "name-development-task-definition": {
@@ -2614,7 +2557,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ecs.CfnTaskDefinition",
                   "version": "0.0.0"
                 }
               },
@@ -2622,8 +2565,8 @@
                 "id": "app",
                 "path": "aws-ecs-integ/name-development-task-definition/app",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "0.0.0"
                 }
               },
               "ExecutionRole": {
@@ -2771,25 +2714,25 @@
                           "aws:cdk:cloudformation:props": {}
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "@aws-cdk/aws-logs.LogGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ecs.TaskDefinition",
               "version": "0.0.0"
             }
           },
@@ -2808,70 +2751,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
-                }
-              },
-              "envoy": {
-                "id": "envoy",
-                "path": "aws-ecs-integ/name-development-task-definition/envoy",
-                "children": {
-                  "LogGroup": {
-                    "id": "LogGroup",
-                    "path": "aws-ecs-integ/name-development-task-definition/envoy/LogGroup",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-ecs-integ/name-development-task-definition/envoy/LogGroup/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                          "aws:cdk:cloudformation:props": {}
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
-            }
-          },
-          "name-development-logs": {
-            "id": "name-development-logs",
-            "path": "aws-ecs-integ/name-development-logs",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-ecs-integ/name-development-logs/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "logGroupName": "name-development-logs",
-                    "retentionInDays": 30
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
               "version": "0.0.0"
             }
           },
@@ -2989,7 +2875,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-ecs.CfnService",
                   "version": "0.0.0"
                 }
               },
@@ -3031,13 +2917,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-servicediscovery.CfnService",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-servicediscovery.Service",
                   "version": "0.0.0"
                 }
               },
@@ -3065,19 +2951,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ecs.FargateService",
               "version": "0.0.0"
             }
           },
@@ -3122,13 +3008,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualNode",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-appmesh.VirtualNode",
               "version": "0.0.0"
             }
           },
@@ -3162,7 +3048,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualRouter",
                   "version": "0.0.0"
                 }
               },
@@ -3212,19 +3098,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-appmesh.Route",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-appmesh.VirtualRouter",
               "version": "0.0.0"
             }
           },
@@ -3260,13 +3146,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualService",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-appmesh.VirtualService",
               "version": "0.0.0"
             }
           }

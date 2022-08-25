@@ -430,6 +430,7 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 
 Show as many digits as can fit, before rounding.
 
+
 ```ts
 declare const dashboard: cloudwatch.Dashboard;
 
@@ -437,6 +438,18 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   metrics: [ /* ... */ ],
 
   fullPrecision: true,
+}));
+```
+
+Sparkline allows you to glance the trend of a metric by displaying a simplified linegraph below the value. You can't use `sparkline: true` together with `setPeriodToTimeRange: true`
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.SingleValueWidget({
+  metrics: [ /* ... */ ],
+
+  sparkline: true,
 }));
 ```
 

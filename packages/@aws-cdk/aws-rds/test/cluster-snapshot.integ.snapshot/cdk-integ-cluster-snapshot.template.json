@@ -118,7 +118,11 @@
       "Value": "cdk-integ-cluster-snapshot/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -467,10 +471,10 @@
   "ClusterInstance1448F06E4": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.small",
     "DBClusterIdentifier": {
      "Ref": "ClusterEB0386A7"
     },
+    "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
@@ -479,7 +483,9 @@
    },
    "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet2DefaultRoute060D2087"
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -487,10 +493,10 @@
   "ClusterInstance2C3E0561B": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.small",
     "DBClusterIdentifier": {
      "Ref": "ClusterEB0386A7"
     },
+    "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
@@ -499,7 +505,9 @@
    },
    "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet2DefaultRoute060D2087"
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -914,7 +922,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
+      "Ref": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket766250D8"
      },
      "S3Key": {
       "Fn::Join": [
@@ -927,7 +935,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
+             "Ref": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey850D9181"
             }
            ]
           }
@@ -940,7 +948,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
+             "Ref": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey850D9181"
             }
            ]
           }
@@ -1083,7 +1091,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
+      "Ref": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket766250D8"
      },
      "S3Key": {
       "Fn::Join": [
@@ -1096,7 +1104,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
+             "Ref": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey850D9181"
             }
            ]
           }
@@ -1109,7 +1117,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
+             "Ref": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey850D9181"
             }
            ]
           }
@@ -1249,7 +1257,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
+      "Ref": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket766250D8"
      },
      "S3Key": {
       "Fn::Join": [
@@ -1262,7 +1270,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
+             "Ref": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey850D9181"
             }
            ]
           }
@@ -1275,7 +1283,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
+             "Ref": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey850D9181"
             }
            ]
           }
@@ -1687,10 +1695,10 @@
   "FromSnapshotInstance167EFB569": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.small",
     "DBClusterIdentifier": {
      "Ref": "FromSnapshotEE0682C5"
     },
+    "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
      "Ref": "FromSnapshotSubnets9ED4B8EE"
     },
@@ -1699,7 +1707,9 @@
    },
    "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet2DefaultRoute060D2087"
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1707,10 +1717,10 @@
   "FromSnapshotInstance2CD342D07": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.small",
     "DBClusterIdentifier": {
      "Ref": "FromSnapshotEE0682C5"
     },
+    "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
      "Ref": "FromSnapshotSubnets9ED4B8EE"
     },
@@ -1719,7 +1729,9 @@
    },
    "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet2DefaultRoute060D2087"
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1820,17 +1832,17 @@
    "Type": "String",
    "Description": "Artifact hash for asset \"2e7ee01d9005281c0784e709cad69500591734343d1cb95da2fb4a3f5076aadd\""
   },
-  "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90": {
+  "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket766250D8": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9\""
+   "Description": "S3 bucket for asset \"3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671\""
   },
-  "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212": {
+  "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey850D9181": {
    "Type": "String",
-   "Description": "S3 key for asset version \"8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9\""
+   "Description": "S3 key for asset version \"3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671\""
   },
-  "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA": {
+  "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671ArtifactHashC40EE1D5": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9\""
+   "Description": "Artifact hash for asset \"3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671\""
   }
  },
  "Mappings": {

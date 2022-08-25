@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ"
       ],
-      "assertionStack": "applicationMultipleTargetGroupsEc2ServiceTestDefaultTestDeployAssert1194B50F"
+      "assertionStack": "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

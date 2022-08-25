@@ -117,7 +117,11 @@
       "Value": "BulkUpdate/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "BulkUpdate/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+   ]
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -496,10 +504,10 @@
   "DatabaseClusterInstance1C566869D": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.small",
     "DBClusterIdentifier": {
      "Ref": "DatabaseCluster68FC2945"
     },
+    "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
      "Ref": "DatabaseClusterSubnets7FAE1846"
     },
@@ -507,7 +515,9 @@
    },
    "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet2DefaultRoute060D2087"
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -515,10 +525,10 @@
   "DatabaseClusterInstance252BB9A46": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.small",
     "DBClusterIdentifier": {
      "Ref": "DatabaseCluster68FC2945"
     },
+    "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
      "Ref": "DatabaseClusterSubnets7FAE1846"
     },
@@ -526,7 +536,9 @@
    },
    "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet2DefaultRoute060D2087"
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -534,10 +546,10 @@
   "DatabaseClusterInstance3EA629143": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.small",
     "DBClusterIdentifier": {
      "Ref": "DatabaseCluster68FC2945"
     },
+    "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
      "Ref": "DatabaseClusterSubnets7FAE1846"
     },
@@ -545,7 +557,9 @@
    },
    "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet2DefaultRoute060D2087"
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

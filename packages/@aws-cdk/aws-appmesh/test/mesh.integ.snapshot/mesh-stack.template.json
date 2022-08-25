@@ -117,7 +117,11 @@
       "Value": "mesh-stack/vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+   ]
   },
   "vpcPublicSubnet2Subnet009B674F": {
    "Type": "AWS::EC2::Subnet",

@@ -117,7 +117,11 @@
       "Value": "aws-cdk-vpc-lambda/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "aws-cdk-vpc-lambda/VPC/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
   },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
@@ -424,7 +432,13 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPrivateSubnet1DefaultRouteAE1D6490",
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+   ]
   },
   "MyLambdaSecurityGroup1E71A818": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -440,7 +454,13 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "DependsOn": [
+    "VPCPrivateSubnet1DefaultRouteAE1D6490",
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+   ]
   },
   "MyLambdaCCE802FB": {
    "Type": "AWS::Lambda::Function",
@@ -476,7 +496,11 @@
     }
    },
    "DependsOn": [
-    "MyLambdaServiceRole4539ECB6"
+    "MyLambdaServiceRole4539ECB6",
+    "VPCPrivateSubnet1DefaultRouteAE1D6490",
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
    ]
   }
  }

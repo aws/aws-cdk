@@ -30,7 +30,9 @@
    },
    "DependsOn": [
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteFF4E2178",
-    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520"
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableAssociation8B583A17",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTableAssociation43E5803C"
    ]
   },
   "ALBFargateServiceLBSecurityGroup5DC3060E": {
@@ -433,7 +435,11 @@
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteFF4E2178",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableAssociation8B583A17"
+   ]
   },
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2Subnet95FF715A": {
    "Type": "AWS::EC2::Subnet",
@@ -537,7 +543,11 @@
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTableAssociation43E5803C"
+   ]
   },
   "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1Subnet075EFF4C": {
    "Type": "AWS::EC2::Subnet",
@@ -721,7 +731,9 @@
    },
    "DependsOn": [
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteFF4E2178",
-    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520"
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableAssociation8B583A17",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTableAssociation43E5803C"
    ]
   },
   "NLBFargateServiceLBPublicListenerB0DCA73C": {

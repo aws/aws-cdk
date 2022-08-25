@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.71"
         }
       },
       "aws-cdk-vpc-endpoint-dns-integ": {
@@ -736,6 +736,24 @@
                       "version": "0.0.0"
                     }
                   },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/EnableDns/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/EnableDns/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
                     "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/EnableDns/CustomResourcePolicy",
@@ -802,24 +820,6 @@
                       "fqn": "@aws-cdk/aws-iam.Policy",
                       "version": "0.0.0"
                     }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/EnableDns/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/EnableDns/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CustomResource",
-                      "version": "0.0.0"
-                    }
                   }
                 },
                 "constructInfo": {
@@ -836,6 +836,24 @@
                     "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/GetNames/Provider",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/GetNames/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/GetNames/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CustomResource",
                       "version": "0.0.0"
                     }
                   },
@@ -875,24 +893,6 @@
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/GetNames/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/GetNames/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CustomResource",
                       "version": "0.0.0"
                     }
                   }
@@ -973,6 +973,24 @@
                       "version": "0.0.0"
                     }
                   },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/StartVerification/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/StartVerification/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
                     "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/StartVerification/CustomResourcePolicy",
@@ -1037,24 +1055,6 @@
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/StartVerification/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/StartVerification/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CustomResource",
                       "version": "0.0.0"
                     }
                   }
@@ -1157,7 +1157,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F"
+                        "Ref": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A"
                       },
                       "s3Key": {
                         "Fn::Join": [
@@ -1170,7 +1170,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
+                                      "Ref": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5"
                                     }
                                   ]
                                 }
@@ -1183,7 +1183,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
+                                      "Ref": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5"
                                     }
                                   ]
                                 }
@@ -1219,13 +1219,13 @@
             "id": "AssetParameters",
             "path": "aws-cdk-vpc-endpoint-dns-integ/AssetParameters",
             "children": {
-              "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90": {
-                "id": "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
-                "path": "aws-cdk-vpc-endpoint-dns-integ/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
+              "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286": {
+                "id": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
+                "path": "aws-cdk-vpc-endpoint-dns-integ/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-vpc-endpoint-dns-integ/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3Bucket",
+                    "path": "aws-cdk-vpc-endpoint-dns-integ/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -1233,7 +1233,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-vpc-endpoint-dns-integ/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3VersionKey",
+                    "path": "aws-cdk-vpc-endpoint-dns-integ/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -1241,7 +1241,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-vpc-endpoint-dns-integ/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/ArtifactHash",
+                    "path": "aws-cdk-vpc-endpoint-dns-integ/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -1250,13 +1250,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.71"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.0.9"
+              "version": "10.1.71"
             }
           }
         },

@@ -61,23 +61,34 @@ export class HotswappableChangeCandidate {
   }
 }
 
+type Exclude = { [key: string]: Exclude | true }
+
 /**
  * This function transforms all keys (recursively) in the provided `val` object.
  *
  * @param val The object whose keys need to be transformed.
  * @param transform The function that will be applied to each key.
+ * @param exclude The keys that will not be transformed and copied to output directly
  * @returns A new object with the same values as `val`, but with all keys transformed according to `transform`.
  */
-export function transformObjectKeys(val: any, transform: (str: string) => string): any {
+export function transformObjectKeys(val: any, transform: (str: string) => string, exclude: Exclude = {}): any {
   if (val == null || typeof val !== 'object') {
     return val;
   }
   if (Array.isArray(val)) {
-    return val.map((input: any) => transformObjectKeys(input, transform));
+    // For arrays we just pass parent's exclude object directly
+    // since it makes no sense to specify different exclude options for each array element
+    return val.map((input: any) => transformObjectKeys(input, transform, exclude));
   }
   const ret: { [k: string]: any; } = {};
   for (const [k, v] of Object.entries(val)) {
-    ret[transform(k)] = transformObjectKeys(v, transform);
+    const childExclude = exclude[k];
+    if (childExclude === true) {
+      // we don't transform this object if the key is specified in exclude
+      ret[transform(k)] = v;
+    } else {
+      ret[transform(k)] = transformObjectKeys(v, transform, childExclude);
+    }
   }
   return ret;
 }

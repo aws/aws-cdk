@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.71"
+          "version": "10.1.78"
         }
       },
       "test-bucket-deployments-2": {
@@ -220,7 +220,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "1d3b5490cd99feddeb525a62c046988997469f2a765d0f12b43cff9d87a284fa": {
@@ -254,7 +254,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da": {
@@ -288,7 +288,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e": {
@@ -322,13 +322,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.71"
+              "version": "10.1.78"
             }
           },
           "DeployMe": {
@@ -3044,7 +3044,7 @@
                 "path": "integ-test-bucket-deployments/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "DeployAssert": {

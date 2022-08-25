@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.51"
         }
       },
       "integ-servicecatalogappregistry-application": {
@@ -82,6 +82,40 @@
                   "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnAttributeGroupAssociation",
                   "version": "0.0.0"
                 }
+              },
+              "RAMSharead8ba81b8cdd": {
+                "id": "RAMSharead8ba81b8cdd",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/RAMSharead8ba81b8cdd",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "RAMSharead8ba81b8cdd",
+                    "allowExternalPrincipals": false,
+                    "permissionArns": [
+                      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
+                    ],
+                    "principals": [
+                      {
+                        "Fn::GetAtt": [
+                          "MyRoleF48FFE04",
+                          "Arn"
+                        ]
+                      }
+                    ],
+                    "resourceArns": [
+                      {
+                        "Fn::GetAtt": [
+                          "TestApplication2FBC585F",
+                          "Arn"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ram.CfnResourceShare",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -127,6 +161,56 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-servicecatalogappregistry.AttributeGroup",
+              "version": "0.0.0"
+            }
+          },
+          "MyRole": {
+            "id": "MyRole",
+            "path": "integ-servicecatalogappregistry-application/MyRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalogappregistry-application/MyRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
               "version": "0.0.0"
             }
           }

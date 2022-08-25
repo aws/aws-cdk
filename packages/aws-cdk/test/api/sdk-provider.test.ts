@@ -402,6 +402,22 @@ describe('with intercepted network calls', () => {
       // THEN
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('88888'));
     });
+
+    test('if AssumeRole fails because of ExpiredToken, then fail completely', async () => {
+      // GIVEN
+      prepareCreds({
+        fakeSts,
+        config: {
+          default: { aws_access_key_id: 'foo', $account: '88888' },
+        },
+      });
+      const provider = await providerFromProfile(undefined);
+
+      // WHEN - assumeRole fails with a specific error
+      await expect(async () => {
+        await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: '<FAIL:ExpiredToken>' });
+      }).rejects.toThrow(/ExpiredToken/);
+    });
   });
 
   describe('Plugins', () => {

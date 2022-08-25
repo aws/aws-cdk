@@ -32,6 +32,6 @@ export class FeatureFlags {
       }
       return true;
     }
-    return context ?? cxapi.futureFlagDefault(featureFlag);
+    return context !== undefined ? Boolean(context) : cxapi.futureFlagDefault(featureFlag);
   }
 }

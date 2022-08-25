@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ"
       ],
-      "assertionStack": "executionRoleAlbFargateTestDefaultTestDeployAssert4C0F3ED3"
+      "assertionStack": "executionRoleAlbFargateTest/DefaultTest/DeployAssert"
     }
   }
 }

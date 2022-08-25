@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.78"
         }
       },
       "aws-cdk-rds-instance-s3-integ": {
@@ -921,6 +921,7 @@
                       "aws:cdk:cloudformation:props": {
                         "engineName": "sqlserver-se",
                         "majorEngineVersion": "14.00",
+                        "optionGroupDescription": "Option group for sqlserver-se 14.00",
                         "optionConfigurations": [
                           {
                             "optionName": "SQLSERVER_BACKUP_RESTORE",
@@ -936,8 +937,7 @@
                               }
                             ]
                           }
-                        ],
-                        "optionGroupDescription": "Option group for sqlserver-se 14.00"
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -1027,7 +1027,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
-                    "dbInstanceClass": "db.m5.large",
                     "allocatedStorage": "100",
                     "associatedRoles": [
                       {
@@ -1041,6 +1040,7 @@
                       }
                     ],
                     "copyTagsToSnapshot": true,
+                    "dbInstanceClass": "db.m5.large",
                     "dbSubnetGroupName": {
                       "Ref": "DatabaseSubnetGroup7D60F180"
                     },

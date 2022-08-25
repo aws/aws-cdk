@@ -18,14 +18,21 @@ RUN yum update -y \
 COPY requirements.txt ./
 RUN python -m pip install -r requirements.txt -t /opt/awscli
 
+#
 # organize for self-contained usage
+#
+
 RUN mv /opt/awscli/bin/aws /opt/awscli
 
+#
 # cleanup
+#
+
 RUN rm -rf \
     /opt/awscli/pip* \
     /opt/awscli/setuptools* \
-    /opt/awscli/awscli/examples
+    && cd /opt/awscli/awscli/examples \
+    && rm -rf $(ls | grep -v global_options.rst)
 
 #
 # Test that the CLI works

@@ -335,6 +335,14 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    * @default false
    */
   readonly fullPrecision?: boolean;
+
+  /**
+   * Whether to show a graph below the value illustrating the value for the whole time range.
+   * Cannot be used in combination with `setPeriodToTimeRange`
+   *
+   * @default false
+   */
+  readonly sparkline?: boolean;
 }
 
 /**
@@ -347,6 +355,10 @@ export class SingleValueWidget extends ConcreteWidget {
     super(props.width || 6, props.height || 3);
     this.props = props;
     this.copyMetricWarnings(...props.metrics);
+
+    if (props.setPeriodToTimeRange && props.sparkline) {
+      throw new Error('You cannot use setPeriodToTimeRange with sparkline');
+    }
   }
 
   public toJson(): any[] {
@@ -360,6 +372,7 @@ export class SingleValueWidget extends ConcreteWidget {
         view: 'singleValue',
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
+        sparkline: this.props.sparkline,
         metrics: allMetricsGraphJson(this.props.metrics, []),
         setPeriodToTimeRange: this.props.setPeriodToTimeRange,
         singleValueFullPrecision: this.props.fullPrecision,

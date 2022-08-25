@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
 import { Tag } from '../cdk-toolkit';
 import { debug, warning } from '../logging';
-import { publishAssets } from '../util/asset-publishing';
+import { buildAssets, publishAssets } from '../util/asset-publishing';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { SdkProvider } from './aws-auth/sdk-provider';
@@ -236,6 +236,43 @@ export interface DeployStackOptions {
    * @default - Use the stored template
    */
   readonly overrideTemplate?: any;
+
+  /**
+   * Whether to build assets before publishing.
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly buildAssets?: boolean;
+}
+
+export interface BuildStackAssetsOptions {
+  /**
+   * Stack with assets to build.
+   */
+  readonly stack: cxapi.CloudFormationStackArtifact;
+
+  /**
+   * Name of the toolkit stack, if not the default name.
+   *
+   * @default 'CDKToolkit'
+   */
+  readonly toolkitStackName?: string;
+
+  /**
+   * Execution role for the building.
+   *
+   * @default - Current role
+   */
+  readonly roleArn?: string;
+}
+
+interface PublishStackAssetsOptions {
+  /**
+   * Whether to build assets before publishing.
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly buildAssets?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -340,7 +377,9 @@ export class CloudFormationDeployments {
 
     // Publish any assets before doing the actual deploy (do not publish any assets on import operation)
     if (options.resourcesToImport === undefined) {
-      await this.publishStackAssets(options.stack, toolkitInfo);
+      await this.publishStackAssets(options.stack, toolkitInfo, {
+        buildAssets: options.buildAssets ?? true,
+      });
     }
 
     // Do a verification of the bootstrap stack version
@@ -452,9 +491,31 @@ export class CloudFormationDeployments {
   }
 
   /**
+   * Build a stack's assets.
+   */
+  public async buildStackAssets(options: BuildStackAssetsOptions) {
+    const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(options.stack, options.roleArn);
+    const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
+
+    const stackEnv = await this.sdkProvider.resolveEnvironment(options.stack.environment);
+    const assetArtifacts = options.stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
+
+    for (const assetArtifact of assetArtifacts) {
+      await this.validateBootstrapStackVersion(
+        options.stack.stackName,
+        assetArtifact.requiresBootstrapStackVersion,
+        assetArtifact.bootstrapStackVersionSsmParameter,
+        toolkitInfo);
+
+      const manifest = AssetManifest.fromFile(assetArtifact.file);
+      await buildAssets(manifest, this.sdkProvider, stackEnv);
+    }
+  }
+
+  /**
    * Publish all asset manifests that are referenced by the given stack
    */
-  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo) {
+  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo, options: PublishStackAssetsOptions = {}) {
     const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
     const assetArtifacts = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
 
@@ -466,7 +527,9 @@ export class CloudFormationDeployments {
         toolkitInfo);
 
       const manifest = AssetManifest.fromFile(assetArtifact.file);
-      await publishAssets(manifest, this.sdkProvider, stackEnv);
+      await publishAssets(manifest, this.sdkProvider, stackEnv, {
+        buildAssets: options.buildAssets ?? true,
+      });
     }
   }
 

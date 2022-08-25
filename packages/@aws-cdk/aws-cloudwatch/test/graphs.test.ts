@@ -621,6 +621,53 @@ describe('Graphs', () => {
 
   });
 
+  test('add sparkline to singleValueWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new SingleValueWidget({
+      metrics: [metric],
+      sparkline: true,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 3,
+      properties: {
+        view: 'singleValue',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        sparkline: true,
+      },
+    }]);
+
+
+  });
+
+  test('throws if setPeriodToTimeRange and sparkline is set on singleValueWidget', () => {
+    // GIVEN
+    new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const toThrow = () => {
+      new SingleValueWidget({
+        metrics: [metric],
+        setPeriodToTimeRange: true,
+        sparkline: true,
+      });
+    };
+
+    // THEN
+    expect(() => toThrow()).toThrow(/You cannot use setPeriodToTimeRange with sparkline/);
+  });
+
   test('add singleValueFullPrecision to singleValueWidget', () => {
     // GIVEN
     const stack = new Stack();
