@@ -1012,6 +1012,9 @@ If your training job or model uses resources from AWS Marketplace,
 [network isolation is required](https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html).
 To do so, set the `enableNetworkIsolation` property to `true` for `SageMakerCreateModel` or `SageMakerCreateTrainingJob`.
 
+If performing distributed deep learning algorithms [inter-container traffic should be encrypted](https://docs.aws.amazon.com/sagemaker/latest/dg/train-encrypt.html).
+To do so, set the `enableInterContainerTrafficEncryption` property to `true` for `SageMakerCreateTrainingJob`.
+
 To set environment variables for the Docker container use the `environment` property.
 
 ### Create Training Job

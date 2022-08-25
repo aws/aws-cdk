@@ -142,6 +142,7 @@ test('create complex training job', () => {
       ],
     },
     enableNetworkIsolation: true,
+    enableInterContainerTrafficEncryption: true,
     hyperparameters: {
       lr: '0.1',
     },
@@ -225,6 +226,7 @@ test('create complex training job', () => {
         ],
       },
       EnableNetworkIsolation: true,
+      EnableInterContainerTrafficEncryption: true,
       HyperParameters: {
         lr: '0.1',
       },

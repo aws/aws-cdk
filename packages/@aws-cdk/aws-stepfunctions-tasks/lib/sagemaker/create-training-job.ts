@@ -40,6 +40,13 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
   readonly enableNetworkIsolation?: boolean;
 
   /**
+   * Enables inter container traffic encryption.
+   *
+   * @default false
+   */
+  readonly enableInterContainerTrafficEncryption?: boolean;
+
+  /**
    * Algorithm-specific parameters that influence the quality of the model. Set hyperparameters before you start the learning process.
    * For a list of hyperparameters provided by Amazon SageMaker
    * @see https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html
@@ -232,6 +239,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     return {
       TrainingJobName: this.props.trainingJobName,
       EnableNetworkIsolation: this.props.enableNetworkIsolation,
+      EnableInterContainerTrafficEncryption: this.props.enableInterContainerTrafficEncryption,
       RoleArn: this._role!.roleArn,
       ...this.renderAlgorithmSpecification(this.algorithmSpecification),
       ...this.renderInputDataConfig(this.inputDataConfig),
