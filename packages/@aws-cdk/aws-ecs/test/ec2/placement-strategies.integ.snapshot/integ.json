@@ -1,11 +1,14 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "PlacementStrategies/DefaultTest": {
+    "integ.placement-strategies": {
       "stacks": [
         "aws-cdk-ecs-integration-test-stack"
       ],
-      "assertionStack": "PlacementStrategiesDefaultTestDeployAssert6383DC1B"
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
     }
-  }
+  },
+  "synthContext": {},
+  "enableLookups": false
 }

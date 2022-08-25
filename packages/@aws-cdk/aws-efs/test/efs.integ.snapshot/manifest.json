@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -144,10 +144,7 @@
         "/test-efs-integ/FileSystem/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystem8A8E25C0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FileSystem8A8E25C0"
           }
         ],
         "/test-efs-integ/FileSystem/EfsSecurityGroup/Resource": [
@@ -159,28 +156,19 @@
         "/test-efs-integ/FileSystem/EfsMountTarget1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystemEfsMountTarget1586453F0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FileSystemEfsMountTarget1586453F0"
           }
         ],
         "/test-efs-integ/FileSystem/EfsMountTarget2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystemEfsMountTarget24B8EBB43",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FileSystemEfsMountTarget24B8EBB43"
           }
         ],
         "/test-efs-integ/FileSystem/AccessPoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystemAccessPointF8178182",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FileSystemAccessPointF8178182"
           }
         ]
       },
