@@ -836,7 +836,7 @@ Fn.conditionAnd(
 );
 
 // To use Fn::ToJsonString
-Fn.toJsonString(myObjectOrArray)
+Fn.toJsonString(myObjectOrArray);
 ```
 
 When working with deploy-time values (those for which `Token.isUnresolved`
