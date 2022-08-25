@@ -14,6 +14,7 @@ import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+import { buildAllStackAssets } from './build';
 import { deployStacks } from './deploy';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
@@ -169,14 +170,18 @@ export class CdkToolkit {
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
-    const concurrency = options.concurrency || 1;
-    const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
-    if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
-      warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
+    try {
+      await buildAllStackAssets(stackCollection.stackArtifacts, {
+        buildStackAssets: (a) => this.buildAllAssetsForSingleStack(a, options),
+      });
+    } catch (e) {
+      error('\n ❌ Building assets failed: %s', e);
+      throw e;
     }
 
     const deployStack = async (stack: cxapi.CloudFormationStackArtifact) => {
       if (stackCollection.stackCount !== 1) { highlight(stack.displayName); }
+
       if (!stack.environment) {
         // eslint-disable-next-line max-len
         throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
@@ -188,7 +193,7 @@ export class CdkToolkit {
         } else {
           warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
           await this.destroy({
-            selector: { patterns: [stack.stackName] },
+            selector: { patterns: [stack.hierarchicalId] },
             exclusively: true,
             force: true,
             roleArn: options.roleArn,
@@ -250,6 +255,7 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
+          buildAssets: false,
         });
 
         const message = result.noOp
@@ -295,6 +301,12 @@ export class CdkToolkit {
       }
       print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
     };
+
+    const concurrency = options.concurrency || 1;
+    const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
+    if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
+      warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
+    }
 
     try {
       await deployStacks(stacks, { concurrency, deployStack });
@@ -745,6 +757,21 @@ export class CdkToolkit {
     } catch (e) {
       // just continue - deploy will show the error
     }
+  }
+
+  private async buildAllAssetsForSingleStack(stack: cxapi.CloudFormationStackArtifact, options: Pick<DeployOptions, 'roleArn' | 'toolkitStackName'>): Promise<void> {
+    // Check whether the stack has an asset manifest before trying to build and publish.
+    if (!stack.dependencies.some(cxapi.AssetManifestArtifact.isAssetManifestArtifact)) {
+      return;
+    }
+
+    print('%s: building assets...\n', chalk.bold(stack.displayName));
+    await this.props.cloudFormation.buildStackAssets({
+      stack,
+      roleArn: options.roleArn,
+      toolkitStackName: options.toolkitStackName,
+    });
+    print('\n%s: assets built\n', chalk.bold(stack.displayName));
   }
 }
 
