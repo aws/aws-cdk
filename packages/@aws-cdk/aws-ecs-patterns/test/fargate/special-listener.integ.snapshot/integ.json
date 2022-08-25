@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ"
       ],
-      "assertionStack": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6"
+      "assertionStack": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

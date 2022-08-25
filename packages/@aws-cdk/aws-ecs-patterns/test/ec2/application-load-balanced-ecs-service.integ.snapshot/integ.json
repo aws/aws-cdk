@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ"
       ],
-      "assertionStack": "applicationLoadBalancedEc2ServiceTestDefaultTestDeployAssert3356477A"
+      "assertionStack": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert"
     }
   }
 }
