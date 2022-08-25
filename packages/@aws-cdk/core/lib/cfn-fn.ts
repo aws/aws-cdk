@@ -889,6 +889,10 @@ class FnToJsonString implements IResolvable {
   }
 }
 
+/**
+ * The intrinsic function `Fn::Length` returns the number of elements within an array
+ * or an intrinsic function that returns an array.
+ */
 class FnLength implements IResolvable {
   public readonly creationStack: string[];
 
