@@ -219,6 +219,6 @@ describe('splunk log driver', () => {
         }),
         memoryLimitMiB: 128,
       });
-    }).toThrow('Please provide either token or secretToken.');
+    }).toThrow('Please provide `secretToken`. You can also provide `token` on v1');
   });
 });
