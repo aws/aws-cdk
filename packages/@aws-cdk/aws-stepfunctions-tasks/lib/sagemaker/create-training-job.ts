@@ -383,6 +383,15 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
       this.securityGroup = new ec2.SecurityGroup(this, 'TrainJobSecurityGroup', {
         vpc: this.vpc,
       });
+
+      if (this.props.enableInterContainerTrafficEncryption) {
+        this.securityGroup.addEgressRule(this.securityGroup, ec2.Port.udp(500))
+        this.securityGroup.addEgressRule(this.securityGroup, ec2.Port.esp())
+
+        this.securityGroup.addIngressRule(this.securityGroup, ec2.Port.udp(500))
+        this.securityGroup.addIngressRule(this.securityGroup, ec2.Port.esp())
+      }
+
       this.connections.addSecurityGroup(this.securityGroup);
       this.securityGroups.push(this.securityGroup);
     }
