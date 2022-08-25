@@ -137,7 +137,7 @@ export class SplunkLogDriver extends LogDriver {
     super();
 
     if (!props.token && !props.secretToken) {
-      throw new Error('Please provide either token or secretToken.');
+      throw new Error('Please provide `secretToken`. You can also provide `token` on v1');
     }
     if (props.gzipLevel) {
       ensureInRange(props.gzipLevel, -1, 9);
