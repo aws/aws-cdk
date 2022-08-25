@@ -1,4 +1,4 @@
-import { DefaultCdkOptions, DeployOptions, DestroyOptions, SynthOptions, ListOptions } from './commands';
+import { DefaultCdkOptions, DeployOptions, DestroyOptions, SynthOptions, ListOptions, StackActivityProgress } from './commands';
 import { exec } from './utils';
 
 /**
@@ -161,6 +161,7 @@ export class CdkCliWrapper implements ICdk {
       ...options.requireApproval ? ['--require-approval', options.requireApproval] : [],
       ...options.changeSetName ? ['--change-set-name', options.changeSetName] : [],
       ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
+      ...options.progress ? ['--progress', options.progress] : ['--progress', StackActivityProgress.EVENTS],
       ...this.createDefaultArguments(options),
     ];
 
