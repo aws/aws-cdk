@@ -37,11 +37,8 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
    *
    * The splunk-token is added to the SecretOptions property of the Log Driver Configuration. So the secret value will not be
    * resolved or viewable as plain text.
-   *
-   * Please provide at least one of `token` or `secretToken`. In v2 this prop is required.
-   * @default - If secret token is not provided, then the value provided in `token` will be used. In v2 this prop is required so there is no default.
    */
-  readonly secretToken?: Secret;
+  readonly secretToken: Secret;
 
   /**
    * Path to your Splunk Enterprise, self-service Splunk Cloud instance, or Splunk
@@ -137,7 +134,7 @@ export class SplunkLogDriver extends LogDriver {
     super();
 
     if (!props.token && !props.secretToken) {
-      throw new Error('Please provide `secretToken`. You can also provide `token` on v1');
+      throw new Error('Please provide either token or secretToken.');
     }
     if (props.gzipLevel) {
       ensureInRange(props.gzipLevel, -1, 9);

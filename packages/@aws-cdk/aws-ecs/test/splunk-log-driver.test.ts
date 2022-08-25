@@ -209,16 +209,4 @@ describe('splunk log driver', () => {
       ],
     });
   });
-
-  test('throws when neither token nor secret token are provided', () => {
-    expect(() => {
-      td.addContainer('Container', {
-        image,
-        logging: ecs.LogDrivers.splunk({
-          url: 'my-splunk-url',
-        }),
-        memoryLimitMiB: 128,
-      });
-    }).toThrow('Please provide `secretToken`. You can also provide `token` on v1');
-  });
 });
