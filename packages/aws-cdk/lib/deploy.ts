@@ -36,7 +36,12 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
 
           deploymentStates[stack.id] = 'deploying';
 
-          await deployStack(stack);
+          await deployStack(stack).catch((err) => {
+            // By recording the failure immediately as the queued task exits, we prevent the next
+            // queued task from starting (its 'hasAnyStackFailed' will return 'true').
+            deploymentStates[stack.id] = 'failed';
+            throw err;
+          });
 
           deploymentStates[stack.id] = 'completed';
           enqueueStackDeploys();
