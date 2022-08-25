@@ -176,4 +176,19 @@ describe('hosted zone', () => {
       hz.zoneName;
     }).toThrow('Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.');
   });
+
+  test('fromLookup throws error when domainName is undefined', () => {
+    // GIVEN
+    let domainName!: string;
+    const stack = new cdk.Stack(undefined, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // THEN
+    expect(() => {
+      HostedZone.fromLookup(stack, 'HostedZone', {
+        domainName,
+      });
+    }).toThrow(/Cannot use undefined value for attribute `domainName`/);
+  });
 });

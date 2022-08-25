@@ -1,5 +1,5 @@
 {
-  "$version": "82.0.0",
+  "$version": "85.0.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::LookoutEquipment::InferenceScheduler": {
