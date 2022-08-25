@@ -1525,6 +1525,7 @@ describe('auto scaling group', () => {
       launchTemplateId: 'test-lt-id',
       versionNumber: '0',
     });
+    const vpc = mockVpc(stack);
 
     // THEN
     expect(() => {
@@ -1535,9 +1536,16 @@ describe('auto scaling group', () => {
           generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
           cpuType: AmazonLinuxCpuType.X86_64,
         }),
-        vpc: mockVpc(stack),
+        vpc,
       });
     }).toThrow('Setting \'machineImage\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg-2', {
+        launchTemplate: lt,
+        associatePublicIpAddress: true,
+        vpc,
+      });
+    }).toThrow('Setting \'associatePublicIpAddress\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
   });
 
   test('Cannot specify Launch Template without instance type', () => {
