@@ -1,0 +1,103 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-aws-apigatewayv2-http-stage-test": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-aws-apigatewayv2-http-stage-test.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpApiWithTwoStages/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiWithTwoStages0E0DEF3D"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/IAMRoleForAccessLog-dev/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpDevStageWithPropertiesIAMRoleForAccessLogdev15F41A64"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpDevStageWithPropertiesaccount599CEC2F"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/AccessLoggingGroup-dev": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpDevStageWithPropertiesAccessLoggingGroupdevEFE36386"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpDevStageWithProperties3C5F7E2B"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/IAMRoleForAccessLog-prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProdStageWithPropertiesIAMRoleForAccessLogprod8B4DB8CF"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProdStageWithPropertiesaccountD7482B22"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/AccessLoggingGroup-prod": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProdStageWithPropertiesAccessLoggingGroupprodE24A9D48"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProdStageWithProperties63349B8F"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpApiWithExternalLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiWithExternalLogGroupEE0D9E6A"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/dev-access-log-group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "devaccessloggroup95A3E6FC"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithExternalLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpDevStageWithExternalLogGroupBF024E37"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-aws-apigatewayv2-http-stage-test"
+    },
+    "HttpSocketStageWithLogsTestDefaultTestDeployAssertD8CEFF4D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "HttpSocketStageWithLogsTestDefaultTestDeployAssertD8CEFF4D.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "HttpSocketStageWithLogsTest/DefaultTest/DeployAssert"
+    }
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-aws-apigatewayv2-websocket-stage-test": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-aws-apigatewayv2-websocket-stage-test.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketApi34BCF99B"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketDevStageaccount02DC9EE0"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/AccessLoggingGroup-dev": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketDevStageAccessLoggingGroupdev392340B6"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketDevStageF28AE687"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/IAMRoleForAccessLog-dev/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IAMRoleForAccessLogdevA2648D3F"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketProdStageaccount61A6A2A5"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/AccessLoggingGroup-prod": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketProdStageAccessLoggingGroupprod11396295"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketProdStage7A23B950"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/IAMRoleForAccessLog-prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IAMRoleForAccessLogprodF17DDD3F"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-aws-apigatewayv2-websocket-stage-test"
+    },
+    "WebSocketStageWithLogsTestDefaultTestDeployAssert159008C9": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "WebSocketStageWithLogsTestDefaultTestDeployAssert159008C9.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "WebSocketStageWithLogsTest/DefaultTest/DeployAssert"
+    }
+  }
+}
