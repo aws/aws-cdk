@@ -33,6 +33,7 @@ Currently supported are:
 - Publish messages on SNS topics
 - Write messages into columns of DynamoDB
 - Put messages IoT Events input
+- Start the execution of a Step Functions state machine
 
 ## Republish a message to another MQTT topic
 
@@ -324,6 +325,33 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
       batchMode: true, // optional property, default is 'false'
       messageId: '${payload.transactionId}', // optional property, default is a new UUID
       role: role, // optional property, default is a new UUID
+    }),
+  ],
+});
+```
+
+## Start the execution of a Step Functions state machine
+
+The code snippet below creates an AWS IoT Rule that starts the execution of a Step Functions state machine: 
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+
+declare const role: iam.Role;
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition: new sfn.Pass(stack, 'StartPass'),
+});
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT * FROM 'device/+/data",
+  ),
+  actions: [
+    new actions.StepFunctionsAction(stateMachine, {
+      role: role, // optional property, defaults to a new role
+      executionNamePrefix: 'StateMachinePrefix', // optional property, defaults to nothing
     }),
   ],
 });

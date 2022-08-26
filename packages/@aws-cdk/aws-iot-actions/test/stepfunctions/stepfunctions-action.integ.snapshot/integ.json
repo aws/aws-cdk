@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "IntegrationTest/DefaultTest": {
+      "stacks": [
+        "test-stack"
+      ],
+      "assertionStack": "IntegrationTest/DefaultTest/DeployAssert"
+    }
+  }
+}
