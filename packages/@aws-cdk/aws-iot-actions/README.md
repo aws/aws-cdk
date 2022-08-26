@@ -341,7 +341,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 declare const role: iam.Role;
 
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition: new sfn.Pass(stack, 'StartPass'),
+  definition: new sfn.Pass(this, 'StartPass'),
 });
 
 const topicRule = new iot.TopicRule(this, 'TopicRule', {
