@@ -42,6 +42,8 @@ Higher level constructs for Websocket APIs | ![Experimental](https://img.shields
 - [WebSocket API](#websocket-api)
   - [Manage Connections Permission](#manage-connections-permission)
   - [Managing access to WebSocket APIs](#managing-access-to-websocket-apis)
+  - [Data Trace Logging](#data-trace-logging)
+- [Access Logs](#access-logs)
 
 ## Introduction
 
@@ -310,6 +312,9 @@ const stage = new apigwv2.HttpStage(this, 'Stage', {
 const clientErrorMetric = stage.metricClientError();
 ```
 
+Also note that detailed metrics (i.e. metrics for each resource/method combination) may be
+enabled by setting the detailedMetricsEnabled flag to true on a stage.
+
 ### VPC Link
 
 Private integrations let HTTP APIs connect with AWS resources that are placed behind a VPC. These are usually Application
@@ -447,3 +452,128 @@ const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi',{
 });
 ```
 
+### Data Trace Logging
+
+Data trace logging is supported for WebSocket apis. It is enabled by setting the logging level in a stage.
+Valid values are OFF, ERROR and INFO.  By default, it's OFF.
+
+```ts
+import * as apigw from '../../lib';
+
+const httpApi = new apigw.HttpApi(this, 'HttpApi', { createDefaultStage: false });
+new apigw.HttpStage(this, 'HttpDev', {
+  httpApi,
+  stageName: 'dev',
+  dataTraceLoggingLevel: 'INFO',
+});
+```
+
+## Access Logs
+
+Access logging is available for both HTTP and WebSocket APIs.
+
+A single line written to the access log for each request that's received by the API Gateway. By default,
+access logging is turned off. To enable access logging for a set of default properties to an internally created log group for a given stage set the accessLogEnabled flag to true.  These examples use HttpApi and HttpStage, however
+they also apply if WebSocketApi and WebSocketStage are used instead.
+
+```ts
+import * as apigw from '../../lib';
+
+const httpApi = new apigw.HttpApi(this, 'HttpApi', { createDefaultStage: false });
+new apigw.HttpStage(this, 'HttpDev', {
+  httpApi,
+  stageName: 'dev',
+  accessLogEnabled: true,
+});
+```
+
+A log group for the access log will be created along with a role that has the proper permissions to 
+create and write to the log.  The log entries will contain interesting information that's relevant for
+both http and websocket apis.
+
+However, if you want to modify the log entries set a value for the accessLogFormat property
+(see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference for a full list of the possible entries).
+
+For example, imagine that you want to see the error message along with the http method that's called 
+(e.g. GET, POST, etc.), which is not included in the default entries because it's applicable only 
+to http apis.  A definition for an entry that contains the method and the error message might look like this:
+
+```ts
+import * as apigw from '../../lib';
+
+const accessLogFormat = JSON.stringify({
+  apigw: {
+    api_id: '$context.apiId',
+    stage: '$context.stage',
+  },
+  request: {
+    request_id: '$context.requestId',
+    extended_request_id: '$context.extendedRequestId',
+  },
+  errors: {
+    message: '$context.error.message',
+  }
+  http: {
+    method: '$context.httpMethod'
+  }
+});
+
+new apigw.HttpStage(this, 'HttpDevStageWithExternalLogGroup', {
+  httpApi: httpApiWithExternalLogGroup,
+  stageName: 'dev',
+  accessLogEnabled: true,
+  accessLogFormat: accessLogFormat,
+});
+```
+
+Note that it's not necessary to lay out the log entries in a json format as shown, it's possible to 
+include $context.* entries in a free form string.  Also note that all access log entries must include
+either $context.requestId or $context.extendedRequestId. If neither is present CloudFormation will reject
+the configuration.
+
+The log group that's created by default has a retention period set to 30 days and a removal policy of
+DESTROY (meaning that if the stack that contains it is deleted the log group will also be deleted).
+
+If the defaults values aren't right for your application you can supply your own log group:
+
+```ts
+import * as apigateway from '@aws-cdk/aws-apigateway';
+import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
+import * as apigw from '../../lib';
+
+const httpApiWithExternalLogGroup = new apigw.HttpApi(this, 'HttpApiWithExternalLogGroup', { createDefaultStage: false });
+const logGroup = new logs.LogGroup(this, 'dev-access-log-group', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  retention: 7,
+});
+
+const iamRoleForLogGroup = new iam.Role(scope, 'IAMRoleForAccessLog', {
+  roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+  assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+});
+
+iamRoleForLogGroup.node.addDependency(this.api);
+
+iamRoleForLogGroup.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs'));
+
+// It's required to register the iam role that is used to create the log group with the account
+// if an api gateway has never been created in this account/region before.  Otherwise, this is
+// a no-op.
+const account = new apigateway.CfnAccount(this, 'account', {
+  cloudWatchRoleArn: iamRoleForLogGroup.roleArn,
+});
+account.node.addDependency(this.api);
+
+new apigw.HttpStage(this, 'HttpDevStageWithExternalLogGroup', {
+  httpApi: httpApiWithExternalLogGroup,
+  stageName: 'dev',
+  accessLogEnabled: true,
+  accessLogGroupArn: logGroup.logGroupArn,
+});
+```
+
+Note that creating the IAM role and registering it with the account won't be necessary if
+that's been done somewhere else for the account and region that the api is being deployed in 
+(e.g. by hand in the console or in a support stack).

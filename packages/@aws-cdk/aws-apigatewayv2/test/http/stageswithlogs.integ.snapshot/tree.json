@@ -1,0 +1,424 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.78"
+        }
+      },
+      "aws-cdk-aws-apigatewayv2-http-stage-test": {
+        "id": "aws-cdk-aws-apigatewayv2-http-stage-test",
+        "path": "aws-cdk-aws-apigatewayv2-http-stage-test",
+        "children": {
+          "HttpApiWithTwoStages": {
+            "id": "HttpApiWithTwoStages",
+            "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpApiWithTwoStages",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpApiWithTwoStages/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "HttpApiWithTwoStages",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "HttpDevStageWithProperties": {
+            "id": "HttpDevStageWithProperties",
+            "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties",
+            "children": {
+              "IAMRoleForAccessLog-dev": {
+                "id": "IAMRoleForAccessLog-dev",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/IAMRoleForAccessLog-dev",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/IAMRoleForAccessLog-dev/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "apigateway.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "account": {
+                "id": "account",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/account",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Account",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudWatchRoleArn": {
+                      "Fn::GetAtt": [
+                        "HttpDevStageWithPropertiesIAMRoleForAccessLogdev15F41A64",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "version": "0.0.0"
+                }
+              },
+              "AccessLoggingGroup-dev": {
+                "id": "AccessLoggingGroup-dev",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/AccessLoggingGroup-dev",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "HttpApiWithTwoStages0E0DEF3D"
+                    },
+                    "stageName": "dev",
+                    "accessLogSettings": {
+                      "destinationArn": {
+                        "Fn::GetAtt": [
+                          "HttpDevStageWithPropertiesAccessLoggingGroupdevEFE36386",
+                          "Arn"
+                        ]
+                      },
+                      "format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
+                    },
+                    "defaultRouteSettings": {
+                      "throttlingBurstLimit": 1000,
+                      "throttlingRateLimit": 1000,
+                      "detailedMetricsEnabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnStage",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.HttpStage",
+              "version": "0.0.0"
+            }
+          },
+          "HttpProdStageWithProperties": {
+            "id": "HttpProdStageWithProperties",
+            "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties",
+            "children": {
+              "IAMRoleForAccessLog-prod": {
+                "id": "IAMRoleForAccessLog-prod",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/IAMRoleForAccessLog-prod",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/IAMRoleForAccessLog-prod/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "apigateway.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "account": {
+                "id": "account",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/account",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Account",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudWatchRoleArn": {
+                      "Fn::GetAtt": [
+                        "HttpProdStageWithPropertiesIAMRoleForAccessLogprod8B4DB8CF",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "version": "0.0.0"
+                }
+              },
+              "AccessLoggingGroup-prod": {
+                "id": "AccessLoggingGroup-prod",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/AccessLoggingGroup-prod",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "HttpApiWithTwoStages0E0DEF3D"
+                    },
+                    "stageName": "prod",
+                    "accessLogSettings": {
+                      "destinationArn": {
+                        "Fn::GetAtt": [
+                          "HttpProdStageWithPropertiesAccessLoggingGroupprodE24A9D48",
+                          "Arn"
+                        ]
+                      },
+                      "format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
+                    },
+                    "defaultRouteSettings": {
+                      "throttlingBurstLimit": 1000,
+                      "throttlingRateLimit": 1000,
+                      "detailedMetricsEnabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnStage",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.HttpStage",
+              "version": "0.0.0"
+            }
+          },
+          "HttpApiWithExternalLogGroup": {
+            "id": "HttpApiWithExternalLogGroup",
+            "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpApiWithExternalLogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpApiWithExternalLogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "HttpApiWithExternalLogGroup",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "dev-access-log-group": {
+            "id": "dev-access-log-group",
+            "path": "aws-cdk-aws-apigatewayv2-http-stage-test/dev-access-log-group",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/dev-access-log-group/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 7
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
+          "HttpDevStageWithExternalLogGroup": {
+            "id": "HttpDevStageWithExternalLogGroup",
+            "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithExternalLogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithExternalLogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "HttpApiWithExternalLogGroupEE0D9E6A"
+                    },
+                    "stageName": "dev",
+                    "accessLogSettings": {
+                      "destinationArn": {
+                        "Fn::GetAtt": [
+                          "devaccessloggroup95A3E6FC",
+                          "Arn"
+                        ]
+                      },
+                      "format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\"}}"
+                    },
+                    "defaultRouteSettings": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnStage",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.HttpStage",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "HttpSocketStageWithLogsTest": {
+        "id": "HttpSocketStageWithLogsTest",
+        "path": "HttpSocketStageWithLogsTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "HttpSocketStageWithLogsTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "HttpSocketStageWithLogsTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.78"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "HttpSocketStageWithLogsTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

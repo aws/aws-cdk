@@ -42,6 +42,35 @@ export interface DomainMappingOptions {
   readonly mappingKey?: string;
 }
 
+export const defaultAccessLogFormat = JSON.stringify({
+  apigw: {
+    api_id: '$context.apiId',
+    stage: '$context.stage',
+  },
+  client: {
+    ip: '$context.identity.sourceIp',
+  },
+  request: {
+    request_id: '$context.requestId',
+    extended_request_id: '$context.extendedRequestId',
+    time: '$context.requestTime',
+    time_epoch: '$context.requestTimeEpoch',
+    protocol: '$context.protocol',
+  },
+  integration: {
+    latency: '$context.integrationLatency',
+    status: '$context.integrationStatus',
+  },
+  response: {
+    latency: '$context.responseLatency',
+    status: '$context.status',
+  },
+  error: {
+    error_message: '$context.error.message',
+    error_responsetype: '$context.error.responseType',
+  },
+});
+
 /**
  * Options required to create a new stage.
  * Options that are common between HTTP and Websocket APIs.
@@ -66,6 +95,52 @@ export interface StageOptions {
    * @default - no throttling configuration
    */
   readonly throttle?: ThrottleSettings;
+
+  /**
+   * Whether or not to enable access logging.
+   *
+   * @default - false
+   */
+  readonly accessLogEnabled?: boolean;
+
+  /**
+   * Optionally, specify a log group that access log entries will be written to.
+   * @default - If not specified a log group will be created if access logs are enabled.
+   */
+  readonly accessLogGroupArn?: string;
+
+  /**
+   * The format and contents of an access log entry.
+   *
+   * @default - If not specified a the default fields logged will be set to
+   * apigw: {
+   * api_id: '$context.apiId',
+   * stage: '$context.stage',
+   * },
+   * client: {
+   * ip: '$context.identity.sourceIp',
+   * },
+   * request: {
+   * request_id: '$context.requestId',
+   * extended_request_id: '$context.extendedRequestId',
+   * time: '$context.requestTime',
+   * time_epoch: '$context.requestTimeEpoch',
+   * protocol: '$context.protocol',
+   * },
+   * integration: {
+   * latency: '$context.integrationLatency',
+   * status: '$context.integrationStatus',
+   * },
+   * response: {
+   * latency: '$context.responseLatency',
+   * status: '$context.status',
+   * },
+   * error: {
+   * error_message: '$context.error.message',
+   * error_responsetype: '$context.error.responseType',
+   * }
+   */
+  readonly accessLogFormat?: string;
 }
 
 /**
@@ -94,3 +169,5 @@ export interface ThrottleSettings {
    */
   readonly burstLimit?: number;
 }
+
+

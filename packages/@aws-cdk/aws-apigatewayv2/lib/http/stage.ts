@@ -1,8 +1,11 @@
+import { CfnAccount } from '@aws-cdk/aws-apigateway';
 import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
-import { Stack } from '@aws-cdk/core';
+import { Role, ServicePrincipal, ManagedPolicy } from '@aws-cdk/aws-iam';
+import { CfnLogGroup } from '@aws-cdk/aws-logs';
+import { Stack, PhysicalName, RemovalPolicy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
-import { StageOptions, IStage, StageAttributes } from '../common';
+import { StageOptions, IStage, StageAttributes, defaultAccessLogFormat } from '../common';
 import { IApi } from '../common/api';
 import { StageBase } from '../common/base';
 import { IHttpApi } from './api';
@@ -78,6 +81,15 @@ export interface HttpStageOptions extends StageOptions {
    * @default '$default' the default stage of the API. This stage will have the URL at the root of the API endpoint.
    */
   readonly stageName?: string;
+
+  /**
+   * Specifies whether detailed metrics are enabled. Enabling detailed metrics will
+   * generate metric data for each resource/method combination invoked on the
+   * the API Gateway.
+   *
+   * @default - false
+   */
+  readonly detailedMetricsEnabled?: boolean;
 }
 
 /**
@@ -163,14 +175,63 @@ export class HttpStage extends HttpStageBase {
       physicalName: props.stageName ? props.stageName : DEFAULT_STAGE_NAME,
     });
 
+    this.api = props.httpApi;
+    this.stageName = this.physicalName;
+
+    const rateLimits = !props.throttle ? undefined : {
+      throttlingBurstLimit: !props.throttle.burstLimit ? undefined : props.throttle.burstLimit,
+      throttlingRateLimit: !props.throttle.rateLimit ? undefined : props.throttle.rateLimit,
+    };
+
+    const detailedMetrics = !props.detailedMetricsEnabled ? undefined : {
+      detailedMetricsEnabled: props.detailedMetricsEnabled,
+    };
+
+    let destinationArn: string | undefined = undefined;
+    if (props.accessLogEnabled) {
+      if (!props.accessLogGroupArn) {
+        // We need to set up the right permissions to create the log group.
+        const iamRoleForLogGroup = new Role(this, `IAMRoleForAccessLog-${this.stageName}`, {
+          roleName: PhysicalName.GENERATE_IF_NEEDED,
+          assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+        });
+
+        iamRoleForLogGroup.node.addDependency(this.api);
+
+        iamRoleForLogGroup.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs'));
+
+        // It's required to register the iam role that is used to create the log group with the account
+        // if an api gateway has never been created in this account/region before.  Otherwise, this is
+        // a no-op.
+        const account = new CfnAccount(this, 'account', {
+          cloudWatchRoleArn: iamRoleForLogGroup.roleArn,
+        });
+        account.node.addDependency(this.api);
+
+        // Setting up some reasonable defaults for the retention policy and removal policy.
+        // If the user wants something different they should create their own log group.
+        const accessLogsLogGroup = new CfnLogGroup(this, `AccessLoggingGroup-${this.stageName}`, {
+          retentionInDays: 30,
+        });
+        accessLogsLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+        destinationArn = accessLogsLogGroup.attrArn;
+      } else {
+        destinationArn = props.accessLogGroupArn;
+      }
+    }
+
+    const accessLogSettings = !props.accessLogEnabled ? undefined : {
+      destinationArn,
+      format: !props.accessLogFormat ? defaultAccessLogFormat : props.accessLogFormat,
+    };
+
     new CfnStage(this, 'Resource', {
       apiId: props.httpApi.apiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
-      defaultRouteSettings: !props.throttle ? undefined : {
-        throttlingBurstLimit: props.throttle?.burstLimit,
-        throttlingRateLimit: props.throttle?.rateLimit,
-      },
+      defaultRouteSettings: { ...rateLimits, ...detailedMetrics },
+      accessLogSettings,
     });
 
     this.stageName = this.physicalName;

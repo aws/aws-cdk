@@ -1,8 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
+import { LogGroup } from '@aws-cdk/aws-logs';
 import { Stack } from '@aws-cdk/core';
-import { DomainName, HttpApi, HttpStage } from '../../lib';
+import { DomainName, HttpApi, HttpStage, defaultAccessLogFormat } from '../../lib';
 
 describe('HttpStage', () => {
   test('default', () => {
@@ -187,6 +188,113 @@ describe('HttpStage with domain mapping', () => {
       DefaultRouteSettings: {
         ThrottlingBurstLimit: 1000,
         ThrottlingRateLimit: 1000,
+      },
+    });
+  });
+
+  test('correctly sets access log settings when the log group and format are not supplied', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+
+    // WHEN
+    new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      stageName: 'dev',
+      accessLogEnabled: true,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: 'dev',
+      AccessLogSettings: {
+        Format: defaultAccessLogFormat,
+      },
+    });
+
+    // The log group is auto-allocated so we don't know the value of it's arn
+    // but it has to be there with some value.
+    const stageProperties = template.findResources('AWS::ApiGatewayV2::Stage', {});
+    const StageName = Object.keys(stageProperties);
+    expect(StageName).toHaveLength(1);
+    expect(stageProperties[StageName[0]]).toHaveProperty('Properties.AccessLogSettings.DestinationArn');
+  });
+
+  test('correctly sets access log settings when the log group and format are supplied', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+    const accessLogsLogGroup = new LogGroup(stack, 'AccessLogsLogGroup');
+
+    // A format string which is different from the default.
+    const formatString: string = JSON.stringify({
+      apigw: {
+        api_id: '$context.apiId',
+        stage: '$context.stage',
+      },
+      request: {
+        request_id: '$context.requestId',
+        extended_request_id: '$context.extendedRequestId',
+        time: '$context.requestTime',
+        time_epoch: '$context.requestTimeEpoch',
+        protocol: '$context.protocol',
+      },
+    });
+
+    // WHEN
+    new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      stageName: 'dev',
+      accessLogEnabled: true,
+      accessLogGroupArn: accessLogsLogGroup.logGroupArn,
+      accessLogFormat: formatString,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: 'dev',
+      AccessLogSettings: {
+        Format: formatString,
+      },
+    });
+
+    // The arn for the log group gets transformed, so we don't know it's value
+    // but it has to be there with some value.
+    const stageProperties = template.findResources('AWS::ApiGatewayV2::Stage', {});
+    const StageName = Object.keys(stageProperties);
+    expect(StageName).toHaveLength(1);
+    expect(stageProperties[StageName[0]]).toHaveProperty('Properties.AccessLogSettings.DestinationArn');
+  });
+
+  test('correctly sets the detailed metrics flag', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+
+    // WHEN
+    new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      stageName: 'dev',
+      detailedMetricsEnabled: true,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: 'dev',
+      DefaultRouteSettings: {
+        DetailedMetricsEnabled: true,
       },
     });
   });
