@@ -339,6 +339,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 
 declare const role: iam.Role;
+declare const stack: cdk.Stack;
 
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
   definition: new sfn.Pass(stack, 'StartPass'),
