@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.71"
+          "version": "10.1.78"
         }
       },
       "batch-stack": {
@@ -2289,7 +2289,7 @@
                 "path": "batch-tests/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.78"
                 }
               },
               "DeployAssert": {

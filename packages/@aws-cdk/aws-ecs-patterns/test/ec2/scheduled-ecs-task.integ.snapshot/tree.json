@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.49"
+          "version": "10.1.78"
         }
       },
       "aws-ecs-integ-ecs": {
@@ -922,7 +922,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.49"
+                      "version": "10.1.78"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1492,7 +1492,7 @@
                 "path": "scheduledEc2TaskTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.49"
+                  "version": "10.1.78"
                 }
               },
               "DeployAssert": {
