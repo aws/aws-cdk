@@ -154,6 +154,30 @@ describe('event source mapping', () => {
     })).toThrow(/kafkaBootStrapServers must not be empty if set/);
   });
 
+  test('throws if kafkaConsumerGroupId is invalid', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: '',
+      kafkaConsumerGroupId: 'some invalid',
+      target: fn,
+    })).toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters and matching "/[a-zA-Z0-9-\/*:_+=.@-]*/"');
+  });
+
+  test('not throws if kafkaConsumerGroupId is empty', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: '',
+      kafkaConsumerGroupId: '',
+      target: fn,
+    })).not.toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters and matching "/[a-zA-Z0-9-\/*:_+=.@-]*/"');
+  });
+
+  test('throws if kafkaConsumerGroupId is too long', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: '',
+      kafkaConsumerGroupId: 'x'.repeat(201),
+      target: fn,
+    })).toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters and matching "/[a-zA-Z0-9-\/*:_+=.@-]*/"');
+  });
+
   test('eventSourceArn appears in stack', () => {
     const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
       type: 'String',

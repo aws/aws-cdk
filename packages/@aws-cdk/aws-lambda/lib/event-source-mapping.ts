@@ -340,9 +340,18 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
 
-    let amazonManagedKafkaEventSourceConfig :CfnEventSourceMapping['amazonManagedKafkaEventSourceConfig'];
+    let amazonManagedKafkaEventSourceConfig : CfnEventSourceMapping['amazonManagedKafkaEventSourceConfig'];
+    let selfManagedKafkaEventSourceConfig: CfnEventSourceMapping['selfManagedKafkaEventSourceConfig'];
+
     if (props.kafkaConsumerGroupId) {
-      amazonManagedKafkaEventSourceConfig = { consumerGroupId: props.kafkaConsumerGroupId };
+      if (Boolean(props.kafkaConsumerGroupId.match(/[a-zA-Z0-9-\/*:_+=.@-]*/s)?.length) || props.kafkaConsumerGroupId.length > 200 || props.kafkaConsumerGroupId.length <1) {
+        throw new Error('kafkaConsumerGroupId must be a valid string between 1 and 200 characters and matching "/[a-zA-Z0-9-\/*:_+=.@-]*/"');
+      }
+      if (Boolean(props.kafkaBootstrapServers?.length) ) {
+        selfManagedKafkaEventSourceConfig = { consumerGroupId: props.kafkaConsumerGroupId };
+      } else {
+        amazonManagedKafkaEventSourceConfig = { consumerGroupId: props.kafkaConsumerGroupId };
+      }
     }
 
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
@@ -363,6 +372,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
+      selfManagedKafkaEventSourceConfig,
       amazonManagedKafkaEventSourceConfig,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
