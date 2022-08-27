@@ -264,10 +264,14 @@ declare const secret: Secret;
 // (Optional) The secret containing the root CA certificate that your Kafka brokers use for TLS encryption
 declare const encryption: Secret;
 
+// (Optional) The consumer group id to use when connecting to the Kafka broker. If omitted the UUID of the event source mapping will be used.
+const consumerGroupId: "my-consumer-group-id";
+
 declare const myFunction: lambda.Function;
 myFunction.addEventSource(new SelfManagedKafkaEventSource({
   bootstrapServers: bootstrapServers,
   topic: topic,
+  consumerGroupId : consumerGroupId,
   secret: secret,
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
