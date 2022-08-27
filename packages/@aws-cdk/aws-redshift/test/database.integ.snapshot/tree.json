@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.65"
+          "version": "10.1.85"
         }
       },
       "aws-cdk-redshift-cluster-database": {
@@ -1260,7 +1260,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.65"
+                  "version": "10.1.85"
                 }
               },
               "TablePrivileges": {
@@ -1526,13 +1526,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.65"
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.65"
+                  "version": "10.1.85"
                 }
               }
             },
@@ -1778,7 +1778,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.65"
+                  "version": "10.1.85"
                 }
               },
               "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671": {
@@ -1812,13 +1812,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.65"
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.65"
+              "version": "10.1.85"
             }
           },
           "Table": {
@@ -2084,7 +2084,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.65"
+                  "version": "10.1.85"
                 }
               }
             },
