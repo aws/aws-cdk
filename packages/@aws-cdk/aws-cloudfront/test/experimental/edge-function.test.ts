@@ -4,6 +4,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cloudfront from '../../lib';
 
 let app: cdk.App;
@@ -224,6 +225,20 @@ describe('stacks', () => {
     Template.fromStack(secondFnStack).hasResourceProperties('AWS::SSM::Parameter', {
       Name: '/cdk/EdgeFunctionArn/testregion/SecondStack/MyFn',
     });
+  });
+
+  test('a construct with EdgeFunction can be created multiple times', () => {
+    class CustomConstruct extends Construct {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+        new cloudfront.experimental.EdgeFunction(this, 'MyFn', defaultEdgeFunctionProps());
+      }
+    }
+
+    new CustomConstruct(stack, 'First');
+    expect(() => {
+      new CustomConstruct(stack, 'Second');
+    }).not.toThrow();
   });
 });
 

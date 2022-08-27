@@ -164,7 +164,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const parameterName = `/${parameterNamePrefix}/${this.env.region}/${sanitizedPath}`;
     const functionStack = this.edgeStack(props.stackId);
 
-    const edgeFunction = new lambda.Function(functionStack, id, props);
+    const edgeFunction = new lambda.Function(functionStack, id + this.node.addr, props);
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
 
     // Store the current version's ARN to be retrieved by the cross region reader below.
