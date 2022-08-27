@@ -90,15 +90,15 @@ describe('stacks', () => {
     Template.fromStack(fnStack).hasResourceProperties('AWS::Lambda::Function', {
       Code: { ZipFile: 'foo' },
       Handler: 'index.handler',
-      Role: { 'Fn::GetAtt': ['MyFnServiceRoleF3016589', 'Arn'] },
+      Role: { 'Fn::GetAtt': ['MyFnc86575fb991394ecfa5e6e8cf791b8b4e11306952dServiceRole375E9B30', 'Arn'] },
       Runtime: 'nodejs14.x',
     });
     Template.fromStack(fnStack).hasResourceProperties('AWS::Lambda::Version', {
-      FunctionName: { Ref: 'MyFn6F8F742F' },
+      FunctionName: { Ref: 'MyFnc86575fb991394ecfa5e6e8cf791b8b4e11306952d74045A7B' },
     });
     Template.fromStack(fnStack).hasResourceProperties('AWS::SSM::Parameter', {
       Type: 'String',
-      Value: { Ref: 'MyFnCurrentVersion309B29FC565d8e08ba88650b100357cd5eaf4bbb' },
+      Value: { Ref: 'MyFnc86575fb991394ecfa5e6e8cf791b8b4e11306952dCurrentVersion39A74FB6c4f1403b565c735ef3338944c9489262' },
       Name: '/cdk/EdgeFunctionArn/testregion/Stack/MyFn',
     });
   });
