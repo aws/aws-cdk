@@ -155,9 +155,6 @@
                         "functionName": {
                           "Ref": "FC4345940"
                         },
-                        "amazonManagedKafkaEventSourceConfig": {
-                          "consumerGroupId": "myTestConsumerGroup"
-                        },
                         "batchSize": 100,
                         "selfManagedEventSource": {
                           "endpoints": {
@@ -167,6 +164,9 @@
                               "my-self-hosted-kafka-broker-3:9092"
                             ]
                           }
+                        },
+                        "selfManagedKafkaEventSourceConfig": {
+                          "consumerGroupId": "myTestConsumerGroup"
                         },
                         "sourceAccessConfigurations": [
                           {

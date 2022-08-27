@@ -88,9 +88,6 @@
     "FunctionName": {
      "Ref": "FC4345940"
     },
-    "AmazonManagedKafkaEventSourceConfig": {
-     "ConsumerGroupId": "myTestConsumerGroup"
-    },
     "BatchSize": 100,
     "SelfManagedEventSource": {
      "Endpoints": {
@@ -100,6 +97,9 @@
        "my-self-hosted-kafka-broker-3:9092"
       ]
      }
+    },
+    "SelfManagedKafkaEventSourceConfig": {
+     "ConsumerGroupId": "myTestConsumerGroup"
     },
     "SourceAccessConfigurations": [
      {

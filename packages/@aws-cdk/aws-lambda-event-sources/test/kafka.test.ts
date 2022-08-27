@@ -656,7 +656,7 @@ describe('KafkaEventSource', () => {
       // THEN
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
-        AmazonManagedKafkaEventSourceConfig: { ConsumerGroupId: consumerGroupId },
+        SelfManagedKafkaEventSourceConfig: { ConsumerGroupId: consumerGroupId },
       });
 
     });
