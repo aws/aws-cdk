@@ -216,6 +216,14 @@ export interface EventSourceMappingOptions {
   readonly kafkaBootstrapServers?: string[]
 
   /**
+   * The consumer group ID to use while consuming Kafka messages. If not set, the consumer group ID will be UUID of the EventSourceMapping.
+   *
+   * @default - none
+   */
+  readonly kafkaConsumerGroupId?: string
+
+
+  /**
    * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html
    *
@@ -332,6 +340,11 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
 
+    let amazonManagedKafkaEventSourceConfig :CfnEventSourceMapping['amazonManagedKafkaEventSourceConfig'];
+    if (props.kafkaConsumerGroupId) {
+      amazonManagedKafkaEventSourceConfig = { consumerGroupId: props.kafkaConsumerGroupId };
+    }
+
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       bisectBatchOnFunctionError: props.bisectBatchOnError,
@@ -350,6 +363,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
+      amazonManagedKafkaEventSourceConfig,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }

@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { EventSourceMappingOptions } from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Stack, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -22,6 +23,12 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * @default none
    */
   readonly secret?: secretsmanager.ISecret
+  /**
+   * The consumer group ID to use while consuming Kafka messages. If not set, the consumer group ID will be the UUID of the EventSourceMapping.
+   *
+   * @default - none
+   */
+  readonly consumerGroupId?: EventSourceMappingOptions['kafkaConsumerGroupId'];
 }
 
 /**
@@ -125,6 +132,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         kafkaTopic: this.innerProps.topic,
+        kafkaConsumerGroupId: this.innerProps.consumerGroupId,
       }),
     );
 
@@ -199,6 +207,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       this.enrichMappingOptions({
         kafkaBootstrapServers: this.innerProps.bootstrapServers,
         kafkaTopic: this.innerProps.topic,
+        kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
       }),
