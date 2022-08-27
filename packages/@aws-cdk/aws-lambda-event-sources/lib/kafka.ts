@@ -24,7 +24,8 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    */
   readonly secret?: secretsmanager.ISecret
   /**
-   * The consumer group ID to use while consuming Kafka messages. If not set, the consumer group ID will be the UUID of the EventSourceMapping.
+   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id
    *
    * @default - none
    */
