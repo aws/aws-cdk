@@ -159,15 +159,7 @@ describe('event source mapping', () => {
       eventSourceArn: '',
       kafkaConsumerGroupId: 'some invalid',
       target: fn,
-    })).toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters and matching "/[a-zA-Z0-9-\/*:_+=.@-]*/"');
-  });
-
-  test('not throws if kafkaConsumerGroupId is empty', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      eventSourceArn: '',
-      kafkaConsumerGroupId: '',
-      target: fn,
-    })).not.toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters and matching "/[a-zA-Z0-9-\/*:_+=.@-]*/"');
+    })).toThrow('kafkaConsumerGroupId contain ivalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
   });
 
   test('throws if kafkaConsumerGroupId is too long', () => {
@@ -175,7 +167,23 @@ describe('event source mapping', () => {
       eventSourceArn: '',
       kafkaConsumerGroupId: 'x'.repeat(201),
       target: fn,
-    })).toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters and matching "/[a-zA-Z0-9-\/*:_+=.@-]*/"');
+    })).toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
+  });
+
+  test('not throws if kafkaConsumerGroupId is empty', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: '',
+      kafkaConsumerGroupId: '',
+      target: fn,
+    })).not.toThrow();
+  });
+
+  test('not throws if kafkaConsumerGroupId is valid', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: '',
+      kafkaConsumerGroupId: 'someValidConsumerGroupId',
+      target: fn,
+    })).not.toThrow();
   });
 
   test('eventSourceArn appears in stack', () => {

@@ -346,9 +346,16 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     let selfManagedKafkaEventSourceConfig: CfnEventSourceMapping['selfManagedKafkaEventSourceConfig'];
 
     if (props.kafkaConsumerGroupId) {
-      if (Boolean(props.kafkaConsumerGroupId.match(/[a-zA-Z0-9-\/*:_+=.@-]*/s)?.length) || props.kafkaConsumerGroupId.length > 200 || props.kafkaConsumerGroupId.length <1) {
-        throw new Error('kafkaConsumerGroupId must be a valid string between 1 and 200 characters and matching "/[a-zA-Z0-9-\/*:_+=.@-]*/"');
+      if (props.kafkaConsumerGroupId.length > 200 || props.kafkaConsumerGroupId.length <1) {
+        throw new Error('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
       }
+
+      const regex = new RegExp(/[a-zA-Z0-9-\/*:_+=.@-]*/);
+      const patternMatch = regex.exec(props.kafkaConsumerGroupId);
+      if (patternMatch === null || patternMatch[0] !== props.kafkaConsumerGroupId) {
+        throw new Error('kafkaConsumerGroupId contain ivalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+      }
+
       if (Boolean(props.kafkaBootstrapServers?.length) ) {
         selfManagedKafkaEventSourceConfig = { consumerGroupId: props.kafkaConsumerGroupId };
       } else {
