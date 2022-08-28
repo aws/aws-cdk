@@ -267,6 +267,7 @@ export class DockerImage extends BundlingDockerImage {
    */
   public static fromBuild(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
+    const buildSecrets = options.buildSecrets || {};
 
     if (options.file && isAbsolute(options.file)) {
       throw new Error(`"file" must be relative to the docker build directory. Got ${options.file}`);
@@ -283,6 +284,7 @@ export class DockerImage extends BundlingDockerImage {
       ...(options.platform ? ['--platform', options.platform] : []),
       ...(options.targetStage ? ['--target', options.targetStage] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+      ...flatten(Object.entries(buildSecrets).map(([k, v]) => ['--secret', `id=${k},src=${v}`])),
       path,
     ];
 
@@ -488,6 +490,13 @@ export interface DockerBuildOptions {
    * @default - no build args
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Build secrets
+   *
+   * @default - no build secrets
+   */
+  readonly buildSecrets?: { [key: string]: string };
 
   /**
    * Name of the Dockerfile, must relative to the docker build path.

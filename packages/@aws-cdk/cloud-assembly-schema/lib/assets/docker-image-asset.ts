@@ -64,6 +64,15 @@ export interface DockerImageSource {
   readonly dockerBuildArgs?: { [name: string]: string };
 
   /**
+   * Additional build secrets
+   *
+   * Requires BuildKit to be enabled.
+   *
+   * @default - No additional build secrets
+   */
+  readonly dockerBuildSecrets?: { [name: string]: string };
+
+  /**
    * Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.
    *
    * Specify this property to build images on a specific networking mode.

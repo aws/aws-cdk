@@ -175,6 +175,15 @@ export interface DockerImageAssetSource {
   readonly dockerBuildArgs?: { [key: string]: string };
 
   /**
+   * Build secrets to pass to the `docker build` command.
+   *
+   * Docker BuildKit must be enabled
+   *
+   * @default - no build secrets are passed
+   */
+  readonly dockerBuildSecrets?: { [key: string]: string };
+
+  /**
    * Docker target to build to
    *
    * Only allowed when `directoryName` is specified.

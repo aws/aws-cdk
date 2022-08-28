@@ -99,6 +99,13 @@ export interface DockerImageAssetInvalidationOptions {
   readonly buildArgs?: boolean;
 
   /**
+   * Use `buildSecrets` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly buildSecrets?: boolean;
+
+  /**
    * Use `target` while calculating the asset hash
    *
    * @default true
@@ -162,6 +169,15 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no build args are passed
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Build secrets to pass to the `docker build` command.
+   *
+   * Docker BuildKit must be enabled.
+   *
+   * @default - no build secrets are passed
+   */
+  readonly buildSecrets?: { [key: string]: string };
 
   /**
    * Docker target to build to
@@ -268,6 +284,11 @@ export class DockerImageAsset extends Construct implements IAsset {
   private readonly dockerBuildArgs?: { [key: string]: string };
 
   /**
+   * Build secrets to pass to the `docker build` command.
+   */
+  private readonly dockerBuildSecrets?: { [key: string]: string };
+
+  /**
    * Docker target to build to
    */
   private readonly dockerBuildTarget?: string;
@@ -325,6 +346,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     const extraHash: { [field: string]: any } = {};
     if (props.invalidation?.extraHash !== false && props.extraHash) { extraHash.user = props.extraHash; }
     if (props.invalidation?.buildArgs !== false && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
+    if (props.invalidation?.buildSecrets !== false && props.buildSecrets) { extraHash.buildSecrets = props.buildSecrets; }
     if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
     if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
     if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
@@ -353,11 +375,13 @@ export class DockerImageAsset extends Construct implements IAsset {
     const stack = Stack.of(this);
     this.assetPath = staging.relativeStagedPath(stack);
     this.dockerBuildArgs = props.buildArgs;
+    this.dockerBuildSecrets = props.buildSecrets;
     this.dockerBuildTarget = props.target;
 
     const location = stack.synthesizer.addDockerImageAsset({
       directoryName: this.assetPath,
       dockerBuildArgs: this.dockerBuildArgs,
+      dockerBuildSecrets: this.dockerBuildSecrets,
       dockerBuildTarget: this.dockerBuildTarget,
       dockerFile: props.file,
       sourceHash: staging.assetHash,
@@ -411,12 +435,21 @@ function validateProps(props: DockerImageAssetProps) {
   }
 
   validateBuildArgs(props.buildArgs);
+  validateBuildSecrets(props.buildSecrets);
 }
 
 function validateBuildArgs(buildArgs?: { [key: string]: string }) {
   for (const [key, value] of Object.entries(buildArgs || {})) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
       throw new Error('Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment');
+    }
+  }
+}
+
+function validateBuildSecrets(buildSecrets?: { [key: string]: string }) {
+  for (const [key, value] of Object.entries(buildSecrets || {})) {
+    if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
+      throw new Error('Cannot use tokens in keys or values of "buildSecrets" since they are needed before deployment');
     }
   }
 }

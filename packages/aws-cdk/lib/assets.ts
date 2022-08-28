@@ -120,6 +120,7 @@ async function prepareDockerImageAsset(
   assetManifest.addDockerImageAsset(asset.sourceHash, {
     directory: asset.path,
     dockerBuildArgs: asset.buildArgs,
+    dockerBuildSecrets: asset.buildSecrets,
     dockerBuildTarget: asset.target,
     dockerFile: asset.file,
     networkMode: asset.networkMode,

@@ -147,6 +147,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
         path: asset.directoryName,
         sourceHash: asset.sourceHash,
         buildArgs: asset.dockerBuildArgs,
+        buildSecrets: asset.dockerBuildSecrets,
         target: asset.dockerBuildTarget,
         file: asset.dockerFile,
         networkMode: asset.networkMode,

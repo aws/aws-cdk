@@ -63,6 +63,9 @@ describe('bundling', () => {
       buildArgs: {
         TEST_ARG: 'cdk-test',
       },
+      buildSecrets: {
+        a: 'b',
+      },
     });
     image.run();
 
@@ -71,12 +74,16 @@ describe('bundling', () => {
       buildArgs: {
         TEST_ARG: 'cdk-test',
       },
+      buildSecrets: {
+        a: 'b',
+      },
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
     expect(spawnSyncStub.firstCall.calledWith('docker', [
       'build', '-t', tag,
       '--build-arg', 'TEST_ARG=cdk-test',
+      '--secret', 'id=a,src=b',
       'docker-path',
     ])).toEqual(true);
 
