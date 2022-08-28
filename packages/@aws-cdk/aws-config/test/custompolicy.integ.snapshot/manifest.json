@@ -1,0 +1,37 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-config-custompolicy": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-config-custompolicy.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-config-custompolicy/Custom/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Custom8166710A"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-config-custompolicy"
+    },
+    "awscdkconfigcustompolicyintegDefaultTestDeployAssert4EE21D3A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awscdkconfigcustompolicyintegDefaultTestDeployAssert4EE21D3A.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "aws-cdk-config-custompolicy-integ/DefaultTest/DeployAssert"
+    }
+  }
+}
