@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as NetFW from '../lib';
 
 class TestStack extends cdk.Stack {
@@ -133,5 +134,8 @@ class TestStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new TestStack(app, 'network-firewall-integ-stack');
+const testCase = new TestStack(app, 'network-firewall-integ-stack');
+new IntegTest(app, 'AllBasicTest', {
+  testCases: [testCase],
+});
 app.synth();
