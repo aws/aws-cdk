@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { App, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
+import { App, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as s3 from '../lib';
 

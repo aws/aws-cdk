@@ -2610,6 +2610,151 @@ describe('bucket', () => {
     })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
   });
 
+  test('autoDeleteObjects with custom role', () => {
+    const stack = new cdk.Stack();
+    const customRole = new iam.Role(stack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    new s3.Bucket(stack, 'Bucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      autoDeleteObjectsRole: customRole,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+    // Lambda provider is using custom role
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      'Role': {
+        'Fn::GetAtt': [
+          'CustomRole6D8E6809',
+          'Arn',
+        ],
+      },
+      'Description': {
+        'Fn::Join': [
+          '',
+          [
+            'Lambda function for auto-deleting objects in ',
+            {
+              'Ref': 'Bucket83908E77',
+            },
+            ' S3 bucket.',
+          ],
+        ],
+      },
+    });
+    // Bucket policy uses custom role as principal
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+            ],
+            'Effect': 'Allow',
+            'Principal': {
+              'AWS': {
+                'Fn::GetAtt': [
+                  'CustomRole6D8E6809',
+                  'Arn',
+                ],
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('autoDeleteObjects with multiple buckets using custom role', () => {
+    const stack = new cdk.Stack();
+    const customRole = new iam.Role(stack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    new s3.Bucket(stack, 'Bucket1', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      autoDeleteObjectsRole: customRole,
+    });
+    new s3.Bucket(stack, 'Bucket2', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      autoDeleteObjectsRole: customRole,
+    });
+    // Should use same provider and role
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+  });
+
+  test('autoDeleteObjects with multiple buckets using custom role and default auto-created role', () => {
+    const stack = new cdk.Stack();
+    const customRole = new iam.Role(stack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    new s3.Bucket(stack, 'Bucket1', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+    new s3.Bucket(stack, 'Bucket2', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      autoDeleteObjectsRole: customRole,
+    });
+    // Should use different providers and roles
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+
+    // Bucket 1 uses provider with default auto-created role
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      'Role': {
+        'Fn::GetAtt': [
+          'CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092',
+          'Arn',
+        ],
+      },
+      'Description': {
+        'Fn::Join': [
+          '',
+          [
+            'Lambda function for auto-deleting objects in ',
+            {
+              'Ref': 'Bucket12520700A',
+            },
+            ' S3 bucket.',
+          ],
+        ],
+      },
+    });
+
+    // Bucket 2 uses provider with custom role
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      'Role': {
+        'Fn::GetAtt': [
+          'CustomRole6D8E6809',
+          'Arn',
+        ],
+      },
+      'Description': {
+        'Fn::Join': [
+          '',
+          [
+            'Lambda function for auto-deleting objects in ',
+            {
+              'Ref': 'Bucket25524B414',
+            },
+            ' S3 bucket.',
+          ],
+        ],
+      },
+    });
+  });
+
   test('bucket with transfer acceleration turned on', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
