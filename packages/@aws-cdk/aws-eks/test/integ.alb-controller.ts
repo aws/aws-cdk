@@ -1,4 +1,4 @@
-/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
+/// !cdk-integ pragma:disable-update-workflow
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
