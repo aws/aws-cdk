@@ -81,6 +81,20 @@ test('can configure validation method', () => {
   });
 });
 
+test('throws when domain name is longer than 64 characters', () => {
+  const stack = new Stack();
+
+  new Certificate(stack, 'Certificate', {
+    domainName: 'test.example.com'.repeat(7),
+  });
+  
+  expect(() => {
+    new Certificate(stack, 'Certificate', {
+      domainName: 'example.com'.repeat(7),
+    });
+  }).toThrow(/Domain name must be less than 64 characters/);
+})
+
 test('needs validation domain supplied if domain contains a token', () => {
   const stack = new Stack();
 
@@ -322,3 +336,4 @@ test('CertificateValidation.fromDnsMultiZone', () => {
     ValidationMethod: 'DNS',
   });
 });
+

@@ -212,6 +212,11 @@ export class Certificate extends CertificateBase implements ICertificate {
       }
     }
 
+    //check if domain name is less than 64  characters
+    if (props.domainName.length > 64) {
+      throw new Error(`Domain name ${props.domainName} is longer than 64 characters`);
+    }
+
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
     const cert = new CfnCertificate(this, 'Resource', {
