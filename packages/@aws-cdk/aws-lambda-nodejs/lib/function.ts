@@ -171,17 +171,17 @@ function findEntry(id: string, entry?: string): string {
   const definingFile = findDefiningFile();
   const extname = path.extname(definingFile);
 
-  const tsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.ts`);
+  const tsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.ts`).replace('file://', '');
   if (fs.existsSync(tsHandlerFile)) {
     return tsHandlerFile;
   }
 
-  const jsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.js`);
+  const jsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.js`).replace('file://', '');
   if (fs.existsSync(jsHandlerFile)) {
     return jsHandlerFile;
   }
 
-  const mjsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.mjs`);
+  const mjsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.mjs`).replace('file://', '');
   if (fs.existsSync(mjsHandlerFile)) {
     return mjsHandlerFile;
   }
