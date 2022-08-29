@@ -86,7 +86,8 @@ test('throws when domain name is longer than 64 characters', () => {
 
   new Certificate(stack, 'Certificate', {
     domainName: 'test.example.com'.repeat(7),
-  });  
+  });
+  
   expect(() => {
     new Certificate(stack, 'Certificate', {
       domainName: 'example.com'.repeat(7),
