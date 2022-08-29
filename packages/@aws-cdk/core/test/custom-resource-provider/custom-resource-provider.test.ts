@@ -318,7 +318,7 @@ describe('custom resource provider', () => {
     const cr = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
       runtime: CustomResourceProviderRuntime.NODEJS_14_X,
-      roleArn: 'arn:aws:iam::123456789012:role/CoolRole'
+      role: 'arn:aws:iam::123456789012:role/CoolRole',
     });
 
     // THEN

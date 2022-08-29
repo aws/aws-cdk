@@ -2243,12 +2243,12 @@ export class Bucket extends BucketBase {
   }
 
   private enableAutoDeleteObjects(role?: iam.IRole) {
-    const providerId = role ? `${AUTO_DELETE_OBJECTS_RESOURCE_TYPE}-${role.node.uniqueId}` : AUTO_DELETE_OBJECTS_RESOURCE_TYPE;
+    const providerId = role ? `${AUTO_DELETE_OBJECTS_RESOURCE_TYPE}-${role.node.id}` : AUTO_DELETE_OBJECTS_RESOURCE_TYPE;
     const provider = CustomResourceProvider.getOrCreateProvider(this, providerId, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
-      roleArn: role ? role.roleArn : undefined,
+      role: role ? role.roleArn : undefined,
     });
 
     // Use a bucket policy to allow the custom resource to delete

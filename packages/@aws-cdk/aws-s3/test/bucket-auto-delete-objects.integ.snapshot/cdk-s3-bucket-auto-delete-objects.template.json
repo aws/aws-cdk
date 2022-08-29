@@ -110,7 +110,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232"
+      "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2"
      },
      "S3Key": {
       "Fn::Join": [
@@ -123,7 +123,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
+             "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48"
             }
            ]
           }
@@ -136,7 +136,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
+             "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48"
             }
            ]
           }
@@ -228,7 +228,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6S3BucketB51EC107"
+      "Ref": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3Bucket12F02545"
      },
      "S3Key": {
       "Fn::Join": [
@@ -241,7 +241,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6S3VersionKey2B267DB5"
+             "Ref": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3VersionKey63B061C0"
             }
            ]
           }
@@ -254,7 +254,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6S3VersionKey2B267DB5"
+             "Ref": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3VersionKey63B061C0"
             }
            ]
           }
@@ -294,32 +294,319 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "CustomRole6D8E6809": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "BucketCustomRoleFFBF9F36": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "BucketCustomRolePolicyFB405E22": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "BucketCustomRoleFFBF9F36"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomRole6D8E6809",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BucketCustomRoleFFBF9F36",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BucketCustomRoleFFBF9F36",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "BucketCustomRoleAutoDeleteObjectsCustomResource524E2B8B": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomRoleCustomResourceProviderHandler02AD56A5",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "BucketCustomRoleFFBF9F36"
+    }
+   },
+   "DependsOn": [
+    "BucketCustomRolePolicyFB405E22"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomRoleCustomResourceProviderHandler02AD56A5": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomRole6D8E6809",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "BucketCustomRoleFFBF9F36"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   }
+  },
+  "CustomS3PutObjectsBucketCustomRoleCustomResourceProviderRole6DFE73A8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": "s3:PutObject",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            {
+             "Fn::GetAtt": [
+              "BucketCustomRoleFFBF9F36",
+              "Arn"
+             ]
+            },
+            "/*"
+           ]
+          ]
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomS3PutObjectsBucketCustomRoleCustomResourceProviderHandler9F2EEF99": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3Bucket12F02545"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3VersionKey63B061C0"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3VersionKey63B061C0"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3PutObjectsBucketCustomRoleCustomResourceProviderRole6DFE73A8",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "CustomS3PutObjectsBucketCustomRoleCustomResourceProviderRole6DFE73A8"
+   ]
+  },
+  "PutObjectsCustomResourceCustomRole": {
+   "Type": "Custom::S3PutObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3PutObjectsBucketCustomRoleCustomResourceProviderHandler9F2EEF99",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "BucketCustomRoleFFBF9F36"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
-  "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232": {
+  "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
+   "Description": "S3 bucket for asset \"60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26\""
   },
-  "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE": {
+  "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48": {
    "Type": "String",
-   "Description": "S3 key for asset version \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
+   "Description": "S3 key for asset version \"60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26\""
   },
-  "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2": {
+  "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26ArtifactHashF709D3CB": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
+   "Description": "Artifact hash for asset \"60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26\""
   },
-  "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6S3BucketB51EC107": {
+  "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3Bucket12F02545": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6\""
+   "Description": "S3 bucket for asset \"e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12\""
   },
-  "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6S3VersionKey2B267DB5": {
+  "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3VersionKey63B061C0": {
    "Type": "String",
-   "Description": "S3 key for asset version \"31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6\""
+   "Description": "S3 key for asset version \"e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12\""
   },
-  "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6ArtifactHashEE982197": {
+  "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12ArtifactHashD6D06D72": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6\""
+   "Description": "Artifact hash for asset \"e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12\""
   }
  }
 }

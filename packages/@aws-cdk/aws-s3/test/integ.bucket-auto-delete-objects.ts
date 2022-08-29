@@ -38,13 +38,13 @@ class TestStack extends Stack {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
-    const bucketWithCustomRole = new s3.Bucket(this, 'Bucket', {
+    const bucketWithCustomRole = new s3.Bucket(this, 'BucketCustomRole', {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
       autoDeleteObjectsRole: customRole,
     });
 
-    const serviceTokenCustomRole = CustomResourceProvider.getOrCreate(this, PUT_OBJECTS_RESOURCE_TYPE, {
+    const serviceTokenCustomRole = CustomResourceProvider.getOrCreate(this, `${PUT_OBJECTS_RESOURCE_TYPE}-${bucketWithCustomRole.node.id}`, {
       codeDirectory: path.join(__dirname, 'put-objects-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       policyStatements: [{
@@ -55,7 +55,7 @@ class TestStack extends Stack {
     });
     new CustomResource(this, 'PutObjectsCustomResourceCustomRole', {
       resourceType: PUT_OBJECTS_RESOURCE_TYPE,
-      serviceTokenCustomRole,
+      serviceToken: serviceTokenCustomRole,
       properties: {
         BucketName: bucketWithCustomRole.bucketName,
       },

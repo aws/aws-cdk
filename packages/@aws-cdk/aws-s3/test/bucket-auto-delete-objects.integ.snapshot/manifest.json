@@ -19,25 +19,25 @@
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
-              "id": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
+              "path": "asset.60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
+              "id": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
               "packaging": "zip",
-              "sourceHash": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
-              "s3BucketParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232",
-              "s3KeyParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE",
-              "artifactHashParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2"
+              "sourceHash": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
+              "s3BucketParameter": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2",
+              "s3KeyParameter": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48",
+              "artifactHashParameter": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26ArtifactHashF709D3CB"
             }
           },
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6",
-              "id": "31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6",
+              "path": "asset.e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12",
+              "id": "e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12",
               "packaging": "zip",
-              "sourceHash": "31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6",
-              "s3BucketParameter": "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6S3BucketB51EC107",
-              "s3KeyParameter": "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6S3VersionKey2B267DB5",
-              "artifactHashParameter": "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6ArtifactHashEE982197"
+              "sourceHash": "e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12",
+              "s3BucketParameter": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3Bucket12F02545",
+              "s3KeyParameter": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3VersionKey63B061C0",
+              "artifactHashParameter": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12ArtifactHashD6D06D72"
             }
           }
         ],
@@ -71,40 +71,40 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/S3Bucket": [
+        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232"
+            "data": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2"
           }
         ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/S3VersionKey": [
+        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
+            "data": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48"
           }
         ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/ArtifactHash": [
+        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2"
+            "data": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26ArtifactHashF709D3CB"
           }
         ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6/S3Bucket": [
+        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6S3BucketB51EC107"
+            "data": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3Bucket12F02545"
           }
         ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6/S3VersionKey": [
+        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6S3VersionKey2B267DB5"
+            "data": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3VersionKey63B061C0"
           }
         ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6/ArtifactHash": [
+        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters31552cb1c5c4cdb0d9502dc59c3cd63cb519dcb7e320e60965c75940297ae3b6ArtifactHashEE982197"
+            "data": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12ArtifactHashD6D06D72"
           }
         ],
         "/cdk-s3-bucket-auto-delete-objects/Custom::S3PutObjectsCustomResourceProvider/Role": [
@@ -123,6 +123,54 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PutObjectsCustomResource"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/CustomRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomRole6D8E6809"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/BucketCustomRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketCustomRoleFFBF9F36"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/BucketCustomRole/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketCustomRolePolicyFB405E22"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/BucketCustomRole/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketCustomRoleAutoDeleteObjectsCustomResource524E2B8B"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/Custom::S3AutoDeleteObjects-CustomRoleCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomRoleCustomResourceProviderHandler02AD56A5"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/Custom::S3PutObjects-BucketCustomRoleCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3PutObjectsBucketCustomRoleCustomResourceProviderRole6DFE73A8"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/Custom::S3PutObjects-BucketCustomRoleCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3PutObjectsBucketCustomRoleCustomResourceProviderHandler9F2EEF99"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/PutObjectsCustomResourceCustomRole/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PutObjectsCustomResourceCustomRole"
           }
         ]
       },

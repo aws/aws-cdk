@@ -90,7 +90,7 @@ export interface CustomResourceProviderProps {
    *
    * @default - A new role is created.
    */
-  readonly roleArn?: string;
+  readonly role?: string;
 }
 
 /**
@@ -238,20 +238,20 @@ export class CustomResourceProvider extends Construct {
     }
 
     let role = undefined;
-    if (props.roleArn) {
-      this.roleArn = props.roleArn;
+    if (props.role) {
+      this.roleArn = props.role;
     } else {
       role = new CfnResource(this, 'Role', {
         type: 'AWS::IAM::Role',
         properties: {
           AssumeRolePolicyDocument: {
             Version: '2012-10-17',
-            Statement: [{Action: 'sts:AssumeRole', Effect: 'Allow', Principal: {Service: 'lambda.amazonaws.com'}}],
+            Statement: [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }],
           },
           ManagedPolicyArns: [
-            {'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'},
+            { 'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
           ],
-          Policies: Lazy.any({produce: () => this.renderPolicies()}),
+          Policies: Lazy.any({ produce: () => this.renderPolicies() }),
         },
       });
       this.roleArn = Token.asString(role.getAtt('Arn'));
@@ -270,13 +270,13 @@ export class CustomResourceProvider extends Construct {
         Timeout: timeout.toSeconds(),
         MemorySize: memory.toMebibytes(),
         Handler: `${ENTRYPOINT_FILENAME}.handler`,
-        Role: role ? role.getAtt('Arn') : props.roleArn,
+        Role: role ? role.getAtt('Arn') : props.role,
         Runtime: customResourceProviderRuntimeToString(props.runtime),
         Environment: this.renderEnvironmentVariables(props.environment),
         Description: props.description ?? undefined,
       },
     });
-    if(role) {
+    if (role) {
       handler.addDependsOn(role);
     }
     if (this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
