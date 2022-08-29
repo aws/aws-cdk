@@ -241,6 +241,7 @@ test('throws when domain name is longer than 64 characters', () => {
   }).toThrow(/Domain name must be 64 characters or less/);
 });
 
+
 test('test transparency logging settings is passed to the custom resource', () => {
   const stack = new Stack();
 
