@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.78"
+          "version": "10.1.85"
         }
       },
       "aws-cdk-msk-integ": {
@@ -944,7 +944,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.78"
+                  "version": "10.1.85"
                 }
               },
               "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286": {
@@ -978,13 +978,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.78"
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.78"
+              "version": "10.1.85"
             }
           },
           "Cluster": {
@@ -1193,7 +1193,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.78"
+              "version": "10.1.85"
             }
           },
           "AWS679f53fac002430cb0da5b7982bd2287": {
@@ -1356,6 +1356,204 @@
               "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"
             }
+          },
+          "ClusterIAM": {
+            "id": "ClusterIAM",
+            "path": "aws-cdk-msk-integ/ClusterIAM",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-msk-integ/ClusterIAM/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-msk-integ/ClusterIAM/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "MSK security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-msk-integ/ClusterIAM/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "brokerNodeGroupInfo": {
+                      "instanceType": "kafka.m5.large",
+                      "clientSubnets": [
+                        {
+                          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                        },
+                        {
+                          "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                        }
+                      ],
+                      "securityGroups": [
+                        {
+                          "Fn::GetAtt": [
+                            "ClusterIAMSecurityGroupA09813F0",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "storageInfo": {
+                        "ebsStorageInfo": {
+                          "volumeSize": 1000
+                        }
+                      }
+                    },
+                    "clusterName": "integ-test-iam-auth",
+                    "kafkaVersion": "2.8.1",
+                    "numberOfBrokerNodes": 2,
+                    "clientAuthentication": {
+                      "sasl": {
+                        "iam": {
+                          "enabled": true
+                        }
+                      }
+                    },
+                    "encryptionInfo": {
+                      "encryptionInTransit": {
+                        "clientBroker": "TLS",
+                        "inCluster": true
+                      }
+                    },
+                    "loggingInfo": {
+                      "brokerLogs": {
+                        "cloudWatchLogs": {
+                          "enabled": false
+                        },
+                        "firehose": {
+                          "enabled": false
+                        },
+                        "s3": {
+                          "enabled": true,
+                          "bucket": {
+                            "Ref": "LoggingBucket1E5A6F3B"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-msk.CfnCluster",
+                  "version": "0.0.0"
+                }
+              },
+              "BootstrapBrokersBootstrapBrokerStringSaslIam": {
+                "id": "BootstrapBrokersBootstrapBrokerStringSaslIam",
+                "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam",
+                "children": {
+                  "Provider": {
+                    "id": "Provider",
+                    "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/Provider",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CustomResourcePolicy": {
+                    "id": "CustomResourcePolicy",
+                    "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/CustomResourcePolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/CustomResourcePolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "kafka:GetBootstrapBrokers",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "ClusterIAMC4B15B57"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99",
+                            "roles": [
+                              {
+                                "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/custom-resources.AwsCustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-msk.Cluster",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapBrokers3": {
+            "id": "BootstrapBrokers3",
+            "path": "aws-cdk-msk-integ/BootstrapBrokers3",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
@@ -1376,7 +1574,7 @@
                 "path": "MskLogging/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.78"
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
@@ -1396,7 +1594,7 @@
                             "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.78"
+                              "version": "10.1.85"
                             }
                           }
                         },
@@ -1436,7 +1634,7 @@
                                 "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertEqualsS3listObjectsV2/AssertionProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.1.78"
+                                  "version": "10.1.85"
                                 }
                               }
                             },
@@ -1514,20 +1712,20 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.78"
+                      "version": "10.1.85"
                     }
                   },
                   "AssetParameters": {
                     "id": "AssetParameters",
                     "path": "MskLogging/DefaultTest/DeployAssert/AssetParameters",
                     "children": {
-                      "0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd": {
-                        "id": "0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd",
-                        "path": "MskLogging/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd",
+                      "374e4c6bf67290e7a1839e32e1c4ec413fe48477e9585dc2e042bc07509f7458": {
+                        "id": "374e4c6bf67290e7a1839e32e1c4ec413fe48477e9585dc2e042bc07509f7458",
+                        "path": "MskLogging/DefaultTest/DeployAssert/AssetParameters/374e4c6bf67290e7a1839e32e1c4ec413fe48477e9585dc2e042bc07509f7458",
                         "children": {
                           "S3Bucket": {
                             "id": "S3Bucket",
-                            "path": "MskLogging/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/S3Bucket",
+                            "path": "MskLogging/DefaultTest/DeployAssert/AssetParameters/374e4c6bf67290e7a1839e32e1c4ec413fe48477e9585dc2e042bc07509f7458/S3Bucket",
                             "constructInfo": {
                               "fqn": "@aws-cdk/core.CfnParameter",
                               "version": "0.0.0"
@@ -1535,7 +1733,7 @@
                           },
                           "S3VersionKey": {
                             "id": "S3VersionKey",
-                            "path": "MskLogging/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/S3VersionKey",
+                            "path": "MskLogging/DefaultTest/DeployAssert/AssetParameters/374e4c6bf67290e7a1839e32e1c4ec413fe48477e9585dc2e042bc07509f7458/S3VersionKey",
                             "constructInfo": {
                               "fqn": "@aws-cdk/core.CfnParameter",
                               "version": "0.0.0"
@@ -1543,7 +1741,7 @@
                           },
                           "ArtifactHash": {
                             "id": "ArtifactHash",
-                            "path": "MskLogging/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/ArtifactHash",
+                            "path": "MskLogging/DefaultTest/DeployAssert/AssetParameters/374e4c6bf67290e7a1839e32e1c4ec413fe48477e9585dc2e042bc07509f7458/ArtifactHash",
                             "constructInfo": {
                               "fqn": "@aws-cdk/core.CfnParameter",
                               "version": "0.0.0"
@@ -1552,13 +1750,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.78"
+                          "version": "10.1.85"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.78"
+                      "version": "10.1.85"
                     }
                   }
                 },
