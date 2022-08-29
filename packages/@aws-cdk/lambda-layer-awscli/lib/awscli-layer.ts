@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
+import * as childproc from 'child_process';
+import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { RemovalPolicy, ResourceEnvironment, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
-import * as childproc from 'child_process';
-import * as path from 'path';
 
 /**
  * An AWS Lambda layer that includes the AWS CLI.
