@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/// !cdk-integ pragma:ignore-assets
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as ssm from '@aws-cdk/aws-ssm';

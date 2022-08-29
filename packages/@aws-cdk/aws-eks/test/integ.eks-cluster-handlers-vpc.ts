@@ -1,4 +1,4 @@
-/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
+/// !cdk-integ pragma:disable-update-workflow
 import { App, Stack } from '@aws-cdk/core';
 import * as eks from '../lib';
 

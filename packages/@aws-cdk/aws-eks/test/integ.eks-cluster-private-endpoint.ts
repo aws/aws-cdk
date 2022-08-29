@@ -1,4 +1,4 @@
-/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
+/// !cdk-integ pragma:disable-update-workflow
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';

@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as cdk from '@aws-cdk/core';
 import * as dynamodb from '../lib';
 

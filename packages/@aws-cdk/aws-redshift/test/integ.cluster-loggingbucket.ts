@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/// !cdk-integ pragma:ignore-assets
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack, App, StackProps } from '@aws-cdk/core';
