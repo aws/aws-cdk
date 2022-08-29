@@ -15,6 +15,12 @@
         "validateOnSynth": false
       },
       "metadata": {
+        "/aws-cdk-redshift-cluster-database/ElasticIPAddress": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ElasticIPAddress"
+          }
+        ],
         "/aws-cdk-redshift-cluster-database/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -180,14 +186,20 @@
         "/aws-cdk-redshift-cluster-database/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterEB0386A7"
           }
         ]
       },
       "displayName": "aws-cdk-redshift-cluster-database"
+    },
+    "awscdkredshiftelasticiptestDefaultTestDeployAssertEAC4B798": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awscdkredshiftelasticiptestDefaultTestDeployAssertEAC4B798.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert"
     }
   }
 }

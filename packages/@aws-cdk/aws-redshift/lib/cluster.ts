@@ -96,6 +96,24 @@ export interface Login {
 }
 
 /**
+ * Logging bucket and S3 prefix combination
+ */
+export interface LoggingProperties {
+  /**
+   * Bucket to send logs to.
+   * Logging information includes queries and connection attempts, for the specified Amazon Redshift cluster.
+   *
+   */
+  readonly loggingBucket: s3.IBucket
+
+  /**
+   * Prefix used for logging.
+   *
+   */
+  readonly loggingKeyPrefix: string
+}
+
+/**
  * Options to add the multi user rotation
  */
 export interface RotationMultiUserOptions {
@@ -294,19 +312,11 @@ export interface ClusterProps {
   readonly defaultDatabaseName?: string;
 
   /**
-   * Bucket to send logs to.
-   * Logging information includes queries and connection attempts, for the specified Amazon Redshift cluster.
+   * Bucket details for log files to be sent to, including prefix.
    *
-   * @default - No Logs
+   * @default - No logging bucket is used
    */
-  readonly loggingBucket?: s3.IBucket
-
-  /**
-   * Prefix used for logging
-   *
-   * @default - no prefix
-   */
-  readonly loggingKeyPrefix?: string
+  readonly loggingProperties?: LoggingProperties;
 
   /**
    * The removal policy to apply when the cluster and its instances are removed
@@ -475,11 +485,28 @@ export class Cluster extends ClusterBase {
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
     let loggingProperties;
-    if (props.loggingBucket) {
+    if (props.loggingProperties) {
       loggingProperties = {
-        bucketName: props.loggingBucket.bucketName,
-        s3KeyPrefix: props.loggingKeyPrefix,
+        bucketName: props.loggingProperties.loggingBucket.bucketName,
+        s3KeyPrefix: props.loggingProperties.loggingKeyPrefix,
       };
+      props.loggingProperties.loggingBucket.addToResourcePolicy(
+        new iam.PolicyStatement(
+          {
+            actions: [
+              's3:GetBucketAcl',
+              's3:PutObject',
+            ],
+            resources: [
+              props.loggingProperties.loggingBucket.arnForObjects('*'),
+              props.loggingProperties.loggingBucket.bucketArn,
+            ],
+            principals: [
+              new iam.ServicePrincipal('redshift.amazonaws.com'),
+            ],
+          },
+        ),
+      );
     }
 
     const cluster = new CfnCluster(this, 'Resource', {

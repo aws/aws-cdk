@@ -8,7 +8,7 @@
       "regions": [
         "us-east-1"
       ],
-      "assertionStack": "IntegTestBatchDefaultEnvVarsStackDefaultTestDeployAssertC15EFFF2"
+      "assertionStack": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert"
     }
   }
 }

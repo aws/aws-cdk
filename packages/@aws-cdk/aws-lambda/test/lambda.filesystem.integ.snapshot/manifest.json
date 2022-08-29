@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -144,10 +144,7 @@
         "/aws-cdk-lambda-1/Efs/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Efs9E8BF36B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "Efs9E8BF36B"
           }
         ],
         "/aws-cdk-lambda-1/Efs/EfsSecurityGroup/Resource": [
@@ -165,28 +162,19 @@
         "/aws-cdk-lambda-1/Efs/EfsMountTarget1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EfsEfsMountTarget195B2DD2E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "EfsEfsMountTarget195B2DD2E"
           }
         ],
         "/aws-cdk-lambda-1/Efs/EfsMountTarget2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EfsEfsMountTarget2315C927F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "EfsEfsMountTarget2315C927F"
           }
         ],
         "/aws-cdk-lambda-1/Efs/AccessPoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EfsAccessPointE419FED9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "EfsAccessPointE419FED9"
           }
         ],
         "/aws-cdk-lambda-1/MyLambda/ServiceRole/Resource": [

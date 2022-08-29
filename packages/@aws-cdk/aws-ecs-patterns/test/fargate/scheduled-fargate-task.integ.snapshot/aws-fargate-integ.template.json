@@ -117,7 +117,11 @@
       "Value": "aws-fargate-integ/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -285,7 +289,6 @@
    "Properties": {
     "ContainerDefinitions": [
      {
-      "Cpu": 256,
       "Environment": [
        {
         "Name": "TRIGGER",
@@ -324,7 +327,6 @@
         }
        }
       },
-      "Memory": 512,
       "Name": "ScheduledContainer"
      }
     ],

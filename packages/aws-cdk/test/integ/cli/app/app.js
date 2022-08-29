@@ -228,6 +228,24 @@ class LambdaStack extends cdk.Stack {
   }
 }
 
+class LambdaHotswapStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    const fn = new lambda.Function(this, 'my-function', {
+      code: lambda.Code.asset(path.join(__dirname, 'lambda')),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      description: process.env.DYNAMIC_LAMBDA_PROPERTY_VALUE ?? "description",
+      environment: {
+        SomeVariable: process.env.DYNAMIC_LAMBDA_PROPERTY_VALUE ?? "environment",
+      }
+    });
+
+    new cdk.CfnOutput(this, 'FunctionName', { value: fn.functionName });
+  }
+}
+
 class DockerStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -261,6 +279,9 @@ class DockerStackWithCustomFile extends cdk.Stack {
   }
 }
 
+/**
+ * A stack that will never succeed deploying (done in a way that CDK cannot detect but CFN will complain about)
+ */
 class FailedStack extends cdk.Stack {
 
   constructor(parent, id, props) {
@@ -379,9 +400,14 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
+    new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
-    new FailedStack(app, `${stackPrefix}-failed`)
+    const failed = new FailedStack(app, `${stackPrefix}-failed`)
+
+    // A stack that depends on the failed stack -- used to test that '-e' does not deploy the failing stack
+    const dependsOnFailed = new OutputsStack(app, `${stackPrefix}-depends-on-failed`);
+    dependsOnFailed.addDependency(failed);
 
     if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
       const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };

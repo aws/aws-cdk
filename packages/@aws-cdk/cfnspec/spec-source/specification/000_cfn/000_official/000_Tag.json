@@ -1,5 +1,5 @@
 {
-  "$version": "81.1.0",
+  "$version": "85.0.0",
   "PropertyTypes": {
     "Tag": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html",

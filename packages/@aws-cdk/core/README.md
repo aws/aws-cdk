@@ -345,13 +345,13 @@ relationship between all resources in the scope of `constructA` and all
 resources in the scope of `constructB`.
 
 If you want a single object to represent a set of constructs that are not
-necessarily in the same scope, you can use a `ConcreteDependable`. The
+necessarily in the same scope, you can use a `DependencyGroup`. The
 following creates a single object that represents a dependency on two
 constructs, `constructB` and `constructC`:
 
 ```ts
 // Declare the dependable object
-const bAndC = new ConcreteDependable();
+const bAndC = new DependencyGroup();
 bAndC.add(constructB);
 bAndC.add(constructC);
 
@@ -779,7 +779,7 @@ const stack = Stack.of(this);
 
 stack.account; // Returns the AWS::AccountId for this stack (or the literal value if known)
 stack.region;  // Returns the AWS::Region for this stack (or the literal value if known)
-stack.partition;
+stack.partition; // Returns the AWS::Partition for this stack (or the literal value if known)
 ```
 
 [cfn-pseudo-params]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html

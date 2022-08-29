@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.71"
         }
       },
       "AwsCdkFsxLustre": {
@@ -768,7 +768,8 @@
                       }
                     ],
                     "lustreConfiguration": {
-                      "deploymentType": "SCRATCH_2"
+                      "deploymentType": "SCRATCH_2",
+                      "dataCompressionType": "LZ4"
                     },
                     "securityGroupIds": [
                       {

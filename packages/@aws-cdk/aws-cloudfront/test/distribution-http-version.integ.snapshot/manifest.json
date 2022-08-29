@@ -1,0 +1,55 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-distribution-http-version": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-distribution-http-version.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-distribution-http-version/Http11/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Http118E669F5D"
+          }
+        ],
+        "/integ-distribution-http-version/Http2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Http25ED2A59B"
+          }
+        ],
+        "/integ-distribution-http-version/Http2and3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Http2and3D987DA75"
+          }
+        ],
+        "/integ-distribution-http-version/Http3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Http31D566096"
+          }
+        ]
+      },
+      "displayName": "integ-distribution-http-version"
+    },
+    "DistributionHttpVersionDefaultTestDeployAssert506965CB": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "DistributionHttpVersionDefaultTestDeployAssert506965CB.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "DistributionHttpVersion/DefaultTest/DeployAssert"
+    }
+  }
+}

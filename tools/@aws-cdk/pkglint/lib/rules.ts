@@ -1,6 +1,6 @@
-import { Bundle } from '@aws-cdk/node-bundle';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Bundle } from '@aws-cdk/node-bundle';
 import * as caseUtils from 'case';
 import * as glob from 'glob';
 import * as semver from 'semver';
@@ -1670,6 +1670,7 @@ export class UbergenPackageVisibility extends ValidationRule {
     'awslint',
     'cdk',
     'cdk-assets',
+    '@aws-cdk/integ-runner',
   ];
 
   public validate(pkg: PackageJson): void {
@@ -1715,7 +1716,7 @@ export class NoExperimentalDependents extends ValidationRule {
     ['@aws-cdk/aws-apigatewayv2-authorizers', ['@aws-cdk/aws-apigatewayv2']],
     ['@aws-cdk/aws-events-targets', ['@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-kinesisfirehose-destinations', ['@aws-cdk/aws-kinesisfirehose']],
-    ['@aws-cdk/aws-iot-actions', ['@aws-cdk/aws-iot', '@aws-cdk/aws-kinesisfirehose']],
+    ['@aws-cdk/aws-iot-actions', ['@aws-cdk/aws-iot', '@aws-cdk/aws-kinesisfirehose', '@aws-cdk/aws-iotevents']],
     ['@aws-cdk/aws-iotevents-actions', ['@aws-cdk/aws-iotevents']],
   ]);
 

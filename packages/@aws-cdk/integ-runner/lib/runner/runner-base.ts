@@ -48,6 +48,13 @@ export interface IntegRunnerOptions {
    * @default - CdkCliWrapper
    */
   readonly cdk?: ICdk;
+
+  /**
+   * Show output from running integration tests
+   *
+   * @default false
+   */
+  readonly showOutput?: boolean;
 }
 
 /**
@@ -137,6 +144,7 @@ export abstract class IntegRunner {
 
     this.cdk = options.cdk ?? new CdkCliWrapper({
       directory: this.directory,
+      showOutput: options.showOutput,
       env: {
         ...options.env,
       },
@@ -260,7 +268,7 @@ export abstract class IntegRunner {
     const stacks = this.actualTestSuite.getStacksWithoutUpdateWorkflow() ?? [];
     const manifest = AssemblyManifestReader.fromPath(this.snapshotDir);
     const assets = flatten(stacks.map(stack => {
-      return manifest.getAssetsForStack(stack) ?? [];
+      return manifest.getAssetLocationsForStack(stack) ?? [];
     }));
 
     assets.forEach(asset => {

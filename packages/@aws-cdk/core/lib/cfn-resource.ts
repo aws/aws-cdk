@@ -480,7 +480,7 @@ export enum TagType {
 export interface ICfnResourceOptions {
   /**
    * A condition to associate with this resource. This means that only if the condition evaluates to 'true' when the stack
-   * is deployed, the resource will be included. This is provided to allow CDK projects to produce legacy templates, but noramlly
+   * is deployed, the resource will be included. This is provided to allow CDK projects to produce legacy templates, but normally
    * there is no need to use it in CDK projects.
    */
   condition?: CfnCondition;
