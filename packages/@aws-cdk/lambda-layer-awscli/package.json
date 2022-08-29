@@ -72,16 +72,20 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "constructs": "^10.0.0",
     "lambda-layer-awscli-v1": "0.0.2",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
   "dependencies": {
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -98,12 +102,12 @@
     "announce": false
   },
   "cdk-build": {
-    "eslint": {
-      "disable": true
-    },
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
+  },
+  "ubergen": {
+    "exclude": false
   },
   "nozem": {
     "ostools": [
@@ -113,5 +117,6 @@
   },
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "private": true
 }

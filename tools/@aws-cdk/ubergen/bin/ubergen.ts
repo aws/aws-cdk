@@ -602,7 +602,6 @@ async function rewriteRosettaFixtureImports(fromFile: string, libName: string): 
 }
 
 const IGNORED_FILE_NAMES = new Set([
-  'awscli-layer.ts',
   '.eslintrc.js',
   '.gitignore',
   '.jest.config.js',

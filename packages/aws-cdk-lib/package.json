@@ -15,7 +15,7 @@
     "gen": "ubergen",
     "build": "cdk-build",
     "lint": "cdk-lint",
-    "test": "cdk-test",
+    "test": "echo done",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
     "build+test": "yarn build && yarn test",
@@ -360,12 +360,10 @@
     "@aws-cdk/ubergen": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^14.18.26",
-    "@types/jest": "^27.5.2",
     "constructs": "^10.0.0",
     "esbuild": "^0.15.5",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
-    "jest": "^27.5.1",
     "typescript": "~3.8.3"
   },
   "peerDependencies": {

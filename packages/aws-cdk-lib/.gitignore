@@ -13,7 +13,3 @@ junit.xml
 !.eslintrc.js
 dist
 .LAST_PACKAGE
-
-.nyc_output
-coverage
-nyc.config.js
