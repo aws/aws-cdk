@@ -24,7 +24,7 @@
     "graceful-fs": "^4.2.10",
     "jest-junit": "^13.2.0",
     "jsii-diff": "^1.65.0",
-    "jsii-pacmak": "^1.65.0",
+    "jsii-pacmak": "^1.65.1",
     "jsii-reflect": "^1.65.0",
     "jsii-rosetta": "^1.65.0",
     "lerna": "^4.0.0",
