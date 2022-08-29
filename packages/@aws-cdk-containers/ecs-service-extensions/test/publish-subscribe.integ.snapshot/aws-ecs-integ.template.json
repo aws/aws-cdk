@@ -666,6 +666,7 @@
   },
   "signupqueueawsecsintegsignup8DE00B29CE828029": {
    "Type": "AWS::SNS::Subscription",
+   "DependsOn": "signupqueuePolicy185ADC00",
    "Properties": {
     "Protocol": "sqs",
     "TopicArn": {
@@ -740,6 +741,7 @@
   },
   "EventsQueueawsecsintegdeleteF56807768162F4C0": {
    "Type": "AWS::SNS::Subscription",
+   "DependsOn": "EventsQueuePolicyF3E925EC",
    "Properties": {
     "Protocol": "sqs",
     "TopicArn": {
