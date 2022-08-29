@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/lambda-layer-awscli",
-  "version": "2.0.0",
+  "version": "0.0.0",
   "description": "An AWS Lambda layer that contains the AWS CLI",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -76,8 +76,8 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "aws-cdk-lib": "2.0.0",
     "constructs": "^10.0.0",
+    "lambda-layer-awscli-v1": "0.0.2",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
@@ -85,7 +85,8 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "aws-cdk-lib": "^2.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -97,9 +98,6 @@
     "announce": false
   },
   "cdk-build": {
-    "pre": [
-      "layer/build.sh"
-    ],
     "eslint": {
       "disable": true
     },
