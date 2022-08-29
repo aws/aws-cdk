@@ -66,7 +66,10 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  treeMetadata: false,
+});
+app.node.setContext('@aws-cdk/core:newStyleStackSynthesis', true);
 
 const stack = new TestStack(app, 'aws-cdk-lambda-destinations');
 const integ = new IntegTest(app, 'Destinations', {

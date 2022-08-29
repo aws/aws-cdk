@@ -54,6 +54,7 @@ export class IntegTestCase extends Construct {
     return {
       ...props,
       assertionStack: this._assert.scope.node.path,
+      assertionStackName: this._assert.scope.stackName,
       stacks: props.stacks.map(s => s.node.path),
     };
   }
