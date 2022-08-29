@@ -511,6 +511,20 @@ const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
 });
 ```
 
+When `autoDeleteObjects` is set to true, a custom resource is created to
+manage the deletion of the objects within the bucket. By default, a new role is
+created for the Lambda function that implements this feature. If you want to use
+your own role instead, you can provide it in the `autoDeleteObjectsRole` property:
+
+```ts
+declare const myRole: iam.IRole;
+const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+  autoDeleteObjectsRole: myRole,
+});
+```
+
 **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
 switching this to `false` in a CDK version *before* `1.126.0` will lead to
 all objects in the bucket being deleted. Be sure to update your bucket resources
