@@ -1,0 +1,49 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "CloudtrailIntegTestStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CloudtrailIntegTestStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/CloudtrailIntegTestStack/Trail/S3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrailS30071F172"
+          }
+        ],
+        "/CloudtrailIntegTestStack/Trail/S3/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrailS3PolicyE42170FE"
+          }
+        ],
+        "/CloudtrailIntegTestStack/Trail/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Trail022F0CF2"
+          }
+        ]
+      },
+      "displayName": "CloudtrailIntegTestStack"
+    },
+    "TrailIntegTestDefaultTestDeployAssertA42C24D1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "TrailIntegTestDefaultTestDeployAssertA42C24D1.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "TrailIntegTest/DefaultTest/DeployAssert"
+    }
+  }
+}

@@ -117,7 +117,11 @@
       "Value": "aws-cdk-msk-integ/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "aws-cdk-msk-integ/VPC/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
   },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
@@ -593,7 +601,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3Bucket196AD8D5"
+      "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2"
      },
      "S3Key": {
       "Fn::Join": [
@@ -606,7 +614,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3VersionKey53E5B9FA"
+             "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48"
             }
            ]
           }
@@ -619,7 +627,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3VersionKey53E5B9FA"
+             "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48"
             }
            ]
           }
@@ -728,29 +736,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "kafka:GetBootstrapBrokers",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "ClusterEB0386A7"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126",
-    "Roles": [
-     {
-      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-     }
-    ]
-   }
-  },
   "ClusterBootstrapBrokersBootstrapBrokerStringTls2E6167B7": {
    "Type": "Custom::AWS",
    "Properties": {
@@ -792,6 +777,29 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "kafka:GetBootstrapBrokers",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ClusterEB0386A7"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   }
+  },
   "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -828,7 +836,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560S3Bucket648C0EE1"
+      "Ref": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A"
      },
      "S3Key": {
       "Fn::Join": [
@@ -841,7 +849,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560S3VersionKeyDCBB7AC4"
+             "Ref": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5"
             }
            ]
           }
@@ -854,7 +862,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560S3VersionKeyDCBB7AC4"
+             "Ref": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5"
             }
            ]
           }
@@ -877,32 +885,175 @@
    "DependsOn": [
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
+  },
+  "ClusterIAMSecurityGroupA09813F0": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "ClusterIAMC4B15B57": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+      },
+      {
+       "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterIAMSecurityGroupA09813F0",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "integ-test-iam-auth",
+    "KafkaVersion": "2.8.1",
+    "NumberOfBrokerNodes": 2,
+    "ClientAuthentication": {
+     "Sasl": {
+      "Iam": {
+       "Enabled": true
+      }
+     }
+    },
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Bucket": {
+        "Ref": "LoggingBucket1E5A6F3B"
+       },
+       "Enabled": true
+      }
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamEB333452": {
+   "Type": "Custom::AWS",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"Kafka\",\"action\":\"getBootstrapBrokers\",\"parameters\":{\"ClusterArn\":\"",
+       {
+        "Ref": "ClusterIAMC4B15B57"
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"BootstrapBrokers\"}}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"Kafka\",\"action\":\"getBootstrapBrokers\",\"parameters\":{\"ClusterArn\":\"",
+       {
+        "Ref": "ClusterIAMC4B15B57"
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"BootstrapBrokers\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": true
+   },
+   "DependsOn": [
+    "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "kafka:GetBootstrapBrokers",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ClusterIAMC4B15B57"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   }
   }
  },
  "Parameters": {
-  "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3Bucket196AD8D5": {
+  "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb\""
+   "Description": "S3 bucket for asset \"60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26\""
   },
-  "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbS3VersionKey53E5B9FA": {
+  "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48": {
    "Type": "String",
-   "Description": "S3 key for asset version \"17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb\""
+   "Description": "S3 key for asset version \"60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26\""
   },
-  "AssetParameters17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccbArtifactHash35F1B2CD": {
+  "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26ArtifactHashF709D3CB": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"17cb4b37288c269a54418db6e9c7c3763b2d1a82bdc374be4653bd366345eccb\""
+   "Description": "Artifact hash for asset \"60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26\""
   },
-  "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560S3Bucket648C0EE1": {
+  "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"c1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560\""
+   "Description": "S3 bucket for asset \"105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286\""
   },
-  "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560S3VersionKeyDCBB7AC4": {
+  "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5": {
    "Type": "String",
-   "Description": "S3 key for asset version \"c1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560\""
+   "Description": "S3 key for asset version \"105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286\""
   },
-  "AssetParametersc1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560ArtifactHash99A6E846": {
+  "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"c1bc48e68a705504356d7b5178aa4617261dbfcf12b70eb9b10fe1fb207ff560\""
+   "Description": "Artifact hash for asset \"105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286\""
   }
  },
  "Outputs": {
@@ -938,6 +1089,14 @@
     "Fn::GetAtt": [
      "ClusterBootstrapBrokersBootstrapBrokerStringTls2E6167B7",
      "BootstrapBrokerStringTls"
+    ]
+   }
+  },
+  "BootstrapBrokers3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamEB333452",
+     "BootstrapBrokerStringSaslIam"
     ]
    }
   }
