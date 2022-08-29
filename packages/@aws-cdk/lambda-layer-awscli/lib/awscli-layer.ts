@@ -3,7 +3,6 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { RemovalPolicy, ResourceEnvironment, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import * as childproc from 'child_process';
-import * as os from 'os';
 import * as path from 'path';
 
 /**
@@ -20,12 +19,8 @@ export class AwsCliLayer implements lambda.ILayerVersion {
   private readonly packageName: string = 'lambda-layer-awscli-v1';
   private readonly npmPackage: any;
   private readonly layer: lambda.LayerVersion;
-  private readonly wellKnownInstallDir: string;
 
   constructor(scope: Construct, id: string) {
-    const installParentDir = os.homedir() ?? os.tmpdir();
-    this.wellKnownInstallDir = path.join(installParentDir, '.awscdk/npm-cache');
-
     const version = this.requireWrapper(path.join(__dirname, '../package.json')).devDependencies[this.packageName];
     const pathOfModuleIfAlreadyInstalled = require.resolve(`${this.packageName}`);
     const versionAlreadyInstalled = this.requireWrapper(path.join(pathOfModuleIfAlreadyInstalled, '../../package.json')).version;
@@ -74,9 +69,13 @@ export class AwsCliLayer implements lambda.ILayerVersion {
   }
 
   private installNpmPackage(): any {
-    console.log(`Shelling out to run npm install ${this.packageName} --no-save --prefix ${this.wellKnownInstallDir}`);
-    const result = childproc.execSync(`pwd; npm prefix; npm install  ${this.packageName} --silent --no-save --prefix ${this.wellKnownInstallDir}`);
+    const installDir = require.main?.paths[0].split('/').slice(0, -1).join('/');
+    if (!installDir) {
+      return;
+    }
+    console.log(`Shelling out to run npm install ${this.packageName} --no-save --prefix ${installDir}`);
+    const result = childproc.execSync(`pwd; npm prefix; npm install  ${this.packageName} --no-save --prefix ${installDir}`);
     console.log(result.toString('utf8'));
-    return this.requireWrapper(path.join(this.wellKnownInstallDir, 'node_modules', this.packageName, 'lib/index.js'));
+    return this.requireWrapper(path.join(installDir, 'node_modules', this.packageName, 'lib/index.js'));
   }
 }
