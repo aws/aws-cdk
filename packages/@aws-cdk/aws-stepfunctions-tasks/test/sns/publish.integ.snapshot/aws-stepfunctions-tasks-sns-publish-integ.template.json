@@ -45,6 +45,7 @@
   },
   "showmethemessagesawsstepfunctionstaskssnspublishintegcooltopic8388C976F1D63091": {
    "Type": "AWS::SNS::Subscription",
+   "DependsOn": "showmethemessagesPolicyB08B04B0",
    "Properties": {
     "Protocol": "sqs",
     "TopicArn": {
