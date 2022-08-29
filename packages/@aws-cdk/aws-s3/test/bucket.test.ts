@@ -2650,12 +2650,6 @@ describe('bucket', () => {
       'PolicyDocument': {
         'Statement': [
           {
-            'Action': [
-              's3:GetBucket*',
-              's3:List*',
-              's3:DeleteObject*',
-            ],
-            'Effect': 'Allow',
             'Principal': {
               'AWS': {
                 'Fn::GetAtt': [
@@ -2663,6 +2657,48 @@ describe('bucket', () => {
                   'Arn',
                 ],
               },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('autoDeleteObjects with custom role from ARN', () => {
+    const stack = new cdk.Stack();
+    const customRole = iam.Role.fromRoleArn(stack, 'CustomRole', 'arn:aws:iam::123456789012:role/CoolRole');
+
+    new s3.Bucket(stack, 'Bucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      autoDeleteObjectsRole: customRole,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+    // Lambda provider is using custom role
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      'Role': 'arn:aws:iam::123456789012:role/CoolRole',
+      'Description': {
+        'Fn::Join': [
+          '',
+          [
+            'Lambda function for auto-deleting objects in ',
+            {
+              'Ref': 'Bucket83908E77',
+            },
+            ' S3 bucket.',
+          ],
+        ],
+      },
+    });
+    // Bucket policy uses custom role as principal
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Principal': {
+              'AWS': 'arn:aws:iam::123456789012:role/CoolRole',
             },
           },
         ],
