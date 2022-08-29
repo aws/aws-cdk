@@ -333,23 +333,6 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
  * @example
  *
  * const ssmParameter = new ssm.StringParameter(this, 'mySsmParameter', {
-<<<<<<< HEAD
- * parameterName: 'mySsmParameter',
- * stringValue: 'mySsmParameterValue',
- * type: ssm.ParameterType.STRING,
- * });
- *
- * const secureParameter = new ssm.StringParameter(this, 'mySecretParameter', {
- * parameterName: 'mySecretParameter',
- * stringValue: 'mySecretParameterValue',
- * type: ssm.ParameterType.SECURE_STRING,
- * });
- *
- * const listParameter = new ssm.StringParameter(this, 'myListParameter', {
- * parameterName: 'myListParameter',
- * stringValue: ["myListParameterValue1", "myListParameterValue2"],
- * type: ssm.ParameterType.STRING_LIST,
-=======
  *    parameterName: 'mySsmParameter',
  *    stringValue: 'mySsmParameterValue',
  *    type: ssm.ParameterType.STRING,
@@ -365,7 +348,6 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
  *    parameterName: 'myListParameter',
  *    stringValue: ["myListParameterValue1", "myListParameterValue2"],
  *    type: ssm.ParameterType.STRING_LIST,
->>>>>>> 1f0656e65cd34f66d42814e5523e0cfd943794d5
  * });
  *
  */
