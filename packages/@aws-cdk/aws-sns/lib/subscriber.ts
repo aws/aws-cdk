@@ -32,7 +32,7 @@ export interface TopicSubscriptionConfig extends SubscriptionOptions {
    *
    * @default - empty list
    */
-  readonly subscriptionDependencies?: IDependable[];
+  readonly subscriptionDependency?: IDependable;
 }
 
 /**

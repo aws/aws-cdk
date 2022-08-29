@@ -100,10 +100,11 @@ export abstract class TopicBase extends Resource implements ITopic {
       ...subscriptionConfig,
     });
 
-    // Add dependencies for the subscription
-    subscriptionConfig.subscriptionDependencies?.forEach(subscriptionDependency => {
-      subscription.node.addDependency(subscriptionDependency);
-    });
+    // Add dependency for the subscription, for example for SQS subscription
+    // the queue policy has to deploy before the subscription is created
+    if (subscriptionConfig.subscriptionDependency) {
+      subscription.node.addDependency(subscriptionConfig.subscriptionDependency);
+    }
 
     return subscription;
   }

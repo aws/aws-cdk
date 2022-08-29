@@ -3,7 +3,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { ArnFormat, FeatureFlags, Names, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, IDependable } from 'constructs';
+import { Construct } from 'constructs';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -49,12 +49,6 @@ export class SqsSubscription implements sns.ITopicSubscription {
       },
     })).policyDependable;
 
-    // Add the subscription policy as a dependency for the subscription
-    const subscriptionDependencies: IDependable[] = [];
-    if (queuePolicyDependable) {
-      subscriptionDependencies.push(queuePolicyDependable);
-    }
-
     // if the queue is encrypted, add a statement to the key resource policy
     // which allows this topic to decrypt KMS keys
     if (this.queue.encryptionMasterKey) {
@@ -83,7 +77,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
       filterPolicy: this.props.filterPolicy,
       region: this.regionFromArn(topic),
       deadLetterQueue: this.props.deadLetterQueue,
-      subscriptionDependencies,
+      subscriptionDependency: queuePolicyDependable,
     };
   }
 
