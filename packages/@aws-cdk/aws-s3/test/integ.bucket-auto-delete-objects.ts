@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { App, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
 import * as s3 from '../lib';
 
@@ -29,6 +30,34 @@ class TestStack extends Stack {
       serviceToken,
       properties: {
         BucketName: bucket.bucketName,
+      },
+    });
+
+    // Test with custom role
+    const customRole = new iam.Role(this, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    const bucketWithCustomRole = new s3.Bucket(this, 'Bucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      autoDeleteObjectsRole: customRole,
+    });
+
+    const serviceTokenCustomRole = CustomResourceProvider.getOrCreate(this, PUT_OBJECTS_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, 'put-objects-handler'),
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      policyStatements: [{
+        Effect: 'Allow',
+        Action: 's3:PutObject',
+        Resource: bucketWithCustomRole.arnForObjects('*'),
+      }],
+    });
+    new CustomResource(this, 'PutObjectsCustomResourceCustomRole', {
+      resourceType: PUT_OBJECTS_RESOURCE_TYPE,
+      serviceTokenCustomRole,
+      properties: {
+        BucketName: bucketWithCustomRole.bucketName,
       },
     });
   }

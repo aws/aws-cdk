@@ -1393,6 +1393,13 @@ export interface BucketProps {
   readonly autoDeleteObjects?: boolean;
 
   /**
+   * The role to use for the autoDeleteObjects handler.
+   *
+   * @default - a new role will be created.
+   */
+  readonly autoDeleteObjectsRole?: iam.IRole;
+
+  /**
    * Whether this bucket should have versioning turned on or not.
    *
    * @default false
@@ -1853,7 +1860,7 @@ export class Bucket extends BucketBase {
         throw new Error('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.');
       }
 
-      this.enableAutoDeleteObjects();
+      this.enableAutoDeleteObjects(props.autoDeleteObjectsRole);
     }
 
     if (this.eventBridgeEnabled) {
@@ -2235,11 +2242,13 @@ export class Bucket extends BucketBase {
     });
   }
 
-  private enableAutoDeleteObjects() {
-    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
+  private enableAutoDeleteObjects(role?: iam.IRole) {
+    const providerId = role ? `${AUTO_DELETE_OBJECTS_RESOURCE_TYPE}-${role.node.uniqueId}` : AUTO_DELETE_OBJECTS_RESOURCE_TYPE;
+    const provider = CustomResourceProvider.getOrCreateProvider(this, providerId, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
+      roleArn: role ? role.roleArn : undefined,
     });
 
     // Use a bucket policy to allow the custom resource to delete

@@ -84,6 +84,13 @@ export interface CustomResourceProviderProps {
    * @default - No description.
    */
   readonly description?: string;
+
+  /**
+   * AWS Lambda execution role ARN to use for the provider.
+   *
+   * @default - A new role is created.
+   */
+  readonly roleArn?: string;
 }
 
 /**
@@ -230,20 +237,25 @@ export class CustomResourceProvider extends Construct {
       }
     }
 
-    const role = new CfnResource(this, 'Role', {
-      type: 'AWS::IAM::Role',
-      properties: {
-        AssumeRolePolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }],
+    let role = undefined;
+    if (props.roleArn) {
+      this.roleArn = props.roleArn;
+    } else {
+      role = new CfnResource(this, 'Role', {
+        type: 'AWS::IAM::Role',
+        properties: {
+          AssumeRolePolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [{Action: 'sts:AssumeRole', Effect: 'Allow', Principal: {Service: 'lambda.amazonaws.com'}}],
+          },
+          ManagedPolicyArns: [
+            {'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'},
+          ],
+          Policies: Lazy.any({produce: () => this.renderPolicies()}),
         },
-        ManagedPolicyArns: [
-          { 'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
-        ],
-        Policies: Lazy.any({ produce: () => this.renderPolicies() }),
-      },
-    });
-    this.roleArn = Token.asString(role.getAtt('Arn'));
+      });
+      this.roleArn = Token.asString(role.getAtt('Arn'));
+    }
 
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
@@ -258,15 +270,15 @@ export class CustomResourceProvider extends Construct {
         Timeout: timeout.toSeconds(),
         MemorySize: memory.toMebibytes(),
         Handler: `${ENTRYPOINT_FILENAME}.handler`,
-        Role: role.getAtt('Arn'),
+        Role: role ? role.getAtt('Arn') : props.roleArn,
         Runtime: customResourceProviderRuntimeToString(props.runtime),
         Environment: this.renderEnvironmentVariables(props.environment),
         Description: props.description ?? undefined,
       },
     });
-
-    handler.addDependsOn(role);
-
+    if(role) {
+      handler.addDependsOn(role);
+    }
     if (this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, assetFileName);
       handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY, 'Code');

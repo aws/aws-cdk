@@ -309,5 +309,21 @@ describe('custom resource provider', () => {
     });
 
   });
+
+  test('explicitly provided roleArn', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const cr = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      roleArn: 'arn:aws:iam::123456789012:role/CoolRole'
+    });
+
+    // THEN
+    expect(stack.resolve(cr.roleArn)).toEqual('arn:aws:iam::123456789012:role/CoolRole');
+
+  });
 });
 
