@@ -1,0 +1,37 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TestStack = exports.testFixtureCluster = exports.testFixtureNoVpc = exports.testFixture = void 0;
+const ec2 = require("@aws-cdk/aws-ec2");
+const core_1 = require("@aws-cdk/core");
+const lib_1 = require("../lib");
+function testFixture() {
+    const { stack, app } = testFixtureNoVpc();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    return { stack, vpc, app };
+}
+exports.testFixture = testFixture;
+function testFixtureNoVpc() {
+    const app = new core_1.App();
+    const stack = new core_1.Stack(app, 'Stack', { env: { region: 'us-east-1' } });
+    return { stack, app };
+}
+exports.testFixtureNoVpc = testFixtureNoVpc;
+function testFixtureCluster() {
+    const { stack, app } = testFixtureNoVpc();
+    const cluster = new lib_1.Cluster(stack, 'Cluster');
+    return { stack, app, cluster };
+}
+exports.testFixtureCluster = testFixtureCluster;
+// we must specify an explicit environment because we have an AMI map that is
+// keyed from the target region.
+const env = {
+    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
+    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+};
+class TestStack extends core_1.Stack {
+    constructor(scope, id) {
+        super(scope, id, { env });
+    }
+}
+exports.TestStack = TestStack;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXRpbC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInV0aWwudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBQUEsd0NBQXdDO0FBQ3hDLHdDQUEyQztBQUUzQyxnQ0FBaUM7QUFFakMsU0FBZ0IsV0FBVztJQUN6QixNQUFNLEVBQUUsS0FBSyxFQUFFLEdBQUcsRUFBRSxHQUFHLGdCQUFnQixFQUFFLENBQUM7SUFDMUMsTUFBTSxHQUFHLEdBQUcsSUFBSSxHQUFHLENBQUMsR0FBRyxDQUFDLEtBQUssRUFBRSxLQUFLLENBQUMsQ0FBQztJQUV0QyxPQUFPLEVBQUUsS0FBSyxFQUFFLEdBQUcsRUFBRSxHQUFHLEVBQUUsQ0FBQztBQUM3QixDQUFDO0FBTEQsa0NBS0M7QUFFRCxTQUFnQixnQkFBZ0I7SUFDOUIsTUFBTSxHQUFHLEdBQUcsSUFBSSxVQUFHLEVBQUUsQ0FBQztJQUN0QixNQUFNLEtBQUssR0FBRyxJQUFJLFlBQUssQ0FBQyxHQUFHLEVBQUUsT0FBTyxFQUFFLEVBQUUsR0FBRyxFQUFFLEVBQUUsTUFBTSxFQUFFLFdBQVcsRUFBRSxFQUFFLENBQUMsQ0FBQztJQUN4RSxPQUFPLEVBQUUsS0FBSyxFQUFFLEdBQUcsRUFBRSxDQUFDO0FBQ3hCLENBQUM7QUFKRCw0Q0FJQztBQUVELFNBQWdCLGtCQUFrQjtJQUNoQyxNQUFNLEVBQUUsS0FBSyxFQUFFLEdBQUcsRUFBRSxHQUFHLGdCQUFnQixFQUFFLENBQUM7SUFDMUMsTUFBTSxPQUFPLEdBQUcsSUFBSSxhQUFPLENBQUMsS0FBSyxFQUFFLFNBQVMsQ0FBQyxDQUFDO0lBRTlDLE9BQU8sRUFBRSxLQUFLLEVBQUUsR0FBRyxFQUFFLE9BQU8sRUFBRSxDQUFDO0FBQ2pDLENBQUM7QUFMRCxnREFLQztBQUVELDZFQUE2RTtBQUM3RSxnQ0FBZ0M7QUFDaEMsTUFBTSxHQUFHLEdBQUc7SUFDVixNQUFNLEVBQUUsT0FBTyxDQUFDLEdBQUcsQ0FBQyxnQkFBZ0IsSUFBSSxPQUFPLENBQUMsR0FBRyxDQUFDLGtCQUFrQjtJQUN0RSxPQUFPLEVBQUUsT0FBTyxDQUFDLEdBQUcsQ0FBQyxpQkFBaUIsSUFBSSxPQUFPLENBQUMsR0FBRyxDQUFDLG1CQUFtQjtDQUMxRSxDQUFDO0FBRUYsTUFBYSxTQUFVLFNBQVEsWUFBSztJQUNsQyxZQUFZLEtBQWdCLEVBQUUsRUFBVTtRQUN0QyxLQUFLLENBQUMsS0FBSyxFQUFFLEVBQUUsRUFBRSxFQUFFLEdBQUcsRUFBRSxDQUFDLENBQUM7S0FDM0I7Q0FDRjtBQUpELDhCQUlDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgZWMyIGZyb20gJ0Bhd3MtY2RrL2F3cy1lYzInO1xuaW1wb3J0IHsgQXBwLCBTdGFjayB9IGZyb20gJ0Bhd3MtY2RrL2NvcmUnO1xuaW1wb3J0IHsgQ29uc3RydWN0IH0gZnJvbSAnY29uc3RydWN0cyc7XG5pbXBvcnQgeyBDbHVzdGVyIH0gZnJvbSAnLi4vbGliJztcblxuZXhwb3J0IGZ1bmN0aW9uIHRlc3RGaXh0dXJlKCkge1xuICBjb25zdCB7IHN0YWNrLCBhcHAgfSA9IHRlc3RGaXh0dXJlTm9WcGMoKTtcbiAgY29uc3QgdnBjID0gbmV3IGVjMi5WcGMoc3RhY2ssICdWUEMnKTtcblxuICByZXR1cm4geyBzdGFjaywgdnBjLCBhcHAgfTtcbn1cblxuZXhwb3J0IGZ1bmN0aW9uIHRlc3RGaXh0dXJlTm9WcGMoKSB7XG4gIGNvbnN0IGFwcCA9IG5ldyBBcHAoKTtcbiAgY29uc3Qgc3RhY2sgPSBuZXcgU3RhY2soYXBwLCAnU3RhY2snLCB7IGVudjogeyByZWdpb246ICd1cy1lYXN0LTEnIH0gfSk7XG4gIHJldHVybiB7IHN0YWNrLCBhcHAgfTtcbn1cblxuZXhwb3J0IGZ1bmN0aW9uIHRlc3RGaXh0dXJlQ2x1c3RlcigpIHtcbiAgY29uc3QgeyBzdGFjaywgYXBwIH0gPSB0ZXN0Rml4dHVyZU5vVnBjKCk7XG4gIGNvbnN0IGNsdXN0ZXIgPSBuZXcgQ2x1c3RlcihzdGFjaywgJ0NsdXN0ZXInKTtcblxuICByZXR1cm4geyBzdGFjaywgYXBwLCBjbHVzdGVyIH07XG59XG5cbi8vIHdlIG11c3Qgc3BlY2lmeSBhbiBleHBsaWNpdCBlbnZpcm9ubWVudCBiZWNhdXNlIHdlIGhhdmUgYW4gQU1JIG1hcCB0aGF0IGlzXG4vLyBrZXllZCBmcm9tIHRoZSB0YXJnZXQgcmVnaW9uLlxuY29uc3QgZW52ID0ge1xuICByZWdpb246IHByb2Nlc3MuZW52LkNES19JTlRFR19SRUdJT04gfHwgcHJvY2Vzcy5lbnYuQ0RLX0RFRkFVTFRfUkVHSU9OLFxuICBhY2NvdW50OiBwcm9jZXNzLmVudi5DREtfSU5URUdfQUNDT1VOVCB8fCBwcm9jZXNzLmVudi5DREtfREVGQVVMVF9BQ0NPVU5ULFxufTtcblxuZXhwb3J0IGNsYXNzIFRlc3RTdGFjayBleHRlbmRzIFN0YWNrIHtcbiAgY29uc3RydWN0b3Ioc2NvcGU6IENvbnN0cnVjdCwgaWQ6IHN0cmluZykge1xuICAgIHN1cGVyKHNjb3BlLCBpZCwgeyBlbnYgfSk7XG4gIH1cbn1cbiJdfQ==

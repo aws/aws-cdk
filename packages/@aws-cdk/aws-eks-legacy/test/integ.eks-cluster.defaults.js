@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const cdk = require("@aws-cdk/core");
+const eks = require("../lib");
+const util_1 = require("./util");
+/// !cdk-integ pragma:enable-lookups
+class EksClusterStack extends util_1.TestStack {
+    constructor(scope, id) {
+        super(scope, id);
+        new eks.Cluster(this, 'Cluster');
+    }
+}
+const app = new cdk.App();
+// since the EKS optimized AMI is hard-coded here based on the region,
+// we need to actually pass in a specific region.
+new EksClusterStack(app, 'eks-integ-defaults');
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuZWtzLWNsdXN0ZXIuZGVmYXVsdHMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbnRlZy5la3MtY2x1c3Rlci5kZWZhdWx0cy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLHFDQUFxQztBQUNyQyw4QkFBOEI7QUFDOUIsaUNBQW1DO0FBQ25DLG9DQUFvQztBQUVwQyxNQUFNLGVBQWdCLFNBQVEsZ0JBQVM7SUFDckMsWUFBWSxLQUFjLEVBQUUsRUFBVTtRQUNwQyxLQUFLLENBQUMsS0FBSyxFQUFFLEVBQUUsQ0FBQyxDQUFDO1FBRWpCLElBQUksR0FBRyxDQUFDLE9BQU8sQ0FBQyxJQUFJLEVBQUUsU0FBUyxDQUFDLENBQUM7S0FDbEM7Q0FDRjtBQUVELE1BQU0sR0FBRyxHQUFHLElBQUksR0FBRyxDQUFDLEdBQUcsRUFBRSxDQUFDO0FBRTFCLHNFQUFzRTtBQUN0RSxpREFBaUQ7QUFDakQsSUFBSSxlQUFlLENBQUMsR0FBRyxFQUFFLG9CQUFvQixDQUFDLENBQUM7QUFFL0MsR0FBRyxDQUFDLEtBQUssRUFBRSxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgY2RrIGZyb20gJ0Bhd3MtY2RrL2NvcmUnO1xuaW1wb3J0ICogYXMgZWtzIGZyb20gJy4uL2xpYic7XG5pbXBvcnQgeyBUZXN0U3RhY2sgfSBmcm9tICcuL3V0aWwnO1xuLy8vICFjZGstaW50ZWcgcHJhZ21hOmVuYWJsZS1sb29rdXBzXG5cbmNsYXNzIEVrc0NsdXN0ZXJTdGFjayBleHRlbmRzIFRlc3RTdGFjayB7XG4gIGNvbnN0cnVjdG9yKHNjb3BlOiBjZGsuQXBwLCBpZDogc3RyaW5nKSB7XG4gICAgc3VwZXIoc2NvcGUsIGlkKTtcblxuICAgIG5ldyBla3MuQ2x1c3Rlcih0aGlzLCAnQ2x1c3RlcicpO1xuICB9XG59XG5cbmNvbnN0IGFwcCA9IG5ldyBjZGsuQXBwKCk7XG5cbi8vIHNpbmNlIHRoZSBFS1Mgb3B0aW1pemVkIEFNSSBpcyBoYXJkLWNvZGVkIGhlcmUgYmFzZWQgb24gdGhlIHJlZ2lvbixcbi8vIHdlIG5lZWQgdG8gYWN0dWFsbHkgcGFzcyBpbiBhIHNwZWNpZmljIHJlZ2lvbi5cbm5ldyBFa3NDbHVzdGVyU3RhY2soYXBwLCAnZWtzLWludGVnLWRlZmF1bHRzJyk7XG5cbmFwcC5zeW50aCgpO1xuIl19
