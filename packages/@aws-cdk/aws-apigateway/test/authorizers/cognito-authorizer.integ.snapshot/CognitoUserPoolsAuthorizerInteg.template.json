@@ -85,7 +85,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "myrestapiAccountA49A05BE": {
    "Type": "AWS::ApiGateway::Account",
@@ -99,7 +101,9 @@
    },
    "DependsOn": [
     "myrestapi551C8392"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a": {
    "Type": "AWS::ApiGateway::Deployment",

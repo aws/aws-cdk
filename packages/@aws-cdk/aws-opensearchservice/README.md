@@ -31,16 +31,16 @@ See [Migrating to OpenSearch](https://docs.aws.amazon.com/cdk/api/latest/docs/aw
 Create a development cluster by simply specifying the version:
 
 ```ts
-const devDomain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+const devDomain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
 });
 ```
 
 To perform version upgrades without replacing the entire domain, specify the `enableVersionUpgrade` property.
 
 ```ts
-const devDomain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+const devDomain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
   enableVersionUpgrade: true, // defaults to false
 });
 ```
@@ -48,8 +48,8 @@ const devDomain = new opensearch.Domain(this, 'Domain', {
 Create a production grade cluster by also specifying things like capacity and az distribution
 
 ```ts
-const prodDomain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+const prodDomain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
   capacity: {
     masterNodes: 5,
     dataNodes: 20,
@@ -104,7 +104,7 @@ This method accepts a domain endpoint of an already existing domain:
 
 ```ts
 const domainEndpoint = 'https://my-domain-jcjotrt6f7otem4sqcwbch3c4u.us-east-1.es.amazonaws.com';
-const domain = opensearch.Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint);
+const domain = Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint);
 ```
 
 ### Using the output of another CloudFormation stack
@@ -129,7 +129,7 @@ Helper methods also exist for managing access to the domain.
 
 ```ts
 declare const fn: lambda.Function;
-declare const domain: opensearch.Domain;
+declare const domain: Domain;
 
 // Grant write access to the app-search index
 domain.grantIndexWrite('app-search', fn);
@@ -143,8 +143,8 @@ domain.grantPathRead('app-search/_search', fn);
 The domain can also be created with encryption enabled:
 
 ```ts
-const domain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
   ebs: {
     volumeSize: 100,
     volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
@@ -168,8 +168,8 @@ Domains can be placed inside a VPC, providing a secure communication between Ama
 
 ```ts
 const vpc = new ec2.Vpc(this, 'Vpc');
-const domainProps: opensearch.DomainProps = {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+const domainProps: DomainProps = {
+  version: EngineVersion.OPENSEARCH_1_0,
   removalPolicy: RemovalPolicy.DESTROY,
   vpc,
   // must be enabled since our VPC contains multiple private subnets.
@@ -181,7 +181,7 @@ const domainProps: opensearch.DomainProps = {
     dataNodes: 2,
   },
 };
-new opensearch.Domain(this, 'Domain', domainProps);
+new Domain(this, 'Domain', domainProps);
 ```
 
 In addition, you can use the `vpcSubnets` property to control which specific subnets will be used, and the `securityGroups` property to control
@@ -192,7 +192,7 @@ which security groups will be attached to the domain. By default, CDK will selec
 Helper methods exist to access common domain metrics for example:
 
 ```ts
-declare const domain: opensearch.Domain;
+declare const domain: Domain;
 const freeStorageSpace = domain.metricFreeStorageSpace();
 const masterSysMemoryUtilization = domain.metric('MasterSysMemoryUtilization');
 ```
@@ -205,8 +205,8 @@ The domain can also be created with a master user configured. The password can
 be supplied or dynamically created if not supplied.
 
 ```ts
-const domain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
   enforceHttps: true,
   nodeToNodeEncryption: true,
   encryptionAtRest: {
@@ -243,8 +243,8 @@ stored in the AWS Secrets Manager as secret. The secret has the prefix
 `<domain id>MasterUser`.
 
 ```ts
-const domain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
   useUnsignedBasicAuth: true,
 });
 
@@ -259,8 +259,8 @@ constructor property, or later by means of a helper method.
 For simple permissions the `accessPolicies` constructor may be sufficient:
 
 ```ts
-const domain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
   accessPolicies: [
     new iam.PolicyStatement({
       actions: ['es:*ESHttpPost', 'es:ESHttpPut*'],
@@ -277,8 +277,8 @@ For more complex use-cases, for example, to set the domain up to receive data fr
 allows for policies that include the explicit domain ARN.
 
 ```ts
-const domain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
 });
 domain.addAccessPolicies(
   new iam.PolicyStatement({
@@ -313,8 +313,8 @@ domain.addAccessPolicies(
 Audit logs can be enabled for a domain, but only when fine grained access control is enabled.
 
 ```ts
-const domain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
   enforceHttps: true,
   nodeToNodeEncryption: true,
   encryptionAtRest: {
@@ -337,8 +337,8 @@ const domain = new opensearch.Domain(this, 'Domain', {
 UltraWarm nodes can be enabled to provide a cost-effective way to store large amounts of read-only data.
 
 ```ts
-const domain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
   capacity: {
     masterNodes: 2,
     warmNodes: 2,
@@ -352,8 +352,8 @@ const domain = new opensearch.Domain(this, 'Domain', {
 Custom endpoints can be configured to reach the domain under a custom domain name.
 
 ```ts
-new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
   customEndpoint: {
     domainName: 'search.example.com',
   },
@@ -369,12 +369,31 @@ Additionally, an automatic CNAME-Record is created if a hosted zone is provided 
 [Advanced options](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createupdatedomains.html#createdomain-configure-advanced-options) can used to configure additional options.
 
 ```ts
-new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_0,
+new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
   advancedOptions: {
     'rest.action.multi.allow_explicit_index': 'false',
     'indices.fielddata.cache.size': '25',
     'indices.query.bool.max_clause_count': '2048',
+  },
+});
+```
+
+## Amazon Cognito authentication for OpenSearch Dashboards
+
+The domain can be configured to use Amazon Cognito authentication for OpenSearch Dashboards.
+
+> Visit [Configuring Amazon Cognito authentication for OpenSearch Dashboards](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cognito-auth.html) for more details.
+
+```ts
+declare const cognitoConfigurationRole: iam.Role;
+
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
+  cognitoDashboardsAuth: {
+    role: cognitoConfigurationRole,
+    identityPoolId: 'example-identity-pool-id',
+    userPoolId: 'example-user-pool-id',
   },
 });
 ```

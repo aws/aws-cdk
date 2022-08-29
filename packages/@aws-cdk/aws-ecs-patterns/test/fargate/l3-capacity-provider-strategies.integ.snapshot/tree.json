@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.78"
         }
       },
       "aws-ecs-integ-lb-fargate": {
@@ -1719,6 +1719,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "l3CapacityProviderStrategiesTest": {
+        "id": "l3CapacityProviderStrategiesTest",
+        "path": "l3CapacityProviderStrategiesTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "l3CapacityProviderStrategiesTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "l3CapacityProviderStrategiesTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.78"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "l3CapacityProviderStrategiesTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

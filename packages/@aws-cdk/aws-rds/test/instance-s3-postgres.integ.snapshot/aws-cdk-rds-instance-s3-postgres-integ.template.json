@@ -117,7 +117,11 @@
       "Value": "aws-cdk-rds-instance-s3-postgres-integ/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -563,7 +567,6 @@
   "InstanceC1063A87": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.m5.large",
     "AllocatedStorage": "100",
     "AssociatedRoles": [
      {
@@ -586,6 +589,7 @@
      }
     ],
     "CopyTagsToSnapshot": true,
+    "DBInstanceClass": "db.m5.large",
     "DBSubnetGroupName": {
      "Ref": "InstanceSubnetGroupF2CBA54F"
     },

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/// !cdk-integ pragma:ignore-assets
+import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
@@ -52,8 +52,35 @@ const getParameter = new AwsCustomResource(stack, 'GetParameter', {
   policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
 });
 
+const customRole = new iam.Role(stack, 'CustomRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+customRole.addToPolicy(
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    resources: ['*'],
+    actions: [
+      'ssm:*',
+    ],
+  }),
+);
+const getParameterNoPolicy = new AwsCustomResource(stack, 'GetParameterNoPolicy', {
+  resourceType: 'Custom::SSMParameter',
+  onUpdate: {
+    service: 'SSM',
+    action: 'getParameter',
+    parameters: {
+      Name: ssmParameter.parameterName,
+      WithDecryption: true,
+    },
+    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN'),
+  },
+  role: customRole,
+});
+
 new cdk.CfnOutput(stack, 'MessageId', { value: snsPublish.getResponseField('MessageId') });
 new cdk.CfnOutput(stack, 'TopicArn', { value: listTopics.getResponseField('Topics.0.TopicArn') });
 new cdk.CfnOutput(stack, 'ParameterValue', { value: getParameter.getResponseField('Parameter.Value') });
+new cdk.CfnOutput(stack, 'ParameterValueNoPolicy', { value: getParameterNoPolicy.getResponseField('Parameter.Value') });
 
 app.synth();

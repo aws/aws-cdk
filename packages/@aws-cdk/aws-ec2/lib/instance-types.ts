@@ -129,6 +129,16 @@ export enum InstanceClass {
   R5 = 'r5',
 
   /**
+   * Memory optimized instances based on AMD EPYC, 6th generation
+   */
+  MEMORY6_AMD = 'memory6-amd',
+
+  /**
+   * Memory optimized instances based on AMD EPYC, 6th generation
+   */
+  R6A = 'r6a',
+
+  /**
    * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
    */
   MEMORY6_INTEL = 'memory6-intel',
@@ -743,6 +753,17 @@ export enum InstanceClass {
    */
   P3DN = 'p3dn',
 
+
+  /**
+   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation (in developer preview)
+   */
+  PARALLEL4_NVME_DRIVE_EXTENDED = 'parallel4-nvme-drive-extended',
+
+  /**
+   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation (in developer preview)
+   */
+  P4DE = 'p4de',
+
   /**
    * Parallel-processing optimized instances, 4th generation
    */
@@ -1046,6 +1067,8 @@ export class InstanceType {
       [InstanceClass.R4]: 'r4',
       [InstanceClass.MEMORY5]: 'r5',
       [InstanceClass.R5]: 'r5',
+      [InstanceClass.MEMORY6_AMD]: 'r6a',
+      [InstanceClass.R6A]: 'r6a',
       [InstanceClass.MEMORY6_INTEL]: 'r6i',
       [InstanceClass.R6I]: 'r6i',
       [InstanceClass.MEMORY6_INTEL_NVME_DRIVE]: 'r6id',
@@ -1159,6 +1182,8 @@ export class InstanceType {
       [InstanceClass.P3]: 'p3',
       [InstanceClass.PARALLEL3_NVME_DRIVE_HIGH_PERFORMANCE]: 'p3dn',
       [InstanceClass.P3DN]: 'p3dn',
+      [InstanceClass.PARALLEL4_NVME_DRIVE_EXTENDED]: 'p4de',
+      [InstanceClass.P4DE]: 'p4de',
       [InstanceClass.PARALLEL4]: 'p4d',
       [InstanceClass.P4D]: 'p4d',
       [InstanceClass.ARM1]: 'a1',

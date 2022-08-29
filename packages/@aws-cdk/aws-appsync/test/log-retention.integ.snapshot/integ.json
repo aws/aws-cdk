@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "Integ/DefaultTest": {
+      "stacks": [
+        "AppSyncIntegLogRetention"
+      ],
+      "assertionStack": "Integ/DefaultTest/DeployAssert"
+    }
+  }
+}

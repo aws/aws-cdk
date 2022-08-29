@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.78"
         }
       },
       "batch-stack": {
@@ -1592,6 +1592,269 @@
               "version": "0.0.0"
             }
           },
+          "batch-demand-compute-env-launch-template-2": {
+            "id": "batch-demand-compute-env-launch-template-2",
+            "path": "batch-stack/batch-demand-compute-env-launch-template-2",
+            "children": {
+              "Resource-Security-Group": {
+                "id": "Resource-Security-Group",
+                "path": "batch-stack/batch-demand-compute-env-launch-template-2/Resource-Security-Group",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-stack/batch-demand-compute-env-launch-template-2/Resource-Security-Group/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "batch-stack/batch-demand-compute-env-launch-template-2/Resource-Security-Group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Ecs-Instance-Role": {
+                "id": "Ecs-Instance-Role",
+                "path": "batch-stack/batch-demand-compute-env-launch-template-2/Ecs-Instance-Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-stack/batch-demand-compute-env-launch-template-2/Ecs-Instance-Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "ec2.",
+                                      {
+                                        "Ref": "AWS::URLSuffix"
+                                      }
+                                    ]
+                                  ]
+                                }
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Instance-Profile": {
+                "id": "Instance-Profile",
+                "path": "batch-stack/batch-demand-compute-env-launch-template-2/Instance-Profile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "roles": [
+                      {
+                        "Ref": "batchdemandcomputeenvlaunchtemplate2EcsInstanceRoleEE146754"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnInstanceProfile",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource-Service-Instance-Role": {
+                "id": "Resource-Service-Instance-Role",
+                "path": "batch-stack/batch-demand-compute-env-launch-template-2/Resource-Service-Instance-Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-stack/batch-demand-compute-env-launch-template-2/Resource-Service-Instance-Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "batch.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSBatchServiceRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-stack/batch-demand-compute-env-launch-template-2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "MANAGED",
+                    "computeResources": {
+                      "launchTemplate": {
+                        "launchTemplateId": {
+                          "Ref": "ec2launchtemplate"
+                        }
+                      },
+                      "maxvCpus": 256,
+                      "securityGroupIds": [
+                        {
+                          "Fn::GetAtt": [
+                            "batchdemandcomputeenvlaunchtemplate2ResourceSecurityGroupBEA8DDD5",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "subnets": [
+                        {
+                          "Ref": "vpcPrivateSubnet1Subnet934893E8"
+                        },
+                        {
+                          "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+                        }
+                      ],
+                      "tags": {
+                        "compute-env-tag": "123XYZ"
+                      },
+                      "type": "EC2",
+                      "allocationStrategy": "BEST_FIT",
+                      "instanceRole": {
+                        "Fn::GetAtt": [
+                          "batchdemandcomputeenvlaunchtemplate2InstanceProfileC5A36CBC",
+                          "Arn"
+                        ]
+                      },
+                      "instanceTypes": [
+                        "optimal"
+                      ],
+                      "minvCpus": 0
+                    },
+                    "serviceRole": {
+                      "Fn::GetAtt": [
+                        "batchdemandcomputeenvlaunchtemplate2ResourceServiceInstanceRole41CADAC1",
+                        "Arn"
+                      ]
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-batch.CfnComputeEnvironment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-batch.ComputeEnvironment",
+              "version": "0.0.0"
+            }
+          },
+          "batch-with-launch-template-id": {
+            "id": "batch-with-launch-template-id",
+            "path": "batch-stack/batch-with-launch-template-id",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-stack/batch-with-launch-template-id/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Batch::JobQueue",
+                  "aws:cdk:cloudformation:props": {
+                    "computeEnvironmentOrder": [
+                      {
+                        "computeEnvironment": {
+                          "Ref": "batchdemandcomputeenvlaunchtemplate2E12D5CBC"
+                        },
+                        "order": 1
+                      }
+                    ],
+                    "priority": 1,
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-batch.CfnJobQueue",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-batch.JobQueue",
+              "version": "0.0.0"
+            }
+          },
           "batch-job-repo": {
             "id": "batch-job-repo",
             "path": "batch-stack/batch-job-repo",
@@ -1666,6 +1929,20 @@
                   "aws:cdk:cloudformation:props": {
                     "type": "container",
                     "containerProperties": {
+                      "environment": [
+                        {
+                          "name": "AWS_REGION",
+                          "value": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        {
+                          "name": "AWS_ACCOUNT",
+                          "value": {
+                            "Ref": "AWS::AccountId"
+                          }
+                        }
+                      ],
                       "image": {
                         "Fn::Join": [
                           "",
@@ -1776,6 +2053,20 @@
                   "aws:cdk:cloudformation:props": {
                     "type": "container",
                     "containerProperties": {
+                      "environment": [
+                        {
+                          "name": "AWS_REGION",
+                          "value": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        {
+                          "name": "AWS_ACCOUNT",
+                          "value": {
+                            "Ref": "AWS::AccountId"
+                          }
+                        }
+                      ],
                       "image": "docker/whalesay",
                       "privileged": false,
                       "readonlyRootFilesystem": false,
@@ -1917,6 +2208,20 @@
                   "aws:cdk:cloudformation:props": {
                     "type": "container",
                     "containerProperties": {
+                      "environment": [
+                        {
+                          "name": "AWS_REGION",
+                          "value": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        {
+                          "name": "AWS_ACCOUNT",
+                          "value": {
+                            "Ref": "AWS::AccountId"
+                          }
+                        }
+                      ],
                       "secrets": [
                         {
                           "name": "SECRET",
@@ -1968,6 +2273,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "batch-tests": {
+        "id": "batch-tests",
+        "path": "batch-tests",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "batch-tests/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "batch-tests/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.78"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "batch-tests/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

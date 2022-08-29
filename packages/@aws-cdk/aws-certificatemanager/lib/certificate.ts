@@ -72,6 +72,21 @@ export interface CertificateProps {
    * @default CertificateValidation.fromEmail()
    */
   readonly validation?: CertificateValidation;
+
+  /**
+   * Enable or disable transparency logging for this certificate
+   *
+   * Once a certificate has been logged, it cannot be removed from the log.
+   * Opting out at that point will have no effect. If you opt out of logging
+   * when you request a certificate and then choose later to opt back in,
+   * your certificate will not be logged until it is renewed.
+   * If you want the certificate to be logged immediately, we recommend that you issue a new one.
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency
+   *
+   * @default true
+   */
+  readonly transparencyLoggingEnabled?: boolean;
 }
 
 /**
@@ -219,11 +234,17 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
+    let certificateTransparencyLoggingPreference: string | undefined;
+    if (props.transparencyLoggingEnabled !== undefined) {
+      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
+    }
+
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: renderDomainValidation(validation, allDomainNames),
       validationMethod: validation.method,
+      certificateTransparencyLoggingPreference,
     });
 
     this.certificateArn = cert.ref;

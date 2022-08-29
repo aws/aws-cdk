@@ -117,7 +117,11 @@
       "Value": "aws-stepfunctions-integ/vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+   ]
   },
   "vpcPublicSubnet2Subnet009B674F": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "aws-stepfunctions-integ/vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59"
+   ]
   },
   "vpcPrivateSubnet1Subnet934893E8": {
    "Type": "AWS::EC2::Subnet",
@@ -670,6 +678,20 @@
    "Properties": {
     "Type": "container",
     "ContainerProperties": {
+     "Environment": [
+      {
+       "Name": "AWS_REGION",
+       "Value": {
+        "Ref": "AWS::Region"
+       }
+      },
+      {
+       "Name": "AWS_ACCOUNT",
+       "Value": {
+        "Ref": "AWS::AccountId"
+       }
+      }
+     ],
      "Image": {
       "Fn::Join": [
        "",

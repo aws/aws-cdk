@@ -1,0 +1,101 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "BatchDefaultEnvVarsStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "BatchDefaultEnvVarsStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/BatchDefaultEnvVarsStack/JobDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JobDefinition24FFE3ED"
+          }
+        ]
+      },
+      "displayName": "BatchDefaultEnvVarsStack"
+    },
+    "IntegTestBatchDefaultEnvVarsStackDefaultTestDeployAssertC15EFFF2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegTestBatchDefaultEnvVarsStackDefaultTestDeployAssertC15EFFF2.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd.bundle",
+              "id": "0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd",
+              "packaging": "zip",
+              "sourceHash": "0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd",
+              "s3BucketParameter": "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdS3BucketF94385B7",
+              "s3KeyParameter": "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdS3VersionKey66DB0F9E",
+              "artifactHashParameter": "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdArtifactHash2AC894D9"
+            }
+          }
+        ],
+        "/IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallBatchdescribeJobDefinitions"
+          }
+        ],
+        "/IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/AssertEqualsBatchdescribeJobDefinitions/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallBatchdescribeJobDefinitionsAssertEqualsBatchdescribeJobDefinitions39706B7C"
+          }
+        ],
+        "/IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/AssertEqualsBatchdescribeJobDefinitions/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAssertEqualsBatchdescribeJobDefinitions"
+          }
+        ],
+        "/IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdS3BucketF94385B7"
+          }
+        ],
+        "/IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdS3VersionKey66DB0F9E"
+          }
+        ],
+        "/IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdArtifactHash2AC894D9"
+          }
+        ]
+      },
+      "displayName": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert"
+    }
+  }
+}

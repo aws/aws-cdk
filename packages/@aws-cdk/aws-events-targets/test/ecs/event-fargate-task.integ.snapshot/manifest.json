@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -112,6 +112,18 @@
             "data": "EcsCluster97242B84"
           }
         ],
+        "/aws-ecs-integ-fargate/MyDeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueueD997968A"
+          }
+        ],
+        "/aws-ecs-integ-fargate/MyDeadLetterQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeadLetterQueuePolicyCC35D52C"
+          }
+        ],
         "/aws-ecs-integ-fargate/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -121,10 +133,7 @@
         "/aws-ecs-integ-fargate/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "TaskDef54694570"
           }
         ],
         "/aws-ecs-integ-fargate/TaskDef/TheContainer/LogGroup/Resource": [
@@ -171,6 +180,15 @@
         ]
       },
       "displayName": "aws-ecs-integ-fargate"
+    },
+    "EcsFargateTestDefaultTestDeployAssert36341BFB": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EcsFargateTestDefaultTestDeployAssert36341BFB.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "EcsFargateTest/DefaultTest/DeployAssert"
     }
   }
 }

@@ -1,5 +1,10 @@
 {
  "Resources": {
+  "ElasticIPAddress": {
+   "Type": "AWS::EC2::EIP",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -130,6 +135,10 @@
      }
     ]
    },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -246,6 +255,10 @@
      }
     ]
    },
+   "DependsOn": [
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -525,7 +538,9 @@
     "ClusterSubnetGroupName": {
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
-    "ElasticIp": "10.123.123.123",
+    "ElasticIp": {
+     "Ref": "ElasticIPAddress"
+    },
     "Encrypted": true,
     "NumberOfNodes": 2,
     "PubliclyAccessible": true,

@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.78"
         }
       },
       "aws-ecs-integ": {
@@ -683,10 +683,10 @@
                   "aws:cdk:cloudformation:props": {
                     "capacityProviders": [
                       {
-                        "Ref": "FirstCapacityProvierD92F5AC4"
+                        "Ref": "FirstCapacityProvider4F40D887"
                       },
                       {
-                        "Ref": "SecondCapacityProvierADE5DA56"
+                        "Ref": "SecondCapacityProvider85378C3E"
                       }
                     ],
                     "cluster": {
@@ -993,13 +993,13 @@
               "version": "0.0.0"
             }
           },
-          "FirstCapacityProvier": {
-            "id": "FirstCapacityProvier",
-            "path": "aws-ecs-integ/FirstCapacityProvier",
+          "FirstCapacityProvider": {
+            "id": "FirstCapacityProvider",
+            "path": "aws-ecs-integ/FirstCapacityProvider",
             "children": {
-              "FirstCapacityProvier": {
-                "id": "FirstCapacityProvier",
-                "path": "aws-ecs-integ/FirstCapacityProvier/FirstCapacityProvier",
+              "FirstCapacityProvider": {
+                "id": "FirstCapacityProvider",
+                "path": "aws-ecs-integ/FirstCapacityProvider/FirstCapacityProvider",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::CapacityProvider",
                   "aws:cdk:cloudformation:props": {
@@ -1298,13 +1298,13 @@
               "version": "0.0.0"
             }
           },
-          "SecondCapacityProvier": {
-            "id": "SecondCapacityProvier",
-            "path": "aws-ecs-integ/SecondCapacityProvier",
+          "SecondCapacityProvider": {
+            "id": "SecondCapacityProvider",
+            "path": "aws-ecs-integ/SecondCapacityProvider",
             "children": {
-              "SecondCapacityProvier": {
-                "id": "SecondCapacityProvier",
-                "path": "aws-ecs-integ/SecondCapacityProvier/SecondCapacityProvier",
+              "SecondCapacityProvider": {
+                "id": "SecondCapacityProvider",
+                "path": "aws-ecs-integ/SecondCapacityProvider/SecondCapacityProvider",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::CapacityProvider",
                   "aws:cdk:cloudformation:props": {
@@ -1677,14 +1677,14 @@
                         "capacityProviderStrategy": [
                           {
                             "capacityProvider": {
-                              "Ref": "FirstCapacityProvierD92F5AC4"
+                              "Ref": "FirstCapacityProvider4F40D887"
                             },
                             "base": 1,
                             "weight": 1
                           },
                           {
                             "capacityProvider": {
-                              "Ref": "SecondCapacityProvierADE5DA56"
+                              "Ref": "SecondCapacityProvider85378C3E"
                             },
                             "base": 0,
                             "weight": 2
@@ -1734,6 +1734,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "networkLoadBalancedEc2ServiceTest": {
+        "id": "networkLoadBalancedEc2ServiceTest",
+        "path": "networkLoadBalancedEc2ServiceTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "networkLoadBalancedEc2ServiceTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "networkLoadBalancedEc2ServiceTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.78"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "networkLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
