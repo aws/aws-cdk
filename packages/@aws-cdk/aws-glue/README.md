@@ -72,7 +72,11 @@ new glue.Job(this, 'PythonSparkStreamingJob', {
 ### Python Shell Jobs
 
 A Python shell job runs Python scripts as a shell and supports a Python version that depends on the AWS Glue version you are using.
-This can be used to schedule and run tasks that don't require an Apache Spark environment.
+This can be used to schedule and run tasks that don't require an Apache Spark environment. Currently, three flavors are supported:
+
+* PythonVersion.TWO (2.7; EOL)
+* PythonVersion.THREE (3.6)
+* PythonVersion.THREE_NINE (3.9)
 
 ```ts
 declare const bucket: s3.Bucket;
