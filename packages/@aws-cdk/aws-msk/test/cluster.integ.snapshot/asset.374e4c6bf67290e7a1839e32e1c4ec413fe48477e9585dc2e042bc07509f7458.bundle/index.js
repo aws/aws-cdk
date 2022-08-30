@@ -2,22 +2,8 @@ var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
@@ -30,7 +16,10 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // lib/assertions/providers/lambda-handler/index.ts
@@ -414,7 +403,7 @@ var CustomResourceHandler = class {
   }
   async handle() {
     try {
-      console.log(`Event: ${JSON.stringify(this.event)}`);
+      console.log(`Event: ${JSON.stringify({ ...this.event, ResponseURL: "..." })}`);
       const response = await this.processEvent(this.event.ResourceProperties);
       console.log(`Event output : ${JSON.stringify(response)}`);
       await this.respond({
@@ -497,10 +486,13 @@ var AssertionHandler = class extends CustomResourceHandler {
           ].join("\n")
         })
       };
+      if (request2.failDeployment) {
+        throw new Error(result.data);
+      }
     } else {
       result = {
         data: JSON.stringify({
-          status: "pass"
+          status: "success"
         })
       };
     }
@@ -509,27 +501,9 @@ var AssertionHandler = class extends CustomResourceHandler {
 };
 var MatchCreator = class {
   constructor(obj) {
-    switch (Object.keys(obj)[0]) {
-      case "$ObjectLike":
-        this.type = "objectLike";
-        this.parsedObj = obj.$ObjectLike;
-        break;
-      case "$ArrayWith":
-        this.type = "arrayWith";
-        this.parsedObj = obj.$ArrayWith;
-        break;
-      case "$Exact":
-        this.type = "exact";
-        this.parsedObj = obj.$Exact;
-        break;
-      case "$StringLike":
-        this.type = "stringLikeRegexp";
-        this.parsedObj = obj.$StringLike;
-        break;
-      default:
-        this.type = "exact";
-        this.parsedObj = obj;
-    }
+    this.parsedObj = {
+      matcher: obj
+    };
   }
   getMatcher() {
     try {
@@ -546,9 +520,12 @@ var MatchCreator = class {
             return v;
         }
       });
-      return Match[this.type](final);
+      if (Matcher.isMatcher(final.matcher)) {
+        return final.matcher;
+      }
+      return Match.exact(final.matcher);
     } catch {
-      return Match[this.type](this.parsedObj);
+      return Match.exact(this.parsedObj.matcher);
     }
   }
 };
@@ -563,18 +540,6 @@ function decodeCall(call) {
     return call;
   }
 }
-
-// lib/assertions/providers/lambda-handler/results.ts
-var ResultsCollectionHandler = class extends CustomResourceHandler {
-  async processEvent(request2) {
-    const reduced = request2.assertionResults.reduce((agg, result, idx) => {
-      const msg = result.status === "pass" ? "pass" : `fail - ${result.message}`;
-      return `${agg}
-Test${idx}: ${msg}`;
-    }, "").trim();
-    return { message: reduced };
-  }
-};
 
 // lib/assertions/providers/lambda-handler/utils.ts
 function decode(object) {
@@ -592,12 +557,15 @@ function decode(object) {
 
 // lib/assertions/providers/lambda-handler/sdk.ts
 function flatten(object) {
-  return Object.assign({}, ...function _flatten(child, path = []) {
-    return [].concat(...Object.keys(child).map((key) => {
-      const childKey = Buffer.isBuffer(child[key]) ? child[key].toString("utf8") : child[key];
-      return typeof childKey === "object" && childKey !== null ? _flatten(childKey, path.concat([key])) : { [path.concat([key]).join(".")]: childKey };
-    }));
-  }(object));
+  return Object.assign(
+    {},
+    ...function _flatten(child, path = []) {
+      return [].concat(...Object.keys(child).map((key) => {
+        const childKey = Buffer.isBuffer(child[key]) ? child[key].toString("utf8") : child[key];
+        return typeof childKey === "object" && childKey !== null ? _flatten(childKey, path.concat([key])) : { [path.concat([key]).join(".")]: childKey };
+      }));
+    }(object)
+  );
 }
 var AwsApiCallHandler = class extends CustomResourceHandler {
   async processEvent(request2) {
@@ -610,14 +578,15 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
     const respond = {
       apiCallResponse: response
     };
-    const flatData = __spreadValues({}, flatten(respond));
+    const flatData = {
+      ...flatten(respond)
+    };
     return request2.flattenResponse === "true" ? flatData : respond;
   }
 };
 
 // lib/assertions/providers/lambda-handler/types.ts
 var ASSERT_RESOURCE_TYPE = "Custom::DeployAssert@AssertEquals";
-var RESULTS_RESOURCE_TYPE = "Custom::DeployAssert@ResultsCollection";
 var SDK_RESOURCE_TYPE_PREFIX = "Custom::DeployAssert@SdkCall";
 
 // lib/assertions/providers/lambda-handler/index.ts
@@ -632,8 +601,6 @@ function createResourceHandler(event, context) {
   switch (event.ResourceType) {
     case ASSERT_RESOURCE_TYPE:
       return new AssertionHandler(event, context);
-    case RESULTS_RESOURCE_TYPE:
-      return new ResultsCollectionHandler(event, context);
     default:
       throw new Error(`Unsupported resource type "${event.ResourceType}`);
   }

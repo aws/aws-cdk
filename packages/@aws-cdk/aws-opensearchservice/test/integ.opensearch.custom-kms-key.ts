@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
