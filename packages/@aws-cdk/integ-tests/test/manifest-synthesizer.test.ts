@@ -45,10 +45,12 @@ describe(IntegManifestSynthesizer, () => {
       testCases: {
         ['stack/case1']: {
           assertionStack: 'stack/case1/DeployAssert',
+          assertionStackName: 'stackcase1DeployAssert491B3C7C',
           stacks: ['stack-under-test-1'],
         },
         ['stack/case2']: {
           assertionStack: 'stack/case2/DeployAssert',
+          assertionStackName: 'stackcase2DeployAssert3B5E6392',
           stacks: ['stack-under-test-2'],
         },
       },
@@ -73,6 +75,7 @@ describe(IntegManifestSynthesizer, () => {
       testCases: {
         ['Integ/DefaultTest']: {
           assertionStack: 'Integ/DefaultTest/DeployAssert',
+          assertionStackName: 'IntegDefaultTestDeployAssert4E6713E1',
           stacks: ['stack'],
         },
       },
@@ -100,10 +103,12 @@ describe(IntegManifestSynthesizer, () => {
       testCases: {
         ['Integ/DefaultTest']: {
           assertionStack: 'Integ/DefaultTest/DeployAssert',
+          assertionStackName: 'IntegDefaultTestDeployAssert4E6713E1',
           stacks: ['stack'],
         },
         ['Case/CaseTestCase']: {
           assertionStack: 'Case/CaseTestCase/DeployAssert',
+          assertionStackName: 'CaseCaseTestCaseDeployAssertF0B5763D',
           diffAssets: true,
           stacks: ['Case'],
         },
