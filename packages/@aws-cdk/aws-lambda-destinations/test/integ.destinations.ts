@@ -96,5 +96,3 @@ message.assertAtPath('Messages.0.Body', ExpectedResult.objectLike({
   },
   responsePayload: 'success',
 }));
-
-app.synth();

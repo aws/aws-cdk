@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
@@ -53,4 +52,3 @@ const invoke = integ.assertions.invokeFunction({
 invoke.expect(ExpectedResult.objectLike({
   Payload: '200',
 }));
-app.synth();

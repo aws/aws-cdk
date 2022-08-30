@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
     "Destinations/DefaultTest": {
       "stacks": [
         "aws-cdk-lambda-destinations"
       ],
-      "assertionStack": "DestinationsDefaultTestDeployAssertCC49E667"
+      "assertionStack": "Destinations/DefaultTest/DeployAssert",
+      "assertionStackName": "DestinationsDefaultTestDeployAssertCC49E667"
     }
   }
 }
