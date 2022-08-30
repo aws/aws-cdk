@@ -64,7 +64,6 @@
       "Arn"
      ]
     },
-    "Description": "version-hash:1786de9fc1bc4cb2fd5b64d612628c6f",
     "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
@@ -85,7 +84,7 @@
     }
    }
   },
-  "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629": {
+  "MyLambdaCurrentVersionE7A382CC1786de9fc1bc4cb2fd5b64d612628c6f": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -101,7 +100,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629",
+      "MyLambdaCurrentVersionE7A382CC1786de9fc1bc4cb2fd5b64d612628c6f",
       "Version"
      ]
     },
@@ -144,6 +143,40 @@
     "Principal": "*",
     "FunctionUrlAuthType": "NONE"
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

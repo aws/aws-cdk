@@ -822,10 +822,11 @@
                       "version": "10.1.85"
                     }
                   },
-                  "AssetParameters": {
-                    "id": "AssetParameters",
-                    "path": "Destinations/DefaultTest/DeployAssert/AssetParameters",
+                  "AwsApiCallSQSreceiveMessage": {
+                    "id": "AwsApiCallSQSreceiveMessage",
+                    "path": "Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage",
                     "children": {
+<<<<<<< HEAD
                       "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7": {
                         "id": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7",
                         "path": "Destinations/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7",
@@ -852,10 +853,23 @@
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.1.85"
+=======
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.85"
+>>>>>>> 62766debee (integ test snapshot updates)
                             }
                           }
                         },
                         "constructInfo": {
+<<<<<<< HEAD
                           "fqn": "constructs.Construct",
                           "version": "10.1.85"
                         }
@@ -884,6 +898,8 @@
                           }
                         },
                         "constructInfo": {
+=======
+>>>>>>> 62766debee (integ test snapshot updates)
                           "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
                           "version": "0.0.0"
                         }

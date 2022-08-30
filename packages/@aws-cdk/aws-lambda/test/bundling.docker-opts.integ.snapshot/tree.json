@@ -103,41 +103,9 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParametersbadc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668S3BucketFA35C5ED"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersbadc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668S3VersionKeyE3A69E58"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersbadc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668S3VersionKeyE3A69E58"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "badc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -160,6 +128,7 @@
               "version": "0.0.0"
             }
           },
+<<<<<<< HEAD
           "AssetParameters": {
             "id": "AssetParameters",
             "path": "cdk-integ-lambda-bundling-docker-bundling-opts/AssetParameters",
@@ -204,6 +173,8 @@
               "version": "10.1.85"
             }
           },
+=======
+>>>>>>> 62766debee (integ test snapshot updates)
           "Exports": {
             "id": "Exports",
             "path": "cdk-integ-lambda-bundling-docker-bundling-opts/Exports",
@@ -380,6 +351,7 @@
                         "id": "Handler",
                         "path": "DockerOptsBundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
+<<<<<<< HEAD
                           "fqn": "constructs.Construct",
                           "version": "10.1.85"
                         }
@@ -424,6 +396,8 @@
                           }
                         },
                         "constructInfo": {
+=======
+>>>>>>> 62766debee (integ test snapshot updates)
                           "fqn": "constructs.Construct",
                           "version": "10.1.85"
                         }

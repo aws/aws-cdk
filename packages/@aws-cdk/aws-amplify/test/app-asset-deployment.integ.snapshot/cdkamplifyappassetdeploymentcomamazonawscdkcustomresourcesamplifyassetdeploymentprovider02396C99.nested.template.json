@@ -62,41 +62,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetocdkamplifyappassetdeploymentAssetParametersc3fdb1653d155f504c9d470873cc7012b6b21b0be8fc9922ae2ef49bd22daecbS3Bucket3F6C7722Ref"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetocdkamplifyappassetdeploymentAssetParametersc3fdb1653d155f504c9d470873cc7012b6b21b0be8fc9922ae2ef49bd22daecbS3VersionKey85B4EF88Ref"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetocdkamplifyappassetdeploymentAssetParametersc3fdb1653d155f504c9d470873cc7012b6b21b0be8fc9922ae2ef49bd22daecbS3VersionKey85B4EF88Ref"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "27cd124d24507c9c8a71b80b4f75144c226dfc0a8f4b527609e98f0fd044deff.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -174,41 +142,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetocdkamplifyappassetdeploymentAssetParametersc3fdb1653d155f504c9d470873cc7012b6b21b0be8fc9922ae2ef49bd22daecbS3Bucket3F6C7722Ref"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetocdkamplifyappassetdeploymentAssetParametersc3fdb1653d155f504c9d470873cc7012b6b21b0be8fc9922ae2ef49bd22daecbS3VersionKey85B4EF88Ref"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetocdkamplifyappassetdeploymentAssetParametersc3fdb1653d155f504c9d470873cc7012b6b21b0be8fc9922ae2ef49bd22daecbS3VersionKey85B4EF88Ref"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "27cd124d24507c9c8a71b80b4f75144c226dfc0a8f4b527609e98f0fd044deff.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -334,41 +270,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetocdkamplifyappassetdeploymentAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket080E3142Ref"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetocdkamplifyappassetdeploymentAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey644E1674Ref"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetocdkamplifyappassetdeploymentAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey644E1674Ref"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -503,41 +407,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetocdkamplifyappassetdeploymentAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket080E3142Ref"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetocdkamplifyappassetdeploymentAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey644E1674Ref"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetocdkamplifyappassetdeploymentAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey644E1674Ref"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -669,41 +541,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetocdkamplifyappassetdeploymentAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket080E3142Ref"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetocdkamplifyappassetdeploymentAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey644E1674Ref"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetocdkamplifyappassetdeploymentAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey644E1674Ref"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -964,20 +804,6 @@
      "Arn"
     ]
    }
-  }
- },
- "Parameters": {
-  "referencetocdkamplifyappassetdeploymentAssetParametersc3fdb1653d155f504c9d470873cc7012b6b21b0be8fc9922ae2ef49bd22daecbS3Bucket3F6C7722Ref": {
-   "Type": "String"
-  },
-  "referencetocdkamplifyappassetdeploymentAssetParametersc3fdb1653d155f504c9d470873cc7012b6b21b0be8fc9922ae2ef49bd22daecbS3VersionKey85B4EF88Ref": {
-   "Type": "String"
-  },
-  "referencetocdkamplifyappassetdeploymentAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket080E3142Ref": {
-   "Type": "String"
-  },
-  "referencetocdkamplifyappassetdeploymentAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey644E1674Ref": {
-   "Type": "String"
   }
  }
 }

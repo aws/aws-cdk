@@ -6,8 +6,12 @@
         "cdk-integ-lambda-bundling"
       ],
       "stackUpdateWorkflow": false,
+<<<<<<< HEAD
       "assertionStack": "Bundling/DefaultTest/DeployAssert",
       "assertionStackName": "BundlingDefaultTestDeployAssertAACA0CAF"
+=======
+      "assertionStack": "Bundling/DefaultTest/DeployAssert"
+>>>>>>> 62766debee (integ test snapshot updates)
     }
   }
 }

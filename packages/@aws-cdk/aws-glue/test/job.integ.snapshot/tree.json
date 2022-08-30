@@ -130,7 +130,7 @@
                                           },
                                           ":s3:::",
                                           {
-                                            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                           },
                                           "/*"
                                         ]
@@ -146,7 +146,7 @@
                                           },
                                           ":s3:::",
                                           {
-                                            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                           }
                                         ]
                                       ]
@@ -203,6 +203,7 @@
                   "version": "0.0.0"
                 }
               },
+<<<<<<< HEAD
               "Codeb466388f7ca2adcca7e8d91f0390ca4f": {
                 "id": "Codeb466388f7ca2adcca7e8d91f0390ca4f",
                 "path": "aws-glue-job/EtlJob/Codeb466388f7ca2adcca7e8d91f0390ca4f",
@@ -210,14 +211,27 @@
                   "Stage": {
                     "id": "Stage",
                     "path": "aws-glue-job/EtlJob/Codeb466388f7ca2adcca7e8d91f0390ca4f/Stage",
+=======
+              "Codeb6774d6d1e75972579cd7f65b2bccbf8": {
+                "id": "Codeb6774d6d1e75972579cd7f65b2bccbf8",
+                "path": "aws-glue-job/EtlJob/Codeb6774d6d1e75972579cd7f65b2bccbf8",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-glue-job/EtlJob/Codeb6774d6d1e75972579cd7f65b2bccbf8/Stage",
+>>>>>>> 62766debee (integ test snapshot updates)
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
+<<<<<<< HEAD
                     "path": "aws-glue-job/EtlJob/Codeb466388f7ca2adcca7e8d91f0390ca4f/AssetBucket",
+=======
+                    "path": "aws-glue-job/EtlJob/Codeb6774d6d1e75972579cd7f65b2bccbf8/AssetBucket",
+>>>>>>> 62766debee (integ test snapshot updates)
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.BucketBase",
                       "version": "0.0.0"
@@ -243,35 +257,9 @@
                           [
                             "s3://",
                             {
-                              "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+                              "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                             },
-                            "/",
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
+                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
                           ]
                         ]
                       },
@@ -386,6 +374,7 @@
               "version": "0.0.0"
             }
           },
+<<<<<<< HEAD
           "AssetParameters": {
             "id": "AssetParameters",
             "path": "aws-glue-job/AssetParameters",
@@ -430,6 +419,8 @@
               "version": "10.1.85"
             }
           },
+=======
+>>>>>>> 62766debee (integ test snapshot updates)
           "StreamingJob": {
             "id": "StreamingJob",
             "path": "aws-glue-job/StreamingJob",
@@ -507,7 +498,7 @@
                                           },
                                           ":s3:::",
                                           {
-                                            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                           },
                                           "/*"
                                         ]
@@ -523,7 +514,7 @@
                                           },
                                           ":s3:::",
                                           {
-                                            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                           }
                                         ]
                                       ]
@@ -572,35 +563,9 @@
                           [
                             "s3://",
                             {
-                              "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+                              "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                             },
-                            "/",
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
+                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
                           ]
                         ]
                       },
@@ -712,7 +677,7 @@
                                           },
                                           ":s3:::",
                                           {
-                                            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                           },
                                           "/*"
                                         ]
@@ -728,7 +693,7 @@
                                           },
                                           ":s3:::",
                                           {
-                                            "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                           }
                                         ]
                                       ]
@@ -777,35 +742,9 @@
                           [
                             "s3://",
                             {
-                              "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
+                              "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                             },
-                            "/",
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
+                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
                           ]
                         ]
                       },
@@ -1047,14 +986,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

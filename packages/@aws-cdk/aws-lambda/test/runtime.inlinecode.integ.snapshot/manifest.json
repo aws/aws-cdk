@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-lambda-runtime-inlinecode.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-lambda-runtime-inlinecode.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-lambda-runtime-inlinecode": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-lambda-runtime-inlinecode.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc0190b17e2248f645e6fb64b3fcc344774325a53c839f3e3d06cf7c1ba8b516.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-lambda-runtime-inlinecode.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "aws-cdk-lambda-runtime-inlinecode.assets"
+      ],
       "metadata": {
         "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X/ServiceRole/Resource": [
           {
@@ -123,22 +147,16 @@
             "data": "NODEJS16XfunctionName"
           }
         ],
-        "PYTHON36ServiceRole814B3AD9": [
+        "/aws-cdk-lambda-runtime-inlinecode/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PYTHON36ServiceRole814B3AD9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "BootstrapVersion"
           }
         ],
-        "PYTHON364935EF15": [
+        "/aws-cdk-lambda-runtime-inlinecode/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PYTHON364935EF15",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

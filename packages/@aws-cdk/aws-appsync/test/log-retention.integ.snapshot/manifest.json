@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "AppSyncIntegLogRetention.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AppSyncIntegLogRetention.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "AppSyncIntegLogRetention": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "AppSyncIntegLogRetention.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/AppSyncIntegLogRetention": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
-              "id": "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
-              "packaging": "zip",
-              "sourceHash": "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
-              "s3BucketParameter": "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347S3Bucket6D5A7C19",
-              "s3KeyParameter": "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347S3VersionKeyB0A22B12",
-              "artifactHashParameter": "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347ArtifactHash974BA2D2"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4b28ed67e04a46a2c905cb42f19d4eb8ae84fa4604e89814ff512d6112fdd01d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AppSyncIntegLogRetention.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AppSyncIntegLogRetention.assets"
+      ],
+      "metadata": {
         "/AppSyncIntegLogRetention/GraphqlApi/ApiLogsRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -77,44 +87,61 @@
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
-        "/AppSyncIntegLogRetention/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347S3Bucket6D5A7C19"
-          }
-        ],
-        "/AppSyncIntegLogRetention/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347S3VersionKeyB0A22B12"
-          }
-        ],
-        "/AppSyncIntegLogRetention/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347ArtifactHash974BA2D2"
-          }
-        ],
         "/AppSyncIntegLogRetention/Exports/Output{\"Fn::GetAtt\":[\"GraphqlApi1B6CF24C\",\"ApiId\"]}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttGraphqlApi1B6CF24CApiIdE34D50AD"
           }
+        ],
+        "/AppSyncIntegLogRetention/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AppSyncIntegLogRetention/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
         ]
       },
       "displayName": "AppSyncIntegLogRetention"
+    },
+    "IntegDefaultTestDeployAssert4E6713E1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IntegDefaultTestDeployAssert4E6713E1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
     },
     "IntegDefaultTestDeployAssert4E6713E1": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "IntegDefaultTestDeployAssert4E6713E1.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b067f32c23cd851bcf08779bac0b5d6f2bed5bb4782f129925f4910d618f880.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IntegDefaultTestDeployAssert4E6713E1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
       "dependencies": [
-        "AppSyncIntegLogRetention"
+        "AppSyncIntegLogRetention",
+        "IntegDefaultTestDeployAssert4E6713E1.assets"
       ],
       "metadata": {
+<<<<<<< HEAD
         "/Integ/DefaultTest/DeployAssert": [
           {
             "type": "aws:cdk:asset",
@@ -129,6 +156,8 @@
             }
           }
         ],
+=======
+>>>>>>> 62766debee (integ test snapshot updates)
         "/Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -159,6 +188,7 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
+<<<<<<< HEAD
         "/Integ/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
@@ -175,6 +205,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7ArtifactHashB8137036"
+=======
+        "/Integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+>>>>>>> 62766debee (integ test snapshot updates)
           }
         ]
       },

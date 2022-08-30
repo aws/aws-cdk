@@ -289,6 +289,7 @@
                 "id": "Resource",
                 "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
                 "constructInfo": {
+<<<<<<< HEAD
                   "fqn": "constructs.Construct",
                   "version": "10.1.85"
                 }
@@ -333,6 +334,8 @@
                   }
                 },
                 "constructInfo": {
+=======
+>>>>>>> 62766debee (integ test snapshot updates)
                   "fqn": "constructs.Construct",
                   "version": "10.1.85"
                 }
@@ -511,6 +514,7 @@
                         "id": "Handler",
                         "path": "Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
+<<<<<<< HEAD
                           "fqn": "constructs.Construct",
                           "version": "10.1.85"
                         }
@@ -555,6 +559,8 @@
                           }
                         },
                         "constructInfo": {
+=======
+>>>>>>> 62766debee (integ test snapshot updates)
                           "fqn": "constructs.Construct",
                           "version": "10.1.85"
                         }

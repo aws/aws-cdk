@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-patterns-queue-isolated"
       ],
-      "assertionStack": "isolatedQueueProcessingFargateServiceTestDefaultTestDeployAssert0132317A"
+      "assertionStack": "isolatedQueueProcessingFargateServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

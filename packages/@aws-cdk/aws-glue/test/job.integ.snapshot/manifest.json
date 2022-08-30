@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-glue-job.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-glue-job.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-glue-job": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-glue-job.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-glue-job": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py",
-              "id": "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855",
-              "packaging": "file",
-              "sourceHash": "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855",
-              "s3BucketParameter": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469",
-              "s3KeyParameter": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763",
-              "artifactHashParameter": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855ArtifactHash0C610005"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c555928e4190ffbb4b6f7e22c6d029fc9bfe7a6383a476cf2ac4a159dd1f985.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-glue-job.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-glue-job.assets"
+      ],
+      "metadata": {
         "/aws-glue-job/EtlJob/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -57,24 +67,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EtlJobSuccessMetricRuleA72A3EF6"
-          }
-        ],
-        "/aws-glue-job/AssetParameters/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469"
-          }
-        ],
-        "/aws-glue-job/AssetParameters/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763"
-          }
-        ],
-        "/aws-glue-job/AssetParameters/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855ArtifactHash0C610005"
           }
         ],
         "/aws-glue-job/StreamingJob/ServiceRole/Resource": [
@@ -113,6 +105,7 @@
             "data": "ShellJob42E81F95"
           }
         ],
+<<<<<<< HEAD
         "/aws-glue-job/ShellJob39/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -129,6 +122,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ShellJob390C141361"
+=======
+        "/aws-glue-job/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-glue-job/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+>>>>>>> 62766debee (integ test snapshot updates)
           }
         ]
       },

@@ -315,6 +315,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
+<<<<<<< HEAD
                         "Ref": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A"
                       },
                       "s3Key": {
@@ -350,6 +351,11 @@
                           ]
                         ]
                       }
+=======
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip"
+>>>>>>> 62766debee (integ test snapshot updates)
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -373,6 +379,7 @@
               "version": "0.0.0"
             }
           },
+<<<<<<< HEAD
           "AssetParameters": {
             "id": "AssetParameters",
             "path": "log-group-events/AssetParameters",
@@ -417,6 +424,8 @@
               "version": "10.1.85"
             }
           },
+=======
+>>>>>>> 62766debee (integ test snapshot updates)
           "CustomRule": {
             "id": "CustomRule",
             "path": "log-group-events/CustomRule",
@@ -838,6 +847,7 @@
                         "id": "Handler",
                         "path": "LogGroup/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
+<<<<<<< HEAD
                           "fqn": "constructs.Construct",
                           "version": "10.1.85"
                         }
@@ -882,6 +892,8 @@
                           }
                         },
                         "constructInfo": {
+=======
+>>>>>>> 62766debee (integ test snapshot updates)
                           "fqn": "constructs.Construct",
                           "version": "10.1.85"
                         }

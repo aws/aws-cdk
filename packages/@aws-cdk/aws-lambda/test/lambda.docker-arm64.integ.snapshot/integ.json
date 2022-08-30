@@ -5,7 +5,7 @@
       "stacks": [
         "lambda-ecr-docker-arm64"
       ],
-      "assertionStack": "lambdadockerarm64DefaultTestDeployAssert07D408EF"
+      "assertionStack": "lambda-docker-arm64/DefaultTest/DeployAssert"
     }
   }
 }

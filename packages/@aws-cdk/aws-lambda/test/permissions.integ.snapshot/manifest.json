@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "lambda-permissions.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-permissions.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "lambda-permissions": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "lambda-permissions.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f189cb5ef6ca8751f98c7dbbfdfb7dac59c18d9bb287a62e9b01d4fb43156f7e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-permissions.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "lambda-permissions.assets"
+      ],
       "metadata": {
         "/lambda-permissions/MyLambda/ServiceRole/Resource": [
           {
@@ -39,22 +63,16 @@
             "data": "MyLambdaInvoke138AF9IJcZORjZNKCKShZMMuVQwCnUkbFqMoQf5of0C1F7DFD8"
           }
         ],
-        "MyLambdaInvokeAnyPrincipal256ECDE1": [
+        "/lambda-permissions/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaInvokeAnyPrincipal256ECDE1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "BootstrapVersion"
           }
         ],
-        "MyLambdaInvokeOrganizationPrincipaloxxxxxxxxxxEB282AD1": [
+        "/lambda-permissions/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaInvokeOrganizationPrincipaloxxxxxxxxxxEB282AD1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

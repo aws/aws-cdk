@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-cdk-lambda-runtime-inlinecode": {
@@ -103,8 +103,8 @@
             "id": "NODEJS_12_X-functionName",
             "path": "aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X-functionName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "PYTHON_3_7": {
@@ -194,8 +194,8 @@
             "id": "PYTHON_3_7-functionName",
             "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_7-functionName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "PYTHON_3_8": {
@@ -285,8 +285,8 @@
             "id": "PYTHON_3_8-functionName",
             "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8-functionName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "PYTHON_3_9": {
@@ -376,8 +376,8 @@
             "id": "PYTHON_3_9-functionName",
             "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9-functionName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "NODEJS_14_X": {
@@ -467,8 +467,8 @@
             "id": "NODEJS_14_X-functionName",
             "path": "aws-cdk-lambda-runtime-inlinecode/NODEJS_14_X-functionName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "NODEJS_16_X": {
@@ -558,20 +558,20 @@
             "id": "NODEJS_16_X-functionName",
             "path": "aws-cdk-lambda-runtime-inlinecode/NODEJS_16_X-functionName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

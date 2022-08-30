@@ -15,7 +15,11 @@
      "status": "ACTIVE"
     },
     "flattenResponse": "true",
+<<<<<<< HEAD
     "salt": "1661796816631"
+=======
+    "salt": "1661545671319"
+>>>>>>> 62766debee (integ test snapshot updates)
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -36,7 +40,11 @@
      ]
     },
     "expected": "{\"$StringLike\":\"AWS_REGION\"}",
+<<<<<<< HEAD
     "salt": "1661796816632"
+=======
+    "salt": "1661545671320"
+>>>>>>> 62766debee (integ test snapshot updates)
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -88,6 +96,7 @@
     "Runtime": "nodejs14.x",
     "Code": {
      "S3Bucket": {
+<<<<<<< HEAD
       "Ref": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80"
      },
      "S3Key": {
@@ -123,6 +132,11 @@
        ]
       ]
      }
+=======
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "374e4c6bf67290e7a1839e32e1c4ec413fe48477e9585dc2e042bc07509f7458.zip"
+>>>>>>> 62766debee (integ test snapshot updates)
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -146,6 +160,7 @@
   }
  },
  "Parameters": {
+<<<<<<< HEAD
   "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80": {
    "Type": "String",
    "Description": "S3 bucket for asset \"84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7\""
@@ -157,6 +172,39 @@
   "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7ArtifactHashB8137036": {
    "Type": "String",
    "Description": "Artifact hash for asset \"84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7\""
+=======
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+>>>>>>> 62766debee (integ test snapshot updates)
   }
  }
 }

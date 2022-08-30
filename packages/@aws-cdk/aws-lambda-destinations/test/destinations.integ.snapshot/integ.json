@@ -5,8 +5,12 @@
       "stacks": [
         "aws-cdk-lambda-destinations"
       ],
+<<<<<<< HEAD
       "assertionStack": "Destinations/DefaultTest/DeployAssert",
       "assertionStackName": "DestinationsDefaultTestDeployAssertCC49E667"
+=======
+      "assertionStack": "Destinations/DefaultTest/DeployAssert"
+>>>>>>> 62766debee (integ test snapshot updates)
     }
   }
 }

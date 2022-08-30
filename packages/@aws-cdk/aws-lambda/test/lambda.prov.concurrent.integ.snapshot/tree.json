@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.85"
         }
       },
       "aws-cdk-lambda-pce-1": {
@@ -179,7 +179,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaAliasPCECurrentVersion072335D3224448d87cb592b450e76b3259c1d874",
+                        "MyLambdaAliasPCECurrentVersion072335D322935888161d542257ba1aa7d6060c95",
                         "Version"
                       ]
                     },
@@ -198,8 +198,8 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-lambda-pce-1/Alias/ScalingRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "AliasPermission": {
@@ -392,7 +392,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaVersionPCECurrentVersion27FC3932d779c9115684f8f405cbd7282b1508f5",
+                        "MyLambdaVersionPCECurrentVersion27FC3932fa78bcfe53ab85fefd72b3ac4cc5679c",
                         "Version"
                       ]
                     },
@@ -408,8 +408,8 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-lambda-pce-1/Alias2/ScalingRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "AliasPermission2": {
@@ -438,14 +438,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

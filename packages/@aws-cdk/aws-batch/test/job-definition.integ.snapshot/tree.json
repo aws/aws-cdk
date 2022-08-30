@@ -242,6 +242,7 @@
                         "id": "Handler",
                         "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
+<<<<<<< HEAD
                           "fqn": "constructs.Construct",
                           "version": "10.1.85"
                         }
@@ -286,6 +287,8 @@
                           }
                         },
                         "constructInfo": {
+=======
+>>>>>>> 62766debee (integ test snapshot updates)
                           "fqn": "constructs.Construct",
                           "version": "10.1.85"
                         }

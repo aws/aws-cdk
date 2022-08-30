@@ -6,8 +6,12 @@
         "cdk-integ-lambda-bundling-docker-bundling-opts"
       ],
       "stackUpdateWorkflow": false,
+<<<<<<< HEAD
       "assertionStack": "DockerOptsBundling/DefaultTest/DeployAssert",
       "assertionStackName": "DockerOptsBundlingDefaultTestDeployAssert72BE28F7"
+=======
+      "assertionStack": "Bundling/DefaultTest/DeployAssert"
+>>>>>>> 62766debee (integ test snapshot updates)
     }
   }
 }

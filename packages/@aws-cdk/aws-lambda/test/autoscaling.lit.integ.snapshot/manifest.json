@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "aws-lambda-autoscaling.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-lambda-autoscaling.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-lambda-autoscaling": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-lambda-autoscaling.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4767a3ce91661e31522e16a0123192cfecc27cf91a8268827790ff3940e96ea9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-lambda-autoscaling.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "aws-lambda-autoscaling.assets"
+      ],
       "metadata": {
         "/aws-lambda-autoscaling/MyLambda/ServiceRole/Resource": [
           {
@@ -30,7 +54,10 @@
         "/aws-lambda-autoscaling/MyLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC0be4c7f7b82230afaf72d130ee920da9"
+            "data": "MyLambdaCurrentVersionE7A382CC7c384e097d7f7605c9405f788cdf9f7b",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/aws-lambda-autoscaling/Alias/Resource": [
@@ -57,13 +84,16 @@
             "data": "FunctionName"
           }
         ],
-        "MyLambdaCurrentVersionE7A382CCdcbc579545d1d05c38def865a59d6082": [
+        "/aws-lambda-autoscaling/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CCdcbc579545d1d05c38def865a59d6082",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-lambda-autoscaling/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
