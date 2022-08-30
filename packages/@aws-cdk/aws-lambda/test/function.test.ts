@@ -1789,6 +1789,66 @@ describe('function', () => {
     });
   });
 
+  test('specify autoDeleteLogGroup', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS,
+      autoDeleteLogGroup: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB',
+            },
+          ],
+        ],
+      },
+      RemovalPolicy: 'destroy',
+    });
+  });
+
+  test('specify both log retention and autoDeleteLogGroup', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS,
+      logRetention: logs.RetentionDays.ONE_MONTH,
+      autoDeleteLogGroup: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB',
+            },
+          ],
+        ],
+      },
+      RetentionInDays: 30,
+      RemovalPolicy: 'destroy',
+    });
+  });
+
   test('imported lambda with imported security group and allowAllOutbound set to false', () => {
     // GIVEN
     const stack = new cdk.Stack();

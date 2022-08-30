@@ -808,6 +808,8 @@ It is possible to obtain the function's log group as a `logs.ILogGroup` by calli
 By default, CDK uses the AWS SDK retry options when creating a log group. The `logRetentionRetryOptions` property
 allows you to customize the maximum number of retries and base backoff duration.
 
+To automatically delete the associated log group for a Lambda function, you can use the `autoDeleteLogGroup` property.
+
 *Note* that, if either `logRetention` is set or `logGroup` property is called, a [CloudFormation custom
 resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) is added
 to the stack that pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the

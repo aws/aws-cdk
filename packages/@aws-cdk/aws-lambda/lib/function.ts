@@ -6,7 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, RemovalPolicy, Size, Stack, Token } from '@aws-cdk/core';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { AliasOptions, Alias } from './alias';
@@ -275,6 +275,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - No event sources.
    */
   readonly events?: IEventSource[];
+
+  /**
+   * Whether the associated CloudWatch log group should be automatically deleted
+   * when the function is removed from the stack or when the stack is deleted.
+   *
+   * @default false
+   */
+  readonly autoDeleteLogGroup?: boolean;
 
   /**
    * The number of days log events are kept in CloudWatch Logs. When updating
@@ -835,12 +843,13 @@ export class Function extends FunctionBase {
     }
 
     // Log retention
-    if (props.logRetention) {
+    if (props.logRetention || props.autoDeleteLogGroup === true) {
       const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
-        retention: props.logRetention,
+        retention: props.logRetention ?? logs.RetentionDays.INFINITE,
         role: props.logRetentionRole,
-        logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
+        logRetentionRetryOptions: props.logRetentionRetryOptions,
+        removalPolicy: props.autoDeleteLogGroup ? RemovalPolicy.DESTROY : undefined,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
     }
