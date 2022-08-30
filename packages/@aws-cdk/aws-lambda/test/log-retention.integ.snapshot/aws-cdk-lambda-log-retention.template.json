@@ -116,6 +116,62 @@
        ],
        "Effect": "Allow",
        "Resource": "*"
+      },
+      {
+       "Action": "logs:DeleteLogGroup",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:/aws/lambda/",
+          {
+           "Ref": "AutoDeleteLogGroupF74A7E0D"
+          },
+          ":*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "logs:DeleteLogStream",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:/aws/lambda/",
+          {
+           "Ref": "AutoDeleteLogGroupF74A7E0D"
+          },
+          ":log-stream:*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -135,7 +191,7 @@
     "Runtime": "nodejs14.x",
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3Bucket0D8A173B"
+      "Ref": "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347S3Bucket6D5A7C19"
      },
      "S3Key": {
       "Fn::Join": [
@@ -148,7 +204,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332"
+             "Ref": "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347S3VersionKeyB0A22B12"
             }
            ]
           }
@@ -161,7 +217,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332"
+             "Ref": "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347S3VersionKeyB0A22B12"
             }
            ]
           }
@@ -328,20 +384,93 @@
     },
     "RetentionInDays": 365
    }
+  },
+  "AutoDeleteLogGroupServiceRoleF3400DE1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AutoDeleteLogGroupF74A7E0D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = (event) => console.log(JSON.stringify(event));"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "AutoDeleteLogGroupServiceRoleF3400DE1",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "AutoDeleteLogGroupServiceRoleF3400DE1"
+   ]
+  },
+  "AutoDeleteLogGroupLogRetentionAC501FFB": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "AutoDeleteLogGroupF74A7E0D"
+       }
+      ]
+     ]
+    },
+    "RemovalPolicy": "destroy"
+   }
   }
  },
  "Parameters": {
-  "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3Bucket0D8A173B": {
+  "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347S3Bucket6D5A7C19": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665\""
+   "Description": "S3 bucket for asset \"d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347\""
   },
-  "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332": {
+  "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347S3VersionKeyB0A22B12": {
    "Type": "String",
-   "Description": "S3 key for asset version \"22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665\""
+   "Description": "S3 key for asset version \"d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347\""
   },
-  "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665ArtifactHashF4A1E70E": {
+  "AssetParametersd01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347ArtifactHash974BA2D2": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665\""
+   "Description": "Artifact hash for asset \"d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347\""
   }
  }
 }

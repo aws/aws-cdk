@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.90"
         }
       },
       "aws-cdk-lambda-log-retention": {
@@ -217,6 +217,62 @@
                                   ],
                                   "Effect": "Allow",
                                   "Resource": "*"
+                                },
+                                {
+                                  "Action": "logs:DeleteLogGroup",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/lambda/",
+                                        {
+                                          "Ref": "AutoDeleteLogGroupF74A7E0D"
+                                        },
+                                        ":*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:DeleteLogStream",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/lambda/",
+                                        {
+                                          "Ref": "AutoDeleteLogGroupF74A7E0D"
+                                        },
+                                        ":log-stream:*"
+                                      ]
+                                    ]
+                                  }
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -257,20 +313,20 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.0.9"
+              "version": "10.1.90"
             }
           },
           "AssetParameters": {
             "id": "AssetParameters",
             "path": "aws-cdk-lambda-log-retention/AssetParameters",
             "children": {
-              "22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665": {
-                "id": "22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665",
-                "path": "aws-cdk-lambda-log-retention/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665",
+              "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347": {
+                "id": "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
+                "path": "aws-cdk-lambda-log-retention/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-lambda-log-retention/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/S3Bucket",
+                    "path": "aws-cdk-lambda-log-retention/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -278,7 +334,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-lambda-log-retention/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/S3VersionKey",
+                    "path": "aws-cdk-lambda-log-retention/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -286,7 +342,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-lambda-log-retention/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/ArtifactHash",
+                    "path": "aws-cdk-lambda-log-retention/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -295,13 +351,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.90"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.0.9"
+              "version": "10.1.90"
             }
           },
           "OneMonth": {
@@ -511,6 +567,115 @@
               "LogGroup": {
                 "id": "LogGroup",
                 "path": "aws-cdk-lambda-log-retention/OneYear/LogGroup",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "AutoDeleteLogGroup": {
+            "id": "AutoDeleteLogGroup",
+            "path": "aws-cdk-lambda-log-retention/AutoDeleteLogGroup",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-lambda-log-retention/AutoDeleteLogGroup/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-lambda-log-retention/AutoDeleteLogGroup/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-lambda-log-retention/AutoDeleteLogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = (event) => console.log(JSON.stringify(event));"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "AutoDeleteLogGroupServiceRoleF3400DE1",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "LogRetention": {
+                "id": "LogRetention",
+                "path": "aws-cdk-lambda-log-retention/AutoDeleteLogGroup/LogRetention",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-lambda-log-retention/AutoDeleteLogGroup/LogRetention/Resource",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.LogRetention",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "aws-cdk-lambda-log-retention/AutoDeleteLogGroup/LogGroup",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"

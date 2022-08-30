@@ -27,4 +27,11 @@ new lambda.Function(stack, 'OneYear', {
   logRetention: logs.RetentionDays.ONE_YEAR,
 });
 
+new lambda.Function(stack, 'AutoDeleteLogGroup', {
+  code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_14_X,
+  autoDeleteLogGroup: true,
+});
+
 app.synth();
