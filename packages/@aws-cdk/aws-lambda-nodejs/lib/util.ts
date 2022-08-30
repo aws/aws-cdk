@@ -208,3 +208,24 @@ function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<
   }
   return updatedCompilerOptions;
 }
+
+
+/**
+ * Finds the name of the file where the `NodejsFunction` is defined
+ */
+export function findDefiningFile(sites: CallSite[]): string {
+  let definingIndex;
+  for (const [index, site] of sites.entries()) {
+    if (site.getFunctionName() === 'NodejsFunction') {
+      // The next site is the site where the NodejsFunction was created
+      definingIndex = index + 1;
+      break;
+    }
+  }
+
+  if (!definingIndex || !sites[definingIndex]) {
+    throw new Error('Cannot find defining file.');
+  }
+
+  return sites[definingIndex].getFileName();
+}
