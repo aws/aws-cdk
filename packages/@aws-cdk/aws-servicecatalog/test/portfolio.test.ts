@@ -62,6 +62,14 @@ describe('Portfolio', () => {
       }).toThrowError(/Missing required Portfolio ID from Portfolio ARN/);
     }),
 
+    test('portfolio arn formatting', () => {
+      const portfolio = new servicecatalog.Portfolio(stack, 'Portfolio', {
+        displayName: 'MyPortfolio',
+        providerName: 'testProvider',
+      });
+      expect(portfolio.portfolioArn).toEqual(`arn:${stack.partition}:catalog:${stack.region}:${stack.account}:portfolio/${portfolio.portfolioId}`);
+    }),
+
     test('fails portfolio creation with short name', () => {
       expect(() => {
         new servicecatalog.Portfolio(stack, 'MyPortfolio', {

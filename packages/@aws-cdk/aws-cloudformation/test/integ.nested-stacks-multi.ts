@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as sns from '@aws-cdk/aws-sns';
 import { App, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
