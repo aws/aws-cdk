@@ -186,3 +186,9 @@ If the credentials file is present, `docker` will be configured to use the
 `docker-credential-cdk-assets` credential helper for each of the domains listed
 in the file. This helper will assume the role provided (if present), and then fetch
 the login credentials from either SecretsManager or ECR.
+
+## Change the Docker Command
+
+By default, the AWS CDK will build and publish using the `docker` command.
+However, by specifying the `CDK_DOCKER_CMD` environment variable, you can
+override the command that will be used to build and publish your assets.

@@ -13,6 +13,7 @@ let aws: ReturnType<typeof mockAws>;
 const absoluteDockerPath = '/simple/cdk.out/dockerdir';
 beforeEach(() => {
   jest.resetAllMocks();
+  delete(process.env.CDK_DOCKER_CMD);
 
   // By default, assume no externally-configured credentials.
   jest.spyOn(dockercreds, 'cdkCredentialsConfig').mockReturnValue(undefined);
@@ -490,6 +491,28 @@ test('publishing only', async () => {
     { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
     { commandLine: ['docker', 'push', '12345.amazonaws.com/aws-cdk/assets:theAsset1'] },
     { commandLine: ['docker', 'push', '12345.amazonaws.com/aws-cdk/assets:theAsset2'] },
+  );
+
+  await pub.publish();
+
+  expectAllSpawns();
+  expect(true).toBeTruthy(); // Expect no exception, satisfy linter
+});
+
+test('overriding the docker command', async () => {
+  process.env.CDK_DOCKER_CMD = 'custom';
+  aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
+  aws.mockEcr.getAuthorizationToken = mockedApiResult({
+    authorizationData: [
+      { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+    ],
+  });
+
+  const expectAllSpawns = mockSpawn(
+    { commandLine: ['custom', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
+    { commandLine: ['custom', 'inspect', 'cdkasset-theasset'] },
+    { commandLine: ['custom', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
+    { commandLine: ['custom', 'push', '12345.amazonaws.com/repo:abcdef'] },
   );
 
   await pub.publish();
