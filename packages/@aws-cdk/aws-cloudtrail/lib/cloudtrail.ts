@@ -119,6 +119,8 @@ export interface TrailProps {
   /**
    * Specifies whether the trail is applied to all accounts in an organization in AWS Organizations, or only for the current AWS account.
    *
+   * If this is set to true then the current account _must_ be the management account. If it is not, then CloudFormation will throw an error.
+   *
    * If this is set to true and the current account is a management account for an organization in AWS Organizations, the trail will be created in all AWS accounts that belong to the organization.
    * If this is set to false, the trail will remain in the current AWS account but be deleted from all member accounts in the organization.
    *
