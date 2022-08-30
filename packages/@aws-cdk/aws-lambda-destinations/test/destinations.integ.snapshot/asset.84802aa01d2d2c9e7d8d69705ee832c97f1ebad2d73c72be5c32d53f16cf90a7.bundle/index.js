@@ -493,7 +493,7 @@ var AssertionHandler = class extends CustomResourceHandler {
     } else {
       result = {
         data: JSON.stringify({
-          status: "pass"
+          status: "success"
         })
       };
     }
