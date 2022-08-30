@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.39.1](https://github.com/aws/aws-cdk/compare/v2.39.0...v2.39.1) (2022-08-29)
+
+
+### Bug Fixes
+
+* **python:** NameError name 'SubnetSelection' is not defined ([#21790](https://github.com/aws/aws-cdk/issues/21790)) ([eaaba39](https://github.com/aws/aws-cdk/commit/eaaba39e21f8b76dfa01cb5515a25d8600e73eee)), closes [#21790](https://github.com/aws/aws-cdk/issues/21790)
+
+## [2.39.0](https://github.com/aws/aws-cdk/compare/v2.38.1...v2.39.0) (2022-08-25)
+
+
+### Features
+
+* **aws-cloudwatch:** add support for sparkline graphs in SingleValueWidget  ([#21684](https://github.com/aws/aws-cdk/issues/21684)) ([cf5d115](https://github.com/aws/aws-cdk/commit/cf5d115aaba1bf62239817d4ced78316a9e50490)), closes [#21683](https://github.com/aws/aws-cdk/issues/21683)
+* **certificatemanager:** Allow opting out of transparency logging ([#21686](https://github.com/aws/aws-cdk/issues/21686)) ([85b6db0](https://github.com/aws/aws-cdk/commit/85b6db054d1aced18b1ec4fc1b16ed74aa47cf99))
+* **cfnspec:** cloudformation spec v85.0.0 ([#21679](https://github.com/aws/aws-cdk/issues/21679)) ([1a560b0](https://github.com/aws/aws-cdk/commit/1a560b05c8f0740f367fc016602fdb9b1d7f7a13))
+* **cli:** re-introduce `--concurrency` option ([#21681](https://github.com/aws/aws-cdk/issues/21681)) ([f001f7e](https://github.com/aws/aws-cdk/commit/f001f7e2989254c2ceae6ec22486ad6aee5ee66c)), closes [#20345](https://github.com/aws/aws-cdk/issues/20345) [#21664](https://github.com/aws/aws-cdk/issues/21664) [#21663](https://github.com/aws/aws-cdk/issues/21663) [#21598](https://github.com/aws/aws-cdk/issues/21598) [#21663](https://github.com/aws/aws-cdk/issues/21663)
+* **cloudtrail:** add configuration for IsOrganizationTrail ([#21625](https://github.com/aws/aws-cdk/issues/21625)) ([f5a1057](https://github.com/aws/aws-cdk/commit/f5a10574308b9193cba32d398a08fe61b5d15aa3)), closes [#21578](https://github.com/aws/aws-cdk/issues/21578)
+* **ecr-assets:** expose property imageTag separately from imageUri in ECR assets  ([#21582](https://github.com/aws/aws-cdk/issues/21582)) ([5f32e0f](https://github.com/aws/aws-cdk/commit/5f32e0f6904e57aec17bc967ac5bbd9f9f0c45b6))
+
+
+### Bug Fixes
+
+* **autoscaling:** error not thrown when associatePublicIpAddress is set to false when specifying launchTemplate ([#21714](https://github.com/aws/aws-cdk/issues/21714)) ([da61adc](https://github.com/aws/aws-cdk/commit/da61adc1bfadea4e541d34f4eb082f280cc289e1)), closes [#21576](https://github.com/aws/aws-cdk/issues/21576)
+* **cli:** build assets before deploying any stacks ([#21513](https://github.com/aws/aws-cdk/issues/21513)) ([5cc0d35](https://github.com/aws/aws-cdk/commit/5cc0d3514dd6c1bedd8233ec48074257b003fed0)), closes [#21511](https://github.com/aws/aws-cdk/issues/21511)
+* **cli:** CLI hangs for 10 minutes on expired credentials ([#21052](https://github.com/aws/aws-cdk/issues/21052)) ([1e305e6](https://github.com/aws/aws-cdk/commit/1e305e6eed6b4ede78df10cbaadb8b578c1e6baa))
+* **cli:** ECS hotswap breaks Firelens configuration ([#21748](https://github.com/aws/aws-cdk/issues/21748)) ([3d22f70](https://github.com/aws/aws-cdk/commit/3d22f70a8e4e81e2e9056fa76a4c932f3305fd4b)), closes [#21692](https://github.com/aws/aws-cdk/issues/21692)
+* **cli:** empty non top-level stack does not get deleted ([#21624](https://github.com/aws/aws-cdk/issues/21624)) ([a6757b0](https://github.com/aws/aws-cdk/commit/a6757b06f764938981aa82c82b2d21feea05b2f4)), closes [/github.com/aws/aws-cdk/blob/92d6d58029595735df6902db5f820b1182dfb27b/packages/aws-cdk/lib/api/cxapp/cloud-assembly.ts#L138](https://github.com/aws//github.com/aws/aws-cdk/blob/92d6d58029595735df6902db5f820b1182dfb27b/packages/aws-cdk/lib/api/cxapp/cloud-assembly.ts/issues/L138) [/github.com/aws/aws-cdk/blob/92d6d58029595735df6902db5f820b1182dfb27b/packages/aws-cdk/test/integ/cli/cli.integtest.ts#L685](https://github.com/aws//github.com/aws/aws-cdk/blob/92d6d58029595735df6902db5f820b1182dfb27b/packages/aws-cdk/test/integ/cli/cli.integtest.ts/issues/L685) [#20822](https://github.com/aws/aws-cdk/issues/20822) [#20822](https://github.com/aws/aws-cdk/issues/20822)
+* **codebuild:** ReportGroup missing test permissions when set to CODE_COVERAGE ([#21656](https://github.com/aws/aws-cdk/issues/21656)) ([17a4989](https://github.com/aws/aws-cdk/commit/17a4989385fc7c5aeacdbd0b564e3d3b21530384)), closes [#21534](https://github.com/aws/aws-cdk/issues/21534)
+* **core:** feature flag values should be booleans ([#21759](https://github.com/aws/aws-cdk/issues/21759)) ([daf885f](https://github.com/aws/aws-cdk/commit/daf885ff8d20088c93e214dbb07d163cfaa28089)), closes [aws-cdk/aws-lambda/lib/function.ts#L1306](https://github.com/aws-cdk/aws-lambda/lib/function.ts/issues/L1306)
+* **ec2:** Internet connectivity not established for private subnets ([#21495](https://github.com/aws/aws-cdk/issues/21495)) ([5b1488d](https://github.com/aws/aws-cdk/commit/5b1488d4368110a17546ece6a5bb869f22adac99)), closes [#21348](https://github.com/aws/aws-cdk/issues/21348)
+
 ## [2.38.1](https://github.com/aws/aws-cdk/compare/v2.38.0...v2.38.1) (2022-08-18)
 
 ### Reverts
