@@ -227,7 +227,7 @@ export class Certificate extends CertificateBase implements ICertificate {
       }
     }
 
-    //check if domain name is less than 64  characters
+    // check if domain name is 64 characters or less
     if (props.domainName.length > 64) {
       throw new Error('Domain name must be 64 characters or less');
     }
