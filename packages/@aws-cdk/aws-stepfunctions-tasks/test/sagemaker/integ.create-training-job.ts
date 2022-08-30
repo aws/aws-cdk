@@ -46,6 +46,7 @@ const sm = new StateMachine(stack, 'StateMachine', {
         },
       },
     }],
+    enableInterContainerTrafficEncryption: true,
     outputDataConfig: { s3OutputLocation: S3Location.fromBucket(trainingData, 'result/') },
     trainingJobName: 'mytrainingjob',
   }),
