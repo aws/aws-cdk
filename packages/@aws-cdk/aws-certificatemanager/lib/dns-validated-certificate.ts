@@ -88,7 +88,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.domainName = props.domainName;
     //check if domain name is less than 64  characters
     if (this.domainName.length > 64) {
-      throw new Error('Domain name must be less than 64 characters');
+      throw new Error('Domain name must be 64 characters or less');
     }
     this.normalizedZoneName = props.hostedZone.zoneName;
     // Remove trailing `.` from zone name

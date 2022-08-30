@@ -237,7 +237,7 @@ test('throws when domain name is longer than 64 characters', () => {
       domainName: 'example.com'.repeat(7),
       hostedZone: exampleDotComZone,
     });
-  }).toThrow(/Domain name must be less than 64 characters/);
+  }).toThrow(/Domain name must be 64 characters or less/);
 }),
 
 
