@@ -34,6 +34,7 @@ Currently supported are:
 - Write messages into columns of DynamoDB
 - Put messages IoT Events input
 - Start the execution of a Step Functions state machine
+- Write document data to Open Search Service
 
 ## Republish a message to another MQTT topic
 
@@ -353,6 +354,32 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
       role: role, // optional property, defaults to a new role
       executionNamePrefix: 'StateMachinePrefix', // optional property, defaults to nothing
     }),
+  ],
+});
+```
+
+## Write document data to Open Search Service
+
+The code snippet below creates an AWS IoT Rule that writes document data to an Open Search domain: 
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as oss from '@aws-cdk/aws-opensearchservice';
+
+declare const role: iam.Role;
+declare const domain: oss.Domain;
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
+  actions: [
+    new actions.OpenSearchAction(
+      domain,
+      'DocumentId',
+      'DocumentIndex',
+      'DocumentType',
+    ), {
+      role: role, // optional property, defaults to a new role
+    },
   ],
 });
 ```
