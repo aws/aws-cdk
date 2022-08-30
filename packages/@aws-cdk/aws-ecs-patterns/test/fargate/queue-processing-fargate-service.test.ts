@@ -5,6 +5,7 @@ import { MachineImage } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { Queue } from '@aws-cdk/aws-sqs';
 import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -652,4 +653,93 @@ test('can set capacity provider strategies', () => {
       },
     ],
   });
+});
+
+it('can set queue props by queue construct', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const queue = new Queue(stack, 'Queue', {
+    queueName: 'custom-queue',
+    visibilityTimeout: cdk.Duration.seconds(200),
+    deadLetterQueue: {
+      queue: new Queue(stack, 'DeadLetterQueue', {
+        queueName: 'custom-dead-letter-queue',
+        retentionPeriod: cdk.Duration.seconds(100),
+      }),
+      maxReceiveCount: 10,
+    },
+  });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    queue: queue,
+  });
+
+  // Queue
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
+    QueueName: 'custom-queue',
+    VisibilityTimeout: 200,
+    RedrivePolicy: {
+      maxReceiveCount: 10,
+    },
+  });
+  // DLQ
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
+    QueueName: 'custom-dead-letter-queue',
+    MessageRetentionPeriod: 100,
+  });
+});
+
+it('can set queue props by QueueProcessingServiceBaseProps', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    retentionPeriod: cdk.Duration.seconds(100),
+    visibilityTimeout: cdk.Duration.seconds(200),
+    maxReceiveCount: 10,
+  });
+
+  // Queue
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
+    QueueName: Match.absent(),
+    VisibilityTimeout: 200,
+    RedrivePolicy: {
+      maxReceiveCount: 10,
+    },
+  });
+  // DLQ
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
+    QueueName: Match.absent(),
+    MessageRetentionPeriod: 100,
+  });
+});
+
+it('throws validation errors of the specific queue prop, when setting queue and queue related props at same time', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const queue = new Queue(stack, 'Queue');
+
+  // Setting all retentionPeriod, visibilityTimeout and maxReceiveCount
+  expect(() => {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service1', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      queue: queue,
+      retentionPeriod: cdk.Duration.seconds(100),
+      visibilityTimeout: cdk.Duration.seconds(200),
+      maxReceiveCount: 10,
+    });
+  }).toThrow(new Error('retentionPeriod, visibilityTimeout, maxReceiveCount can be set only when queue is not set. Specify them in the QueueProps of the queue'));
+
+  // Setting only visibilityTimeout
+  expect(() => {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service2', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      queue: queue,
+      visibilityTimeout: cdk.Duration.seconds(200),
+    });
+  }).toThrow(new Error('visibilityTimeout can be set only when queue is not set. Specify them in the QueueProps of the queue'));
 });
