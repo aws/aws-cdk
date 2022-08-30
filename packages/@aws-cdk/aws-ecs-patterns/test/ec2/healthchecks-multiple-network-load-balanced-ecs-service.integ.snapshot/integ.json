@@ -3,7 +3,7 @@
   "testCases": {
     "Integ/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-nlb-healthchecks"
       ],
       "assertionStack": "Integ/DefaultTest/DeployAssert"
     }
