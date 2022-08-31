@@ -24,8 +24,8 @@ async function createLogGroupSafe(logGroupName: string, region?: string, options
   // an error "OperationAbortedException: A conflicting operation is currently
   // in progress...Please try again."
   // To avoid an error, we do as requested and try again.
-  let retryCount = options?.maxRetries == undefined ? 10 : options.maxRetries;
-  const delay = options?.retryOptions?.base == undefined ? 10 : options.retryOptions.base;
+  let retryCount = options?.maxRetries ?? 10;
+  const delay = options?.retryOptions?.base ?? 10;
   do {
     try {
       const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
@@ -53,8 +53,8 @@ async function createLogGroupSafe(logGroupName: string, region?: string, options
 
 //delete a log group
 async function deleteLogGroup(logGroupName: string, region?: string, options?: SdkRetryOptions) {
-  let retryCount = options?.maxRetries == undefined ? 10 : options.maxRetries;
-  const delay = options?.retryOptions?.base == undefined ? 10 : options.retryOptions.base;
+  let retryCount = options?.maxRetries ?? 10;
+  const delay = options?.retryOptions?.base ?? 10;
   do {
     try {
       const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
@@ -93,8 +93,8 @@ async function setRetentionPolicy(logGroupName: string, region?: string, options
   // condition where a log group is either already being created or its retention
   // policy is being updated. This would result in an OperationAbortedException,
   // which we will try to catch and retry the command a number of times before failing
-  let retryCount = options?.maxRetries == undefined ? 10 : options.maxRetries;
-  const delay = options?.retryOptions?.base == undefined ? 10 : options.retryOptions.base;
+  let retryCount = options?.maxRetries ?? 10;
+  const delay = options?.retryOptions?.base ?? 10;
   do {
     try {
       const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });

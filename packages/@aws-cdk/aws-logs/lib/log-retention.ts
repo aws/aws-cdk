@@ -204,15 +204,5 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       })],
     }));
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['logs:DeleteLogStream'],
-      //Only allow deleting the specific log group.
-      resources: [cdk.Stack.of(this).formatArn({
-        service: 'logs',
-        resource: `log-group:${logGroupName}:log-stream`,
-        resourceName: '*',
-        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      })],
-    }));
   }
 }
