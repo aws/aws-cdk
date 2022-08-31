@@ -3,9 +3,11 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ssm from '../lib';
+import { ParameterType, ParameterValueType } from '../lib';
 
 test('creating a String SSM Parameter', () => {
   // GIVEN
@@ -29,7 +31,7 @@ test('creating a String SSM Parameter', () => {
   });
 });
 
-test('type cannot be specified as AWS_EC2_IMAGE_ID', () => {
+testDeprecated('type cannot be specified as AWS_EC2_IMAGE_ID', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
@@ -648,6 +650,166 @@ test('fromLookup will use the SSM context provider to read value during synthesi
       provider: 'ssm',
     },
   ]);
+});
+
+describe('from string list parameter', () => {
+  testDeprecated('valueForTypedStringParameter list type throws error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      ssm.StringParameter.valueForTypedStringParameter(stack, 'my-param-name', ParameterType.STRING_LIST);
+    }).toThrow(/use valueForStringListParameter instead/);
+  });
+
+  testDeprecated('fromStringParameterAttributes list type throws error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
+        parameterName: 'my-param-name',
+        type: ParameterType.STRING_LIST,
+      });
+    }).toThrow(/fromStringParameterAttributes does not support StringList/);
+  });
+
+  testDeprecated('fromStringParameterAttributes returns correct value', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
+      parameterName: 'my-param-name',
+      type: ParameterType.STRING,
+    });
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Parameters: {
+        myparamnameParameter: {
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: 'my-param-name',
+        },
+      },
+    });
+  });
+
+  test('fromStringParameterAttributes returns correct value with valueType', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
+      parameterName: 'my-param-name',
+      valueType: ParameterValueType.STRING,
+    });
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Parameters: {
+        myparamnameParameter: {
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: 'my-param-name',
+        },
+      },
+    });
+  });
+
+  test('valueForTypedListParameter returns correct value', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    ssm.StringListParameter.valueForTypedListParameter(stack, 'my-param-name');
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Parameters: {
+        SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
+          Type: 'AWS::SSM::Parameter::Value<List<String>>',
+          Default: 'my-param-name',
+        },
+      },
+    });
+  });
+
+  test('valueForTypedListParameter returns correct value with type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    ssm.StringListParameter.valueForTypedListParameter(stack, 'my-param-name', ParameterValueType.AWS_EC2_INSTANCE_ID);
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Parameters: {
+        SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
+          Type: 'AWS::SSM::Parameter::Value<List<AWS::EC2::Instance::Id>>',
+          Default: 'my-param-name',
+        },
+      },
+    });
+  });
+
+  test('fromStringListParameterAttributes returns correct value', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    ssm.StringListParameter.fromListParameterAttributes(stack, 'my-param-name', {
+      parameterName: 'my-param-name',
+    });
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Parameters: {
+        myparamnameParameter: {
+          Type: 'AWS::SSM::Parameter::Value<List<String>>',
+          Default: 'my-param-name',
+        },
+      },
+    });
+  });
+
+  testDeprecated('string type returns correct value', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    ssm.StringParameter.valueForTypedStringParameter(stack, 'my-param-name', ParameterType.STRING);
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Parameters: {
+        SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: 'my-param-name',
+        },
+      },
+    });
+  });
+
+  test('string valueType returns correct value', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    ssm.StringParameter.valueForTypedStringParameterV2(stack, 'my-param-name', ParameterValueType.AWS_EC2_IMAGE_ID);
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Parameters: {
+        SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
+          Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+          Default: 'my-param-name',
+        },
+      },
+    });
+  });
+
 });
 
 describe('valueForStringParameter', () => {
