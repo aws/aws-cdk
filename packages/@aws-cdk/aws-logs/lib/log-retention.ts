@@ -124,7 +124,7 @@ export class LogRetention extends Construct {
     const existing = cdk.Stack.of(this).node.tryFindChild(functionLogicalId);
     const func = existing as LogRetentionFunction ?? new LogRetentionFunction(cdk.Stack.of(this), functionLogicalId, props);
 
-    // if removalPolicy is DESTROY, add action for DeleteLogGroup and DeleteLogStream
+    // if removalPolicy is DESTROY, add action for DeleteLogGroup
     if (props.removalPolicy === cdk.RemovalPolicy.DESTROY) {
       func.grantDeleteLogGroup(props.logGroupName);
     }
