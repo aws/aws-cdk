@@ -292,13 +292,13 @@
             "id": "AssetParameters",
             "path": "aws-cdk-lambda-log-retention/AssetParameters",
             "children": {
-              "e0163b329804d2e99b32443f08493300bfbbdf377bef1de4add805af5e78a717": {
-                "id": "e0163b329804d2e99b32443f08493300bfbbdf377bef1de4add805af5e78a717",
-                "path": "aws-cdk-lambda-log-retention/AssetParameters/e0163b329804d2e99b32443f08493300bfbbdf377bef1de4add805af5e78a717",
+              "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347": {
+                "id": "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
+                "path": "aws-cdk-lambda-log-retention/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-lambda-log-retention/AssetParameters/e0163b329804d2e99b32443f08493300bfbbdf377bef1de4add805af5e78a717/S3Bucket",
+                    "path": "aws-cdk-lambda-log-retention/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -306,7 +306,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-lambda-log-retention/AssetParameters/e0163b329804d2e99b32443f08493300bfbbdf377bef1de4add805af5e78a717/S3VersionKey",
+                    "path": "aws-cdk-lambda-log-retention/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -314,7 +314,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-lambda-log-retention/AssetParameters/e0163b329804d2e99b32443f08493300bfbbdf377bef1de4add805af5e78a717/ArtifactHash",
+                    "path": "aws-cdk-lambda-log-retention/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"

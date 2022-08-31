@@ -843,7 +843,7 @@ export class Function extends FunctionBase {
     }
 
     // Log retention
-    if (props.logRetention || props.autoDeleteLogGroup === true) {
+    if (props.logRetention || props.autoDeleteLogGroup) {
       const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention ?? logs.RetentionDays.INFINITE,
