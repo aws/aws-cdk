@@ -13,7 +13,7 @@ let aws: ReturnType<typeof mockAws>;
 const absoluteDockerPath = '/simple/cdk.out/dockerdir';
 beforeEach(() => {
   jest.resetAllMocks();
-  delete(process.env.CDK_DOCKER_CMD);
+  delete(process.env.CDK_DOCKER);
 
   // By default, assume no externally-configured credentials.
   jest.spyOn(dockercreds, 'cdkCredentialsConfig').mockReturnValue(undefined);
@@ -500,7 +500,7 @@ test('publishing only', async () => {
 });
 
 test('overriding the docker command', async () => {
-  process.env.CDK_DOCKER_CMD = 'custom';
+  process.env.CDK_DOCKER = 'custom';
 
   const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, throwOnError: false });
 

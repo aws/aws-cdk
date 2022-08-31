@@ -209,7 +209,7 @@ export class DockerFactory {
 }
 
 function getDockerCmd(): string {
-  return process.env.CDK_DOCKER_CMD ?? 'docker';
+  return process.env.CDK_DOCKER ?? 'docker';
 }
 
 function flatten(x: string[][]) {

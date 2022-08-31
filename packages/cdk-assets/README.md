@@ -189,6 +189,7 @@ the login credentials from either SecretsManager or ECR.
 
 ## Change the Docker Command
 
-By default, the AWS CDK will build and publish using the `docker` command.
-However, by specifying the `CDK_DOCKER_CMD` environment variable, you can
-override the command that will be used to build and publish your assets.
+By default, the AWS CDK will build and publish Docker image assets using the
+`docker` command. However, by specifying the `CDK_DOCKER` environment variable,
+you can override the command that will be used to build and publish your
+assets.
