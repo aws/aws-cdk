@@ -117,7 +117,11 @@
       "Value": "integ-init/IntegInitVpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "IntegInitVpcPublicSubnet1DefaultRoute5BB90E8C",
+    "IntegInitVpcPublicSubnet1RouteTableAssociation00D33741"
+   ]
   },
   "IntegInitVpcPublicSubnet2Subnet9A384F16": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "integ-init/IntegInitVpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "IntegInitVpcPublicSubnet2DefaultRoute2393995F",
+    "IntegInitVpcPublicSubnet2RouteTableAssociationB816F9F3"
+   ]
   },
   "IntegInitVpcPrivateSubnet1Subnet259B51C1": {
    "Type": "AWS::EC2::Subnet",
@@ -515,7 +523,7 @@
     ]
    }
   },
-  "Instance255F352651ad64873f230a4d2": {
+  "Instance255F35265555f8bd64fe3316f": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
     "AvailabilityZone": {
@@ -555,7 +563,7 @@
       "Fn::Join": [
        "",
        [
-        "#!/bin/bash\n# fingerprint: 8ef54c03058b2a11\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+        "#!/bin/bash\n# fingerprint: 8deb3fafcf9d33f0\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
         {
          "Ref": "AWS::Region"
         },
@@ -563,7 +571,7 @@
         {
          "Ref": "AWS::StackName"
         },
-        " --resource Instance255F352651ad64873f230a4d2 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
+        " --resource Instance255F35265555f8bd64fe3316f -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
         {
          "Ref": "AWS::Region"
         },
@@ -571,7 +579,7 @@
         {
          "Ref": "AWS::StackName"
         },
-        " --resource Instance255F352651ad64873f230a4d2\n  cat /var/log/cfn-init.log >&2\n)"
+        " --resource Instance255F35265555f8bd64fe3316f\n  cat /var/log/cfn-init.log >&2\n)"
        ]
       ]
      }
@@ -668,7 +676,7 @@
        }
       },
       "files": {
-       "/tmp/file2": {
+       "/tmp/file2.json": {
         "content": {
          "stackId": {
           "Ref": "AWS::StackId"
@@ -676,7 +684,10 @@
          "stackName": "integ-init",
          "region": {
           "Ref": "AWS::Region"
-         }
+         },
+         "intProperty": 18,
+         "boolProperty": true,
+         "numProperty": 58.23
         },
         "mode": "000644",
         "owner": "root",

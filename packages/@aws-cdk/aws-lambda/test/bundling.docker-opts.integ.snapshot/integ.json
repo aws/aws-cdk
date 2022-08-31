@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "DockerOptsBundling/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-bundling-docker-bundling-opts"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "DockerOptsBundling/DefaultTest/DeployAssert",
+      "assertionStackName": "DockerOptsBundlingDefaultTestDeployAssert72BE28F7"
+    }
+  }
+}

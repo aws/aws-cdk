@@ -133,6 +133,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * VPC network to place Lambda network interfaces
    *
    * Specify this if the Lambda function needs to access resources in a VPC.
+   * This is required when `vpcSubnets` is specified.
    *
    * @default - Function is not placed within a VPC.
    */
@@ -141,8 +142,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * Where to place the network interfaces within the VPC.
    *
-   * Only used if 'vpc' is supplied. Note: internet access for Lambdas
-   * requires a NAT gateway, so picking Public subnets is not allowed.
+   * This requires `vpc` to be specified in order for interfaces to actually be
+   * placed in the subnets. If `vpc` is not specify, this will raise an error.
+   *
+   * Note: Internet access for Lambda Functions requires a NAT Gateway, so picking
+   * public subnets is not allowed (unless `allowPublicSubnet` is set to `true`).
    *
    * @default - the Vpc default strategy if not specified
    */
@@ -1094,7 +1098,13 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
-    if (!props.vpc) { return undefined; }
+    if (!props.vpc) {
+      if (props.vpcSubnets) {
+        throw new Error('Cannot configure \'vpcSubnets\' without configuring a VPC');
+      }
+      return undefined;
+    }
+
 
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
       throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
@@ -1126,21 +1136,22 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     const allowPublicSubnet = props.allowPublicSubnet ?? false;
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
-    for (const subnetId of subnetIds) {
+    for (const subnetId of selectedSubnets.subnetIds) {
       if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
         throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
           'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true');
       }
     }
+    this.node.addDependency(selectedSubnets.internetConnectivityEstablished);
 
     // List can't be empty here, if we got this far you intended to put your Lambda
     // in subnets. We're going to guarantee that we get the nice error message by
     // making VpcNetwork do the selection again.
 
     return {
-      subnetIds,
+      subnetIds: selectedSubnets.subnetIds,
       securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
   }

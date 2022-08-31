@@ -244,6 +244,19 @@ export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-contai
 export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueImdsv2TemplateName';
 
 /**
+ * ARN format used by ECS. In the new ARN format, the cluster name is part
+ * of the resource ID.
+ *
+ * If this flag is not set, the old ARN format (without cluster name) for ECS is used.
+ * If this flag is set, the new ARN format (with cluster name) for ECS is used.
+ *
+ * This is a feature flag as the old format is still valid for existing ECS clusters.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids
+ */
+export const ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME = '@aws-cdk/aws-ecs:arnFormatIncludesClusterName';
+
+/**
  * Minimize IAM policies by combining Principals, Actions and Resources of two
  * Statements in the policies, as long as it doesn't change the meaning of the
  * policy.
@@ -301,6 +314,45 @@ export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLo
 export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption';
 
 /**
+ * Enable this feature flag to change the default behavior for aws-apigateway.RestApi and aws-apigateway.SpecRestApi
+ * to _not_ create a CloudWatch role and Account. There is only a single ApiGateway account per AWS
+ * environment which means that each time you create a RestApi in your account the ApiGateway account
+ * is overwritten. If at some point the newest RestApi is deleted, the ApiGateway Account and CloudWatch
+ * role will also be deleted, breaking any existing ApiGateways that were depending on them.
+ *
+ * When this flag is enabled you should either create the ApiGateway account and CloudWatch role
+ * separately _or_ only enable the cloudWatchRole on a single RestApi.
+ */
+export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disableCloudWatchRole';
+
+/**
+ * Enable this feature flag to get partition names as string literals in Stacks with known regions defined in
+ * their environment, such as "aws" or "aws-cn".  Previously the CloudFormation intrinsic function
+ * "Ref: AWS::Partition" was used.  For example:
+ *
+ * ```yaml
+ * Principal:
+ *   AWS:
+ *     Fn::Join:
+ *       - ""
+ *       - - "arn:"
+ *         - Ref: AWS::Partition
+ *         - :iam::123456789876:root
+ * ```
+ *
+ * becomes:
+ *
+ * ```
+ * Principal:
+ *   AWS: "arn:aws:iam::123456789876:root"
+ * ```
+ *
+ * The intrinsic function will still be used in Stacks where no region is defined or the region's partition
+ * is unknown.
+ */
+export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -328,10 +380,13 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
   [CHECK_SECRET_USAGE]: true,
   [IAM_MINIMIZE_POLICIES]: true,
+  [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true,
   [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true,
   [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
   [S3_CREATE_DEFAULT_LOGGING_POLICY]: true,
   [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
+  [APIGATEWAY_DISABLE_CLOUDWATCH_ROLE]: true,
+  [ENABLE_PARTITION_LITERALS]: true,
 };
 
 /**

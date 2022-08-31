@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { App, Stack, StackProps } from '@aws-cdk/core';

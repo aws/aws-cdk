@@ -1,7 +1,6 @@
-/// !cdk-integ *
-
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as constructs from 'constructs';
 import * as apig from '../lib';
 
@@ -34,6 +33,7 @@ class SecondStack extends cdk.Stack {
     super(scope, id, props);
 
     const api = new apig.RestApi(this, 'BooksApi', {
+      cloudWatchRole: true,
       restApiName: 'SecondRestAPI',
     });
     api.root.addMethod('ANY');
@@ -45,5 +45,9 @@ class SecondStack extends cdk.Stack {
 
 const app = new cdk.App();
 const first = new FirstStack(app, 'FirstStack');
-new SecondStack(app, 'SecondStack', { lambda: first.firstLambda });
-app.synth();
+const testCase = new SecondStack(app, 'SecondStack', { lambda: first.firstLambda });
+
+// will deploy dependent stacks, i.e. first
+new IntegTest(app, 'restapi-multistack', {
+  testCases: [testCase],
+});

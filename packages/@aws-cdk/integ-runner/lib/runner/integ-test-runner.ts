@@ -48,6 +48,13 @@ export interface RunOptions {
    * @default true
    */
   readonly updateWorkflow?: boolean;
+
+  /**
+   * The level of verbosity for logging.
+   *
+   * @default 0
+   */
+  readonly verbosity?: number;
 }
 
 /**
@@ -148,6 +155,11 @@ export class IntegTestRunner extends IntegRunner {
     const clean = options.clean ?? true;
     const updateWorkflowEnabled = (options.updateWorkflow ?? true)
       && (actualTestCase.stackUpdateWorkflow ?? true);
+    const enableForVerbosityLevel = (needed = 1) => {
+      const verbosity = options.verbosity ?? 0;
+      return (verbosity >= needed) ? true : undefined;
+    };
+
     try {
       if (!options.dryRun && (actualTestCase.cdkCommandOptions?.deploy?.enabled ?? true)) {
         assertionResults = this.deploy(
@@ -155,6 +167,8 @@ export class IntegTestRunner extends IntegRunner {
             ...this.defaultArgs,
             profile: this.profile,
             requireApproval: RequireApproval.NEVER,
+            verbose: enableForVerbosityLevel(3),
+            debug: enableForVerbosityLevel(4),
           },
           updateWorkflowEnabled,
           options.testCaseName,
@@ -170,9 +184,9 @@ export class IntegTestRunner extends IntegRunner {
           output: path.relative(this.directory, this.cdkOutDir),
         });
       }
-      // only create the snapshot if there are no assertion assertion results
+      // only create the snapshot if there are no failed assertion results
       // (i.e. no failures)
-      if (!assertionResults) {
+      if (!assertionResults || !Object.values(assertionResults).some(result => result.status === 'fail')) {
         this.createSnapshot();
       }
     } catch (e) {
@@ -189,6 +203,8 @@ export class IntegTestRunner extends IntegRunner {
             output: path.relative(this.directory, this.cdkOutDir),
             ...actualTestCase.cdkCommandOptions?.destroy?.args,
             context: this.getContext(actualTestCase.cdkCommandOptions?.destroy?.args?.context),
+            verbose: enableForVerbosityLevel(3),
+            debug: enableForVerbosityLevel(4),
           });
         }
       }
@@ -284,9 +300,10 @@ export class IntegTestRunner extends IntegRunner {
         });
       }
 
-      if (actualTestCase.assertionStack) {
+      if (actualTestCase.assertionStack && actualTestCase.assertionStackName) {
         return this.processAssertionResults(
           path.join(this.cdkOutDir, 'assertion-results.json'),
+          actualTestCase.assertionStackName,
           actualTestCase.assertionStack,
         );
       }
@@ -303,17 +320,17 @@ export class IntegTestRunner extends IntegRunner {
    * Process the outputsFile which contains the assertions results as stack
    * outputs
    */
-  private processAssertionResults(file: string, assertionStackId: string): AssertionResults | undefined {
+  private processAssertionResults(file: string, assertionStackName: string, assertionStackId: string): AssertionResults | undefined {
     const results: AssertionResults = {};
     if (fs.existsSync(file)) {
       try {
         const outputs: { [key: string]: { [key: string]: string } } = fs.readJSONSync(file);
 
-        if (assertionStackId in outputs) {
-          for (const [assertionId, result] of Object.entries(outputs[assertionStackId])) {
+        if (assertionStackName in outputs) {
+          for (const [assertionId, result] of Object.entries(outputs[assertionStackName])) {
             if (assertionId.startsWith('AssertionResults')) {
               const assertionResult: AssertionResult = JSON.parse(result.replace(/\n/g, '\\n'));
-              if (assertionResult.status === 'fail') {
+              if (assertionResult.status === 'fail' || assertionResult.status === 'success') {
                 results[assertionId] = assertionResult;
               }
             }

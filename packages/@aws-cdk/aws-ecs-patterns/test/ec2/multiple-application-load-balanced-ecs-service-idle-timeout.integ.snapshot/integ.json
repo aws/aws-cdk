@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "multiAlbEcsEc2Test/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ"
+      ],
+      "assertionStack": "multiAlbEcsEc2Test/DefaultTest/DeployAssert"
+    }
+  }
+}

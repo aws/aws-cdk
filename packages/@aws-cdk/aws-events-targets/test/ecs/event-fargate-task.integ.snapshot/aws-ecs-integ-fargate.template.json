@@ -117,7 +117,11 @@
       "Value": "aws-ecs-integ-fargate/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -212,6 +216,50 @@
   },
   "EcsCluster97242B84": {
    "Type": "AWS::ECS::Cluster"
+  },
+  "MyDeadLetterQueueD997968A": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyDeadLetterQueuePolicyCC35D52C": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "Rule4C995B7F",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyDeadLetterQueueD997968A",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowEventRuleawsecsintegfargateRule16FD584B"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "MyDeadLetterQueueD997968A"
+     }
+    ]
+   }
   },
   "TaskDefTaskRole1EDB4A67": {
    "Type": "AWS::IAM::Role",
@@ -471,6 +519,14 @@
         "EcsCluster97242B84",
         "Arn"
        ]
+      },
+      "DeadLetterConfig": {
+       "Arn": {
+        "Fn::GetAtt": [
+         "MyDeadLetterQueueD997968A",
+         "Arn"
+        ]
+       }
       },
       "EcsParameters": {
        "LaunchType": "FARGATE",

@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -149,6 +149,15 @@
         ]
       },
       "displayName": "restapi-multiuse-example"
+    },
+    "restapimultiuseDefaultTestDeployAssert47DF66CC": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "restapimultiuseDefaultTestDeployAssert47DF66CC.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "restapi-multiuse/DefaultTest/DeployAssert"
     }
   }
 }
