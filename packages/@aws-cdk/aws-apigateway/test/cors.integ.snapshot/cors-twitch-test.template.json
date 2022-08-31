@@ -35,7 +35,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "corsapitestAccount7D1D6854": {
    "Type": "AWS::ApiGateway::Account",
@@ -49,7 +51,9 @@
    },
    "DependsOn": [
     "corsapitest8682546E"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203": {
    "Type": "AWS::ApiGateway::Deployment",

@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ-alb-fg-https"
       ],
-      "assertionStack": "albFargateServiceTestDefaultTestDeployAssert11CD2C41"
+      "assertionStack": "albFargateServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

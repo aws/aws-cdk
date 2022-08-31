@@ -50,7 +50,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data).toEqual('{"status":"pass"}');
+      expect(response.data).toEqual('{"status":"success"}');
     });
 
     test('fail', async () => {
@@ -95,7 +95,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data).toEqual('{"status":"pass"}');
+      expect(response.data).toEqual('{"status":"success"}');
     });
 
     test('fail', async () => {
@@ -159,7 +159,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data).toEqual('{"status":"pass"}');
+      expect(response.data).toEqual('{"status":"success"}');
     });
 
     test('fail', async () => {
@@ -209,7 +209,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data).toEqual('{"status":"pass"}');
+      expect(response.data).toEqual('{"status":"success"}');
     });
 
     test('string equals pass', async () => {
@@ -224,7 +224,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data).toEqual('{"status":"pass"}');
+      expect(response.data).toEqual('{"status":"success"}');
     });
 
     test('fail', async () => {
