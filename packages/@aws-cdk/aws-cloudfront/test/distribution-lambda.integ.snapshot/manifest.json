@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "integ-distribution-lambda.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-distribution-lambda.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "integ-distribution-lambda": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/us-east-1",
       "properties": {
         "templateFile": "integ-distribution-lambda.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/ded5c13a3576afb1b4391c7609f6064d4fe3fe644b26a54640b26da280f32ebf.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-distribution-lambda.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "integ-distribution-lambda.assets"
+      ],
       "metadata": {
         "/integ-distribution-lambda/Lambda/ServiceRole/Resource": [
           {
@@ -39,13 +63,16 @@
             "data": "DistB3B78991"
           }
         ],
-        "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118": [
+        "/integ-distribution-lambda/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-distribution-lambda/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
