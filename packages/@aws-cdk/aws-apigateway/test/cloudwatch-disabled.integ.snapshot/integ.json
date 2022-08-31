@@ -5,7 +5,7 @@
       "stacks": [
         "default-api"
       ],
-      "assertionStack": "cloudwatchlogsdisabledDefaultTestDeployAssert6C87D47C"
+      "assertionStack": "cloudwatch-logs-disabled/DefaultTest/DeployAssert"
     }
   }
 }

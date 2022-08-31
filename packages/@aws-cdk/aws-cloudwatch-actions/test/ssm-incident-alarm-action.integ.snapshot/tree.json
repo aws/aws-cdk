@@ -8,14 +8,95 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "SsmIncidentAlarmActionIntegrationTestStack": {
         "id": "SsmIncidentAlarmActionIntegrationTestStack",
         "path": "SsmIncidentAlarmActionIntegrationTestStack",
         "children": {
+          "Key": {
+            "id": "Key",
+            "path": "SsmIncidentAlarmActionIntegrationTestStack/Key",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SsmIncidentAlarmActionIntegrationTestStack/Key/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "pendingWindowInDays": 7
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "ReplicationSet": {
+            "id": "ReplicationSet",
+            "path": "SsmIncidentAlarmActionIntegrationTestStack/ReplicationSet",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::SSMIncidents::ReplicationSet",
+              "aws:cdk:cloudformation:props": {
+                "regions": [
+                  {
+                    "regionName": {
+                      "Ref": "AWS::Region"
+                    },
+                    "regionConfiguration": {
+                      "sseKmsKeyId": {
+                        "Fn::GetAtt": [
+                          "Key961B73FD",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "deletionProtected": false
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssmincidents.CfnReplicationSet",
+              "version": "0.0.0"
+            }
+          },
           "ResponsePlan": {
             "id": "ResponsePlan",
             "path": "SsmIncidentAlarmActionIntegrationTestStack/ResponsePlan",
@@ -95,8 +176,8 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "SsmIncidentManagerAlarmActionTest": {
@@ -111,16 +192,16 @@
                 "id": "Default",
                 "path": "SsmIncidentManagerAlarmActionTest/DefaultTest/Default",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "SsmIncidentManagerAlarmActionTest/DefaultTest/DeployAssert",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -137,8 +218,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

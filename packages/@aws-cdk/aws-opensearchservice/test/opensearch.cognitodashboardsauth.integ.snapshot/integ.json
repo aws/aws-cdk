@@ -5,7 +5,7 @@
       "stacks": [
         "cdk-integ-opensearch-cognitodashboardsauth"
       ],
-      "assertionStack": "CognitoAuthForOpenSearchDashboardsDefaultTestDeployAssert4CCFA971"
+      "assertionStack": "CognitoAuthForOpenSearchDashboards/DefaultTest/DeployAssert"
     }
   }
 }

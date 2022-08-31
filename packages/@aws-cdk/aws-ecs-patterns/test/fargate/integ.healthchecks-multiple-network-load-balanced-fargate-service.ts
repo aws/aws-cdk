@@ -5,7 +5,7 @@ import { IntegTest } from '@aws-cdk/integ-tests';
 import { NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-integ-multi-nlb-healthchecks');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -46,13 +46,9 @@ const networkMultipleTargetGroupsFargateService = new NetworkMultipleTargetGroup
   ],
 });
 
-networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
-  port: '8050',
-});
+networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({});
 
-networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({
-  port: '8050',
-});
+networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({});
 
 networkMultipleTargetGroupsFargateService.loadBalancers[0]._enableCrossEnvironment;
 networkMultipleTargetGroupsFargateService.loadBalancers[1]._enableCrossEnvironment;

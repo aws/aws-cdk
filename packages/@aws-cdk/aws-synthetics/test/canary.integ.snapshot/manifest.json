@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,40 +7,38 @@
         "file": "tree.json"
       }
     },
+    "canary-one.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "canary-one.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "canary-one": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "canary-one.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/canary-one": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb",
-              "id": "9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb",
-              "packaging": "zip",
-              "sourceHash": "9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb",
-              "s3BucketParameter": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbS3Bucket59F507C2",
-              "s3KeyParameter": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbS3VersionKeyEFB5FFF8",
-              "artifactHashParameter": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbArtifactHash0E2FE9D4"
-            }
-          },
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820.zip",
-              "id": "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820",
-              "packaging": "file",
-              "sourceHash": "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820",
-              "s3BucketParameter": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3Bucket705C3761",
-              "s3KeyParameter": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3VersionKeyE546342B",
-              "artifactHashParameter": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820ArtifactHash536FDCC3"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd5cacd9987453c5d75cae0c956943b37b2fb0597ac6490e5b2e3eb1d0a5a6a0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "canary-one.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "canary-one.assets"
+      ],
+      "metadata": {
         "/canary-one/mytestbucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -81,42 +79,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyCanaryOneEF6A9CB9"
-          }
-        ],
-        "/canary-one/AssetParameters/9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbS3Bucket59F507C2"
-          }
-        ],
-        "/canary-one/AssetParameters/9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbS3VersionKeyEFB5FFF8"
-          }
-        ],
-        "/canary-one/AssetParameters/9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbArtifactHash0E2FE9D4"
-          }
-        ],
-        "/canary-one/AssetParameters/b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3Bucket705C3761"
-          }
-        ],
-        "/canary-one/AssetParameters/b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3VersionKeyE546342B"
-          }
-        ],
-        "/canary-one/AssetParameters/b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820ArtifactHash536FDCC3"
           }
         ],
         "/canary-one/MyCanaryTwo/ArtifactsBucket/Resource": [
@@ -189,6 +151,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPythonCanary9A3DE09E"
+          }
+        ],
+        "/canary-one/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/canary-one/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

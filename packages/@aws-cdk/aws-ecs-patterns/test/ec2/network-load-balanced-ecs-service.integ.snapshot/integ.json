@@ -3,7 +3,7 @@
   "testCases": {
     "networkLoadBalancedEc2ServiceTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-nlb"
       ],
       "assertionStack": "networkLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert"
     }

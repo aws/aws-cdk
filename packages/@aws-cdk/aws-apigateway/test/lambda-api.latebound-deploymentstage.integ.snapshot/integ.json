@@ -5,7 +5,7 @@
       "stacks": [
         "LateBoundDeploymentStageStack"
       ],
-      "assertionStack": "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4"
+      "assertionStack": "lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert"
     }
   }
 }

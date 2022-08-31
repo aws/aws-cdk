@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.85"
         }
       },
       "cdk-integ-assets-bundling": {
@@ -24,8 +24,8 @@
                 "id": "Stage",
                 "path": "cdk-integ-assets-bundling/BundledAsset/Stage",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "AssetBucket": {
@@ -40,50 +40,6 @@
             "constructInfo": {
               "fqn": "@aws-cdk/aws-s3-assets.Asset",
               "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "cdk-integ-assets-bundling/AssetParameters",
-            "children": {
-              "96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6": {
-                "id": "96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6",
-                "path": "cdk-integ-assets-bundling/AssetParameters/96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "cdk-integ-assets-bundling/AssetParameters/96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "cdk-integ-assets-bundling/AssetParameters/96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "cdk-integ-assets-bundling/AssetParameters/96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.9"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.0.9"
             }
           },
           "MyUser": {
@@ -132,7 +88,7 @@
                                       },
                                       ":s3:::",
                                       {
-                                        "Ref": "AssetParameters96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6S3Bucket455340E7"
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                       },
                                       "/*"
                                     ]
@@ -148,7 +104,7 @@
                                       },
                                       ":s3:::",
                                       {
-                                        "Ref": "AssetParameters96eb17ab9d98dd42b972aa0dd468f59024f21aba33c7d792b8ebe7a8d378e2b6S3Bucket455340E7"
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                       }
                                     ]
                                   ]
@@ -185,14 +141,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

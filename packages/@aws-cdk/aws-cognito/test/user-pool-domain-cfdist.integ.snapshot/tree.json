@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.85"
         }
       },
       "integ-user-pool-domain-cfdist": {
@@ -90,6 +90,24 @@
                           "version": "0.0.0"
                         }
                       },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-user-pool-domain-cfdist/UserPool/Domain/CloudFrontDomainName/Resource",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-user-pool-domain-cfdist/UserPool/Domain/CloudFrontDomainName/Resource/Default",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.85"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.85"
+                        }
+                      },
                       "CustomResourcePolicy": {
                         "id": "CustomResourcePolicy",
                         "path": "integ-user-pool-domain-cfdist/UserPool/Domain/CloudFrontDomainName/CustomResourcePolicy",
@@ -128,24 +146,6 @@
                           "fqn": "@aws-cdk/aws-iam.Policy",
                           "version": "0.0.0"
                         }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-user-pool-domain-cfdist/UserPool/Domain/CloudFrontDomainName/Resource",
-                        "children": {
-                          "Default": {
-                            "id": "Default",
-                            "path": "integ-user-pool-domain-cfdist/UserPool/Domain/CloudFrontDomainName/Resource/Default",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
-                          "version": "0.0.0"
-                        }
                       }
                     },
                     "constructInfo": {
@@ -169,8 +169,8 @@
             "id": "Domain",
             "path": "integ-user-pool-domain-cfdist/Domain",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "AWS679f53fac002430cb0da5b7982bd2287": {
@@ -234,8 +234,8 @@
                     "id": "Stage",
                     "path": "integ-user-pool-domain-cfdist/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -260,41 +260,9 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -318,68 +286,24 @@
               "version": "0.0.0"
             }
           },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "integ-user-pool-domain-cfdist/AssetParameters",
-            "children": {
-              "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90": {
-                "id": "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
-                "path": "integ-user-pool-domain-cfdist/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "integ-user-pool-domain-cfdist/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "integ-user-pool-domain-cfdist/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "integ-user-pool-domain-cfdist/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.9"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.0.9"
-            }
-          },
           "CloudFrontDomainName": {
             "id": "CloudFrontDomainName",
             "path": "integ-user-pool-domain-cfdist/CloudFrontDomainName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

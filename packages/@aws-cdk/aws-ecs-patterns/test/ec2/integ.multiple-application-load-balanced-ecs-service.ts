@@ -5,7 +5,7 @@ import * as integ from '@aws-cdk/integ-tests';
 import { ApplicationMultipleTargetGroupsEc2Service } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-integ-multiple-alb');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });

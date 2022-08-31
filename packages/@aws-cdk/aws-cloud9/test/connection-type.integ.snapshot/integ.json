@@ -5,7 +5,7 @@
       "stacks": [
         "C9ConnectionTypeStack"
       ],
-      "assertionStack": "cloud9connectiontypeDefaultTestDeployAssert401C3608"
+      "assertionStack": "cloud-9-connection-type/DefaultTest/DeployAssert"
     }
   }
 }

@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "nested-stacks-multi": {
@@ -70,8 +70,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.NestedStack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "NestedChild.NestedStack": {
@@ -98,71 +98,29 @@
                               },
                               "/",
                               {
-                                "Ref": "referencetonestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3Bucket41B3528FRef"
+                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "/",
-                              {
-                                "Fn::Select": [
-                                  0,
-                                  {
-                                    "Fn::Split": [
-                                      "||",
-                                      {
-                                        "Ref": "referencetonestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3VersionKey2F819BA6Ref"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              {
-                                "Fn::Select": [
-                                  1,
-                                  {
-                                    "Fn::Split": [
-                                      "||",
-                                      {
-                                        "Ref": "referencetonestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3VersionKey2F819BA6Ref"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
+                              "/e3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809d.json"
                             ]
                           ]
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnStack",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              },
-              "reference-to-nestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3Bucket41B3528FRef": {
-                "id": "reference-to-nestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3Bucket41B3528FRef",
-                "path": "nested-stacks-multi/NestedStack/reference-to-nestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3Bucket41B3528FRef",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
-                }
-              },
-              "reference-to-nestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3VersionKey2F819BA6Ref": {
-                "id": "reference-to-nestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3VersionKey2F819BA6Ref",
-                "path": "nested-stacks-multi/NestedStack/reference-to-nestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3VersionKey2F819BA6Ref",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.NestedStack",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "NestedStack.NestedStack": {
@@ -189,147 +147,35 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters686794a6d724e01e517bba15106edebf9db8d4bb309f0c60d5ff55a11db4a856S3BucketDF3BC15F"
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/",
-                          {
-                            "Fn::Select": [
-                              0,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParameters686794a6d724e01e517bba15106edebf9db8d4bb309f0c60d5ff55a11db4a856S3VersionKey1BCA0E57"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              1,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParameters686794a6d724e01e517bba15106edebf9db8d4bb309f0c60d5ff55a11db4a856S3VersionKey1BCA0E57"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
+                          "/02e1d355a08f27a90a39ccff4659a30be80f54c06d1907ec317d28a823e5cf56.json"
                         ]
                       ]
-                    },
-                    "parameters": {
-                      "referencetonestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3Bucket41B3528FRef": {
-                        "Ref": "AssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3Bucket9165C850"
-                      },
-                      "referencetonestedstacksmultiAssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3VersionKey2F819BA6Ref": {
-                        "Ref": "AssetParameterse3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809dS3VersionKey8C8E79CA"
-                      }
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnStack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "nested-stacks-multi/AssetParameters",
-            "children": {
-              "e3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809d": {
-                "id": "e3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809d",
-                "path": "nested-stacks-multi/AssetParameters/e3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809d",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "nested-stacks-multi/AssetParameters/e3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809d/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "nested-stacks-multi/AssetParameters/e3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809d/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "nested-stacks-multi/AssetParameters/e3410ccec04414535f1c8035ce0ea42f59eedf66d0e6d0eec8bc435c4a4e809d/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              },
-              "686794a6d724e01e517bba15106edebf9db8d4bb309f0c60d5ff55a11db4a856": {
-                "id": "686794a6d724e01e517bba15106edebf9db8d4bb309f0c60d5ff55a11db4a856",
-                "path": "nested-stacks-multi/AssetParameters/686794a6d724e01e517bba15106edebf9db8d4bb309f0c60d5ff55a11db4a856",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "nested-stacks-multi/AssetParameters/686794a6d724e01e517bba15106edebf9db8d4bb309f0c60d5ff55a11db4a856/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "nested-stacks-multi/AssetParameters/686794a6d724e01e517bba15106edebf9db8d4bb309f0c60d5ff55a11db4a856/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "nested-stacks-multi/AssetParameters/686794a6d724e01e517bba15106edebf9db8d4bb309f0c60d5ff55a11db4a856/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

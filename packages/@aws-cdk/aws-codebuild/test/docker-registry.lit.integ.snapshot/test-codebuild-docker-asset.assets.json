@@ -1,7 +1,7 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "files": {
-    "0a15a723de2401fd13e907980b5dae5afb0ba950e9e5261e072adc214e189b05": {
+    "0c2ea3d3bbaac25b53e18a6c0ceebbe8c81fc7020867db446385dfc9bbfe246c": {
       "source": {
         "path": "test-codebuild-docker-asset.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0a15a723de2401fd13e907980b5dae5afb0ba950e9e5261e072adc214e189b05.json",
+          "objectKey": "0c2ea3d3bbaac25b53e18a6c0ceebbe8c81fc7020867db446385dfc9bbfe246c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

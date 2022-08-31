@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "integ-identitypool.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-identitypool.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "integ-identitypool": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-identitypool.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba3fc84048e7b640e5c349fc2c90bc998d6ca8de19283a433e4c860faf487850.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-identitypool.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "integ-identitypool.assets"
+      ],
       "metadata": {
         "/integ-identitypool/Pool/Resource": [
           {
@@ -21,10 +45,10 @@
             "data": "PoolD3F588B8"
           }
         ],
-        "/integ-identitypool/Pool/UserPoolAuthenticationProviderClient/Resource": [
+        "/integ-identitypool/Pool/testClient/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PoolUserPoolAuthenticationProviderClient20F2FFC4"
+            "data": "PooltestClientFE8D4935"
           }
         ],
         "/integ-identitypool/PoolProviderGoogle/Resource": [
@@ -85,6 +109,27 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "identitypoolDefaultRoleAttachment6BCAB114"
+          }
+        ],
+        "/integ-identitypool/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-identitypool/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "PoolUserPoolAuthenticationProviderClient20F2FFC4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PoolUserPoolAuthenticationProviderClient20F2FFC4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.78"
+          "version": "10.1.85"
         }
       },
       "integ-init": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "integ-init/IntegInitVpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "integ-init/IntegInitVpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +425,8 @@
                     "id": "Acl",
                     "path": "integ-init/IntegInitVpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +544,8 @@
                     "id": "Acl",
                     "path": "integ-init/IntegInitVpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -778,7 +778,7 @@
                                           },
                                           ":s3:::",
                                           {
-                                            "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                           },
                                           "/*"
                                         ]
@@ -794,7 +794,7 @@
                                           },
                                           ":s3:::",
                                           {
-                                            "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                           }
                                         ]
                                       ]
@@ -900,7 +900,7 @@
                         "Fn::Join": [
                           "",
                           [
-                            "#!/bin/bash\n# fingerprint: 8deb3fafcf9d33f0\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+                            "#!/bin/bash\n# fingerprint: 89cb2e09a1c3d4c8\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
                             {
                               "Ref": "AWS::Region"
                             },
@@ -908,7 +908,7 @@
                             {
                               "Ref": "AWS::StackName"
                             },
-                            " --resource Instance255F35265555f8bd64fe3316f -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
+                            " --resource Instance255F35265a0c5f577d761edb0 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
                             {
                               "Ref": "AWS::Region"
                             },
@@ -916,7 +916,7 @@
                             {
                               "Ref": "AWS::StackName"
                             },
-                            " --resource Instance255F35265555f8bd64fe3316f\n  cat /var/log/cfn-init.log >&2\n)"
+                            " --resource Instance255F35265a0c5f577d761edb0\n  cat /var/log/cfn-init.log >&2\n)"
                           ]
                         ]
                       }
@@ -938,16 +938,16 @@
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "path": "integ-init/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "path": "integ-init/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "--tmp--sourceDirAsset": {
@@ -958,8 +958,8 @@
                 "id": "Stage",
                 "path": "integ-init/--tmp--sourceDirAsset/Stage",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "AssetBucket": {
@@ -975,61 +975,17 @@
               "fqn": "@aws-cdk/aws-s3-assets.Asset",
               "version": "0.0.0"
             }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "integ-init/AssetParameters",
-            "children": {
-              "f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b": {
-                "id": "f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b",
-                "path": "integ-init/AssetParameters/f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "integ-init/AssetParameters/f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "integ-init/AssetParameters/f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "integ-init/AssetParameters/f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.78"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.78"
-            }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

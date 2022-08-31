@@ -7,27 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-ecs-integ-fargate.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-integ-fargate.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-ecs-integ-fargate": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ-fargate.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-ecs-integ-fargate": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "repositoryName": "aws-cdk/assets",
-              "imageTag": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
-              "id": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
-              "packaging": "container-image",
-              "path": "asset.7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
-              "sourceHash": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21e73448eb441396f1651456a83004f72f1f50583a8c6e054fc95fc99118d943.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-integ-fargate.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-integ-fargate.assets"
+      ],
+      "metadata": {
         "/aws-ecs-integ-fargate/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -133,7 +144,10 @@
         "/aws-ecs-integ-fargate/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570"
+            "data": "TaskDef54694570",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-fargate/TaskDef/TheContainer/LogGroup/Resource": [
@@ -177,16 +191,66 @@
             "type": "aws:cdk:logicalId",
             "data": "Rule4C995B7F"
           }
+        ],
+        "/aws-ecs-integ-fargate/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-integ-fargate/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
         ]
       },
       "displayName": "aws-ecs-integ-fargate"
+    },
+    "EcsFargateTestDefaultTestDeployAssert36341BFB.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EcsFargateTestDefaultTestDeployAssert36341BFB.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
     },
     "EcsFargateTestDefaultTestDeployAssert36341BFB": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "EcsFargateTestDefaultTestDeployAssert36341BFB.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EcsFargateTestDefaultTestDeployAssert36341BFB.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EcsFargateTestDefaultTestDeployAssert36341BFB.assets"
+      ],
+      "metadata": {
+        "/EcsFargateTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EcsFargateTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
       },
       "displayName": "EcsFargateTest/DefaultTest/DeployAssert"
     }

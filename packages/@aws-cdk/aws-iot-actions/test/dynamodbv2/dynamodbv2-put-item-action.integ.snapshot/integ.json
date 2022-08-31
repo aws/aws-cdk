@@ -5,7 +5,7 @@
       "stacks": [
         "test-dynamodbv2-put-item-action-stack"
       ],
-      "assertionStack": "dynamodbv2integtestDefaultTestDeployAssertEF9A9A37"
+      "assertionStack": "dynamodbv2-integtest/DefaultTest/DeployAssert"
     }
   }
 }

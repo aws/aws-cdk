@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-cdk-iam-user": {
@@ -48,124 +48,124 @@
             "id": "ImportedUserByArn",
             "path": "aws-cdk-iam-user/ImportedUserByArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "ImportedUserByArnPath": {
             "id": "ImportedUserByArnPath",
             "path": "aws-cdk-iam-user/ImportedUserByArnPath",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "ImportedUserByArnPathMultiple": {
             "id": "ImportedUserByArnPathMultiple",
             "path": "aws-cdk-iam-user/ImportedUserByArnPathMultiple",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "ImportedUserByAttributes": {
             "id": "ImportedUserByAttributes",
             "path": "aws-cdk-iam-user/ImportedUserByAttributes",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "ImportedUserByAttributesPath": {
             "id": "ImportedUserByAttributesPath",
             "path": "aws-cdk-iam-user/ImportedUserByAttributesPath",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "ImportedUserByAttributesPathMultiple": {
             "id": "ImportedUserByAttributesPathMultiple",
             "path": "aws-cdk-iam-user/ImportedUserByAttributesPathMultiple",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "ImportedUserByName": {
             "id": "ImportedUserByName",
             "path": "aws-cdk-iam-user/ImportedUserByName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "NameForUserImportedByArn": {
             "id": "NameForUserImportedByArn",
             "path": "aws-cdk-iam-user/NameForUserImportedByArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "NameForUserImportedByArnPath": {
             "id": "NameForUserImportedByArnPath",
             "path": "aws-cdk-iam-user/NameForUserImportedByArnPath",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "NameForUserImportedByArnPathMultiple": {
             "id": "NameForUserImportedByArnPathMultiple",
             "path": "aws-cdk-iam-user/NameForUserImportedByArnPathMultiple",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "NameForUserImportedByAttributes": {
             "id": "NameForUserImportedByAttributes",
             "path": "aws-cdk-iam-user/NameForUserImportedByAttributes",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "NameForUserImportedByAttributesPath": {
             "id": "NameForUserImportedByAttributesPath",
             "path": "aws-cdk-iam-user/NameForUserImportedByAttributesPath",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "NameForUserImportedByAttributesPathMultiple": {
             "id": "NameForUserImportedByAttributesPathMultiple",
             "path": "aws-cdk-iam-user/NameForUserImportedByAttributesPathMultiple",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "NameForUserImportedByName": {
             "id": "NameForUserImportedByName",
             "path": "aws-cdk-iam-user/NameForUserImportedByName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

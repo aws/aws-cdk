@@ -9,7 +9,7 @@ import * as integ from '@aws-cdk/integ-tests';
 import { ApplicationMultipleTargetGroupsEc2Service } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-integ-alb-idle-timeout');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
