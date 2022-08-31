@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.49"
+          "version": "10.1.90"
         }
       },
       "aws-cdk-log-retention-integ": {
@@ -150,30 +150,6 @@
                                       ]
                                     ]
                                   }
-                                },
-                                {
-                                  "Action": "logs:DeleteLogStream",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":logs:",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":log-group:logRetentionLogGroup:log-stream:*"
-                                      ]
-                                    ]
-                                  }
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -214,7 +190,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.49"
+              "version": "10.1.90"
             }
           },
           "AssetParameters": {
@@ -252,13 +228,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.49"
+                  "version": "10.1.90"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.49"
+              "version": "10.1.90"
             }
           }
         },
@@ -280,7 +256,7 @@
                 "path": "LogRetentionInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.49"
+                  "version": "10.1.90"
                 }
               },
               "DeployAssert": {

@@ -105,30 +105,6 @@ describe('log retention', () => {
               ],
             },
           },
-          {
-            'Action': 'logs:DeleteLogStream',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    'Ref': 'AWS::Partition',
-                  },
-                  ':logs:',
-                  {
-                    'Ref': 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    'Ref': 'AWS::AccountId',
-                  },
-                  ':log-group:group:log-stream:*',
-                ],
-              ],
-            },
-          },
         ],
         'Version': '2012-10-17',
       },
@@ -260,30 +236,6 @@ describe('log retention', () => {
             },
           },
           {
-            'Action': 'logs:DeleteLogStream',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    'Ref': 'AWS::Partition',
-                  },
-                  ':logs:',
-                  {
-                    'Ref': 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    'Ref': 'AWS::AccountId',
-                  },
-                  ':log-group:group1:log-stream:*',
-                ],
-              ],
-            },
-          },
-          {
             'Action': 'logs:DeleteLogGroup',
             'Effect': 'Allow',
             'Resource': {
@@ -303,30 +255,6 @@ describe('log retention', () => {
                     'Ref': 'AWS::AccountId',
                   },
                   ':log-group:group2:*',
-                ],
-              ],
-            },
-          },
-          {
-            'Action': 'logs:DeleteLogStream',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    'Ref': 'AWS::Partition',
-                  },
-                  ':logs:',
-                  {
-                    'Ref': 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    'Ref': 'AWS::AccountId',
-                  },
-                  ':log-group:group2:log-stream:*',
                 ],
               ],
             },
