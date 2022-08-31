@@ -1149,6 +1149,8 @@ new App({
 cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
 ```
 
+_cdk.json_
+
 ```json
 {
   "context": {
@@ -1157,11 +1159,15 @@ cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
 }
 ```
 
+_cdk.context.json_
+
 ```json
 {
   "@aws-cdk/core:newStyleStackSynthesis": true
 }
 ```
+
+_~/.cdk.json_
 
 ```json
 {
