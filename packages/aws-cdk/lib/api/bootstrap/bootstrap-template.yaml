@@ -152,6 +152,7 @@ Resources:
               - kms:Encrypt
               - kms:ReEncrypt*
               - kms:GenerateDataKey*
+              - kms:RetireGrant
             Effect: Allow
             Principal:
               # Not actually everyone -- see below for Conditions
