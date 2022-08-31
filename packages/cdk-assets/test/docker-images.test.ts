@@ -501,6 +501,9 @@ test('publishing only', async () => {
 
 test('overriding the docker command', async () => {
   process.env.CDK_DOCKER_CMD = 'custom';
+
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, throwOnError: false });
+
   aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
   aws.mockEcr.getAuthorizationToken = mockedApiResult({
     authorizationData: [
