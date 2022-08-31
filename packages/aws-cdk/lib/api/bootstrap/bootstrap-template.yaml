@@ -272,7 +272,7 @@ Resources:
             KmsKey: { Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}" }
           - Fn::If:
               - UseAwsDefaultKey
-              - EncryptionType: AES256
+              - Ref: AWS::NoValue
               - EncryptionType: KMS
                 KmsKey: { Fn::Sub: "${ImageAssetsEcrKmsKeyId}" }
   FilePublishingRole:
