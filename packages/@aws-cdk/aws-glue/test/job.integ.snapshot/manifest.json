@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c555928e4190ffbb4b6f7e22c6d029fc9bfe7a6383a476cf2ac4a159dd1f985.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d4fb124b6f262a7f5f621715b1437dcf5af3450121d622990f89e94fd55d8f5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -103,6 +103,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ShellJob42E81F95"
+          }
+        ],
+        "/aws-glue-job/ShellJob39/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShellJob39ServiceRole2F6F3768"
+          }
+        ],
+        "/aws-glue-job/ShellJob39/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShellJob39ServiceRoleDefaultPolicy38A33919"
+          }
+        ],
+        "/aws-glue-job/ShellJob39/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShellJob390C141361"
           }
         ],
         "/aws-glue-job/BootstrapVersion": [

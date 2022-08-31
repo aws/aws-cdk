@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -150,7 +150,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -164,7 +164,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -258,7 +258,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PrivateSubnet1"
      }
     ]
    }
@@ -272,7 +272,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PrivateSubnet1"
      }
     ]
    }
@@ -327,7 +327,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PrivateSubnet2"
      }
     ]
    }
@@ -341,7 +341,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc/PrivateSubnet2"
      }
     ]
    }
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/Vpc"
+      "Value": "aws-ecs-integ-appmesh-proxy/Vpc"
      }
     ]
    }
@@ -397,7 +397,7 @@
   "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+    "GroupDescription": "aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -408,7 +408,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup"
      }
     ],
     "VpcId": {
@@ -444,7 +444,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
    }
@@ -567,7 +567,7 @@
      {
       "Key": "Name",
       "PropagateAtLaunch": true,
-      "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup"
      }
     ],
     "VPCZoneIdentifier": [
@@ -620,7 +620,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
    }
@@ -736,7 +736,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup"
      }
     ],
     "Timeout": 310
@@ -746,7 +746,7 @@
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
    ]
   },
-  "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic7A89925AFDCBEE50": {
+  "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegappmeshproxyEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic6486DB9E6F5E487C": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -783,7 +783,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
    }
@@ -806,7 +806,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
    }
@@ -892,7 +892,7 @@
       "Name": "envoy"
      }
     ],
-    "Family": "awsecsintegTaskDef6FDFB69A",
+    "Family": "awsecsintegappmeshproxyTaskDef1D8BFD08",
     "IpcMode": "host",
     "NetworkMode": "awsvpc",
     "PidMode": "task",
@@ -975,7 +975,7 @@
   "ServiceSecurityGroupC96ED6A7": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-integ/Service/SecurityGroup",
+    "GroupDescription": "aws-ecs-integ-appmesh-proxy/Service/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",

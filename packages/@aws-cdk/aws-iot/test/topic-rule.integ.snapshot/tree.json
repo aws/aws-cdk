@@ -9,20 +9,20 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.92"
         }
       },
-      "test-stack": {
-        "id": "test-stack",
-        "path": "test-stack",
+      "topic-rule-test-stack": {
+        "id": "topic-rule-test-stack",
+        "path": "topic-rule-test-stack",
         "children": {
           "TopicRule": {
             "id": "TopicRule",
-            "path": "test-stack/TopicRule",
+            "path": "topic-rule-test-stack/TopicRule",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-stack/TopicRule/Resource",
+                "path": "topic-rule-test-stack/TopicRule/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IoT::TopicRule",
                   "aws:cdk:cloudformation:props": {
@@ -53,6 +53,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "TopicRule": {
+        "id": "TopicRule",
+        "path": "TopicRule",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "TopicRule/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "TopicRule/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.92"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "TopicRule/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
