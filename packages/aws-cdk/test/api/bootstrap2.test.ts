@@ -71,7 +71,7 @@ describe('Bootstrapping v2', () => {
     await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
         cloudFormationExecutionPolicies: ['arn:policy'],
-        ecrKey: 'my-kms-ecr-key-id',
+        ecrKeyId: 'my-kms-ecr-key-id',
       },
     });
 
@@ -316,13 +316,13 @@ describe('Bootstrapping v2', () => {
       ['my-key-id', 'my-key-id'],
       ['AWS_DEFAULT_KEY', 'AWS_DEFAULT_KEY'],
       ['arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'],
-    ])('(new stack) ecrKey=%p => parameter becomes %p ', async (ecrKey, paramKeyId) => {
+    ])('(new stack) ecrKeyId=%p => parameter becomes %p ', async (ecrKeyId, paramKeyId) => {
       // GIVEN: no existing stack
 
       // WHEN
       await bootstrapper.bootstrapEnvironment(env, sdk, {
         parameters: {
-          ecrKey,
+          ecrKeyId,
           cloudFormationExecutionPolicies: ['arn:booh'],
         },
       });

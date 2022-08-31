@@ -59,7 +59,7 @@ export interface BootstrappingParameters {
    *
    * @default - use the default KMS key or create a custom one
    */
-  readonly ecrKey?: string;
+  readonly ecrKeyId?: string;
 
   /**
    * Whether or not to create a new customer master key (CMK)

@@ -136,10 +136,10 @@ export class Bootstrapper {
 
     let kmsEcrKeyId = USE_DEFAULT_KEY;
 
-    if (params.ecrKey) {
+    if (params.ecrKeyId) {
       // key is given
-      kmsEcrKeyId = params.ecrKey;
-    } else if (params.ecrKey === '') {
+      kmsEcrKeyId = params.ecrKeyId;
+    } else if (params.ecrKeyId === '') {
       // key shall be created
       kmsEcrKeyId = CREATE_NEW_KEY;
     }

@@ -181,7 +181,7 @@ Resources:
     Type: AWS::KMS::Alias
     Properties:
       AliasName:
-        Fn::Sub: "alias/cdk-${Qualifier}-bucket-assets-key"
+        Fn::Sub: "alias/cdk-${Qualifier}-assets-key"
       TargetKeyId:
         Ref: FileAssetsBucketEncryptionKey
   FileAssetsEcrEncryptionKeyAlias:
@@ -420,18 +420,6 @@ Resources:
               - ecr:GetAuthorizationToken
             Resource: "*"
             Effect: Allow
-          - Action:
-              - kms:Decrypt
-              - kms:DescribeKey
-              - kms:Encrypt
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-            Effect: Allow
-            Resource:
-              Fn::If:
-                - CreateNewEcrKey
-                - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
-                - Fn::Sub: arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${ImageAssetsEcrKmsKeyId}
         Version: '2012-10-17'
       Roles:
         - Ref: ImagePublishingRole
