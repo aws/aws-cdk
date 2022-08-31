@@ -36,41 +36,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eS3Bucket305E1975"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eS3VersionKeyCC928AE5"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eS3VersionKeyCC928AE5"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "b0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374e.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -86,20 +54,6 @@
    ]
   }
  },
- "Parameters": {
-  "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eS3Bucket305E1975": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"b0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374e\""
-  },
-  "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eS3VersionKeyCC928AE5": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"b0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374e\""
-  },
-  "AssetParametersb0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374eArtifactHashBE058EE4": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"b0011b8704c0cceee88b3cdf79d915b7babbe192f420c472879803f44c2c374e\""
-  }
- },
  "Outputs": {
   "ExportsOutputRefFunction76856677C48862D5": {
    "Value": {
@@ -108,6 +62,40 @@
    "Export": {
     "Name": "cdk-integ-lambda-bundling:ExportsOutputRefFunction76856677C48862D5"
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

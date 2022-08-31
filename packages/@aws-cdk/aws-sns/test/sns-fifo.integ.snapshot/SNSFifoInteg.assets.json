@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "84d514b00d9e3dc065215aeb875494767355d96ed11c81410036cd85a35e6c46": {
+      "source": {
+        "path": "SNSFifoInteg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "84d514b00d9e3dc065215aeb875494767355d96ed11c81410036cd85a35e6c46.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
