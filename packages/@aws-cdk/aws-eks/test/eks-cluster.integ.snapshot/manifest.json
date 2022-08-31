@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/e4e156f1c2bf69982c736ecee2821d0c74938b61efb432c83911a8eed47e423f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/9d93de02e3995042df25f0c815d08f666c01ae7ccba1dece3b84145f196a0595.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

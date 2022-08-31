@@ -124,7 +124,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b067f32c23cd851bcf08779bac0b5d6f2bed5bb4782f129925f4910d618f880.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/07ab7b54df89b4069877978ceffa06afaf11939a042378cafa0943f7c03f605b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -141,23 +141,6 @@
         "IntegDefaultTestDeployAssert4E6713E1.assets"
       ],
       "metadata": {
-<<<<<<< HEAD
-        "/Integ/DefaultTest/DeployAssert": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7.bundle",
-              "id": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7",
-              "packaging": "zip",
-              "sourceHash": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7",
-              "s3BucketParameter": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80",
-              "s3KeyParameter": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE",
-              "artifactHashParameter": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7ArtifactHashB8137036"
-            }
-          }
-        ],
-=======
->>>>>>> 62766debee (integ test snapshot updates)
         "/Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -188,24 +171,6 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-<<<<<<< HEAD
-        "/Integ/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7ArtifactHashB8137036"
-=======
         "/Integ/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -216,7 +181,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
->>>>>>> 62766debee (integ test snapshot updates)
           }
         ]
       },

@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -42,19 +42,13 @@
         "/aws-cdk-layer-version-1/MyLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLayer38944FA5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyLayer38944FA5"
           }
         ],
         "/aws-cdk-layer-version-1/MyLayer/remote-account-grant": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLayerremoteaccountgrant715E5D21",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyLayerremoteaccountgrant715E5D21"
           }
         ],
         "/aws-cdk-layer-version-1/MyLayeredLambda/ServiceRole/Resource": [

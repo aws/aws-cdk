@@ -99,8 +99,8 @@
                         "id": "Acl",
                         "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet1/Acl",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "RouteTable": {
@@ -282,8 +282,8 @@
                         "id": "Acl",
                         "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet2/Acl",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "RouteTable": {
@@ -465,8 +465,8 @@
                         "id": "Acl",
                         "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet1/Acl",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "RouteTable": {
@@ -592,8 +592,8 @@
                         "id": "Acl",
                         "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet2/Acl",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "RouteTable": {
@@ -947,14 +947,14 @@
                         "id": "Default",
                         "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/Resource/Resource/Default",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -967,16 +967,16 @@
                 "id": "KubectlReadyBarrier",
                 "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/KubectlReadyBarrier",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
                 }
               },
               "ClusterSecurityGroup": {
                 "id": "ClusterSecurityGroup",
                 "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/ClusterSecurityGroup",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               },
               "MastersRole": {
@@ -1045,14 +1045,14 @@
                             "id": "Default",
                             "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/AwsAuth/manifest/Resource/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -1071,16 +1071,16 @@
                 "id": "ConfigCommand",
                 "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/ConfigCommand",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "GetTokenCommand": {
                 "id": "GetTokenCommand",
                 "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/GetTokenCommand",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "CoreDnsComputeTypePatch": {
@@ -1095,14 +1095,14 @@
                         "id": "Default",
                         "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/CoreDnsComputeTypePatch/Resource/Default",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -1172,14 +1172,14 @@
                         "id": "Default",
                         "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/fargate-profile-default/Resource/Default",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -1210,8 +1210,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -1356,8 +1356,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -1521,8 +1521,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -1736,8 +1736,8 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -1949,8 +1949,8 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -2159,8 +2159,8 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -2359,8 +2359,8 @@
                         "id": "Resource",
                         "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -2379,30 +2379,30 @@
                 "id": "Service-principalMap",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnMapping",
+                  "version": "0.0.0"
                 }
               },
               "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderframeworkonEventC85EBDF3Arn": {
                 "id": "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderframeworkonEventC85EBDF3Arn",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksfargateclustertestawscdkawseksClusterResourceProviderframeworkonEventC85EBDF3Arn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
                 "id": "reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.NestedStack",
+              "version": "0.0.0"
             }
           },
           "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack": {
@@ -2446,8 +2446,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnStack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -2593,8 +2593,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -2682,8 +2682,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -2710,7 +2710,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "39ee629321f531fffd853b944b2d6f3fa7b5276431c9a4fd4dc681303ab15080.zip"
+                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2738,8 +2738,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -2919,8 +2919,8 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -3007,48 +3007,48 @@
                 "id": "awscdkeksfargateclustertestawscdkawseksKubectlProviderframeworkonEvent33B2ACA4Arn",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/awscdkeksfargateclustertestawscdkawseksKubectlProviderframeworkonEvent33B2ACA4Arn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksfargateclustertestFargateCluster8588769EArn": {
                 "id": "reference-to-awscdkeksfargateclustertestFargateCluster8588769EArn",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateCluster8588769EArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
                 "id": "reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet1Subnet0278E6BCRef": {
                 "id": "reference-to-awscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet1Subnet0278E6BCRef",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet1Subnet0278E6BCRef",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet2Subnet1F1EC575Ref": {
                 "id": "reference-to-awscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet2Subnet1F1EC575Ref",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet2Subnet1F1EC575Ref",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksfargateclustertestFargateCluster8588769EClusterSecurityGroupId": {
                 "id": "reference-to-awscdkeksfargateclustertestFargateCluster8588769EClusterSecurityGroupId",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateCluster8588769EClusterSecurityGroupId",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -3083,7 +3083,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/8cae357b4b44269540ad5e8192fb0689ef7b072a5f01a9cd9af6125eb3b128d6.json"
+                          "/9cf42a12662cd7aff3bd02d56b7c27abfe0b2ced351915eae48f629cbac42c51.json"
                         ]
                       ]
                     },
@@ -3116,8 +3116,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnStack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -3128,14 +3128,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

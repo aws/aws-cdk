@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4dce75e4b44f501984463975e9e40a7328c180c6e2a8fe209d5d024c295edd20.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/74d965776c195a1435805e8637e85f42f8d6da765361ac8be584318da83cf7d0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -522,10 +522,7 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/Start a Job Run/awsclilayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StartaJobRunawsclilayer110EEF0B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "StartaJobRunawsclilayer110EEF0B"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/Resource": [

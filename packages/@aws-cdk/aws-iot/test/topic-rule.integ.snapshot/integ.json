@@ -1,11 +1,14 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "TopicRule/DefaultTest": {
+    "integ.topic-rule": {
       "stacks": [
-        "topic-rule-test-stack"
+        "test-stack"
       ],
-      "assertionStack": "TopicRule/DefaultTest/DeployAssert"
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
     }
-  }
+  },
+  "synthContext": {},
+  "enableLookups": false
 }

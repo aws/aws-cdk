@@ -77,8 +77,8 @@
                     "id": "Staging",
                     "path": "lambda-ecr-docker/MyLambda/AssetImage/Staging",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "Repository": {
@@ -128,14 +128,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

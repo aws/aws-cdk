@@ -99,8 +99,8 @@
                         "id": "Acl",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/Acl",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "RouteTable": {
@@ -282,8 +282,8 @@
                         "id": "Acl",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/Acl",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "RouteTable": {
@@ -465,8 +465,8 @@
                         "id": "Acl",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/Acl",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "RouteTable": {
@@ -592,8 +592,8 @@
                         "id": "Acl",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/Acl",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "RouteTable": {
@@ -939,14 +939,14 @@
                         "id": "Default",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/integration-test-eks-cluster/Resource/Resource/Default",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -959,16 +959,16 @@
                 "id": "KubectlReadyBarrier",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/integration-test-eks-cluster/KubectlReadyBarrier",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
                 }
               },
               "ClusterSecurityGroup": {
                 "id": "ClusterSecurityGroup",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/integration-test-eks-cluster/ClusterSecurityGroup",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               },
               "MastersRole": {
@@ -1037,14 +1037,14 @@
                             "id": "Default",
                             "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/integration-test-eks-cluster/AwsAuth/manifest/Resource/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -1196,16 +1196,16 @@
                 "id": "ConfigCommand",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/integration-test-eks-cluster/ConfigCommand",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "GetTokenCommand": {
                 "id": "GetTokenCommand",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/integration-test-eks-cluster/GetTokenCommand",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -1230,8 +1230,8 @@
                         "id": "Stage",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -1376,8 +1376,8 @@
                         "id": "Stage",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -1541,8 +1541,8 @@
                         "id": "Stage",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -1756,8 +1756,8 @@
                             "id": "Stage",
                             "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -1969,8 +1969,8 @@
                             "id": "Stage",
                             "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -2179,8 +2179,8 @@
                             "id": "Stage",
                             "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -2379,8 +2379,8 @@
                         "id": "Resource",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -2399,30 +2399,30 @@
                 "id": "Service-principalMap",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnMapping",
+                  "version": "0.0.0"
                 }
               },
               "awsstepfunctionstasksemrcontainersallservicesintegawscdkawseksClusterResourceProviderframeworkonEventFF3F425BArn": {
                 "id": "awsstepfunctionstasksemrcontainersallservicesintegawscdkawseksClusterResourceProviderframeworkonEventFF3F425BArn",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersallservicesintegawscdkawseksClusterResourceProviderframeworkonEventFF3F425BArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterCreationRole78F8A91EArn": {
                 "id": "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterCreationRole78F8A91EArn",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterCreationRole78F8A91EArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.NestedStack",
+              "version": "0.0.0"
             }
           },
           "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack": {
@@ -2466,8 +2466,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnStack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -2613,8 +2613,8 @@
                         "id": "Stage",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -2702,8 +2702,8 @@
                         "id": "Stage",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -2730,7 +2730,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "39ee629321f531fffd853b944b2d6f3fa7b5276431c9a4fd4dc681303ab15080.zip"
+                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2758,8 +2758,8 @@
                         "id": "Stage",
                         "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -2939,8 +2939,8 @@
                             "id": "Stage",
                             "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -3027,48 +3027,48 @@
                 "id": "awsstepfunctionstasksemrcontainersallservicesintegawscdkawseksKubectlProviderframeworkonEvent3B33A326Arn",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/awsstepfunctionstasksemrcontainersallservicesintegawscdkawseksKubectlProviderframeworkonEvent3B33A326Arn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtestekscluster4FFBB19EArn": {
                 "id": "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtestekscluster4FFBB19EArn",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtestekscluster4FFBB19EArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterCreationRole78F8A91EArn": {
                 "id": "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterCreationRole78F8A91EArn",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterCreationRole78F8A91EArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterDefaultVpcPrivateSubnet1SubnetFBC220C4Ref": {
                 "id": "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterDefaultVpcPrivateSubnet1SubnetFBC220C4Ref",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterDefaultVpcPrivateSubnet1SubnetFBC220C4Ref",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet7E4A5E3BRef": {
                 "id": "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet7E4A5E3BRef",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet7E4A5E3BRef",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtestekscluster4FFBB19EClusterSecurityGroupId": {
                 "id": "reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtestekscluster4FFBB19EClusterSecurityGroupId",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicesintegintegrationtestekscluster4FFBB19EClusterSecurityGroupId",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -3103,7 +3103,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/9925a53951c4d787fad4fc845e8998f28b8b796de151923b3d3e9c26266ab1be.json"
+                          "/81fca77fde3176b6b8fcaa623a31b490ee999e4908029f0874274004e19b1f38.json"
                         ]
                       ]
                     },
@@ -3136,8 +3136,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnStack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -3319,8 +3319,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
             }
           },
           "Start a Job Run": {
@@ -3628,28 +3628,28 @@
             "id": "stateMachineArn",
             "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/stateMachineArn",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "Service-principalMap": {
             "id": "Service-principalMap",
             "path": "aws-stepfunctions-tasks-emr-containers-all-services-integ/Service-principalMap",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnMapping",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

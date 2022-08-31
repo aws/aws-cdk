@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -105,24 +105,6 @@
             "data": "ShellJob42E81F95"
           }
         ],
-<<<<<<< HEAD
-        "/aws-glue-job/ShellJob39/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ShellJob39ServiceRole2F6F3768"
-          }
-        ],
-        "/aws-glue-job/ShellJob39/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ShellJob39ServiceRoleDefaultPolicy38A33919"
-          }
-        ],
-        "/aws-glue-job/ShellJob39/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ShellJob390C141361"
-=======
         "/aws-glue-job/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -133,7 +115,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
->>>>>>> 62766debee (integ test snapshot updates)
           }
         ]
       },

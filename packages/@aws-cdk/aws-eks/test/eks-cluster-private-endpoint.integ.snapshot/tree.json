@@ -145,8 +145,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -328,8 +328,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -455,8 +455,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -582,8 +582,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -933,14 +933,14 @@
                         "id": "Default",
                         "path": "aws-cdk-eks-cluster-private-endpoint-test/Cluster/Resource/Resource/Default",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -953,16 +953,16 @@
                 "id": "KubectlReadyBarrier",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlReadyBarrier",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
                 }
               },
               "ClusterSecurityGroup": {
                 "id": "ClusterSecurityGroup",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/Cluster/ClusterSecurityGroup",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               },
               "AwsAuth": {
@@ -981,14 +981,14 @@
                             "id": "Default",
                             "path": "aws-cdk-eks-cluster-private-endpoint-test/Cluster/AwsAuth/manifest/Resource/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -1140,16 +1140,16 @@
                 "id": "ConfigCommand",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/Cluster/ConfigCommand",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "GetTokenCommand": {
                 "id": "GetTokenCommand",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/Cluster/GetTokenCommand",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "manifest-config-map": {
@@ -1164,14 +1164,14 @@
                         "id": "Default",
                         "path": "aws-cdk-eks-cluster-private-endpoint-test/Cluster/manifest-config-map/Resource/Default",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -1202,8 +1202,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -1348,8 +1348,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -1513,8 +1513,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -1728,8 +1728,8 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -1941,8 +1941,8 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -2151,8 +2151,8 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -2351,8 +2351,8 @@
                         "id": "Resource",
                         "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -2371,30 +2371,30 @@
                 "id": "Service-principalMap",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnMapping",
+                  "version": "0.0.0"
                 }
               },
               "awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderframeworkonEvent080B290CArn": {
                 "id": "awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderframeworkonEvent080B290CArn",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderframeworkonEvent080B290CArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksclusterprivateendpointtestClusterCreationRole990BAAEAArn": {
                 "id": "reference-to-awscdkeksclusterprivateendpointtestClusterCreationRole990BAAEAArn",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awscdkeksclusterprivateendpointtestClusterCreationRole990BAAEAArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.NestedStack",
+              "version": "0.0.0"
             }
           },
           "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack": {
@@ -2438,8 +2438,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnStack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -2585,8 +2585,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -2674,8 +2674,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -2702,7 +2702,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "39ee629321f531fffd853b944b2d6f3fa7b5276431c9a4fd4dc681303ab15080.zip"
+                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2730,8 +2730,8 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -2911,8 +2911,8 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -2999,48 +2999,48 @@
                 "id": "awscdkeksclusterprivateendpointtestawscdkawseksKubectlProviderframeworkonEventC2C76E2FArn",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/awscdkeksclusterprivateendpointtestawscdkawseksKubectlProviderframeworkonEventC2C76E2FArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksclusterprivateendpointtestClusterF4CF4FE8Arn": {
                 "id": "reference-to-awscdkeksclusterprivateendpointtestClusterF4CF4FE8Arn",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestClusterF4CF4FE8Arn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksclusterprivateendpointtestClusterCreationRole990BAAEAArn": {
                 "id": "reference-to-awscdkeksclusterprivateendpointtestClusterCreationRole990BAAEAArn",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestClusterCreationRole990BAAEAArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksclusterprivateendpointtestVpcPrivateSubnet1Subnet94DAD769Ref": {
                 "id": "reference-to-awscdkeksclusterprivateendpointtestVpcPrivateSubnet1Subnet94DAD769Ref",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestVpcPrivateSubnet1Subnet94DAD769Ref",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksclusterprivateendpointtestVpcPrivateSubnet2Subnet04963C08Ref": {
                 "id": "reference-to-awscdkeksclusterprivateendpointtestVpcPrivateSubnet2Subnet04963C08Ref",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestVpcPrivateSubnet2Subnet04963C08Ref",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               },
               "reference-to-awscdkeksclusterprivateendpointtestClusterF4CF4FE8ClusterSecurityGroupId": {
                 "id": "reference-to-awscdkeksclusterprivateendpointtestClusterF4CF4FE8ClusterSecurityGroupId",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestClusterF4CF4FE8ClusterSecurityGroupId",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -3075,7 +3075,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/6b848d2f614f289e42ff84bca9bdc58ba226b5520cfe612828c8770c505c61bb.json"
+                          "/02e38b41ddb78e1047ec3273c474783a8a96f45f24ac52a7f56449a7c8356447.json"
                         ]
                       ]
                     },
@@ -3108,8 +3108,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnStack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -3120,14 +3120,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

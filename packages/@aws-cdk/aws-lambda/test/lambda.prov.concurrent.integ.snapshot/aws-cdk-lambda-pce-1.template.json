@@ -64,6 +64,7 @@
       "Arn"
      ]
     },
+    "Description": "version-hash:22935888161d542257ba1aa7d6060c95",
     "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
@@ -72,7 +73,7 @@
     "MyLambdaAliasPCEServiceRoleF7C9F212"
    ]
   },
-  "MyLambdaAliasPCECurrentVersion072335D322935888161d542257ba1aa7d6060c95": {
+  "MyLambdaAliasPCECurrentVersion072335D3224448d87cb592b450e76b3259c1d874": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -88,7 +89,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaAliasPCECurrentVersion072335D322935888161d542257ba1aa7d6060c95",
+      "MyLambdaAliasPCECurrentVersion072335D3224448d87cb592b450e76b3259c1d874",
       "Version"
      ]
     },
@@ -172,6 +173,7 @@
       "Arn"
      ]
     },
+    "Description": "version-hash:fa78bcfe53ab85fefd72b3ac4cc5679c",
     "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
@@ -180,7 +182,7 @@
     "MyLambdaVersionPCEServiceRole2ACFB73E"
    ]
   },
-  "MyLambdaVersionPCECurrentVersion27FC3932fa78bcfe53ab85fefd72b3ac4cc5679c": {
+  "MyLambdaVersionPCECurrentVersion27FC3932d779c9115684f8f405cbd7282b1508f5": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -199,7 +201,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaVersionPCECurrentVersion27FC3932fa78bcfe53ab85fefd72b3ac4cc5679c",
+      "MyLambdaVersionPCECurrentVersion27FC3932d779c9115684f8f405cbd7282b1508f5",
       "Version"
      ]
     },

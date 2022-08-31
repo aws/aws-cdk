@@ -14,22 +14,14 @@
     "parameters": {
      "Entries": [
       {
-<<<<<<< HEAD
-       "Detail": "{\"date\":\"abc1661796816664\"}",
-=======
-       "Detail": "{\"date\":\"abc1661520760920\"}",
->>>>>>> 62766debee (integ test snapshot updates)
+       "Detail": "{\"date\":\"abc1661947671805\"}",
        "DetailType": "cdk-integ-custom-rule",
        "Source": "cdk-integ"
       }
      ]
     },
     "flattenResponse": "false",
-<<<<<<< HEAD
-    "salt": "1661796816666"
-=======
-    "salt": "1661520760922"
->>>>>>> 62766debee (integ test snapshot updates)
+    "salt": "1661947671807"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -99,47 +91,9 @@
     "Runtime": "nodejs14.x",
     "Code": {
      "S3Bucket": {
-<<<<<<< HEAD
-      "Ref": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80"
-     },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
-=======
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "374e4c6bf67290e7a1839e32e1c4ec413fe48477e9585dc2e042bc07509f7458.zip"
->>>>>>> 62766debee (integ test snapshot updates)
+     "S3Key": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -166,19 +120,11 @@
      "logGroupName": {
       "Fn::ImportValue": "log-group-events:ExportsOutputRefloggroup2F19C5C9B4F4C6918"
      },
-<<<<<<< HEAD
-     "startTime": "1661796816664",
+     "startTime": "1661947671805",
      "limit": 1
     },
     "flattenResponse": "true",
-    "salt": "1661796816667"
-=======
-     "startTime": "1661520760920",
-     "limit": 1
-    },
-    "flattenResponse": "true",
-    "salt": "1661520760922"
->>>>>>> 62766debee (integ test snapshot updates)
+    "salt": "1661947671807"
    },
    "DependsOn": [
     "AwsApiCallEventBridgeputEvents"
@@ -201,13 +147,8 @@
       "apiCallResponse.events.0.message"
      ]
     },
-<<<<<<< HEAD
-    "expected": "{\"$StringLike\":\"abc1661796816664\"}",
-    "salt": "1661796816667"
-=======
-    "expected": "{\"$StringLike\":\"abc1661520760920\"}",
-    "salt": "1661520760923"
->>>>>>> 62766debee (integ test snapshot updates)
+    "expected": "{\"$StringLike\":\"abc1661947671805\"}",
+    "salt": "1661947671808"
    },
    "DependsOn": [
     "AwsApiCallEventBridgeputEvents"
@@ -216,23 +157,6 @@
    "DeletionPolicy": "Delete"
   }
  },
-<<<<<<< HEAD
- "Parameters": {
-  "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7\""
-  },
-  "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7\""
-  },
-  "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7ArtifactHashB8137036": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7\""
-  }
- },
-=======
->>>>>>> 62766debee (integ test snapshot updates)
  "Outputs": {
   "AssertionResultsAssertEqualsCloudWatchLogsfilterLogEvents": {
    "Value": {

@@ -77,8 +77,8 @@
                     "id": "Stage",
                     "path": "lambda-test-current-version/MyLambda/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -157,7 +157,7 @@
                             },
                             "qualifier": {
                               "Fn::GetAtt": [
-                                "MyLambdaCurrentVersionE7A382CC729d0f94105773f32ab290a92db57227",
+                                "MyLambdaCurrentVersionE7A382CC2ea27ea57e328c1e5be4991bd1bd072d",
                                 "Version"
                               ]
                             },
@@ -190,7 +190,7 @@
                             },
                             "functionVersion": {
                               "Fn::GetAtt": [
-                                "MyLambdaCurrentVersionE7A382CC729d0f94105773f32ab290a92db57227",
+                                "MyLambdaCurrentVersionE7A382CC2ea27ea57e328c1e5be4991bd1bd072d",
                                 "Version"
                               ]
                             },
@@ -206,8 +206,8 @@
                         "id": "ScalingRole",
                         "path": "lambda-test-current-version/MyLambda/CurrentVersion/Aliaslive/ScalingRole",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -230,14 +230,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

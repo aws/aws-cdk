@@ -72,14 +72,6 @@
       },
       "displayName": "cdk-integ-lambda-bundling-docker-bundling-opts"
     },
-<<<<<<< HEAD
-    "DockerOptsBundlingDefaultTestDeployAssert72BE28F7": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "DockerOptsBundlingDefaultTestDeployAssert72BE28F7.template.json",
-        "validateOnSynth": false
-=======
     "BundlingDefaultTestDeployAssertAACA0CAF.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -96,7 +88,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e99f7a84d3e823a517558ba15285a302ec1ede64225b134d36d047bcaf64af4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee1dea1410fd3184d3f81700e326bdc22da699a312cb46aad6e80df72dfe2c4f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -107,85 +99,48 @@
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
->>>>>>> 62766debee (integ test snapshot updates)
       },
       "dependencies": [
         "cdk-integ-lambda-bundling-docker-bundling-opts",
         "BundlingDefaultTestDeployAssertAACA0CAF.assets"
       ],
       "metadata": {
-<<<<<<< HEAD
-        "/DockerOptsBundling/DefaultTest/DeployAssert": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7.bundle",
-              "id": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7",
-              "packaging": "zip",
-              "sourceHash": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7",
-              "s3BucketParameter": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80",
-              "s3KeyParameter": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE",
-              "artifactHashParameter": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7ArtifactHashB8137036"
-            }
-          }
-        ],
-        "/DockerOptsBundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default/Default": [
-=======
         "/Bundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default/Default": [
->>>>>>> 62766debee (integ test snapshot updates)
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8"
           }
         ],
-        "/DockerOptsBundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Invoke": [
+        "/Bundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8InvokeA3F6E40A"
           }
         ],
-        "/DockerOptsBundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/Default/Default": [
+        "/Bundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8AssertEqualsLambdainvoke89C63F4A"
           }
         ],
-        "/DockerOptsBundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/AssertionResults": [
+        "/Bundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAssertEqualsLambdainvoke"
           }
         ],
-        "/DockerOptsBundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+        "/Bundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
           }
         ],
-        "/DockerOptsBundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+        "/Bundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-<<<<<<< HEAD
-        "/DockerOptsBundling/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80"
-          }
-        ],
-        "/DockerOptsBundling/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE"
-          }
-        ],
-        "/DockerOptsBundling/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7ArtifactHashB8137036"
-=======
         "/Bundling/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -196,11 +151,10 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
->>>>>>> 62766debee (integ test snapshot updates)
           }
         ]
       },
-      "displayName": "DockerOptsBundling/DefaultTest/DeployAssert"
+      "displayName": "Bundling/DefaultTest/DeployAssert"
     }
   }
 }

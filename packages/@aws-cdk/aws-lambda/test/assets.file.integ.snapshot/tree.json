@@ -77,8 +77,8 @@
                     "id": "Stage",
                     "path": "lambda-test-assets-file/MyLambda/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -130,14 +130,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

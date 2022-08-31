@@ -17,11 +17,7 @@
      }
     },
     "flattenResponse": "true",
-<<<<<<< HEAD
-    "salt": "1661796815777"
-=======
-    "salt": "1661515683196"
->>>>>>> 62766debee (integ test snapshot updates)
+    "salt": "1661947566002"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -82,47 +78,9 @@
     "Runtime": "nodejs14.x",
     "Code": {
      "S3Bucket": {
-<<<<<<< HEAD
-      "Ref": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80"
-     },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
-=======
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "374e4c6bf67290e7a1839e32e1c4ec413fe48477e9585dc2e042bc07509f7458.zip"
->>>>>>> 62766debee (integ test snapshot updates)
+     "S3Key": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -154,11 +112,7 @@
      }
     },
     "flattenResponse": "false",
-<<<<<<< HEAD
-    "salt": "1661796815778"
-=======
-    "salt": "1661515683213"
->>>>>>> 62766debee (integ test snapshot updates)
+    "salt": "1661947566002"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -179,33 +133,12 @@
      ]
     },
     "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\"}}",
-<<<<<<< HEAD
-    "salt": "1661796815778"
-=======
-    "salt": "1661515683214"
->>>>>>> 62766debee (integ test snapshot updates)
+    "salt": "1661947566003"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
-<<<<<<< HEAD
- "Parameters": {
-  "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7\""
-  },
-  "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7\""
-  },
-  "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7ArtifactHashB8137036": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7\""
-  }
- },
-=======
->>>>>>> 62766debee (integ test snapshot updates)
  "Outputs": {
   "AssertionResultsAssertEqualsStepFunctionsdescribeExecution": {
    "Value": {

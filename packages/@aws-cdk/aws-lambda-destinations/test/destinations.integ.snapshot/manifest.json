@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
   "version": "21.0.0",
-=======
-  "version": "20.0.0",
->>>>>>> 62766debee (integ test snapshot updates)
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -176,7 +172,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/641793a5c1b164dc56541412523b7774abf8ab85ce849a74490d8642a1e84117.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/249a277d674893db2c9c537c018206a462a86473ed305c7d1e728151ac3120ae.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -193,23 +189,6 @@
         "DestinationsDefaultTestDeployAssertCC49E667.assets"
       ],
       "metadata": {
-<<<<<<< HEAD
-        "/Destinations/DefaultTest/DeployAssert": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7.bundle",
-              "id": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7",
-              "packaging": "zip",
-              "sourceHash": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7",
-              "s3BucketParameter": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80",
-              "s3KeyParameter": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE",
-              "artifactHashParameter": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7ArtifactHashB8137036"
-            }
-          }
-        ],
-=======
->>>>>>> 62766debee (integ test snapshot updates)
         "/Destinations/DefaultTest/DeployAssert/LambdaInvoked12df417a1b74909abb3ea643735a310/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -234,42 +213,6 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-<<<<<<< HEAD
-        "/Destinations/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80"
-          }
-        ],
-        "/Destinations/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE"
-          }
-        ],
-        "/Destinations/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7ArtifactHashB8137036"
-          }
-        ],
-        "/Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSreceiveMessage"
-          }
-        ],
-        "/Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/AssertEqualsSQSreceiveMessage/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSreceiveMessageAssertEqualsSQSreceiveMessage56120636"
-          }
-        ],
-        "/Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/AssertEqualsSQSreceiveMessage/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAssertEqualsSQSreceiveMessage"
-=======
         "/Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -298,7 +241,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
->>>>>>> 62766debee (integ test snapshot updates)
           }
         ]
       },

@@ -123,8 +123,8 @@
                 "id": "LambdaInsightsLayer",
                 "path": "stack/MyFunc1/LambdaInsightsLayer",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -240,8 +240,8 @@
                 "id": "LambdaInsightsLayer",
                 "path": "stack/MyFunc2/LambdaInsightsLayer",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -357,8 +357,8 @@
                 "id": "LambdaInsightsLayer",
                 "path": "stack/MyFunc3/LambdaInsightsLayer",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -471,8 +471,8 @@
                 "id": "LambdaInsightsLayer",
                 "path": "stack/MyFunc4/LambdaInsightsLayer",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -485,8 +485,8 @@
             "id": "Cloudwatch-lambda-insights-versionMap",
             "path": "stack/Cloudwatch-lambda-insights-versionMap",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnMapping",
+              "version": "0.0.0"
             }
           },
           "MyFunc5": {
@@ -593,8 +593,8 @@
                 "id": "LambdaInsightsLayer",
                 "path": "stack/MyFunc5/LambdaInsightsLayer",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -713,8 +713,8 @@
                 "id": "LambdaInsightsLayer",
                 "path": "stack/MyFunc6/LambdaInsightsLayer",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -725,14 +725,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

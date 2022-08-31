@@ -94,8 +94,8 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       },
       "IntegTest-BatchDefaultEnvVarsStack": {
@@ -148,14 +148,14 @@
                             "id": "Default",
                             "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
                         }
                       },
                       "AssertEqualsBatchdescribeJobDefinitions": {
@@ -188,22 +188,22 @@
                                 "id": "Default",
                                 "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/AssertEqualsBatchdescribeJobDefinitions/Default/Default",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.1.85"
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
                             }
                           },
                           "AssertionResults": {
                             "id": "AssertionResults",
                             "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/AssertEqualsBatchdescribeJobDefinitions/AssertionResults",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.CfnOutput",
+                              "version": "0.0.0"
                             }
                           }
                         },
@@ -226,71 +226,24 @@
                         "id": "Staging",
                         "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-<<<<<<< HEAD
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
-                    }
-                  },
-                  "AssetParameters": {
-                    "id": "AssetParameters",
-                    "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters",
-                    "children": {
-                      "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7": {
-                        "id": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7",
-                        "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7",
-                        "children": {
-                          "S3Bucket": {
-                            "id": "S3Bucket",
-                            "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/S3Bucket",
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
-                            }
-                          },
-                          "S3VersionKey": {
-                            "id": "S3VersionKey",
-                            "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/S3VersionKey",
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
-                            }
-                          },
-                          "ArtifactHash": {
-                            "id": "ArtifactHash",
-                            "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters/84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7/ArtifactHash",
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-=======
->>>>>>> 62766debee (integ test snapshot updates)
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -301,8 +254,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -319,8 +272,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

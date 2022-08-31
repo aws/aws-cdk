@@ -5,12 +5,8 @@
       "stacks": [
         "log-group-events"
       ],
-<<<<<<< HEAD
       "assertionStack": "LogGroup/DefaultTest/DeployAssert",
       "assertionStackName": "LogGroupDefaultTestDeployAssert353EE07A"
-=======
-      "assertionStack": "LogGroup/DefaultTest/DeployAssert"
->>>>>>> 62766debee (integ test snapshot updates)
     }
   }
 }

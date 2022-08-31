@@ -209,7 +209,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaCurrentVersionE7A382CC1786de9fc1bc4cb2fd5b64d612628c6f",
+                        "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629",
                         "Version"
                       ]
                     },
@@ -225,8 +225,8 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-lambda-1/Alias/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               },
               "AliasPermission": {
@@ -305,14 +305,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }
