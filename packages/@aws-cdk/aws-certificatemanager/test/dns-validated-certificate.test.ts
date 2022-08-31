@@ -225,6 +225,21 @@ test('works with imported role', () => {
   });
 });
 
+
+test('throws when domain name is longer than 64 characters', () => {
+  const stack = new Stack();
+
+  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+    zoneName: 'example.com',
+  });
+  expect(() => {
+    new DnsValidatedCertificate(stack, 'Cert', {
+      domainName: 'example.com'.repeat(7),
+      hostedZone: exampleDotComZone,
+    });
+  }).toThrow(/Domain name must be 64 characters or less/);
+}),
+
 test('test transparency logging settings is passed to the custom resource', () => {
   const stack = new Stack();
 

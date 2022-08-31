@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import { App, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 

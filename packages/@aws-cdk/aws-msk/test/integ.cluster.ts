@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { IntegTest, AssertionsProvider, ExpectedResult } from '@aws-cdk/integ-tests';
 import * as msk from '../lib';
 
@@ -34,6 +34,28 @@ class FeatureFlagStack extends cdk.Stack {
     // Test lazy instance of the AwsCustomResource
     new cdk.CfnOutput(this, 'BootstrapBrokers', { value: cluster.bootstrapBrokersTls });
     new cdk.CfnOutput(this, 'BootstrapBrokers2', { value: cluster.bootstrapBrokersTls });
+
+    // iam authenticated msk cluster integ test
+    const cluster2 = new msk.Cluster(this, 'ClusterIAM', {
+      clusterName: 'integ-test-iam-auth',
+      kafkaVersion: msk.KafkaVersion.V2_8_1,
+      vpc,
+      logging: {
+        s3: {
+          bucket: this.bucket,
+        },
+      },
+      encryptionInTransit: {
+        clientBroker: msk.ClientBrokerEncryption.TLS,
+      },
+      clientAuthentication: msk.ClientAuthentication.sasl({
+        iam: true,
+      }),
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    // Test lazy instance of the AwsCustomResource
+    new cdk.CfnOutput(this, 'BootstrapBrokers3', { value: cluster2.bootstrapBrokersSaslIam });
   }
 }
 

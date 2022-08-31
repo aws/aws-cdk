@@ -19,7 +19,7 @@
      "Payload": "{\"status\":\"OK\"}"
     },
     "flattenResponse": "false",
-    "salt": "1651691787842"
+    "salt": "1661796815696"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -38,50 +38,6 @@
      ]
     }
    }
-  },
-  "AwsApiCallSQSreceiveMessage": {
-   "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "SQS",
-    "api": "receiveMessage",
-    "parameters": {
-     "QueueUrl": {
-      "Fn::ImportValue": "aws-cdk-lambda-destinations:ExportsOutputRefQueue4A7E3555425E8BD3"
-     },
-     "WaitTimeSeconds": 20
-    },
-    "flattenResponse": "true",
-    "salt": "1651691787842"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallSQSreceiveMessageAssertEqualsSQSreceiveMessage56120636": {
-   "Type": "Custom::DeployAssert@AssertEquals",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "actual": {
-     "Fn::GetAtt": [
-      "AwsApiCallSQSreceiveMessage",
-      "apiCallResponse.Messages.0.Body"
-     ]
-    },
-    "expected": "{\"$ObjectLike\":{\"requestContext\":{\"condition\":\"Success\"},\"requestPayload\":{\"status\":\"OK\"},\"responseContext\":{\"statusCode\":200},\"responsePayload\":\"success\"}}",
-    "salt": "1651691787843"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
    "Type": "AWS::IAM::Role",
@@ -170,7 +126,7 @@
     "Runtime": "nodejs14.x",
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3BucketF7210344"
+      "Ref": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80"
      },
      "S3Key": {
       "Fn::Join": [
@@ -183,7 +139,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3VersionKey1E71961C"
+             "Ref": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE"
             }
            ]
           }
@@ -196,7 +152,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3VersionKey1E71961C"
+             "Ref": "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE"
             }
            ]
           }
@@ -215,6 +171,64 @@
      ]
     }
    }
+  },
+  "AwsApiCallSQSreceiveMessage": {
+   "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SQS",
+    "api": "receiveMessage",
+    "parameters": {
+     "QueueUrl": {
+      "Fn::ImportValue": "aws-cdk-lambda-destinations:ExportsOutputRefQueue4A7E3555425E8BD3"
+     },
+     "WaitTimeSeconds": 20
+    },
+    "flattenResponse": "true",
+    "salt": "1661796815696"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSQSreceiveMessageAssertEqualsSQSreceiveMessage56120636": {
+   "Type": "Custom::DeployAssert@AssertEquals",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "actual": {
+     "Fn::GetAtt": [
+      "AwsApiCallSQSreceiveMessage",
+      "apiCallResponse.Messages.0.Body"
+     ]
+    },
+    "expected": "{\"$ObjectLike\":{\"requestContext\":{\"condition\":\"Success\"},\"requestPayload\":{\"status\":\"OK\"},\"responseContext\":{\"statusCode\":200},\"responsePayload\":\"success\"}}",
+    "salt": "1661796815696"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3BucketA2BC9E80": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7\""
+  },
+  "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7S3VersionKeyB8E92EFE": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7\""
+  },
+  "AssetParameters84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7ArtifactHashB8137036": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7\""
   }
  },
  "Outputs": {
@@ -225,20 +239,6 @@
      "data"
     ]
    }
-  }
- },
- "Parameters": {
-  "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3BucketF7210344": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b\""
-  },
-  "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3VersionKey1E71961C": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b\""
-  },
-  "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bArtifactHash4F8362F2": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38b\""
   }
  }
 }

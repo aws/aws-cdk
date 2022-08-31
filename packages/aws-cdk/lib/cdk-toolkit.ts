@@ -930,7 +930,7 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
   readonly traceLogs?: boolean;
 
   /**
-   * Maximum number of simulatenous deployments (dependency permitting) to execute.
+   * Maximum number of simultaneous deployments (dependency permitting) to execute.
    * The default is '1', which executes all deployments serially.
    *
    * @default 1
@@ -1009,7 +1009,7 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
   readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
 
   /**
-   * Maximum number of simulatenous deployments (dependency permitting) to execute.
+   * Maximum number of simultaneous deployments (dependency permitting) to execute.
    * The default is '1', which executes all deployments serially.
    *
    * @default 1

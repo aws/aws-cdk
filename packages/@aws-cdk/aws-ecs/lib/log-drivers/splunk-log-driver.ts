@@ -37,11 +37,8 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
    *
    * The splunk-token is added to the SecretOptions property of the Log Driver Configuration. So the secret value will not be
    * resolved or viewable as plain text.
-   *
-   * Please provide at least one of `token` or `secretToken`.
-   * @default - If secret token is not provided, then the value provided in `token` will be used.
    */
-  readonly secretToken?: Secret;
+  readonly secretToken: Secret;
 
   /**
    * Path to your Splunk Enterprise, self-service Splunk Cloud instance, or Splunk

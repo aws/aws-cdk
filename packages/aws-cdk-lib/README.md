@@ -852,6 +852,9 @@ can be accessed from the `Fn` class, which provides type-safe methods for each
 intrinsic function as well as condition expressions:
 
 ```ts
+declare const myObjectOrArray: any;
+declare const myArray: any;
+
 // To use Fn::Base64
 Fn.base64('SGVsbG8gQ0RLIQo=');
 
@@ -863,6 +866,12 @@ Fn.conditionAnd(
   // The AWS::Region pseudo-parameter value is NOT equal to "us-east-1"
   Fn.conditionNot(Fn.conditionEquals('us-east-1', Aws.REGION)),
 );
+
+// To use Fn::ToJsonString
+Fn.toJsonString(myObjectOrArray);
+
+// To use Fn::Length
+Fn.len(Fn.split(',', myArray));
 ```
 
 When working with deploy-time values (those for which `Token.isUnresolved`
