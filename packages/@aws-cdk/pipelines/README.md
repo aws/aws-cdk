@@ -1563,6 +1563,87 @@ We recommend you avoid specifying the `cliVersion` parameter at all. By default
 the pipeline will use the latest CLI version, which will support all cloud assembly
 versions.
 
+## Using Drop-in Docker Replacements
+
+By default, the AWS CDK will build and publish Docker image assets using the
+`docker` command. However, by specifying the `CDK_DOCKER` environment variable,
+you can override the command that will be used to build and publish your
+assets.
+
+In CDK Pipelines, the drop-in replacement for the `docker` command must be
+included in the CodeBuild environment and configured for your pipeline:
+
+**Adding to the default CodeBuild image**
+
+```ts
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  selfMutation: false,
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console
+    }),
+    commands: [
+      'npm ci',
+      'npm run build',
+      'npx cdk synth',
+    ],
+  }),
+
+  // Configure CodeBuild to use a drop-in Docker replacement.
+  codeBuildDefaults: {
+    buildEnvironment: {
+      partialBuildSpec: Codebuild.BuildSpec.fromObject({
+        phases: {
+          install: {
+            commands: [
+              // Commands to install the 'drop-in-replacement' command.
+            ],
+          }
+        }
+      }),
+      environmentVariables: {
+        CDK_DOCKER: 'drop-in-replacement',
+      }
+    }
+  },
+
+  // Turn this on if the application uses bundled file assets
+  dockerEnableForSynth: true,
+});
+```
+
+**Using a custom build image**
+
+```ts
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  selfMutation: false,
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console
+    }),
+    commands: [
+      'npm ci',
+      'npm run build',
+      'npx cdk synth',
+    ],
+  }),
+
+  // Configure CodeBuild to use a drop-in Docker replacement.
+  codeBuildDefaults: {
+    buildEnvironment: {
+      // A build image that contains the `drop-in-replacement` command.
+      buildImage: codebuild.LinuxBuildImage.fromDockerRegistry('your-docker-registry'),
+      environmentVariables: {
+        CDK_DOCKER: 'drop-in-replacement',
+      }
+    }
+  },
+
+  // Turn this on if the application uses bundled file assets
+  dockerEnableForSynth: true,
+});
+```
+
 ## Known Issues
 
 There are some usability issues that are caused by underlying technology, and
