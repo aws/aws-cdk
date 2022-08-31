@@ -97,7 +97,7 @@ export interface AppProps {
    *
    * @default - no additional context
    */
-  readonly finalContext?: { [key: string]: any };
+  readonly postCliContext?: { [key: string]: any };
 
   /**
    * Include construct tree metadata as part of the Cloud Assembly.
@@ -143,7 +143,7 @@ export class App extends Stage {
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });
 
-    this.loadContext(props.context, props.finalContext);
+    this.loadContext(props.context, props.postCliContext);
 
     if (props.stackTraces === false) {
       this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);

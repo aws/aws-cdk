@@ -1084,57 +1084,14 @@ where context can be specified. They are listed below in the order they are eval
 top take precedence over those below).
 
 - The `node.setContext()` method
-
-```ts
-const app = new App();
-app.node.setContext('@aws-cdk/core:newStyleStackSynthesis', true);
-```
-
-- The `finalContext` prop when you create an `App`
-
-```ts
-new App({
-  finalContext: {
-    '@aws-cdk/core:newStyleStackSynthesis': true,
-  },
-});
-```
-
+- The `postCliContext` prop when you create an `App`
 - The CLI via the `--context` CLI argument
-
-```console
-cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
-```
-
 - The `cdk.json` file via the `context` key:
-
-```json
-{
-  "context": {
-    "@aws-cdk/core:newStyleStackSynthesis": true
-  }
-}
-```
-
 - The `cdk.context.json` file:
-
-```json
-{
-  "@aws-cdk/core:newStyleStackSynthesis": true
-}
-```
-
 - The `~/.cdk.json` file via the `context` key:
-
-```json
-{
-  "context": {
-    "@aws-cdk/core:newStyleStackSynthesis": true
-  }
-}
-```
-
 - The `context` prop when you create an `App`
+
+### Examples of setting context
 
 ```ts
 new App({
@@ -1142,6 +1099,45 @@ new App({
     '@aws-cdk/core:newStyleStackSynthesis': true,
   },
 });
+```
+
+```ts
+const app = new App();
+app.node.setContext('@aws-cdk/core:newStyleStackSynthesis', true);
+```
+
+```ts
+new App({
+  postCliContext: {
+    '@aws-cdk/core:newStyleStackSynthesis': true,
+  },
+});
+```
+
+```console
+cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
+```
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:newStyleStackSynthesis": true
+  }
+}
+```
+
+```json
+{
+  "@aws-cdk/core:newStyleStackSynthesis": true
+}
+```
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:newStyleStackSynthesis": true
+  }
+}
 ```
 
 <!--END CORE DOCUMENTATION-->

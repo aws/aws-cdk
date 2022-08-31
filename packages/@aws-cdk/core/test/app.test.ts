@@ -136,7 +136,7 @@ describe('app', () => {
         key1: 'val3',
         key2: 'val4',
       },
-      finalContext: {
+      postCliContext: {
         key1: 'val5',
         key2: 'val6',
       },
