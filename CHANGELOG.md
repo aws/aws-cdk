@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.170.1](https://github.com/aws/aws-cdk/compare/v1.170.0...v1.170.1) (2022-08-30)
+
+
+### Bug Fixes
+
+* **python:** NameError: name 'SubnetSelection' is not defined ([#21790](https://github.com/aws/aws-cdk/issues/21790)) ([eaaba39](https://github.com/aws/aws-cdk/commit/eaaba39e21f8b76dfa01cb5515a25d8600e73eee)), closes [#21790](https://github.com/aws/aws-cdk/issues/21790)
+
 ## [1.170.0](https://github.com/aws/aws-cdk/compare/v1.169.0...v1.170.0) (2022-08-25)
 
 
