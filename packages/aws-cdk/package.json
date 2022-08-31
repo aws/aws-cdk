@@ -95,7 +95,7 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@jsii/check-node": "1.65.1",
+    "@jsii/check-node": "1.66.0",
     "archiver": "^5.3.1",
     "aws-sdk": "^2.1093.0",
     "camelcase": "^6.3.0",
