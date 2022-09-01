@@ -11,6 +11,9 @@ ARG HTTPS_PROXY
 RUN pip install --upgrade pip
 
 # pipenv 2022.4.8 is the last version with Python 3.6 support
-RUN pip install pipenv==2022.4.8 poetry
+# poetry>=1.2 cannot use MD5 hashes for installing packages, which is the only hashes
+# AWS Code Artifact supports.
+# https://github.com/python-poetry/poetry/issues/6301
+RUN pip install pipenv==2022.4.8 poetry<1.2
 
 CMD [ "python" ]
