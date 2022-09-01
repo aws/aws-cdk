@@ -5,7 +5,7 @@
       "stacks": [
         "integ-distribution-http-version"
       ],
-      "assertionStack": "DistributionHttpVersionDefaultTestDeployAssert506965CB"
+      "assertionStack": "DistributionHttpVersion/DefaultTest/DeployAssert"
     }
   }
 }

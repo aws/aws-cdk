@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "d14d4d28827aa2ee0a3dde817ac455d876b4a26219717d3f160fc8c41ac04a5f": {
+      "source": {
+        "path": "aws-ecs-integ-fargate-multi-alb-health.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d14d4d28827aa2ee0a3dde817ac455d876b4a26219717d3f160fc8c41ac04a5f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -6,7 +6,7 @@ import * as integ from '@aws-cdk/integ-tests';
 import { NetworkLoadBalancedEc2Service } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-integ-nlb');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 
