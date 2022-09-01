@@ -5,7 +5,7 @@
       "stacks": [
         "aws-cdk-redshift-cluster-database"
       ],
-      "assertionStack": "awscdkredshiftelasticiptestDefaultTestDeployAssertEAC4B798"
+      "assertionStack": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert"
     }
   }
 }

@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "bc7daff8fffdf1e210ad96e35ac62379ac46eded3b44d51daf59b1a4cfcfd10f": {
+      "source": {
+        "path": "cdk-integ-elasticsearch-ultrawarm.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bc7daff8fffdf1e210ad96e35ac62379ac46eded3b44d51daf59b1a4cfcfd10f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -3,9 +3,9 @@
   "testCases": {
     "publicQueueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-fargate-special-listener"
       ],
-      "assertionStack": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6"
+      "assertionStack": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

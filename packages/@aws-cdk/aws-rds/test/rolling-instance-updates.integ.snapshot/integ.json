@@ -6,7 +6,7 @@
         "BulkUpdate",
         "RollingUpdate"
       ],
-      "assertionStack": "InstanceUpdateBehaviorTestsDefaultTestDeployAssert287956FD"
+      "assertionStack": "InstanceUpdateBehaviorTests/DefaultTest/DeployAssert"
     }
   }
 }

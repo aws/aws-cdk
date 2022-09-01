@@ -120,7 +120,11 @@
       "Value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "Ec2ClusterVpcPublicSubnet1DefaultRouteC7FBE273",
+    "Ec2ClusterVpcPublicSubnet1RouteTableAssociation9C78F646"
+   ]
   },
   "Ec2ClusterVpcPublicSubnet2Subnet207D9E5E": {
    "Type": "AWS::EC2::Subnet",
@@ -224,7 +228,11 @@
       "Value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "Ec2ClusterVpcPublicSubnet2DefaultRouteEBA52256",
+    "Ec2ClusterVpcPublicSubnet2RouteTableAssociation7615C6B2"
+   ]
   },
   "Ec2ClusterVpcPrivateSubnet1Subnet0AE9B91E": {
    "Type": "AWS::EC2::Subnet",
@@ -874,23 +882,7 @@
      {
       "Essential": true,
       "Image": {
-       "Fn::Join": [
-        "",
-        [
-         {
-          "Ref": "AWS::AccountId"
-         },
-         ".dkr.ecr.",
-         {
-          "Ref": "AWS::Region"
-         },
-         ".",
-         {
-          "Ref": "AWS::URLSuffix"
-         },
-         "/aws-cdk/assets:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
-        ]
-       ]
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -977,7 +969,10 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":repository/aws-cdk/assets"
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+          }
          ]
         ]
        }
@@ -1260,6 +1255,11 @@
   "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
   }
  },
  "Outputs": {
@@ -1361,6 +1361,33 @@
    "us-west-2": {
     "states": "states.us-west-2.amazonaws.com"
    }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }
