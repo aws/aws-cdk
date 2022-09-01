@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "integ-user-pool-resource-server.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-user-pool-resource-server.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "integ-user-pool-resource-server": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-user-pool-resource-server.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/049bd36f74620af6fc8d539c066135f807e1f738f45d6553a63580253593f5d2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-user-pool-resource-server.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "integ-user-pool-resource-server.assets"
+      ],
       "metadata": {
         "/integ-user-pool-resource-server/myuserpool/Resource": [
           {
@@ -45,40 +69,16 @@
             "data": "clientid"
           }
         ],
-        "myuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyFAAD57F1": [
+        "/integ-user-pool-resource-server/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyFAAD57F1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "BootstrapVersion"
           }
         ],
-        "myuserpoolclientDescribeCognitoUserPoolClient662FE3FB": [
+        "/integ-user-pool-resource-server/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myuserpoolclientDescribeCognitoUserPoolClient662FE3FB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AWS679f53fac002430cb0da5b7982bd22872D164C4C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
