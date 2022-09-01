@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.71"
+          "version": "10.1.85"
         }
       },
       "integ-apprunner": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "integ-apprunner/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "integ-apprunner/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +425,8 @@
                     "id": "Acl",
                     "path": "integ-apprunner/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +544,8 @@
                     "id": "Acl",
                     "path": "integ-apprunner/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -782,16 +782,16 @@
             "id": "URL6",
             "path": "integ-apprunner/URL6",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "ImportedVpcConnector": {
             "id": "ImportedVpcConnector",
             "path": "integ-apprunner/ImportedVpcConnector",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "Service7": {
@@ -843,20 +843,20 @@
             "id": "URL7",
             "path": "integ-apprunner/URL7",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }
