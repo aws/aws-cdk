@@ -660,7 +660,7 @@ describe('from string list parameter', () => {
     // THEN
     expect(() => {
       ssm.StringParameter.valueForTypedStringParameter(stack, 'my-param-name', ParameterType.STRING_LIST);
-    }).toThrow(/use valueForStringListParameter instead/);
+    }).toThrow(/use valueForTypedListParameter instead/);
   });
 
   testDeprecated('fromStringParameterAttributes list type throws error', () => {
