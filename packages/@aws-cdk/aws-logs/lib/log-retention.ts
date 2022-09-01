@@ -85,6 +85,11 @@ export class LogRetention extends Construct {
     // Custom resource provider
     const provider = this.ensureSingletonLogRetentionFunction(props);
 
+    // if removalPolicy is DESTROY, add action for DeleteLogGroup
+    if (props.removalPolicy === cdk.RemovalPolicy.DESTROY) {
+      provider.grantDeleteLogGroup(props.logGroupName);
+    }
+
     // Need to use a CfnResource here to prevent lerna dependency cycles
     // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
     const retryOptions = props.logRetentionRetryOptions;
@@ -134,8 +139,9 @@ export class LogRetention extends Construct {
  */
 class LogRetentionFunction extends Construct implements cdk.ITaggable {
   public readonly functionArn: cdk.Reference;
-
   public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Lambda::Function');
+
+  private readonly role: iam.IRole;
 
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
@@ -158,29 +164,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       // creates a CF circular dependency.
       resources: ['*'],
     }));
-    // if removalPolicy is DESTROY, add action for DeleteLogGroup and DeleteLogStream
-    if (props.removalPolicy === cdk.RemovalPolicy.DESTROY) {
-      role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['logs:DeleteLogGroup'],
-        //Only allow deleting the specific log group.
-        resources: [cdk.Stack.of(this).formatArn({
-          service: 'logs',
-          resource: 'log-group',
-          resourceName: `${props.logGroupName}:*`,
-          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-        })],
-      }));
-      role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['logs:DeleteLogStream'],
-        //Only allow deleting the specific log group.
-        resources: [cdk.Stack.of(this).formatArn({
-          service: 'logs',
-          resource: `log-group:${props.logGroupName}:log-stream`,
-          resourceName: '*',
-          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-        })],
-      }));
-    }
+    this.role = role;
 
     // Lambda function
     const resource = new cdk.CfnResource(this, 'Resource', {
@@ -209,5 +193,18 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
         resource.addDependsOn(child.node.defaultChild);
       }
     });
+  }
+
+  grantDeleteLogGroup(logGroupName: string) {
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['logs:DeleteLogGroup'],
+      //Only allow deleting the specific log group.
+      resources: [cdk.Stack.of(this).formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        resourceName: `${logGroupName}:*`,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })],
+    }));
   }
 }
