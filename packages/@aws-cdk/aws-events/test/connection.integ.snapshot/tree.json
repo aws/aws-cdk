@@ -1,0 +1,106 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "IntegConnectionStack": {
+        "id": "IntegConnectionStack",
+        "path": "IntegConnectionStack",
+        "children": {
+          "Connection": {
+            "id": "Connection",
+            "path": "IntegConnectionStack/Connection",
+            "children": {
+              "Connection": {
+                "id": "Connection",
+                "path": "IntegConnectionStack/Connection/Connection",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Connection",
+                  "aws:cdk:cloudformation:props": {
+                    "authorizationType": "API_KEY",
+                    "authParameters": {
+                      "apiKeyAuthParameters": {
+                        "apiKeyName": "keyname",
+                        "apiKeyValue": "keyvalue"
+                      },
+                      "invocationHttpParameters": {
+                        "headerParameters": [
+                          {
+                            "key": "content-type",
+                            "value": "application/json",
+                            "isValueSecret": false
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnConnection",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.Connection",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ConnectionTest": {
+        "id": "ConnectionTest",
+        "path": "ConnectionTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ConnectionTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ConnectionTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ConnectionTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

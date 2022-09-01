@@ -1,0 +1,25 @@
+{
+ "Resources": {
+  "Connection07624BCD": {
+   "Type": "AWS::Events::Connection",
+   "Properties": {
+    "AuthorizationType": "API_KEY",
+    "AuthParameters": {
+     "ApiKeyAuthParameters": {
+      "ApiKeyName": "keyname",
+      "ApiKeyValue": "keyvalue"
+     },
+     "InvocationHttpParameters": {
+      "HeaderParameters": [
+       {
+        "IsValueSecret": false,
+        "Key": "content-type",
+        "Value": "application/json"
+       }
+      ]
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,37 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "IntegConnectionStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegConnectionStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/IntegConnectionStack/Connection/Connection": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Connection07624BCD"
+          }
+        ]
+      },
+      "displayName": "IntegConnectionStack"
+    },
+    "ConnectionTestDefaultTestDeployAssertBA181C0F": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ConnectionTestDefaultTestDeployAssertBA181C0F.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "ConnectionTest/DefaultTest/DeployAssert"
+    }
+  }
+}
