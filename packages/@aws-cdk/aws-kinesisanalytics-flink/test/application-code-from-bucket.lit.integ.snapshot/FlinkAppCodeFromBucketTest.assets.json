@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "files": {
     "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "5d987383da354a8f070aa7573df3dfcd74a8aaab72453d5c699f5f07fa515eb9": {
+    "29b6babcdc09f7011be31e1014e8b548e391623adf4fedfc5ba3e9dace27c968": {
       "source": {
         "path": "FlinkAppCodeFromBucketTest.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5d987383da354a8f070aa7573df3dfcd74a8aaab72453d5c699f5f07fa515eb9.json",
+          "objectKey": "29b6babcdc09f7011be31e1014e8b548e391623adf4fedfc5ba3e9dace27c968.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

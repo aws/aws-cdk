@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.85"
         }
       },
       "aws-cdk-codepipeline-cloudformation": {
@@ -105,7 +105,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                       "aws:cdk:cloudformation:props": {
-                        "aliasName": "alias/codepipeline-awscdkcodepipelinecloudformationpipeline7dbde619",
+                        "aliasName": "alias/codepipeline-aws-cdk-codepipeline-cloudformation-pipeline-7dbde619",
                         "targetKeyId": {
                           "Fn::GetAtt": [
                             "PipelineArtifactsBucketEncryptionKey01D58D69",
@@ -698,13 +698,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.85"
                 }
               },
               "Deploy": {
@@ -764,7 +764,7 @@
                             "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Deploy/PrepareChanges/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.0.9"
+                              "version": "10.1.85"
                             }
                           },
                           "DefaultPolicy": {
@@ -1014,7 +1014,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.85"
                     }
                   },
                   "ApproveChanges": {
@@ -1074,7 +1074,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.85"
                     }
                   },
                   "ExecuteChanges": {
@@ -1130,7 +1130,7 @@
                             "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Deploy/ExecuteChanges/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.0.9"
+                              "version": "10.1.85"
                             }
                           },
                           "DefaultPolicy": {
@@ -1209,13 +1209,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.85"
                 }
               }
             },
@@ -1226,14 +1226,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

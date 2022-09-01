@@ -1,4 +1,5 @@
 import { CreateChangeSetInput } from 'aws-sdk/clients/cloudformation';
+import { parse } from 'yaml';
 import { Bootstrapper } from '../../lib/api/bootstrap';
 import { deserializeStructure } from '../../lib/serialize';
 import { MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
@@ -296,4 +297,24 @@ test('stack is termination protected when set', async () => {
   // THEN
   expect(executed).toBeTruthy();
   expect(protectedTermination).toBeTruthy();
+});
+
+test('do showTemplate YAML', async () => {
+  process.stdout.write = jest.fn().mockImplementationOnce((template) => {
+    // THEN
+    expect(parse(template)).toHaveProperty('Description', 'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.');
+  });
+
+  // WHEN
+  await bootstrapper.showTemplate(false);
+});
+
+test('do showTemplate JSON', async () => {
+  process.stdout.write = jest.fn().mockImplementationOnce((template) => {
+    // THEN
+    expect(JSON.parse(template)).toHaveProperty('Description', 'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.');
+  });
+
+  // WHEN
+  await bootstrapper.showTemplate(true);
 });

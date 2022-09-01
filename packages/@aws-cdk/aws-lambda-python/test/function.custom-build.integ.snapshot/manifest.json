@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "cdk-integ-lambda-custom-build.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-lambda-custom-build.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "cdk-integ-lambda-custom-build": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-lambda-custom-build.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/cdk-integ-lambda-custom-build": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82",
-              "id": "89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82",
-              "packaging": "zip",
-              "sourceHash": "89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82",
-              "s3BucketParameter": "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82S3BucketC9B359BB",
-              "s3KeyParameter": "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82S3VersionKeyBF16F8DD",
-              "artifactHashParameter": "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82ArtifactHashFF99ACF4"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a55d53ade2b8a8371454f5560cd4016fc7558d30dded2109b5ad4221bccced10.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-lambda-custom-build.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-lambda-custom-build.assets"
+      ],
+      "metadata": {
         "/cdk-integ-lambda-custom-build/my_handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -41,28 +51,22 @@
             "data": "myhandlerD202FA8E"
           }
         ],
-        "/cdk-integ-lambda-custom-build/AssetParameters/89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82S3BucketC9B359BB"
-          }
-        ],
-        "/cdk-integ-lambda-custom-build/AssetParameters/89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82S3VersionKeyBF16F8DD"
-          }
-        ],
-        "/cdk-integ-lambda-custom-build/AssetParameters/89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82ArtifactHashFF99ACF4"
-          }
-        ],
         "/cdk-integ-lambda-custom-build/FunctionArn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FunctionArn"
+          }
+        ],
+        "/cdk-integ-lambda-custom-build/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-lambda-custom-build/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

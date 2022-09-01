@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "ChatbotLogRetentionInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ChatbotLogRetentionInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "ChatbotLogRetentionInteg": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "ChatbotLogRetentionInteg.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/ChatbotLogRetentionInteg": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665",
-              "id": "22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665",
-              "packaging": "zip",
-              "sourceHash": "22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665",
-              "s3BucketParameter": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3Bucket0D8A173B",
-              "s3KeyParameter": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332",
-              "artifactHashParameter": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665ArtifactHashF4A1E70E"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/99a36eb4f06baf7fc18c9d97a7558266d81bb3ba32434c95fceca54221c29668.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ChatbotLogRetentionInteg.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ChatbotLogRetentionInteg.assets"
+      ],
+      "metadata": {
         "/ChatbotLogRetentionInteg/MySlackChannel/ConfigurationRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -71,22 +81,16 @@
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
-        "/ChatbotLogRetentionInteg/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/S3Bucket": [
+        "/ChatbotLogRetentionInteg/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3Bucket0D8A173B"
+            "data": "BootstrapVersion"
           }
         ],
-        "/ChatbotLogRetentionInteg/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/S3VersionKey": [
+        "/ChatbotLogRetentionInteg/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332"
-          }
-        ],
-        "/ChatbotLogRetentionInteg/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665ArtifactHashF4A1E70E"
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

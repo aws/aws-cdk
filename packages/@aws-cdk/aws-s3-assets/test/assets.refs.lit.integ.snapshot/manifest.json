@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,46 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-asset-refs.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-asset-refs.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-asset-refs": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-asset-refs.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f62e8c4cf09a5c38ec0c5085a9012837a76ff2548608d8330c7a3754865ccd6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-asset-refs.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "aws-cdk-asset-refs.assets"
+      ],
       "metadata": {
-        "/aws-cdk-asset-refs": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2",
-              "id": "6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2",
-              "packaging": "zip",
-              "sourceHash": "6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2",
-              "s3BucketParameter": "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B",
-              "s3KeyParameter": "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9",
-              "artifactHashParameter": "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD"
-            }
-          }
-        ],
-        "/aws-cdk-asset-refs/AssetParameters/6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B"
-          }
-        ],
-        "/aws-cdk-asset-refs/AssetParameters/6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9"
-          }
-        ],
-        "/aws-cdk-asset-refs/AssetParameters/6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD"
-          }
-        ],
         "/aws-cdk-asset-refs/S3BucketName": [
           {
             "type": "aws:cdk:logicalId",
@@ -81,6 +73,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyUserDefaultPolicy7B897426"
+          }
+        ],
+        "/aws-cdk-asset-refs/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-asset-refs/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

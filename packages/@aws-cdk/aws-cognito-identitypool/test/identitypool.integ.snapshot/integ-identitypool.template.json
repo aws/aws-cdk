@@ -31,7 +31,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "PoolUserPoolAuthenticationProviderClient20F2FFC4": {
+  "PooltestClientFE8D4935": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
     "UserPoolId": {
@@ -170,7 +170,7 @@
     "CognitoIdentityProviders": [
      {
       "ClientId": {
-       "Ref": "PoolUserPoolAuthenticationProviderClient20F2FFC4"
+       "Ref": "PooltestClientFE8D4935"
       },
       "ProviderName": {
        "Fn::Join": [
@@ -229,7 +229,7 @@
     "OtherPool7DA7F2F7",
     "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
     "PoolD3F588B8",
-    "PoolUserPoolAuthenticationProviderClient20F2FFC4"
+    "PooltestClientFE8D4935"
    ]
   },
   "identitypoolAuthenticatedRoleB074B49D": {
@@ -276,7 +276,7 @@
     "OtherPool7DA7F2F7",
     "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
     "PoolD3F588B8",
-    "PoolUserPoolAuthenticationProviderClient20F2FFC4"
+    "PooltestClientFE8D4935"
    ]
   },
   "identitypoolAuthenticatedRoleDefaultPolicyCB4D2992": {
@@ -303,7 +303,7 @@
     "OtherPool7DA7F2F7",
     "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
     "PoolD3F588B8",
-    "PoolUserPoolAuthenticationProviderClient20F2FFC4"
+    "PooltestClientFE8D4935"
    ]
   },
   "identitypoolUnauthenticatedRoleE61CAC70": {
@@ -350,7 +350,7 @@
     "OtherPool7DA7F2F7",
     "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
     "PoolD3F588B8",
-    "PoolUserPoolAuthenticationProviderClient20F2FFC4"
+    "PooltestClientFE8D4935"
    ]
   },
   "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98": {
@@ -377,7 +377,7 @@
     "OtherPool7DA7F2F7",
     "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
     "PoolD3F588B8",
-    "PoolUserPoolAuthenticationProviderClient20F2FFC4"
+    "PooltestClientFE8D4935"
    ]
   },
   "identitypoolDefaultRoleAttachment6BCAB114": {
@@ -385,6 +385,29 @@
    "Properties": {
     "IdentityPoolId": {
      "Ref": "identitypoolE2A6D099"
+    },
+    "RoleMappings": {
+     "theKey": {
+      "AmbiguousRoleResolution": "Deny",
+      "IdentityProvider": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::GetAtt": [
+           "PoolD3F588B8",
+           "ProviderName"
+          ]
+         },
+         ":",
+         {
+          "Ref": "PooltestClientFE8D4935"
+         }
+        ]
+       ]
+      },
+      "Type": "Token"
+     }
     },
     "Roles": {
      "authenticated": {
@@ -399,27 +422,47 @@
        "Arn"
       ]
      }
-    },
-    "RoleMappings": {
-     "www.amazon.com": {
-      "AmbiguousRoleResolution": "Deny",
-      "IdentityProvider": "www.amazon.com",
-      "Type":"Token"
-     },
-     "theKey":{
-      "AmbiguousRoleResolution": "Deny",
-      "IdentityProvider": {
-       "Fn::ImportValue": "ProviderUrl"
-      },
-      "Type":"Token"
-     }
     }
    },
    "DependsOn": [
     "OtherPool7DA7F2F7",
     "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
     "PoolD3F588B8",
-    "PoolUserPoolAuthenticationProviderClient20F2FFC4"
+    "PooltestClientFE8D4935"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
    ]
   }
  }

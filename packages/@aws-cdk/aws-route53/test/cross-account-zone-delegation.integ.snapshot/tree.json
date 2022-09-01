@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.85"
         }
       },
       "aws-cdk-route53-cross-account-integ": {
@@ -225,8 +225,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "CrossAccountZoneDelegationCustomResource": {
@@ -237,14 +237,14 @@
                     "id": "Default",
                     "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId/CrossAccountZoneDelegationCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -261,74 +261,30 @@
                 "id": "Staging",
                 "path": "aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CustomResourceProvider",
-              "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "aws-cdk-route53-cross-account-integ/AssetParameters",
-            "children": {
-              "7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a": {
-                "id": "7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a",
-                "path": "aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.0.9"
+              "version": "10.1.85"
             }
           },
           "ChildHostedZoneWithZoneName": {
@@ -432,8 +388,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "CrossAccountZoneDelegationCustomResource": {
@@ -444,14 +400,14 @@
                     "id": "Default",
                     "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName/CrossAccountZoneDelegationCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -462,14 +418,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "cdk-integ-lambda-python-38.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-lambda-python-38.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "cdk-integ-lambda-python-38": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-lambda-python-38.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/cdk-integ-lambda-python-38": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1",
-              "id": "4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1",
-              "packaging": "zip",
-              "sourceHash": "4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1",
-              "s3BucketParameter": "AssetParameters4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1S3Bucket5B8D7C52",
-              "s3KeyParameter": "AssetParameters4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1S3VersionKey0715561F",
-              "artifactHashParameter": "AssetParameters4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1ArtifactHash100AAF6A"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d6ffbf3ee613bc8f0ca6cd812d528f166a0f706ff538a0eb33908bf02ef7dff3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-lambda-python-38.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-lambda-python-38.assets"
+      ],
+      "metadata": {
         "/cdk-integ-lambda-python-38/my_handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -41,28 +51,22 @@
             "data": "myhandlerD202FA8E"
           }
         ],
-        "/cdk-integ-lambda-python-38/AssetParameters/4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1S3Bucket5B8D7C52"
-          }
-        ],
-        "/cdk-integ-lambda-python-38/AssetParameters/4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1S3VersionKey0715561F"
-          }
-        ],
-        "/cdk-integ-lambda-python-38/AssetParameters/4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters4a949a5774e8a2699d0b66a55a050fe808fa208984e9adc4a02401d47ab68bf1ArtifactHash100AAF6A"
-          }
-        ],
         "/cdk-integ-lambda-python-38/FunctionArn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FunctionArn"
+          }
+        ],
+        "/cdk-integ-lambda-python-38/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-lambda-python-38/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

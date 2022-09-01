@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "0855d28e1ae8eb9c4a9983618a4a8f9fb7d855db9d682bc841a73d78c4eef8a2": {
+      "source": {
+        "path": "aws-ecs-integ-fargate-multi-nlb-health.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0855d28e1ae8eb9c4a9983618a4a8f9fb7d855db9d682bc841a73d78c4eef8a2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

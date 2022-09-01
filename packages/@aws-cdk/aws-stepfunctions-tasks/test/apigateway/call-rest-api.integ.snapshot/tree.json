@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.63"
+          "version": "10.1.85"
         }
       },
       "CallRestApiInteg": {
@@ -163,8 +163,8 @@
                 "id": "Endpoint",
                 "path": "CallRestApiInteg/MyRestApi/Endpoint",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "Default": {
@@ -591,22 +591,22 @@
             "id": "stateMachineArn",
             "path": "CallRestApiInteg/stateMachineArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "Service-principalMap": {
             "id": "Service-principalMap",
             "path": "CallRestApiInteg/Service-principalMap",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnMapping",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "call-rest-api": {
@@ -622,15 +622,15 @@
                 "path": "call-rest-api/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.63"
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "call-rest-api/DefaultTest/DeployAssert",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -647,8 +647,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

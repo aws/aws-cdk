@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "a389d7e9f2a0c88704abdc26f4d459304fb00ac5e25b50f81ebb1e0c39670def": {
+      "source": {
+        "path": "aws-ecs-integ-alb-idle-timeout.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a389d7e9f2a0c88704abdc26f4d459304fb00ac5e25b50f81ebb1e0c39670def.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

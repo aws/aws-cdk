@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.85"
         }
       },
       "aws-appsync-integ": {
@@ -134,6 +134,14 @@
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-appsync.CfnApiKey",
                   "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "aws-appsync-integ/Api/LogGroup",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "none": {
@@ -2446,8 +2454,8 @@
                 "id": "ScalingRole",
                 "path": "aws-appsync-integ/CustomerTable/ScalingRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -2516,8 +2524,8 @@
                 "id": "ScalingRole",
                 "path": "aws-appsync-integ/OrderTable/ScalingRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -2560,8 +2568,8 @@
                 "id": "ScalingRole",
                 "path": "aws-appsync-integ/PaymentTable/ScalingRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -2574,20 +2582,20 @@
             "id": "ImportedPaymentTable",
             "path": "aws-appsync-integ/ImportedPaymentTable",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

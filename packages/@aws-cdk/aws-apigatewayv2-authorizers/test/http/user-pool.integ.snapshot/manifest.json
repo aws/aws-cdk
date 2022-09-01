@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "AuthorizerInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AuthorizerInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "AuthorizerInteg": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "AuthorizerInteg.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/AuthorizerInteg": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cd.handler",
-              "id": "7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cd",
-              "packaging": "zip",
-              "sourceHash": "7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cd",
-              "s3BucketParameter": "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdS3Bucket0AFE1748",
-              "s3KeyParameter": "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdS3VersionKey8E654BCC",
-              "artifactHashParameter": "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdArtifactHashC4761AE9"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1fc11fe2e695e78d8a1c9d9e0932310c86abef781c83ca4b89ba535f69acb9b2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AuthorizerInteg.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AuthorizerInteg.assets"
+      ],
+      "metadata": {
         "/AuthorizerInteg/MyHttpApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -89,22 +99,16 @@
             "data": "lambda8B5974B5"
           }
         ],
-        "/AuthorizerInteg/AssetParameters/7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cd/S3Bucket": [
+        "/AuthorizerInteg/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdS3Bucket0AFE1748"
+            "data": "BootstrapVersion"
           }
         ],
-        "/AuthorizerInteg/AssetParameters/7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cd/S3VersionKey": [
+        "/AuthorizerInteg/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdS3VersionKey8E654BCC"
-          }
-        ],
-        "/AuthorizerInteg/AssetParameters/7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cd/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdArtifactHashC4761AE9"
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

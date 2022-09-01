@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "14a027c1e773c525a264feb8611e0c8902f7587c9596a6bc59810bc985be81a9": {
+      "source": {
+        "path": "cdk-integ-elasticsearch-advancedsecurity.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "14a027c1e773c525a264feb8611e0c8902f7587c9596a6bc59810bc985be81a9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

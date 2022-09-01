@@ -5,7 +5,7 @@
       "stacks": [
         "iotevents-put-message-action-test-stack"
       ],
-      "assertionStack": "ioteventsDefaultTestDeployAssertE216288D"
+      "assertionStack": "iotevents/DefaultTest/DeployAssert"
     }
   }
 }

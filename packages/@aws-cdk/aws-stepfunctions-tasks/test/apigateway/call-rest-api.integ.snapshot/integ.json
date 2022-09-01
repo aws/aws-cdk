@@ -5,7 +5,7 @@
       "stacks": [
         "CallRestApiInteg"
       ],
-      "assertionStack": "callrestapiDefaultTestDeployAssert9913150A"
+      "assertionStack": "call-rest-api/DefaultTest/DeployAssert"
     }
   }
 }

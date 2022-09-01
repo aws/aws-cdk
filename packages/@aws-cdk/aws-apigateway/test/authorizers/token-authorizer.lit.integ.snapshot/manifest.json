@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "TokenAuthorizerInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TokenAuthorizerInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "TokenAuthorizerInteg": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "TokenAuthorizerInteg.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/TokenAuthorizerInteg": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3.handler",
-              "id": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3",
-              "packaging": "zip",
-              "sourceHash": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3",
-              "s3BucketParameter": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3Bucket2E551A38",
-              "s3KeyParameter": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621",
-              "artifactHashParameter": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3ArtifactHashD7A29DA9"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d121ee9744a20c9af43e516c8fb4fe93d1ed9b26130e2db68ed9534c7104c866.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TokenAuthorizerInteg.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TokenAuthorizerInteg.assets"
+      ],
+      "metadata": {
         "/TokenAuthorizerInteg/MyAuthorizerFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -45,24 +55,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyAuthorizerFunctionTokenAuthorizerIntegMyAuthorizer793B1D5FPermissions7557AE26"
-          }
-        ],
-        "/TokenAuthorizerInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3Bucket2E551A38"
-          }
-        ],
-        "/TokenAuthorizerInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621"
-          }
-        ],
-        "/TokenAuthorizerInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3ArtifactHashD7A29DA9"
           }
         ],
         "/TokenAuthorizerInteg/MyRestApi/Resource": [
@@ -111,6 +103,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyAuthorizer6575980E"
+          }
+        ],
+        "/TokenAuthorizerInteg/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TokenAuthorizerInteg/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

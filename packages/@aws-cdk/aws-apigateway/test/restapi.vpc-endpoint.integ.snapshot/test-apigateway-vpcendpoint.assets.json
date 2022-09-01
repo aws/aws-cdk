@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "8e48bac03532a132f29ca387e2a53510c1c64533b901fc1d49edbc90593321a4": {
+      "source": {
+        "path": "test-apigateway-vpcendpoint.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8e48bac03532a132f29ca387e2a53510c1c64533b901fc1d49edbc90593321a4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

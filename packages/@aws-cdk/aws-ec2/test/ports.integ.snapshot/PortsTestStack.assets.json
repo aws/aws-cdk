@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "74fbccffb88016dde84f49d49e50202d9131c2bdf4e02f8c79fc5f7355740cd0": {
+      "source": {
+        "path": "PortsTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "74fbccffb88016dde84f49d49e50202d9131c2bdf4e02f8c79fc5f7355740cd0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

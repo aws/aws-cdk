@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "cors-twitch-test.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cors-twitch-test.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "cors-twitch-test": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cors-twitch-test.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/cors-twitch-test": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f.handler",
-              "id": "c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f",
-              "packaging": "zip",
-              "sourceHash": "c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f",
-              "s3BucketParameter": "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fS3BucketE85F411C",
-              "s3KeyParameter": "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fS3VersionKeyF02404BC",
-              "artifactHashParameter": "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fArtifactHash6742F1C9"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba5dee6e1f1d18e08b8875856fa71d14724d042519cd5803e3176d4ec31e83b3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cors-twitch-test.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cors-twitch-test.assets"
+      ],
+      "metadata": {
         "/cors-twitch-test/cors-api-test/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -143,33 +153,65 @@
             "data": "handlerE1533BD5"
           }
         ],
-        "/cors-twitch-test/AssetParameters/c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f/S3Bucket": [
+        "/cors-twitch-test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fS3BucketE85F411C"
+            "data": "BootstrapVersion"
           }
         ],
-        "/cors-twitch-test/AssetParameters/c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f/S3VersionKey": [
+        "/cors-twitch-test/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fS3VersionKeyF02404BC"
-          }
-        ],
-        "/cors-twitch-test/AssetParameters/c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersc7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4fArtifactHash6742F1C9"
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
       "displayName": "cors-twitch-test"
+    },
+    "corsDefaultTestDeployAssert5CF8F851.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "corsDefaultTestDeployAssert5CF8F851.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
     },
     "corsDefaultTestDeployAssert5CF8F851": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "corsDefaultTestDeployAssert5CF8F851.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "corsDefaultTestDeployAssert5CF8F851.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "corsDefaultTestDeployAssert5CF8F851.assets"
+      ],
+      "metadata": {
+        "/cors/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cors/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
       },
       "displayName": "cors/DefaultTest/DeployAssert"
     }

@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-lambda-log-retention.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-lambda-log-retention.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-lambda-log-retention": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-lambda-log-retention.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-cdk-lambda-log-retention": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665",
-              "id": "22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665",
-              "packaging": "zip",
-              "sourceHash": "22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665",
-              "s3BucketParameter": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3Bucket0D8A173B",
-              "s3KeyParameter": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332",
-              "artifactHashParameter": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665ArtifactHashF4A1E70E"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/565671f07704dec45a94362d4c9166d9e510a62338c5590cbe8fa62564a5043f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-lambda-log-retention.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-lambda-log-retention.assets"
+      ],
+      "metadata": {
         "/aws-cdk-lambda-log-retention/OneWeek/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -65,24 +75,6 @@
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
-        "/aws-cdk-lambda-log-retention/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3Bucket0D8A173B"
-          }
-        ],
-        "/aws-cdk-lambda-log-retention/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332"
-          }
-        ],
-        "/aws-cdk-lambda-log-retention/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665ArtifactHashF4A1E70E"
-          }
-        ],
         "/aws-cdk-lambda-log-retention/OneMonth/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -117,6 +109,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "OneYearLogRetentionBD83A067"
+          }
+        ],
+        "/aws-cdk-lambda-log-retention/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-lambda-log-retention/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

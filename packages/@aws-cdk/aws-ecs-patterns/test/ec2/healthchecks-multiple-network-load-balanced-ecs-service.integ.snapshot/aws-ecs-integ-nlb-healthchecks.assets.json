@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "938593a91bfaf1c51b2786679a99cf16ac6ca72a04f09a1ec6ee950cbdfa0333": {
+      "source": {
+        "path": "aws-ecs-integ-nlb-healthchecks.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "938593a91bfaf1c51b2786679a99cf16ac6ca72a04f09a1ec6ee950cbdfa0333.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

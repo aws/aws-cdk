@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.85"
         }
       },
       "aws-cdk-ses-receipt": {
@@ -581,8 +581,8 @@
                     "id": "Stage",
                     "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -607,41 +607,9 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34S3Bucket6AFCBA5F"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34S3VersionKey02BA9086"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34S3VersionKey02BA9086"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -687,61 +655,17 @@
               "fqn": "@aws-cdk/aws-lambda.Function",
               "version": "0.0.0"
             }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "aws-cdk-ses-receipt/AssetParameters",
-            "children": {
-              "96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34": {
-                "id": "96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34",
-                "path": "aws-cdk-ses-receipt/AssetParameters/96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "aws-cdk-ses-receipt/AssetParameters/96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "aws-cdk-ses-receipt/AssetParameters/96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "aws-cdk-ses-receipt/AssetParameters/96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.9"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.0.9"
-            }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

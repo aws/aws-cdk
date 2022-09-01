@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.85"
         }
       },
       "canary-one": {
@@ -431,8 +431,8 @@
                     "id": "Stage",
                     "path": "canary-one/MyCanaryOne/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -469,41 +469,9 @@
                     "code": {
                       "handler": "canary.handler",
                       "s3Bucket": {
-                        "Ref": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbS3Bucket59F507C2"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbS3VersionKeyEFB5FFF8"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbS3VersionKeyEFB5FFF8"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb.zip"
                     },
                     "executionRoleArn": {
                       "Fn::GetAtt": [
@@ -529,84 +497,6 @@
             "constructInfo": {
               "fqn": "@aws-cdk/aws-synthetics.Canary",
               "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "canary-one/AssetParameters",
-            "children": {
-              "9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb": {
-                "id": "9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb",
-                "path": "canary-one/AssetParameters/9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "canary-one/AssetParameters/9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "canary-one/AssetParameters/9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "canary-one/AssetParameters/9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.9"
-                }
-              },
-              "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820": {
-                "id": "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820",
-                "path": "canary-one/AssetParameters/b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "canary-one/AssetParameters/b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "canary-one/AssetParameters/b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "canary-one/AssetParameters/b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.9"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.0.9"
             }
           },
           "MyCanaryTwo": {
@@ -834,8 +724,8 @@
                     "id": "Stage",
                     "path": "canary-one/MyCanaryTwo/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -872,41 +762,9 @@
                     "code": {
                       "handler": "canary.handler",
                       "s3Bucket": {
-                        "Ref": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3Bucket705C3761"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3VersionKeyE546342B"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3VersionKeyE546342B"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820.zip"
                     },
                     "executionRoleArn": {
                       "Fn::GetAtt": [
@@ -1159,8 +1017,8 @@
                     "id": "Stage",
                     "path": "canary-one/MyCanaryThree/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -1197,41 +1055,9 @@
                     "code": {
                       "handler": "canary.handler",
                       "s3Bucket": {
-                        "Ref": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3Bucket705C3761"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3VersionKeyE546342B"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3VersionKeyE546342B"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820.zip"
                     },
                     "executionRoleArn": {
                       "Fn::GetAtt": [
@@ -1484,8 +1310,8 @@
                     "id": "Stage",
                     "path": "canary-one/MyPythonCanary/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -1522,41 +1348,9 @@
                     "code": {
                       "handler": "canary.handler",
                       "s3Bucket": {
-                        "Ref": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbS3Bucket59F507C2"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbS3VersionKeyEFB5FFF8"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bbS3VersionKeyEFB5FFF8"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb.zip"
                     },
                     "executionRoleArn": {
                       "Fn::GetAtt": [
@@ -1586,14 +1380,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

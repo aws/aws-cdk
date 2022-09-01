@@ -7,58 +7,46 @@
     "Code": {
      "S3": {
       "Bucket": {
-       "Ref": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3BucketD4E005C8"
+       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
       },
-      "Key": {
-       "Fn::Join": [
-        "",
-        [
-         {
-          "Fn::Select": [
-           0,
-           {
-            "Fn::Split": [
-             "||",
-             {
-              "Ref": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3VersionKey52BCEABD"
-             }
-            ]
-           }
-          ]
-         },
-         {
-          "Fn::Select": [
-           1,
-           {
-            "Fn::Split": [
-             "||",
-             {
-              "Ref": "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3VersionKey52BCEABD"
-             }
-            ]
-           }
-          ]
-         }
-        ]
-       ]
-      }
+      "Key": "32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3.zip"
      }
     }
    }
   }
  },
  "Parameters": {
-  "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3BucketD4E005C8": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3\""
-  },
-  "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3S3VersionKey52BCEABD": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3\""
-  },
-  "AssetParameters32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3ArtifactHash1A78403B": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"32b8e8a8b79a84deb31e4d456dbcf3e40937f201633ae38c9e90e15b82084ae3\""
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

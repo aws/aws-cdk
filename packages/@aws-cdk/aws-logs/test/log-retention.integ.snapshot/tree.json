@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.49"
+          "version": "10.1.85"
         }
       },
       "aws-cdk-log-retention-integ": {
@@ -24,8 +24,8 @@
                 "id": "Resource",
                 "path": "aws-cdk-log-retention-integ/MyLambda/Resource",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -46,8 +46,8 @@
                     "id": "Stage",
                     "path": "aws-cdk-log-retention-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -207,64 +207,20 @@
                 "id": "Resource",
                 "path": "aws-cdk-log-retention-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.49"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "aws-cdk-log-retention-integ/AssetParameters",
-            "children": {
-              "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347": {
-                "id": "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
-                "path": "aws-cdk-log-retention-integ/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "aws-cdk-log-retention-integ/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "aws-cdk-log-retention-integ/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "aws-cdk-log-retention-integ/AssetParameters/d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.49"
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.49"
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "LogRetentionInteg": {
@@ -280,15 +236,15 @@
                 "path": "LogRetentionInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.49"
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "LogRetentionInteg/DefaultTest/DeployAssert",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -305,8 +261,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }
