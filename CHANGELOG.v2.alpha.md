@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.40.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.39.1-alpha.0...v2.40.0-alpha.0) (2022-08-31)
+
+
+### Features
+
+* **glue:** Added value to PythonVersion enum ([#21670](https://github.com/aws/aws-cdk/issues/21670)) ([9774d4c](https://github.com/aws/aws-cdk/commit/9774d4ce11287d91278290369dc783a83d784fdf)), closes [#21568](https://github.com/aws/aws-cdk/issues/21568) [/github.com/aws/aws-cdk/issues/21568#issuecomment-1219668861](https://github.com/aws//github.com/aws/aws-cdk/issues/21568/issues/issuecomment-1219668861)
+* **msk:** added msk cluster sasl iam property ([#21798](https://github.com/aws/aws-cdk/issues/21798)) ([d30a530](https://github.com/aws/aws-cdk/commit/d30a530a68d97ac455125bf4a2154a31adcb9582))
+
+
+### Bug Fixes
+
+* **integ-runner:** array arguments aren't recognizing multiple options ([#21763](https://github.com/aws/aws-cdk/issues/21763)) ([d942324](https://github.com/aws/aws-cdk/commit/d942324cef7646397f9359dfb91819ded72874b0)), closes [#20384](https://github.com/aws/aws-cdk/issues/20384)
+
+## [2.39.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.39.0-alpha.0...v2.39.1-alpha.0) (2022-08-29)
+
+
+### Bug Fixes
+
+* **python:** NameError name 'SubnetSelection' is not defined ([#21790](https://github.com/aws/aws-cdk/issues/21790)) ([eaaba39](https://github.com/aws/aws-cdk/commit/eaaba39e21f8b76dfa01cb5515a25d8600e73eee)), closes [#21790](https://github.com/aws/aws-cdk/issues/21790)
+
+## [2.39.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.38.1-alpha.0...v2.39.0-alpha.0) (2022-08-25)
+
+
+### Features
+
+* **servicecatalogappregistry:** add sharing of applications and attribute groups ([#20850](https://github.com/aws/aws-cdk/issues/20850)) ([cf3bb6e](https://github.com/aws/aws-cdk/commit/cf3bb6e9ced5e3d18e782e7144858078c70cdcf9))
+
+
+### Bug Fixes
+
+* **aws-batch:** Support omitting ComputeEnvironment security groups so that they can be specified in Launch Template ([#21579](https://github.com/aws/aws-cdk/issues/21579)) ([33b00dd](https://github.com/aws/aws-cdk/commit/33b00dd063bf690bef4a91a91b468ba4a8a8531e)), closes [#21577](https://github.com/aws/aws-cdk/issues/21577)
+* **integ-runner:** ignoring asset changes doesn't work with new style assets ([#21638](https://github.com/aws/aws-cdk/issues/21638)) ([7857f55](https://github.com/aws/aws-cdk/commit/7857f55e8e7748920f8c97b08c13a04b9c8598ab))
+* **integ-tests:** assertions stack not deployed on v2 ([#21646](https://github.com/aws/aws-cdk/issues/21646)) ([ee1b66d](https://github.com/aws/aws-cdk/commit/ee1b66d1c9de6fcd284ee359db3ab232084fe6c7)), closes [#21639](https://github.com/aws/aws-cdk/issues/21639)
+
 ## [2.38.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.38.0-alpha.0...v2.38.1-alpha.0) (2022-08-18)
 
 ## [2.38.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.37.1-alpha.0...v2.38.0-alpha.0) (2022-08-17)

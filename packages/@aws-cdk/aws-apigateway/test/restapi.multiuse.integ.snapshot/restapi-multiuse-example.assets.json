@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "51680579d9adb3ad81fac08d82bd985d48376db0123b61f5f43746d195763e02": {
+      "source": {
+        "path": "restapi-multiuse-example.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "51680579d9adb3ad81fac08d82bd985d48376db0123b61f5f43746d195763e02.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

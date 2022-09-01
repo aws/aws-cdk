@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../integ-handlers/ts-decorator-handler.ts"],
+  "sourcesContent": ["function enumerable(value: boolean) {\n  return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {\n    descriptor.enumerable = value;\n  };\n}\n\nclass Greeter {\n  greeting: string;\n  constructor(message: string) {\n    this.greeting = message;\n  }\n\n  @enumerable(false)\n  greet() {\n    return 'Hello, ' + this.greeting;\n  }\n}\n\n\nexport async function handler(): Promise<void> {\n  const message = new Greeter('World').greet();\n  console.log(message); // eslint-disable-line no-console\n}\n"],
+  "mappings": "kcAAA,SAASA,EAAWC,EAAc,CAChC,OAAO,SAAUC,EAAcC,EAAsBC,EAA8B,CACjFA,EAAW,WAAaH,CAC1B,CACF,CAEA,IAAMI,EAAN,KAAa,CAEX,YAAYC,EAAe,CACzB,KAAK,SAAWA,CAClB,CAGA,OAAK,CACH,MAAO,UAAY,KAAK,QAC1B,GAFAC,EAAA,CADCP,EAAW,EAAK,6BAOZ,eAAeQ,GAAO,CAC3B,IAAMF,EAAU,IAAID,EAAQ,OAAO,EAAE,MAAK,EAC1C,QAAQ,IAAIC,CAAO,CACrB,CAHA,QAAA,QAAAE",
+  "names": ["enumerable", "value", "_target", "_propertyKey", "descriptor", "Greeter", "message", "__decorate", "handler"]
+}
