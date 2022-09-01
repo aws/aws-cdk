@@ -149,7 +149,7 @@ test('Bundling a function with pipenv dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python && cp -rT /asset-input/ /asset-output/python',
+        'export PIPENV_VENV_IN_PROJECT=1; pipenv lock && pipenv requirements > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python && cp -rT /asset-input/ /asset-output/python',
       ],
     }),
   }));

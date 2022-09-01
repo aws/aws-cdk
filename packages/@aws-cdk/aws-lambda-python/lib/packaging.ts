@@ -37,7 +37,7 @@ export class Packaging {
     dependenciesFile: DependenciesFile.PIPENV,
     // By default, pipenv creates a virtualenv in `/.local`, so we force it to create one in the package directory.
     // At the end, we remove the virtualenv to avoid creating a duplicate copy in the Lambda package.
-    exportCommand: `PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > ${DependenciesFile.PIP} && rm -rf .venv`,
+    exportCommand: `export PIPENV_VENV_IN_PROJECT=1; pipenv lock && pipenv requirements > ${DependenciesFile.PIP} && rm -rf .venv`,
   });
 
   /**
