@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.85"
         }
       },
       "integ-apprunner": {
@@ -24,8 +24,8 @@
                 "id": "Staging",
                 "path": "integ-apprunner/ImageAssets/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "Repository": {
@@ -115,7 +115,10 @@
                                         {
                                           "Ref": "AWS::AccountId"
                                         },
-                                        ":repository/aws-cdk/assets"
+                                        ":repository/",
+                                        {
+                                          "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                                        }
                                       ]
                                     ]
                                   }
@@ -168,23 +171,7 @@
                           "port": "8000"
                         },
                         "imageIdentifier": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              {
-                                "Ref": "AWS::AccountId"
-                              },
-                              ".dkr.ecr.",
-                              {
-                                "Ref": "AWS::Region"
-                              },
-                              ".",
-                              {
-                                "Ref": "AWS::URLSuffix"
-                              },
-                              "/aws-cdk/assets:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
-                            ]
-                          ]
+                          "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
                         },
                         "imageRepositoryType": "ECR"
                       }
@@ -212,8 +199,8 @@
             "id": "URL3",
             "path": "integ-apprunner/URL3",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "Service2": {
@@ -289,7 +276,10 @@
                                         {
                                           "Ref": "AWS::AccountId"
                                         },
-                                        ":repository/aws-cdk/assets"
+                                        ":repository/",
+                                        {
+                                          "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                                        }
                                       ]
                                     ]
                                   }
@@ -356,7 +346,11 @@
                               {
                                 "Ref": "AWS::URLSuffix"
                               },
-                              "/aws-cdk/assets:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
+                              "/",
+                              {
+                                "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                              },
+                              ":77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
                             ]
                           ]
                         },
@@ -386,20 +380,20 @@
             "id": "URL2",
             "path": "integ-apprunner/URL2",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

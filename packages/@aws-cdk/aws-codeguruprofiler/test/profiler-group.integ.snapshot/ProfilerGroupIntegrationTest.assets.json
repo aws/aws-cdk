@@ -1,7 +1,7 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "files": {
-    "0df01470a24f63a2d7cd65e62872709a320ccc9b851d1b3cc2509a46bff46305": {
+    "f2d7e3b1a7e733ee53d7499bd28bbf092974fa493a29b54ff5d428aab070a0f7": {
       "source": {
         "path": "ProfilerGroupIntegrationTest.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0df01470a24f63a2d7cd65e62872709a320ccc9b851d1b3cc2509a46bff46305.json",
+          "objectKey": "f2d7e3b1a7e733ee53d7499bd28bbf092974fa493a29b54ff5d428aab070a0f7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
