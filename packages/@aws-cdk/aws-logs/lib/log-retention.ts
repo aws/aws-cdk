@@ -85,6 +85,11 @@ export class LogRetention extends Construct {
     // Custom resource provider
     const provider = this.ensureSingletonLogRetentionFunction(props);
 
+    // if removalPolicy is DESTROY, add action for DeleteLogGroup
+    if (props.removalPolicy === cdk.RemovalPolicy.DESTROY) {
+      provider.grantDeleteLogGroup(props.logGroupName);
+    }
+
     // Need to use a CfnResource here to prevent lerna dependency cycles
     // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
     const retryOptions = props.logRetentionRetryOptions;
@@ -122,13 +127,10 @@ export class LogRetention extends Construct {
   private ensureSingletonLogRetentionFunction(props: LogRetentionProps) {
     const functionLogicalId = 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a';
     const existing = cdk.Stack.of(this).node.tryFindChild(functionLogicalId);
-    const func = existing as LogRetentionFunction ?? new LogRetentionFunction(cdk.Stack.of(this), functionLogicalId, props);
-
-    // if removalPolicy is DESTROY, add action for DeleteLogGroup
-    if (props.removalPolicy === cdk.RemovalPolicy.DESTROY) {
-      func.grantDeleteLogGroup(props.logGroupName);
+    if (existing) {
+      return existing as LogRetentionFunction;
     }
-    return func;
+    return new LogRetentionFunction(cdk.Stack.of(this), functionLogicalId, props);
   }
 }
 
