@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "files": {
     "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "397d8bcc99c8d502a597bf21b349950ec685f5165e2bbf562f770aa01d53fb6e": {
+    "c3d2a2489dfb36ca42d0b96528dd574c5d76756e84224a4288d23c9f42c280cb": {
       "source": {
         "path": "aws-cdk-lambda-log-retention.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "397d8bcc99c8d502a597bf21b349950ec685f5165e2bbf562f770aa01d53fb6e.json",
+          "objectKey": "c3d2a2489dfb36ca42d0b96528dd574c5d76756e84224a4288d23c9f42c280cb.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
