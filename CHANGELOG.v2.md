@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.40.0](https://github.com/aws/aws-cdk/compare/v2.39.1...v2.40.0) (2022-08-31)
+
+
+### Features
+
+* **cdk-cli-wrapper:** add `progress` argument for cdk deploy ([#21762](https://github.com/aws/aws-cdk/issues/21762)) ([dab83cc](https://github.com/aws/aws-cdk/commit/dab83cc4e70ec477abb4fdf2a2ac6319dff143e9))
+* **core:** `Fn::ToJsonString` and `Fn::Length` intrinsic functions ([#21749](https://github.com/aws/aws-cdk/issues/21749)) ([7472fa4](https://github.com/aws/aws-cdk/commit/7472fa484e45cc5dd05c10e4998c02d28f60da65))
+
+
+### Bug Fixes
+
+* **certificatemanager:** domainName not checked for length ([#21807](https://github.com/aws/aws-cdk/issues/21807)) ([3e55092](https://github.com/aws/aws-cdk/commit/3e55092fb70e0ec74ee7c4144d6e39a29d8757ae))
+* **ecs:** secretToken required but declared as optional ([#21745](https://github.com/aws/aws-cdk/issues/21745)) ([26ac81f](https://github.com/aws/aws-cdk/commit/26ac81f77877f504ede97997db8e3b48670f643e)), closes [#21744](https://github.com/aws/aws-cdk/issues/21744)
+* **ecs-patterns:** add validation for queue and queue related props ([#21717](https://github.com/aws/aws-cdk/issues/21717)) ([7e9bd7d](https://github.com/aws/aws-cdk/commit/7e9bd7d8419313c333b7a0fffdc489363046e4e2))
+* **integ:** write assertion stack name to integ manifest ([#21809](https://github.com/aws/aws-cdk/issues/21809)) ([e2dc2cb](https://github.com/aws/aws-cdk/commit/e2dc2cb76109bcac249f28eac8da3335c8b06e9d)), closes [#21646](https://github.com/aws/aws-cdk/issues/21646)
+* **servicecatalog:** incorrect service in portfolio arn generation ([#21770](https://github.com/aws/aws-cdk/issues/21770)) ([f9ca639](https://github.com/aws/aws-cdk/commit/f9ca639175352bad1db78666c750f00955627d1a)), closes [#20849](https://github.com/aws/aws-cdk/issues/20849)
+
 ## [2.39.1](https://github.com/aws/aws-cdk/compare/v2.39.0...v2.39.1) (2022-08-29)
 
 
