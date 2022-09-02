@@ -25,18 +25,16 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
   readonly identifiers?: string[]
 
   /**
-   * The SAML metadata file content.
-   *
-   * @default - no file content specified
+   * The SAML metadata file type.
    */
-  readonly metadataFile?: string;
+  readonly metadataType: UserPoolIdentityProviderSamlMetadataType;
 
   /**
-   * The SAML metadata URL.
-   *
-   * @default - no URL specified
+   * The SAML metadata content.
+   * If metadataType is set to URL, this should be the metadata URL.
+   * If metadataType is set to FILE, this should be the metadata file contents.
    */
-  readonly metadataUrl?: string;
+  readonly metadataContent: string;
 
   /**
    * Whether to enable the "Sign-out flow" feature.
@@ -44,6 +42,17 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
    * @default - false
    */
   readonly idpSignout?: boolean;
+}
+
+/**
+ * Metadata types that can be used for a SAML user pool identity provider.
+ */
+export enum UserPoolIdentityProviderSamlMetadataType {
+  /** Metadata provided via a URL. */
+  URL = 'url',
+
+  /** Metadata provided via the contents of a file. */
+  FILE = 'file',
 }
 
 /**
@@ -58,20 +67,21 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
 
     this.validateName(props.name);
 
-    if ((props.metadataFile === undefined && props.metadataUrl === undefined) ||
-        (props.metadataFile !== undefined && props.metadataUrl !== undefined)) {
-      throw new Error('Specify exactly one of metadataUrl and metadataFile');
+    const providerDetails: Record<string, string | boolean> = {
+      IDPSignout: props.idpSignout ?? false,
+    };
+
+    if (props.metadataType === UserPoolIdentityProviderSamlMetadataType.URL) {
+      providerDetails.MetadataURL = props.metadataContent;
+    } else if (props.metadataType === UserPoolIdentityProviderSamlMetadataType.FILE) {
+      providerDetails.MetadataFile = props.metadataContent;
     }
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,
       providerName: this.getProviderName(props.name),
       providerType: 'SAML',
-      providerDetails: {
-        IDPSignout: props.idpSignout ?? false,
-        MetadataURL: props.metadataUrl,
-        MetadataFile: props.metadataFile,
-      },
+      providerDetails,
       idpIdentifiers: props.identifiers,
       attributeMapping: super.configureAttributeMapping(),
     });
