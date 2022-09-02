@@ -21,5 +21,15 @@
     }
    }
   }
+ },
+ "Outputs": {
+  "ExportsOutputRefConnection07624BCD5A8A23C8": {
+   "Value": {
+    "Ref": "Connection07624BCD"
+   },
+   "Export": {
+    "Name": "IntegConnectionStack:ExportsOutputRefConnection07624BCD5A8A23C8"
+   }
+  }
  }
 }

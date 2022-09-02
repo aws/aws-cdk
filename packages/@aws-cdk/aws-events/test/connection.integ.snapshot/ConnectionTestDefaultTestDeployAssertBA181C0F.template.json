@@ -1,1 +1,173 @@
-{}
+{
+ "Resources": {
+  "AwsApiCallEventBridgedescribeConnection": {
+   "Type": "Custom::DeployAssert@SdkCallEventBridgedescribeConnection",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EventBridge",
+    "api": "describeConnection",
+    "parameters": {
+     "Name": {
+      "Fn::ImportValue": "IntegConnectionStack:ExportsOutputRefConnection07624BCD5A8A23C8"
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1662105932337"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallEventBridgedescribeConnectionAssertEqualsEventBridgedescribeConnection641C4FA0": {
+   "Type": "Custom::DeployAssert@AssertEquals",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "actual": {
+     "Fn::GetAtt": [
+      "AwsApiCallEventBridgedescribeConnection",
+      "apiCallResponse"
+     ]
+    },
+    "expected": "{\"$ObjectLike\":{\"AuthParameters\":{\"ApiKeyAuthParameters\":{\"ApiKeyName\":\"keyname\"},\"InvocationHttpParameters\":{\"HeaderParameters\":[{\"Key\":\"content-type\",\"Value\":\"application/json\",\"IsValueSecret\":false}]}}}}",
+    "salt": "1662105932338"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "eventbridge:DescribeConnection"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "events:DescribeConnection"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdS3BucketF94385B7"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdS3VersionKey66DB0F9E"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdS3VersionKey66DB0F9E"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAssertEqualsEventBridgedescribeConnection": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEventBridgedescribeConnectionAssertEqualsEventBridgedescribeConnection641C4FA0",
+     "data"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdS3BucketF94385B7": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd\""
+  },
+  "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdS3VersionKey66DB0F9E": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd\""
+  },
+  "AssetParameters0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbdArtifactHash2AC894D9": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd\""
+  }
+ }
+}

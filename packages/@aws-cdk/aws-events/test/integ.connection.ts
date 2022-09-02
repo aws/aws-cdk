@@ -1,19 +1,41 @@
 import { App, SecretValue, Stack } from '@aws-cdk/core';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
+import { AssertionsProvider, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
 import { Authorization, Connection, HttpParameter } from '../lib';
 
 const app = new App();
 
 const stack = new Stack(app, 'IntegConnectionStack');
 
-new Connection(stack, 'Connection', {
+const connection = new Connection(stack, 'Connection', {
   authorization: Authorization.apiKey('keyname', SecretValue.unsafePlainText('keyvalue')),
   headerParameters: {
     'content-type': HttpParameter.fromString('application/json'),
   },
 });
-new IntegTest(app, 'ConnectionTest', {
+const testCase = new IntegTest(app, 'ConnectionTest', {
   testCases: [stack],
 });
+
+const deployedConncention = testCase.assertions.awsApiCall('EventBridge', 'describeConnection', { Name: connection.connectionName });
+
+deployedConncention.expect(ExpectedResult.objectLike({
+  AuthParameters: {
+    ApiKeyAuthParameters: {
+      ApiKeyName: 'keyname',
+    },
+    InvocationHttpParameters: {
+      HeaderParameters: [
+        {
+          Key: 'content-type',
+          Value: 'application/json',
+          IsValueSecret: false,
+        },
+      ],
+    },
+  },
+}));
+
+const assertionProvider = deployedConncention.node.tryFindChild('SdkProvider') as AssertionsProvider;
+assertionProvider.addPolicyStatementFromSdkCall('events', 'DescribeConnection');
 
 app.synth();
