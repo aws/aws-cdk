@@ -89,15 +89,14 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
       return name;
     }
 
-    const uniqueId = Names.uniqueId(this);
+    const uniqueName = Names.uniqueResourceName(this, {
+      maxLength: 32,
+    });
 
-    if (uniqueId.length < 3) {
-      return `${uniqueId}saml`;
+    if (uniqueName.length < 3) {
+      return `${uniqueName}saml`;
     }
 
-    if (uniqueId.length > 32) {
-      return uniqueId.substring(0, 16) + uniqueId.substring(uniqueId.length - 16);
-    }
-    return uniqueId;
+    return uniqueName;
   }
 }
