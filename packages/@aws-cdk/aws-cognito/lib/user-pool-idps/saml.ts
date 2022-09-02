@@ -56,9 +56,7 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderSamlProps) {
     super(scope, id, props);
 
-    if (props.name && !Token.isUnresolved(props.name) && (props.name.length < 3 || props.name.length > 32)) {
-      throw new Error(`Expected provider name to be between 3 and 32 characters, received ${props.name} (${props.name.length} characters)`);
-    }
+    this.validateName(props.name);
 
     if ((props.metadataFile === undefined && props.metadataUrl === undefined) ||
         (props.metadataFile !== undefined && props.metadataUrl !== undefined)) {
@@ -83,9 +81,7 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
 
   private getProviderName(name?: string): string {
     if (name) {
-      if (!Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
-        throw new Error(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`);
-      }
+      this.validateName(name);
       return name;
     }
 
@@ -98,5 +94,11 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
     }
 
     return uniqueName;
+  }
+
+  private validateName(name?: string) {
+    if (name && !Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
+      throw new Error(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`);
+    }
   }
 }
