@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.92"
         }
       },
       "IntegConnectionStack": {
@@ -70,7 +70,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.92"
             }
           }
         },
@@ -92,7 +92,7 @@
                 "path": "ConnectionTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.92"
                 }
               },
               "DeployAssert": {
@@ -112,7 +112,7 @@
                             "path": "ConnectionTest/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeConnection/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "version": "10.1.92"
                             }
                           }
                         },
@@ -152,7 +152,7 @@
                                 "path": "ConnectionTest/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeConnection/AssertEqualsEventBridgedescribeConnection/AssertionProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.1.85"
+                                  "version": "10.1.92"
                                 }
                               }
                             },
@@ -230,51 +230,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
-                    }
-                  },
-                  "AssetParameters": {
-                    "id": "AssetParameters",
-                    "path": "ConnectionTest/DefaultTest/DeployAssert/AssetParameters",
-                    "children": {
-                      "0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd": {
-                        "id": "0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd",
-                        "path": "ConnectionTest/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd",
-                        "children": {
-                          "S3Bucket": {
-                            "id": "S3Bucket",
-                            "path": "ConnectionTest/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/S3Bucket",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnParameter",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "S3VersionKey": {
-                            "id": "S3VersionKey",
-                            "path": "ConnectionTest/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/S3VersionKey",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnParameter",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "ArtifactHash": {
-                            "id": "ArtifactHash",
-                            "path": "ConnectionTest/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/ArtifactHash",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnParameter",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.1.92"
                     }
                   }
                 },

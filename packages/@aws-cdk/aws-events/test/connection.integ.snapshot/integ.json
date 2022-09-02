@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
     "ConnectionTest/DefaultTest": {
       "stacks": [
         "IntegConnectionStack"
       ],
-      "assertionStack": "ConnectionTest/DefaultTest/DeployAssert"
+      "assertionStack": "ConnectionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ConnectionTestDefaultTestDeployAssertBA181C0F"
     }
   }
 }
