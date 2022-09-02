@@ -51,7 +51,7 @@ export function bindBaseTargetConfig(props: TargetBaseProps) {
 
   return {
     deadLetterConfig: deadLetterQueue ? { arn: deadLetterQueue?.queueArn } : undefined,
-    retryPolicy: (retryAttempts && retryAttempts >= 0) || maxEventAge
+    retryPolicy: (retryAttempts !== undefined && retryAttempts >= 0) || maxEventAge
       ? {
         maximumRetryAttempts: retryAttempts,
         maximumEventAgeInSeconds: maxEventAge?.toSeconds({ integral: true }),
