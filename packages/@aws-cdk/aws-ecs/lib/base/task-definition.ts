@@ -379,8 +379,6 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private _passRoleStatement?: iam.PolicyStatement;
 
-  private _referencesSecretJsonField?: boolean;
-
   private runtimePlatform?: RuntimePlatform;
 
   /**
@@ -614,9 +612,6 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
-    if (container.referencesSecretJsonField) {
-      this._referencesSecretJsonField = true;
-    }
   }
 
   /**
@@ -695,7 +690,12 @@ export class TaskDefinition extends TaskDefinitionBase {
    * specific JSON field of a secret stored in Secrets Manager.
    */
   public get referencesSecretJsonField(): boolean | undefined {
-    return this._referencesSecretJsonField;
+    for (const container of this.containers) {
+      if (container.referencesSecretJsonField) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

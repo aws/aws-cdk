@@ -548,7 +548,7 @@ describe('container definition', () => {
         const actual = container.containerPort;
         const expected = 8080;
         expect(actual).toEqual(expected);
-      }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings()./);
+      }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings\(\)./);
 
 
     });
@@ -597,7 +597,7 @@ describe('container definition', () => {
           const actual = container.ingressPort;
           const expected = 8080;
           expect(actual).toEqual(expected);
-        }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings()./);
+        }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings\(\)./);
 
 
       });
@@ -1258,7 +1258,7 @@ describe('container definition', () => {
     });
 
     // WHEN
-    taskDefinition.addContainer('cont', {
+    const container = taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       secrets: {
@@ -1268,6 +1268,7 @@ describe('container definition', () => {
         SECRET_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, { versionStage: 'version-stage' }),
       },
     });
+    container.addSecret('LATER_SECRET', ecs.Secret.fromSecretsManager(secret, 'field'));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -1327,6 +1328,20 @@ describe('container definition', () => {
                       Ref: 'SecretA720EF05',
                     },
                     '::version-stage:',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'LATER_SECRET',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':field::',
                   ],
                 ],
               },
