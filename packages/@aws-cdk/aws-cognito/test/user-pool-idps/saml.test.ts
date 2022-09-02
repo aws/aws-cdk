@@ -1,6 +1,6 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
-import { ProviderAttribute, UserPool, UserPoolIdentityProviderSaml } from '../../lib';
+import { ProviderAttribute, UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadataType } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
   describe('saml', () => {
@@ -12,7 +12,8 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
-        metadataUrl: 'https://my-metadata-url.com',
+        metadataType: UserPoolIdentityProviderSamlMetadataType.URL,
+        metadataContent: 'https://my-metadata-url.com',
       });
 
       // THEN
@@ -34,7 +35,8 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
-        metadataFile: 'my-file-contents',
+        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
+        metadataContent: 'my-file-contents',
       });
 
       // THEN
@@ -56,7 +58,8 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
-        metadataFile: 'my-file-contents',
+        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
+        metadataContent: 'my-file-contents',
         idpSignout: true,
       });
 
@@ -79,7 +82,8 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       const provider = new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
-        metadataFile: 'my-file-contents',
+        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
+        metadataContent: 'my-file-contents',
       });
 
       // THEN
@@ -94,7 +98,8 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
-        metadataFile: 'my-file-contents',
+        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
+        metadataContent: 'my-file-contents',
         attributeMapping: {
           familyName: ProviderAttribute.other('family_name'),
           givenName: ProviderAttribute.other('given_name'),
@@ -125,7 +130,8 @@ describe('UserPoolIdentityProvider', () => {
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
         name: 'my-provider',
-        metadataFile: 'my-file-contents',
+        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
+        metadataContent: 'my-file-contents',
       });
 
       // THEN
@@ -143,32 +149,9 @@ describe('UserPoolIdentityProvider', () => {
       expect(() => new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
         name: 'xy',
-        metadataFile: 'my-file-contents',
+        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
+        metadataContent: 'my-file-contents',
       })).toThrow(/Expected provider name to be between 3 and 32 characters/);
-    });
-
-    test('throws when neither metadataUrl nor metadataFile is provided', () => {
-      // GIVEN
-      const stack = new Stack();
-      const pool = new UserPool(stack, 'userpool');
-
-      // THEN
-      expect(() => new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
-        userPool: pool,
-      })).toThrow(/Specify exactly one of metadataUrl and metadataFile/);
-    });
-
-    test('throws when both metadataUrl and metadataFile are provided', () => {
-      // GIVEN
-      const stack = new Stack();
-      const pool = new UserPool(stack, 'userpool');
-
-      // THEN
-      expect(() => new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
-        userPool: pool,
-        metadataUrl: 'https://my-metadata-url.com',
-        metadataFile: 'my-file-contents',
-      })).toThrow(/Specify exactly one of metadataUrl and metadataFile/);
     });
 
     test('generates a valid name when unique id is too short', () => {
@@ -179,7 +162,8 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, 'xy', {
         userPool: pool,
-        metadataFile: 'my-file-contents',
+        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
+        metadataContent: 'my-file-contents',
       });
 
       // THEN
@@ -196,12 +180,13 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, `${'saml'.repeat(10)}xyz`, {
         userPool: pool,
-        metadataFile: 'my-file-contents',
+        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
+        metadataContent: 'my-file-contents',
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
-        ProviderName: 'samlsamlsamlsamllsamlsamlsamlxyz',
+        ProviderName: Match.stringLikeRegexp('^\\w{3,32}$'),
       });
     });
   });
