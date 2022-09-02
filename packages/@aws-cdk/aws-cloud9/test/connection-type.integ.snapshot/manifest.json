@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,166 +7,249 @@
         "file": "tree.json"
       }
     },
-    "C9Stack": {
+    "C9ConnectionTypeStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "C9ConnectionTypeStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "C9ConnectionTypeStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "C9Stack.template.json",
-        "validateOnSynth": false
+        "templateFile": "C9ConnectionTypeStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a756052273558cbf93ae4b5e8e881eccd7e6e079926dab1fab1e94489ee61867.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "C9ConnectionTypeStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "C9ConnectionTypeStack.assets"
+      ],
       "metadata": {
-        "/C9Stack/VPC/Resource": [
+        "/C9ConnectionTypeStack/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/Subnet": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/RouteTable": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/DefaultRoute": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/EIP": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet1/NATGateway": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet2/Subnet": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet2/RouteTable": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/C9Stack/VPC/PublicSubnet2/DefaultRoute": [
+        "/C9ConnectionTypeStack/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet1/Subnet": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet1/RouteTable": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet1/DefaultRoute": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet2/Subnet": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet2/RouteTable": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/C9Stack/VPC/PrivateSubnet2/DefaultRoute": [
+        "/C9ConnectionTypeStack/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/C9Stack/VPC/IGW": [
+        "/C9ConnectionTypeStack/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/C9Stack/VPC/VPCGW": [
+        "/C9ConnectionTypeStack/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/C9Stack/Repo/Resource": [
+        "/C9ConnectionTypeStack/Repo/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Repo02AC86CF"
           }
         ],
-        "/C9Stack/C9Env/Resource": [
+        "/C9ConnectionTypeStack/C9Env/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "C9EnvF05FC3BE"
           }
         ],
-        "/C9Stack/URL": [
+        "/C9ConnectionTypeStack/URL": [
           {
             "type": "aws:cdk:logicalId",
             "data": "URL"
           }
         ],
-        "/C9Stack/ARN": [
+        "/C9ConnectionTypeStack/ARN": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ARN"
           }
+        ],
+        "/C9ConnectionTypeStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/C9ConnectionTypeStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
         ]
       },
-      "displayName": "C9Stack"
+      "displayName": "C9ConnectionTypeStack"
+    },
+    "cloud9connectiontypeDefaultTestDeployAssert401C3608.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cloud9connectiontypeDefaultTestDeployAssert401C3608.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cloud9connectiontypeDefaultTestDeployAssert401C3608": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cloud9connectiontypeDefaultTestDeployAssert401C3608.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cloud9connectiontypeDefaultTestDeployAssert401C3608.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cloud9connectiontypeDefaultTestDeployAssert401C3608.assets"
+      ],
+      "metadata": {
+        "/cloud-9-connection-type/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cloud-9-connection-type/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cloud-9-connection-type/DefaultTest/DeployAssert"
     }
   }
 }

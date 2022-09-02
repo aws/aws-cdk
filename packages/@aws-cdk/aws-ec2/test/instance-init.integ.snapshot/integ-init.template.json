@@ -117,7 +117,11 @@
       "Value": "integ-init/IntegInitVpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "IntegInitVpcPublicSubnet1DefaultRoute5BB90E8C",
+    "IntegInitVpcPublicSubnet1RouteTableAssociation00D33741"
+   ]
   },
   "IntegInitVpcPublicSubnet2Subnet9A384F16": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "integ-init/IntegInitVpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "IntegInitVpcPublicSubnet2DefaultRoute2393995F",
+    "IntegInitVpcPublicSubnet2RouteTableAssociationB816F9F3"
+   ]
   },
   "IntegInitVpcPrivateSubnet1Subnet259B51C1": {
    "Type": "AWS::EC2::Subnet",
@@ -461,7 +469,7 @@
            },
            ":s3:::",
            {
-            "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
            },
            "/*"
           ]
@@ -477,7 +485,7 @@
            },
            ":s3:::",
            {
-            "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
            }
           ]
          ]
@@ -515,7 +523,7 @@
     ]
    }
   },
-  "Instance255F35265555f8bd64fe3316f": {
+  "Instance255F35265a0c5f577d761edb0": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
     "AvailabilityZone": {
@@ -555,7 +563,7 @@
       "Fn::Join": [
        "",
        [
-        "#!/bin/bash\n# fingerprint: 8deb3fafcf9d33f0\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+        "#!/bin/bash\n# fingerprint: 89cb2e09a1c3d4c8\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
         {
          "Ref": "AWS::Region"
         },
@@ -563,7 +571,7 @@
         {
          "Ref": "AWS::StackName"
         },
-        " --resource Instance255F35265555f8bd64fe3316f -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
+        " --resource Instance255F35265a0c5f577d761edb0 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
         {
          "Ref": "AWS::Region"
         },
@@ -571,7 +579,7 @@
         {
          "Ref": "AWS::StackName"
         },
-        " --resource Instance255F35265555f8bd64fe3316f\n  cat /var/log/cfn-init.log >&2\n)"
+        " --resource Instance255F35265a0c5f577d761edb0\n  cat /var/log/cfn-init.log >&2\n)"
        ]
       ]
      }
@@ -621,50 +629,7 @@
       },
       "sources": {
        "/tmp/sourceDir": {
-        "Fn::Join": [
-         "",
-         [
-          "https://s3.",
-          {
-           "Ref": "AWS::Region"
-          },
-          ".",
-          {
-           "Ref": "AWS::URLSuffix"
-          },
-          "/",
-          {
-           "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
-          },
-          "/",
-          {
-           "Fn::Select": [
-            0,
-            {
-             "Fn::Split": [
-              "||",
-              {
-               "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3VersionKey89F61A12"
-              }
-             ]
-            }
-           ]
-          },
-          {
-           "Fn::Select": [
-            1,
-            {
-             "Fn::Split": [
-              "||",
-              {
-               "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3VersionKey89F61A12"
-              }
-             ]
-            }
-           ]
-          }
-         ]
-        ]
+        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b.zip"
        }
       },
       "files": {
@@ -696,7 +661,7 @@
       },
       "buckets": [
        {
-        "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        }
       ]
      }
@@ -709,17 +674,37 @@
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
   },
-  "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b\""
-  },
-  "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3VersionKey89F61A12": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b\""
-  },
-  "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bArtifactHash088925E9": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b\""
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

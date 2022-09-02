@@ -3,9 +3,9 @@
   "testCases": {
     "circuitBreakerAlbFargateTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-circuit-breaker"
       ],
-      "assertionStack": "circuitBreakerAlbFargateTestDefaultTestDeployAssert8EB02B4E"
+      "assertionStack": "circuitBreakerAlbFargateTest/DefaultTest/DeployAssert"
     }
   }
 }

@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-rds-instance.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-rds-instance.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-rds-instance": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-rds-instance.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-cdk-rds-instance": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b",
-              "id": "af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b",
-              "packaging": "zip",
-              "sourceHash": "af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b",
-              "s3BucketParameter": "AssetParametersaf4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8bS3Bucket2E84C3BE",
-              "s3KeyParameter": "AssetParametersaf4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8bS3VersionKey91073FC4",
-              "artifactHashParameter": "AssetParametersaf4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8bArtifactHash61CB979E"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca59a5a9368640ecbf25d69e1e3312350b2d7b735c3b73b031c02657142ca94b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-rds-instance.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-rds-instance.assets"
+      ],
+      "metadata": {
         "/aws-cdk-rds-instance/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -317,24 +327,6 @@
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
-        "/aws-cdk-rds-instance/AssetParameters/af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersaf4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8bS3Bucket2E84C3BE"
-          }
-        ],
-        "/aws-cdk-rds-instance/AssetParameters/af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersaf4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8bS3VersionKey91073FC4"
-          }
-        ],
-        "/aws-cdk-rds-instance/AssetParameters/af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersaf4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8bArtifactHash61CB979E"
-          }
-        ],
         "/aws-cdk-rds-instance/HighCPU/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -351,6 +343,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Function76856677"
+          }
+        ],
+        "/aws-cdk-rds-instance/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-rds-instance/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
