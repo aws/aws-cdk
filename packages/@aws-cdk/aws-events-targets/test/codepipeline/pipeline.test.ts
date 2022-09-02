@@ -157,6 +157,58 @@ describe('CodePipeline event target', () => {
           ],
         });
       });
+
+      test('adds 0 retry attempts to the target configuration', () => {
+        // WHEN
+        let queue = new sqs.Queue(stack, 'dlq');
+
+        rule.addTarget(new targets.CodePipeline(pipeline, {
+          retryAttempts: 0,
+        }));
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+          ScheduleExpression: 'rate(1 minute)',
+          State: 'ENABLED',
+          Targets: [
+            {
+              Arn: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':codepipeline:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':',
+                    {
+                      Ref: 'PipelineC660917D',
+                    },
+                  ],
+                ],
+              },
+              Id: 'Target0',
+              RetryPolicy: {
+                MaximumRetryAttempts: 0,
+              },
+              RoleArn: {
+                'Fn::GetAtt': [
+                  'PipelineEventsRole46BEEA7C',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        });
+      });
     });
 
     describe('with an explicit event role', () => {
