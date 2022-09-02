@@ -28,6 +28,11 @@ Owner: CDK support team
 linked in the PR description to the PR.
 Owner: Core CDK team
 
+### GitHub Merit Badger
+[github-merit-badger.yml](github-merit-badger.yml): GitHub action that adds 'merit badges' to pull
+requests based on the users prior contributions to the CDK.
+Owner: Core CDK team
+
 ## Issue Triggered
 
 ### Closed Issue Message
