@@ -479,6 +479,8 @@ const newContainer = taskDefinition.addContainer('container', {
   },
 });
 newContainer.addEnvironment('QUEUE_NAME', 'MyQueue');
+newContainer.addSecret('API_KEY', ecs.Secret.fromSecretsManager(secret));
+newContainer.addSecret('DB_PASSWORD', ecs.Secret.fromSecretsManager(secret, 'password'));
 ```
 
 The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
