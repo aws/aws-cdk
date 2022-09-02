@@ -75,6 +75,8 @@ export class Configuration {
   public readonly defaultConfig = new Settings({
     versionReporting: true,
     pathMetadata: true,
+    debug: false,
+    staging: true,
     output: 'cdk.out',
   });
 
