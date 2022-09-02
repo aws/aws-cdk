@@ -21,14 +21,14 @@ Parameters:
     Default: ''
     Type: String
   FileAssetsBucketKmsKeyId:
-    Description: Empty to create a new key (default), 'AWS_MANAGED_KEY' to use a managed
-      S3 key, or the ID/ARN of an existing key.
-    Default: ''
+    Description: 'DEFAULT_ENCRYPTION' to use a managed S3 key, 'BOOTSTRAP_KEY' to use bootstrap CMK key (default),
+      or the ID/ARN of an existing key.
+    Default: 'BOOTSTRAP_KEY'
     Type: String
   ImageAssetsEcrKmsKeyId:
-    Description: Empty to create a new key, 'AWS_DEFAULT_KEY' to use default
-      ecr encryption, or the ID/ARN of an existing key.
-    Default: ''
+    Description: 'DEFAULT_ENCRYPTION' to use default ecr encryption, 'BOOTSTRAP_KEY' to use bootstrap CMK key (default),
+      or the ID/ARN of an existing key.
+    Default: 'DEFAULT_ENCRYPTION'
     Type: String
   ContainerAssetsRepositoryName:
     Description: A user-provided custom name to use for the container assets ECR repository
@@ -76,11 +76,11 @@ Conditions:
           - Ref: FileAssetsBucketName
   CreateNewKey:
     Fn::Equals:
-      - ''
+      - 'BOOTSTRAP_KEY'
       - Ref: FileAssetsBucketKmsKeyId
   CreateNewEcrKey:
     Fn::Equals:
-      - ''
+      - 'BOOTSTRAP_KEY'
       - Ref: ImageAssetsEcrKmsKeyId
   CreateCustomerMasterKey:
     Fn::Or:
@@ -88,11 +88,11 @@ Conditions:
       - !Condition CreateNewEcrKey
   UseAwsManagedKey:
     Fn::Equals:
-      - 'AWS_MANAGED_KEY'
+      - 'DEFAULT_ENCRYPTION'
       - Ref: FileAssetsBucketKmsKeyId
   UseAwsDefaultKey:
     Fn::Equals:
-      - 'AWS_DEFAULT_KEY'
+      - 'DEFAULT_ENCRYPTION'
       - Ref: ImageAssetsEcrKmsKeyId
   HasCustomContainerAssetsRepositoryName:
     Fn::Not:

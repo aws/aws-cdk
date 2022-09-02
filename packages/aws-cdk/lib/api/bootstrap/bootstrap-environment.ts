@@ -131,11 +131,10 @@ export class Bootstrapper {
     const currentKmsKeyId = current.parameters.FileAssetsBucketKmsKeyId;
     const kmsKeyId = params.kmsKeyId ??
       (params.createCustomerMasterKey === true ? CREATE_NEW_KEY :
-        params.createCustomerMasterKey === false || currentKmsKeyId === undefined ? USE_AWS_MANAGED_KEY :
+        params.createCustomerMasterKey === false || currentKmsKeyId === undefined ? USE_DEFAULT_ENCRYPTION :
           undefined);
 
-    let kmsEcrKeyId = USE_DEFAULT_KEY;
-
+    let kmsEcrKeyId = USE_DEFAULT_ENCRYPTION;
     if (params.ecrKeyId) {
       // key is given
       kmsEcrKeyId = params.ecrKeyId;
@@ -190,19 +189,14 @@ export class Bootstrapper {
 }
 
 /**
- * Predefined value that will cause the bootstrap-template.yml to NOT create a CMK but use the default key
+ * Predefined value that will cause the bootstrap-template.yml to use default encryption
  */
-const USE_AWS_MANAGED_KEY = 'AWS_MANAGED_KEY';
-
-/**
- * Predefined value indicating that the default key must be used for bootstrap-template.yml, no CMK will be created.
- */
-const USE_DEFAULT_KEY = 'AWS_DEFAULT_KEY';
+const USE_DEFAULT_ENCRYPTION = 'DEFAULT_ENCRYPTION';
 
 /**
  * Predefined value that will cause the bootstrap-template.yml to create a CMK
  */
-const CREATE_NEW_KEY = '';
+const CREATE_NEW_KEY = 'BOOTSTRAP_KEY';
 
 /**
  * Split an array-like CloudFormation parameter on ,

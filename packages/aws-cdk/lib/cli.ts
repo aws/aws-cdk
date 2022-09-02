@@ -93,11 +93,10 @@ async function parseCommandLineArguments() {
       .option('bootstrap-ecr-key-id', {
         type: 'string',
         desc: 'Encrypts the bootstrap ECR repository with an Customer Master Key (CMK) or with the key given by an optional key-Id' +
-          'Note: Changes to encryption settings of an existing repository will recreate it!',
-        conflicts: 'bootstrap-customer-key',
+          'Note: Changes to encryption settings of an existing repository is not possible! You must first manually delete the repository before changing the encryption settings.',
         default: undefined,
       })
-      .option('bootstrap-customer-key', { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket and repository (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' })
+      .option('bootstrap-customer-key', { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' })
       .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
