@@ -76,6 +76,17 @@ in a template.
 template.resourceCountIs('Foo::Bar', 2);
 ```
 
+You can also count the number of resources of a specific type whose `Properties`
+section contains the specified properties:
+
+```ts
+template.resourcePropertiesCountIs('Foo::Bar', {
+  Foo: 'Bar',
+  Baz: 5,
+  Qux: [ 'Waldo', 'Fred' ],
+}, 1);
+```
+
 ## Resource Matching & Retrieval
 
 Beyond resource counting, the module also allows asserting that a resource with
