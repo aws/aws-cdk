@@ -283,11 +283,11 @@ describe('Bootstrapping v2', () => {
   describe('KMS key', () => {
     test.each([
       // Default case
-      [undefined, 'AWS_MANAGED_KEY'],
+      [undefined, 'DEFAULT_ENCRYPTION'],
       // Create a new key
-      [true, ''],
+      [true, 'BOOTSTRAP_KEY'],
       // Don't create a new key
-      [false, 'AWS_MANAGED_KEY'],
+      [false, 'DEFAULT_ENCRYPTION'],
     ])('(new stack) createCustomerMasterKey=%p => parameter becomes %p ', async (createCustomerMasterKey, paramKeyId) => {
       // GIVEN: no existing stack
 
@@ -309,9 +309,9 @@ describe('Bootstrapping v2', () => {
 
     test.each([
       // Default case
-      [undefined, 'AWS_DEFAULT_KEY'],
+      [undefined, 'DEFAULT_ENCRYPTION'],
       // Create a new key
-      ['', ''],
+      ['', 'BOOTSTRAP_KEY'],
       // Use given key
       ['my-key-id', 'my-key-id'],
       ['AWS_DEFAULT_KEY', 'AWS_DEFAULT_KEY'],
@@ -337,13 +337,13 @@ describe('Bootstrapping v2', () => {
 
     test.each([
       // Old bootstrap stack being upgraded to new one
-      [undefined, undefined, 'AWS_MANAGED_KEY'],
+      [undefined, undefined, 'DEFAULT_ENCRYPTION'],
       // There is a value, user doesn't request a change
       ['arn:aws:key', undefined, undefined],
       // Switch off existing key
-      ['arn:aws:key', false, 'AWS_MANAGED_KEY'],
+      ['arn:aws:key', false, 'DEFAULT_ENCRYPTION'],
       // Switch on existing key
-      ['AWS_MANAGED_KEY', true, ''],
+      ['AWS_MANAGED_KEY', true, 'BOOTSTRAP_KEY'],
     ])('(upgrading) current param %p, createCustomerMasterKey=%p => parameter becomes %p ', async (currentKeyId, createCustomerMasterKey, paramKeyId) => {
       // GIVEN
       mockTheToolkitInfo({
