@@ -15,6 +15,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           badges: '[first-time-contributor,repeat-contributor,valued-contributor,star-contributor,distinguished-contributor]'
-          thresholds: '[0,1,9,49,99]'
+          thresholds: '[0,1,10,50,100]'
           badge-type: 'achievement'
           ignore-usernames: '[RomainMuller,rix0rrr,Jerry-AWS,MrArnoldPalmer,iliapolo,otaviomacedo,madeline-k,kaizencc,comcalvi,corymhall,peterwoodworth,ryparker,TheRealAmazonKendra,vinayak-kukreja,Naumel,mrgrain]'
