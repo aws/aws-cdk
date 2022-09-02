@@ -21,13 +21,13 @@ Parameters:
     Default: ''
     Type: String
   FileAssetsBucketKmsKeyId:
-    Description: 'DEFAULT_ENCRYPTION' to use a managed S3 key, 'BOOTSTRAP_KEY' to use bootstrap CMK key (default),
-      or the ID/ARN of an existing key.
+    Description: "'DEFAULT_ENCRYPTION' to use a managed S3 key, 'BOOTSTRAP_KEY' to use bootstrap CMK key (default),
+      or the ID/ARN of an existing key."
     Default: 'BOOTSTRAP_KEY'
     Type: String
   ImageAssetsEcrKmsKeyId:
-    Description: 'DEFAULT_ENCRYPTION' to use default ecr encryption, 'BOOTSTRAP_KEY' to use bootstrap CMK key (default),
-      or the ID/ARN of an existing key.
+    Description: "'DEFAULT_ENCRYPTION' to use default ecr encryption, 'BOOTSTRAP_KEY' to use bootstrap CMK key (default),
+      or the ID/ARN of an existing key."
     Default: 'DEFAULT_ENCRYPTION'
     Type: String
   ContainerAssetsRepositoryName:
