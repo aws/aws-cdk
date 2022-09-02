@@ -68,6 +68,7 @@ echo "💎 Extracting code samples" >&2
 time $ROSETTA extract \
     --compile \
     --verbose \
+    --compress-tablet \
     --cache ${rosetta_cache_file} \
     --directory packages/aws-cdk-lib \
     ${extract_opts} \
@@ -81,6 +82,7 @@ if $infuse; then
     time $ROSETTA extract \
         --compile \
         --verbose \
+        --compress-tablet \
         --cache ${rosetta_cache_file} \
         --directory packages/aws-cdk-lib \
         $(cat $jsii_pkgs_file)
