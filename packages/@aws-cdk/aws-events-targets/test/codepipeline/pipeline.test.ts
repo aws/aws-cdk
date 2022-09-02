@@ -160,8 +160,6 @@ describe('CodePipeline event target', () => {
 
       test('adds 0 retry attempts to the target configuration', () => {
         // WHEN
-        let queue = new sqs.Queue(stack, 'dlq');
-
         rule.addTarget(new targets.CodePipeline(pipeline, {
           retryAttempts: 0,
         }));
