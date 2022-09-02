@@ -23,6 +23,11 @@ Owner: Core CDK team
 [issue-label-assign.yml](issue-label-assign.yml): Github action for automatically adding labels and/or setting assignees when an Issue or PR is opened or edited based on user-defined Area
 Owner: CDK support team
 
+### PR Labeler
+[pr-labeler.yml](pr-labeler.yml): GitHub action for automatically porting triage labels from issues 
+linked in the PR description to the PR.
+Owner: Core CDK team
+
 ## Issue Triggered
 
 ### Closed Issue Message
@@ -44,4 +49,9 @@ Owner: CDK support team
 ### Yarn Upgrader
 [yarn-upgrade.yml](yarn-upgrade.yml): Upgrades yarn dependencies and creates a
 patch file for downloading.
+Owner: Core CDK team
+
+### Issue Reprioritizer
+[issue-reprioritization.yml](issue-reprioritization.yml): GitHub action that labels `p2`
+issues as `p1` if a certain level of community engagement is met.
 Owner: Core CDK team
