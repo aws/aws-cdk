@@ -9,7 +9,7 @@ import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
  */
 export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProviderProps {
   /**
-   * The name of the provider.
+   * The name of the provider. Must be between 3 and 32 characters.
    *
    * @default - the unique ID of the construct
    */
