@@ -1,6 +1,6 @@
 import { Template, Match } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
-import { ProviderAttribute, UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadataType } from '../../lib';
+import { ProviderAttribute, UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadata } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
   describe('saml', () => {
@@ -12,8 +12,7 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
-        metadataType: UserPoolIdentityProviderSamlMetadataType.URL,
-        metadataContent: 'https://my-metadata-url.com',
+        metadata: UserPoolIdentityProviderSamlMetadata.url('https://my-metadata-url.com'),
       });
 
       // THEN
@@ -35,8 +34,7 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
-        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
-        metadataContent: 'my-file-contents',
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
       });
 
       // THEN
@@ -58,8 +56,7 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
-        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
-        metadataContent: 'my-file-contents',
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
         idpSignout: true,
       });
 
@@ -82,8 +79,7 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       const provider = new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
-        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
-        metadataContent: 'my-file-contents',
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
       });
 
       // THEN
@@ -98,8 +94,7 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
-        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
-        metadataContent: 'my-file-contents',
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
         attributeMapping: {
           familyName: ProviderAttribute.other('family_name'),
           givenName: ProviderAttribute.other('given_name'),
@@ -130,8 +125,7 @@ describe('UserPoolIdentityProvider', () => {
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
         name: 'my-provider',
-        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
-        metadataContent: 'my-file-contents',
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
       });
 
       // THEN
@@ -149,8 +143,7 @@ describe('UserPoolIdentityProvider', () => {
       expect(() => new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
         name: 'xy',
-        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
-        metadataContent: 'my-file-contents',
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
       })).toThrow(/Expected provider name to be between 3 and 32 characters/);
     });
 
@@ -162,8 +155,7 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, 'xy', {
         userPool: pool,
-        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
-        metadataContent: 'my-file-contents',
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
       });
 
       // THEN
@@ -180,8 +172,7 @@ describe('UserPoolIdentityProvider', () => {
       // WHEN
       new UserPoolIdentityProviderSaml(stack, `${'saml'.repeat(10)}xyz`, {
         userPool: pool,
-        metadataType: UserPoolIdentityProviderSamlMetadataType.FILE,
-        metadataContent: 'my-file-contents',
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
       });
 
       // THEN

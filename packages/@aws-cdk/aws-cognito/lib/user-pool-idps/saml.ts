@@ -25,16 +25,9 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
   readonly identifiers?: string[]
 
   /**
-   * The SAML metadata file type.
+   * The SAML metadata.
    */
-  readonly metadataType: UserPoolIdentityProviderSamlMetadataType;
-
-  /**
-   * The SAML metadata content.
-   * If metadataType is set to URL, this should be the metadata URL.
-   * If metadataType is set to FILE, this should be the metadata file contents.
-   */
-  readonly metadataContent: string;
+  readonly metadata: UserPoolIdentityProviderSamlMetadata;
 
   /**
    * Whether to enable the "Sign-out flow" feature.
@@ -56,6 +49,35 @@ export enum UserPoolIdentityProviderSamlMetadataType {
 }
 
 /**
+ * Metadata for a SAML user pool identity provider.
+ */
+export class UserPoolIdentityProviderSamlMetadata {
+
+  /**
+   * Specify SAML metadata via a URL.
+   */
+  public static url(url: string): UserPoolIdentityProviderSamlMetadata {
+    return new UserPoolIdentityProviderSamlMetadata(url, UserPoolIdentityProviderSamlMetadataType.URL);
+  }
+
+  /**
+   * Specify SAML metadata via the contents of a file.
+   */
+  public static file(fileContent: string): UserPoolIdentityProviderSamlMetadata {
+    return new UserPoolIdentityProviderSamlMetadata(fileContent, UserPoolIdentityProviderSamlMetadataType.FILE);
+  }
+
+  /**
+   * Construct the metadata for a SAML identity provider.
+   *
+   * @param metadataContent A URL hosting SAML metadata, or the content of a file containing SAML metadata.
+   * @param metadataType The type of metadata, either a URL or file content.
+   */
+  private constructor(public readonly metadataContent: string, public readonly metadataType: UserPoolIdentityProviderSamlMetadataType) {
+  }
+}
+
+/**
  * Represents a identity provider that integrates with SAML.
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
@@ -67,21 +89,17 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
 
     this.validateName(props.name);
 
-    const providerDetails: Record<string, string | boolean> = {
-      IDPSignout: props.idpSignout ?? false,
-    };
-
-    if (props.metadataType === UserPoolIdentityProviderSamlMetadataType.URL) {
-      providerDetails.MetadataURL = props.metadataContent;
-    } else if (props.metadataType === UserPoolIdentityProviderSamlMetadataType.FILE) {
-      providerDetails.MetadataFile = props.metadataContent;
-    }
+    const { metadataType, metadataContent } = props.metadata;
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,
       providerName: this.getProviderName(props.name),
       providerType: 'SAML',
-      providerDetails,
+      providerDetails: {
+        IDPSignout: props.idpSignout ?? false,
+        MetadataURL: metadataType === UserPoolIdentityProviderSamlMetadataType.URL ? metadataContent : undefined,
+        MetadataFile: metadataType === UserPoolIdentityProviderSamlMetadataType.FILE ? metadataContent : undefined,
+      },
       idpIdentifiers: props.identifiers,
       attributeMapping: super.configureAttributeMapping(),
     });

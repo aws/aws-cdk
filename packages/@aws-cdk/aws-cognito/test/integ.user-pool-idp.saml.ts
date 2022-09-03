@@ -1,7 +1,7 @@
 import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
-import { UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadataType } from '../lib';
+import { UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadata } from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -13,8 +13,7 @@ class TestStack extends Stack {
     new UserPoolIdentityProviderSaml(this, 'cdk', {
       userPool: userpool,
       name: 'cdk',
-      metadataType: UserPoolIdentityProviderSamlMetadataType.URL,
-      metadataContent: 'https://fujifish.github.io/samling/public/metadata.xml',
+      metadata: UserPoolIdentityProviderSamlMetadata.url('https://fujifish.github.io/samling/public/metadata.xml'),
     });
 
     const client = userpool.addClient('client');
