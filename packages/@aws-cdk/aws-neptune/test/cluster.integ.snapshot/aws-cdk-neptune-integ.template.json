@@ -391,17 +391,6 @@
     }
    }
   },
-  "ParamsA8366201": {
-   "Type": "AWS::Neptune::DBClusterParameterGroup",
-   "Properties": {
-    "Description": "A nice parameter group",
-    "Family": "neptune1",
-    "Parameters": {
-     "neptune_enable_audit_log": "1",
-     "neptune_query_timeout": "100000"
-    }
-   }
-  },
   "DbSecurity381C2C15": {
    "Type": "AWS::KMS::Key",
    "Properties": {
@@ -436,6 +425,17 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "ParamsA8366201": {
+   "Type": "AWS::Neptune::DBClusterParameterGroup",
+   "Properties": {
+    "Description": "A nice parameter group",
+    "Family": "neptune1",
+    "Parameters": {
+     "neptune_enable_audit_log": "1",
+     "neptune_query_timeout": "100000"
+    }
+   }
   },
   "DatabaseSubnets3C9252C9": {
    "Type": "AWS::Neptune::DBSubnetGroup",
@@ -528,6 +528,120 @@
     "AutoMinorVersionUpgrade": true,
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
+    }
+   },
+   "DependsOn": [
+    "VPCPrivateSubnet1DefaultRouteAE1D6490",
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Params1200F93288": {
+   "Type": "AWS::Neptune::DBClusterParameterGroup",
+   "Properties": {
+    "Description": "A nice parameter group",
+    "Family": "neptune1.2",
+    "Parameters": {
+     "neptune_enable_audit_log": "1",
+     "neptune_query_timeout": "100000"
+    }
+   }
+  },
+  "Database12Subnets4179194B": {
+   "Type": "AWS::Neptune::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for Database12 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "Database12SecurityGroup4F4302E8": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Neptune security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "Database12SecurityGroupfrom00000IndirectPort3A40EE2B": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "CidrIp": "0.0.0.0/0",
+    "Description": "Open to the world",
+    "FromPort": {
+     "Fn::GetAtt": [
+      "Database12D6A36FB9",
+      "Port"
+     ]
+    },
+    "GroupId": {
+     "Fn::GetAtt": [
+      "Database12SecurityGroup4F4302E8",
+      "GroupId"
+     ]
+    },
+    "ToPort": {
+     "Fn::GetAtt": [
+      "Database12D6A36FB9",
+      "Port"
+     ]
+    }
+   }
+  },
+  "Database12D6A36FB9": {
+   "Type": "AWS::Neptune::DBCluster",
+   "Properties": {
+    "DBClusterParameterGroupName": {
+     "Ref": "Params1200F93288"
+    },
+    "DBSubnetGroupName": {
+     "Ref": "Database12Subnets4179194B"
+    },
+    "EngineVersion": "1.2.0.0",
+    "KmsKeyId": {
+     "Fn::GetAtt": [
+      "DbSecurity381C2C15",
+      "Arn"
+     ]
+    },
+    "StorageEncrypted": true,
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "Database12SecurityGroup4F4302E8",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Database12Instance10D9E6224": {
+   "Type": "AWS::Neptune::DBInstance",
+   "Properties": {
+    "DBInstanceClass": "db.r5.large",
+    "AutoMinorVersionUpgrade": true,
+    "DBClusterIdentifier": {
+     "Ref": "Database12D6A36FB9"
     }
    },
    "DependsOn": [

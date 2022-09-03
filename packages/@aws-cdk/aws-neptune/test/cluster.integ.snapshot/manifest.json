@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/17a5a69a211ef8dbec63fd5adb29382dfaac5da65c78d9ec193450eb3933fd98.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a6ddb6c342f7148aab988924c35145ebf650527ca462ceb456d4128d0d009dcf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,16 +177,16 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/aws-cdk-neptune-integ/Params/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ParamsA8366201"
-          }
-        ],
         "/aws-cdk-neptune-integ/DbSecurity/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DbSecurity381C2C15"
+          }
+        ],
+        "/aws-cdk-neptune-integ/Params/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParamsA8366201"
           }
         ],
         "/aws-cdk-neptune-integ/Database/Subnets/Resource": [
@@ -217,6 +217,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseInstance1844F58FD"
+          }
+        ],
+        "/aws-cdk-neptune-integ/Params12/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Params1200F93288"
+          }
+        ],
+        "/aws-cdk-neptune-integ/Database12/Subnets/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Database12Subnets4179194B"
+          }
+        ],
+        "/aws-cdk-neptune-integ/Database12/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Database12SecurityGroup4F4302E8"
+          }
+        ],
+        "/aws-cdk-neptune-integ/Database12/SecurityGroup/from 0.0.0.0_0:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Database12SecurityGroupfrom00000IndirectPort3A40EE2B"
+          }
+        ],
+        "/aws-cdk-neptune-integ/Database12/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Database12D6A36FB9"
+          }
+        ],
+        "/aws-cdk-neptune-integ/Database12/Instance1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Database12Instance10D9E6224"
           }
         ],
         "/aws-cdk-neptune-integ/BootstrapVersion": [

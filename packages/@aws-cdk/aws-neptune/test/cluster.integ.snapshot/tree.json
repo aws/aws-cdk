@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.92"
         }
       },
       "aws-cdk-neptune-integ": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-neptune-integ/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-neptune-integ/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +425,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-neptune-integ/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +544,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-neptune-integ/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -659,35 +659,6 @@
               "version": "0.0.0"
             }
           },
-          "Params": {
-            "id": "Params",
-            "path": "aws-cdk-neptune-integ/Params",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-neptune-integ/Params/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Neptune::DBClusterParameterGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "description": "A nice parameter group",
-                    "family": "neptune1",
-                    "parameters": {
-                      "neptune_enable_audit_log": "1",
-                      "neptune_query_timeout": "100000"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-neptune.CfnDBClusterParameterGroup",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-neptune.ClusterParameterGroup",
-              "version": "0.0.0"
-            }
-          },
           "DbSecurity": {
             "id": "DbSecurity",
             "path": "aws-cdk-neptune-integ/DbSecurity",
@@ -736,6 +707,35 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "Params": {
+            "id": "Params",
+            "path": "aws-cdk-neptune-integ/Params",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-neptune-integ/Params/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Neptune::DBClusterParameterGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "A nice parameter group",
+                    "family": "neptune1",
+                    "parameters": {
+                      "neptune_enable_audit_log": "1",
+                      "neptune_query_timeout": "100000"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-neptune.CfnDBClusterParameterGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-neptune.ClusterParameterGroup",
               "version": "0.0.0"
             }
           },
@@ -900,17 +900,209 @@
               "fqn": "@aws-cdk/aws-neptune.DatabaseCluster",
               "version": "0.0.0"
             }
+          },
+          "Params12": {
+            "id": "Params12",
+            "path": "aws-cdk-neptune-integ/Params12",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-neptune-integ/Params12/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Neptune::DBClusterParameterGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "A nice parameter group",
+                    "family": "neptune1.2",
+                    "parameters": {
+                      "neptune_enable_audit_log": "1",
+                      "neptune_query_timeout": "100000"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-neptune.CfnDBClusterParameterGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-neptune.ClusterParameterGroup",
+              "version": "0.0.0"
+            }
+          },
+          "Database12": {
+            "id": "Database12",
+            "path": "aws-cdk-neptune-integ/Database12",
+            "children": {
+              "Subnets": {
+                "id": "Subnets",
+                "path": "aws-cdk-neptune-integ/Database12/Subnets",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-neptune-integ/Database12/Subnets/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Neptune::DBSubnetGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "dbSubnetGroupDescription": "Subnets for Database12 database",
+                        "subnetIds": [
+                          {
+                            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                          },
+                          {
+                            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-neptune.CfnDBSubnetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-neptune.SubnetGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-neptune-integ/Database12/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-neptune-integ/Database12/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "Neptune security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "from 0.0.0.0_0:{IndirectPort}": {
+                    "id": "from 0.0.0.0_0:{IndirectPort}",
+                    "path": "aws-cdk-neptune-integ/Database12/SecurityGroup/from 0.0.0.0_0:{IndirectPort}",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Open to the world",
+                        "fromPort": {
+                          "Fn::GetAtt": [
+                            "Database12D6A36FB9",
+                            "Port"
+                          ]
+                        },
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "Database12SecurityGroup4F4302E8",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": {
+                          "Fn::GetAtt": [
+                            "Database12D6A36FB9",
+                            "Port"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-neptune-integ/Database12/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Neptune::DBCluster",
+                  "aws:cdk:cloudformation:props": {
+                    "dbClusterParameterGroupName": {
+                      "Ref": "Params1200F93288"
+                    },
+                    "dbSubnetGroupName": {
+                      "Ref": "Database12Subnets4179194B"
+                    },
+                    "engineVersion": "1.2.0.0",
+                    "kmsKeyId": {
+                      "Fn::GetAtt": [
+                        "DbSecurity381C2C15",
+                        "Arn"
+                      ]
+                    },
+                    "storageEncrypted": true,
+                    "vpcSecurityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "Database12SecurityGroup4F4302E8",
+                          "GroupId"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-neptune.CfnDBCluster",
+                  "version": "0.0.0"
+                }
+              },
+              "Instance1": {
+                "id": "Instance1",
+                "path": "aws-cdk-neptune-integ/Database12/Instance1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Neptune::DBInstance",
+                  "aws:cdk:cloudformation:props": {
+                    "dbInstanceClass": "db.r5.large",
+                    "autoMinorVersionUpgrade": true,
+                    "dbClusterIdentifier": {
+                      "Ref": "Database12D6A36FB9"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-neptune.CfnDBInstance",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-neptune.DatabaseCluster",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }
