@@ -433,7 +433,7 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       }, {
         cidrMask: 28,
         name: 'Isolated',
@@ -468,7 +468,7 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       }, {
         cidrMask: 28,
         name: 'Isolated',
@@ -525,7 +525,7 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       }, {
         cidrMask: 28,
         name: 'Isolated',

@@ -947,7 +947,7 @@ describe('cluster', () => {
     cluster.addRotationSingleUser({
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -1004,7 +1004,7 @@ describe('cluster', () => {
       secret: userSecret.attach(cluster),
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -2427,7 +2427,7 @@ describe('cluster', () => {
       instanceProps: {
         vpc,
         vpcSubnets: {
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         },
         publiclyAccessible: true,
       },
