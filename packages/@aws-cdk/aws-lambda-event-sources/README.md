@@ -271,7 +271,7 @@ declare const myFunction: lambda.Function;
 myFunction.addEventSource(new SelfManagedKafkaEventSource({
   bootstrapServers: bootstrapServers,
   topic: topic,
-  consumerGroupId : consumerGroupId,
+  consumerGroupId: consumerGroupId,
   secret: secret,
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,

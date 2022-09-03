@@ -216,7 +216,7 @@ export interface EventSourceMappingOptions {
   readonly kafkaBootstrapServers?: string[]
 
   /**
-   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value. For more information, see [Customizable consumer group ID](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id).
+   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value. The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'. For more information, see [Customizable consumer group ID](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id).
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-amazonmanagedkafkaeventsourceconfig.html
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-selfmanagedkafkaeventsourceconfig.html
    *
@@ -348,7 +348,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     if (props.kafkaConsumerGroupId) {
       if (props.kafkaConsumerGroupId.length > 200 || props.kafkaConsumerGroupId.length <1) {
         throw new Error('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
-      }
+    }
 
       const regex = new RegExp(/[a-zA-Z0-9-\/*:_+=.@-]*/);
       const patternMatch = regex.exec(props.kafkaConsumerGroupId);
@@ -357,7 +357,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       }
 
       if (Boolean(props.kafkaBootstrapServers?.length) ) {
-        selfManagedKafkaEventSourceConfig = { consumerGroupId: props.kafkaConsumerGroupId };
+      selfManagedKafkaEventSourceConfig = { consumerGroupId: props.kafkaConsumerGroupId };
       } else {
         amazonManagedKafkaEventSourceConfig = { consumerGroupId: props.kafkaConsumerGroupId };
       }
