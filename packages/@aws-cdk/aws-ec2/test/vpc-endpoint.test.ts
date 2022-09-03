@@ -63,7 +63,7 @@ describe('vpc endpoint', () => {
                 subnetType: SubnetType.PUBLIC,
               },
               {
-                subnetType: SubnetType.PRIVATE_WITH_NAT,
+                subnetType: SubnetType.PRIVATE_WITH_EGRESS,
               },
             ],
           },
