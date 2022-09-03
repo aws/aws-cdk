@@ -16,4 +16,4 @@ RUN sudo apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && sudo chsh -s $(which zsh) $(whoami)
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
     # Required, otherwise shell is extermly slow due the size of the aws-cdk
-    && echo "[oh-my-zsh]\n  hide-dirty = 1" > /home/superchain/.gitconfig
+    && sudo sh -c 'echo "[oh-my-zsh]\n        hide-dirty = 1" > /etc/gitconfig'
