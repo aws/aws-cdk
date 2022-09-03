@@ -7,7 +7,7 @@ import { IntegTest } from '@aws-cdk/integ-tests';
 import { ApplicationMultipleTargetGroupsEc2Service } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-integ-multiple-alb-healthchecks');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
@@ -50,7 +50,6 @@ const applicationMultipleTargetGroupsFargateService = new ApplicationMultipleTar
 });
 
 applicationMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
-  port: '8050',
   protocol: Protocol.HTTP,
   healthyThresholdCount: 2,
   unhealthyThresholdCount: 2,
@@ -60,7 +59,6 @@ applicationMultipleTargetGroupsFargateService.targetGroups[0].configureHealthChe
 });
 
 applicationMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({
-  port: '8050',
   protocol: Protocol.HTTP,
   healthyThresholdCount: 2,
   unhealthyThresholdCount: 2,

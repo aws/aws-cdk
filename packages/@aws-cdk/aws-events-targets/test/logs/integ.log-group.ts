@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as events from '@aws-cdk/aws-events';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -86,4 +85,3 @@ logEvents.node.addDependency(putEvent);
 logEvents.assertAtPath('events.0.message', ExpectedResult.stringLikeRegexp(expectedValue));
 
 app.synth();
-
