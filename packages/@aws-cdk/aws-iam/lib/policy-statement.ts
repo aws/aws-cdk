@@ -86,14 +86,6 @@ export class PolicyStatement {
   private _frozen = false;
 
   constructor(props: PolicyStatementProps = {}) {
-    // Validate actions
-    for (const action of [...props.actions || [], ...props.notActions || []]) {
-
-      if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action) && !cdk.Token.isUnresolved(action)) {
-        throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
-      }
-    }
-
     this._sid = props.sid;
     this._effect = props.effect || Effect.ALLOW;
 
@@ -154,6 +146,7 @@ export class PolicyStatement {
     if (actions.length > 0 && this._notAction.length > 0) {
       throw new Error('Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
     }
+    this.validatePolicyActions(actions);
     this._action.push(...actions);
   }
 
@@ -170,6 +163,7 @@ export class PolicyStatement {
     if (notActions.length > 0 && this._action.length > 0) {
       throw new Error('Cannot add \'NotActions\' to policy statement if \'Actions\' have been added');
     }
+    this.validatePolicyActions(notActions);
     this._notAction.push(...notActions);
   }
 
@@ -230,6 +224,14 @@ export class PolicyStatement {
       const fragment = notPrincipal.policyFragment;
       mergePrincipal(this._notPrincipal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
+    }
+  }
+
+  private validatePolicyActions(actions: string[]) {
+    for (const action of actions || []) {
+      if (!cdk.Token.isUnresolved(action) && !/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action)) {
+        throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
+      }
     }
   }
 
