@@ -13,9 +13,7 @@
   "postCreateCommand": "yarn install",
   "remoteUser": "superchain",
   "features": {
-    "git": "latest",
-    "aws-cli": "latest",
-    "docker-from-docker": {
+    "docker-in-docker": {
       "version": "latest",
       "moby": true
     }
