@@ -5,41 +5,9 @@
    "Properties": {
     "Content": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3Bucket59232CCDRef"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3VersionKey7F3246C3Ref"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3VersionKey7F3246C3Ref"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06ee.zip"
     },
     "Description": "/opt/nodejs/node_modules/proxy-agent"
    }
@@ -103,41 +71,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3BucketFFD8686DRef"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey9EC52CC1Ref"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey9EC52CC1Ref"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -224,41 +160,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3BucketFFD8686DRef"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey9EC52CC1Ref"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey9EC52CC1Ref"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -391,41 +295,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3BucketACE15B0DRef"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyF3C8306DRef"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyF3C8306DRef"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -560,41 +432,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3BucketACE15B0DRef"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyF3C8306DRef"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyF3C8306DRef"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -726,41 +566,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3BucketACE15B0DRef"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyF3C8306DRef"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyF3C8306DRef"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1024,25 +832,7 @@
   }
  },
  "Parameters": {
-  "referencetoawscdkeksclusterinferencetestAssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3Bucket59232CCDRef": {
-   "Type": "String"
-  },
-  "referencetoawscdkeksclusterinferencetestAssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3VersionKey7F3246C3Ref": {
-   "Type": "String"
-  },
   "referencetoawscdkeksclusterinferencetestClusterCreationRoleE75B6E1BArn": {
-   "Type": "String"
-  },
-  "referencetoawscdkeksclusterinferencetestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3BucketFFD8686DRef": {
-   "Type": "String"
-  },
-  "referencetoawscdkeksclusterinferencetestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey9EC52CC1Ref": {
-   "Type": "String"
-  },
-  "referencetoawscdkeksclusterinferencetestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3BucketACE15B0DRef": {
-   "Type": "String"
-  },
-  "referencetoawscdkeksclusterinferencetestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKeyF3C8306DRef": {
    "Type": "String"
   }
  }

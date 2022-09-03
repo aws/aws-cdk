@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.71"
+          "version": "10.1.85"
         }
       },
       "test-apigateway-vpcendpoint": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +425,8 @@
                     "id": "Acl",
                     "path": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +544,8 @@
                     "id": "Acl",
                     "path": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -952,8 +952,8 @@
                 "id": "Endpoint",
                 "path": "test-apigateway-vpcendpoint/MyApi/Endpoint",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "Default": {
@@ -1011,8 +1011,8 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "apigateway-vpcendpoint": {
@@ -1028,15 +1028,15 @@
                 "path": "apigateway-vpcendpoint/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "apigateway-vpcendpoint/DefaultTest/DeployAssert",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -1053,8 +1053,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }
