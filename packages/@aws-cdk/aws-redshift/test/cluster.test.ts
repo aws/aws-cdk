@@ -278,7 +278,7 @@ describe('parameter group', () => {
 
   });
 
-  test('adding to cluster parameter group on cluster not instantiated with parameter group', () => {
+  test('Adding to the cluster parameter group on a cluster not instantiated with a parameter group', () => {
 
     // WHEN
     const cluster = new Cluster(stack, 'Redshift', {
@@ -300,6 +300,46 @@ describe('parameter group', () => {
       Description: 'Parameter Group for the foobar Redshift cluster',
       ParameterGroupFamily: 'redshift-1.0',
       Parameters: [
+        {
+          ParameterName: 'foo',
+          ParameterValue: 'bar',
+        },
+      ],
+    });
+  });
+
+  test('Adding to the cluster parameter group on a cluster instantiated with a parameter group', () => {
+
+    // WHEN
+    const group = new ClusterParameterGroup(stack, 'Params', {
+      description: 'lorem ipsum',
+      parameters: {
+        param: 'value',
+      },
+    });
+
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      parameterGroup: group,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Redshift::Cluster', {
+      ClusterParameterGroupName: { Ref: Match.anyValue() },
+    });
+
+    template.hasResourceProperties('AWS::Redshift::ClusterParameterGroup', {
+      Description: 'lorem ipsum',
+      ParameterGroupFamily: 'redshift-1.0',
+      Parameters: [
+        {
+          ParameterName: 'param',
+          ParameterValue: 'value',
+        },
         {
           ParameterName: 'foo',
           ParameterValue: 'bar',

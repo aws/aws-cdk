@@ -317,7 +317,17 @@ params.addParameter('enable_user_activity_logging', 'true');
 
 Additionally, you can add a parameter to the cluster's associated parameter group with `Cluster.addToParameterGroup()`. If the cluster does not have an associated parameter group, a new parameter group is created.
 
-```ts fixture=cluster
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new Cluster(this, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+    masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+  },
+  vpc,
+});
+
 cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 ```
 
