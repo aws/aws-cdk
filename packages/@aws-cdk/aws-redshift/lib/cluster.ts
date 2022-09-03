@@ -385,7 +385,6 @@ abstract class ClusterBase extends Resource implements ICluster {
       targetType: secretsmanager.AttachmentTargetType.REDSHIFT_CLUSTER,
     };
   }
-
 }
 
 /**
