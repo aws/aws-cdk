@@ -1,0 +1,23 @@
+{
+  "name": "aws-cdk",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint"]
+    }
+  },
+
+  "postCreateCommand": "yarn install",
+  "remoteUser": "superchain",
+  "features": {
+    "git": "latest",
+    "aws-cli": "latest",
+    "docker-from-docker": {
+      "version": "latest",
+      "moby": true
+    }
+  }
+}
