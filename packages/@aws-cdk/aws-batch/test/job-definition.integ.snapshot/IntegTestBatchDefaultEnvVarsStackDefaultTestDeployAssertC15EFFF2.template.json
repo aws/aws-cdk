@@ -15,7 +15,7 @@
      "status": "ACTIVE"
     },
     "flattenResponse": "true",
-    "salt": "1661947601911"
+    "salt": "1662181496271"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -36,7 +36,7 @@
      ]
     },
     "expected": "{\"$StringLike\":\"AWS_REGION\"}",
-    "salt": "1661947601912"
+    "salt": "1662181496272"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
