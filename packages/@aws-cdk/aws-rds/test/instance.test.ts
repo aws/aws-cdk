@@ -300,7 +300,7 @@ describe('instance', () => {
       credentials: rds.Credentials.fromUsername('syscdk'),
       vpc,
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
     });
 
@@ -822,7 +822,7 @@ describe('instance', () => {
     instance.addRotationSingleUser({
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -875,7 +875,7 @@ describe('instance', () => {
       secret: userSecret.attach(instance),
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -1519,7 +1519,7 @@ describe('instance', () => {
       }),
       vpc,
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
       publiclyAccessible: true,
     });
