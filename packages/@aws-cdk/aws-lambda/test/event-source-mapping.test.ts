@@ -156,7 +156,7 @@ describe('event source mapping', () => {
 
   test('throws if kafkaConsumerGroupId is invalid', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
-      eventSourceArn: '',
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
       kafkaConsumerGroupId: 'some invalid',
       target: fn,
     })).toThrow('kafkaConsumerGroupId contain ivalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
@@ -164,7 +164,7 @@ describe('event source mapping', () => {
 
   test('throws if kafkaConsumerGroupId is too long', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
-      eventSourceArn: '',
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
       kafkaConsumerGroupId: 'x'.repeat(201),
       target: fn,
     })).toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
@@ -172,15 +172,23 @@ describe('event source mapping', () => {
 
   test('not throws if kafkaConsumerGroupId is empty', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
-      eventSourceArn: '',
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
       kafkaConsumerGroupId: '',
       target: fn,
     })).not.toThrow();
   });
 
-  test('not throws if kafkaConsumerGroupId is valid', () => {
+  test('not throws if kafkaConsumerGroupId is valid for amazon managed kafka', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
-      eventSourceArn: '',
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+      kafkaConsumerGroupId: 'someValidConsumerGroupId',
+      target: fn,
+    })).not.toThrow();
+  });
+
+  test('not throws if kafkaConsumerGroupId is valid for self managed kafka', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      kafkaBootstrapServers: ['kafka-broker-1:9092', 'kafka-broker-2:9092'],
       kafkaConsumerGroupId: 'someValidConsumerGroupId',
       target: fn,
     })).not.toThrow();
