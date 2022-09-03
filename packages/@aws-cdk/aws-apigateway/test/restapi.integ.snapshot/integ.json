@@ -5,7 +5,7 @@
       "stacks": [
         "test-apigateway-restapi"
       ],
-      "assertionStack": "apigatewayrestapiDefaultTestDeployAssert6A9696A7"
+      "assertionStack": "apigateway-restapi/DefaultTest/DeployAssert"
     }
   }
 }

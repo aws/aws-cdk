@@ -1,7 +1,7 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "files": {
-    "f27550f05f1852993570414002ca947328443edfcf3e2e6971467a6c16ed594c": {
+    "3ad098f5c98b05c98dae3ab17e026e847d893a37bfb1b6f11947f8bcd4d590f1": {
       "source": {
         "path": "integ-kinesis-stream.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f27550f05f1852993570414002ca947328443edfcf3e2e6971467a6c16ed594c.json",
+          "objectKey": "3ad098f5c98b05c98dae3ab17e026e847d893a37bfb1b6f11947f8bcd4d590f1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
