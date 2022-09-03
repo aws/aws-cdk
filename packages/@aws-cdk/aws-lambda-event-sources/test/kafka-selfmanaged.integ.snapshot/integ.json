@@ -5,7 +5,7 @@
       "stacks": [
         "lambda-event-source-kafka-self-managed"
       ],
-      "assertionStack": "LambdaEventSourceKafkaSelfManagedTestDefaultTestDeployAssertAF78BD0F"
+      "assertionStack": "LambdaEventSourceKafkaSelfManagedTest/DefaultTest/DeployAssert"
     }
   }
 }

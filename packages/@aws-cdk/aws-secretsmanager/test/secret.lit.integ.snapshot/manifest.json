@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "Integ-SecretsManager-Secret.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Integ-SecretsManager-Secret.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "Integ-SecretsManager-Secret": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "Integ-SecretsManager-Secret.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0f1ea0ff19e664945a34a95a8a95491e3fa70b47bdb0e6b5fdf28945fdfbb69.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Integ-SecretsManager-Secret.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "Integ-SecretsManager-Secret.assets"
+      ],
       "metadata": {
         "/Integ-SecretsManager-Secret/TestRole/Resource": [
           {
@@ -68,18 +92,21 @@
             "type": "aws:cdk:logicalId",
             "data": "JSONSecret6FE68AEF"
           }
+        ],
+        "/Integ-SecretsManager-Secret/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
         ]
       },
       "displayName": "Integ-SecretsManager-Secret"
-    },
-    "SecretTestDefaultTestDeployAssert519F6A06": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "SecretTestDefaultTestDeployAssert519F6A06.template.json",
-        "validateOnSynth": false
-      },
-      "displayName": "SecretTest/DefaultTest/DeployAssert"
     }
   }
 }

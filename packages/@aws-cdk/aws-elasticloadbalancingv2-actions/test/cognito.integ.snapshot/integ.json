@@ -5,7 +5,7 @@
       "stacks": [
         "integ-cognito"
       ],
-      "assertionStack": "integtestcognitoDefaultTestDeployAssert6F2623C9"
+      "assertionStack": "integ-test-cognito/DefaultTest/DeployAssert"
     }
   }
 }
