@@ -329,6 +329,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
     }
 
+    if (props.kafkaConsumerGroupId) {
+      this.validateKafkaConsumerGroupIdOrThrow(props.kafkaConsumerGroupId);
+    }
+
     let destinationConfig;
 
     if (props.onFailure) {
@@ -340,18 +344,6 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     let selfManagedEventSource;
     if (props.kafkaBootstrapServers) {
       selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
-    }
-
-    let amazonManagedKafkaEventSourceConfig: CfnEventSourceMapping['amazonManagedKafkaEventSourceConfig'];
-    if (props.kafkaConsumerGroupId && props.eventSourceArn) {
-      this.validateKafkaConsumerGroupIdOrThrow(props.kafkaConsumerGroupId);
-      amazonManagedKafkaEventSourceConfig = { consumerGroupId: props.kafkaConsumerGroupId };
-    }
-
-    let selfManagedKafkaEventSourceConfig: CfnEventSourceMapping['selfManagedKafkaEventSourceConfig'];
-    if (props.kafkaConsumerGroupId && props.kafkaBootstrapServers) {
-      this.validateKafkaConsumerGroupIdOrThrow(props.kafkaConsumerGroupId);
-      selfManagedKafkaEventSourceConfig = { consumerGroupId: props.kafkaConsumerGroupId };
     }
 
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
@@ -372,8 +364,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
-      selfManagedKafkaEventSourceConfig,
-      amazonManagedKafkaEventSourceConfig,
+      selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined,
+      amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }
