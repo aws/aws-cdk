@@ -630,7 +630,7 @@ fn.addEventSource(new eventsources.S3EventSource(bucket, {
   filters: [ { prefix: 'subdir/' } ] // optional
 }));
 ```
-The folloing code adds an DynamoDB notification as an event source filtering insert events:
+The following code adds an DynamoDB notification as an event source filtering insert events:
 ```ts
 import * as eventsources from '@aws-cdk/aws-lambda-event-sources';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
