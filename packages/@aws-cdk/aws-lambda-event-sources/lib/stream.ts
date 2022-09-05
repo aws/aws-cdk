@@ -109,7 +109,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
   readonly onFailure?: lambda.IEventSourceDlq;
 
   /**
-   * Add filter criteria to DinamoDB Trigger
+   * Add filter criteria option
    *
    * @default - None
    */
