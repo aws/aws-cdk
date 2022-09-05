@@ -10,7 +10,7 @@ class DynamoEventSourceTest extends cdk.Stack {
     super(scope, id);
 
     const fn = new TestFunction(this, 'F');
-    const queue = new dynamodb.Table(this, 'T', {
+    const table = new dynamodb.Table(this, 'T', {
       partitionKey: {
         name: 'id',
         type: dynamodb.AttributeType.STRING,
@@ -19,7 +19,7 @@ class DynamoEventSourceTest extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    fn.addEventSource(new DynamoEventSource(queue, {
+    fn.addEventSource(new DynamoEventSource(table, {
       batchSize: 5,
       startingPosition: lambda.StartingPosition.LATEST,
       filterCriteria: FilterCriteria.addFilters({
