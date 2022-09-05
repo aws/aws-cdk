@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.cluster-elasticip": {
+    "aws-cdk-redshift-elastic-ip-test/DefaultTest": {
       "stacks": [
         "aws-cdk-redshift-cluster-database"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

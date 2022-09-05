@@ -3,9 +3,9 @@
   "testCases": {
     "applicationLoadBalancedEc2ServiceTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-alb"
       ],
-      "assertionStack": "applicationLoadBalancedEc2ServiceTestDefaultTestDeployAssert3356477A"
+      "assertionStack": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

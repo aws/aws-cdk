@@ -479,6 +479,8 @@ const newContainer = taskDefinition.addContainer('container', {
   },
 });
 newContainer.addEnvironment('QUEUE_NAME', 'MyQueue');
+newContainer.addSecret('API_KEY', ecs.Secret.fromSecretsManager(secret));
+newContainer.addSecret('DB_PASSWORD', ecs.Secret.fromSecretsManager(secret, 'password'));
 ```
 
 The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
@@ -887,13 +889,15 @@ taskDefinition.addContainer('TheContainer', {
 ### splunk Log Driver
 
 ```ts
+declare const secret: secretsmanager.Secret;
+
 // Create a Task Definition for the container to start
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
   logging: ecs.LogDrivers.splunk({
-    token: SecretValue.secretsManager('my-splunk-token'),
+    secretToken: secret,
     url: 'my-splunk-url',
   }),
 });

@@ -30,7 +30,7 @@ class TestStack extends cdk.Stack {
 
     const cluster = new DatabaseCluster(this, 'Database', {
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
       instanceType: InstanceType.R5_LARGE,
       clusterParameterGroup: params,
       kmsKey,

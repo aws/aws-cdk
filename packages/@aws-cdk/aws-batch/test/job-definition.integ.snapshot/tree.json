@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.92"
         }
       },
       "BatchDefaultEnvVarsStack": {
@@ -47,11 +47,15 @@
                       "environment": [
                         {
                           "name": "AWS_REGION",
-                          "value": "us-east-1"
+                          "value": {
+                            "Ref": "AWS::Region"
+                          }
                         },
                         {
                           "name": "AWS_ACCOUNT",
-                          "value": "347315207830"
+                          "value": {
+                            "Ref": "AWS::AccountId"
+                          }
                         }
                       ],
                       "image": "docker/whalesay",
@@ -71,6 +75,83 @@
                     "platformCapabilities": [
                       "EC2"
                     ],
+                    "retryStrategy": {
+                      "attempts": 1
+                    },
+                    "timeout": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-batch.CfnJobDefinition",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-batch.JobDefinition",
+              "version": "0.0.0"
+            }
+          },
+          "JobDefinitionTags": {
+            "id": "JobDefinitionTags",
+            "path": "BatchDefaultEnvVarsStack/JobDefinitionTags",
+            "children": {
+              "Resource-Batch-Task-Definition-Role": {
+                "id": "Resource-Batch-Task-Definition-Role",
+                "path": "BatchDefaultEnvVarsStack/JobDefinitionTags/Resource-Batch-Task-Definition-Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.LazyRole",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource-Batch-Job-Container-Definition": {
+                "id": "Resource-Batch-Job-Container-Definition",
+                "path": "BatchDefaultEnvVarsStack/JobDefinitionTags/Resource-Batch-Job-Container-Definition",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "BatchDefaultEnvVarsStack/JobDefinitionTags/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Batch::JobDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "container",
+                    "containerProperties": {
+                      "environment": [
+                        {
+                          "name": "AWS_REGION",
+                          "value": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        {
+                          "name": "AWS_ACCOUNT",
+                          "value": {
+                            "Ref": "AWS::AccountId"
+                          }
+                        }
+                      ],
+                      "image": "docker/whalesay",
+                      "privileged": false,
+                      "readonlyRootFilesystem": false,
+                      "resourceRequirements": [
+                        {
+                          "type": "VCPU",
+                          "value": "1"
+                        },
+                        {
+                          "type": "MEMORY",
+                          "value": "4"
+                        }
+                      ]
+                    },
+                    "platformCapabilities": [
+                      "EC2"
+                    ],
+                    "propagateTags": true,
                     "retryStrategy": {
                       "attempts": 1
                     },
@@ -107,7 +188,7 @@
                 "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.33"
+                  "version": "10.1.92"
                 }
               },
               "DeployAssert": {
@@ -127,7 +208,7 @@
                             "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.33"
+                              "version": "10.1.92"
                             }
                           }
                         },
@@ -167,7 +248,7 @@
                                 "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AwsApiCallBatchdescribeJobDefinitions/AssertEqualsBatchdescribeJobDefinitions/AssertionProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.1.33"
+                                  "version": "10.1.92"
                                 }
                               }
                             },
@@ -245,51 +326,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.33"
-                    }
-                  },
-                  "AssetParameters": {
-                    "id": "AssetParameters",
-                    "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters",
-                    "children": {
-                      "ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3": {
-                        "id": "ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3",
-                        "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3",
-                        "children": {
-                          "S3Bucket": {
-                            "id": "S3Bucket",
-                            "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3/S3Bucket",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnParameter",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "S3VersionKey": {
-                            "id": "S3VersionKey",
-                            "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3/S3VersionKey",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnParameter",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "ArtifactHash": {
-                            "id": "ArtifactHash",
-                            "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/AssetParameters/ec094b96e98289a8faed4f4280a8531224c0191f583bc684c21c91a65319e4a3/ArtifactHash",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnParameter",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.33"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.33"
+                      "version": "10.1.92"
                     }
                   }
                 },

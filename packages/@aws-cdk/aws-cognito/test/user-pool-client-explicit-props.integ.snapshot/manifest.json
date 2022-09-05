@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "integ-user-pool-client-explicit-props.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-user-pool-client-explicit-props.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "integ-user-pool-client-explicit-props": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-user-pool-client-explicit-props.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/integ-user-pool-client-explicit-props": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
-              "id": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
-              "packaging": "zip",
-              "sourceHash": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
-              "s3BucketParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A",
-              "s3KeyParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5",
-              "artifactHashParameter": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/800ae0e8612e8f6d8cb727c55cf20dc51d4cbcc37c1e1701560675517ff5134a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-user-pool-client-explicit-props.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-user-pool-client-explicit-props.assets"
+      ],
+      "metadata": {
         "/integ-user-pool-client-explicit-props/myuserpool/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -41,16 +51,16 @@
             "data": "myuserpoolmyuserpoolclientAFB2274E"
           }
         ],
-        "/integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyF83BED40"
-          }
-        ],
         "/integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/DescribeCognitoUserPoolClient/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientEA733B32"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyF83BED40"
           }
         ],
         "/integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -65,28 +75,22 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/integ-user-pool-client-explicit-props/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3BucketC526447A"
-          }
-        ],
-        "/integ-user-pool-client-explicit-props/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286S3VersionKey237620B5"
-          }
-        ],
-        "/integ-user-pool-client-explicit-props/AssetParameters/105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286ArtifactHashC17A8FEC"
-          }
-        ],
         "/integ-user-pool-client-explicit-props/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecretA720EF05"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
