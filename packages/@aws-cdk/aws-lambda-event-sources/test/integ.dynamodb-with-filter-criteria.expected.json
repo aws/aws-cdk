@@ -102,7 +102,7 @@
         "FilterCriteria": {
           "Filters": [
             {
-              "Pattern": "{\"dynamodb\":{\"Keys\":{\"id\":{\"S\":[{\"exists\":true}]}}}}"
+              "Pattern": "{\"eventName\":[\"INSERT\"],\"dynamodb\":{\"Keys\":{\"id\":{\"S\":[{\"exists\":true}]}}}}"
             }
           ]
         },

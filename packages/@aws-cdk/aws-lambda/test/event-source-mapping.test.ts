@@ -1,6 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterCriteria, FilterPattern } from '../lib';
+import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterCriteria, FilterRule } from '../lib';
 
 let stack: cdk.Stack;
 let fn: Function;
@@ -184,17 +184,17 @@ describe('event source mapping', () => {
       eventSourceArn: eventSourceArn,
       kafkaTopic: topicNameParam.valueAsString,
       filterCriteria: FilterCriteria.addFilters({
-        a: FilterPattern.or('a','b')
-      })
+        a: FilterRule.or('a', 'b'),
+      }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       FilterCriteria: {
         Filters: [
           {
-            Pattern: "{\"a\":[\"a\",\"b\"]}"
-          }
-        ]
+            Pattern: '{"a":["a","b"]}',
+          },
+        ],
       },
     });
   });

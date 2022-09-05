@@ -102,12 +102,11 @@
     "FilterCriteria": {
      "Filters": [
       {
-       "Pattern": "{\"dynamodb\":{\"Keys\":{\"id\":{\"S\":[{\"exists\":true}]}}}}"
+       "Pattern": "{\"eventName\":[\"INSERT\"],\"dynamodb\":{\"Keys\":{\"id\":{\"S\":[{\"exists\":true}]}}}}"
       }
      ]
     },
-    "StartingPosition": "TRIM_HORIZON",
-    "TumblingWindowInSeconds": 60
+    "StartingPosition": "LATEST"
    }
   },
   "TD925BC7E": {

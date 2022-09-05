@@ -617,6 +617,7 @@ declare const fn: lambda.Function;
 const queue = new sqs.Queue(this, 'Queue');
 fn.addEventSource(new eventsources.SqsEventSource(queue));
 ```
+
 The following code adds an S3 bucket notification as an event source:
 
 ```ts
@@ -630,7 +631,9 @@ fn.addEventSource(new eventsources.S3EventSource(bucket, {
   filters: [ { prefix: 'subdir/' } ] // optional
 }));
 ```
+
 The following code adds an DynamoDB notification as an event source filtering insert events:
+
 ```ts
 import * as eventsources from '@aws-cdk/aws-lambda-event-sources';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
@@ -645,8 +648,8 @@ const table = new dynamodb.Table(this, 'Table', {
 });
 fn.addEventSource(new eventsources.DynamoEventSource(table, {
   startingPosition: lambda.StartingPosition.LATEST,
-  filterCriteria: FilterCriteria.addFilters({
-    eventName: FilterPattern.textEquals('INSERT'),
+  filterCriteria: lambda.FilterCriteria.addFilters({
+    eventName: lambda.FilterRule.textEquals('INSERT'),
   }),
 }));
 ```

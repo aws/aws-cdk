@@ -1,6 +1,6 @@
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { FilterCriteria, FilterPattern } from '@aws-cdk/aws-lambda';
+import { FilterCriteria, FilterRule } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { DynamoEventSource } from '../lib';
 import { TestFunction } from './test-function';
@@ -23,11 +23,11 @@ class DynamoEventSourceTest extends cdk.Stack {
       batchSize: 5,
       startingPosition: lambda.StartingPosition.LATEST,
       filterCriteria: FilterCriteria.addFilters({
-        eventName: FilterPattern.textEquals('INSERT'),
+        eventName: FilterRule.textEquals('INSERT'),
         dynamodb: {
           Keys: {
             id: {
-              S: FilterPattern.exists(),
+              S: FilterRule.exists(),
             },
           },
         },

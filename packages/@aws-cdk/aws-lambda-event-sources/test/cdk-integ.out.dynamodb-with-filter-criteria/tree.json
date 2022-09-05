@@ -169,12 +169,11 @@
                         "filterCriteria": {
                           "filters": [
                             {
-                              "pattern": "{\"dynamodb\":{\"Keys\":{\"id\":{\"S\":[{\"exists\":true}]}}}}"
+                              "pattern": "{\"eventName\":[\"INSERT\"],\"dynamodb\":{\"Keys\":{\"id\":{\"S\":[{\"exists\":true}]}}}}"
                             }
                           ]
                         },
-                        "startingPosition": "TRIM_HORIZON",
-                        "tumblingWindowInSeconds": 60
+                        "startingPosition": "LATEST"
                       }
                     },
                     "constructInfo": {

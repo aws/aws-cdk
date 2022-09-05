@@ -1,7 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { FilterCriteria, FilterPattern } from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as sources from '../lib';
@@ -259,12 +258,12 @@ describe('DynamoEventSource', () => {
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       startingPosition: lambda.StartingPosition.LATEST,
-      filterCriteria: FilterCriteria.addFilters({
-        eventName: FilterPattern.textEquals('INSERT'),
+      filterCriteria: lambda.FilterCriteria.addFilters({
+        eventName: lambda.FilterRule.textEquals('INSERT'),
         dynamodb: {
           Keys: {
             id: {
-              S: FilterPattern.exists(),
+              S: lambda.FilterRule.exists(),
             },
           },
         },

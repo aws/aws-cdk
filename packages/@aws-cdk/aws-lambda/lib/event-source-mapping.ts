@@ -79,50 +79,94 @@ export interface SourceAccessConfiguration {
   readonly uri: string
 }
 
-export class FilterPattern {
+/**
+ * Filter rules for Lambda event filtering
+ */
+export class FilterRule {
+  /**
+   * Null comparison operator
+   */
   public static null(): string[] {
     return [];
   }
+
+  /**
+   * Empty comparison operator
+   */
   public static empty(): string[] {
-    return [""];
+    return [''];
   }
+
+  /**
+   * String equals comparison operator
+   */
   public static textEquals(elem: string): string[] {
     return [elem];
   }
+
+  /**
+   * Numeric equals comparison operator
+   */
   public static numericEquals(elem: number): {[key: string]: any}[] {
-    return [{ "numeric": ["=", elem] }];
+    return [{ numeric: ['=', elem] }];
   }
+
+  /**
+   * Or comparison operator
+   */
   public static or(...elem: string[]): string[] {
     return elem;
   }
+
+  /**
+   * Not equals comparison operator
+   */
   public static notEquals(elem: string): {[key:string]: string[]}[] {
     return [{ 'anything-but': [elem] }];
   }
+
+  /**
+   * Numeric range comparison operator
+   */
   public static between(first: number, second: number): {[key:string]: any[]}[] {
-    return [{ "numeric": [">", first, "<=", second] }];
+    return [{ numeric: ['>', first, '<=', second] }];
   }
+
+  /**
+   * Exists comparison operator
+   */
   public static exists(): {[key:string]: boolean}[] {
-    return [{ "exists": true }];
+    return [{ exists: true }];
   }
+
+  /**
+   * Not exists comparison operator
+   */
   public static notExists(): {[key:string]: boolean}[] {
-    return [{ "exists": false }];
+    return [{ exists: false }];
   }
+
+  /**
+   * Begins with comparison operator
+   */
   public static beginsWith(elem: string): {[key:string]: string}[] {
-    return [{ "prefix": elem }];
+    return [{ prefix: elem }];
   }
 }
 
+/**
+ * By default, you can have five different filters per event source. You can request a quota increase for up to 10 filters per event source.
+ */
 export class FilterCriteria {
   /**
-   * By default, you can have five different filters per event source.
-   * You can request a quota increase for up to 10 filters per event source.
+   * Create a Filter Criteria Object
    */
-  public static addFilters(...filters: {[key: string]: FilterPattern}[]): {[key: string]: any} {
+  public static addFilters(...filters: {[key: string]: FilterRule}[]): {[key: string]: any} {
     let list: {[key: string]: string}[] = [];
     for (let item of filters) {
-      list.push({ pattern: JSON.stringify(item) })
+      list.push({ pattern: JSON.stringify(item) });
     }
-    return { filters: list }
+    return { filters: list };
   }
 }
 
@@ -273,10 +317,10 @@ export interface EventSourceMappingOptions {
   /**
    * Add filter criteria to Event Source
    * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
-   * 
+   *
    * @default - none
    */
-   readonly filterCriteria?: FilterCriteria
+  readonly filterCriteria?: FilterCriteria
 }
 
 /**
