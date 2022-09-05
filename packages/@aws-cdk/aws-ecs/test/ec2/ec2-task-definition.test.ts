@@ -261,7 +261,7 @@ describe('ec2 task definition', () => {
         hostname: 'webHost',
         linuxParameters: new ecs.LinuxParameters(stack, 'LinuxParameters', {
           initProcessEnabled: true,
-          sharedMemorySize: cdk.Size.gibibytes(1),
+          sharedMemorySize: 1024,
         }),
         logging: new ecs.AwsLogDriver({ streamPrefix: 'prefix' }),
         memoryReservationMiB: 1024,

@@ -1830,7 +1830,7 @@ describe('container definition', () => {
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
-        sharedMemorySize: cdk.Size.gibibytes(1),
+        sharedMemorySize: 1024,
         maxSwap: cdk.Size.gibibytes(5),
         swappiness: 90,
       });
@@ -1872,7 +1872,7 @@ describe('container definition', () => {
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
-        sharedMemorySize: cdk.Size.gibibytes(1),
+        sharedMemorySize: 1024,
         maxSwap: cdk.Size.gibibytes(5),
         swappiness: 90,
       });
@@ -1916,7 +1916,7 @@ describe('container definition', () => {
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
-        sharedMemorySize: cdk.Size.gibibytes(1),
+        sharedMemorySize: 1024,
         maxSwap: cdk.Size.gibibytes(5),
         swappiness: 90,
       });
@@ -1960,7 +1960,7 @@ describe('container definition', () => {
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
-        sharedMemorySize: cdk.Size.gibibytes(1),
+        sharedMemorySize: 1024,
         maxSwap: cdk.Size.gibibytes(5),
         swappiness: 90,
       });
