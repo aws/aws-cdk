@@ -2,40 +2,41 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { FilterCriteria, FilterRule } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import { DynamoEventSource } from '../lib';
 import { TestFunction } from './test-function';
 
-class DynamoEventSourceTest extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
-    super(scope, id);
-
-    const fn = new TestFunction(this, 'F');
-    const table = new dynamodb.Table(this, 'T', {
-      partitionKey: {
-        name: 'id',
-        type: dynamodb.AttributeType.STRING,
-      },
-      stream: dynamodb.StreamViewType.NEW_IMAGE,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
-
-    fn.addEventSource(new DynamoEventSource(table, {
-      batchSize: 5,
-      startingPosition: lambda.StartingPosition.LATEST,
-      filterCriteria: FilterCriteria.addFilters({
-        eventName: FilterRule.textEquals('INSERT'),
-        dynamodb: {
-          Keys: {
-            id: {
-              S: FilterRule.exists(),
-            },
-          },
-        },
-      }),
-    }));
-  }
-}
-
 const app = new cdk.App();
-new DynamoEventSourceTest(app, 'lambda-event-source-dynamodb');
+
+const stack = new cdk.Stack(app, 'lambda-event-source-filter-criteria-dynamodb');
+
+const fn = new TestFunction(stack, 'F');
+const table = new dynamodb.Table(stack, 'T', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  stream: dynamodb.StreamViewType.NEW_IMAGE,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+fn.addEventSource(new DynamoEventSource(table, {
+  batchSize: 5,
+  startingPosition: lambda.StartingPosition.LATEST,
+  filterCriteria: FilterCriteria.addFilters({
+    eventName: FilterRule.textEquals('INSERT'),
+    dynamodb: {
+      Keys: {
+        id: {
+          S: FilterRule.exists(),
+        },
+      },
+    },
+  }),
+}));
+
+new integ.IntegTest(app, 'FilterCriteria', {
+  testCases: [stack],
+});
+
 app.synth();

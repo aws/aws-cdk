@@ -37,21 +37,20 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "dynamodb:ListStreams",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
               "Action": [
-                "dynamodb:DescribeStream",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator"
+                "kinesis:DescribeStream",
+                "kinesis:DescribeStreamSummary",
+                "kinesis:GetRecords",
+                "kinesis:GetShardIterator",
+                "kinesis:ListShards",
+                "kinesis:ListStreams",
+                "kinesis:SubscribeToShard"
               ],
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "TD925BC7E",
-                  "StreamArn"
+                  "Q63C6E3AB",
+                  "Arn"
                 ]
               }
             }
@@ -86,54 +85,66 @@
         "FServiceRole3AC82EE1"
       ]
     },
-    "FDynamoDBEventSourcelambdaeventsourcefiltercriteriadynamodbT9CFE7D0657833F11": {
+    "FKinesisEventSourcelambdaeventsourcekinesisQ645CE7DB2D6BCCF5": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "Properties": {
         "FunctionName": {
           "Ref": "FC4345940"
         },
-        "BatchSize": 5,
+        "BatchSize": 100,
         "EventSourceArn": {
           "Fn::GetAtt": [
-            "TD925BC7E",
-            "StreamArn"
+            "Q63C6E3AB",
+            "Arn"
           ]
         },
-        "FilterCriteria": {
-          "Filters": [
+        "StartingPosition": "TRIM_HORIZON",
+        "TumblingWindowInSeconds": 60
+      }
+    },
+    "Q63C6E3AB": {
+      "Type": "AWS::Kinesis::Stream",
+      "Properties": {
+        "RetentionPeriodHours": 24,
+        "ShardCount": 1,
+        "StreamEncryption": {
+          "Fn::If": [
+            "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             {
-              "Pattern": "{\"eventName\":[\"INSERT\"],\"dynamodb\":{\"Keys\":{\"id\":{\"S\":[{\"exists\":true}]}}}}"
+              "Ref": "AWS::NoValue"
+            },
+            {
+              "EncryptionType": "KMS",
+              "KeyId": "alias/aws/kinesis"
             }
           ]
         },
-        "StartingPosition": "LATEST"
-      }
-    },
-    "TD925BC7E": {
-      "Type": "AWS::DynamoDB::Table",
-      "Properties": {
-        "KeySchema": [
-          {
-            "AttributeName": "id",
-            "KeyType": "HASH"
-          }
-        ],
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "id",
-            "AttributeType": "S"
-          }
-        ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
-        "StreamSpecification": {
-          "StreamViewType": "NEW_IMAGE"
+        "StreamModeDetails": {
+          "StreamMode": "PROVISIONED"
         }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      }
+    }
+  },
+  "Conditions": {
+    "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+      "Fn::Or": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "cn-north-1"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "cn-northwest-1"
+          ]
+        }
+      ]
     }
   }
 }
