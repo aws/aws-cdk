@@ -20,7 +20,6 @@ class TestStack extends Stack {
         ErrorCode: '$.errorCode',
       },
     });
-    /// !hide
   }
 }
 
