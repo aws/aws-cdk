@@ -10,7 +10,6 @@ class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    /// !show
     new MetricFilter(this, 'MetricFilter', {
       logGroup,
       metricNamespace: 'MyApp',
