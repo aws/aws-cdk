@@ -79,6 +79,53 @@ export interface SourceAccessConfiguration {
   readonly uri: string
 }
 
+export class FilterPattern {
+  public static null(): string[] {
+    return [];
+  }
+  public static empty(): string[] {
+    return [""];
+  }
+  public static textEquals(elem: string): string[] {
+    return [elem];
+  }
+  public static numericEquals(elem: number): {[key: string]: any}[] {
+    return [{ "numeric": ["=", elem] }];
+  }
+  public static or(...elem: string[]): string[] {
+    return elem;
+  }
+  public static notEquals(elem: string): {[key:string]: string[]}[] {
+    return [{ 'anything-but': [elem] }];
+  }
+  public static between(first: number, second: number): {[key:string]: any[]}[] {
+    return [{ "numeric": [">", first, "<=", second] }];
+  }
+  public static exists(): {[key:string]: boolean}[] {
+    return [{ "exists": true }];
+  }
+  public static notExists(): {[key:string]: boolean}[] {
+    return [{ "exists": false }];
+  }
+  public static beginsWith(elem: string): {[key:string]: string}[] {
+    return [{ "prefix": elem }];
+  }
+}
+
+export class FilterCriteria {
+  /**
+   * By default, you can have five different filters per event source.
+   * You can request a quota increase for up to 10 filters per event source.
+   */
+  public static addFilters(...filters: {[key: string]: FilterPattern}[]): {[key: string]: any} {
+    let list: {[key: string]: string}[] = [];
+    for (let item of filters) {
+      list.push({ pattern: JSON.stringify(item) })
+    }
+    return { filters: list }
+  }
+}
+
 export interface EventSourceMappingOptions {
   /**
    * The Amazon Resource Name (ARN) of the event source. Any record added to
@@ -222,6 +269,14 @@ export interface EventSourceMappingOptions {
    * @default - none
    */
   readonly sourceAccessConfigurations?: SourceAccessConfiguration[]
+
+  /**
+   * Add filter criteria to Event Source
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   * 
+   * @default - none
+   */
+   readonly filterCriteria?: FilterCriteria
 }
 
 /**
@@ -350,6 +405,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
+      filterCriteria: props.filterCriteria,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }

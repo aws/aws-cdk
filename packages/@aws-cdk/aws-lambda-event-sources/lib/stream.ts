@@ -107,6 +107,13 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * @default - discarded records are ignored
    */
   readonly onFailure?: lambda.IEventSourceDlq;
+
+  /**
+   * Add filter criteria to DinamoDB Trigger
+   *
+   * @default - None
+   */
+  readonly filterCriteria?: lambda.FilterCriteria;
 }
 
 /**
@@ -132,6 +139,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       onFailure: this.props.onFailure,
       tumblingWindow: this.props.tumblingWindow,
       enabled: this.props.enabled,
+      filterCriteria: this.props.filterCriteria,
     };
   }
 }
