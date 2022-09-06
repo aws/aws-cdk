@@ -39,6 +39,13 @@ export interface SqsEventSourceProps {
    * @default true
    */
   readonly enabled?: boolean;
+
+  /**
+   * Add filter criteria option
+   *
+   * @default - None
+   */
+  readonly filterCriteria?: lambda.FilterCriteria;
 }
 
 /**
@@ -73,6 +80,7 @@ export class SqsEventSource implements lambda.IEventSource {
       reportBatchItemFailures: this.props.reportBatchItemFailures,
       enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,
+      filterCriteria: this.props.filterCriteria,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 

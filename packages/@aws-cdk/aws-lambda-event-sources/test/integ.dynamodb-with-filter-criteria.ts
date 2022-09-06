@@ -1,6 +1,5 @@
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { FilterCriteria, FilterRule } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import { DynamoEventSource } from '../lib';
@@ -23,19 +22,19 @@ const table = new dynamodb.Table(stack, 'T', {
 fn.addEventSource(new DynamoEventSource(table, {
   batchSize: 5,
   startingPosition: lambda.StartingPosition.LATEST,
-  filterCriteria: FilterCriteria.addFilters({
-    eventName: FilterRule.isEqual('INSERT'),
+  filterCriteria: lambda.FilterCriteria.addFilters({
+    eventName: lambda.FilterRule.isEqual('INSERT'),
     dynamodb: {
       Keys: {
         id: {
-          S: FilterRule.exists(),
+          S: lambda.FilterRule.exists(),
         },
       },
     },
   }),
 }));
 
-new integ.IntegTest(app, 'FilterCriteria', {
+new integ.IntegTest(app, 'DynamoDBFilterCriteria', {
   testCases: [stack],
 });
 

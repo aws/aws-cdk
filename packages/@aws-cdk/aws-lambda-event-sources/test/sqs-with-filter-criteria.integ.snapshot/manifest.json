@@ -7,27 +7,27 @@
         "file": "tree.json"
       }
     },
-    "lambda-event-source-filter-criteria-dynamodb.assets": {
+    "lambda-event-source-filter-criteria-sqs.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "lambda-event-source-filter-criteria-dynamodb.assets.json",
+        "file": "lambda-event-source-filter-criteria-sqs.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "lambda-event-source-filter-criteria-dynamodb": {
+    "lambda-event-source-filter-criteria-sqs": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "lambda-event-source-filter-criteria-dynamodb.template.json",
+        "templateFile": "lambda-event-source-filter-criteria-sqs.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8ddecd300b64f1e8196cec45f3e0f752e4a04060a8cd32fbcd88c192b14499fc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/879ea05cb693492da58c7a50d14e304f03f420185f19e668345fbee2bcf9fe44.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "lambda-event-source-filter-criteria-dynamodb.assets"
+          "lambda-event-source-filter-criteria-sqs.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -36,67 +36,67 @@
         }
       },
       "dependencies": [
-        "lambda-event-source-filter-criteria-dynamodb.assets"
+        "lambda-event-source-filter-criteria-sqs.assets"
       ],
       "metadata": {
-        "/lambda-event-source-filter-criteria-dynamodb/F/ServiceRole/Resource": [
+        "/lambda-event-source-filter-criteria-sqs/F/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FServiceRole3AC82EE1"
           }
         ],
-        "/lambda-event-source-filter-criteria-dynamodb/F/ServiceRole/DefaultPolicy/Resource": [
+        "/lambda-event-source-filter-criteria-sqs/F/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FServiceRoleDefaultPolicy17A19BFA"
           }
         ],
-        "/lambda-event-source-filter-criteria-dynamodb/F/Resource": [
+        "/lambda-event-source-filter-criteria-sqs/F/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FC4345940"
           }
         ],
-        "/lambda-event-source-filter-criteria-dynamodb/F/DynamoDBEventSource:lambdaeventsourcefiltercriteriadynamodbT9CFE7D06/Resource": [
+        "/lambda-event-source-filter-criteria-sqs/F/SqsEventSource:lambdaeventsourcefiltercriteriasqsQA0FC5C93/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FDynamoDBEventSourcelambdaeventsourcefiltercriteriadynamodbT9CFE7D0657833F11"
+            "data": "FSqsEventSourcelambdaeventsourcefiltercriteriasqsQA0FC5C93EBF98B38"
           }
         ],
-        "/lambda-event-source-filter-criteria-dynamodb/T/Resource": [
+        "/lambda-event-source-filter-criteria-sqs/Q/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TD925BC7E"
+            "data": "Q63C6E3AB"
           }
         ],
-        "/lambda-event-source-filter-criteria-dynamodb/BootstrapVersion": [
+        "/lambda-event-source-filter-criteria-sqs/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/lambda-event-source-filter-criteria-dynamodb/CheckBootstrapVersion": [
+        "/lambda-event-source-filter-criteria-sqs/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "lambda-event-source-filter-criteria-dynamodb"
+      "displayName": "lambda-event-source-filter-criteria-sqs"
     },
-    "FilterCriteriaDefaultTestDeployAssert62832D80.assets": {
+    "SQSFilterCriteriaDefaultTestDeployAssert70A9A808.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "FilterCriteriaDefaultTestDeployAssert62832D80.assets.json",
+        "file": "SQSFilterCriteriaDefaultTestDeployAssert70A9A808.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "FilterCriteriaDefaultTestDeployAssert62832D80": {
+    "SQSFilterCriteriaDefaultTestDeployAssert70A9A808": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "FilterCriteriaDefaultTestDeployAssert62832D80.template.json",
+        "templateFile": "SQSFilterCriteriaDefaultTestDeployAssert70A9A808.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -104,7 +104,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "FilterCriteriaDefaultTestDeployAssert62832D80.assets"
+          "SQSFilterCriteriaDefaultTestDeployAssert70A9A808.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -113,23 +113,23 @@
         }
       },
       "dependencies": [
-        "FilterCriteriaDefaultTestDeployAssert62832D80.assets"
+        "SQSFilterCriteriaDefaultTestDeployAssert70A9A808.assets"
       ],
       "metadata": {
-        "/FilterCriteria/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/SQSFilterCriteria/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/FilterCriteria/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/SQSFilterCriteria/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "FilterCriteria/DefaultTest/DeployAssert"
+      "displayName": "SQSFilterCriteria/DefaultTest/DeployAssert"
     }
   }
 }

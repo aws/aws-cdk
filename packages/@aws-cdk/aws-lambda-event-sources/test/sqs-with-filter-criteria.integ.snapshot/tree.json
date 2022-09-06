@@ -12,21 +12,21 @@
           "version": "10.1.92"
         }
       },
-      "lambda-event-source-filter-criteria-dynamodb": {
-        "id": "lambda-event-source-filter-criteria-dynamodb",
-        "path": "lambda-event-source-filter-criteria-dynamodb",
+      "lambda-event-source-filter-criteria-sqs": {
+        "id": "lambda-event-source-filter-criteria-sqs",
+        "path": "lambda-event-source-filter-criteria-sqs",
         "children": {
           "F": {
             "id": "F",
-            "path": "lambda-event-source-filter-criteria-dynamodb/F",
+            "path": "lambda-event-source-filter-criteria-sqs/F",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "lambda-event-source-filter-criteria-dynamodb/F/ServiceRole",
+                "path": "lambda-event-source-filter-criteria-sqs/F/ServiceRole",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "lambda-event-source-filter-criteria-dynamodb/F/ServiceRole/Resource",
+                    "path": "lambda-event-source-filter-criteria-sqs/F/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -65,32 +65,29 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "lambda-event-source-filter-criteria-dynamodb/F/ServiceRole/DefaultPolicy",
+                    "path": "lambda-event-source-filter-criteria-sqs/F/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "lambda-event-source-filter-criteria-dynamodb/F/ServiceRole/DefaultPolicy/Resource",
+                        "path": "lambda-event-source-filter-criteria-sqs/F/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "dynamodb:ListStreams",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                },
-                                {
                                   "Action": [
-                                    "dynamodb:DescribeStream",
-                                    "dynamodb:GetRecords",
-                                    "dynamodb:GetShardIterator"
+                                    "sqs:ChangeMessageVisibility",
+                                    "sqs:DeleteMessage",
+                                    "sqs:GetQueueAttributes",
+                                    "sqs:GetQueueUrl",
+                                    "sqs:ReceiveMessage"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "TD925BC7E",
-                                      "StreamArn"
+                                      "Q63C6E3AB",
+                                      "Arn"
                                     ]
                                   }
                                 }
@@ -124,7 +121,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "lambda-event-source-filter-criteria-dynamodb/F/Resource",
+                "path": "lambda-event-source-filter-criteria-sqs/F/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -146,13 +143,13 @@
                   "version": "0.0.0"
                 }
               },
-              "DynamoDBEventSource:lambdaeventsourcefiltercriteriadynamodbT9CFE7D06": {
-                "id": "DynamoDBEventSource:lambdaeventsourcefiltercriteriadynamodbT9CFE7D06",
-                "path": "lambda-event-source-filter-criteria-dynamodb/F/DynamoDBEventSource:lambdaeventsourcefiltercriteriadynamodbT9CFE7D06",
+              "SqsEventSource:lambdaeventsourcefiltercriteriasqsQA0FC5C93": {
+                "id": "SqsEventSource:lambdaeventsourcefiltercriteriasqsQA0FC5C93",
+                "path": "lambda-event-source-filter-criteria-sqs/F/SqsEventSource:lambdaeventsourcefiltercriteriasqsQA0FC5C93",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "lambda-event-source-filter-criteria-dynamodb/F/DynamoDBEventSource:lambdaeventsourcefiltercriteriadynamodbT9CFE7D06/Resource",
+                    "path": "lambda-event-source-filter-criteria-sqs/F/SqsEventSource:lambdaeventsourcefiltercriteriasqsQA0FC5C93/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
                       "aws:cdk:cloudformation:props": {
@@ -162,18 +159,17 @@
                         "batchSize": 5,
                         "eventSourceArn": {
                           "Fn::GetAtt": [
-                            "TD925BC7E",
-                            "StreamArn"
+                            "Q63C6E3AB",
+                            "Arn"
                           ]
                         },
                         "filterCriteria": {
                           "filters": [
                             {
-                              "pattern": "{\"eventName\":[\"INSERT\"],\"dynamodb\":{\"Keys\":{\"id\":{\"S\":[{\"exists\":true}]}}}}"
+                              "pattern": "{\"body\":{\"id\":[{\"exists\":true}]}}"
                             }
                           ]
-                        },
-                        "startingPosition": "LATEST"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -193,53 +189,25 @@
               "version": "0.0.0"
             }
           },
-          "T": {
-            "id": "T",
-            "path": "lambda-event-source-filter-criteria-dynamodb/T",
+          "Q": {
+            "id": "Q",
+            "path": "lambda-event-source-filter-criteria-sqs/Q",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "lambda-event-source-filter-criteria-dynamodb/T/Resource",
+                "path": "lambda-event-source-filter-criteria-sqs/Q/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
-                  "aws:cdk:cloudformation:props": {
-                    "keySchema": [
-                      {
-                        "attributeName": "id",
-                        "keyType": "HASH"
-                      }
-                    ],
-                    "attributeDefinitions": [
-                      {
-                        "attributeName": "id",
-                        "attributeType": "S"
-                      }
-                    ],
-                    "provisionedThroughput": {
-                      "readCapacityUnits": 5,
-                      "writeCapacityUnits": 5
-                    },
-                    "streamSpecification": {
-                      "streamViewType": "NEW_IMAGE"
-                    }
-                  }
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
-                  "version": "0.0.0"
-                }
-              },
-              "ScalingRole": {
-                "id": "ScalingRole",
-                "path": "lambda-event-source-filter-criteria-dynamodb/T/ScalingRole",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "fqn": "@aws-cdk/aws-sqs.Queue",
               "version": "0.0.0"
             }
           }
@@ -249,17 +217,17 @@
           "version": "0.0.0"
         }
       },
-      "FilterCriteria": {
-        "id": "FilterCriteria",
-        "path": "FilterCriteria",
+      "SQSFilterCriteria": {
+        "id": "SQSFilterCriteria",
+        "path": "SQSFilterCriteria",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "FilterCriteria/DefaultTest",
+            "path": "SQSFilterCriteria/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "FilterCriteria/DefaultTest/Default",
+                "path": "SQSFilterCriteria/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.1.92"
@@ -267,7 +235,7 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "FilterCriteria/DefaultTest/DeployAssert",
+                "path": "SQSFilterCriteria/DefaultTest/DeployAssert",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
