@@ -21,6 +21,7 @@ export * from './lambda-insights';
 export * from './log-retention';
 export * from './architecture';
 export * from './function-url';
+export * from './filter-criteria';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';
