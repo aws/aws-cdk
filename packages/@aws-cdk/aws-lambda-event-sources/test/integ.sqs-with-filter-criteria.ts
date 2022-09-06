@@ -14,11 +14,11 @@ const queue = new sqs.Queue(stack, 'Q');
 
 fn.addEventSource(new SqsEventSource(queue, {
   batchSize: 5,
-  filterCriteria: lambda.FilterCriteria.addFilters({
+  filters: [{
     body: {
       id: lambda.FilterRule.exists(),
     },
-  }),
+  }],
 }));
 
 new integ.IntegTest(app, 'SQSFilterCriteria', {

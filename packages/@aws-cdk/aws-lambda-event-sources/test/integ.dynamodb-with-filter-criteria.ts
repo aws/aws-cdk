@@ -22,7 +22,7 @@ const table = new dynamodb.Table(stack, 'T', {
 fn.addEventSource(new DynamoEventSource(table, {
   batchSize: 5,
   startingPosition: lambda.StartingPosition.LATEST,
-  filterCriteria: lambda.FilterCriteria.addFilters({
+  filters: [{
     eventName: lambda.FilterRule.isEqual('INSERT'),
     dynamodb: {
       Keys: {
@@ -31,7 +31,7 @@ fn.addEventSource(new DynamoEventSource(table, {
         },
       },
     },
-  }),
+  }],
 }));
 
 new integ.IntegTest(app, 'DynamoDBFilterCriteria', {

@@ -69,18 +69,18 @@ export class FilterRule {
   }
 }
 
-/**
- * By default, you can have five different filters per event source. You can request a quota increase for up to 10 filters per event source.
- */
-export class FilterCriteria {
-  /**
-   * Create a Filter Criteria Object
-   */
-  public static addFilters(...filters: {[key: string]: FilterRule}[]): {[key: string]: any} {
-    let list: {[key: string]: string}[] = [];
-    for (let item of filters) {
-      list.push({ pattern: JSON.stringify(item) });
-    }
-    return { filters: list };
-  }
-}
+// /**
+//  * By default, you can have five different filters per event source. You can request a quota increase for up to 10 filters per event source.
+//  */
+// export class FilterCriteria {
+//   /**
+//    * Create a Filter Criteria Object
+//    */
+//   public static addFilters(...filters: {[key: string]: FilterRule}[]): {[key: string]: any} {
+//     let list: {[key: string]: string}[] = [];
+//     for (let item of filters) {
+//       list.push({ pattern: JSON.stringify(item) });
+//     }
+//     return { filters: list };
+//   }
+// }
