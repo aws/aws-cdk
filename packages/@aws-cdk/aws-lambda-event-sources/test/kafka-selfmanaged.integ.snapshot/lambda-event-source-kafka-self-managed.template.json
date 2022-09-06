@@ -98,6 +98,9 @@
       ]
      }
     },
+    "SelfManagedKafkaEventSourceConfig": {
+     "ConsumerGroupId": "myTestConsumerGroup"
+    },
     "SourceAccessConfigurations": [
      {
       "Type": "CLIENT_CERTIFICATE_TLS_AUTH",
