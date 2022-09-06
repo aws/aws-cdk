@@ -98,17 +98,13 @@ export class FilterRule {
   }
 
   /**
-   * String equals comparison operator
+   * Equals comparison operator
    */
-  public static textEquals(elem: string): string[] {
-    return [elem];
-  }
-
-  /**
-   * Numeric equals comparison operator
-   */
-  public static numericEquals(elem: number): {[key: string]: any}[] {
-    return [{ numeric: ['=', elem] }];
+  public static isEqual(item: string | number): any {
+    if (typeof item === 'number') {
+      return [{ numeric: ['=', item] }];
+    }
+    return [item];
   }
 
   /**

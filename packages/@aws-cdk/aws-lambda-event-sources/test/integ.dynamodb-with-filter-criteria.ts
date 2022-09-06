@@ -24,7 +24,7 @@ fn.addEventSource(new DynamoEventSource(table, {
   batchSize: 5,
   startingPosition: lambda.StartingPosition.LATEST,
   filterCriteria: FilterCriteria.addFilters({
-    eventName: FilterRule.textEquals('INSERT'),
+    eventName: FilterRule.isEqual('INSERT'),
     dynamodb: {
       Keys: {
         id: {

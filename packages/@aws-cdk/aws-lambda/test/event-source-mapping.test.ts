@@ -185,6 +185,7 @@ describe('event source mapping', () => {
       kafkaTopic: topicNameParam.valueAsString,
       filterCriteria: FilterCriteria.addFilters({
         a: FilterRule.or('a', 'b'),
+        x: FilterRule.isEqual('y'),
       }),
     });
 
