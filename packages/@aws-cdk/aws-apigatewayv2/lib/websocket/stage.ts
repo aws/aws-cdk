@@ -47,6 +47,19 @@ export interface WebSocketStageProps extends StageOptions {
    * @default - OFF. No data trace logs will be generated.
    */
   readonly dataTraceLoggingLevel?: string;
+
+  /**
+   * If true it stops the creation of a data trace log group, which 
+   * controls the retention properties of the group.  Set to true
+   * if the default behavior (no limit on log entry retentions, group
+   * is not deleted when it's parent stack is deleted) is desired or
+   * if the caller has already created the log group. Note that this
+   * setting has no effect if dataTraceLoggingLevel isn't specified or
+   * is set to OFF.
+   * 
+   * @default - false
+   */
+  readonly inhibitDataTraceLogGroupCreation?: boolean;
 }
 
 /**
@@ -124,15 +137,28 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
           loggingLevel: props.dataTraceLoggingLevel,
         };
 
+    // If the user has turned on data access logging and hasn't inhibited the creation
+    // of the data access log group, create the group with 30 day retention and have it 
+    // be deleted when the stack that contains it is deleted.  This is far more likely to
+    // be reasonable behavior from a user point of view than the default (i.e. no limit on
+    // log entry retention and the group is retained when the stack that contains it is deleted)
+    if (props.dataTraceLoggingLevel && props.dataTraceLoggingLevel !== 'OFF' && !props.inhibitDataTraceLogGroupCreation){
+      const dataLoggingLogGroup = new CfnLogGroup(this, 'data-trace-logging-log-group', {
+        logGroupName: `/aws/apigateway/${props.webSocketApi.apiId}/${this.physicalName}`,
+        retentionInDays: 30
+      });
+      dataLoggingLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    }
+
     let destinationArn: string | undefined = undefined;
     if (props.accessLogEnabled) {
       if (!props.accessLogGroupArn) {
         // We need to set up the right permissions to create the log group.
-        const iamRoleForLogGroup = new Role(this, `IAMRoleForAccessLog-${this.stageName}`, {
+        const iamRoleForLogGroup = new Role(this, 'IAMRoleForAccessLog', {
           roleName: PhysicalName.GENERATE_IF_NEEDED,
           assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
         });
-
+        iamRoleForLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
         iamRoleForLogGroup.node.addDependency(this.api);
 
         iamRoleForLogGroup.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs'));
@@ -147,7 +173,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
 
         // Setting up some reasonable defaults for the retention policy and removal policy.
         // If the user wants something different they should create their own log group.
-        const accessLogsLogGroup = new CfnLogGroup(this, `AccessLoggingGroup-${this.stageName}`, {
+        const accessLogsLogGroup = new CfnLogGroup(this, 'AccessLoggingGroup', {
           retentionInDays: 30,
         });
         accessLogsLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);

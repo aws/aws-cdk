@@ -176,6 +176,7 @@ export class HttpStage extends HttpStageBase {
     });
 
     this.api = props.httpApi;
+    this.baseApi = props.httpApi;
     this.stageName = this.physicalName;
 
     const rateLimits = !props.throttle ? undefined : {
@@ -191,13 +192,13 @@ export class HttpStage extends HttpStageBase {
     if (props.accessLogEnabled) {
       if (!props.accessLogGroupArn) {
         // We need to set up the right permissions to create the log group.
-        const iamRoleForLogGroup = new Role(this, `IAMRoleForAccessLog-${this.stageName}`, {
+        const iamRoleForLogGroup = new Role(this, 'IAMRoleForAccessLog', {
           roleName: PhysicalName.GENERATE_IF_NEEDED,
           assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
         });
 
         iamRoleForLogGroup.node.addDependency(this.api);
-
+        iamRoleForLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
         iamRoleForLogGroup.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs'));
 
         // It's required to register the iam role that is used to create the log group with the account
@@ -210,7 +211,7 @@ export class HttpStage extends HttpStageBase {
 
         // Setting up some reasonable defaults for the retention policy and removal policy.
         // If the user wants something different they should create their own log group.
-        const accessLogsLogGroup = new CfnLogGroup(this, `AccessLoggingGroup-${this.stageName}`, {
+        const accessLogsLogGroup = new CfnLogGroup(this, 'AccessLoggingGroup', {
           retentionInDays: 30,
         });
         accessLogsLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
@@ -226,17 +227,18 @@ export class HttpStage extends HttpStageBase {
       format: !props.accessLogFormat ? defaultAccessLogFormat : props.accessLogFormat,
     };
 
+    const defaultRouteSettings =
+      !detailedMetrics && !rateLimits ?
+        undefined :
+        { ...detailedMetrics, ...rateLimits };
+
     new CfnStage(this, 'Resource', {
       apiId: props.httpApi.apiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
-      defaultRouteSettings: { ...rateLimits, ...detailedMetrics },
+      defaultRouteSettings,
       accessLogSettings,
     });
-
-    this.stageName = this.physicalName;
-    this.baseApi = props.httpApi;
-    this.api = props.httpApi;
 
     if (props.domainMapping) {
       this._addDomainMapping(props.domainMapping);

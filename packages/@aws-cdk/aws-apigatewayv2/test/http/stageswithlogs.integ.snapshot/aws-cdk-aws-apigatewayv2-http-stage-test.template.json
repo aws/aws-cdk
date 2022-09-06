@@ -195,8 +195,7 @@
       ]
      },
      "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\"}}"
-    },
-    "DefaultRouteSettings": {}
+    }
    }
   }
  }

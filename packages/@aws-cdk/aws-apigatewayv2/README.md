@@ -163,6 +163,7 @@ declare const api: apigwv2.HttpApi;
 new apigwv2.HttpStage(this, 'Stage', {
   httpApi: api,
   stageName: 'beta',
+  autoDeploy: true,
 });
 ```
 
@@ -170,6 +171,7 @@ If you omit the `stageName` will create a `$default` stage. A `$default` stage i
 the API's URL - `https://{api_id}.execute-api.{region}.amazonaws.com/`.
 
 Note that, `HttpApi` will always creates a `$default` stage, unless the `createDefaultStage` property is unset.
+To get a working api gateway stage either autoDeploy must be set to true or an explicit CfnDeployment must be created.
 
 ### Custom Domain
 
@@ -308,6 +310,7 @@ the `metric` methods from the `Stage` construct.
 const api = new apigwv2.HttpApi(this, 'my-api');
 const stage = new apigwv2.HttpStage(this, 'Stage', {
   httpApi: api,
+  autoDeploy: true,
 });
 const clientErrorMetric = stage.metricClientError();
 ```
@@ -460,10 +463,11 @@ Valid values are OFF, ERROR and INFO.  By default, it's OFF.
 ```ts
 import * as apigw from '../../lib';
 
-const httpApi = new apigw.HttpApi(this, 'HttpApi', { createDefaultStage: false });
-new apigw.HttpStage(this, 'HttpDev', {
-  httpApi,
+const websocketApi = new apigw.WebSocketApi(this, 'WebSocketApi');
+new apigw.WebSocketStage(this, 'WebSocketDev', {
+  webSocketApi,
   stageName: 'dev',
+  autoDeploy: true,
   dataTraceLoggingLevel: 'INFO',
 });
 ```
@@ -473,8 +477,7 @@ new apigw.HttpStage(this, 'HttpDev', {
 Access logging is available for both HTTP and WebSocket APIs.
 
 A single line written to the access log for each request that's received by the API Gateway. By default,
-access logging is turned off. To enable access logging for a set of default properties to an internally created log group for a given stage set the accessLogEnabled flag to true.  These examples use HttpApi and HttpStage, however
-they also apply if WebSocketApi and WebSocketStage are used instead.
+access logging is turned off. To enable access logging for a set of default properties to an internally created log group for a given stage set the accessLogEnabled flag to true.  These examples use HttpApi and HttpStage, however they also apply if WebSocketApi and WebSocketStage are used instead.
 
 ```ts
 import * as apigw from '../../lib';
@@ -483,13 +486,15 @@ const httpApi = new apigw.HttpApi(this, 'HttpApi', { createDefaultStage: false }
 new apigw.HttpStage(this, 'HttpDev', {
   httpApi,
   stageName: 'dev',
+  autoDeploy: true,
   accessLogEnabled: true,
 });
 ```
 
 A log group for the access log will be created along with a role that has the proper permissions to 
 create and write to the log.  The log entries will contain interesting information that's relevant for
-both http and websocket apis.
+both http and websocket apis. To get a working api gateway stage either autoDeploy must be set to true
+or an explicit CfnDeployment must be created.
 
 However, if you want to modify the log entries set a value for the accessLogFormat property
 (see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference for a full list of the possible entries).
@@ -521,6 +526,7 @@ const accessLogFormat = JSON.stringify({
 new apigw.HttpStage(this, 'HttpDevStageWithExternalLogGroup', {
   httpApi: httpApiWithExternalLogGroup,
   stageName: 'dev',
+  autoDeploy: true,
   accessLogEnabled: true,
   accessLogFormat: accessLogFormat,
 });
