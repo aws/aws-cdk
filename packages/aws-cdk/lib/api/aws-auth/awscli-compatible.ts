@@ -41,7 +41,7 @@ export class AwsCliCompatible {
     // we use that to the exclusion of everything else (note: this does not apply
     // to AWS_PROFILE, environment credentials still take precedence over AWS_PROFILE)
     if (options.profile) {
-      return new AWS.CredentialProviderChain(iniFileCredentialFactories(options.profile));
+      return new AWS.CredentialProviderChain(iniFileCredentialFactories(options.profile, options.httpOptions));
     }
 
     const implicitProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
@@ -49,7 +49,7 @@ export class AwsCliCompatible {
     const sources = [
       () => new AWS.EnvironmentCredentials('AWS'),
       () => new AWS.EnvironmentCredentials('AMAZON'),
-      ...iniFileCredentialFactories(implicitProfile),
+      ...iniFileCredentialFactories(implicitProfile, options.httpOptions),
     ];
 
     if (options.containerCreds ?? hasEcsCredentials()) {
@@ -75,10 +75,13 @@ export class AwsCliCompatible {
       });
     }
 
-    function iniFileCredentialFactories(theProfile: string) {
+    function iniFileCredentialFactories(theProfile: string, theHttpOptions?: AWS.HTTPOptions) {
       return [
         () => profileCredentials(theProfile),
-        () => new AWS.SsoCredentials({ profile: theProfile }),
+        () => new AWS.SsoCredentials({
+          profile: theProfile,
+          httpOptions: theHttpOptions,
+        });
         () => new AWS.ProcessCredentials({ profile: theProfile }),
       ];
     }
