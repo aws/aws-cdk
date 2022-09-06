@@ -224,8 +224,9 @@ describe('event source mapping', () => {
       eventSourceArn: eventSourceArn,
       kafkaTopic: topicNameParam.valueAsString,
       filterCriteria: FilterCriteria.addFilters({
-        a: FilterRule.or('a', 'b'),
-        x: FilterRule.isEqual('y'),
+        orFilter: FilterRule.or('one', 'two'),
+        stringEquals: FilterRule.isEqual('test'),
+        numericEquals: FilterRule.isEqual(1),
       }),
     });
 
@@ -233,7 +234,7 @@ describe('event source mapping', () => {
       FilterCriteria: {
         Filters: [
           {
-            Pattern: '{"a":["a","b"]}',
+            Pattern: '{"orFilter":["one","two"],"stringEquals":["test"],"numericEquals":[{"numeric":["=",1]}]}',
           },
         ],
       },
