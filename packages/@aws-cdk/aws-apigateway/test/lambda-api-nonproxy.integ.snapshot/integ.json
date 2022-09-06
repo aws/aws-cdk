@@ -5,7 +5,7 @@
       "stacks": [
         "LambdaApiIntegrationOptionsNonProxyIntegrationStack"
       ],
-      "assertionStack": "lambdanonproxyintegrationDefaultTestDeployAssert31D3AA1B"
+      "assertionStack": "lambda-non-proxy-integration/DefaultTest/DeployAssert"
     }
   }
 }

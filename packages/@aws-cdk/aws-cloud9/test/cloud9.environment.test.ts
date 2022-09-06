@@ -28,7 +28,7 @@ test('create resource correctly with vpc, imageId, and subnetSelection', () => {
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     subnetSelection: {
-      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
     imageId: cloud9.ImageId.AMAZON_LINUX_2,
   });

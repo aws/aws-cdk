@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "a92d2c0be6fb187cfa216bb5d0b18cf416d0208ee0511945755d724040111541": {
+      "source": {
+        "path": "restapi-books-example.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a92d2c0be6fb187cfa216bb5d0b18cf416d0208ee0511945755d724040111541.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -5,7 +5,7 @@
       "stacks": [
         "IntegApiGatewayV2Iam"
       ],
-      "assertionStack": "ApiGatewayV2WebSocketIamTestDefaultTestDeployAssert2B412D7B"
+      "assertionStack": "ApiGatewayV2WebSocketIamTest/DefaultTest/DeployAssert"
     }
   }
 }

@@ -2,7 +2,7 @@ import { info } from 'console';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { warning } from '../../logging';
-import { loadStructuredFile, toYAML } from '../../serialize';
+import { loadStructuredFile, serializeStructure } from '../../serialize';
 import { rootDir } from '../../util/directories';
 import { SdkProvider } from '../aws-auth';
 import { DeployStackResult } from '../deploy-stack';
@@ -33,9 +33,9 @@ export class Bootstrapper {
     }
   }
 
-  public async showTemplate() {
+  public async showTemplate(json: boolean) {
     const template = await this.loadTemplate();
-    process.stdout.write(`${toYAML(template)}\n`);
+    process.stdout.write(`${serializeStructure(template, json)}\n`);
   }
 
   /**
