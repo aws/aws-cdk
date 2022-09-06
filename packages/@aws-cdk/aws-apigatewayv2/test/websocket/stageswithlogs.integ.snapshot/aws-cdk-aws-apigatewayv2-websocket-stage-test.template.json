@@ -1,0 +1,206 @@
+{
+ "Resources": {
+  "WebSocketApi34BCF99B": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "WebSocketApi",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   }
+  },
+  "WebSocketDevStageIAMRoleForAccessLogdevC55BCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "WebSocketApi34BCF99B"
+   ]
+  },
+  "WebSocketDevStageaccount02DC9EE0": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "WebSocketDevStageIAMRoleForAccessLogdevC55BCE73",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "WebSocketApi34BCF99B"
+   ]
+  },
+  "WebSocketDevStageAccessLoggingGroupdev392340B6": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "WebSocketDevStageF28AE687": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApi34BCF99B"
+    },
+    "StageName": "dev",
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "WebSocketDevStageAccessLoggingGroupdev392340B6",
+       "Arn"
+      ]
+     },
+     "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
+    },
+    "DefaultRouteSettings": {
+     "DataTraceEnabled": true,
+     "LoggingLevel": "INFO",
+     "ThrottlingBurstLimit": 1000,
+     "ThrottlingRateLimit": 1000
+    }
+   }
+  },
+  "WebSocketProdStageIAMRoleForAccessLogprodFB0B51EA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "WebSocketApi34BCF99B"
+   ]
+  },
+  "WebSocketProdStageaccount61A6A2A5": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "WebSocketProdStageIAMRoleForAccessLogprodFB0B51EA",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "WebSocketApi34BCF99B"
+   ]
+  },
+  "WebSocketProdStageAccessLoggingGroupprod11396295": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "WebSocketProdStage7A23B950": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApi34BCF99B"
+    },
+    "StageName": "prod",
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "WebSocketProdStageAccessLoggingGroupprod11396295",
+       "Arn"
+      ]
+     },
+     "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
+    },
+    "DefaultRouteSettings": {
+     "DataTraceEnabled": true,
+     "LoggingLevel": "INFO",
+     "ThrottlingBurstLimit": 1000,
+     "ThrottlingRateLimit": 1000
+    }
+   }
+  },
+  "WebSocketApiWithExternalLogGroupDCF7BBC9": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "WebSocketApiWithExternalLogGroup",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   }
+  },
+  "devaccessloggroup95A3E6FC": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "WebSocketDevStageWithExternalLogGroupBEB8F176": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApiWithExternalLogGroupDCF7BBC9"
+    },
+    "StageName": "dev",
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "devaccessloggroup95A3E6FC",
+       "Arn"
+      ]
+     },
+     "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\"}}"
+    }
+   }
+  }
+ }
+}

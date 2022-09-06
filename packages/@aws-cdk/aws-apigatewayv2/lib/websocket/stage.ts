@@ -145,6 +145,19 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
           loggingLevel: props.dataTraceLoggingLevel,
         };
 
+    // If the user has turned on data access logging and hasn't inhibited the creation
+    // of the data access log group, create the group with 30 day retention and have it 
+    // be deleted when the stack that contains it is deleted.  This is far more likely to
+    // be reasonable behavior from a user point of view than the default (i.e. no limit on
+    // log entry retention and the group is retained when the stack that contains it is deleted)
+    if (props.dataTraceLoggingLevel && props.dataTraceLoggingLevel !== 'OFF' && !props.inhibitDataTraceLogGroupCreation){
+      const dataLoggingLogGroup = new CfnLogGroup(this, 'data-trace-logging-log-group', {
+        logGroupName: `/aws/apigateway/${props.webSocketApi.apiId}/${this.physicalName}`,
+        retentionInDays: 30
+      });
+      dataLoggingLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    }
+
     let destinationArn: string | undefined = undefined;
     if (props.accessLogEnabled) {
       if (!props.accessLogGroup) {

@@ -1,0 +1,427 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-cdk-aws-apigatewayv2-websocket-stage-test": {
+        "id": "aws-cdk-aws-apigatewayv2-websocket-stage-test",
+        "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test",
+        "children": {
+          "WebSocketApi": {
+            "id": "WebSocketApi",
+            "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "WebSocketApi",
+                    "protocolType": "WEBSOCKET",
+                    "routeSelectionExpression": "$request.body.action"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketApi",
+              "version": "0.0.0"
+            }
+          },
+          "WebSocketDevStage": {
+            "id": "WebSocketDevStage",
+            "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage",
+            "children": {
+              "IAMRoleForAccessLog-dev": {
+                "id": "IAMRoleForAccessLog-dev",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/IAMRoleForAccessLog-dev",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/IAMRoleForAccessLog-dev/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "apigateway.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "account": {
+                "id": "account",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/account",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Account",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudWatchRoleArn": {
+                      "Fn::GetAtt": [
+                        "WebSocketDevStageIAMRoleForAccessLogdevC55BCE73",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "version": "0.0.0"
+                }
+              },
+              "AccessLoggingGroup-dev": {
+                "id": "AccessLoggingGroup-dev",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/AccessLoggingGroup-dev",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "WebSocketApi34BCF99B"
+                    },
+                    "stageName": "dev",
+                    "accessLogSettings": {
+                      "destinationArn": {
+                        "Fn::GetAtt": [
+                          "WebSocketDevStageAccessLoggingGroupdev392340B6",
+                          "Arn"
+                        ]
+                      },
+                      "format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
+                    },
+                    "defaultRouteSettings": {
+                      "dataTraceEnabled": true,
+                      "loggingLevel": "INFO",
+                      "throttlingBurstLimit": 1000,
+                      "throttlingRateLimit": 1000
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnStage",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketStage",
+              "version": "0.0.0"
+            }
+          },
+          "WebSocketProdStage": {
+            "id": "WebSocketProdStage",
+            "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage",
+            "children": {
+              "IAMRoleForAccessLog-prod": {
+                "id": "IAMRoleForAccessLog-prod",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/IAMRoleForAccessLog-prod",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/IAMRoleForAccessLog-prod/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "apigateway.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "account": {
+                "id": "account",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/account",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Account",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudWatchRoleArn": {
+                      "Fn::GetAtt": [
+                        "WebSocketProdStageIAMRoleForAccessLogprodFB0B51EA",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "version": "0.0.0"
+                }
+              },
+              "AccessLoggingGroup-prod": {
+                "id": "AccessLoggingGroup-prod",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/AccessLoggingGroup-prod",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "WebSocketApi34BCF99B"
+                    },
+                    "stageName": "prod",
+                    "accessLogSettings": {
+                      "destinationArn": {
+                        "Fn::GetAtt": [
+                          "WebSocketProdStageAccessLoggingGroupprod11396295",
+                          "Arn"
+                        ]
+                      },
+                      "format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
+                    },
+                    "defaultRouteSettings": {
+                      "dataTraceEnabled": true,
+                      "loggingLevel": "INFO",
+                      "throttlingBurstLimit": 1000,
+                      "throttlingRateLimit": 1000
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnStage",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketStage",
+              "version": "0.0.0"
+            }
+          },
+          "WebSocketApiWithExternalLogGroup": {
+            "id": "WebSocketApiWithExternalLogGroup",
+            "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketApiWithExternalLogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketApiWithExternalLogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "WebSocketApiWithExternalLogGroup",
+                    "protocolType": "WEBSOCKET",
+                    "routeSelectionExpression": "$request.body.action"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketApi",
+              "version": "0.0.0"
+            }
+          },
+          "dev-access-log-group": {
+            "id": "dev-access-log-group",
+            "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/dev-access-log-group",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/dev-access-log-group/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 7
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
+          "WebSocketDevStageWithExternalLogGroup": {
+            "id": "WebSocketDevStageWithExternalLogGroup",
+            "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStageWithExternalLogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStageWithExternalLogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "WebSocketApiWithExternalLogGroupDCF7BBC9"
+                    },
+                    "stageName": "dev",
+                    "accessLogSettings": {
+                      "destinationArn": {
+                        "Fn::GetAtt": [
+                          "devaccessloggroup95A3E6FC",
+                          "Arn"
+                        ]
+                      },
+                      "format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\"}}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnStage",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketStage",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "WebSocketStageWithLogsTest": {
+        "id": "WebSocketStageWithLogsTest",
+        "path": "WebSocketStageWithLogsTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "WebSocketStageWithLogsTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "WebSocketStageWithLogsTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "WebSocketStageWithLogsTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

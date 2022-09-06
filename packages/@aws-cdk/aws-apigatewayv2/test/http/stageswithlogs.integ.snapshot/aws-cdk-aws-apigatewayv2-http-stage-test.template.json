@@ -1,0 +1,202 @@
+{
+ "Resources": {
+  "HttpApiWithTwoStages0E0DEF3D": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "HttpApiWithTwoStages",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "HttpDevStageWithPropertiesIAMRoleForAccessLogdev15F41A64": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "HttpApiWithTwoStages0E0DEF3D"
+   ]
+  },
+  "HttpDevStageWithPropertiesaccount599CEC2F": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "HttpDevStageWithPropertiesIAMRoleForAccessLogdev15F41A64",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "HttpApiWithTwoStages0E0DEF3D"
+   ]
+  },
+  "HttpDevStageWithPropertiesAccessLoggingGroupdevEFE36386": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpDevStageWithProperties3C5F7E2B": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "HttpApiWithTwoStages0E0DEF3D"
+    },
+    "StageName": "dev",
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "HttpDevStageWithPropertiesAccessLoggingGroupdevEFE36386",
+       "Arn"
+      ]
+     },
+     "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
+    },
+    "DefaultRouteSettings": {
+     "DetailedMetricsEnabled": true,
+     "ThrottlingBurstLimit": 1000,
+     "ThrottlingRateLimit": 1000
+    }
+   }
+  },
+  "HttpProdStageWithPropertiesIAMRoleForAccessLogprod8B4DB8CF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "HttpApiWithTwoStages0E0DEF3D"
+   ]
+  },
+  "HttpProdStageWithPropertiesaccountD7482B22": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "HttpProdStageWithPropertiesIAMRoleForAccessLogprod8B4DB8CF",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "HttpApiWithTwoStages0E0DEF3D"
+   ]
+  },
+  "HttpProdStageWithPropertiesAccessLoggingGroupprodE24A9D48": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpProdStageWithProperties63349B8F": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "HttpApiWithTwoStages0E0DEF3D"
+    },
+    "StageName": "prod",
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "HttpProdStageWithPropertiesAccessLoggingGroupprodE24A9D48",
+       "Arn"
+      ]
+     },
+     "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
+    },
+    "DefaultRouteSettings": {
+     "DetailedMetricsEnabled": true,
+     "ThrottlingBurstLimit": 1000,
+     "ThrottlingRateLimit": 1000
+    }
+   }
+  },
+  "HttpApiWithExternalLogGroupEE0D9E6A": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "HttpApiWithExternalLogGroup",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "devaccessloggroup95A3E6FC": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpDevStageWithExternalLogGroupBF024E37": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "HttpApiWithExternalLogGroupEE0D9E6A"
+    },
+    "StageName": "dev",
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "devaccessloggroup95A3E6FC",
+       "Arn"
+      ]
+     },
+     "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\"}}"
+    }
+   }
+  }
+ }
+}

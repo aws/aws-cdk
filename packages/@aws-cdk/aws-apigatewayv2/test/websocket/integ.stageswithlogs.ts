@@ -67,6 +67,31 @@ new apigw.WebSocketStage(stack, 'WebSocketDevStageWithExternalLogGroup', {
   accessLogFormat: accessLogFormat,
 });
 
+const websocketApiWithExternalLogGroup = new apigw.WebSocketApi(stack, 'WebSocketApiWithExternalLogGroup');
+const logGroup = new logs.LogGroup(stack, 'dev-access-log-group', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  retention: 7,
+});
+
+export const accessLogFormat = JSON.stringify({
+  apigw: {
+    api_id: '$context.apiId',
+    stage: '$context.stage',
+  },
+  request: {
+    request_id: '$context.requestId',
+    extended_request_id: '$context.extendedRequestId',
+  },
+});
+
+new apigw.WebSocketStage(stack, 'WebSocketDevStageWithExternalLogGroup', {
+  webSocketApi: websocketApiWithExternalLogGroup,
+  stageName: 'dev',
+  accessLogEnabled: true,
+  accessLogGroupArn: logGroup.logGroupArn,
+  accessLogFormat: accessLogFormat,
+});
+
 new integ.IntegTest(app, 'WebSocketStageWithLogsTest', {
   testCases: [stack],
 });
