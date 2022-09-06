@@ -2,7 +2,6 @@ import * as crypto from 'crypto';
 import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { EventSourceMappingOptions } from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Stack, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -29,7 +28,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - none
    */
-  readonly consumerGroupId?: EventSourceMappingOptions['kafkaConsumerGroupId'];
+  readonly consumerGroupId?: string;
 }
 
 /**
