@@ -259,7 +259,7 @@ describe('DynamoEventSource', () => {
     fn.addEventSource(new sources.DynamoEventSource(table, {
       startingPosition: lambda.StartingPosition.LATEST,
       filterCriteria: lambda.FilterCriteria.addFilters({
-        eventName: lambda.FilterRule.isEquals('INSERT'),
+        eventName: lambda.FilterRule.isEqual('INSERT'),
         dynamodb: {
           Keys: {
             id: {
