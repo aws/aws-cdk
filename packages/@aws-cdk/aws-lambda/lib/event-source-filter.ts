@@ -1,7 +1,7 @@
 /**
  * Filter rules for Lambda event filtering
  */
- export class FilterRule {
+export class FilterRule {
   /**
    * Null comparison operator
    */
