@@ -216,6 +216,16 @@ export interface EventSourceMappingOptions {
   readonly kafkaBootstrapServers?: string[]
 
   /**
+   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value. The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'. For more information, see [Customizable consumer group ID](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id).
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-amazonmanagedkafkaeventsourceconfig.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-selfmanagedkafkaeventsourceconfig.html
+   *
+   * @default - none
+   */
+  readonly kafkaConsumerGroupId?: string
+
+
+  /**
    * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html
    *
@@ -319,6 +329,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
     }
 
+    if (props.kafkaConsumerGroupId) {
+      this.validateKafkaConsumerGroupIdOrThrow(props.kafkaConsumerGroupId);
+    }
+
     let destinationConfig;
 
     if (props.onFailure) {
@@ -331,6 +345,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     if (props.kafkaBootstrapServers) {
       selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
+
+    let consumerGroupConfig = props.kafkaConsumerGroupId ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined;
 
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
@@ -350,8 +366,22 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
+      selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
+      amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
+  }
+
+  private validateKafkaConsumerGroupIdOrThrow(kafkaConsumerGroupId: string) {
+    if (kafkaConsumerGroupId.length > 200 ||kafkaConsumerGroupId.length < 1) {
+      throw new Error('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
+    }
+
+    const regex = new RegExp(/[a-zA-Z0-9-\/*:_+=.@-]*/);
+    const patternMatch = regex.exec(kafkaConsumerGroupId);
+    if (patternMatch === null || patternMatch[0] !== kafkaConsumerGroupId) {
+      throw new Error('kafkaConsumerGroupId contain ivalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+    }
   }
 }
 
