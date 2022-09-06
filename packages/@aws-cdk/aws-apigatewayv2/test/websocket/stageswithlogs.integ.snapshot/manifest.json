@@ -21,6 +21,12 @@
             "data": "WebSocketApi34BCF99B"
           }
         ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/IAMRoleForAccessLog-dev/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketDevStageIAMRoleForAccessLogdevC55BCE73"
+          }
+        ],
         "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/account": [
           {
             "type": "aws:cdk:logicalId",
@@ -39,10 +45,10 @@
             "data": "WebSocketDevStageF28AE687"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/IAMRoleForAccessLog-dev/Resource": [
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/IAMRoleForAccessLog-prod/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IAMRoleForAccessLogdevA2648D3F"
+            "data": "WebSocketProdStageIAMRoleForAccessLogprodFB0B51EA"
           }
         ],
         "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/account": [
@@ -63,10 +69,22 @@
             "data": "WebSocketProdStage7A23B950"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/IAMRoleForAccessLog-prod/Resource": [
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketApiWithExternalLogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IAMRoleForAccessLogprodF17DDD3F"
+            "data": "WebSocketApiWithExternalLogGroupDCF7BBC9"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/dev-access-log-group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "devaccessloggroup95A3E6FC"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStageWithExternalLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketDevStageWithExternalLogGroupBEB8F176"
           }
         ]
       },
