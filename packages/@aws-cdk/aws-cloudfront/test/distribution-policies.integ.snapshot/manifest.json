@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "integ-distribution-policies.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-distribution-policies.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "integ-distribution-policies": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-distribution-policies.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d76653a864e13a2b26a7cf3d87d4ff2a401608c2059e4fecbd6771e44716ee5d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-distribution-policies.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "integ-distribution-policies.assets"
+      ],
       "metadata": {
         "/integ-distribution-policies/CachePolicy/Resource": [
           {
@@ -37,6 +61,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DistB3B78991"
+          }
+        ],
+        "/integ-distribution-policies/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-distribution-policies/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

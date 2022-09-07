@@ -22,6 +22,13 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * @default none
    */
   readonly secret?: secretsmanager.ISecret
+  /**
+   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id
+   *
+   * @default - none
+   */
+  readonly consumerGroupId?: string;
 }
 
 /**
@@ -101,7 +108,7 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
    *
    * @default - none
    */
-  readonly rootCACertificate?: secretsmanager.Secret;
+  readonly rootCACertificate?: secretsmanager.ISecret;
 }
 
 /**
@@ -125,6 +132,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         kafkaTopic: this.innerProps.topic,
+        kafkaConsumerGroupId: this.innerProps.consumerGroupId,
       }),
     );
 
@@ -199,6 +207,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       this.enrichMappingOptions({
         kafkaBootstrapServers: this.innerProps.bootstrapServers,
         kafkaTopic: this.innerProps.topic,
+        kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
       }),

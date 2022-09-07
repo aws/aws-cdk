@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "integtest-restapi-fromdefinition-inline": {
@@ -150,8 +150,8 @@
                 "id": "Endpoint",
                 "path": "integtest-restapi-fromdefinition-inline/my-api/Endpoint",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "CloudWatchRole": {
@@ -232,20 +232,56 @@
             "id": "PetsURL",
             "path": "integtest-restapi-fromdefinition-inline/PetsURL",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "inline-api-definition": {
+        "id": "inline-api-definition",
+        "path": "inline-api-definition",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "inline-api-definition/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "inline-api-definition/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "inline-api-definition/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

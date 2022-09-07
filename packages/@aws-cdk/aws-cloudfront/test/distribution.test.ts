@@ -1019,3 +1019,54 @@ describe('origin IDs', () => {
     });
   });
 });
+
+describe('supported HTTP versions', () => {
+  test('setting HTTP/1.1 renders HttpVersion correctly', () => {
+    new Distribution(stack, 'Http1Distribution', {
+      httpVersion: HttpVersion.HTTP1_1,
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        HttpVersion: 'http1.1',
+      },
+    });
+  });
+  test('setting HTTP/2 renders HttpVersion correctly', () => {
+    new Distribution(stack, 'Http1Distribution', {
+      httpVersion: HttpVersion.HTTP2,
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        HttpVersion: 'http2',
+      },
+    });
+  });
+  test('setting HTTP/3 renders HttpVersion correctly', () => {
+    new Distribution(stack, 'Http1Distribution', {
+      httpVersion: HttpVersion.HTTP3,
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        HttpVersion: 'http3',
+      },
+    });
+  });
+  test('setting HTTP/2 and HTTP/3 renders HttpVersion correctly', () => {
+    new Distribution(stack, 'Http1Distribution', {
+      httpVersion: HttpVersion.HTTP2_AND_3,
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        HttpVersion: 'http2and3',
+      },
+    });
+  });
+});

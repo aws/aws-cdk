@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "integ-service-discovery-integration.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-service-discovery-integration.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "integ-service-discovery-integration": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-service-discovery-integration.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/46ad1c04ffa4e5d9f049d190ba62f99576b12bceab7128aceac621f18b07f717.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-service-discovery-integration.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "integ-service-discovery-integration.assets"
+      ],
       "metadata": {
         "/integ-service-discovery-integration/VPC/Resource": [
           {
@@ -199,6 +223,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Endpoint"
+          }
+        ],
+        "/integ-service-discovery-integration/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-service-discovery-integration/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

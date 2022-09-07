@@ -401,7 +401,7 @@ export interface CommonClusterOptions {
    *
    * For example, to only select private subnets, supply the following:
    *
-   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }]`
+   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]`
    *
    * @default - All public and private subnets
    */
@@ -1285,7 +1285,7 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
-  private readonly logging?: { [key: string]: [ { [key: string]: any }, { [key: string]: any } ] };
+  private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1337,7 +1337,7 @@ export class Cluster extends ClusterBase {
       description: 'EKS Control Plane Security Group',
     });
 
-    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }];
+    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }];
 
     const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
@@ -1347,27 +1347,11 @@ export class Cluster extends ClusterBase {
     // Get subnetIds for all selected subnets
     const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
-    // The value of clusterLoggingTypeDisabled should be invert of props.clusterLogging.
-    let clusterLoggingTypeDisabled: ClusterLoggingTypes[] = [];
-
-    // Find out type(s) to disable.
-    Object.values(ClusterLoggingTypes).forEach(function (key) {
-      let clusterLoggingTypeEnabled = Object.values(props.clusterLogging ? Object.values(props.clusterLogging) : []);
-      if (!Object.values(clusterLoggingTypeEnabled).includes(key)) {
-        clusterLoggingTypeDisabled.push(key);
-      };
-    });
-
-    // Leave it untouched as undefined if (props.clusterLogging === undefined).
     this.logging = props.clusterLogging ? {
       clusterLogging: [
         {
           enabled: true,
           types: Object.values(props.clusterLogging),
-        },
-        {
-          enabled: false,
-          types: Object.values(clusterLoggingTypeDisabled),
         },
       ],
     } : undefined;

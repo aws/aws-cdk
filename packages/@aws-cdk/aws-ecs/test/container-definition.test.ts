@@ -548,7 +548,7 @@ describe('container definition', () => {
         const actual = container.containerPort;
         const expected = 8080;
         expect(actual).toEqual(expected);
-      }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings()./);
+      }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings\(\)./);
 
 
     });
@@ -597,7 +597,7 @@ describe('container definition', () => {
           const actual = container.ingressPort;
           const expected = 8080;
           expect(actual).toEqual(expected);
-        }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings()./);
+        }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings\(\)./);
 
 
       });
@@ -1258,7 +1258,7 @@ describe('container definition', () => {
     });
 
     // WHEN
-    taskDefinition.addContainer('cont', {
+    const container = taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       secrets: {
@@ -1268,6 +1268,7 @@ describe('container definition', () => {
         SECRET_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, { versionStage: 'version-stage' }),
       },
     });
+    container.addSecret('LATER_SECRET', ecs.Secret.fromSecretsManager(secret, 'field'));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -1327,6 +1328,20 @@ describe('container definition', () => {
                       Ref: 'SecretA720EF05',
                     },
                     '::version-stage:',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'LATER_SECRET',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':field::',
                   ],
                 ],
               },
@@ -1786,6 +1801,16 @@ describe('container definition', () => {
   });
 
   describe('Can specify linux parameters', () => {
+    test('validation throws with out of range params', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const swappinessValues = [-1, 30.5, 101];
+      swappinessValues.forEach(swappiness => expect(() =>
+        new ecs.LinuxParameters(stack, `LinuxParametersWithSwappiness(${swappiness})`, { swappiness }))
+        .toThrowError(`swappiness: Must be an integer between 0 and 100; received ${swappiness}.`));
+    });
+
     test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1821,6 +1846,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: cdk.Size.gibibytes(5),
+        swappiness: 90,
       });
 
       linuxParameters.addCapabilities(ecs.Capability.ALL);
@@ -1844,7 +1871,9 @@ describe('container definition', () => {
                 Drop: ['KILL'],
               },
               InitProcessEnabled: true,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
+              Swappiness: 90,
             },
           }),
         ],
@@ -1859,6 +1888,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: cdk.Size.gibibytes(5),
+        swappiness: 90,
       });
 
       linuxParameters.addCapabilities(ecs.Capability.ALL);
@@ -1884,7 +1915,9 @@ describe('container definition', () => {
                 Drop: ['SETUID'],
               },
               InitProcessEnabled: true,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
+              Swappiness: 90,
             },
           }),
         ],
@@ -1899,6 +1932,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: cdk.Size.gibibytes(5),
+        swappiness: 90,
       });
 
       // WHEN
@@ -1924,7 +1959,9 @@ describe('container definition', () => {
                 },
               ],
               InitProcessEnabled: true,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
+              Swappiness: 90,
             },
           }),
         ],
@@ -1939,6 +1976,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: cdk.Size.gibibytes(5),
+        swappiness: 90,
       });
 
       // WHEN
@@ -1966,7 +2005,9 @@ describe('container definition', () => {
                 },
               ],
               InitProcessEnabled: true,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
+              Swappiness: 90,
             },
           }),
         ],

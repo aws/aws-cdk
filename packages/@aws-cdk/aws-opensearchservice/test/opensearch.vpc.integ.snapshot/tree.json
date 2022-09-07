@@ -9,13 +9,21 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.58"
+          "version": "10.1.85"
         }
       },
       "cdk-integ-opensearch-vpc": {
         "id": "cdk-integ-opensearch-vpc",
         "path": "cdk-integ-opensearch-vpc",
         "children": {
+          "ServiceLinkedRole": {
+            "id": "ServiceLinkedRole",
+            "path": "cdk-integ-opensearch-vpc/ServiceLinkedRole",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnResource",
+              "version": "0.0.0"
+            }
+          },
           "Vpc": {
             "id": "Vpc",
             "path": "cdk-integ-opensearch-vpc/Vpc",
@@ -763,6 +771,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-integ-opensearch-vpc-test": {
+        "id": "cdk-integ-opensearch-vpc-test",
+        "path": "cdk-integ-opensearch-vpc-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-opensearch-vpc-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-opensearch-vpc-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-opensearch-vpc-test/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

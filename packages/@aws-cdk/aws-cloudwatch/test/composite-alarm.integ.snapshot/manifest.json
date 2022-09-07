@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "CompositeAlarmIntegrationTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CompositeAlarmIntegrationTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "CompositeAlarmIntegrationTest": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "CompositeAlarmIntegrationTest.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f1d7f1c425488b9245a0ff851dae7650c25e5558781cc88a972edb6a36be237.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CompositeAlarmIntegrationTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "CompositeAlarmIntegrationTest.assets"
+      ],
       "metadata": {
         "/CompositeAlarmIntegrationTest/Alarm1/Resource": [
           {
@@ -49,6 +73,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CompositeAlarmF4C3D082"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

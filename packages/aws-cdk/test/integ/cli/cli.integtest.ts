@@ -135,6 +135,37 @@ integTest('automatic ordering', withDefaultFixture(async (fixture) => {
   await fixture.cdkDestroy('order-providing');
 }));
 
+integTest('automatic ordering with concurrency', withDefaultFixture(async (fixture) => {
+  // Deploy the consuming stack which will include the producing stack
+  await fixture.cdkDeploy('order-consuming', { options: ['--concurrency', '2'] });
+
+  // Destroy the providing stack which will include the consuming stack
+  await fixture.cdkDestroy('order-providing');
+}));
+
+integTest('--exclusively selects only selected stack', withDefaultFixture(async (fixture) => {
+  // Deploy the "depends-on-failed" stack, with --exclusively. It will NOT fail (because
+  // of --exclusively) and it WILL create an output we can check for to confirm that it did
+  // get deployed.
+  const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+  await fs.mkdir(path.dirname(outputsFile), { recursive: true });
+
+  await fixture.cdkDeploy('depends-on-failed', {
+    options: [
+      '--exclusively',
+      '--outputs-file', outputsFile,
+    ],
+  });
+
+  // Verify the output to see that the stack deployed
+  const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+  expect(outputs).toEqual({
+    [`${fixture.stackNamePrefix}-depends-on-failed`]: {
+      TopicName: `${fixture.stackNamePrefix}-depends-on-failedMyTopic`,
+    },
+  });
+}));
+
 integTest('context setting', withDefaultFixture(async (fixture) => {
   await fs.writeFile(path.join(fixture.integTestDir, 'cdk.context.json'), JSON.stringify({
     contextkey: 'this is the context value',
@@ -178,7 +209,17 @@ integTest('deploy', withDefaultFixture(async (fixture) => {
 integTest('deploy all', withDefaultFixture(async (fixture) => {
   const arns = await fixture.cdkDeploy('test-*', { captureStderr: false });
 
-  // verify that we only deployed a single stack (there's a single ARN in the output)
+  // verify that we only deployed both stacks (there are 2 ARNs in the output)
+  expect(arns.split('\n').length).toEqual(2);
+}));
+
+integTest('deploy all concurrently', withDefaultFixture(async (fixture) => {
+  const arns = await fixture.cdkDeploy('test-*', {
+    captureStderr: false,
+    options: ['--concurrency', '2'],
+  });
+
+  // verify that we only deployed both stacks (there are 2 ARNs in the output)
   expect(arns.split('\n').length).toEqual(2);
 }));
 
@@ -1100,6 +1141,9 @@ integTest('hotswap deployment supports Lambda function\'s description and enviro
   // GIVEN
   const stackArn = await fixture.cdkDeploy('lambda-hotswap', {
     captureStderr: false,
+    modEnv: {
+      DYNAMIC_LAMBDA_PROPERTY_VALUE: 'original value',
+    },
   });
 
   // WHEN
@@ -1107,6 +1151,9 @@ integTest('hotswap deployment supports Lambda function\'s description and enviro
     options: ['--hotswap'],
     captureStderr: true,
     onlyStderr: true,
+    modEnv: {
+      DYNAMIC_LAMBDA_PROPERTY_VALUE: 'new value',
+    },
   });
 
   const response = await fixture.aws.cloudFormation('describeStacks', {

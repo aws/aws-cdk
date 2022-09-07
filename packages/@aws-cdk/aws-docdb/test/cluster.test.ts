@@ -108,7 +108,7 @@ describe('DatabaseCluster', () => {
         vpc,
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
         vpcSubnets: {
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         },
       });
     }).toThrowError('Cluster requires at least 2 subnets, got 1');

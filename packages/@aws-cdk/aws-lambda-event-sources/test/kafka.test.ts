@@ -240,7 +240,7 @@ describe('KafkaEventSource', () => {
             topic: kafkaTopic,
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
             vpc: vpc,
-            vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+            vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             securityGroup: sg,
           }));
 
@@ -300,7 +300,7 @@ describe('KafkaEventSource', () => {
             secret: secret,
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
             vpc: vpc,
-            vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+            vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             securityGroup: sg,
           }));
 
@@ -411,7 +411,7 @@ describe('KafkaEventSource', () => {
               secret: secret,
               startingPosition: lambda.StartingPosition.TRIM_HORIZON,
               vpc: vpc,
-              vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+              vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             }));
         }).toThrow(/securityGroup must be set/);
 
@@ -437,7 +437,7 @@ describe('KafkaEventSource', () => {
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.SASL_SCRAM_256_AUTH,
         }));
@@ -472,7 +472,7 @@ describe('KafkaEventSource', () => {
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.BASIC_AUTH,
         }));
@@ -507,7 +507,7 @@ describe('KafkaEventSource', () => {
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
         }));
@@ -543,7 +543,7 @@ describe('KafkaEventSource', () => {
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
           rootCACertificate: rootCACertificate,
@@ -584,7 +584,7 @@ describe('KafkaEventSource', () => {
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           rootCACertificate: rootCACertificate,
         }));
@@ -601,6 +601,94 @@ describe('KafkaEventSource', () => {
       });
     });
 
+    test('rootCACertificate can be ISecret', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const mockRootCACertificateSecretArn = 'arn:aws:secretsmanager:us-east-1:012345678901:secret:mock';
+      const rootCACertificate = Secret.fromSecretPartialArn(stack, 'RootCASecret', mockRootCACertificateSecretArn);
+      const bootstrapServers = ['kafka-broker:9092'];
+      const sg = SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789');
+      const vpc = new Vpc(stack, 'Vpc');
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          vpc: vpc,
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+          securityGroup: sg,
+          rootCACertificate: rootCACertificate,
+        }));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SourceAccessConfigurations: Match.arrayWith([
+          {
+            Type: 'SERVER_ROOT_CA_CERTIFICATE',
+            URI: mockRootCACertificateSecretArn,
+          },
+        ]),
+      });
+    });
+
+    test('consumerGroupId can be set for SelfManagedKafkaEventSource', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+      const consumerGroupId = 'my-consumer-group-id';
+      const eventSourceMapping = new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          consumerGroupId: consumerGroupId,
+        });
+      // WHEN
+      fn.addEventSource(eventSourceMapping);
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SelfManagedKafkaEventSourceConfig: { ConsumerGroupId: consumerGroupId },
+      });
+
+    });
+
+    test('consumerGroupId can be set for ManagedKafkaEventSource', () => {
+
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const consumerGroupId = 'my-consumer-group-id';
+
+
+      const mskEventMapping = new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          consumerGroupId,
+        });
+
+      // WHEN
+      fn.addEventSource(mskEventMapping);
+      expect(mskEventMapping.eventSourceMappingId).toBeDefined();
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        AmazonManagedKafkaEventSourceConfig: { ConsumerGroupId: consumerGroupId },
+      });
+
+    });
 
     test('ManagedKafkaEventSource name conforms to construct id rules', () => {
       // GIVEN
