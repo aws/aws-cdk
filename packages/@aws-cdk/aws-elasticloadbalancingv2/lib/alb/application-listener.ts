@@ -702,15 +702,8 @@ class ImportedApplicationListener extends ExternalApplicationListener {
     this.listenerArn = props.listenerArn;
     const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
 
-    let securityGroup: ec2.ISecurityGroup;
-    if (props.securityGroup) {
-      securityGroup = props.securityGroup;
-    } else {
-      throw new Error('The `securityGroup` must be specified to import an application listener.');
-    }
-
     this.connections = new ec2.Connections({
-      securityGroups: [securityGroup],
+      securityGroups: [props.securityGroup],
       defaultPort,
     });
   }

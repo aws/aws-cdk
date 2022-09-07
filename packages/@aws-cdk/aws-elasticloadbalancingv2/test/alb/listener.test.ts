@@ -707,6 +707,37 @@ describe('tests', () => {
     });
   });
 
+  test('imported listener only need securityGroup and listenerArn as attributes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const importedListener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack, 'listener', {
+      listenerArn: 'listener-arn',
+      defaultPort: 443,
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'security-group-id', {
+        allowAllOutbound: false,
+      }),
+    });
+    importedListener.addAction('Hello', {
+      action: elbv2.ListenerAction.fixedResponse(503),
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+      priority: 10,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      ListenerArn: 'listener-arn',
+      Priority: 10,
+      Actions: [
+        {
+          FixedResponseConfig: {
+            StatusCode: '503',
+          },
+          Type: 'fixed-response',
+        },
+      ],
+    });
+  });
+
   test('Can add actions to an imported listener', () => {
     // GIVEN
     const stack = new cdk.Stack();
