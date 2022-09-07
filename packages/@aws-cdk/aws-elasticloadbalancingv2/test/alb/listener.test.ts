@@ -281,7 +281,7 @@ describe('tests', () => {
         next: elbv2.ListenerAction.forward([group]),
         issuer: 'dummy',
         clientId: 'dummy',
-        clientSecret: SecretValue.plainText('dummy'),
+        clientSecret: SecretValue.unsafePlainText('dummy'),
         tokenEndpoint: 'dummy',
         userInfoEndpoint: 'dummy',
         authorizationEndpoint: 'dummy',
