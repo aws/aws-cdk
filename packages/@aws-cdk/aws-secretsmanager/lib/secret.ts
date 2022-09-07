@@ -646,7 +646,7 @@ export class Secret extends SecretBase {
       ? parseSecretNameForOwnedSecret(this, this.secretArn, props.secretName)
       : parseSecretName(this, this.secretArn);
 
-    // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
+    // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
     const principal =
       new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
     this.encryptionKey?.grantEncryptDecrypt(principal);
