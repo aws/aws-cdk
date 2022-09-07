@@ -39,7 +39,6 @@ def lambda_handler(event, context):
 
 const app = new App();
 const readPermissionsStack = new TestReadGrantStack(app, 'aws-cdk-kms-managed-secret-read-only');
-// const writePermissionsStack = new TestWriteGrantStack(app, 'aws-cdk-kms-managed-secret-write');
 
 // Test
 const testCase = new IntegTest(app, 'SecretsManagerPermissionsTest', {
