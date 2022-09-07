@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ');
+const stack = new cdk.Stack(app, 'aws-ecs-integ-appmesh-proxy');
 
 // Create a cluster
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });

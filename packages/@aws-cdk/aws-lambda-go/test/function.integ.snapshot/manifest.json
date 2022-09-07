@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "cdk-integ-lambda-golang.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-lambda-golang.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "cdk-integ-lambda-golang": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-lambda-golang.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/cdk-integ-lambda-golang": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb",
-              "id": "9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb",
-              "packaging": "zip",
-              "sourceHash": "9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb",
-              "s3BucketParameter": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbS3Bucket408A3301",
-              "s3KeyParameter": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbS3VersionKeyB036EE40",
-              "artifactHashParameter": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbArtifactHash7E5C4DB4"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7385563402206e09438dafaf3605ec0e9c07ed1a40f48e23e95e4381590f288f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-lambda-golang.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-lambda-golang.assets"
+      ],
+      "metadata": {
         "/cdk-integ-lambda-golang/go-handler-docker/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -41,22 +51,16 @@
             "data": "gohandlerdockerAE04F1B8"
           }
         ],
-        "/cdk-integ-lambda-golang/AssetParameters/9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb/S3Bucket": [
+        "/cdk-integ-lambda-golang/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbS3Bucket408A3301"
+            "data": "BootstrapVersion"
           }
         ],
-        "/cdk-integ-lambda-golang/AssetParameters/9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb/S3VersionKey": [
+        "/cdk-integ-lambda-golang/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbS3VersionKeyB036EE40"
-          }
-        ],
-        "/cdk-integ-lambda-golang/AssetParameters/9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bb/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9546cbdd4e8c634d5ba8e30b66cc3a7fde2f90c3c1fb0e14bebf7873bb6e77bbArtifactHash7E5C4DB4"
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

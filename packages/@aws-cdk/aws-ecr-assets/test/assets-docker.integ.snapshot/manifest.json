@@ -7,39 +7,38 @@
         "file": "tree.json"
       }
     },
+    "integ-assets-docker.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-assets-docker.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "integ-assets-docker": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-assets-docker.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/integ-assets-docker": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "repositoryName": "aws-cdk/assets",
-              "imageTag": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
-              "id": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
-              "packaging": "container-image",
-              "path": "asset.0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
-              "sourceHash": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
-            }
-          },
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "repositoryName": "aws-cdk/assets",
-              "imageTag": "394b24fcdc153a83b1fc400bf2e812ee67e3a5ffafdf977d531cfe2187d95f38",
-              "id": "394b24fcdc153a83b1fc400bf2e812ee67e3a5ffafdf977d531cfe2187d95f38",
-              "packaging": "container-image",
-              "path": "asset.394b24fcdc153a83b1fc400bf2e812ee67e3a5ffafdf977d531cfe2187d95f38",
-              "sourceHash": "394b24fcdc153a83b1fc400bf2e812ee67e3a5ffafdf977d531cfe2187d95f38",
-              "platform": "linux/arm64"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/129ed50df2725896720f8593072e2ac18c7c116a97374bea1f973ba8871c68e5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-assets-docker.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-assets-docker.assets"
+      ],
+      "metadata": {
         "/integ-assets-docker/MyUser/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -68,6 +67,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ImageUri3"
+          }
+        ],
+        "/integ-assets-docker/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-assets-docker/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

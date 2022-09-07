@@ -14,6 +14,13 @@ new JobDefinition(stack, "JobDefinition", {
   },
 });
 
+new JobDefinition(stack, "JobDefinitionTags", {
+  container: {
+    image: ContainerImage.fromRegistry("docker/whalesay"),
+  },
+  propagateTags: true,
+});
+
 const integ = new IntegTest(app, "IntegTest-BatchDefaultEnvVarsStack", {
   testCases: [stack],
   regions: ["us-east-1"],

@@ -209,41 +209,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aS3Bucket7FA0095F"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aS3VersionKeyC54BEE58"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aS3VersionKeyC54BEE58"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3a.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -294,41 +262,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaS3Bucket2E6D85D3"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaS3VersionKey22B8E7C6"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaS3VersionKey22B8E7C6"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cda.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -342,32 +278,6 @@
    "DependsOn": [
     "lambdaServiceRole494E4CA6"
    ]
-  }
- },
- "Parameters": {
-  "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aS3Bucket7FA0095F": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3a\""
-  },
-  "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aS3VersionKeyC54BEE58": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3a\""
-  },
-  "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aArtifactHash06752181": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3a\""
-  },
-  "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaS3Bucket2E6D85D3": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cda\""
-  },
-  "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaS3VersionKey22B8E7C6": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cda\""
-  },
-  "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaArtifactHash82A279EA": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cda\""
   }
  },
  "Outputs": {
@@ -392,6 +302,40 @@
      ]
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

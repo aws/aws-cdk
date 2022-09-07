@@ -479,11 +479,32 @@ const newContainer = taskDefinition.addContainer('container', {
   },
 });
 newContainer.addEnvironment('QUEUE_NAME', 'MyQueue');
+newContainer.addSecret('API_KEY', ecs.Secret.fromSecretsManager(secret));
+newContainer.addSecret('DB_PASSWORD', ecs.Secret.fromSecretsManager(secret, 'password'));
 ```
 
 The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
 files is restricted to the EC2 launch type for files hosted on S3. Further details provided in the AWS documentation
 about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
+
+### Linux parameters
+
+To apply additional linux-specific options related to init process and memory management to the container, use the `linuxParameters` property:
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  linuxParameters: new ecs.LinuxParameters(this, 'LinuxParameters', {
+    initProcessEnabled: true,
+    sharedMemorySize: 1024,
+    maxSwap: 5000,
+    swappiness: 90,
+  }),
+});
+```
 
 ### System controls
 

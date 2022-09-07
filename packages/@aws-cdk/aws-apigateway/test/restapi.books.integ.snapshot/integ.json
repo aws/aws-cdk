@@ -5,7 +5,7 @@
       "stacks": [
         "restapi-books-example"
       ],
-      "assertionStack": "restapibooksDefaultTestDeployAssert1D3FCB77"
+      "assertionStack": "restapi-books/DefaultTest/DeployAssert"
     }
   }
 }

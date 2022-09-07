@@ -2,14 +2,10 @@ import { Template, Match } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as glue from '../lib';
 import { PartitionIndex } from '../lib';
 import { CfnTable } from '../lib/glue.generated';
-
-const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 test('unpartitioned JSON table', () => {
   const app = new cdk.App();
@@ -1217,8 +1213,8 @@ describe('grants', () => {
     });
   });
 
-  testFutureBehavior('write only', s3GrantWriteCtx, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('write only', () => {
+    const stack = new cdk.Stack();
     const user = new iam.User(stack, 'User');
     const database = new glue.Database(stack, 'Database', {
       databaseName: 'database',
@@ -1323,8 +1319,8 @@ describe('grants', () => {
     });
   });
 
-  testFutureBehavior('read and write', s3GrantWriteCtx, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('read and write', () => {
+    const stack = new cdk.Stack();
     const user = new iam.User(stack, 'User');
     const database = new glue.Database(stack, 'Database', {
       databaseName: 'database',

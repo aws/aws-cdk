@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "integ-servicecatalogappregistry-attribute-group.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-servicecatalogappregistry-attribute-group.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "integ-servicecatalogappregistry-attribute-group": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-servicecatalogappregistry-attribute-group.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3dece22dad73361a79cb380f2880362a20ffc5c0cc75ddc6707e26b5a88cf93f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-servicecatalogappregistry-attribute-group.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "integ-servicecatalogappregistry-attribute-group.assets"
+      ],
       "metadata": {
         "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/Resource": [
           {
@@ -37,6 +61,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MySecondRoleB9F57405"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

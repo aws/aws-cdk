@@ -108,6 +108,24 @@ new glue.Connection(this, 'MyConnection', {
 });
 ```
 
+For RDS `Connection` by JDBC, it is recommended to manage credentials using AWS Secrets Manager. To use Secret, specify `SECRET_ID` in `properties` like the following code. Note that in this case, the subnet must have a route to the AWS Secrets Manager VPC endpoint or to the AWS Secrets Manager endpoint through a NAT gateway.
+
+```ts
+declare const securityGroup: ec2.SecurityGroup;
+declare const subnet: ec2.Subnet;
+declare const db: rds.DatabaseCluster;
+new glue.Connection(this, "RdsConnection", {
+  type: glue.ConnectionType.JDBC,
+  securityGroups: [securityGroup],
+  subnet,
+  properties: {
+    JDBC_CONNECTION_URL: `jdbc:mysql://${db.clusterEndpoint.socketAddress}/databasename`,
+    JDBC_ENFORCE_SSL: "false",
+    SECRET_ID: db.secret!.secretName,
+  },
+});
+```
+
 If you need to use a connection type that doesn't exist as a static member on `ConnectionType`, you can instantiate a `ConnectionType` object, e.g: `new glue.ConnectionType('NEW_TYPE')`.
 
 See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/latest/dg/populate-add-connection.html) and [Connection Structure](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-catalog-connections.html#aws-glue-api-catalog-connections-Connection) documentation for more information on the supported data stores and their configurations.

@@ -5,7 +5,7 @@
       "stacks": [
         "cdk-ses-email-identity-integ"
       ],
-      "assertionStack": "EmailIdentityIntegDefaultTestDeployAssert3F909307"
+      "assertionStack": "EmailIdentityInteg/DefaultTest/DeployAssert"
     }
   }
 }

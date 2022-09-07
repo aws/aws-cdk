@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "nested-stacks-docker": {
@@ -28,8 +28,8 @@
                     "id": "Staging",
                     "path": "nested-stacks-docker/nested-stack-with-image/my-image/Staging",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "Repository": {
@@ -97,7 +97,10 @@
                                         {
                                           "Ref": "AWS::AccountId"
                                         },
-                                        ":repository/aws-cdk/assets"
+                                        ":repository/",
+                                        {
+                                          "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                                        }
                                       ]
                                     ]
                                   }
@@ -139,14 +142,14 @@
                 "id": "output",
                 "path": "nested-stacks-docker/nested-stack-with-image/output",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.NestedStack",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "nested-stack-with-image.NestedStack": {
@@ -173,105 +176,35 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297S3BucketAF5C36E5"
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/",
-                          {
-                            "Fn::Select": [
-                              0,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297S3VersionKeyEB2E48FF"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              1,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParametersbd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297S3VersionKeyEB2E48FF"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
+                          "/eaf17d410c9c3958b50b406011121bab5f3147b4a61a0f93a9ab1db097033867.json"
                         ]
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnStack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "nested-stacks-docker/AssetParameters",
-            "children": {
-              "bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297": {
-                "id": "bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297",
-                "path": "nested-stacks-docker/AssetParameters/bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "nested-stacks-docker/AssetParameters/bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "nested-stacks-docker/AssetParameters/bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "nested-stacks-docker/AssetParameters/bd34d9d2b847afabcea4ef507c1bdaabe8abdbb75c41b3db3609d371f8626297/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

@@ -5,7 +5,7 @@
       "stacks": [
         "cdk-ses-configuration-set-integ"
       ],
-      "assertionStack": "ConfigurationSetIntegDefaultTestDeployAssert9B6AD46A"
+      "assertionStack": "ConfigurationSetInteg/DefaultTest/DeployAssert"
     }
   }
 }

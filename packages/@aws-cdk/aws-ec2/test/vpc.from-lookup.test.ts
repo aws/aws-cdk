@@ -165,7 +165,7 @@ describe('vpc from lookup', () => {
       });
 
       // WHEN
-      const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_WITH_NAT, onePerAz: true });
+      const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_WITH_EGRESS, onePerAz: true });
 
       // THEN: we got 2 subnets and not 4
       expect(subnets.subnets.map(s => s.availabilityZone)).toEqual(['us-east-1c', 'us-east-1d']);

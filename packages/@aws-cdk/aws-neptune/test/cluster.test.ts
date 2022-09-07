@@ -91,7 +91,7 @@ describe('DatabaseCluster', () => {
         instances: 1,
         vpc,
         vpcSubnets: {
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         },
         instanceType: InstanceType.R5_LARGE,
       });

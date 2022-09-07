@@ -5,7 +5,7 @@ import { IntegTest } from '@aws-cdk/integ-tests';
 import { NetworkMultipleTargetGroupsEc2Service } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-integ-nlb-healthchecks');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
@@ -46,13 +46,9 @@ const networkMultipleTargetGroupsFargateService = new NetworkMultipleTargetGroup
   ],
 });
 
-networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
-  port: '8050',
-});
+networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({});
 
-networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({
-  port: '8050',
-});
+networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({});
 
 networkMultipleTargetGroupsFargateService.loadBalancers[0]._enableCrossEnvironment;
 networkMultipleTargetGroupsFargateService.loadBalancers[1]._enableCrossEnvironment;

@@ -48,6 +48,7 @@ zp2mwJn2NYB7AZ7+imp0azDZb+8YG2aUCiyqb6PnnA==
       new SelfManagedKafkaEventSource({
         bootstrapServers,
         topic: 'my-test-topic',
+        consumerGroupId: 'myTestConsumerGroup',
         secret: clientCertificatesSecret,
         authenticationMethod: AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
         rootCACertificate: rootCASecret,

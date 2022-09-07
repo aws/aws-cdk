@@ -5,7 +5,7 @@
       "stacks": [
         "test-bucket-deployments-2"
       ],
-      "assertionStack": "integtestbucketdeploymentsDefaultTestDeployAssertCF25A2DF"
+      "assertionStack": "integ-test-bucket-deployments/DefaultTest/DeployAssert"
     }
   }
 }

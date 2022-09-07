@@ -6,7 +6,7 @@ import * as integ from '@aws-cdk/integ-tests';
 import * as ecsPatterns from '../../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ');
+const stack = new cdk.Stack(app, 'aws-ecs-integ-fargate-image');
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
 const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });

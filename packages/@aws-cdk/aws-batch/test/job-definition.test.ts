@@ -284,6 +284,21 @@ describe('Batch Job Definition', () => {
     });
   });
 
+  test('Can propagate tags', () => {
+    // WHEN
+    new batch.JobDefinition(stack, 'job-def', {
+      container: {
+        image: ecs.ContainerImage.fromRegistry('docker/whalesay'),
+      },
+      propagateTags: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      PropagateTags: true,
+    });
+  });
+
   test('can use an ecr image', () => {
     // WHEN
     const repo = new ecr.Repository(stack, 'image-repo');

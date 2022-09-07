@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Stack, DefaultStackSynthesizer } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -10,11 +9,11 @@ import { TarballImageAsset } from '../lib';
 
 /* eslint-disable quote-props */
 
-const flags = { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: true };
 
 describe('image asset', () => {
-  testFutureBehavior('test instantiating Asset Image', flags, App, (app) => {
+  test('test instantiating Asset Image', () => {
     // GIVEN
+    const app = new App();
     const stack = new Stack(app);
     const asset = new TarballImageAsset(stack, 'Image', {
       tarballFile: __dirname + '/demo-tarball/empty.tar',
@@ -52,9 +51,9 @@ describe('image asset', () => {
     expect(asset.node.tryFindChild('Staging')).toBeDefined();
   });
 
-  testFutureBehavior('asset.repository.grantPull can be used to grant a principal permissions to use the image', flags, App, (app) => {
+  test('asset.repository.grantPull can be used to grant a principal permissions to use the image', () => {
     // GIVEN
-    const stack = new Stack(app);
+    const stack = new Stack();
     const user = new iam.User(stack, 'MyUser');
     const asset = new TarballImageAsset(stack, 'Image', {
       tarballFile: 'test/demo-tarball/empty.tar',
@@ -115,7 +114,8 @@ describe('image asset', () => {
     });
   });
 
-  testFutureBehavior('docker directory is staged if asset staging is enabled', flags, App, (app) => {
+  test('docker directory is staged if asset staging is enabled', () => {
+    const app = new App();
     const stack = new Stack(app);
     const image = new TarballImageAsset(stack, 'MyAsset', {
       tarballFile: 'test/demo-tarball/empty.tar',

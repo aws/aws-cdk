@@ -5,7 +5,7 @@
       "stacks": [
         "aws-cdk-log-retention-integ"
       ],
-      "assertionStack": "LogRetentionIntegDefaultTestDeployAssert6ACC5A74"
+      "assertionStack": "LogRetentionInteg/DefaultTest/DeployAssert"
     }
   }
 }

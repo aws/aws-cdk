@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.58"
+          "version": "10.1.85"
         }
       },
       "aws-cdk-lambda-1": {

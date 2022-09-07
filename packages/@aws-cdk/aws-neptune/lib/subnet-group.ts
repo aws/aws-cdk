@@ -74,7 +74,7 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
   constructor(scope: Construct, id: string, props: SubnetGroupProps) {
     super(scope, id);
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT });
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS });
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Resource', {
       dbSubnetGroupDescription: props.description || 'Subnet group for Neptune',
