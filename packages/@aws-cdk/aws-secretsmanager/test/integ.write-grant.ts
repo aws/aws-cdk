@@ -45,8 +45,6 @@ const testCase = new IntegTest(app, 'SecretsManagerPermissionsTest', {
   testCases: [stack],
 });
 
-// app.synth();
-
 const readLambdaInvocation = testCase.assertions.invokeFunction({
   functionName: stack.fn.functionName,
 });

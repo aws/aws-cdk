@@ -478,7 +478,7 @@ export class Secret extends SecretBase {
    * Return whether the given object is a Secret.
    */
   public static isSecret(x: any): x is Secret {
-    return x !== null && typeof (x) === 'object' && SECRET_SYMBOL in x;
+    return x !== null && typeof(x) === 'object' && SECRET_SYMBOL in x;
   }
 
   /** @deprecated use `fromSecretCompleteArn` or `fromSecretPartialArn` */

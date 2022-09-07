@@ -37,38 +37,6 @@ def lambda_handler(event, context):
   }
 }
 
-// class TestWriteGrantStack extends Stack {
-//   public readonly fn: lambda.Function;
-//   public readonly secret: secretsmanager.Secret;
-//   public readonly key: kms.Key;
-
-//   constructor(scope: Construct, id: string, props?: StackProps) {
-//     super(scope, id, props);
-
-//     this.key = new kms.Key(this, 'Key', { removalPolicy: cdk.RemovalPolicy.DESTROY });
-//     this.secret = new secretsmanager.Secret(this, 'Secret', {
-//       encryptionKey: this.key,
-//     });
-
-//     this.fn = new lambda.Function(this, 'Write', {
-//       runtime: lambda.Runtime.PYTHON_3_9,
-//       handler: 'index.handler',
-//       code: lambda.Code.fromInline(`import boto3
-//       def lambda_handler(event, context):
-//       secret_name = "` + this.secret.secretName + `"
-//       key_id = "` + this.key.keyId + `"
-//       console.log(secret_name)
-//       console.log(key_id)
-//       kms = boto3.session.Session().client(service_name='kms').generate_data_key(KeyId=key_id)
-//       return {'statusCode': 200}`),
-//     });
-
-//     this.secret.grantWrite(new iam.Role(this, 'SecretsMngrIntegTestRole', {
-//       assumedBy: new iam.ServicePrincipal('lambda'),
-//     }));
-//   }
-// }
-
 const app = new App();
 const readPermissionsStack = new TestReadGrantStack(app, 'aws-cdk-kms-managed-secret-read-only');
 // const writePermissionsStack = new TestWriteGrantStack(app, 'aws-cdk-kms-managed-secret-write');
@@ -77,8 +45,6 @@ const readPermissionsStack = new TestReadGrantStack(app, 'aws-cdk-kms-managed-se
 const testCase = new IntegTest(app, 'SecretsManagerPermissionsTest', {
   testCases: [readPermissionsStack],
 });
-
-// app.synth();
 
 const readLambdaInvocation = testCase.assertions.invokeFunction({
   functionName: readPermissionsStack.fn.functionName,
