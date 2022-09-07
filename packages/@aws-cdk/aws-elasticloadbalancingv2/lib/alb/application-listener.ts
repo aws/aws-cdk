@@ -557,13 +557,6 @@ export interface ApplicationListenerAttributes {
   readonly listenerArn: string;
 
   /**
-   * Security group ID of the load balancer this listener is associated with
-   *
-   * @deprecated use `securityGroup` instead
-   */
-  readonly securityGroupId?: string;
-
-  /**
    * Security group of the load balancer this listener is associated with
    */
   readonly securityGroup: ec2.ISecurityGroup;
@@ -712,12 +705,8 @@ class ImportedApplicationListener extends ExternalApplicationListener {
     let securityGroup: ec2.ISecurityGroup;
     if (props.securityGroup) {
       securityGroup = props.securityGroup;
-    } else if (props.securityGroupId) {
-      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
-        allowAllOutbound: props.securityGroupAllowsAllOutbound,
-      });
     } else {
-      throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an application listener.');
+      throw new Error('The `securityGroup` must be specified to import an application listener.');
     }
 
     this.connections = new ec2.Connections({
