@@ -431,7 +431,7 @@ async function initCommandLine() {
         const bootstrapper = new Bootstrapper(source);
 
         if (args.showTemplate) {
-          return bootstrapper.showTemplate();
+          return bootstrapper.showTemplate(args.json);
         }
 
         return cli.bootstrap(args.ENVIRONMENTS, bootstrapper, {

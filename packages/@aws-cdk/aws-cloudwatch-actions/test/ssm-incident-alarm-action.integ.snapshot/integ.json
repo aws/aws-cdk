@@ -5,7 +5,7 @@
       "stacks": [
         "SsmIncidentAlarmActionIntegrationTestStack"
       ],
-      "assertionStack": "SsmIncidentManagerAlarmActionTestDefaultTestDeployAssert9DC05EC0"
+      "assertionStack": "SsmIncidentManagerAlarmActionTest/DefaultTest/DeployAssert"
     }
   }
 }

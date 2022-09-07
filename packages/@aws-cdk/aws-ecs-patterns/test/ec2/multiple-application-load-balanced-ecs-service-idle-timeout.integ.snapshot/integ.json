@@ -3,7 +3,7 @@
   "testCases": {
     "multiAlbEcsEc2Test/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-alb-idle-timeout"
       ],
       "assertionStack": "multiAlbEcsEc2Test/DefaultTest/DeployAssert"
     }
