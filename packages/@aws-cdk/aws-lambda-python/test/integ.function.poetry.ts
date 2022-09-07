@@ -29,6 +29,12 @@ class TestStack extends Stack {
     new CfnOutput(this, 'Python38FunctionName', {
       value: pythonFunction38.functionName,
     });
+
+    new lambda.PythonFunction(this, 'my_handler_python_37', {
+      entry: path.join(__dirname, 'lambda-handler-poetry'),
+      runtime: Runtime.PYTHON_3_7,
+    });
+
   }
 }
 

@@ -35,7 +35,4 @@ RUN mkdir /tmp/poetry-cache && \
 # set the poetry cache
 ENV POETRY_CACHE_DIR=/tmp/poetry-cache
 
-# create non root user and change allow execute command for non root user
-RUN /sbin/useradd -u 1000 user && chmod 711 /
-
 CMD [ "python" ]
