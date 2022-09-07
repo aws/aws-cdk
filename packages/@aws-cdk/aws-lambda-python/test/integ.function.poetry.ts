@@ -18,7 +18,7 @@ class TestStack extends Stack {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       runtime: Runtime.PYTHON_3_9,
     });
-    new CfnOutput(this, 'inlineFunctionName', {
+    new CfnOutput(this, 'InlineFunctionName', {
       value: pythonFunctionInline.functionName,
     });
 
