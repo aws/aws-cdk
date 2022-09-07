@@ -2,12 +2,9 @@ import { Match, Template } from '@aws-cdk/assertions';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as elbv2 from '../../lib';
 
-const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 describe('tests', () => {
   test('Trivial construction: internet facing', () => {
@@ -150,7 +147,8 @@ describe('tests', () => {
 
   describe('logAccessLogs', () => {
 
-    function loggingSetup(app: cdk.App): { stack: cdk.Stack, bucket: s3.Bucket, lb: elbv2.ApplicationLoadBalancer } {
+    function loggingSetup(): { stack: cdk.Stack, bucket: s3.Bucket, lb: elbv2.ApplicationLoadBalancer } {
+      const app = new cdk.App();
       const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
       const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
@@ -160,8 +158,7 @@ describe('tests', () => {
 
     test('sets load balancer attributes', () => {
       // GIVEN
-      const app = new cdk.App();
-      const { stack, bucket, lb } = loggingSetup(app);
+      const { stack, bucket, lb } = loggingSetup();
 
       // WHEN
       lb.logAccessLogs(bucket);
@@ -187,8 +184,7 @@ describe('tests', () => {
 
     test('adds a dependency on the bucket', () => {
       // GIVEN
-      const app = new cdk.App();
-      const { stack, bucket, lb } = loggingSetup(app);
+      const { stack, bucket, lb } = loggingSetup();
 
       // WHEN
       lb.logAccessLogs(bucket);
@@ -200,9 +196,9 @@ describe('tests', () => {
       });
     });
 
-    testFutureBehavior('logging bucket permissions', s3GrantWriteCtx, cdk.App, (app) => {
+    test('logging bucket permissions', () => {
       // GIVEN
-      const { stack, bucket, lb } = loggingSetup(app);
+      const { stack, bucket, lb } = loggingSetup();
 
       // WHEN
       lb.logAccessLogs(bucket);
@@ -252,9 +248,9 @@ describe('tests', () => {
       });
     });
 
-    testFutureBehavior('access logging with prefix', s3GrantWriteCtx, cdk.App, (app) => {
+    test('access logging with prefix', () => {
       // GIVEN
-      const { stack, bucket, lb } = loggingSetup(app);
+      const { stack, bucket, lb } = loggingSetup();
 
       // WHEN
       lb.logAccessLogs(bucket, 'prefix-of-access-logs');

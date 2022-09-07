@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
-import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';

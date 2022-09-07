@@ -9,7 +9,6 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { Queue } from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
 
 test('test ECS queue worker service construct - with only required props', () => {

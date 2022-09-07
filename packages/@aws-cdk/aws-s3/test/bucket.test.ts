@@ -2,15 +2,11 @@ import { EOL } from 'os';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
-
-const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 describe('bucket', () => {
   test('default bucket', () => {
@@ -949,8 +945,8 @@ describe('bucket', () => {
   });
 
   describe('grantReadWrite', () => {
-    testFutureBehavior('can be used to grant reciprocal permissions to an identity', s3GrantWriteCtx, cdk.App, (app) => {
-      const stack = new cdk.Stack(app);
+    test('can be used to grant reciprocal permissions to an identity', () => {
+      const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
       bucket.grantReadWrite(user);
@@ -1066,8 +1062,8 @@ describe('bucket', () => {
       });
     });
 
-    testFutureBehavior('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', s3GrantWriteCtx, cdk.App, (app) => {
-      const stack = new cdk.Stack(app, 'Stack');
+    test('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', () => {
+      const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
 
@@ -1107,8 +1103,8 @@ describe('bucket', () => {
   });
 
   describe('grantWrite', () => {
-    testFutureBehavior('with KMS key has appropriate permissions for multipart uploads', s3GrantWriteCtx, cdk.App, (app) => {
-      const stack = new cdk.Stack(app);
+    test('with KMS key has appropriate permissions for multipart uploads', () => {
+      const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
       const user = new iam.User(stack, 'MyUser');
       bucket.grantWrite(user);
@@ -1177,8 +1173,8 @@ describe('bucket', () => {
       });
     });
 
-    testFutureBehavior('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', s3GrantWriteCtx, cdk.App, (app) => {
-      const stack = new cdk.Stack(app, 'Stack');
+    test('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', () => {
+      const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
 
@@ -1215,8 +1211,8 @@ describe('bucket', () => {
   });
 
   describe('grantPut', () => {
-    testFutureBehavior('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', s3GrantWriteCtx, cdk.App, (app) => {
-      const stack = new cdk.Stack(app, 'Stack');
+    test('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', () => {
+      const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
 
@@ -1248,8 +1244,8 @@ describe('bucket', () => {
     });
   });
 
-  testFutureBehavior('more grants', s3GrantWriteCtx, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('more grants', () => {
+    const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
     const putter = new iam.User(stack, 'Putter');
     const writer = new iam.User(stack, 'Writer');

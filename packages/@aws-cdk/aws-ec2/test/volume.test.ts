@@ -1,9 +1,7 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import { AccountRootPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import {
   AmazonLinuxGeneration,
   EbsDeviceVolumeType,
@@ -442,9 +440,9 @@ describe('volume', () => {
   });
 
   describe('grantAttachVolume to any instance with encryption', () => {
-    testFutureBehavior('with future flag aws-kms:defaultKeyPolicies', { [cxapi.KMS_DEFAULT_KEY_POLICIES]: true }, cdk.App, (app) => {
+    test('with default key policies', () => {
       // GIVEN
-      const stack = new cdk.Stack(app);
+      const stack = new cdk.Stack();
       const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
       const encryptionKey = new kms.Key(stack, 'Key');
       const volume = new Volume(stack, 'Volume', {

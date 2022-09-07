@@ -1,18 +1,12 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import { App, Duration, Stack, CfnParameter } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { Stream, StreamEncryption, StreamMode } from '../lib';
 
-/* eslint-disable quote-props */
-
 describe('Kinesis data streams', () => {
-
   test('default stream', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream');
 
     Template.fromStack(stack).templateMatches({
@@ -67,7 +61,6 @@ describe('Kinesis data streams', () => {
 
   test('multiple default streams only have one condition for encryption', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream');
     new Stream(stack, 'MyOtherStream');
 
@@ -145,7 +138,6 @@ describe('Kinesis data streams', () => {
 
   test('stream from attributes', () => {
     const stack = new Stack();
-
     const s = Stream.fromStreamAttributes(stack, 'MyStream', {
       streamArn: 'arn:aws:kinesis:region:account-id:stream/stream-name',
     });
@@ -155,7 +147,6 @@ describe('Kinesis data streams', () => {
 
   test('uses explicit shard count', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream', {
       shardCount: 2,
     });
@@ -212,7 +203,6 @@ describe('Kinesis data streams', () => {
 
   test('uses explicit retention period', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream', {
       retentionPeriod: Duration.hours(168),
     });
@@ -351,7 +341,6 @@ describe('Kinesis data streams', () => {
 
   test('auto-creates KMS key if encryption type is KMS but no key is provided', () => {
     const stack = new Stack();
-
     const stream = new Stream(stack, 'MyStream', {
       encryption: StreamEncryption.KMS,
     });
@@ -370,11 +359,9 @@ describe('Kinesis data streams', () => {
 
   test('uses explicit KMS key if encryption type is KMS and a key is provided', () => {
     const stack = new Stack();
-
     const explicitKey = new kms.Key(stack, 'ExplicitKey', {
       description: 'Explicit Key',
     });
-
     new Stream(stack, 'MyStream', {
       encryption: StreamEncryption.KMS,
       encryptionKey: explicitKey,
@@ -399,7 +386,6 @@ describe('Kinesis data streams', () => {
 
   test('uses explicit provisioned streamMode', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream', {
       streamMode: StreamMode.PROVISIONED,
     });
@@ -456,7 +442,6 @@ describe('Kinesis data streams', () => {
 
   test('uses explicit on-demand streamMode', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream', {
       streamMode: StreamMode.ON_DEMAND,
     });
@@ -526,7 +511,6 @@ describe('Kinesis data streams', () => {
     const stream = new Stream(stack, 'MyStream', {
       encryption: StreamEncryption.KMS,
     });
-
     const user = new iam.User(stack, 'MyUser');
     stream.grantRead(user);
 
@@ -552,7 +536,6 @@ describe('Kinesis data streams', () => {
     const stream = new Stream(stack, 'MyStream', {
       encryption: StreamEncryption.KMS,
     });
-
     const user = new iam.User(stack, 'MyUser');
     stream.grantReadWrite(user);
 
@@ -576,7 +559,6 @@ describe('Kinesis data streams', () => {
   test('grantRead creates and associates a policy with read only access to Stream', () => {
     const stack = new Stack();
     const stream = new Stream(stack, 'MyStream');
-
     const user = new iam.User(stack, 'MyUser');
     stream.grantRead(user);
 
@@ -667,7 +649,6 @@ describe('Kinesis data streams', () => {
   test('grantWrite creates and attaches a policy with write only access to Stream', () => {
     const stack = new Stack();
     const stream = new Stream(stack, 'MyStream');
-
     const user = new iam.User(stack, 'MyUser');
     stream.grantWrite(user);
 
@@ -750,7 +731,6 @@ describe('Kinesis data streams', () => {
   test('grantReadWrite creates and attaches a policy with write only access to Stream', () => {
     const stack = new Stack();
     const stream = new Stream(stack, 'MyStream');
-
     const user = new iam.User(stack, 'MyUser');
     stream.grantReadWrite(user);
 
@@ -843,7 +823,6 @@ describe('Kinesis data streams', () => {
   test('grant creates and attaches a policy to Stream which includes supplied permissions', () => {
     const stack = new Stack();
     const stream = new Stream(stack, 'MyStream');
-
     const user = new iam.User(stack, 'MyUser');
     stream.grant(user, 'kinesis:DescribeStream');
 
@@ -992,7 +971,8 @@ describe('Kinesis data streams', () => {
     });
   }),
 
-  testFutureBehavior('cross stack permissions - with encryption', { [cxapi.KMS_DEFAULT_KEY_POLICIES]: true }, App, (app) => {
+  test('cross stack permissions - with encryption', () => {
+    const app = new App();
     const stackA = new Stack(app, 'stackA');
     const streamFromStackA = new Stream(stackA, 'MyStream', {
       encryption: StreamEncryption.KMS,
@@ -1017,7 +997,6 @@ describe('Kinesis data streams', () => {
 
   test('accepts if retentionPeriodHours is a Token', () => {
     const stack = new Stack();
-
     const parameter = new CfnParameter(stack, 'my-retention-period', {
       type: 'Number',
       default: 48,
@@ -1094,7 +1073,6 @@ describe('Kinesis data streams', () => {
   test('basic stream-level metrics (StreamName dimension only)', () => {
     // GIVEN
     const stack = new Stack();
-
     const fiveMinutes = {
       amount: 5,
       unit: {
@@ -1241,7 +1219,6 @@ describe('Kinesis data streams', () => {
   test('allow to overide metric options', () => {
     // GIVEN
     const stack = new Stack();
-
     const fiveMinutes = {
       amount: 5,
       unit: {

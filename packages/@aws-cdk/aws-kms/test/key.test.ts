@@ -1,8 +1,7 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
-import { describeDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as kms from '../lib';
 
 const ADMIN_ACTIONS: string[] = [
@@ -22,28 +21,8 @@ const ADMIN_ACTIONS: string[] = [
   'kms:CancelKeyDeletion',
 ];
 
-const LEGACY_ADMIN_ACTIONS: string[] = [
-  'kms:Create*',
-  'kms:Describe*',
-  'kms:Enable*',
-  'kms:List*',
-  'kms:Put*',
-  'kms:Update*',
-  'kms:Revoke*',
-  'kms:Disable*',
-  'kms:Get*',
-  'kms:Delete*',
-  'kms:ScheduleKeyDeletion',
-  'kms:CancelKeyDeletion',
-  'kms:GenerateDataKey',
-  'kms:TagResource',
-  'kms:UntagResource',
-];
-
-const flags = { [cxapi.KMS_DEFAULT_KEY_POLICIES]: true };
-
-testFutureBehavior('default key', flags, cdk.App, (app) => {
-  const stack = new cdk.Stack(app);
+test('default key', () => {
+  const stack = new cdk.Stack();
   new kms.Key(stack, 'MyKey');
 
   Template.fromStack(stack).hasResource('AWS::KMS::Key', {
@@ -67,16 +46,16 @@ testFutureBehavior('default key', flags, cdk.App, (app) => {
   });
 });
 
-testFutureBehavior('default with no retention', flags, cdk.App, (app) => {
-  const stack = new cdk.Stack(app);
+test('default with no retention', () => {
+  const stack = new cdk.Stack();
   new kms.Key(stack, 'MyKey', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 
   Template.fromStack(stack).hasResource('AWS::KMS::Key', { DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' });
 });
 
 describe('key policies', () => {
-  testFutureBehavior('can specify a default key policy', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('can specify a default key policy', () => {
+    const stack = new cdk.Stack();
     const policy = new iam.PolicyDocument();
     const statement = new iam.PolicyStatement({ resources: ['*'], actions: ['kms:Put*'] });
     statement.addArnPrincipal('arn:aws:iam::111122223333:root');
@@ -101,8 +80,8 @@ describe('key policies', () => {
     });
   });
 
-  testFutureBehavior('can append to the default key policy', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('can append to the default key policy', () => {
+    const stack = new cdk.Stack();
     const statement = new iam.PolicyStatement({ resources: ['*'], actions: ['kms:Put*'] });
     statement.addArnPrincipal('arn:aws:iam::111122223333:root');
 
@@ -134,9 +113,9 @@ describe('key policies', () => {
     });
   });
 
-  testFutureBehavior('decrypt', flags, cdk.App, (app) => {
+  test('decrypt', () => {
     // GIVEN
-    const stack = new cdk.Stack(app);
+    const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'Key');
     const user = new iam.User(stack, 'User');
 
@@ -173,9 +152,9 @@ describe('key policies', () => {
     });
   });
 
-  testFutureBehavior('encrypt', flags, cdk.App, (app) => {
+  test('encrypt', () => {
     // GIVEN
-    const stack = new cdk.Stack(app);
+    const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'Key');
     const user = new iam.User(stack, 'User');
 
@@ -212,7 +191,8 @@ describe('key policies', () => {
     });
   });
 
-  testFutureBehavior('grant for a principal in a dependent stack works correctly', flags, cdk.App, (app) => {
+  test('grant for a principal in a dependent stack works correctly', () => {
+    const app = new cdk.App();
     const principalStack = new cdk.Stack(app, 'PrincipalStack');
     const principal = new iam.Role(principalStack, 'Role', {
       assumedBy: new iam.AnyPrincipal(),
@@ -245,7 +225,8 @@ describe('key policies', () => {
     });
   });
 
-  testFutureBehavior('grant for a principal in a different region', flags, cdk.App, (app) => {
+  test('grant for a principal in a different region', () => {
+    const app = new cdk.App();
     const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { region: 'testregion1' } });
     const principal = new iam.Role(principalStack, 'Role', {
       assumedBy: new iam.AnyPrincipal(),
@@ -292,7 +273,8 @@ describe('key policies', () => {
     });
   });
 
-  testFutureBehavior('grant for a principal in a different account', flags, cdk.App, (app) => {
+  test('grant for a principal in a different account', () => {
+    const app = new cdk.App();
     const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '0123456789012' } });
     const principal = new iam.Role(principalStack, 'Role', {
       assumedBy: new iam.AnyPrincipal(),
@@ -337,7 +319,8 @@ describe('key policies', () => {
     });
   });
 
-  testFutureBehavior('grant for an immutable role', flags, cdk.App, (app) => {
+  test('grant for an immutable role', () => {
+    const app = new cdk.App();
     const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '0123456789012' } });
     const principal = new iam.Role(principalStack, 'Role', {
       assumedBy: new iam.AnyPrincipal(),
@@ -372,8 +355,8 @@ describe('key policies', () => {
     });
   });
 
-  testFutureBehavior('additional key admins can be specified (with imported/immutable principal)', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('additional key admins can be specified (with imported/immutable principal)', () => {
+    const stack = new cdk.Stack();
     const adminRole = iam.Role.fromRoleArn(stack, 'Admin', 'arn:aws:iam::123456789012:role/TrustedAdmin');
     new kms.Key(stack, 'MyKey', { admins: [adminRole] });
 
@@ -402,8 +385,8 @@ describe('key policies', () => {
     });
   });
 
-  testFutureBehavior('additional key admins can be specified (with owned/mutable principal)', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('additional key admins can be specified (with owned/mutable principal)', () => {
+    const stack = new cdk.Stack();
     const adminRole = new iam.Role(stack, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal(),
     });
@@ -440,8 +423,8 @@ describe('key policies', () => {
   });
 });
 
-testFutureBehavior('key with some options', flags, cdk.App, (app) => {
-  const stack = new cdk.Stack(app);
+test('key with some options', () => {
+  const stack = new cdk.Stack();
   const key = new kms.Key(stack, 'MyKey', {
     enableKeyRotation: true,
     enabled: false,
@@ -473,22 +456,22 @@ testFutureBehavior('key with some options', flags, cdk.App, (app) => {
   });
 });
 
-testFutureBehavior('setting pendingWindow value to not in allowed range will throw', flags, cdk.App, (app) => {
-  const stack = new cdk.Stack(app);
+test('setting pendingWindow value to not in allowed range will throw', () => {
+  const stack = new cdk.Stack();
   expect(() => new kms.Key(stack, 'MyKey', { enableKeyRotation: true, pendingWindow: cdk.Duration.days(6) }))
     .toThrow('\'pendingWindow\' value must between 7 and 30 days. Received: 6');
 });
 
 describeDeprecated('trustAccountIdentities is deprecated', () => {
-  testFutureBehavior('setting trustAccountIdentities to false will throw (when the defaultKeyPolicies feature flag is enabled)', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('setting trustAccountIdentities to false will throw (when the defaultKeyPolicies feature flag is enabled)', () => {
+    const stack = new cdk.Stack();
     expect(() => new kms.Key(stack, 'MyKey', { trustAccountIdentities: false }))
       .toThrow('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
   });
 });
 
-testFutureBehavior('addAlias creates an alias', flags, cdk.App, (app) => {
-  const stack = new cdk.Stack(app);
+test('addAlias creates an alias', () => {
+  const stack = new cdk.Stack();
   const key = new kms.Key(stack, 'MyKey', {
     enableKeyRotation: true,
     enabled: false,
@@ -509,8 +492,8 @@ testFutureBehavior('addAlias creates an alias', flags, cdk.App, (app) => {
   });
 });
 
-testFutureBehavior('can run multiple addAlias', flags, cdk.App, (app) => {
-  const stack = new cdk.Stack(app);
+test('can run multiple addAlias', () => {
+  const stack = new cdk.Stack();
   const key = new kms.Key(stack, 'MyKey', {
     enableKeyRotation: true,
     enabled: false,
@@ -542,8 +525,8 @@ testFutureBehavior('can run multiple addAlias', flags, cdk.App, (app) => {
   });
 });
 
-testFutureBehavior('keyId resolves to a Ref', flags, cdk.App, (app) => {
-  const stack = new cdk.Stack(app);
+test('keyId resolves to a Ref', () => {
+  const stack = new cdk.Stack();
   const key = new kms.Key(stack, 'MyKey');
 
   new cdk.CfnOutput(stack, 'Out', {
@@ -555,7 +538,8 @@ testFutureBehavior('keyId resolves to a Ref', flags, cdk.App, (app) => {
   });
 });
 
-testFutureBehavior('fails if key policy has no actions', flags, cdk.App, (app) => {
+test('fails if key policy has no actions', () => {
+  const app = new cdk.App();
   const stack = new cdk.Stack(app);
   const key = new kms.Key(stack, 'MyKey');
 
@@ -567,7 +551,8 @@ testFutureBehavior('fails if key policy has no actions', flags, cdk.App, (app) =
   expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
 });
 
-testFutureBehavior('fails if key policy has no IAM principals', flags, cdk.App, (app) => {
+test('fails if key policy has no IAM principals', () => {
+  const app = new cdk.App();
   const stack = new cdk.Stack(app);
   const key = new kms.Key(stack, 'MyKey');
 
@@ -580,15 +565,16 @@ testFutureBehavior('fails if key policy has no IAM principals', flags, cdk.App, 
 });
 
 describe('imported keys', () => {
-  testFutureBehavior('throw an error when providing something that is not a valid key ARN', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('throw an error when providing something that is not a valid key ARN', () => {
+    const stack = new cdk.Stack();
     expect(() => {
       kms.Key.fromKeyArn(stack, 'Imported', 'arn:aws:kms:us-east-1:123456789012:key');
     }).toThrow(/KMS key ARN must be in the format 'arn:aws:kms:<region>:<account>:key\/<keyId>', got: 'arn:aws:kms:us-east-1:123456789012:key'/);
 
   });
 
-  testFutureBehavior('can have aliases added to them', flags, cdk.App, (app) => {
+  test('can have aliases added to them', () => {
+    const app = new cdk.App();
     const stack2 = new cdk.Stack(app, 'Stack2');
     const myKeyImported = kms.Key.fromKeyArn(stack2, 'MyKeyImported',
       'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012');
@@ -930,8 +916,8 @@ describe('fromCfnKey()', () => {
 
 describe('addToResourcePolicy allowNoOp and there is no policy', () => {
   // eslint-disable-next-line jest/expect-expect
-  testFutureBehavior('succeed if set to true (default)', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('succeed if set to true (default)', () => {
+    const stack = new cdk.Stack();
     const key = kms.Key.fromKeyArn(stack, 'Imported',
       'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012');
 
@@ -939,8 +925,8 @@ describe('addToResourcePolicy allowNoOp and there is no policy', () => {
 
   });
 
-  testFutureBehavior('fails if set to false', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('fails if set to false', () => {
+    const stack = new cdk.Stack();
     const key = kms.Key.fromKeyArn(stack, 'Imported',
       'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012');
 
@@ -952,8 +938,8 @@ describe('addToResourcePolicy allowNoOp and there is no policy', () => {
 });
 
 describe('key specs and key usages', () => {
-  testFutureBehavior('both usage and spec are specified', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('both usage and spec are specified', () => {
+    const stack = new cdk.Stack();
     new kms.Key(stack, 'Key', { keySpec: kms.KeySpec.ECC_SECG_P256K1, keyUsage: kms.KeyUsage.SIGN_VERIFY });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -962,8 +948,8 @@ describe('key specs and key usages', () => {
     });
   });
 
-  testFutureBehavior('only key usage is specified', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('only key usage is specified', () => {
+    const stack = new cdk.Stack();
     new kms.Key(stack, 'Key', { keyUsage: kms.KeyUsage.ENCRYPT_DECRYPT });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -971,8 +957,8 @@ describe('key specs and key usages', () => {
     });
   });
 
-  testFutureBehavior('only key spec is specified', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('only key spec is specified', () => {
+    const stack = new cdk.Stack();
     new kms.Key(stack, 'Key', { keySpec: kms.KeySpec.RSA_4096 });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -980,8 +966,8 @@ describe('key specs and key usages', () => {
     });
   });
 
-  testFutureBehavior('invalid combinations of key specs and key usages', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('invalid combinations of key specs and key usages', () => {
+    const stack = new cdk.Stack();
 
     expect(() => new kms.Key(stack, 'Key1', { keySpec: kms.KeySpec.ECC_NIST_P256 }))
       .toThrow('key spec \'ECC_NIST_P256\' is not valid with usage \'ENCRYPT_DECRYPT\'');
@@ -993,8 +979,8 @@ describe('key specs and key usages', () => {
       .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'SIGN_VERIFY\'');
   });
 
-  testFutureBehavior('fails if key rotation enabled on asymmetric key', flags, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('fails if key rotation enabled on asymmetric key', () => {
+    const stack = new cdk.Stack();
 
     expect(() => new kms.Key(stack, 'Key', { enableKeyRotation: true, keySpec: kms.KeySpec.RSA_3072 }))
       .toThrow('key rotation cannot be enabled on asymmetric keys');

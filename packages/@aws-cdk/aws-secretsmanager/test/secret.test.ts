@@ -2,7 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as secretsmanager from '../lib';
 
@@ -649,94 +649,91 @@ test('secretValue', () => {
 });
 
 describe('secretName', () => {
-  describe('with @aws-cdk/aws-secretsmanager:parseOwnedSecretName set', () => {
-    const flags = { '@aws-cdk/aws-secretsmanager:parseOwnedSecretName': 'true' };
-    testFutureBehavior('selects the first two parts of the resource name when the name is auto-generated', flags, cdk.App, (cdkApp) => {
-      stack = new cdk.Stack(cdkApp);
+  test('selects the first two parts of the resource name when the name is auto-generated', () => {
+    stack = new cdk.Stack();
 
-      const secret = new secretsmanager.Secret(stack, 'Secret');
-      new cdk.CfnOutput(stack, 'MySecretName', {
-        value: secret.secretName,
-      });
-
-      const resourceName = { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] };
-
-      Template.fromStack(stack).hasOutput('MySecretName', {
-        Value: {
-          'Fn::Join': ['-', [
-            { 'Fn::Select': [0, { 'Fn::Split': ['-', resourceName] }] },
-            { 'Fn::Select': [1, { 'Fn::Split': ['-', resourceName] }] },
-          ]],
-        },
-      });
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    new cdk.CfnOutput(stack, 'MySecretName', {
+      value: secret.secretName,
     });
 
-    testFutureBehavior('is simply the first segment when the provided secret name has no hyphens', flags, cdk.App, (cdkApp) => {
-      stack = new cdk.Stack(cdkApp);
+    const resourceName = { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] };
 
-      const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'mySecret' });
-      new cdk.CfnOutput(stack, 'MySecretName', {
-        value: secret.secretName,
-      });
+    Template.fromStack(stack).hasOutput('MySecretName', {
+      Value: {
+        'Fn::Join': ['-', [
+          { 'Fn::Select': [0, { 'Fn::Split': ['-', resourceName] }] },
+          { 'Fn::Select': [1, { 'Fn::Split': ['-', resourceName] }] },
+        ]],
+      },
+    });
+  });
 
-      const resourceName = { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] };
+  test('is simply the first segment when the provided secret name has no hyphens', () => {
+    stack = new cdk.Stack();
 
-      Template.fromStack(stack).hasOutput('MySecretName', {
-        Value: { 'Fn::Select': [0, { 'Fn::Split': ['-', resourceName] }] },
-      });
+    const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'mySecret' });
+    new cdk.CfnOutput(stack, 'MySecretName', {
+      value: secret.secretName,
     });
 
-    function assertSegments(secret: secretsmanager.Secret, segments: number) {
-      new cdk.CfnOutput(stack, 'MySecretName', {
-        value: secret.secretName,
-      });
+    const resourceName = { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] };
 
-      const resourceName = { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] };
-      const secretNameSegments = [];
-      for (let i = 0; i < segments; i++) {
-        secretNameSegments.push({ 'Fn::Select': [i, { 'Fn::Split': ['-', resourceName] }] });
-      }
+    Template.fromStack(stack).hasOutput('MySecretName', {
+      Value: { 'Fn::Select': [0, { 'Fn::Split': ['-', resourceName] }] },
+    });
+  });
 
-      Template.fromStack(stack).hasOutput('MySecretName', {
-        Value: { 'Fn::Join': ['-', secretNameSegments] },
-      });
+  function assertSegments(secret: secretsmanager.Secret, segments: number) {
+    new cdk.CfnOutput(stack, 'MySecretName', {
+      value: secret.secretName,
+    });
+
+    const resourceName = { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] };
+    const secretNameSegments = [];
+    for (let i = 0; i < segments; i++) {
+      secretNameSegments.push({ 'Fn::Select': [i, { 'Fn::Split': ['-', resourceName] }] });
     }
 
-    testFutureBehavior('selects the 2 parts of the resource name when the secret name is provided', flags, cdk.App, (cdkApp) => {
-      stack = new cdk.Stack(cdkApp);
-      const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'my-secret' });
-      assertSegments(secret, 2);
+    Template.fromStack(stack).hasOutput('MySecretName', {
+      Value: { 'Fn::Join': ['-', secretNameSegments] },
+    });
+  }
+
+  test('selects the 2 parts of the resource name when the secret name is provided', () => {
+    stack = new cdk.Stack();
+    const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'my-secret' });
+    assertSegments(secret, 2);
+  });
+
+  test('selects the 3 parts of the resource name when the secret name is provided', () => {
+    stack = new cdk.Stack();
+    const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'my-secret-hyphenated' });
+    assertSegments(secret, 3);
+  });
+
+  test('selects the 4 parts of the resource name when the secret name is provided', () => {
+    stack = new cdk.Stack();
+    const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'my-secret-with-hyphens' });
+    assertSegments(secret, 4);
+  });
+
+  test('uses existing Tokens as secret names as-is', () => {
+    stack = new cdk.Stack();
+
+    const secret1 = new secretsmanager.Secret(stack, 'Secret1');
+    const secret2 = new secretsmanager.Secret(stack, 'Secret2', {
+      secretName: secret1.secretName,
+    });
+    new cdk.CfnOutput(stack, 'MySecretName1', {
+      value: secret1.secretName,
+    });
+    new cdk.CfnOutput(stack, 'MySecretName2', {
+      value: secret2.secretName,
     });
 
-    testFutureBehavior('selects the 3 parts of the resource name when the secret name is provided', flags, cdk.App, (cdkApp) => {
-      stack = new cdk.Stack(cdkApp);
-      const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'my-secret-hyphenated' });
-      assertSegments(secret, 3);
-    });
-
-    testFutureBehavior('selects the 4 parts of the resource name when the secret name is provided', flags, cdk.App, (cdkApp) => {
-      stack = new cdk.Stack(cdkApp);
-      const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'my-secret-with-hyphens' });
-      assertSegments(secret, 4);
-    });
-
-    testFutureBehavior('uses existing Tokens as secret names as-is', flags, cdk.App, (cdkApp) => {
-      stack = new cdk.Stack(cdkApp);
-
-      const secret1 = new secretsmanager.Secret(stack, 'Secret1');
-      const secret2 = new secretsmanager.Secret(stack, 'Secret2', {
-        secretName: secret1.secretName,
-      });
-      new cdk.CfnOutput(stack, 'MySecretName1', {
-        value: secret1.secretName,
-      });
-      new cdk.CfnOutput(stack, 'MySecretName2', {
-        value: secret2.secretName,
-      });
-
-      const outputs = Template.fromStack(stack).findOutputs('*');
-      expect(outputs.MySecretName1).toEqual(outputs.MySecretName2);
-    });
+    const outputs = Template.fromStack(stack).findOutputs('*');
+    expect(outputs.MySecretName1).toEqual(outputs.MySecretName2);
   });
 });
 

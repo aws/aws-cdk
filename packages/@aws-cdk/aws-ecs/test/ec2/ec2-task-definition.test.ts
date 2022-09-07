@@ -707,16 +707,6 @@ describe('ec2 task definition', () => {
       Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     });
 
-    class MyApp extends cdk.App {
-      constructor() {
-        super({
-          context: {
-            [cxapi.DOCKER_IGNORE_SUPPORT]: true,
-          },
-        });
-      }
-    }
-
     test('correctly sets containers from asset using all props', () => {
       // GIVEN
       const stack = new cdk.Stack();

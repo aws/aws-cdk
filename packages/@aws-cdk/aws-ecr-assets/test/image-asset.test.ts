@@ -1,16 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { describeDeprecated, testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
+import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAsset } from '../lib';
 
-/* eslint-disable quote-props */
-
 const DEMO_IMAGE_ASSET_HASH = '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14';
-
-const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
 
 describe('image asset', () => {
   test('fails if the directory does not exist', () => {
@@ -47,7 +43,8 @@ describe('image asset', () => {
 
   });
 
-  testFutureBehavior('docker directory is staged if asset staging is enabled', flags, App, (app) => {
+  test('docker directory is staged if asset staging is enabled', () => {
+    const app = new App();
     const stack = new Stack(app);
     const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'demo-image'),
@@ -67,16 +64,19 @@ describe('image asset', () => {
     // Using a 'describeDeprecated' block here since there's no way to work around this craziness.
     // When the deprecated property is removed source code, this block can be dropped.
 
-    testFutureBehavior('docker directory is staged without files specified in .dockerignore', flags, App, (app) => {
+    test('docker directory is staged without files specified in .dockerignore', () => {
+      const app = new App();
       testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app);
     });
 
-    testFutureBehavior('docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB', flags, App, (app) => {
+    test('docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB', () => {
+      const app = new App();
       testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, IgnoreMode.GLOB);
     });
   });
 
-  testFutureBehavior('docker directory is staged with allow-listed files specified in .dockerignore', flags, App, (app) => {
+  test('docker directory is staged with allow-listed files specified in .dockerignore', () => {
+    const app = new App();
     const stack = new Stack(app);
     const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'allow-listed-image'),
@@ -97,11 +97,13 @@ describe('image asset', () => {
     expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'some_dep', 'file'))).toBe(true);
   });
 
-  testFutureBehavior('docker directory is staged without files specified in exclude option', flags, App, (app) => {
+  test('docker directory is staged without files specified in exclude option', () => {
+    const app = new App();
     testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app);
   });
 
-  testFutureBehavior('docker directory is staged without files specified in exclude option with IgnoreMode.GLOB', flags, App, (app) => {
+  test('docker directory is staged without files specified in exclude option with IgnoreMode.GLOB', () => {
+    const app = new App();
     testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app, IgnoreMode.GLOB);
   });
 
@@ -135,8 +137,9 @@ describe('image asset', () => {
     })).toThrow(/Cannot use Token as value of 'repositoryName'/);
   });
 
-  testFutureBehavior('docker build options are included in the asset id', flags, App, (app) => {
+  test('docker build options are included in the asset id', () => {
     // GIVEN
+    const app = new App();
     const stack = new Stack(app);
     const directory = path.join(__dirname, 'demo-image-custom-docker-file');
 
@@ -228,8 +231,9 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app: Ap
   expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBe(true);
 }
 
-testFutureBehavior('nested assemblies share assets: legacy synth edition', flags, App, (app) => {
+test('nested assemblies share assets: legacy synth edition', () => {
   // GIVEN
+  const app = new App();
   const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
   const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
 
@@ -254,8 +258,9 @@ testFutureBehavior('nested assemblies share assets: legacy synth edition', flags
   }
 });
 
-testFutureBehavior('nested assemblies share assets: default synth edition', flags, App, (app) => {
+test('nested assemblies share assets: default synth edition', () => {
   // GIVEN
+  const app = new App();
   const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });
   const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });
 
