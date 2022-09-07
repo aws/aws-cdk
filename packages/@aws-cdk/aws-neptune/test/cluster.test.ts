@@ -473,7 +473,7 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test('grantConnect - enables IAM auth and grants neptune-db:* to the specified grantee', () => {
+  test('createGrant - enables IAM auth and grants neptune-db:* to the specified grantee', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -528,7 +528,7 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test('grantConnect - throws if IAM auth disabled', () => {
+  test('createGrant - throws if IAM auth disabled', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -544,7 +544,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(() => { cluster.grantConnect(role); }).toThrow(/Cannot grant when IAM authentication is disabled/);
+    expect(() => { cluster.grantConnect(role); }).toThrow(/Cannot grant connect when IAM authentication is disabled/);
   });
 
   test('autoMinorVersionUpgrade is enabled when configured', () => {
