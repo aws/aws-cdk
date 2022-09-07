@@ -5,7 +5,7 @@
       "stacks": [
         "aws-cdk-report-group"
       ],
-      "assertionStack": "ReportGroupIntegTestDefaultTestDeployAssert57960C5A"
+      "assertionStack": "ReportGroupIntegTest/DefaultTest/DeployAssert"
     }
   }
 }

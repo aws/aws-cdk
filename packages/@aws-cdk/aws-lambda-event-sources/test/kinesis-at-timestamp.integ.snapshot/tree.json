@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.85"
         }
       },
       "lambda-event-source-kinesis-at-timestamp": {
@@ -230,14 +230,14 @@
             "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "path": "lambda-event-source-kinesis-at-timestamp/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnCondition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "AtTimestamp": {
@@ -253,15 +253,15 @@
                 "path": "AtTimestamp/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.33"
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "AtTimestamp/DefaultTest/DeployAssert",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -278,8 +278,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

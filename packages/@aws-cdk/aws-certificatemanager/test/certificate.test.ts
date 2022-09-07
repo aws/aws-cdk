@@ -81,6 +81,17 @@ test('can configure validation method', () => {
   });
 });
 
+test('throws when domain name is longer than 64 characters', () => {
+  const stack = new Stack();
+
+  expect(() => {
+    new Certificate(stack, 'Certificate', {
+      domainName: 'example.com'.repeat(7),
+    });
+  }).toThrow(/Domain name must be 64 characters or less/);
+});
+
+
 test('needs validation domain supplied if domain contains a token', () => {
   const stack = new Stack();
 
@@ -364,3 +375,4 @@ describe('Transparency logging settings', () => {
     });
   });
 });
+
