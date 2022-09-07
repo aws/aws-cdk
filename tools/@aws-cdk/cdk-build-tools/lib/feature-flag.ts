@@ -50,19 +50,6 @@ export function testFutureBehavior<T>(
  *
  * When run in CDKv2, the test is skipped, since the feature flag usage is unsupported and blocked.
  */
-export function testLegacyBehavior<T>(
-  name: string,
-  cdkApp: new () => T,
-  fn: (app: T) => void,
-  repoRoot: string = path.join(process.cwd(), '..', '..', '..')) {
-
-  const major = cdkMajorVersion(repoRoot);
-  if (major === 2) {
-    return;
-  }
-  const app = new cdkApp();
-  return test(name, () => fn(app));
-}
 
 function cdkMajorVersion(repoRoot: string) {
   const resolveVersionPath = path.join(repoRoot, 'scripts', 'resolve-version.js');

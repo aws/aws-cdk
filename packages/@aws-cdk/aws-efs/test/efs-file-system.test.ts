@@ -2,7 +2,7 @@ import { Template, Match } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { App, RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy } from '../lib';
@@ -30,22 +30,7 @@ testFutureBehavior(
     Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
       Encrypted: true,
     });
-
   });
-
-testLegacyBehavior('when @aws-cdk/aws-efs:defaultEncryptionAtRest is missing, encryption is disabled by default', App, (app) => {
-  const customStack = new Stack(app);
-
-  const customVpc = new ec2.Vpc(customStack, 'VPC');
-  new FileSystem(customVpc, 'EfsFileSystem', {
-    vpc: customVpc,
-  });
-
-  Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
-    Encrypted: Match.absent(),
-  });
-
-});
 
 test('default file system is created correctly', () => {
   // WHEN

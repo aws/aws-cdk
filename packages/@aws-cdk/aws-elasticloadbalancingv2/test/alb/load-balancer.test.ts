@@ -2,7 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as elbv2 from '../../lib';
@@ -197,50 +197,6 @@ describe('tests', () => {
       // verify the ALB depends on the bucket *and* the bucket policy
       Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
         DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29'],
-      });
-    });
-
-    testLegacyBehavior('legacy bucket permissions', cdk.App, (app) => {
-      const { stack, bucket, lb } = loggingSetup(app);
-
-      // WHEN
-      lb.logAccessLogs(bucket);
-
-      // THEN
-      // verify the bucket policy allows the ALB to put objects in the bucket
-      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Action: ['s3:PutObject*', 's3:Abort*'],
-              Effect: 'Allow',
-              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
-              Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
-              },
-            },
-            {
-              Action: 's3:PutObject',
-              Effect: 'Allow',
-              Principal: { Service: 'delivery.logs.amazonaws.com' },
-              Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
-              },
-              Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
-            },
-            {
-              Action: 's3:GetBucketAcl',
-              Effect: 'Allow',
-              Principal: { Service: 'delivery.logs.amazonaws.com' },
-              Resource: {
-                'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
-              },
-            },
-          ],
-        },
       });
     });
 

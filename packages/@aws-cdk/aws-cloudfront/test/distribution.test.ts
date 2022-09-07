@@ -2,7 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '@aws-cdk/cx-api';
 import {
@@ -498,33 +498,6 @@ describe('certificates', () => {
               AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
               SslSupportMethod: 'sni-only',
               MinimumProtocolVersion: 'TLSv1.2_2021',
-            },
-          },
-        });
-      },
-    );
-
-    testLegacyBehavior(
-      'when @aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021 is disabled, use the TLSv1.2_2019 security policy by default',
-      App,
-      (customApp) => {
-        const customStack = new Stack(customApp);
-
-        const certificate = acm.Certificate.fromCertificateArn(customStack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
-
-        new Distribution(customStack, 'Dist', {
-          defaultBehavior: { origin: defaultOrigin() },
-          domainNames: ['example.com', 'www.example.com'],
-          certificate,
-        });
-
-        Template.fromStack(customStack).hasResourceProperties('AWS::CloudFront::Distribution', {
-          DistributionConfig: {
-            Aliases: ['example.com', 'www.example.com'],
-            ViewerCertificate: {
-              AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
-              SslSupportMethod: 'sni-only',
-              MinimumProtocolVersion: 'TLSv1.2_2019',
             },
           },
         });

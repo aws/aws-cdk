@@ -7,7 +7,7 @@ import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Queue } from '@aws-cdk/aws-sqs';
-import { testDeprecated, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
@@ -85,35 +85,6 @@ test('test ECS queue worker service construct - with only required props', () =>
       }),
     ],
     Family: 'ServiceQueueProcessingTaskDef83DB34F1',
-  });
-});
-
-testLegacyBehavior('test ECS queue worker service construct - with remove default desiredCount feature flag', cdk.App, (app) => {
-  // GIVEN
-  const stack = new cdk.Stack(app);
-  stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
-
-  const vpc = new ec2.Vpc(stack, 'VPC');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
-
-  // WHEN
-  new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
-    cluster,
-    memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
-  });
-
-  // THEN - QueueWorker is of EC2 launch type, and desiredCount is not defined on the Ec2Service.
-  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: Match.absent(),
-    LaunchType: 'EC2',
   });
 });
 
@@ -380,35 +351,6 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
       }),
     ],
     Family: 'ecs-task-family',
-  });
-});
-
-testLegacyBehavior('can set desiredTaskCount to 0', cdk.App, (app) => {
-  // GIVEN
-  const stack = new cdk.Stack(app);
-  const vpc = new ec2.Vpc(stack, 'VPC');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
-
-  // WHEN
-  new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
-    cluster,
-    desiredTaskCount: 0,
-    maxScalingCapacity: 2,
-    memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
-  });
-
-  // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
-  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 0,
-    LaunchType: 'EC2',
   });
 });
 

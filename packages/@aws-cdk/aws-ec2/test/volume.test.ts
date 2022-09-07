@@ -1,10 +1,7 @@
 import { Match, Template } from '@aws-cdk/assertions';
-import {
-  AccountRootPrincipal,
-  Role,
-} from '@aws-cdk/aws-iam';
+import { AccountRootPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
@@ -66,7 +63,6 @@ describe('volume', () => {
     expect(volume.volumeId).toEqual(volumeId);
     expect(volume.availabilityZone).toEqual(availabilityZone);
     expect(volume.encryptionKey).toEqual(encryptionKey);
-
   });
 
   test('tagged volume', () => {
@@ -91,8 +87,6 @@ describe('volume', () => {
         Value: 'TagValue',
       }],
     });
-
-
   });
 
   test('autoenableIO', () => {
@@ -110,8 +104,6 @@ describe('volume', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       AutoEnableIO: true,
     });
-
-
   });
 
   test('encryption', () => {
@@ -129,8 +121,6 @@ describe('volume', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       Encrypted: true,
     });
-
-
   });
 
   test('encryption with kms', () => {
@@ -205,40 +195,6 @@ describe('volume', () => {
         }]),
       },
     });
-
-
-  });
-
-  // only enable for legacy behaviour
-  // see https://github.com/aws/aws-cdk/issues/12962
-  testLegacyBehavior('encryption with kms from snapshot', cdk.App, (app) => {
-    // GIVEN
-    const stack = new cdk.Stack(app);
-    const encryptionKey = new kms.Key(stack, 'Key');
-
-    // WHEN
-    new Volume(stack, 'Volume', {
-      availabilityZone: 'us-east-1a',
-      size: cdk.Size.gibibytes(500),
-      encrypted: true,
-      encryptionKey,
-      snapshotId: 'snap-1234567890',
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-      KeyPolicy: {
-        Statement: Match.arrayWith([Match.objectLike({
-          Action: [
-            'kms:DescribeKey',
-            'kms:GenerateDataKeyWithoutPlainText',
-            'kms:ReEncrypt*',
-          ],
-        })]),
-      },
-    });
-
-
   });
 
   test('iops', () => {
@@ -258,8 +214,6 @@ describe('volume', () => {
       Iops: 500,
       VolumeType: 'io1',
     });
-
-
   });
 
   test('multi-attach', () => {
@@ -279,8 +233,6 @@ describe('volume', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       MultiAttachEnabled: true,
     });
-
-
   });
 
   test('snapshotId', () => {
@@ -297,8 +249,6 @@ describe('volume', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       SnapshotId: 'snap-00000000',
     });
-
-
   });
 
   test('volume: standard', () => {
@@ -316,8 +266,6 @@ describe('volume', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'standard',
     });
-
-
   });
 
   test('volume: io1', () => {
@@ -336,8 +284,6 @@ describe('volume', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'io1',
     });
-
-
   });
 
   test('volume: io2', () => {
@@ -356,8 +302,6 @@ describe('volume', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'io2',
     });
-
-
   });
 
   test('volume: gp2', () => {
@@ -375,8 +319,6 @@ describe('volume', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'gp2',
     });
-
-
   });
 
   test('volume: gp3', () => {
@@ -394,8 +336,6 @@ describe('volume', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'gp3',
     });
-
-
   });
 
   test('volume: st1', () => {
@@ -413,8 +353,6 @@ describe('volume', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'st1',
     });
-
-
   });
 
   test('volume: sc1', () => {
@@ -432,8 +370,6 @@ describe('volume', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'sc1',
     });
-
-
   });
 
   test('grantAttachVolume to any instance', () => {
@@ -503,70 +439,9 @@ describe('volume', () => {
         }],
       },
     });
-
   });
 
   describe('grantAttachVolume to any instance with encryption', () => {
-
-    // This exact assertions here are only applicable when 'aws-kms:defaultKeyPolicies' feature flag is disabled.
-    // See subsequent test case for the updated behaviour
-    testLegacyBehavior('legacy', cdk.App, (app) => {
-      // GIVEN
-      const stack = new cdk.Stack(app);
-      const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
-      const encryptionKey = new kms.Key(stack, 'Key');
-      const volume = new Volume(stack, 'Volume', {
-        availabilityZone: 'us-east-1a',
-        size: cdk.Size.gibibytes(8),
-        encrypted: true,
-        encryptionKey,
-      });
-
-      // WHEN
-      volume.grantAttachVolume(role);
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-        KeyPolicy: {
-          Statement: Match.arrayWith([{
-            Effect: 'Allow',
-            Principal: {
-              AWS: {
-                'Fn::GetAtt': [
-                  'Role1ABCC5F0',
-                  'Arn',
-                ],
-              },
-            },
-            Action: 'kms:CreateGrant',
-            Condition: {
-              Bool: {
-                'kms:GrantIsForAWSResource': true,
-              },
-              StringEquals: {
-                'kms:ViaService': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'ec2.',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      '.amazonaws.com',
-                    ],
-                  ],
-                },
-                'kms:GrantConstraintType': 'EncryptionContextSubset',
-              },
-            },
-            Resource: '*',
-          }]),
-        },
-      });
-
-
-    });
-
     testFutureBehavior('with future flag aws-kms:defaultKeyPolicies', { [cxapi.KMS_DEFAULT_KEY_POLICIES]: true }, cdk.App, (app) => {
       // GIVEN
       const stack = new cdk.Stack(app);
@@ -617,10 +492,7 @@ describe('volume', () => {
           }]),
         },
       });
-
-
     });
-
   });
 
   test('grantAttachVolume to any instance with KMS.fromKeyArn() encryption', () => {
@@ -691,8 +563,6 @@ describe('volume', () => {
         }]),
       },
     });
-
-
   });
 
   test('grantAttachVolume to specific instances', () => {
@@ -776,8 +646,6 @@ describe('volume', () => {
         }],
       },
     });
-
-
   });
 
   test('grantAttachVolume to instance self', () => {
@@ -916,7 +784,6 @@ describe('volume', () => {
         Value: 'b2376b2bda65cb40f83c290dd844c4aa',
       }]),
     });
-
   });
 
   test('grantDetachVolume to any instance', () => {
@@ -986,7 +853,6 @@ describe('volume', () => {
         }],
       },
     });
-
   });
 
   test('grantDetachVolume from specific instance', () => {
@@ -1070,8 +936,6 @@ describe('volume', () => {
         }],
       },
     });
-
-
   });
 
   test('grantDetachVolume from instance self', () => {
@@ -1212,7 +1076,6 @@ describe('volume', () => {
         Value: 'b2376b2bda65cb40f83c290dd844c4aa',
       }]),
     });
-
   });
 
   test('validation fromVolumeAttributes', () => {
@@ -1249,7 +1112,6 @@ describe('volume', () => {
         availabilityZone: 'us-east-1a',
       });
     }).toThrow('`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token');
-
   });
 
   test('validation required props', () => {
@@ -1307,8 +1169,6 @@ describe('volume', () => {
         encryptionKey: key,
       });
     }).not.toThrow();
-
-
   });
 
   test('validation snapshotId', () => {
@@ -1346,8 +1206,6 @@ describe('volume', () => {
         snapshotId: 'snap-1234 ', // trailing extra character(s)
       });
     }).toThrow('`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
-
-
   });
 
   test('validation iops', () => {
@@ -1470,8 +1328,6 @@ describe('volume', () => {
         });
       }).toThrow(/iops has a maximum ratio of/);
     }
-
-
   });
 
   test('validation multi-attach', () => {
@@ -1515,8 +1371,6 @@ describe('volume', () => {
         }).toThrow(/multi-attach is supported exclusively/);
       }
     }
-
-
   });
 
   test('validation size in range', () => {
@@ -1583,8 +1437,5 @@ describe('volume', () => {
         });
       }).toThrow(/volumes must be between/);
     }
-
-
   });
-
 });

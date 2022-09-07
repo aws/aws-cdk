@@ -2,7 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { testDeprecated, testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as secretsmanager from '../lib';
 
@@ -649,35 +649,6 @@ test('secretValue', () => {
 });
 
 describe('secretName', () => {
-  describe('without @aws-cdk/aws-secretsmanager:parseOwnedSecretName set', () => {
-    function assertSecretParsing(secret: secretsmanager.Secret) {
-      new cdk.CfnOutput(stack, 'MySecretName', {
-        value: secret.secretName,
-      });
-
-      // Creates secret name by parsing ARN.
-      Template.fromStack(stack).hasOutput('*', {
-        Value: { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] },
-      });
-    }
-
-    testLegacyBehavior('when secretName is undefined', cdk.App, (cdkApp) => {
-      stack = new cdk.Stack(cdkApp);
-      const secret = new secretsmanager.Secret(stack, 'Secret', {
-        secretName: undefined,
-      });
-      assertSecretParsing(secret);
-    });
-
-    testLegacyBehavior('when secretName is defined', cdk.App, (cdkApp) => {
-      stack = new cdk.Stack(cdkApp);
-      const secret = new secretsmanager.Secret(stack, 'Secret', {
-        secretName: 'mySecret',
-      });
-      assertSecretParsing(secret);
-    });
-  });
-
   describe('with @aws-cdk/aws-secretsmanager:parseOwnedSecretName set', () => {
     const flags = { '@aws-cdk/aws-secretsmanager:parseOwnedSecretName': 'true' };
     testFutureBehavior('selects the first two parts of the resource name when the name is auto-generated', flags, cdk.App, (cdkApp) => {

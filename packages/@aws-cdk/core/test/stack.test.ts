@@ -1,4 +1,4 @@
-import { testDeprecated, testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { Construct, Node } from 'constructs';
@@ -1040,32 +1040,6 @@ describe('stack', () => {
   });
 
   describe('@aws-cdk/core:enableStackNameDuplicates', () => {
-
-    describe('disabled (default)', () => {
-
-      testLegacyBehavior('stack.templateFile is the name of the template file emitted to the cloud assembly (default is to use the stack name)', App, (app) => {
-        // WHEN
-        const stack1 = new Stack(app, 'MyStack1');
-        const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
-
-        // THEN
-        expect(stack1.templateFile).toEqual('MyStack1.template.json');
-        expect(stack2.templateFile).toEqual('MyRealStack2.template.json');
-
-      });
-
-      testLegacyBehavior('artifactId and templateFile use the stack name', App, (app) => {
-        // WHEN
-        const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
-        const assembly = app.synth();
-
-        // THEN
-        expect(stack1.artifactId).toEqual('thestack');
-        expect(stack1.templateFile).toEqual('thestack.template.json');
-        expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('thestack.template.json');
-      });
-    });
-
     describe('enabled', () => {
       const flags = { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' };
       testFutureBehavior('allows using the same stack name for two stacks (i.e. in different regions)', flags, App, (app) => {
