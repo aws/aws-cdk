@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC"
+      "Value": "aws-cdk-neptune-integ/VPC"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-neptune-integ/VPC/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-neptune-integ/VPC/PublicSubnet1"
      }
     ]
    }
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-neptune-integ/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-neptune-integ/VPC/PublicSubnet1"
      }
     ]
    },
@@ -150,7 +150,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-neptune-integ/VPC/PublicSubnet2"
      }
     ]
    }
@@ -164,7 +164,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-neptune-integ/VPC/PublicSubnet2"
      }
     ]
    }
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-neptune-integ/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-neptune-integ/VPC/PublicSubnet2"
      }
     ]
    },
@@ -258,7 +258,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-neptune-integ/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -272,7 +272,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-neptune-integ/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -327,7 +327,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-neptune-integ/VPC/PrivateSubnet2"
      }
     ]
    }
@@ -341,7 +341,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-neptune-integ/VPC/PrivateSubnet2"
      }
     ]
    }
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-neptune-cluster-default-ev-integ/VPC"
+      "Value": "aws-cdk-neptune-integ/VPC"
      }
     ]
    }
@@ -388,17 +388,6 @@
     },
     "InternetGatewayId": {
      "Ref": "VPCIGWB7E252D3"
-    }
-   }
-  },
-  "ParamsA8366201": {
-   "Type": "AWS::Neptune::DBClusterParameterGroup",
-   "Properties": {
-    "Description": "A nice parameter group",
-    "Family": "neptune1",
-    "Parameters": {
-     "neptune_enable_audit_log": "1",
-     "neptune_query_timeout": "100000"
     }
    }
   },
@@ -436,6 +425,17 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "ParamsA8366201": {
+   "Type": "AWS::Neptune::DBClusterParameterGroup",
+   "Properties": {
+    "Description": "A nice parameter group",
+    "Family": "neptune1",
+    "Parameters": {
+     "neptune_enable_audit_log": "1",
+     "neptune_query_timeout": "100000"
+    }
+   }
   },
   "DatabaseSubnets3C9252C9": {
    "Type": "AWS::Neptune::DBSubnetGroup",
@@ -525,7 +525,7 @@
    "Type": "AWS::Neptune::DBInstance",
    "Properties": {
     "DBInstanceClass": "db.r5.large",
-    "AutoMinorVersionUpgrade": false,
+    "AutoMinorVersionUpgrade": true,
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     }
