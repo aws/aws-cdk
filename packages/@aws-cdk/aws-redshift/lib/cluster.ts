@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, Names, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -642,7 +642,7 @@ export class Cluster extends ClusterBase {
       const param: { [name: string]: string } = {};
       param[name] = value;
       this.parameterGroup = new ClusterParameterGroup(this, 'ParameterGroup', {
-        description: `Parameter Group for the ${this.cluster.clusterIdentifier ?? Names.uniqueResourceName(this, {})} Redshift cluster`,
+        description: this.cluster.clusterIdentifier ? `Parameter Group for the ${this.cluster.clusterIdentifier} Redshift cluster` : 'Cluster parameter group for family redshift-1.0',
         parameters: param,
       });
       this.cluster.clusterParameterGroupName = this.parameterGroup.clusterParameterGroupName;

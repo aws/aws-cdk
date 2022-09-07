@@ -592,7 +592,7 @@
   "ClusterParameterGroup879806FD": {
    "Type": "AWS::Redshift::ClusterParameterGroup",
    "Properties": {
-    "Description": "Parameter Group for the awscdkredshiftclusterdatabaseCluster97CBCDB4 Redshift cluster",
+    "Description": "Cluster parameter group for family redshift-1.0",
     "ParameterGroupFamily": "redshift-1.0",
     "Parameters": [
      {

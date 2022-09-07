@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.92"
         }
       },
       "aws-cdk-redshift-cluster-database": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +425,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +544,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -911,7 +911,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Redshift::ClusterParameterGroup",
                       "aws:cdk:cloudformation:props": {
-                        "description": "Parameter Group for the awscdkredshiftclusterdatabaseCluster97CBCDB4 Redshift cluster",
+                        "description": "Cluster parameter group for family redshift-1.0",
                         "parameterGroupFamily": "redshift-1.0",
                         "parameters": [
                           {
@@ -1138,8 +1138,8 @@
                                 "id": "Stage",
                                 "path": "aws-cdk-redshift-cluster-database/User/Resource/Provider/framework-onEvent/Code/Stage",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.1.85"
+                                  "fqn": "@aws-cdk/core.AssetStaging",
+                                  "version": "0.0.0"
                                 }
                               },
                               "AssetBucket": {
@@ -1215,20 +1215,20 @@
                         "id": "Default",
                         "path": "aws-cdk-redshift-cluster-database/User/Resource/Resource/Default",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.92"
                 }
               },
               "TablePrivileges": {
@@ -1372,8 +1372,8 @@
                                     "id": "Stage",
                                     "path": "aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider/framework-onEvent/Code/Stage",
                                     "constructInfo": {
-                                      "fqn": "constructs.Construct",
-                                      "version": "10.1.85"
+                                      "fqn": "@aws-cdk/core.AssetStaging",
+                                      "version": "0.0.0"
                                     }
                                   },
                                   "AssetBucket": {
@@ -1449,26 +1449,26 @@
                             "id": "Default",
                             "path": "aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Resource/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.1.92"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.92"
                 }
               }
             },
@@ -1595,8 +1595,8 @@
                     "id": "Stage",
                     "path": "aws-cdk-redshift-cluster-database/Query Redshift Database3de5bea727da479686625efb56431b5f/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -1788,8 +1788,8 @@
                                 "id": "Stage",
                                 "path": "aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/Code/Stage",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.1.85"
+                                  "fqn": "@aws-cdk/core.AssetStaging",
+                                  "version": "0.0.0"
                                 }
                               },
                               "AssetBucket": {
@@ -1865,20 +1865,20 @@
                         "id": "Default",
                         "path": "aws-cdk-redshift-cluster-database/Table/Resource/Resource/Default",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.92"
                 }
               }
             },
@@ -1889,14 +1889,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

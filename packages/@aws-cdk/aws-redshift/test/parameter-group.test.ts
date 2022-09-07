@@ -98,6 +98,6 @@ describe('Adding parameters to an existing group', () => {
     // WHEN
     expect(() => params.addParameter('param', 'value2'))
       // THEN
-      .toThrowError('The parameter group already contains the parameter');
+      .toThrowError('The parameter group with id "Params" already contains the parameter');
   });
 });

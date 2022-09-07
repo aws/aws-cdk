@@ -1,4 +1,4 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Names, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnClusterParameterGroup } from './redshift.generated';
 
@@ -102,7 +102,7 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
       this.parameters[name] = value;
       this.resource.parameters = this.parseParameters();
     } else if (existingValue !== value) {
-      throw new Error(`The parameter group already contains the parameter "${name}", but with a different value (Given: ${value}, Existing: ${existingValue}).`);
+      throw new Error(`The parameter group with id "${Names.uniqueResourceName(this, {})}" already contains the parameter "${name}", but with a different value (Given: ${value}, Existing: ${existingValue}).`);
     }
   }
 }
