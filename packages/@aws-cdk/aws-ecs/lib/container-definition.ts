@@ -436,12 +436,6 @@ export class ContainerDefinition extends Construct {
   public readonly logDriverConfig?: LogDriverConfig;
 
   /**
-   * Whether this container definition references a specific JSON field of a secret
-   * stored in Secrets Manager.
-   */
-  public readonly referencesSecretJsonField?: boolean;
-
-  /**
    * The name of the image referenced by this container.
    */
   public readonly imageName: string;
@@ -458,7 +452,7 @@ export class ContainerDefinition extends Construct {
 
   private readonly imageConfig: ContainerImageConfig;
 
-  private readonly secrets?: CfnTaskDefinition.SecretProperty[];
+  private readonly secrets: CfnTaskDefinition.SecretProperty[] = [];
 
   private readonly environment: { [key: string]: string };
 
@@ -486,16 +480,8 @@ export class ContainerDefinition extends Construct {
     }
 
     if (props.secrets) {
-      this.secrets = [];
       for (const [name, secret] of Object.entries(props.secrets)) {
-        if (secret.hasField) {
-          this.referencesSecretJsonField = true;
-        }
-        secret.grantRead(this.taskDefinition.obtainExecutionRole());
-        this.secrets.push({
-          name,
-          valueFrom: secret.arn,
-        });
+        this.addSecret(name, secret);
       }
     }
 
@@ -603,6 +589,18 @@ export class ContainerDefinition extends Construct {
   }
 
   /**
+   * This method adds a secret as environment variable to the container.
+   */
+  public addSecret(name: string, secret: Secret) {
+    secret.grantRead(this.taskDefinition.obtainExecutionRole());
+
+    this.secrets.push({
+      name,
+      valueFrom: secret.arn,
+    });
+  }
+
+  /**
    * This method adds one or more resources to the container.
    */
   public addInferenceAcceleratorResource(...inferenceAcceleratorResources: string[]) {
@@ -656,6 +654,19 @@ export class ContainerDefinition extends Construct {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Whether this container definition references a specific JSON field of a secret
+   * stored in Secrets Manager.
+   */
+  public get referencesSecretJsonField(): boolean | undefined {
+    for (const secret of this.secrets) {
+      if (secret.valueFrom.endsWith('::')) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -726,7 +737,7 @@ export class ContainerDefinition extends Construct {
       logConfiguration: this.logDriverConfig,
       environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
       environmentFiles: this.environmentFiles && renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
-      secrets: this.secrets,
+      secrets: this.secrets.length ? this.secrets : undefined,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.list({ produce: () => this.links }, { omitEmpty: true }),
