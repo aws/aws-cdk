@@ -366,12 +366,10 @@ abstract class SecretBase extends Resource implements ISecret {
       });
     }
 
-    if (this.encryptionKey) {
-      // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
-      const principal = new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal);
-      this.encryptionKey.grantDecrypt(principal);
-      this.encryptionKey?.grant(principal, 'kms:GenerateDataKey');
-    }
+    // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
+    const principal = new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal);
+    this.encryptionKey?.grantDecrypt(principal);
+    this.encryptionKey?.grant(principal, 'kms:GenerateDataKey');
 
     const crossAccount = Token.compareStrings(Stack.of(this).account, grantee.grantPrincipal.principalAccount || '');
 
@@ -393,7 +391,7 @@ abstract class SecretBase extends Resource implements ISecret {
     });
 
     // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
-    const principal = new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
+    const principal = new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal);
     this.encryptionKey?.grantEncryptDecrypt(principal);
     this.encryptionKey?.grant(principal, 'kms:CreateGrant', 'kms:DescribeKey');
 
