@@ -6,12 +6,9 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Queue } from '@aws-cdk/aws-sqs';
-import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
-
-const flags = { [cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true };
 
 test('test fargate queue worker service construct - with only required props', () => {
   // GIVEN
@@ -111,9 +108,9 @@ test('test fargate queue worker service construct - with only required props', (
   });
 });
 
-testFutureBehavior('test fargate queue worker service construct - with remove default desiredCount feature flag', flags, cdk.App, (app) => {
+test('test fargate queue worker service construct - with remove default desiredCount feature flag', () => {
   // GIVEN
-  const stack = new cdk.Stack(app);
+  const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
