@@ -78,6 +78,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
+    "lambda-layer-awscli-v1": "0.0.2",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
@@ -101,9 +102,6 @@
     "announce": false
   },
   "cdk-build": {
-    "pre": [
-      "layer/build.sh"
-    ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
