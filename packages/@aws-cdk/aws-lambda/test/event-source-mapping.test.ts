@@ -1,6 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { Code, EventSourceMapping, Function, Runtime, Alias } from '../lib';
+import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition } from '../lib';
 
 let stack: cdk.Stack;
 let fn: Function;
@@ -154,6 +154,46 @@ describe('event source mapping', () => {
     })).toThrow(/kafkaBootStrapServers must not be empty if set/);
   });
 
+  test('throws if kafkaConsumerGroupId is invalid', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+      kafkaConsumerGroupId: 'some invalid',
+      target: fn,
+    })).toThrow('kafkaConsumerGroupId contain ivalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+  });
+
+  test('throws if kafkaConsumerGroupId is too long', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+      kafkaConsumerGroupId: 'x'.repeat(201),
+      target: fn,
+    })).toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
+  });
+
+  test('not throws if kafkaConsumerGroupId is empty', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+      kafkaConsumerGroupId: '',
+      target: fn,
+    })).not.toThrow();
+  });
+
+  test('not throws if kafkaConsumerGroupId is valid for amazon managed kafka', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+      kafkaConsumerGroupId: 'someValidConsumerGroupId',
+      target: fn,
+    })).not.toThrow();
+  });
+
+  test('not throws if kafkaConsumerGroupId is valid for self managed kafka', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      kafkaBootstrapServers: ['kafka-broker-1:9092', 'kafka-broker-2:9092'],
+      kafkaConsumerGroupId: 'someValidConsumerGroupId',
+      target: fn,
+    })).not.toThrow();
+  });
+
   test('eventSourceArn appears in stack', () => {
     const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
       type: 'String',
@@ -240,5 +280,36 @@ describe('event source mapping', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       FunctionResponseTypes: Match.absent(),
     });
+  });
+
+  test('AT_TIMESTAMP starting position', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      StartingPosition: 'AT_TIMESTAMP',
+      StartingPositionTimestamp: 1640995200,
+    });
+  });
+
+  test('startingPositionTimestamp missing throws error', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+    })).toThrow(/startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP/);
+  });
+
+  test('startingPositionTimestamp without AT_TIMESTAMP throws error', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.LATEST,
+      startingPositionTimestamp: 1640995200,
+    })).toThrow(/startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP/);
   });
 });

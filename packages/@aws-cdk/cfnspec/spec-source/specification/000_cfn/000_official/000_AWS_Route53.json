@@ -1,5 +1,5 @@
 {
-  "$version": "81.0.0",
+  "$version": "85.0.0",
   "PropertyTypes": {
     "AWS::Route53::CidrCollection.Location": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-cidrcollection-location.html",

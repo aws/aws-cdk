@@ -12,6 +12,7 @@ import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 /**
@@ -269,6 +270,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - false
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * The load balancer idle timeout, in seconds. Can be between 1 and 4000 seconds
+   *
+   * @default - CloudFormation sets idle timeout to 60 seconds
+   */
+  readonly idleTimeout?: Duration;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -434,10 +442,18 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
 
     const internetFacing = props.publicLoadBalancer ?? true;
 
+    if (props.idleTimeout) {
+      const idleTimeout = props.idleTimeout.toSeconds();
+      if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
+        throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
+      }
+    }
+
     const lbProps = {
       vpc: this.cluster.vpc,
       loadBalancerName: props.loadBalancerName,
       internetFacing,
+      idleTimeout: props.idleTimeout,
     };
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);

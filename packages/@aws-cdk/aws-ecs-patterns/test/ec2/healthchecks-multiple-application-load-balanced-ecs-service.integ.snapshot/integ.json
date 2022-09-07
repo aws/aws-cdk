@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "Integ/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-multiple-alb-healthchecks"
+      ],
+      "assertionStack": "Integ/DefaultTest/DeployAssert"
+    }
+  }
+}

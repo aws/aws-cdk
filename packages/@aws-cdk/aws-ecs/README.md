@@ -479,11 +479,32 @@ const newContainer = taskDefinition.addContainer('container', {
   },
 });
 newContainer.addEnvironment('QUEUE_NAME', 'MyQueue');
+newContainer.addSecret('API_KEY', ecs.Secret.fromSecretsManager(secret));
+newContainer.addSecret('DB_PASSWORD', ecs.Secret.fromSecretsManager(secret, 'password'));
 ```
 
 The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
 files is restricted to the EC2 launch type for files hosted on S3. Further details provided in the AWS documentation
 about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
+
+### Linux parameters
+
+To apply additional linux-specific options related to init process and memory management to the container, use the `linuxParameters` property:
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  linuxParameters: new ecs.LinuxParameters(this, 'LinuxParameters', {
+    initProcessEnabled: true,
+    sharedMemorySize: 1024,
+    maxSwap: 5000,
+    swappiness: 90,
+  }),
+});
+```
 
 ### System controls
 
@@ -703,6 +724,37 @@ There are two higher-level constructs available which include a load balancer fo
 - `LoadBalancedFargateService`
 - `LoadBalancedEc2Service`
 
+### Import existing services
+
+`Ec2Service` and `FargateService` provide methods to import existing EC2/Fargate services.
+The ARN of the existing service has to be specified to import the service.
+
+Since AWS has changed the [ARN format for ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids), 
+feature flag `@aws-cdk/aws-ecs:arnFormatIncludesClusterName` must be enabled to use the new ARN format.
+The feature flag changes behavior for the entire CDK project. Therefore it is not possible to mix the old and the new format in one CDK project.
+
+```tss
+declare const cluster: ecs.Cluster;
+
+// Import service from EC2 service attributes
+const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+  serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+  cluster,
+});
+
+// Import service from EC2 service ARN
+const service = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+
+// Import service from Fargate service attributes
+const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+  serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+  cluster,
+});
+
+// Import service from Fargate service ARN
+const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+```
+
 ## Task Auto-Scaling
 
 You can configure the task count of a service to match demand. Task auto-scaling is
@@ -837,13 +889,15 @@ taskDefinition.addContainer('TheContainer', {
 ### splunk Log Driver
 
 ```ts
+declare const secret: secretsmanager.Secret;
+
 // Create a Task Definition for the container to start
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
   logging: ecs.LogDrivers.splunk({
-    token: SecretValue.secretsManager('my-splunk-token'),
+    secretToken: secret,
     url: 'my-splunk-url',
   }),
 });

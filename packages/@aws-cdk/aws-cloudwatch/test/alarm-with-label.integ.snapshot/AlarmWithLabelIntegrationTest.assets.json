@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "a6f5e41c0212fcbcdb1d7cdb7acbe27cf764613445faf44701294353f7c98c9b": {
+      "source": {
+        "path": "AlarmWithLabelIntegrationTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a6f5e41c0212fcbcdb1d7cdb7acbe27cf764613445faf44701294353f7c98c9b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

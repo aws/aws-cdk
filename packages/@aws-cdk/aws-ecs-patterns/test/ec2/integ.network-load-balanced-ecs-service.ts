@@ -2,14 +2,15 @@ import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { InstanceType, Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
-
+import * as integ from '@aws-cdk/integ-tests';
 import { NetworkLoadBalancedEc2Service } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-integ-nlb');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
-const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvier', {
+
+const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvider', {
   autoScalingGroup: new AutoScalingGroup(stack, 'FirstAutoScalingGroup', {
     vpc,
     instanceType: new InstanceType('t2.micro'),
@@ -18,7 +19,8 @@ const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvier', {
   capacityProviderName: 'first-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider1);
-const provider2 = new AsgCapacityProvider(stack, 'SecondCapacityProvier', {
+
+const provider2 = new AsgCapacityProvider(stack, 'SecondCapacityProvider', {
   autoScalingGroup: new AutoScalingGroup(stack, 'SecondAutoScalingGroup', {
     vpc,
     instanceType: new InstanceType('t3.micro'),
@@ -47,6 +49,10 @@ new NetworkLoadBalancedEc2Service(stack, 'myService', {
       weight: 2,
     },
   ],
+});
+
+new integ.IntegTest(app, 'networkLoadBalancedEc2ServiceTest', {
+  testCases: [stack],
 });
 
 app.synth();

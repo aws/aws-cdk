@@ -9,20 +9,20 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.85"
         }
       },
-      "aws-ecs-integ": {
-        "id": "aws-ecs-integ",
-        "path": "aws-ecs-integ",
+      "aws-ecs-integ-alb": {
+        "id": "aws-ecs-integ-alb",
+        "path": "aws-ecs-integ-alb",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "aws-ecs-integ/Vpc",
+            "path": "aws-ecs-integ-alb/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-integ/Vpc/Resource",
+                "path": "aws-ecs-integ-alb/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -33,7 +33,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-ecs-integ/Vpc"
+                        "value": "aws-ecs-integ-alb/Vpc"
                       }
                     ]
                   }
@@ -45,11 +45,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "aws-ecs-integ/Vpc/PublicSubnet1",
+                "path": "aws-ecs-integ-alb/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/Subnet",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -77,7 +77,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ-alb/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -89,15 +89,15 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/Acl",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/RouteTable",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -107,7 +107,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ-alb/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -119,7 +119,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -138,7 +138,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/EIP",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -166,7 +166,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ-alb/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -178,7 +178,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/NATGateway",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -194,7 +194,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ-alb/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -212,11 +212,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "aws-ecs-integ/Vpc/PublicSubnet2",
+                "path": "aws-ecs-integ-alb/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/Subnet",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -244,7 +244,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ-alb/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -256,15 +256,15 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/Acl",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/RouteTable",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -274,7 +274,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ-alb/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -286,7 +286,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -305,7 +305,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +325,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/EIP",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -333,7 +333,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ-alb/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -345,7 +345,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/NATGateway",
+                    "path": "aws-ecs-integ-alb/Vpc/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -361,7 +361,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ-alb/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -379,11 +379,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "aws-ecs-integ/Vpc/PrivateSubnet1",
+                "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-integ/Vpc/PrivateSubnet1/Subnet",
+                    "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -411,7 +411,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+                            "value": "aws-ecs-integ-alb/Vpc/PrivateSubnet1"
                           }
                         ]
                       }
@@ -423,15 +423,15 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-integ/Vpc/PrivateSubnet1/Acl",
+                    "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-integ/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -441,7 +441,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+                            "value": "aws-ecs-integ-alb/Vpc/PrivateSubnet1"
                           }
                         ]
                       }
@@ -453,7 +453,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-integ/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -472,7 +472,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-integ/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -498,11 +498,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "aws-ecs-integ/Vpc/PrivateSubnet2",
+                "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-integ/Vpc/PrivateSubnet2/Subnet",
+                    "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -530,7 +530,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+                            "value": "aws-ecs-integ-alb/Vpc/PrivateSubnet2"
                           }
                         ]
                       }
@@ -542,15 +542,15 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-integ/Vpc/PrivateSubnet2/Acl",
+                    "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-integ/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -560,7 +560,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+                            "value": "aws-ecs-integ-alb/Vpc/PrivateSubnet2"
                           }
                         ]
                       }
@@ -572,7 +572,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-integ/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -591,7 +591,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-integ/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "aws-ecs-integ-alb/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -617,14 +617,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "aws-ecs-integ/Vpc/IGW",
+                "path": "aws-ecs-integ-alb/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-ecs-integ/Vpc"
+                        "value": "aws-ecs-integ-alb/Vpc"
                       }
                     ]
                   }
@@ -636,7 +636,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "aws-ecs-integ/Vpc/VPCGW",
+                "path": "aws-ecs-integ-alb/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -661,11 +661,11 @@
           },
           "Cluster": {
             "id": "Cluster",
-            "path": "aws-ecs-integ/Cluster",
+            "path": "aws-ecs-integ-alb/Cluster",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-integ/Cluster/Resource",
+                "path": "aws-ecs-integ-alb/Cluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
                   "aws:cdk:cloudformation:props": {}
@@ -677,7 +677,7 @@
               },
               "Cluster": {
                 "id": "Cluster",
-                "path": "aws-ecs-integ/Cluster/Cluster",
+                "path": "aws-ecs-integ-alb/Cluster/Cluster",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::ClusterCapacityProviderAssociations",
                   "aws:cdk:cloudformation:props": {
@@ -708,19 +708,19 @@
           },
           "FirstAutoScalingGroup": {
             "id": "FirstAutoScalingGroup",
-            "path": "aws-ecs-integ/FirstAutoScalingGroup",
+            "path": "aws-ecs-integ-alb/FirstAutoScalingGroup",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "aws-ecs-integ/FirstAutoScalingGroup/InstanceSecurityGroup",
+                "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ/FirstAutoScalingGroup/InstanceSecurityGroup/Resource",
+                    "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-ecs-integ/FirstAutoScalingGroup/InstanceSecurityGroup",
+                        "groupDescription": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -731,7 +731,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/FirstAutoScalingGroup"
+                            "value": "aws-ecs-integ-alb/FirstAutoScalingGroup"
                           }
                         ],
                         "vpcId": {
@@ -752,11 +752,11 @@
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "aws-ecs-integ/FirstAutoScalingGroup/InstanceRole",
+                "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceRole",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ/FirstAutoScalingGroup/InstanceRole/Resource",
+                    "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -785,7 +785,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/FirstAutoScalingGroup"
+                            "value": "aws-ecs-integ-alb/FirstAutoScalingGroup"
                           }
                         ]
                       }
@@ -797,11 +797,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-ecs-integ/FirstAutoScalingGroup/InstanceRole/DefaultPolicy",
+                    "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ/FirstAutoScalingGroup/InstanceRole/DefaultPolicy/Resource",
+                        "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -879,7 +879,7 @@
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "aws-ecs-integ/FirstAutoScalingGroup/InstanceProfile",
+                "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -897,7 +897,7 @@
               },
               "LaunchConfig": {
                 "id": "LaunchConfig",
-                "path": "aws-ecs-integ/FirstAutoScalingGroup/LaunchConfig",
+                "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/LaunchConfig",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
                   "aws:cdk:cloudformation:props": {
@@ -939,7 +939,7 @@
               },
               "ASG": {
                 "id": "ASG",
-                "path": "aws-ecs-integ/FirstAutoScalingGroup/ASG",
+                "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/ASG",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                   "aws:cdk:cloudformation:props": {
@@ -952,7 +952,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-ecs-integ/FirstAutoScalingGroup",
+                        "value": "aws-ecs-integ-alb/FirstAutoScalingGroup",
                         "propagateAtLaunch": true
                       }
                     ],
@@ -979,27 +979,27 @@
           },
           "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "aws-ecs-integ/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "aws-ecs-integ-alb/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "aws-ecs-integ/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "aws-ecs-integ-alb/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "FirstCapacityProvier": {
             "id": "FirstCapacityProvier",
-            "path": "aws-ecs-integ/FirstCapacityProvier",
+            "path": "aws-ecs-integ-alb/FirstCapacityProvier",
             "children": {
               "FirstCapacityProvier": {
                 "id": "FirstCapacityProvier",
-                "path": "aws-ecs-integ/FirstCapacityProvier/FirstCapacityProvier",
+                "path": "aws-ecs-integ-alb/FirstCapacityProvier/FirstCapacityProvier",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::CapacityProvider",
                   "aws:cdk:cloudformation:props": {
@@ -1029,19 +1029,19 @@
           },
           "SecondAutoScalingGroup": {
             "id": "SecondAutoScalingGroup",
-            "path": "aws-ecs-integ/SecondAutoScalingGroup",
+            "path": "aws-ecs-integ-alb/SecondAutoScalingGroup",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "aws-ecs-integ/SecondAutoScalingGroup/InstanceSecurityGroup",
+                "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ/SecondAutoScalingGroup/InstanceSecurityGroup/Resource",
+                    "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-ecs-integ/SecondAutoScalingGroup/InstanceSecurityGroup",
+                        "groupDescription": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -1052,7 +1052,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/SecondAutoScalingGroup"
+                            "value": "aws-ecs-integ-alb/SecondAutoScalingGroup"
                           }
                         ],
                         "vpcId": {
@@ -1073,11 +1073,11 @@
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "aws-ecs-integ/SecondAutoScalingGroup/InstanceRole",
+                "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceRole",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ/SecondAutoScalingGroup/InstanceRole/Resource",
+                    "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1106,7 +1106,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/SecondAutoScalingGroup"
+                            "value": "aws-ecs-integ-alb/SecondAutoScalingGroup"
                           }
                         ]
                       }
@@ -1118,11 +1118,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-ecs-integ/SecondAutoScalingGroup/InstanceRole/DefaultPolicy",
+                    "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ/SecondAutoScalingGroup/InstanceRole/DefaultPolicy/Resource",
+                        "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1200,7 +1200,7 @@
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "aws-ecs-integ/SecondAutoScalingGroup/InstanceProfile",
+                "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -1218,7 +1218,7 @@
               },
               "LaunchConfig": {
                 "id": "LaunchConfig",
-                "path": "aws-ecs-integ/SecondAutoScalingGroup/LaunchConfig",
+                "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/LaunchConfig",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
                   "aws:cdk:cloudformation:props": {
@@ -1260,7 +1260,7 @@
               },
               "ASG": {
                 "id": "ASG",
-                "path": "aws-ecs-integ/SecondAutoScalingGroup/ASG",
+                "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/ASG",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                   "aws:cdk:cloudformation:props": {
@@ -1273,7 +1273,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-ecs-integ/SecondAutoScalingGroup",
+                        "value": "aws-ecs-integ-alb/SecondAutoScalingGroup",
                         "propagateAtLaunch": true
                       }
                     ],
@@ -1300,11 +1300,11 @@
           },
           "SecondCapacityProvier": {
             "id": "SecondCapacityProvier",
-            "path": "aws-ecs-integ/SecondCapacityProvier",
+            "path": "aws-ecs-integ-alb/SecondCapacityProvier",
             "children": {
               "SecondCapacityProvier": {
                 "id": "SecondCapacityProvier",
-                "path": "aws-ecs-integ/SecondCapacityProvier/SecondCapacityProvier",
+                "path": "aws-ecs-integ-alb/SecondCapacityProvier/SecondCapacityProvier",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::CapacityProvider",
                   "aws:cdk:cloudformation:props": {
@@ -1334,15 +1334,15 @@
           },
           "myService": {
             "id": "myService",
-            "path": "aws-ecs-integ/myService",
+            "path": "aws-ecs-integ-alb/myService",
             "children": {
               "LB": {
                 "id": "LB",
-                "path": "aws-ecs-integ/myService/LB",
+                "path": "aws-ecs-integ-alb/myService/LB",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ/myService/LB/Resource",
+                    "path": "aws-ecs-integ-alb/myService/LB/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
                       "aws:cdk:cloudformation:props": {
@@ -1379,15 +1379,15 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-ecs-integ/myService/LB/SecurityGroup",
+                    "path": "aws-ecs-integ-alb/myService/LB/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ/myService/LB/SecurityGroup/Resource",
+                        "path": "aws-ecs-integ-alb/myService/LB/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
-                            "groupDescription": "Automatically created Security Group for ELB awsecsintegmyServiceLB1F7A535D",
+                            "groupDescription": "Automatically created Security Group for ELB awsecsintegalbmyServiceLBBBB2F01E",
                             "securityGroupEgress": [
                               {
                                 "cidrIp": "255.255.255.255/32",
@@ -1424,11 +1424,11 @@
                   },
                   "PublicListener": {
                     "id": "PublicListener",
-                    "path": "aws-ecs-integ/myService/LB/PublicListener",
+                    "path": "aws-ecs-integ-alb/myService/LB/PublicListener",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ/myService/LB/PublicListener/Resource",
+                        "path": "aws-ecs-integ-alb/myService/LB/PublicListener/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
                           "aws:cdk:cloudformation:props": {
@@ -1454,11 +1454,11 @@
                       },
                       "ECSGroup": {
                         "id": "ECSGroup",
-                        "path": "aws-ecs-integ/myService/LB/PublicListener/ECSGroup",
+                        "path": "aws-ecs-integ-alb/myService/LB/PublicListener/ECSGroup",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-integ/myService/LB/PublicListener/ECSGroup/Resource",
+                            "path": "aws-ecs-integ-alb/myService/LB/PublicListener/ECSGroup/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                               "aws:cdk:cloudformation:props": {
@@ -1501,31 +1501,31 @@
               },
               "LoadBalancerDNS": {
                 "id": "LoadBalancerDNS",
-                "path": "aws-ecs-integ/myService/LoadBalancerDNS",
+                "path": "aws-ecs-integ-alb/myService/LoadBalancerDNS",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "ServiceURL": {
                 "id": "ServiceURL",
-                "path": "aws-ecs-integ/myService/ServiceURL",
+                "path": "aws-ecs-integ-alb/myService/ServiceURL",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "TaskDef": {
                 "id": "TaskDef",
-                "path": "aws-ecs-integ/myService/TaskDef",
+                "path": "aws-ecs-integ-alb/myService/TaskDef",
                 "children": {
                   "TaskRole": {
                     "id": "TaskRole",
-                    "path": "aws-ecs-integ/myService/TaskDef/TaskRole",
+                    "path": "aws-ecs-integ-alb/myService/TaskDef/TaskRole",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ/myService/TaskDef/TaskRole/Resource",
+                        "path": "aws-ecs-integ-alb/myService/TaskDef/TaskRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -1556,7 +1556,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ/myService/TaskDef/Resource",
+                    "path": "aws-ecs-integ-alb/myService/TaskDef/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
                       "aws:cdk:cloudformation:props": {
@@ -1593,7 +1593,7 @@
                             "Arn"
                           ]
                         },
-                        "family": "awsecsintegmyServiceTaskDefA3A33D18",
+                        "family": "awsecsintegalbmyServiceTaskDefB44D2536",
                         "networkMode": "bridge",
                         "requiresCompatibilities": [
                           "EC2"
@@ -1613,15 +1613,15 @@
                   },
                   "web": {
                     "id": "web",
-                    "path": "aws-ecs-integ/myService/TaskDef/web",
+                    "path": "aws-ecs-integ-alb/myService/TaskDef/web",
                     "children": {
                       "LogGroup": {
                         "id": "LogGroup",
-                        "path": "aws-ecs-integ/myService/TaskDef/web/LogGroup",
+                        "path": "aws-ecs-integ-alb/myService/TaskDef/web/LogGroup",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-integ/myService/TaskDef/web/LogGroup/Resource",
+                            "path": "aws-ecs-integ-alb/myService/TaskDef/web/LogGroup/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                               "aws:cdk:cloudformation:props": {}
@@ -1645,11 +1645,11 @@
                   },
                   "ExecutionRole": {
                     "id": "ExecutionRole",
-                    "path": "aws-ecs-integ/myService/TaskDef/ExecutionRole",
+                    "path": "aws-ecs-integ-alb/myService/TaskDef/ExecutionRole",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ/myService/TaskDef/ExecutionRole/Resource",
+                        "path": "aws-ecs-integ-alb/myService/TaskDef/ExecutionRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -1674,11 +1674,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "aws-ecs-integ/myService/TaskDef/ExecutionRole/DefaultPolicy",
+                        "path": "aws-ecs-integ-alb/myService/TaskDef/ExecutionRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-integ/myService/TaskDef/ExecutionRole/DefaultPolicy/Resource",
+                            "path": "aws-ecs-integ-alb/myService/TaskDef/ExecutionRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -1733,11 +1733,11 @@
               },
               "Service": {
                 "id": "Service",
-                "path": "aws-ecs-integ/myService/Service",
+                "path": "aws-ecs-integ-alb/myService/Service",
                 "children": {
                   "Service": {
                     "id": "Service",
-                    "path": "aws-ecs-integ/myService/Service/Service",
+                    "path": "aws-ecs-integ-alb/myService/Service/Service",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ECS::Service",
                       "aws:cdk:cloudformation:props": {
@@ -1800,14 +1800,50 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "applicationLoadBalancedEc2ServiceTest": {
+        "id": "applicationLoadBalancedEc2ServiceTest",
+        "path": "applicationLoadBalancedEc2ServiceTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "applicationLoadBalancedEc2ServiceTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "applicationLoadBalancedEc2ServiceTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

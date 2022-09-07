@@ -2,11 +2,11 @@ import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { InstanceType, Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
-
+import * as integ from '@aws-cdk/integ-tests';
 import { ApplicationLoadBalancedEc2Service } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-integ-alb');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvier', {
@@ -47,6 +47,10 @@ new ApplicationLoadBalancedEc2Service(stack, 'myService', {
       weight: 2,
     },
   ],
+});
+
+new integ.IntegTest(app, 'applicationLoadBalancedEc2ServiceTest', {
+  testCases: [stack],
 });
 
 app.synth();

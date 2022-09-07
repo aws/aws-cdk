@@ -53,6 +53,7 @@ describe('restapi', () => {
         },
         myapiCloudWatchRole095452E5: {
           Type: 'AWS::IAM::Role',
+          DeletionPolicy: 'Retain',
           Properties: {
             AssumeRolePolicyDocument: {
               Statement: [
@@ -71,6 +72,7 @@ describe('restapi', () => {
         },
         myapiAccountEC421A0A: {
           Type: 'AWS::ApiGateway::Account',
+          DeletionPolicy: 'Retain',
           Properties: {
             CloudWatchRoleArn: { 'Fn::GetAtt': ['myapiCloudWatchRole095452E5', 'Arn'] },
           },
@@ -331,6 +333,22 @@ describe('restapi', () => {
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
     Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Account', 1);
+  });
+
+  test('featureFlag @aws-cdk/aws-apigateway:disableCloudWatchRole CloudWatch role is not created created for API Gateway', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+      },
+    });
+    const stack = new Stack(app);
+    const api = new apigw.RestApi(stack, 'myapi');
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Account', 0);
   });
 
   test('"url" and "urlForPath" return the URL endpoints of the deployed API', () => {
@@ -860,6 +878,7 @@ describe('restapi', () => {
 
       // THEN
       expect(stack.resolve(imported.restApiId)).toEqual('api-rxt4498f');
+      expect(imported.restApiName).toEqual('imported-api');
     });
 
     test('fromRestApiAttributes()', () => {
@@ -883,6 +902,32 @@ describe('restapi', () => {
         HttpMethod: 'GET',
         ResourceId: stack.resolve(resource.resourceId),
       });
+      expect(imported.restApiName).toEqual('imported-api');
+    });
+
+    test('fromRestApiAttributes() with restApiName', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const imported = apigw.RestApi.fromRestApiAttributes(stack, 'imported-api', {
+        restApiId: 'test-restapi-id',
+        rootResourceId: 'test-root-resource-id',
+        restApiName: 'test-restapi-name',
+      });
+      const resource = imported.root.addResource('pets');
+      resource.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
+        PathPart: 'pets',
+        ParentId: stack.resolve(imported.restApiRootResourceId),
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'GET',
+        ResourceId: stack.resolve(resource.resourceId),
+      });
+      expect(imported.restApiName).toEqual('test-restapi-name');
     });
   });
 
@@ -958,6 +1003,28 @@ describe('restapi', () => {
         ],
         Value: '01234567890ABCDEFabcdef',
       });
+    });
+
+    test('featureFlag @aws-cdk/aws-apigateway:disableCloudWatchRole CloudWatch role is not created created for API Gateway', () => {
+      // GIVEN
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+        },
+      });
+
+      const stack = new Stack(app);
+      const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      });
+
+      // WHEN
+      const resource = api.root.addResource('pets');
+      resource.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+      Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Account', 0);
     });
   });
 
@@ -1094,6 +1161,38 @@ describe('restapi', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       DisableExecuteApiEndpoint: true,
+    });
+  });
+
+
+  describe('Description', () => {
+    test('description can be set', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'my-api', { description: 'My API' });
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::ApiGateway::RestApi',
+        {
+          Description: 'My API',
+        });
+    });
+
+    test('description is not set', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'my-api');
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::ApiGateway::RestApi', {});
     });
   });
 });
