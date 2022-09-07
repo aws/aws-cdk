@@ -273,6 +273,7 @@ describe('vpc from lookup', () => {
       const previous = mockVpcContextProviderWith({
         vpcId: 'vpc-1234',
         subnetGroups: [],
+        region: 'region-1234',
       }, options => {
         expect(options.region).toEqual('region-1234');
       });
@@ -292,6 +293,7 @@ describe('vpc from lookup', () => {
 interface MockVcpContextResponse {
   readonly vpcId: string;
   readonly subnetGroups: cxapi.VpcSubnetGroup[];
+  readonly region?: string;
 }
 
 function mockVpcContextProviderWith(

@@ -1210,12 +1210,7 @@ export class Vpc extends VpcBase {
       dummyValue: undefined,
     }).value;
 
-    const lookedUpVpcProps = {
-      ...attributes,
-      region: options.region,
-    };
-
-    return new LookedUpVpc(scope, id, attributes ? lookedUpVpcProps : DUMMY_VPC_PROPS, attributes === undefined);
+    return new LookedUpVpc(scope, id, attributes ?? DUMMY_VPC_PROPS, attributes === undefined);
 
     /**
      * Prefixes all keys in the argument with `tag:`.`

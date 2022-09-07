@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
     "ArchiveTest/DefaultTest": {
       "stacks": [
         "StackUnderTest"
       ],
-      "assertionStack": "ArchiveTestDefaultTestDeployAssert3405726A"
+      "assertionStack": "ArchiveTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ArchiveTestDefaultTestDeployAssert3405726A"
     }
   }
 }
