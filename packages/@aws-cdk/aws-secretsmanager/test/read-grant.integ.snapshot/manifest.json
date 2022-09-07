@@ -1,0 +1,184 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-kms-managed-secret-read-only.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-kms-managed-secret-read-only.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-kms-managed-secret-read-only": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-kms-managed-secret-read-only.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aeeffcb05a5d40ab15543a46cc6f4a2e65c78cf8ed85393cb23110c38551224b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-kms-managed-secret-read-only.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-kms-managed-secret-read-only.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-kms-managed-secret-read-only/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/aws-cdk-kms-managed-secret-read-only/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretA720EF05"
+          }
+        ],
+        "/aws-cdk-kms-managed-secret-read-only/Read/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadServiceRole2C10309D"
+          }
+        ],
+        "/aws-cdk-kms-managed-secret-read-only/Read/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Read0389503C"
+          }
+        ],
+        "/aws-cdk-kms-managed-secret-read-only/SecretsMngrIntegTestRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretsMngrIntegTestRole925804DC"
+          }
+        ],
+        "/aws-cdk-kms-managed-secret-read-only/SecretsMngrIntegTestRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretsMngrIntegTestRoleDefaultPolicyFC3FD539"
+          }
+        ],
+        "/aws-cdk-kms-managed-secret-read-only/Exports/Output{\"Ref\":\"Read0389503C\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefRead0389503CFCFE9AD5"
+          }
+        ],
+        "/aws-cdk-kms-managed-secret-read-only/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-kms-managed-secret-read-only/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-kms-managed-secret-read-only"
+    },
+    "SecretsManagerPermissionsTestDefaultTestDeployAssert67CEA71D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SecretsManagerPermissionsTestDefaultTestDeployAssert67CEA71D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SecretsManagerPermissionsTestDefaultTestDeployAssert67CEA71D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SecretsManagerPermissionsTestDefaultTestDeployAssert67CEA71D.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aea6e4f8b7d35d25fe5df5b94e8d135302875f01c959b59b6ae3f0bcfb0b8615.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SecretsManagerPermissionsTestDefaultTestDeployAssert67CEA71D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-kms-managed-secret-read-only",
+        "SecretsManagerPermissionsTestDefaultTestDeployAssert67CEA71D.assets"
+      ],
+      "metadata": {
+        "/SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvoke61ec293b37507815414563fbd779563e/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke61ec293b37507815414563fbd779563e"
+          }
+        ],
+        "/SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvoke61ec293b37507815414563fbd779563e/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke61ec293b37507815414563fbd779563eInvokeDC5BF949"
+          }
+        ],
+        "/SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvoke61ec293b37507815414563fbd779563e/AssertEqualsLambdainvoke/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke61ec293b37507815414563fbd779563eAssertEqualsLambdainvoke54AB7064"
+          }
+        ],
+        "/SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvoke61ec293b37507815414563fbd779563e/AssertEqualsLambdainvoke/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAssertEqualsLambdainvoke"
+          }
+        ],
+        "/SecretsManagerPermissionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/SecretsManagerPermissionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/SecretsManagerPermissionsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SecretsManagerPermissionsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert"
+    }
+  }
+}

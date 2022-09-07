@@ -1,0 +1,579 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.92"
+        }
+      },
+      "aws-cdk-kms-managed-secret-write-only": {
+        "id": "aws-cdk-kms-managed-secret-write-only",
+        "path": "aws-cdk-kms-managed-secret-write-only",
+        "children": {
+          "Key": {
+            "id": "Key",
+            "path": "aws-cdk-kms-managed-secret-write-only/Key",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-kms-managed-secret-write-only/Key/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        },
+                        {
+                          "Action": [
+                            "kms:CreateGrant",
+                            "kms:Decrypt",
+                            "kms:DescribeKey",
+                            "kms:Encrypt",
+                            "kms:GenerateDataKey*",
+                            "kms:ReEncrypt*"
+                          ],
+                          "Condition": {
+                            "StringEquals": {
+                              "kms:ViaService": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "secretsmanager.",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ".amazonaws.com"
+                                  ]
+                                ]
+                              }
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "Secret": {
+            "id": "Secret",
+            "path": "aws-cdk-kms-managed-secret-write-only/Secret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-kms-managed-secret-write-only/Secret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {},
+                    "kmsKeyId": {
+                      "Fn::GetAtt": [
+                        "Key961B73FD",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "Write": {
+            "id": "Write",
+            "path": "aws-cdk-kms-managed-secret-write-only/Write",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-kms-managed-secret-write-only/Write/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-kms-managed-secret-write-only/Write/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-kms-managed-secret-write-only/Write/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "import boto3\ndef lambda_handler(event, context):\n      secret_name = \"",
+                            {
+                              "Fn::Join": [
+                                "-",
+                                [
+                                  {
+                                    "Fn::Select": [
+                                      0,
+                                      {
+                                        "Fn::Split": [
+                                          "-",
+                                          {
+                                            "Fn::Select": [
+                                              6,
+                                              {
+                                                "Fn::Split": [
+                                                  ":",
+                                                  {
+                                                    "Ref": "SecretA720EF05"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Fn::Select": [
+                                      1,
+                                      {
+                                        "Fn::Split": [
+                                          "-",
+                                          {
+                                            "Fn::Select": [
+                                              6,
+                                              {
+                                                "Fn::Split": [
+                                                  ":",
+                                                  {
+                                                    "Ref": "SecretA720EF05"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              ]
+                            },
+                            "\"\n      boto3.session.Session().client(service_name='secretsmanager').put_secret_value(SecretId=secret_name, Description=\"New value.\")\n      "
+                          ]
+                        ]
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "WriteServiceRole54CB8098",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.lambda_handler",
+                    "runtime": "python3.9"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "SecretsMngrIntegTestRole": {
+            "id": "SecretsMngrIntegTestRole",
+            "path": "aws-cdk-kms-managed-secret-write-only/SecretsMngrIntegTestRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-kms-managed-secret-write-only/SecretsMngrIntegTestRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-cdk-kms-managed-secret-write-only/SecretsMngrIntegTestRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-kms-managed-secret-write-only/SecretsMngrIntegTestRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "secretsmanager:PutSecretValue",
+                                "secretsmanager:UpdateSecret"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "SecretA720EF05"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "SecretsMngrIntegTestRoleDefaultPolicyFC3FD539",
+                        "roles": [
+                          {
+                            "Ref": "SecretsMngrIntegTestRole925804DC"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-kms-managed-secret-write-only/Exports",
+            "children": {
+              "Output{\"Ref\":\"Write20B66CD8\"}": {
+                "id": "Output{\"Ref\":\"Write20B66CD8\"}",
+                "path": "aws-cdk-kms-managed-secret-write-only/Exports/Output{\"Ref\":\"Write20B66CD8\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.92"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "SecretsManagerPermissionsTest": {
+        "id": "SecretsManagerPermissionsTest",
+        "path": "SecretsManagerPermissionsTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "SecretsManagerPermissionsTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "SecretsManagerPermissionsTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.92"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert",
+                "children": {
+                  "LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95": {
+                    "id": "LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95",
+                    "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.92"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertEqualsLambdainvoke": {
+                        "id": "AssertEqualsLambdainvoke",
+                        "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95/AssertEqualsLambdainvoke",
+                        "children": {
+                          "AssertionProvider": {
+                            "id": "AssertionProvider",
+                            "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95/AssertEqualsLambdainvoke/AssertionProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95/AssertEqualsLambdainvoke/AssertionProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.92"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95/AssertEqualsLambdainvoke/Default",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95/AssertEqualsLambdainvoke/Default/Default",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssertionResults": {
+                            "id": "AssertionResults",
+                            "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/LambdaInvokecd1e75cdd6abe8fd92ef96dec3780d95/AssertEqualsLambdainvoke/AssertionResults",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnOutput",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.EqualsAssertion",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.92"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

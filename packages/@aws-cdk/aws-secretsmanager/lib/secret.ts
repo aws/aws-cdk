@@ -368,9 +368,9 @@ abstract class SecretBase extends Resource implements ISecret {
 
     if (this.encryptionKey) {
       // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
-      this.encryptionKey.grantDecrypt(
-        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
-      );
+      const principal = new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal);
+      this.encryptionKey.grantDecrypt(principal);
+      this.encryptionKey?.grant(principal, 'kms:GenerateDataKey');
     }
 
     const crossAccount = Token.compareStrings(Stack.of(this).account, grantee.grantPrincipal.principalAccount || '');
@@ -392,12 +392,10 @@ abstract class SecretBase extends Resource implements ISecret {
       resource: this,
     });
 
-    if (this.encryptionKey) {
-      // See https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
-      this.encryptionKey.grantEncrypt(
-        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
-      );
-    }
+    // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
+    const principal = new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
+    this.encryptionKey?.grantEncryptDecrypt(principal);
+    this.encryptionKey?.grant(principal, 'kms:CreateGrant', 'kms:DescribeKey');
 
     // Throw if secret is not imported and it's shared cross account and no KMS key is provided
     if (this instanceof Secret && result.resourceStatement && !this.encryptionKey) {
@@ -482,7 +480,7 @@ export class Secret extends SecretBase {
    * Return whether the given object is a Secret.
    */
   public static isSecret(x: any): x is Secret {
-    return x !== null && typeof(x) === 'object' && SECRET_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && SECRET_SYMBOL in x;
   }
 
   /** @deprecated use `fromSecretCompleteArn` or `fromSecretPartialArn` */
@@ -569,7 +567,7 @@ export class Secret extends SecretBase {
       secretArnIsPartial = false;
     } else {
       if ((attrs.secretCompleteArn && attrs.secretPartialArn) ||
-          (!attrs.secretCompleteArn && !attrs.secretPartialArn)) {
+        (!attrs.secretCompleteArn && !attrs.secretPartialArn)) {
         throw new Error('must use only one of `secretCompleteArn` or `secretPartialArn`');
       }
       if (attrs.secretCompleteArn && !arnIsComplete(attrs.secretCompleteArn)) {
@@ -607,8 +605,8 @@ export class Secret extends SecretBase {
     });
 
     if (props.generateSecretString &&
-        (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&
-        !(props.generateSecretString.secretStringTemplate && props.generateSecretString.generateStringKey)) {
+      (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&
+      !(props.generateSecretString.secretStringTemplate && props.generateSecretString.generateStringKey)) {
       throw new Error('`secretStringTemplate` and `generateStringKey` must be specified together.');
     }
 

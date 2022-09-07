@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "SecretsManagerPermissionsTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-kms-managed-secret-write-only"
+      ],
+      "assertionStack": "SecretsManagerPermissionsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SecretsManagerPermissionsTestDefaultTestDeployAssert67CEA71D"
+    }
+  }
+}
