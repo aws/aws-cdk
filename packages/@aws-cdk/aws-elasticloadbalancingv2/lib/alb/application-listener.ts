@@ -566,7 +566,7 @@ export interface ApplicationListenerAttributes {
   /**
    * Security group of the load balancer this listener is associated with
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup: ec2.ISecurityGroup;
 
   /**
    * The default port on which this listener is listening
