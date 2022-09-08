@@ -1172,12 +1172,7 @@ export class Stack extends Construct implements ITaggable {
    */
   public get bundlingRequired() {
     const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
-
-    // bundlingStacks is of the form `Stage/Stack`, convert it to `Stage-Stack` before comparing to stack name
-    return bundlingStacks.some(pattern => minimatch(
-      this.stackName,
-      pattern.replace('/', '-'),
-    ));
+    return bundlingStacks.some(pattern => minimatch(this.node.path, pattern));
   }
 }
 
