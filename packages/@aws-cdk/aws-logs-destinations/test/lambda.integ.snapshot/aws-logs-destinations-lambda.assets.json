@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "d7ca50fbf27ffc2804a0c560643b24b4531493b10675595aada71816939ba523": {
+      "source": {
+        "path": "aws-logs-destinations-lambda.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d7ca50fbf27ffc2804a0c560643b24b4531493b10675595aada71816939ba523.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

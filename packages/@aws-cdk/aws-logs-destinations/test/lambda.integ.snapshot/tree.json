@@ -1,0 +1,234 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.95"
+        }
+      },
+      "aws-logs-destinations-lambda": {
+        "id": "aws-logs-destinations-lambda",
+        "path": "aws-logs-destinations-lambda",
+        "children": {
+          "MyFunction": {
+            "id": "MyFunction",
+            "path": "aws-logs-destinations-lambda/MyFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-logs-destinations-lambda/MyFunction/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-logs-destinations-lambda/MyFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-logs-destinations-lambda/MyFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = function(event, ctx, cb) { return cb(\"hi\", null); }"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunctionServiceRole3C357FF2",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs16.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "LogGroup": {
+            "id": "LogGroup",
+            "path": "aws-logs-destinations-lambda/LogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-logs-destinations-lambda/LogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
+          "LogSubscriptionFilter": {
+            "id": "LogSubscriptionFilter",
+            "path": "aws-logs-destinations-lambda/LogSubscriptionFilter",
+            "children": {
+              "CanInvokeLambda": {
+                "id": "CanInvokeLambda",
+                "path": "aws-logs-destinations-lambda/LogSubscriptionFilter/CanInvokeLambda",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "MyFunction3BAA72D1",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "logs.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "LogGroupF5B46931",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-logs-destinations-lambda/LogSubscriptionFilter/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::SubscriptionFilter",
+                  "aws:cdk:cloudformation:props": {
+                    "destinationArn": {
+                      "Fn::GetAtt": [
+                        "MyFunction3BAA72D1",
+                        "Arn"
+                      ]
+                    },
+                    "filterPattern": "",
+                    "logGroupName": {
+                      "Ref": "LogGroupF5B46931"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnSubscriptionFilter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.SubscriptionFilter",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "LogsDestinationsLambda": {
+        "id": "LogsDestinationsLambda",
+        "path": "LogsDestinationsLambda",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LogsDestinationsLambda/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LogsDestinationsLambda/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.95"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LogsDestinationsLambda/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

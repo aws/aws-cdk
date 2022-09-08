@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "LogsDestinationsLambda/DefaultTest": {
+      "stacks": [
+        "aws-logs-destinations-lambda"
+      ],
+      "assertionStack": "LogsDestinationsLambda/DefaultTest/DeployAssert",
+      "assertionStackName": "LogsDestinationsLambdaDefaultTestDeployAssert54DA156A"
+    }
+  }
+}
