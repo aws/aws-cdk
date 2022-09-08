@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as kms from '@aws-cdk/aws-kms';
 import * as ssmIncidents from '@aws-cdk/aws-ssmincidents';
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps, RemovalPolicy, Duration } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 
 import * as cloudwatchActions from '../lib';
@@ -12,13 +13,30 @@ class SsmIncidentAlarmActionIntegrationTestStack extends Stack {
 
     const responsePlanName = 'test-response-plan';
 
-    new ssmIncidents.CfnResponsePlan(this, 'ResponsePlan', {
+    const key = new kms.Key(this, 'Key', {
+      pendingWindow: Duration.days(7),
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+    const replicationSet = new ssmIncidents.CfnReplicationSet(this, 'ReplicationSet', {
+      deletionProtected: false,
+      regions: [{
+        regionName: this.region,
+        regionConfiguration: {
+          sseKmsKeyId: key.keyArn,
+        },
+      }],
+    });
+
+    const responsePlan = new ssmIncidents.CfnResponsePlan(this, 'ResponsePlan', {
       name: responsePlanName,
       incidentTemplate: {
         title: 'Incident Title',
         impact: 1,
       },
     });
+
+    responsePlan.node.addDependency(replicationSet);
+
 
     const metric = new cloudwatch.Metric({
       namespace: 'CDK/Test',
@@ -31,6 +49,7 @@ class SsmIncidentAlarmActionIntegrationTestStack extends Stack {
       threshold: 100,
       evaluationPeriods: 3,
     });
+    alarm.node.addDependency(responsePlan);
 
     alarm.addAlarmAction(new cloudwatchActions.SsmIncidentAction(responsePlanName));
   }
