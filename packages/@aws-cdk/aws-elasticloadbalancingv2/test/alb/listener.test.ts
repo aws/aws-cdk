@@ -4,6 +4,7 @@ import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { SecretValue } from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -258,6 +259,53 @@ describe('tests', () => {
           Type: 'forward',
         },
       ],
+    });
+  });
+
+  test('bind is called for all next targets', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+    const fake = new FakeSelfRegisteringTarget(stack, 'FakeTG', vpc);
+    const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      port: 80,
+      targets: [fake],
+    });
+
+    // WHEN
+    listener.addAction('first-action', {
+      action: elbv2.ListenerAction.authenticateOidc({
+        next: elbv2.ListenerAction.forward([group]),
+        issuer: 'dummy',
+        clientId: 'dummy',
+        clientSecret: SecretValue.unsafePlainText('dummy'),
+        tokenEndpoint: 'dummy',
+        userInfoEndpoint: 'dummy',
+        authorizationEndpoint: 'dummy',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: 'tcp',
+      Description: 'Load balancer to target',
+      FromPort: 80,
+      ToPort: 80,
+      GroupId: {
+        'Fn::GetAtt': [
+          'FakeTGSG50E257DF',
+          'GroupId',
+        ],
+      },
+      SourceSecurityGroupId: {
+        'Fn::GetAtt': [
+          'LBSecurityGroup8A41EA2B',
+          'GroupId',
+        ],
+      },
     });
   });
 
