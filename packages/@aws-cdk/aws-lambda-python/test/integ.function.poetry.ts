@@ -1,9 +1,7 @@
-// disabling update workflow because we don't want to include the assets in the snapshot
-// python bundling changes the asset hash pretty frequently
-/// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
@@ -31,9 +29,23 @@ class TestStack extends Stack {
     new CfnOutput(this, 'Python38FunctionName', {
       value: pythonFunction38.functionName,
     });
+
+    new lambda.PythonFunction(this, 'my_handler_python_37', {
+      entry: path.join(__dirname, 'lambda-handler-poetry'),
+      runtime: Runtime.PYTHON_3_7,
+    });
+
   }
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-python');
+const testCase = new TestStack(app, 'cdk-integ-lambda-python');
+
+new IntegTest(app, 'poetry', {
+  testCases: [testCase],
+  // disabling update workflow because we don't want to include the assets in the snapshot
+  // python bundling changes the asset hash pretty frequently
+  stackUpdateWorkflow: false,
+});
+
 app.synth();
