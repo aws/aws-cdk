@@ -3,6 +3,27 @@ import { Construct } from 'constructs';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './neptune.generated';
 
 /**
+ * The DB parameter group family that a DB parameter group is compatible with
+ */
+export class ParameterGroupFamily {
+
+  /**
+   * Family used by Neptune engine versions before 1.2.0.0
+   */
+  public static readonly NEPTUNE_1 = new ParameterGroupFamily('neptune1');
+  /**
+   * Family used by Neptune engine versions 1.2.0.0 and later
+   */
+  public static readonly NEPTUNE_1_2 = new ParameterGroupFamily('neptune1.2');
+
+  /**
+   * Constructor for specifying a custom parameter group famil
+   * @param family the family of the parameter group Neptune
+   */
+  public constructor(public readonly family: string) {}
+}
+
+/**
  * Properties for a parameter group
  */
 interface ParameterGroupPropsBase {
@@ -17,6 +38,13 @@ interface ParameterGroupPropsBase {
    * The parameters in this parameter group
    */
   readonly parameters: { [key: string]: string };
+
+  /**
+   * Parameter group family
+   *
+   * @default - NEPTUNE_1
+   */
+  readonly family?: ParameterGroupFamily;
 }
 
 /**
@@ -81,7 +109,7 @@ export class ClusterParameterGroup extends Resource implements IClusterParameter
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       name: props.clusterParameterGroupName,
       description: props.description || 'Cluster parameter group for neptune db cluster',
-      family: 'neptune1',
+      family: (props.family ?? ParameterGroupFamily.NEPTUNE_1).family,
       parameters: props.parameters,
     });
 
@@ -126,7 +154,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     const resource = new CfnDBParameterGroup(this, 'Resource', {
       name: props.parameterGroupName,
       description: props.description || 'Instance parameter group for neptune db instances',
-      family: 'neptune1',
+      family: (props.family ?? ParameterGroupFamily.NEPTUNE_1).family,
       parameters: props.parameters,
     });
 

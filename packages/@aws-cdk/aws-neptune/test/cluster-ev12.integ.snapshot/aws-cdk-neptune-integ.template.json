@@ -430,7 +430,7 @@
    "Type": "AWS::Neptune::DBClusterParameterGroup",
    "Properties": {
     "Description": "A nice parameter group",
-    "Family": "neptune1",
+    "Family": "neptune1.2",
     "Parameters": {
      "neptune_enable_audit_log": "1",
      "neptune_query_timeout": "100000"
@@ -502,6 +502,7 @@
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets3C9252C9"
     },
+    "EngineVersion": "1.2.0.0",
     "KmsKeyId": {
      "Fn::GetAtt": [
       "DbSecurity381C2C15",
