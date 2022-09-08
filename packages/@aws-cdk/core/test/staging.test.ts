@@ -912,6 +912,54 @@ describe('staging', () => {
     expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
   });
 
+  test('correctly bundles selected stacks with custom names', () => {
+    // GIVEN
+    const app = new App();
+
+    const stack = new Stack(app, 'Stack', {
+      stackName: 'MyStackName',
+    });
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stack']);
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in the Stack
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+  });
+
+  test('correctly bundles selected stacks nested in Stack/Stage/Stack', () => {
+    // GIVEN
+    const app = new App();
+
+    const topStack = new Stack(app, 'TopStack');
+    topStack.node.setContext(cxapi.BUNDLING_STACKS, ['TopStack/MiddleStage/BottomStack']);
+    const middleStage = new Stage(topStack, 'MiddleStage');
+    const bottomStack = new Stack(middleStage, 'BottomStack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    new AssetStaging(bottomStack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in the Stack
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+  });
+
   test('bundling still occurs with partial wildcard', () => {
     // GIVEN
     const app = new App();
