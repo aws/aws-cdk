@@ -22,16 +22,18 @@ const table = new dynamodb.Table(stack, 'T', {
 fn.addEventSource(new DynamoEventSource(table, {
   batchSize: 5,
   startingPosition: lambda.StartingPosition.LATEST,
-  filters: [{
-    eventName: lambda.FilterRule.isEqual('INSERT'),
-    dynamodb: {
-      Keys: {
-        id: {
-          S: lambda.FilterRule.exists(),
+  filters: [
+    lambda.FilterCriteria.filter({
+      eventName: lambda.FilterRule.isEqual('INSERT'),
+      dynamodb: {
+        Keys: {
+          id: {
+            S: lambda.FilterRule.exists(),
+          },
         },
       },
-    },
-  }],
+    }),
+  ],
 }));
 
 new integ.IntegTest(app, 'DynamoDBFilterCriteria', {

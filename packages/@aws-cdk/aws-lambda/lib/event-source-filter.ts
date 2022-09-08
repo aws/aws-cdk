@@ -68,3 +68,15 @@ export class FilterRule {
     return [{ prefix: elem }];
   }
 }
+
+/**
+ * Filter criteria for Lambda event filtering
+ */
+export class FilterCriteria {
+  /**
+   * Filter for event source
+   */
+  public static filter(filter: {[key:string]: any}): {[key:string]: any} {
+    return { pattern: JSON.stringify(filter) };
+  }
+}

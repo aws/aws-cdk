@@ -286,7 +286,7 @@ describe('SQSEventSource', () => {
 
   });
 
-  test('filter criteria', () => {
+  test('adding filter criteria', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -294,11 +294,13 @@ describe('SQSEventSource', () => {
 
     // WHEN
     fn.addEventSource(new sources.SqsEventSource(q, {
-      filters: [{
-        body: {
-          id: lambda.FilterRule.exists(),
-        },
-      }],
+      filters: [
+        lambda.FilterCriteria.filter({
+          body: {
+            id: lambda.FilterRule.exists(),
+          },
+        }),
+      ],
     }));
 
     // THEN
