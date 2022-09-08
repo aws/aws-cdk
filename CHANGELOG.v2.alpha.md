@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.41.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.40.0-alpha.0...v2.41.0-alpha.0) (2022-09-07)
+
+
+### Features
+
+* **batch:** add propagate tags prop in job definition ([#21904](https://github.com/aws/aws-cdk/issues/21904)) ([1bc4526](https://github.com/aws/aws-cdk/commit/1bc4526261c2fbdd6ce6c371ba1d9da2f79e07bd)), closes [#21740](https://github.com/aws/aws-cdk/issues/21740)
+
+
+### Bug Fixes
+
+* **lambda-python:** bundling with poetry is broken ([#21945](https://github.com/aws/aws-cdk/issues/21945)) ([4b37157](https://github.com/aws/aws-cdk/commit/4b37157b47ab38124b62649649d0df9b701cb7fe)), closes [#21867](https://github.com/aws/aws-cdk/issues/21867)
+* **lambda-python:** poetry bundling fails on python3.7 ([#21950](https://github.com/aws/aws-cdk/issues/21950)) ([809e1b0](https://github.com/aws/aws-cdk/commit/809e1b0d5dc29be02f95ea4361b6f87f94325f3d))
+
 ## [2.40.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.39.1-alpha.0...v2.40.0-alpha.0) (2022-08-31)
 
 
