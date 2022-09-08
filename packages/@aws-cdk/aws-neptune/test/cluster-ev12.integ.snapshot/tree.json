@@ -721,7 +721,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Neptune::DBClusterParameterGroup",
                   "aws:cdk:cloudformation:props": {
                     "description": "A nice parameter group",
-                    "family": "neptune1",
+                    "family": "neptune1.2",
                     "parameters": {
                       "neptune_enable_audit_log": "1",
                       "neptune_query_timeout": "100000"
@@ -855,6 +855,7 @@
                     "dbSubnetGroupName": {
                       "Ref": "DatabaseSubnets3C9252C9"
                     },
+                    "engineVersion": "1.2.0.0",
                     "kmsKeyId": {
                       "Fn::GetAtt": [
                         "DbSecurity381C2C15",
@@ -904,6 +905,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ClusterTest": {
+        "id": "ClusterTest",
+        "path": "ClusterTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ClusterTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ClusterTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.92"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ClusterTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
