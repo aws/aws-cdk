@@ -106,6 +106,8 @@ Resources:
               - kms:ScheduleKeyDeletion
               - kms:CancelKeyDeletion
               - kms:GenerateDataKey
+              - kms:TagResource
+              - kms:UntagResource
             Effect: Allow
             Principal:
               AWS:
