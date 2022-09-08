@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.41.0](https://github.com/aws/aws-cdk/compare/v2.40.0...v2.41.0) (2022-09-07)
+
+
+### Features
+
+* **assertions:** add function for verifying the number of matching resource properties ([#21707](https://github.com/aws/aws-cdk/issues/21707)) ([80cb527](https://github.com/aws/aws-cdk/commit/80cb527c01173a060064606b8fe286d5510f145e))
+* **custom-resource:** allow AwsCustomResource to be placed in vpc ([#21357](https://github.com/aws/aws-cdk/issues/21357)) ([62d7bf8](https://github.com/aws/aws-cdk/commit/62d7bf83b4bfe6358e86ecf1c332e51a3909bd8a))
+* **ec2:** allow private non-nat subnets ([#21699](https://github.com/aws/aws-cdk/issues/21699)) ([e1794e3](https://github.com/aws/aws-cdk/commit/e1794e346c2a04bf8f2e5f63138095a79f512cfe))
+* **ecs:** add `maxSwap` and `swappiness` properties to LinuxParameters ([#18703](https://github.com/aws/aws-cdk/issues/18703)) ([08eb1d6](https://github.com/aws/aws-cdk/commit/08eb1d66ae9caa6589c3ee66c4040a4e116adf52)), closes [#18460](https://github.com/aws/aws-cdk/issues/18460)
+* **lambda-event-sources:** add kafka consumerGroupId support ([#21791](https://github.com/aws/aws-cdk/issues/21791)) ([b36bc11](https://github.com/aws/aws-cdk/commit/b36bc1146d06c7b9decface9f4ed9edeca61aa56))
+* compress aws-cdk-lib tablet file ([#21854](https://github.com/aws/aws-cdk/issues/21854)) ([5a3db2d](https://github.com/aws/aws-cdk/commit/5a3db2d19dc5525bfef568f17fffa09657b6ef21))
+* **ecs:** add function for adding secrets to containers after instantiating them ([#21826](https://github.com/aws/aws-cdk/issues/21826)) ([572f781](https://github.com/aws/aws-cdk/commit/572f7815cc5447aac9413b374ebbfd92bfa610a6)), closes [#18959](https://github.com/aws/aws-cdk/issues/18959)
+
+
+### Bug Fixes
+
+* **aws-cdk:** cdk bootstrap print JSON template when using --json option ([#21852](https://github.com/aws/aws-cdk/issues/21852)) ([7bc3d18](https://github.com/aws/aws-cdk/commit/7bc3d18ff742140a35238af0241b5dc4c2cf73ee)), closes [#21456](https://github.com/aws/aws-cdk/issues/21456) [#21456](https://github.com/aws/aws-cdk/issues/21456)
+* **core:** `--debug` doesn't record stack traces ([#21931](https://github.com/aws/aws-cdk/issues/21931)) ([9f2ea45](https://github.com/aws/aws-cdk/commit/9f2ea458609b29a91eb792165be6de596ce1aea9))
+* **events:** additional plaintext header are not set on eventbridge connection ([#21857](https://github.com/aws/aws-cdk/issues/21857)) ([f3f4814](https://github.com/aws/aws-cdk/commit/f3f4814b66ef2b0070fb6b25af9f6566bc1783a0))
+* **events-targets:** cannot set retry policy to 0 retry attempts  ([#21900](https://github.com/aws/aws-cdk/issues/21900)) ([5549f16](https://github.com/aws/aws-cdk/commit/5549f1692270bce06a1d9cde952f9cd23a04204b)), closes [40aws-cdk/aws-events-targets/lib/util.ts#L54-L59](https://github.com/40aws-cdk/aws-events-targets/lib/util.ts/issues/L54-L59) [#21864](https://github.com/aws/aws-cdk/issues/21864)
+* **stepfunctions:** cfnSpec breaks definitionSubstitutions prop ([#21887](https://github.com/aws/aws-cdk/issues/21887)) ([3adf841](https://github.com/aws/aws-cdk/commit/3adf84188947eb2fde6171f70d0d9c2dcdb78563)), closes [#21653](https://github.com/aws/aws-cdk/issues/21653)
+
 ## [2.40.0](https://github.com/aws/aws-cdk/compare/v2.39.1...v2.40.0) (2022-08-31)
 
 
