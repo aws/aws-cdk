@@ -1,6 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import { App } from '@aws-cdk/core';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
@@ -281,7 +284,114 @@ describe('SQSEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'FunctionResponseTypes': ['ReportBatchItemFailures'],
     });
+  });
 
+  test('warning added if lambda function imported without role', () => {
+    const app = new App();
+    const stack = new cdk.Stack(app);
+    const fn = lambda.Function.fromFunctionName(stack, 'Handler', 'testFunction');
+    const q = new sqs.Queue(stack, 'Q');
 
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q));
+    const assembly = app.synth();
+
+    const messages = assembly.getStackArtifact(stack.artifactId).messages;
+
+    // THEN
+    expect(messages.length).toEqual(1);
+    expect(messages[0]).toMatchObject({
+      level: 'warning',
+      id: '/Default/Handler',
+      entry: {
+        data: expect.stringMatching(/Function 'Default\/Handler' was imported without an IAM role/),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::EventSourceMapping', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+  });
+
+  test('policy added to imported function role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = lambda.Function.fromFunctionAttributes(stack, 'Handler', {
+      functionArn: stack.formatArn({
+        service: 'lambda',
+        resource: 'function',
+        resourceName: 'testFunction',
+      }),
+      role: iam.Role.fromRoleName(stack, 'Role', 'testFunctionRole'),
+    });
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'sqs:ReceiveMessage',
+              'sqs:ChangeMessageVisibility',
+              'sqs:GetQueueUrl',
+              'sqs:DeleteMessage',
+              'sqs:GetQueueAttributes',
+            ],
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'Q63C6E3AB',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'Roles': ['testFunctionRole'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'Q63C6E3AB',
+          'Arn',
+        ],
+      },
+      'FunctionName': {
+        'Fn::Select': [
+          6,
+          {
+            'Fn::Split': [
+              ':',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':lambda:',
+                    {
+                      'Ref': 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      'Ref': 'AWS::AccountId',
+                    },
+                    ':function/testFunction',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
   });
 });
