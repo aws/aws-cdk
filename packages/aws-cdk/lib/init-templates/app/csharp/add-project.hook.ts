@@ -10,5 +10,4 @@ export const invoke: InvokeHook = async (targetDirectory: string) => {
   } catch (e) {
     throw new Error(`Could not add project %name.PascalCased%.csproj to solution %name.PascalCased%.sln. ${e.message}`);
   }
-
 };
