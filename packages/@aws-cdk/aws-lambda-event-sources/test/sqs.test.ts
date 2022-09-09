@@ -394,4 +394,33 @@ describe('SQSEventSource', () => {
       },
     });
   });
+
+  test('adding filter criteria', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      filters: [
+        lambda.FilterCriteria.filter({
+          body: {
+            id: lambda.FilterRule.exists(),
+          },
+        }),
+      ],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'FilterCriteria': {
+        'Filters': [
+          {
+            'Pattern': '{"body":{"id":[{"exists":true}]}}',
+          },
+        ],
+      },
+    });
+  });
 });
