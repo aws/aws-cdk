@@ -99,9 +99,9 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as route53 from '@aws-cdk/aws-route53';
 
 declare const hostedZone: route53.HostedZone;
-const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
+const myCertificate = new acm.Certificate(this, 'mySiteCert', {
   domainName: 'www.example.com',
-  hostedZone,
+  validation: acm.CertificateValidation.fromDns(hostedZone),
 });
 
 declare const myBucket: s3.Bucket;
@@ -574,7 +574,7 @@ just HTTP/3. For all supported HTTP versions, see the `HttpVerson` enum.
 ```ts
 // Configure a distribution to use HTTP/2 and HTTP/3
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com'); },
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
   httpVersion: cloudfront.HttpVersion.HTTP2_AND_3,
 });
 ```
