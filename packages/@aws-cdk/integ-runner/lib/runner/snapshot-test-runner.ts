@@ -1,9 +1,8 @@
 import * as path from 'path';
 import { Writable, WritableOptions } from 'stream';
-import { StringDecoder, NodeStringDecoder } from 'string_decoder';
+import { StringDecoder } from 'string_decoder';
 import { diffTemplate, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import { Diagnostic, DiagnosticReason, DestructiveChange, SnapshotVerificationOptions } from '../workers/common';
-import { canonicalizeTemplate } from './private/canonicalize-assets';
 import { AssemblyManifestReader } from './private/cloud-assembly';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
 
@@ -166,8 +165,8 @@ export class IntegSnapshotRunner extends IntegRunner {
         // asset hashes from the templates so they are not part of the diff
         // comparison
         if (!this.actualTestSuite.getOptionsForStack(templateId)?.diffAssets) {
-          actualTemplate = canonicalizeTemplate(actualTemplate);
-          expectedTemplate = canonicalizeTemplate(expectedTemplate);
+          actualTemplate = this.canonicalizeTemplate(actualTemplate, templateId, this.cdkOutDir);
+          expectedTemplate = this.canonicalizeTemplate(expectedTemplate, templateId, this.snapshotDir);
         }
         const templateDiff = diffTemplate(expectedTemplate, actualTemplate);
         if (!templateDiff.isEmpty) {
@@ -225,11 +224,92 @@ export class IntegSnapshotRunner extends IntegRunner {
 
     return stacks;
   }
+
+  /**
+  * Reduce template to a normal form where asset references have been normalized
+  *
+  * This makes it possible to compare templates if all that's different between
+  * them is the hashes of the asset values.
+  */
+  private canonicalizeTemplate(template: any, stackName: string, manifestDir: string): any {
+    const assetsSeen = new Set<string>();
+    const stringSubstitutions = new Array<[RegExp, string]>();
+
+    // Find assets via parameters (for LegacyStackSynthesizer)
+    const paramRe = /^AssetParameters([a-zA-Z0-9]{64})(S3Bucket|S3VersionKey|ArtifactHash)([a-zA-Z0-9]{8})$/;
+    for (const paramName of Object.keys(template?.Parameters || {})) {
+      const m = paramRe.exec(paramName);
+      if (!m) { continue; }
+      if (assetsSeen.has(m[1])) { continue; }
+
+      assetsSeen.add(m[1]);
+      const ix = assetsSeen.size;
+
+      // Full parameter reference
+      stringSubstitutions.push([
+        new RegExp(`AssetParameters${m[1]}(S3Bucket|S3VersionKey|ArtifactHash)([a-zA-Z0-9]{8})`),
+        `Asset${ix}$1`,
+      ]);
+      // Substring asset hash reference
+      stringSubstitutions.push([
+        new RegExp(`${m[1]}`),
+        `Asset${ix}Hash`,
+      ]);
+    }
+
+    // find assets defined in the asset manifest
+    try {
+      const manifest = AssemblyManifestReader.fromPath(manifestDir);
+      const assets = manifest.getAssetIdsForStack(stackName);
+      assets.forEach(asset => {
+        if (!assetsSeen.has(asset)) {
+          assetsSeen.add(asset);
+          const ix = assetsSeen.size;
+          stringSubstitutions.push([
+            new RegExp(asset),
+            `Asset${ix}$1`,
+          ]);
+        }
+      });
+    } catch {
+      // if there is no asset manifest that is fine.
+    }
+
+    // Substitute them out
+    return substitute(template);
+
+    function substitute(what: any): any {
+      if (Array.isArray(what)) {
+        return what.map(substitute);
+      }
+
+      if (typeof what === 'object' && what !== null) {
+        const ret: any = {};
+        for (const [k, v] of Object.entries(what)) {
+          ret[stringSub(k)] = substitute(v);
+        }
+        return ret;
+      }
+
+      if (typeof what === 'string') {
+        return stringSub(what);
+      }
+
+      return what;
+    }
+
+    function stringSub(x: string) {
+      for (const [re, replacement] of stringSubstitutions) {
+        x = x.replace(re, replacement);
+      }
+      return x;
+    }
+  }
 }
 
 class StringWritable extends Writable {
   public data: string;
-  private _decoder: NodeStringDecoder;
+  private _decoder: StringDecoder;
   constructor(options: WritableOptions) {
     super(options);
     this._decoder = new StringDecoder();

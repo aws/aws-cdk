@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "@aws-cdk/aws-ecs-patterns/test/ec2/integ.application-load-balanced-ecs-service": {
+    "applicationLoadBalancedEc2ServiceTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-alb"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

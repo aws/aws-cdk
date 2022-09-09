@@ -149,11 +149,12 @@ export interface IntegTestOptions {
   readonly dryRun?: boolean;
 
   /**
-   * Whether to enable verbose logging
+   * The level of verbosity for logging.
+   * Higher number means more output.
    *
-   * @default false
+   * @default 0
    */
-  readonly verbose?: boolean;
+  readonly verbosity?: number;
 
   /**
    * If this is set to true then the stack update workflow will be disabled
@@ -255,8 +256,8 @@ export function printSummary(total: number, failed: number): void {
  */
 export function formatAssertionResults(results: AssertionResults): string {
   return Object.entries(results)
-    .map(([id, result]) => format('%s\n%s', id, result.message))
-    .join('\n');
+    .map(([id, result]) => format('%s%s', id, result.status === 'success' ? ` - ${result.status}` : `\n${result.message}`))
+    .join('\n      ');
 }
 
 /**
@@ -268,7 +269,7 @@ export function printResults(diagnostic: Diagnostic): void {
       logger.success('  UNCHANGED  %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
       break;
     case DiagnosticReason.TEST_SUCCESS:
-      logger.success('  SUCCESS    %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
+      logger.success('  SUCCESS    %s %s\n      ', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
       break;
     case DiagnosticReason.NO_SNAPSHOT:
       logger.error('  NEW        %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));

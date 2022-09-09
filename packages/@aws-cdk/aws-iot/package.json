@@ -83,6 +83,7 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
@@ -99,6 +100,11 @@
   },
   "engines": {
     "node": ">= 14.15.0"
+  },
+  "awslint": {
+    "exclude": [
+      "no-unused-type:@aws-cdk/aws-iot.ActionConfig"
+    ]
   },
   "stability": "experimental",
   "maturity": "experimental",

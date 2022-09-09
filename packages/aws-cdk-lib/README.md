@@ -376,13 +376,13 @@ relationship between all resources in the scope of `constructA` and all
 resources in the scope of `constructB`.
 
 If you want a single object to represent a set of constructs that are not
-necessarily in the same scope, you can use a `ConcreteDependable`. The
+necessarily in the same scope, you can use a `DependencyGroup`. The
 following creates a single object that represents a dependency on two
 constructs, `constructB` and `constructC`:
 
 ```ts
 // Declare the dependable object
-const bAndC = new ConcreteDependable();
+const bAndC = new DependencyGroup();
 bAndC.add(constructB);
 bAndC.add(constructC);
 
@@ -810,7 +810,7 @@ const stack = Stack.of(this);
 
 stack.account; // Returns the AWS::AccountId for this stack (or the literal value if known)
 stack.region;  // Returns the AWS::Region for this stack (or the literal value if known)
-stack.partition;
+stack.partition; // Returns the AWS::Partition for this stack (or the literal value if known)
 ```
 
 [cfn-pseudo-params]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
@@ -852,6 +852,9 @@ can be accessed from the `Fn` class, which provides type-safe methods for each
 intrinsic function as well as condition expressions:
 
 ```ts
+declare const myObjectOrArray: any;
+declare const myArray: any;
+
 // To use Fn::Base64
 Fn.base64('SGVsbG8gQ0RLIQo=');
 
@@ -863,6 +866,12 @@ Fn.conditionAnd(
   // The AWS::Region pseudo-parameter value is NOT equal to "us-east-1"
   Fn.conditionNot(Fn.conditionEquals('us-east-1', Aws.REGION)),
 );
+
+// To use Fn::ToJsonString
+Fn.toJsonString(myObjectOrArray);
+
+// To use Fn::Length
+Fn.len(Fn.split(',', myArray));
 ```
 
 When working with deploy-time values (those for which `Token.isUnresolved`

@@ -38,4 +38,14 @@ alarm.addAlarmAction(
 );
 ```
 
+## SSM Incident Manager Action Example
+
+```ts
+declare const alarm: cloudwatch.Alarm;
+// Create an Incident Manager incident based on a specific response plan
+alarm.addAlarmAction(
+  new actions.SsmIncidentAction('ResponsePlanName')
+);
+```
+
 See `@aws-cdk/aws-cloudwatch` for more information.
