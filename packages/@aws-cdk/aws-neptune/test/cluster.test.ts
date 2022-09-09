@@ -119,7 +119,7 @@ describe('DatabaseCluster', () => {
   });
 
   test.each([
-    ['1.1.1.0', EngineVersion.V1_1_1_0],
+    ['1.1.1.0', EngineVersion.V1_1_1_0], ['1.2.0.0', EngineVersion.V1_2_0_0],
   ])('can create a cluster for engine version %s', (expected, version) => {
     // GIVEN
     const stack = testStack();
@@ -473,7 +473,7 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test('createGrant - creates IAM policy and enables IAM auth', () => {
+  test('createGrant - enables IAM auth and grants neptune-db:* to the specified grantee', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
