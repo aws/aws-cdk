@@ -375,7 +375,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
 
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (this.enableIamAuthentication === false) {
-      throw new Error('Cannot grant actions as IAM authentication is not enabled');
+      throw new Error('Cannot grant permissions as IAM authentication is disabled');
     }
 
     this.enableIamAuthentication = true;

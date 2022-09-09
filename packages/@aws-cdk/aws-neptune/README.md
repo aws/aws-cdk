@@ -70,7 +70,7 @@ The following example shows enabling IAM authentication for a database cluster a
 const cluster = new neptune.DatabaseCluster(this, 'Cluster', {
   vpc,
   instanceType: neptune.InstanceType.R5_LARGE,
-  iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
+  iamAuthentication: true, // Optional - will be automatically set if you call grantConnect() or grant().
 });
 const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
 // Use one of the following statements to grant the role the necessary permissions

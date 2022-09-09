@@ -544,7 +544,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(() => { cluster.grantConnect(role); }).toThrow(/Cannot grant actions as IAM authentication is not enabled/);
+    expect(() => { cluster.grantConnect(role); }).toThrow(/Cannot grant permissions as IAM authentication is disabled/);
   });
 
   test('grant - enables IAM auth and grants specified actions to the grantee', () => {
@@ -618,7 +618,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(() => { cluster.grant(role, 'neptune-db:ReadDataViaQuery', 'neptune-db:WriteDataViaQuery'); }).toThrow(/Cannot grant actions as IAM authentication is not enabled/);
+    expect(() => { cluster.grant(role, 'neptune-db:ReadDataViaQuery', 'neptune-db:WriteDataViaQuery'); }).toThrow(/Cannot grant permissions as IAM authentication is disabled/);
   });
 
   test('autoMinorVersionUpgrade is enabled when configured', () => {
