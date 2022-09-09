@@ -1,0 +1,58 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "c61e0f11a70b8ae390550b4477f611d7548cddc58c9a1808b8fa738c84e8849a": {
+      "source": {
+        "path": "asset.c61e0f11a70b8ae390550b4477f611d7548cddc58c9a1808b8fa738c84e8849a",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c61e0f11a70b8ae390550b4477f611d7548cddc58c9a1808b8fa738c84e8849a.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "6d591f099499066675f839dee783892f055c6748cad3ec707031bfb839a7dcf6": {
+      "source": {
+        "path": "asset.6d591f099499066675f839dee783892f055c6748cad3ec707031bfb839a7dcf6",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6d591f099499066675f839dee783892f055c6748cad3ec707031bfb839a7dcf6.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "bc90fc78bab5daff01b73ec5433b085e4324b6956f1c77d320a2d54fb8eb03f1": {
+      "source": {
+        "path": "asset.bc90fc78bab5daff01b73ec5433b085e4324b6956f1c77d320a2d54fb8eb03f1",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bc90fc78bab5daff01b73ec5433b085e4324b6956f1c77d320a2d54fb8eb03f1.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "8112ad5508e2643bdc358860414feb34c0375b34b86dfdaec27fab32c38ea900": {
+      "source": {
+        "path": "integ-lambda-python-poetry.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8112ad5508e2643bdc358860414feb34c0375b34b86dfdaec27fab32c38ea900.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
-import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
-import { IntegTest } from '@aws-cdk/integ-tests';
+import { App, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
@@ -11,41 +11,49 @@ import * as lambda from '../lib';
  */
 
 class TestStack extends Stack {
+  public readonly functionNames: string[] = [];
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const pythonFunctionInline = new lambda.PythonFunction(this, 'my_handler_inline', {
+    const pythonFunction39 = new lambda.PythonFunction(this, 'my_handler_inline', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       runtime: Runtime.PYTHON_3_9,
     });
-    new CfnOutput(this, 'InlineFunctionName', {
-      value: pythonFunctionInline.functionName,
-    });
+    this.functionNames.push(pythonFunction39.functionName);
 
     const pythonFunction38 = new lambda.PythonFunction(this, 'my_handler_python_38', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       runtime: Runtime.PYTHON_3_8,
     });
-    new CfnOutput(this, 'Python38FunctionName', {
-      value: pythonFunction38.functionName,
-    });
+    this.functionNames.push(pythonFunction38.functionName);
 
-    new lambda.PythonFunction(this, 'my_handler_python_37', {
+    const pythonFunction37 = new lambda.PythonFunction(this, 'my_handler_python_37', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       runtime: Runtime.PYTHON_3_7,
     });
+    this.functionNames.push(pythonFunction37.functionName);
 
   }
 }
 
 const app = new App();
-const testCase = new TestStack(app, 'cdk-integ-lambda-python');
+const testCase = new TestStack(app, 'integ-lambda-python-poetry');
 
-new IntegTest(app, 'poetry', {
+const integ = new IntegTest(app, 'poetry', {
   testCases: [testCase],
   // disabling update workflow because we don't want to include the assets in the snapshot
   // python bundling changes the asset hash pretty frequently
   stackUpdateWorkflow: false,
+});
+
+testCase.functionNames.forEach(functionName => {
+  const invoke = integ.assertions.invokeFunction({
+    functionName: functionName,
+  });
+
+  invoke.expect(ExpectedResult.objectLike({
+    Payload: '200',
+  }));
 });
 
 app.synth();

@@ -1,14 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "integ.function.sub": {
+    "function-sub/DefaultTest": {
       "stacks": [
-        "cdk-integ-lambda-python"
+        "integ-lambda-python-function-sub"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "stackUpdateWorkflow": false,
+      "assertionStack": "function-sub/DefaultTest/DeployAssert",
+      "assertionStackName": "functionsubDefaultTestDeployAssert6BC1DDE4"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
