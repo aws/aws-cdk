@@ -232,6 +232,14 @@ export interface EventSourceMappingOptions {
    * @default - none
    */
   readonly sourceAccessConfigurations?: SourceAccessConfiguration[]
+
+  /**
+   * Add filter criteria to Event Source
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   *
+   * @default - none
+   */
+  readonly filters?: Array<{[key: string]: any}>
 }
 
 /**
@@ -366,6 +374,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
+      filterCriteria: props.filters ? { filters: props.filters }: undefined,
       selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
     });
