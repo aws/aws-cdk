@@ -1,8 +1,6 @@
 import * as child_process from 'child_process';
-
-export interface ShellOptions extends child_process.SpawnOptions {
-  errorMessage: string;
-}
+import * as chalk from 'chalk';
+import { debug } from './logging';
 
 /**
  * OS helpers
@@ -10,10 +8,10 @@ export interface ShellOptions extends child_process.SpawnOptions {
  * Shell function which both prints to stdout and collects the output into a
  * string.
  */
-export async function shell(command: string[], options: ShellOptions): Promise<string> {
-  const child = child_process.spawn(command[0], renderArguments(command.slice(1)), {
-    shell: true,
-    ...options,
+export async function shell(command: string[]): Promise<string> {
+  const renderedCommand = renderCommandLine(command);
+  debug(`Executing ${chalk.blue(renderedCommand)}`);
+  const child = child_process.spawn(renderedCommand[0], renderCommandLine(renderedCommand.slice(1)), {
     stdio: ['ignore', 'pipe', 'inherit'],
   });
 
@@ -32,16 +30,16 @@ export async function shell(command: string[], options: ShellOptions): Promise<s
       if (code === 0) {
         resolve(Buffer.from(stdout).toString('utf-8'));
       } else {
-        reject(new Error(`${options.errorMessage} exited with error code ${code}`));
+        reject(new Error(`${renderedCommand} exited with error code ${code}`));
       }
     });
   });
 }
 
 /**
- * Render the arguments to include escape characters for each platform.
+ * Render the command line to include escape characters for each platform.
  */
-function renderArguments(cmd: string[]) {
+function renderCommandLine(cmd: string[]) {
   if (process.platform !== 'win32') {
     return doRender(cmd, hasAnyChars(' ', '\\', '!', '"', "'", '&', '$'), posixEscape);
   } else {

@@ -194,7 +194,7 @@ async function withTempDirWithSpaces(cb: (dir: string) => void | Promise<any>) {
   try {
     await cb(tmpDir);
   } finally {
-    // await fs.remove(tmpDir);
+    await fs.remove(tmpDir);
   }
 }
 
