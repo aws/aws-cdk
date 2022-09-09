@@ -272,6 +272,15 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable {
   readonly clusterReadEndpoint: Endpoint;
 
   /**
+   * Grant the given identity the specified actions
+   * @param grantee the identity to be granted the actions
+   * @param actions the data-access actions
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/iam-dp-actions.html
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
    * Grant the given identity connection access to the database.
    */
   grantConnect(grantee: iam.IGrantable): iam.Grant;
@@ -364,15 +373,15 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
 
   protected abstract enableIamAuthentication?: boolean;
 
-  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (this.enableIamAuthentication === false) {
-      throw new Error('Cannot grant connect when IAM authentication is disabled');
+      throw new Error('Cannot grant permissions when IAM authentication is disabled');
     }
 
     this.enableIamAuthentication = true;
     return iam.Grant.addToPrincipal({
       grantee,
-      actions: ['neptune-db:*'],
+      actions,
       resourceArns: [
         [
           'arn',
@@ -384,6 +393,10 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
         ].join(':'),
       ],
     });
+  }
+
+  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, 'neptune-db:*');
   }
 }
 
