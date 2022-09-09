@@ -39,6 +39,13 @@ export interface BucketDeploymentProps {
   readonly destinationKeyPrefix?: string;
 
   /**
+   * If this is set, the zip file will be synced to the destination S3 bucket and extracted.
+   * If false, the file will remain zipped in the destination bucket.
+   * @default true
+   */
+  readonly extract?: boolean;
+
+  /**
    * If this is set, matching files or objects will be excluded from the deployment's sync
    * command. This can be used to exclude a file from being pruned in the destination bucket.
    *
@@ -350,6 +357,7 @@ export class BucketDeployment extends Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
+        Extract: props.extract,
         Prune: props.prune ?? true,
         Exclude: props.exclude,
         Include: props.include,

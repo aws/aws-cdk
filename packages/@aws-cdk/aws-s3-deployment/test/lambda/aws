@@ -15,8 +15,12 @@ import shutil
 
 scriptdir=os.path.dirname(os.path.realpath(__file__))
 
-# if "cp" is called with a local destination, copy a test zip file to the destination or 
-if sys.argv[2] == "cp" and not sys.argv[4].startswith("s3://"):
+# if "cp" is called to contents, copy a test zip file to contents
+# else if "cp" is called with a local destination, copy a test zip file to the destination or
+if sys.argv[2] == "cp" and sys.argv[4].endswith("/contents"):
+    shutil.copy(os.path.join(scriptdir, 'test.zip'), sys.argv[4])
+    sys.argv[4] = "/tmp/contents"
+elif sys.argv[2] == "cp" and not sys.argv[4].startswith("s3://"):
     shutil.copyfile(os.path.join(scriptdir, 'test.zip'), sys.argv[4])
     sys.argv[4] = "archive.zip"
 

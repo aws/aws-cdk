@@ -943,6 +943,25 @@ test('deploy with multiple exclude and include filters', () => {
   });
 });
 
+test('deploy without extracting files in destination', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    Extract: false,
+  });
+});
+
+
 test('deployment allows vpc to be implicitly supplied to lambda', () => {
 
   // GIVEN

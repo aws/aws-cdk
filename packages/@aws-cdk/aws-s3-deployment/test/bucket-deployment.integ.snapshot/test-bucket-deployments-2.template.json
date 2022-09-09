@@ -9,6 +9,10 @@
       "Value": "true"
      },
      {
+      "Key": "aws-cdk:cr-owned:0ac1b9c4",
+      "Value": "true"
+     },
+     {
       "Key": "aws-cdk:cr-owned:12c80047",
       "Value": "true"
      },
@@ -167,7 +171,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39ee629321f531fffd853b944b2d6f3fa7b5276431c9a4fd4dc681303ab15080.zip"
+     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -370,7 +374,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da.zip"
+     "S3Key": "bc935fa4a9499a4b71f067e37a7f05ed05bbcdbf4dc33a44747bc8da38db7e92.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -790,7 +794,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39ee629321f531fffd853b944b2d6f3fa7b5276431c9a4fd4dc681303ab15080.zip"
+     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
     },
     "Description": "/opt/awscli/aws"
    },
@@ -1234,7 +1238,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da.zip"
+     "S3Key": "bc935fa4a9499a4b71f067e37a7f05ed05bbcdbf4dc33a44747bc8da38db7e92.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1408,7 +1412,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39ee629321f531fffd853b944b2d6f3fa7b5276431c9a4fd4dc681303ab15080.zip"
+     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1534,7 +1538,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39ee629321f531fffd853b944b2d6f3fa7b5276431c9a4fd4dc681303ab15080.zip"
+     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1581,7 +1585,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39ee629321f531fffd853b944b2d6f3fa7b5276431c9a4fd4dc681303ab15080.zip"
+     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1619,7 +1623,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39ee629321f531fffd853b944b2d6f3fa7b5276431c9a4fd4dc681303ab15080.zip"
+     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1649,6 +1653,45 @@
     "Exclude": [
      "*.gif"
     ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DeployMeWithoutExtractingFilesOnDestinationAwsCliLayerC65F79D8": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
+  },
+  "DeployMeWithoutExtractingFilesOnDestinationCustomResourceF1CAAF89": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     }
+    ],
+    "SourceObjectKeys": [
+     "fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e.zip"
+    ],
+    "DestinationBucketName": {
+     "Ref": "Destination920A3C57"
+    },
+    "RetainOnDelete": false,
+    "Extract": false,
+    "Prune": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
