@@ -3,7 +3,7 @@
   "testCases": {
     "poetry/DefaultTest": {
       "stacks": [
-        "cdk-integ-lambda-python"
+        "integ-lambda-python-poetry"
       ],
       "stackUpdateWorkflow": false,
       "assertionStack": "poetry/DefaultTest/DeployAssert",
