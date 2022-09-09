@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "SQSFilterCriteria/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-filter-criteria-sqs"
+      ],
+      "assertionStack": "SQSFilterCriteria/DefaultTest/DeployAssert",
+      "assertionStackName": "SQSFilterCriteriaDefaultTestDeployAssert70A9A808"
+    }
+  }
+}
