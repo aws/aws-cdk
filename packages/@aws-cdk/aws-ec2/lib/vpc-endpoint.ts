@@ -258,6 +258,7 @@ export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService
  * An AWS service for an interface VPC endpoint.
  */
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
+  public static readonly SAGEMAKER_STUDIO = new InterfaceVpcEndpointAwsService('studio', 'aws.sagemaker');
   public static readonly SAGEMAKER_NOTEBOOK = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
   public static readonly ATHENA = new InterfaceVpcEndpointAwsService('athena');
   public static readonly APPLICATION_AUTOSCALING = new InterfaceVpcEndpointAwsService('application-autoscaling');
