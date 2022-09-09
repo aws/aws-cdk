@@ -1,4 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as sources from '../lib';
@@ -283,5 +284,34 @@ describe('SQSEventSource', () => {
     });
 
 
+  });
+
+  test('adding filter criteria', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      filters: [
+        lambda.FilterCriteria.filter({
+          body: {
+            id: lambda.FilterRule.exists(),
+          },
+        }),
+      ],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'FilterCriteria': {
+        'Filters': [
+          {
+            'Pattern': '{"body":{"id":[{"exists":true}]}}',
+          },
+        ],
+      },
+    });
   });
 });

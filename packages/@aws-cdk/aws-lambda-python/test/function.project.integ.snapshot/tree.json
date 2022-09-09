@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.95"
         }
       },
       "cdk-integ-lambda-function-project": {
@@ -28,8 +28,8 @@
                     "id": "Stage",
                     "path": "cdk-integ-lambda-function-project/Shared/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -56,7 +56,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f1eb849ae54216b1a7785bca3aa8031a4671eac68c1997e3b6a500336fd6d8fa.zip"
+                      "s3Key": "33674c5088a855fbd87f051a085794b3bd1bd41823d88091874d5f4f1b8ad884.zip"
                     },
                     "compatibleRuntimes": [
                       "python3.9"
@@ -135,8 +135,8 @@
                     "id": "Stage",
                     "path": "cdk-integ-lambda-function-project/my_handler/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -163,7 +163,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "55a6269bb8a00cf3b6d0b295a87c2fb8670afbeceb4427622bd38f248abfd3ed.zip"
+                      "s3Key": "708ad240e424cc18dd8b85017f9e1173ac983ddd3b387b9f4df3577ea60e4a65.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -191,24 +191,214 @@
               "version": "0.0.0"
             }
           },
-          "FunctionArn": {
-            "id": "FunctionArn",
-            "path": "cdk-integ-lambda-function-project/FunctionArn",
+          "Exports": {
+            "id": "Exports",
+            "path": "cdk-integ-lambda-function-project/Exports",
+            "children": {
+              "Output{\"Ref\":\"myhandlerD202FA8E\"}": {
+                "id": "Output{\"Ref\":\"myhandlerD202FA8E\"}",
+                "path": "cdk-integ-lambda-function-project/Exports/Output{\"Ref\":\"myhandlerD202FA8E\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.95"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "lambda-python-project": {
+        "id": "lambda-python-project",
+        "path": "lambda-python-project",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "lambda-python-project/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "lambda-python-project/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.95"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "lambda-python-project/DefaultTest/DeployAssert",
+                "children": {
+                  "LambdaInvoke431773224924ebf10c8a31d363a6bf16": {
+                    "id": "LambdaInvoke431773224924ebf10c8a31d363a6bf16",
+                    "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.95"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertEqualsLambdainvoke": {
+                        "id": "AssertEqualsLambdainvoke",
+                        "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke",
+                        "children": {
+                          "AssertionProvider": {
+                            "id": "AssertionProvider",
+                            "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/AssertionProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/AssertionProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.95"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/Default",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/Default/Default",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssertionResults": {
+                            "id": "AssertionResults",
+                            "path": "lambda-python-project/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/AssertionResults",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnOutput",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.EqualsAssertion",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "lambda-python-project/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "lambda-python-project/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "lambda-python-project/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "lambda-python-project/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.95"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

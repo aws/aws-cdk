@@ -73,7 +73,7 @@ const cluster = new neptune.DatabaseCluster(this, 'Cluster', {
   iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
 });
 const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
-cluster.grantConnect(role); // Grant the role connection access to the DB.
+cluster.grantConnect(role); // Grant the role neptune-db:* access to the DB.
 ```
 
 ## Customizing parameters
@@ -103,6 +103,8 @@ const cluster = new neptune.DatabaseCluster(this, 'Database', {
   parameterGroup: dbParams,
 });
 ```
+
+Note: if you want to use Neptune engine `1.2.0.0` or later, you need to specify the corresponding `engineVersion` prop to `neptune.DatabaseCluster` and `family` prop of `ParameterGroupFamily.NEPTUNE_1_2` to `neptune.ClusterParameterGroup` and `neptune.ParameterGroup`.
 
 ## Adding replicas
 
