@@ -66,6 +66,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * validated using DNS validation against the specified Route 53 hosted zone.
  *
  * @resource AWS::CertificateManager::Certificate
+ * @deprecated use {@link Certificate} instead
  */
 export class DnsValidatedCertificate extends CertificateBase implements ICertificate, cdk.ITaggable {
   public readonly certificateArn: string;

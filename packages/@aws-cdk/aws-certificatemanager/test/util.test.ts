@@ -1,4 +1,5 @@
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Aws, Stack } from '@aws-cdk/core';
 import { Certificate, DnsValidatedCertificate } from '../lib';
 import { apexDomain, getCertificateRegion, isDnsValidatedCertificate } from '../lib/util';
@@ -15,7 +16,7 @@ describe('apex domain', () => {
 });
 
 describe('isDnsValidatedCertificate', () => {
-  test('new DnsValidatedCertificate is a DnsValidatedCertificate', () => {
+  testDeprecated('new DnsValidatedCertificate is a DnsValidatedCertificate', () => {
     const stack = new Stack();
 
     const hostedZone = new PublicHostedZone(stack, 'ExampleDotCom', {
@@ -61,7 +62,7 @@ describe('getCertificateRegion', () => {
     expect(getCertificateRegion(certificate)).toEqual('eu-west-1');
   });
 
-  test('from DnsValidatedCertificate region', () => {
+  testDeprecated('from DnsValidatedCertificate region', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'RegionStack', { env: { region: 'eu-west-1' } });

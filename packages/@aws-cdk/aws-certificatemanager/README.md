@@ -100,16 +100,57 @@ new acm.Certificate(this, 'Certificate', {
 ## Cross-region Certificates
 
 ACM certificates that are used with CloudFront -- or higher-level constructs which rely on CloudFront -- must be in the `us-east-1` region.
-The `DnsValidatedCertificate` construct exists to facilitate creating these certificates cross-region. This resource can only be used with
-Route53-based DNS validation.
+CloudFormation allows you to create a Stack with a CloudFront distribution in any region. In order
+to create an ACM certificate in us-east-1 and reference it in a CloudFront distribution is a
+different region, it is recommended to perform a multi stack deployment.
+
+First create the certificate in `us-east-1`.
 
 ```ts
-declare const myHostedZone: route53.HostedZone;
-new acm.DnsValidatedCertificate(this, 'CrossRegionCertificate', {
-  domainName: 'hello.example.com',
-  hostedZone: myHostedZone,
-  region: 'us-east-1',
+const east1Stack = new Stack(this, 'East1', {
+  env: {
+    region: 'us-east-1',
+  },
 });
+
+const cert = new acm.Certificate(east1Stack, 'Cert', {
+  domainName: '*.example.com',
+  validation: acm.CertificateValidation.fromDns(PublicHostedZone.fromHostedZoneId(east1Stack, 'Zone', 'ZONE_ID')),
+});
+
+// save the certificate in an SSM parameter so it can be looked up later
+const output = new StringParameter(east1Stack, 'CertificateArn', {
+  // generate a physical name for cross region reference
+  parameterName: `${Names.uniqueResourceName(cert, {})}Parameter`,
+  stringValue: cert.certificateArn,
+});
+```
+
+And then lookup the certificate using a Custom Resource in the CloudFront stack.
+
+```ts
+declare const output: StringParameter;
+
+const east2Stack = new Stack(this, 'East2', {
+  env: {
+    region: 'us-east-2',
+  },
+});
+
+const lookup = new AwsCustomResource(east2Stack, 'CertLookup', {
+  onUpdate: {
+    action: 'getParameter',
+    service: 'SSM',
+    region: 'us-east-1',
+    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.Value'),
+    parameters: {
+      Name: output.parameterName,
+    },
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: ['*'] }),
+});
+
+const lookedUpCert = acm.Certificate.fromCertificateArn(east2Stack, 'Cert', lookup.getResponseField('Parameter.Value'));
 ```
 
 ## Requesting private certificates
