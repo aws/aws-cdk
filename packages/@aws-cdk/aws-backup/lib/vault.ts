@@ -103,7 +103,10 @@ export interface BackupVaultProps {
 }
 
 /**
- * Backup vault events
+ * Backup vault events. Some events are no longer supported and will not return 
+ * statuses or notifications.
+ *
+ * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/API_PutBackupVaultNotifications.html#API_PutBackupVaultNotifications_RequestBody
  */
 export enum BackupVaultEvents {
   /** BACKUP_JOB_STARTED */
