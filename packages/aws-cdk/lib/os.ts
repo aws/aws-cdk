@@ -12,6 +12,8 @@ export async function shell(command: string[]): Promise<string> {
   const renderedCommand = renderCommandLine(command);
   debug(`Executing ${chalk.blue(renderedCommand)}`);
   const child = child_process.spawn(renderedCommand[0], renderCommandLine(renderedCommand.slice(1)), {
+    // Need this for Windows where we want .cmd and .bat to be found as well.
+    shell: true,
     stdio: ['ignore', 'pipe', 'inherit'],
   });
 

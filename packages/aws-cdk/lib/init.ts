@@ -280,7 +280,7 @@ async function listDirectory(dirPath: string) {
     .filter(p => !p.startsWith('.'))
     .filter(p => !(p === 'LICENSE'))
     // if, for some reason, the temp folder for the hook doesn't get deleted we don't want to display it in this list
-    .filter(p => !(p.startsWith(HOOK_DIR_PREFIX)))
+    .filter(p => !p.startsWith(HOOK_DIR_PREFIX))
     .filter(p => !(p === INFO_DOT_JSON))
     .sort();
 }
@@ -297,13 +297,7 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-async function initializeProject(
-  template: InitTemplate,
-  language: string,
-  canUseNetwork: boolean,
-  generateOnly: boolean,
-  workDir: string,
-) {
+async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean, workDir: string) {
   await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
   await template.install(language, workDir);
