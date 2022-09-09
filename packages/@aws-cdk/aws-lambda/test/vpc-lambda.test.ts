@@ -238,7 +238,7 @@ describe('lambda + vpc', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -303,7 +303,7 @@ describe('lambda + vpc', () => {
         },
         {
           name: 'Private',
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         },
         {
           name: 'Isolated',

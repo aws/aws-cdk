@@ -391,17 +391,6 @@
     }
    }
   },
-  "ParamsA8366201": {
-   "Type": "AWS::Neptune::DBClusterParameterGroup",
-   "Properties": {
-    "Description": "A nice parameter group",
-    "Family": "neptune1",
-    "Parameters": {
-     "neptune_enable_audit_log": "1",
-     "neptune_query_timeout": "100000"
-    }
-   }
-  },
   "DbSecurity381C2C15": {
    "Type": "AWS::KMS::Key",
    "Properties": {
@@ -436,6 +425,17 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "ParamsA8366201": {
+   "Type": "AWS::Neptune::DBClusterParameterGroup",
+   "Properties": {
+    "Description": "A nice parameter group",
+    "Family": "neptune1",
+    "Parameters": {
+     "neptune_enable_audit_log": "1",
+     "neptune_query_timeout": "100000"
+    }
+   }
   },
   "DatabaseSubnets3C9252C9": {
    "Type": "AWS::Neptune::DBSubnetGroup",
