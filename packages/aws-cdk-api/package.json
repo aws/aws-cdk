@@ -1,0 +1,76 @@
+{
+  "name": "aws-cdk-api",
+  "description": "AWS CDK Programmatic API",
+  "version": "0.0.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "awslint": "cdk-awslint",
+    "build": "cdk-build",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test": "yarn build && yarn test",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "pkglint": "pkglint -f",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "test": "cdk-test",
+    "watch": "cdk-watch"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:aws-cdk-api.AwsCdkApi"
+    ]
+  },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/node-bundle": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^14.18.32",
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "aws-cdk": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/aws-cdk-api"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "publishConfig": {
+    "tag": "latest"
+  }
+}

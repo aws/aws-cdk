@@ -1,0 +1,8 @@
+// Fixture with an AwsCdkApi set up
+import core = require('@aws-cdk/core');
+const { AwsCdkApi } = require('aws-cdk-api');
+
+declare const app: core.App;
+const cdk = AwsCdkApi.fromApp(app);
+
+/// here
