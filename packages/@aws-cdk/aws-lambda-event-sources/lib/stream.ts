@@ -28,9 +28,11 @@ export interface BaseStreamEventSourceProps{
 
   /**
    * The maximum amount of time to gather records before invoking the function.
-   * Maximum of Duration.minutes(5)
+   * Maximum of Duration.minutes(5).
    *
-   * @default Duration.seconds(0)
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html#invocation-eventsourcemapping-batching
+   *
+   * @default - Duration.seconds(0) for Kinesis, DynamoDB, and SQS event sources, Duration.millis(500) for MSK, self-managed Kafka, and Amazon MQ.
    */
   readonly maxBatchingWindow?: Duration;
 
