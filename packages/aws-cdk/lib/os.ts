@@ -9,9 +9,9 @@ import { debug } from './logging';
  * string.
  */
 export async function shell(command: string[]): Promise<string> {
-  const renderedCommand = renderCommandLine(command);
-  debug(`Executing ${chalk.blue(renderedCommand)}`);
-  const child = child_process.spawn(renderedCommand[0], renderCommandLine(renderedCommand.slice(1)), {
+  const commandLine = renderCommandLine(command);
+  debug(`Executing ${chalk.blue(commandLine)}`);
+  const child = child_process.spawn(command[0], renderArguments(command.slice(1)), {
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
     stdio: ['ignore', 'pipe', 'inherit'],
@@ -32,16 +32,20 @@ export async function shell(command: string[]): Promise<string> {
       if (code === 0) {
         resolve(Buffer.from(stdout).toString('utf-8'));
       } else {
-        reject(new Error(`${renderedCommand} exited with error code ${code}`));
+        reject(new Error(`${commandLine} exited with error code ${code}`));
       }
     });
   });
 }
 
-/**
- * Render the command line to include escape characters for each platform.
- */
 function renderCommandLine(cmd: string[]) {
+  return renderArguments(cmd).join(' ');
+}
+
+/**
+ * Render the arguments to include escape characters for each platform.
+ */
+function renderArguments(cmd: string[]) {
   if (process.platform !== 'win32') {
     return doRender(cmd, hasAnyChars(' ', '\\', '!', '"', "'", '&', '$'), posixEscape);
   } else {
