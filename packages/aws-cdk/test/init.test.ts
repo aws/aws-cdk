@@ -76,6 +76,28 @@ describe('constructs version', () => {
     expect(sln).toContainEqual(expect.stringMatching(/\"AwsCdkTest[a-zA-Z0-9]{6}\\AwsCdkTest[a-zA-Z0-9]{6}.fsproj\"/));
   });
 
+  cliTestWithDirSpaces('csharp app with spaces', async (workDir) => {
+    await cliInit('app', 'csharp', false, true, workDir);
+
+    const csprojFile = (await recursiveListFiles(workDir)).filter(f => f.endsWith('.csproj'))[0];
+    expect(csprojFile).toBeDefined();
+
+    const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
+
+    expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+  });
+
+  cliTestWithDirSpaces('fsharp app with spaces', async (workDir) => {
+    await cliInit('app', 'fsharp', false, true, workDir);
+
+    const fsprojFile = (await recursiveListFiles(workDir)).filter(f => f.endsWith('.fsproj'))[0];
+    expect(fsprojFile).toBeDefined();
+
+    const fsproj = (await fs.readFile(fsprojFile, 'utf8')).split(/\r?\n/);
+
+    expect(fsproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+  });
+
   cliTest('create a Python app project', async (workDir) => {
     await cliInit('app', 'python', false, true, workDir);
 
@@ -147,7 +169,6 @@ describe('constructs version', () => {
 });
 
 test('when no version number is present (e.g., local development), the v2 templates are chosen by default', async () => {
-
   expect((await availableInitTemplates()).length).toBeGreaterThan(0);
 });
 
@@ -157,6 +178,19 @@ function cliTest(name: string, handler: (dir: string) => void | Promise<any>): v
 
 async function withTempDir(cb: (dir: string) => void | Promise<any>) {
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
+  try {
+    await cb(tmpDir);
+  } finally {
+    await fs.remove(tmpDir);
+  }
+}
+
+function cliTestWithDirSpaces(name: string, handler: (dir: string) => void | Promise<any>): void {
+  test(name, () => withTempDirWithSpaces(handler));
+}
+
+async function withTempDirWithSpaces(cb: (dir: string) => void | Promise<any>) {
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test with-space'));
   try {
     await cb(tmpDir);
   } finally {
