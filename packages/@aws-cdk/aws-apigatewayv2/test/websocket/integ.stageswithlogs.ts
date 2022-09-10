@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
+import { Duration, RemovalPolicy } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as apigw from '../../lib';
 
@@ -19,6 +20,7 @@ new apigw.WebSocketStage(stack, 'WebSocketDevStage', {
   dataTraceLoggingLevel: 'INFO',
 });
 
+// Stage with access and data trace logging enabled.
 new apigw.WebSocketStage(stack, 'WebSocketProdStage', {
   webSocketApi,
   stageName: 'prod',
@@ -28,6 +30,19 @@ new apigw.WebSocketStage(stack, 'WebSocketProdStage', {
   },
   accessLogEnabled: true,
   dataTraceLoggingLevel: 'INFO',
+});
+
+// Stage with data trace log using non-default parameters.
+new apigw.WebSocketStage(stack, 'WebSocketBetaStage', {
+  webSocketApi,
+  stageName: 'beta',
+  throttle: {
+    rateLimit: 1000,
+    burstLimit: 1000,
+  },
+  dataTraceLoggingLevel: 'INFO',
+  dataTraceLogRetention: Duration.days(7),
+  dataTraceLogRemovalPolicy: RemovalPolicy.RETAIN,
 });
 
 const websocketApiWithExternalLogGroup = new apigw.WebSocketApi(stack, 'WebSocketApiWithExternalLogGroup');
