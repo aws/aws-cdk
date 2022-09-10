@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/665e7b850d69db86fd56f0d0ab447f4719d3a002fa8412f47cc4b456bca262f6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0949f9998b75a61684c2b5f5dce314141e1cb261220caae09a31c81d080b1410.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -103,6 +103,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "WebSocketProdStage7A23B950"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketBetaStage/data-trace-logging-log-group": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketBetaStagedatatraceloggingloggroupC8DEA66A"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketBetaStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketBetaStage0917B5B6"
           }
         ],
         "/aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketApiWithExternalLogGroup/Resource": [

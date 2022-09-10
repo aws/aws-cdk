@@ -212,6 +212,41 @@
     }
    }
   },
+  "WebSocketBetaStagedatatraceloggingloggroupC8DEA66A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/apigateway/",
+       {
+        "Ref": "WebSocketApi34BCF99B"
+       },
+       "/beta"
+      ]
+     ]
+    },
+    "RetentionInDays": 1
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "WebSocketBetaStage0917B5B6": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApi34BCF99B"
+    },
+    "StageName": "beta",
+    "DefaultRouteSettings": {
+     "DataTraceEnabled": true,
+     "LoggingLevel": "INFO",
+     "ThrottlingBurstLimit": 1000,
+     "ThrottlingRateLimit": 1000
+    }
+   }
+  },
   "WebSocketApiWithExternalLogGroupDCF7BBC9": {
    "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
