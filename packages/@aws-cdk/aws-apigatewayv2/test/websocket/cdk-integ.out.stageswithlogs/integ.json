@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "WebSocketStageWithLogsTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-apigatewayv2-websocket-stage-test"
+      ],
+      "assertionStack": "WebSocketStageWithLogsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "WebSocketStageWithLogsTestDefaultTestDeployAssert159008C9"
+    }
+  }
+}
