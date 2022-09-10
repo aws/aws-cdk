@@ -1,4 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
@@ -22,6 +23,11 @@ const kmsKey = new kms.Key(stack, 'DbSecurity', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+  description: 'AWS Sagemaker notebooks role example for interacting with Neptune Database Cluster',
+});
+
 const clusterParameterGroup = new ClusterParameterGroup(stack, 'Params', {
   description: 'A nice parameter group',
   family: ParameterGroupFamily.NEPTUNE_1_2,
@@ -43,6 +49,8 @@ const cluster = new DatabaseCluster(stack, 'Database', {
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+
+cluster.grant(role, 'neptune-db:ReadDataViaQuery', 'neptune-db:GetEngineStatus');
 
 new integ.IntegTest(app, 'ClusterTest', {
   testCases: [stack],
