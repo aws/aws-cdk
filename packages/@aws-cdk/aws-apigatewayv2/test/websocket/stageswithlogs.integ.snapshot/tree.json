@@ -364,7 +364,7 @@
                         ]
                       ]
                     },
-                    "retentionInDays": 1
+                    "retentionInDays": 7
                   }
                 },
                 "constructInfo": {

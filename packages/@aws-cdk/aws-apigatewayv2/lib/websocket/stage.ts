@@ -148,7 +148,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
     // If the user has specfied a retention time and/or removal policy for the log group use it,
     // otherwise make it a 30 day retention and a removal policy of DESTROY.
     if (props.dataTraceLoggingLevel && props.dataTraceLoggingLevel !== 'OFF') {
-      const retentionInDays = !props.dataTraceLogRetention ? 30 : Math.min(props.dataTraceLogRetention.toDays(), 1);
+      const retentionInDays = !props.dataTraceLogRetention ? 30 : Math.max(props.dataTraceLogRetention.toDays(), 1);
 
       // There is no parameter for CfnStage that will accept a non-default log group, however
       // if the log group is created before API Gateway tries to create a log entry for a data trace
