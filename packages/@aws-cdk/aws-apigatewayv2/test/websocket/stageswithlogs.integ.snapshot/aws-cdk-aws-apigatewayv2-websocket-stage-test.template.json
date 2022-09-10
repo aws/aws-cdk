@@ -227,7 +227,7 @@
       ]
      ]
     },
-    "RetentionInDays": 1
+    "RetentionInDays": 7
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
