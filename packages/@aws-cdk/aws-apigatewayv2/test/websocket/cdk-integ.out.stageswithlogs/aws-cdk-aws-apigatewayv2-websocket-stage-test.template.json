@@ -8,7 +8,27 @@
     "RouteSelectionExpression": "$request.body.action"
    }
   },
-  "WebSocketDevStageIAMRoleForAccessLogdevC55BCE73": {
+  "WebSocketDevStagedatatraceloggingloggroup894CB79B": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/apigateway/",
+       {
+        "Ref": "WebSocketApi34BCF99B"
+       },
+       "/dev"
+      ]
+     ]
+    },
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "WebSocketDevStageIAMRoleForAccessLogB2EAD11C": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -40,14 +60,16 @@
    },
    "DependsOn": [
     "WebSocketApi34BCF99B"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "WebSocketDevStageaccount02DC9EE0": {
    "Type": "AWS::ApiGateway::Account",
    "Properties": {
     "CloudWatchRoleArn": {
      "Fn::GetAtt": [
-      "WebSocketDevStageIAMRoleForAccessLogdevC55BCE73",
+      "WebSocketDevStageIAMRoleForAccessLogB2EAD11C",
       "Arn"
      ]
     }
@@ -56,7 +78,7 @@
     "WebSocketApi34BCF99B"
    ]
   },
-  "WebSocketDevStageAccessLoggingGroupdev392340B6": {
+  "WebSocketDevStageAccessLoggingGroupD9D0A523": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 30
@@ -74,7 +96,7 @@
     "AccessLogSettings": {
      "DestinationArn": {
       "Fn::GetAtt": [
-       "WebSocketDevStageAccessLoggingGroupdev392340B6",
+       "WebSocketDevStageAccessLoggingGroupD9D0A523",
        "Arn"
       ]
      },
@@ -88,7 +110,27 @@
     }
    }
   },
-  "WebSocketProdStageIAMRoleForAccessLogprodFB0B51EA": {
+  "WebSocketProdStagedatatraceloggingloggroup36946BB8": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/apigateway/",
+       {
+        "Ref": "WebSocketApi34BCF99B"
+       },
+       "/prod"
+      ]
+     ]
+    },
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "WebSocketProdStageIAMRoleForAccessLog21FA1F7A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -120,14 +162,16 @@
    },
    "DependsOn": [
     "WebSocketApi34BCF99B"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "WebSocketProdStageaccount61A6A2A5": {
    "Type": "AWS::ApiGateway::Account",
    "Properties": {
     "CloudWatchRoleArn": {
      "Fn::GetAtt": [
-      "WebSocketProdStageIAMRoleForAccessLogprodFB0B51EA",
+      "WebSocketProdStageIAMRoleForAccessLog21FA1F7A",
       "Arn"
      ]
     }
@@ -136,7 +180,7 @@
     "WebSocketApi34BCF99B"
    ]
   },
-  "WebSocketProdStageAccessLoggingGroupprod11396295": {
+  "WebSocketProdStageAccessLoggingGroup79A5DEC2": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 30
@@ -154,7 +198,7 @@
     "AccessLogSettings": {
      "DestinationArn": {
       "Fn::GetAtt": [
-       "WebSocketProdStageAccessLoggingGroupprod11396295",
+       "WebSocketProdStageAccessLoggingGroup79A5DEC2",
        "Arn"
       ]
      },
@@ -201,6 +245,40 @@
      "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\"}}"
     }
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

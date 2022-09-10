@@ -7,7 +7,7 @@
     "ProtocolType": "HTTP"
    }
   },
-  "HttpDevStageWithPropertiesIAMRoleForAccessLogdev15F41A64": {
+  "HttpDevStageWithPropertiesIAMRoleForAccessLog1880B487": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -39,14 +39,16 @@
    },
    "DependsOn": [
     "HttpApiWithTwoStages0E0DEF3D"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "HttpDevStageWithPropertiesaccount599CEC2F": {
    "Type": "AWS::ApiGateway::Account",
    "Properties": {
     "CloudWatchRoleArn": {
      "Fn::GetAtt": [
-      "HttpDevStageWithPropertiesIAMRoleForAccessLogdev15F41A64",
+      "HttpDevStageWithPropertiesIAMRoleForAccessLog1880B487",
       "Arn"
      ]
     }
@@ -55,7 +57,7 @@
     "HttpApiWithTwoStages0E0DEF3D"
    ]
   },
-  "HttpDevStageWithPropertiesAccessLoggingGroupdevEFE36386": {
+  "HttpDevStageWithPropertiesAccessLoggingGroup59709639": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 30
@@ -73,7 +75,7 @@
     "AccessLogSettings": {
      "DestinationArn": {
       "Fn::GetAtt": [
-       "HttpDevStageWithPropertiesAccessLoggingGroupdevEFE36386",
+       "HttpDevStageWithPropertiesAccessLoggingGroup59709639",
        "Arn"
       ]
      },
@@ -86,7 +88,7 @@
     }
    }
   },
-  "HttpProdStageWithPropertiesIAMRoleForAccessLogprod8B4DB8CF": {
+  "HttpProdStageWithPropertiesIAMRoleForAccessLog88F64B9D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -118,14 +120,16 @@
    },
    "DependsOn": [
     "HttpApiWithTwoStages0E0DEF3D"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "HttpProdStageWithPropertiesaccountD7482B22": {
    "Type": "AWS::ApiGateway::Account",
    "Properties": {
     "CloudWatchRoleArn": {
      "Fn::GetAtt": [
-      "HttpProdStageWithPropertiesIAMRoleForAccessLogprod8B4DB8CF",
+      "HttpProdStageWithPropertiesIAMRoleForAccessLog88F64B9D",
       "Arn"
      ]
     }
@@ -134,7 +138,7 @@
     "HttpApiWithTwoStages0E0DEF3D"
    ]
   },
-  "HttpProdStageWithPropertiesAccessLoggingGroupprodE24A9D48": {
+  "HttpProdStageWithPropertiesAccessLoggingGroup04FD3616": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 30
@@ -152,7 +156,7 @@
     "AccessLogSettings": {
      "DestinationArn": {
       "Fn::GetAtt": [
-       "HttpProdStageWithPropertiesAccessLoggingGroupprodE24A9D48",
+       "HttpProdStageWithPropertiesAccessLoggingGroup04FD3616",
        "Arn"
       ]
      },
@@ -197,6 +201,40 @@
      "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\"}}"
     }
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }
