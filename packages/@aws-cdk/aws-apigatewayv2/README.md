@@ -473,6 +473,11 @@ new apigwv2.WebSocketStage(this, 'WebSocketDev', {
 });
 ```
 
+The data trace log will show up with a name /aws/apigatway/<api gateway id>.  By default it'll have a retention period of
+30 days and a removal policy of DESTROY.  However, these may be overridden using the properties dataTraceLogRetention and 
+dataTraceLogRemovalPolicy as shown above.  If dataTraceLoggingLevel is not specified or if it has a value of 'OFF', then
+dataTraceLogRetention and dataTraceLogRemovalPolicy will have no effect.
+
 ## Access Logs
 
 Access logging is available for both HTTP and WebSocket APIs.
