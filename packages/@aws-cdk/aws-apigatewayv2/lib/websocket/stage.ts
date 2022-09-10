@@ -1,7 +1,7 @@
 import { CfnAccount } from '@aws-cdk/aws-apigateway';
 import { Grant, IGrantable, Role, ServicePrincipal, ManagedPolicy } from '@aws-cdk/aws-iam';
 import { CfnLogGroup } from '@aws-cdk/aws-logs';
-import { RemovalPolicy, Stack, PhysicalName } from '@aws-cdk/core';
+import { RemovalPolicy, Stack, PhysicalName, Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
 import { StageOptions, IApi, IStage, StageAttributes, defaultAccessLogFormat } from '../common';
@@ -49,17 +49,19 @@ export interface WebSocketStageProps extends StageOptions {
   readonly dataTraceLoggingLevel?: string;
 
   /**
-   * If true it stops the creation of a data trace log group, which 
-   * controls the retention properties of the group.  Set to true
-   * if the default behavior (no limit on log entry retentions, group
-   * is not deleted when it's parent stack is deleted) is desired or
-   * if the caller has already created the log group. Note that this
-   * setting has no effect if dataTraceLoggingLevel isn't specified or
-   * is set to OFF.
-   * 
-   * @default - false
+   * The age at which log entries in the data trace log should be automatically deleted.
+   *
+   * @default Duration.days(30)
    */
-  readonly inhibitDataTraceLogGroupCreation?: boolean;
+  readonly dataTraceLogRetention?: Duration
+
+  /**
+   * Specifies whether the data trace log should be deleted when the stack that
+   * contains it gets deleted or not.
+   *
+   * @default RemovalPolicy.DESTROY (i.e. the data trace log gets deleted when the stack that contains it is deleted.)
+   */
+  readonly dataTraceLogRemovalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -137,17 +139,20 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
           loggingLevel: props.dataTraceLoggingLevel,
         };
 
-    // If the user has turned on data access logging and hasn't inhibited the creation
-    // of the data access log group, create the group with 30 day retention and have it 
-    // be deleted when the stack that contains it is deleted.  This is far more likely to
-    // be reasonable behavior from a user point of view than the default (i.e. no limit on
-    // log entry retention and the group is retained when the stack that contains it is deleted)
-    if (props.dataTraceLoggingLevel && props.dataTraceLoggingLevel !== 'OFF' && !props.inhibitDataTraceLogGroupCreation){
+    // If the user has specfied a retention time and/or removal policy for the log group use it,
+    // otherwise make it a 30 day retention and a removal policy of DESTROY.
+    if (props.dataTraceLoggingLevel && props.dataTraceLoggingLevel !== 'OFF') {
+      const retentionInDays = !props.dataTraceLogRetention ? 30 : Math.min(props.dataTraceLogRetention.toDays(), 1);
       const dataLoggingLogGroup = new CfnLogGroup(this, 'data-trace-logging-log-group', {
         logGroupName: `/aws/apigateway/${props.webSocketApi.apiId}/${this.physicalName}`,
-        retentionInDays: 30
+        retentionInDays,
       });
-      dataLoggingLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+      if (!props.dataTraceLogRemovalPolicy) {
+        dataLoggingLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
+      } else {
+        dataLoggingLogGroup.applyRemovalPolicy(props.dataTraceLogRemovalPolicy);
+      }
     }
 
     let destinationArn: string | undefined = undefined;
