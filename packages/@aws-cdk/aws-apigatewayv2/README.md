@@ -461,10 +461,10 @@ Data trace logging is supported for WebSocket apis. It is enabled by setting the
 Valid values are OFF, ERROR and INFO.  By default, it's OFF.
 
 ```ts
-import * as apigw from '../../lib';
+import { RemovalPolicy } from '@aws-cdk/core';
 
-const websocketApi = new apigw.WebSocketApi(this, 'WebSocketApi');
-new apigw.WebSocketStage(this, 'WebSocketDev', {
+const webSocketApi = new apigwv2.WebSocketApi(this, 'WebSocketApi');
+new apigwv2.WebSocketStage(this, 'WebSocketDev', {
   webSocketApi,
   stageName: 'dev',
   autoDeploy: true,
@@ -487,10 +487,8 @@ A single line written to the access log for each request that's received by the 
 access logging is turned off. To enable access logging for a set of default properties to an internally created log group for a given stage set the accessLogEnabled flag to true.  These examples use HttpApi and HttpStage, however they also apply if WebSocketApi and WebSocketStage are used instead.
 
 ```ts
-import * as apigw from '../../lib';
-
-const httpApi = new apigw.HttpApi(this, 'HttpApi', { createDefaultStage: false });
-new apigw.HttpStage(this, 'HttpDev', {
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi', { createDefaultStage: false });
+new apigwv2.HttpStage(this, 'HttpDev', {
   httpApi,
   stageName: 'dev',
   autoDeploy: true,
@@ -511,8 +509,6 @@ For example, imagine that you want to see the error message along with the http 
 to http apis.  A definition for an entry that contains the method and the error message might look like this:
 
 ```ts
-import * as apigw from '../../lib';
-
 const accessLogFormat = JSON.stringify({
   apigw: {
     api_id: '$context.apiId',
@@ -524,14 +520,15 @@ const accessLogFormat = JSON.stringify({
   },
   errors: {
     message: '$context.error.message',
-  }
+  },
   http: {
     method: '$context.httpMethod'
   }
 });
 
-new apigw.HttpStage(this, 'HttpDevStageWithExternalLogGroup', {
-  httpApi: httpApiWithExternalLogGroup,
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi', { createDefaultStage: false });
+new apigwv2.HttpStage(this, 'HttpDevStageWithAccessLogGroup', {
+  httpApi,
   stageName: 'dev',
   autoDeploy: true,
   accessLogEnabled: true,
@@ -554,9 +551,8 @@ import * as apigateway from '@aws-cdk/aws-apigateway';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import * as apigw from '../../lib';
 
-const httpApiWithExternalLogGroup = new apigw.HttpApi(this, 'HttpApiWithExternalLogGroup', { createDefaultStage: false });
+const httpApiWithExternalLogGroup = new apigwv2.HttpApi(this, 'HttpApiWithExternalLogGroup', { createDefaultStage: false });
 const logGroup = new logs.LogGroup(this, 'dev-access-log-group', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   retention: 7,
@@ -567,7 +563,7 @@ const iamRoleForLogGroup = new iam.Role(scope, 'IAMRoleForAccessLog', {
   assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
 });
 
-iamRoleForLogGroup.node.addDependency(this.api);
+iamRoleForLogGroup.node.addDependency(httpApiWithExternalLogGroup);
 
 iamRoleForLogGroup.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs'));
 
@@ -577,9 +573,9 @@ iamRoleForLogGroup.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('
 const account = new apigateway.CfnAccount(this, 'account', {
   cloudWatchRoleArn: iamRoleForLogGroup.roleArn,
 });
-account.node.addDependency(this.api);
+account.node.addDependency(httpApiWithExternalLogGroup);
 
-new apigw.HttpStage(this, 'HttpDevStageWithExternalLogGroup', {
+new apigwv2.HttpStage(this, 'HttpDevStageWithExternalLogGroup', {
   httpApi: httpApiWithExternalLogGroup,
   stageName: 'dev',
   accessLogEnabled: true,
