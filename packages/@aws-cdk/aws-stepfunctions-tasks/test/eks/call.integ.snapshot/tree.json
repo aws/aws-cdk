@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.95"
         }
       },
       "aws-stepfunctions-tasks-eks-call-integ": {
@@ -1012,7 +1012,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.95"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2446,7 +2446,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.1.95"
                     }
                   }
                 },
@@ -2533,7 +2533,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.95"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2790,7 +2790,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3163,7 +3163,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/680ad32340ab3c6c287faea879b235c3a4d45acec73635571a70a34da615d453.json"
+                          "/757cc4ceb5a9c774c055890fd23acca6f223ac56ffca1bd86d50fa76695d4184.json"
                         ]
                       ]
                     },
@@ -3203,7 +3203,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.95"
             }
           },
           "Role": {
