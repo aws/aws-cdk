@@ -1,13 +1,13 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { ObservabilityConfiguration, TracingVendor } from '../lib';
+import { ObservabilityConfiguration, Vendor } from '../lib';
 
 test('create an observability configuration with xray trace configuration vendor', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', { traceConfiguration: TracingVendor.AWSXRAY });
+  new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', { traceConfiguration: Vendor.AWSXRAY });
   // we should have the observability configuration
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {
     TraceConfiguration: {
@@ -22,7 +22,7 @@ test('create an observability configuration with a custom name and xray as a tra
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
   new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
-    traceConfiguration: TracingVendor.AWSXRAY,
+    traceConfiguration: Vendor.AWSXRAY,
     observabilityConfigurationName: 'MyObservabilityConfiguration',
   });
   // we should have the observability configuration
@@ -35,14 +35,16 @@ test('create an observability configuration with a custom name and xray as a tra
 });
 
 
-test('create an observability configuration with no trace configuration vendor', () => {
+test('create an observability configuration with no trace configuration vendor uses default', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
-    traceConfiguration: TracingVendor.NONE,
-  });
+  new ObservabilityConfiguration(stack, 'ObservabilityConfiguration');
   // we should have the observability configuration
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {});
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {
+    TraceConfiguration: {
+      Vendor: 'AWSXRAY',
+    },
+  });
 });

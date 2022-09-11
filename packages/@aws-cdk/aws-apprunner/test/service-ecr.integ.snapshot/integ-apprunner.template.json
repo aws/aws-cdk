@@ -50,10 +50,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":repository/",
-          {
-           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
-          }
+          ":repository/aws-cdk/assets"
          ]
         ]
        }
@@ -86,7 +83,23 @@
        "Port": "8000"
       },
       "ImageIdentifier": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ".dkr.ecr.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/aws-cdk/assets:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
+        ]
+       ]
       },
       "ImageRepositoryType": "ECR"
      }
@@ -96,9 +109,6 @@
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
      }
-    },
-    "ObservabilityConfiguration": {
-     "ObservabilityEnabled": false
     }
    }
   },
@@ -152,10 +162,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":repository/",
-          {
-           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
-          }
+          ":repository/aws-cdk/assets"
          ]
         ]
        }
@@ -202,11 +209,7 @@
          {
           "Ref": "AWS::URLSuffix"
          },
-         "/",
-         {
-          "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
-         },
-         ":77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
+         "/aws-cdk/assets:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
         ]
        ]
       },
@@ -218,9 +221,6 @@
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
      }
-    },
-    "ObservabilityConfiguration": {
-     "ObservabilityEnabled": false
     }
    }
   }
@@ -257,40 +257,6 @@
      ]
     ]
    }
-  }
- },
- "Parameters": {
-  "BootstrapVersion": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/hnb659fds/version",
-   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
-  }
- },
- "Rules": {
-  "CheckBootstrapVersion": {
-   "Assertions": [
-    {
-     "Assert": {
-      "Fn::Not": [
-       {
-        "Fn::Contains": [
-         [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5"
-         ],
-         {
-          "Ref": "BootstrapVersion"
-         }
-        ]
-       }
-      ]
-     },
-     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
-    }
-   ]
   }
  }
 }

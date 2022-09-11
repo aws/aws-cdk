@@ -67,6 +67,53 @@
      "ObservabilityEnabled": true
     }
    }
+  },
+  "Service109BA9F785": {
+   "Type": "AWS::AppRunner::Service",
+   "Properties": {
+    "SourceConfiguration": {
+     "AuthenticationConfiguration": {},
+     "ImageRepository": {
+      "ImageConfiguration": {
+       "Port": "8000"
+      },
+      "ImageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+      "ImageRepositoryType": "ECR_PUBLIC"
+     }
+    },
+    "InstanceConfiguration": {},
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    },
+    "ObservabilityConfiguration": {
+     "ObservabilityConfigurationArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apprunner:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":observabilityconfiguration/",
+        {
+         "Ref": "ObservabilityConfiguration68CE4C7A"
+        }
+       ]
+      ]
+     },
+     "ObservabilityEnabled": true
+    }
+   }
   }
  },
  "Outputs": {
@@ -95,6 +142,22 @@
       {
        "Fn::GetAtt": [
         "Service9DECC815E",
+        "ServiceUrl"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "URL10": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "Service109BA9F785",
         "ServiceUrl"
        ]
       }

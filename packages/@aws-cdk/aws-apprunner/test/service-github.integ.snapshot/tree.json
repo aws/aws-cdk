@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.95"
         }
       },
       "integ-apprunner": {
@@ -46,9 +46,6 @@
                       "egressConfiguration": {
                         "egressType": "DEFAULT"
                       }
-                    },
-                    "observabilityConfiguration": {
-                      "observabilityEnabled": false
                     }
                   }
                 },
@@ -67,8 +64,8 @@
             "id": "URL4",
             "path": "integ-apprunner/URL4",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "Service5": {
@@ -107,9 +104,6 @@
                       "egressConfiguration": {
                         "egressType": "DEFAULT"
                       }
-                    },
-                    "observabilityConfiguration": {
-                      "observabilityEnabled": false
                     }
                   }
                 },
@@ -128,20 +122,20 @@
             "id": "URL5",
             "path": "integ-apprunner/URL5",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

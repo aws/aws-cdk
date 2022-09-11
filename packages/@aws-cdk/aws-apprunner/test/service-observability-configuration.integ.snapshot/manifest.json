@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -44,9 +44,30 @@
             "type": "aws:cdk:logicalId",
             "data": "URL9"
           }
+        ],
+        "/integ-apprunner/Service10/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service109BA9F785"
+          }
+        ],
+        "/integ-apprunner/URL10": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL10"
+          }
         ]
       },
       "displayName": "integ-apprunner"
+    },
+    "apprunnerDefaultTestDeployAssert9A190FD5": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apprunnerDefaultTestDeployAssert9A190FD5.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "apprunner/DefaultTest/DeployAssert"
     }
   }
 }

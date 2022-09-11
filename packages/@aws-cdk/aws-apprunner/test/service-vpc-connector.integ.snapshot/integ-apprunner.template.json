@@ -117,11 +117,7 @@
       "Value": "integ-apprunner/Vpc/PublicSubnet1"
      }
     ]
-   },
-   "DependsOn": [
-    "VpcPublicSubnet1DefaultRoute3DA9E72A",
-    "VpcPublicSubnet1RouteTableAssociation97140677"
-   ]
+   }
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -225,11 +221,7 @@
       "Value": "integ-apprunner/Vpc/PublicSubnet2"
      }
     ]
-   },
-   "DependsOn": [
-    "VpcPublicSubnet2DefaultRoute97F91067",
-    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-   ]
+   }
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -453,9 +445,6 @@
        ]
       }
      }
-    },
-    "ObservabilityConfiguration": {
-     "ObservabilityEnabled": false
     }
    }
   },
@@ -483,9 +472,6 @@
        ]
       }
      }
-    },
-    "ObservabilityConfiguration": {
-     "ObservabilityEnabled": false
     }
    }
   }
@@ -522,40 +508,6 @@
      ]
     ]
    }
-  }
- },
- "Parameters": {
-  "BootstrapVersion": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/hnb659fds/version",
-   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
-  }
- },
- "Rules": {
-  "CheckBootstrapVersion": {
-   "Assertions": [
-    {
-     "Assert": {
-      "Fn::Not": [
-       {
-        "Fn::Contains": [
-         [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5"
-         ],
-         {
-          "Ref": "BootstrapVersion"
-         }
-        ]
-       }
-      ]
-     },
-     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
-    }
-   ]
   }
  }
 }
