@@ -1,3 +1,4 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -42,6 +43,14 @@ const cluster = new DatabaseCluster(stack, 'Database', {
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+
+const metric = cluster.metric('SparqlErrors', { statistic: cloudwatch.Statistic.SUM });
+new cloudwatch.Alarm(stack, 'Alarm', {
+  evaluationPeriods: 1,
+  threshold: 0,
+  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+  metric: metric,
+});
 
 new integ.IntegTest(app, 'ClusterTest', {
   testCases: [stack],

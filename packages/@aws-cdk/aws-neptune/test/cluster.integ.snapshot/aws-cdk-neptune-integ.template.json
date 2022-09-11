@@ -538,6 +538,26 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "Alarm7103F465": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanThreshold",
+    "EvaluationPeriods": 1,
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": {
+       "Ref": "DatabaseB269D8BB"
+      }
+     }
+    ],
+    "MetricName": "SparqlErrors",
+    "Namespace": "AWS/Neptune",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 0
+   }
   }
  },
  "Parameters": {
