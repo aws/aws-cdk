@@ -1,4 +1,5 @@
 import { Match, Template } from '@aws-cdk/assertions';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -660,6 +661,46 @@ describe('DatabaseCluster', () => {
 
   });
 
+  test('metric - constructs metric with correct namespace and dimension and inputs', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+    });
+
+    // WHEN
+    const metric = cluster.metric('SparqlErrors');
+    new cloudwatch.Alarm(stack, 'Alarm', {
+      evaluationPeriods: 1,
+      threshold: 0,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+      metric: metric,
+    });
+
+    // THEN
+    expect(metric).toEqual(new cloudwatch.Metric({
+      namespace: 'AWS/Neptune',
+      dimensionsMap: {
+        DBClusterIdentifier: cluster.clusterIdentifier,
+      },
+      metricName: 'SparqlErrors',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Namespace: 'AWS/Neptune',
+      MetricName: 'SparqlErrors',
+      Dimensions: [
+        {
+          Name: 'DBClusterIdentifier',
+          Value: stack.resolve(cluster.clusterIdentifier),
+        },
+      ],
+      ComparisonOperator: 'GreaterThanThreshold',
+      EvaluationPeriods: 1,
+      Threshold: 0,
+    });
+  });
 });
 
 function testStack() {
