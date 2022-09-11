@@ -814,10 +814,12 @@ export class Service extends cdk.Resource {
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
       },
-      observabilityConfiguration: {
-        observabilityConfigurationArn: this.props.observabilityConfiguration?.observabilityConfigurationArn,
-        observabilityEnabled: !!this.props.observabilityConfiguration,
-      },
+      ...(this.props.observabilityConfiguration ? {
+        observabilityConfiguration: {
+          observabilityConfigurationArn: this.props.observabilityConfiguration?.observabilityConfigurationArn,
+          observabilityEnabled: !!this.props.observabilityConfiguration,
+        },
+      } : {}),
     });
 
     // grant required privileges for the role
