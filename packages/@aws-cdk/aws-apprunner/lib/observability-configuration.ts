@@ -5,14 +5,9 @@ import { CfnObservabilityConfiguration } from './apprunner.generated';
 
 
 /**
- * The implementation provider for tracing App Runner services.
+ * The vendor for tracing App Runner services.
  */
-export enum TracingVendor {
-  /**
-   * No Tracing Vendor
-   */
-  NONE = 'NONE',
-
+export enum Vendor {
   /**
    * AWS X-Ray
    */
@@ -26,9 +21,9 @@ export interface ObservabilityConfigurationProps {
   /**
    * The implementation provider for tracing App Runner services.
    *
-   * @default Vendor.None
+   * @default Vendor.AWSXRAY
    */
-  readonly traceConfiguration?: TracingVendor;
+  readonly traceConfiguration?: Vendor;
 
   /**
     * The name for the Observability Configuration.
@@ -116,8 +111,7 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
 
     const resource = new CfnObservabilityConfiguration(this, 'Resource', {
       observabilityConfigurationName: this.physicalName,
-      ...(props.traceConfiguration && props.traceConfiguration != TracingVendor.NONE ?
-        { traceConfiguration: { vendor: props?.traceConfiguration } } : {}),
+      traceConfiguration: { vendor: props?.traceConfiguration ?? Vendor.AWSXRAY },
     });
 
     this.latest = resource.attrLatest;
