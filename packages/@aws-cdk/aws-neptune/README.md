@@ -148,7 +148,10 @@ new neptune.DatabaseCluster(this, 'Cluster', {
 
 Both `DatabaseCluster` and `DatabaseInstance` provide a `metric()` method to help with cluster-level and instance-level monitoring.
 
-```ts fixture=with-cluster
+```ts
+declare const cluster: neptune.DatabaseCluster;
+declare const instance: neptune.DatabaseInstance;
+
 cluster.metric('SparqlErrors'); // cluster-level SparqlErrors metric
 instance.metric('SparqlErrors') // instance-level SparqlErrors metric
 ```
