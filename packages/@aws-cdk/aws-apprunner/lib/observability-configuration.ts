@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { Stack } from '@aws-cdk/core';
+import { Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnObservabilityConfiguration } from './apprunner.generated';
 
@@ -62,7 +62,7 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
   public static fromObservabilityConfigurationArn(scope: Construct, id: string, observabilityConfigurationArn: string): IObservabilityConfiguration {
     class Import extends cdk.Resource implements IObservabilityConfiguration {
       public readonly observabilityConfigurationArn = observabilityConfigurationArn;
-      public readonly configurationName = observabilityConfigurationArn.split('/')[1];
+      public readonly configurationName = Lazy.string({ produce: () => observabilityConfigurationArn.split('/')[1] });
     }
 
     return new Import(scope, id);
