@@ -52,7 +52,7 @@ export interface IObservabilityConfiguration extends cdk.IResource {
    * The Name of the Observability Configuration.
    * @attribute
    */
-  readonly observabilityConfigurationName: string;
+  readonly configurationName: string;
 }
 
 /**
@@ -67,7 +67,7 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
   public static fromObservabilityConfigurationArn(scope: Construct, id: string, observabilityConfigurationArn: string): IObservabilityConfiguration {
     class Import extends cdk.Resource implements IObservabilityConfiguration {
       public readonly observabilityConfigurationArn = observabilityConfigurationArn;
-      public readonly observabilityConfigurationName = observabilityConfigurationArn.split('/')[1];
+      public readonly configurationName = observabilityConfigurationArn.split('/')[1];
     }
 
     return new Import(scope, id);
@@ -101,7 +101,7 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
     * The name of the Observability Configuration.
     * @attribute
     */
-  public readonly observabilityConfigurationName: string;
+  public readonly configurationName: string;
 
   /**
    * The revision of the Observability Configuration.
@@ -125,7 +125,7 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
       service: 'apprunner',
       resource: 'observabilityconfiguration',
     });
-    this.observabilityConfigurationName = this.getResourceNameAttribute(resource.ref);
+    this.configurationName = this.getResourceNameAttribute(resource.ref);
     this.observabilityConfigurationRevision = resource.attrObservabilityConfigurationRevision;
   }
 }
