@@ -42,10 +42,11 @@ distinguishes three different subnet types:
   Internet Gateway. If you want your instances to have a public IP address
   and be directly reachable from the Internet, you must place them in a
   public subnet.
-* **Private with Internet Access (`SubnetType.PRIVATE_WITH_NAT`)** - instances in private subnets are not directly routable from the
-  Internet, and connect out to the Internet via a NAT gateway. By default, a
-  NAT gateway is created in every public subnet for maximum availability. Be
+* **Private with Internet Access (`SubnetType.PRIVATE_WITH_EGRESS`)** - instances in private subnets are not directly routable from the
+  Internet, and you must provide a way to connect out to the Internet.
+  By default, a NAT gateway is created in every public subnet for maximum availability. Be
   aware that you will be charged for NAT gateways.
+  Alternatively you can set `natGateways:0` and provide your own egress configuration (i.e through Transit Gateway)
 * **Isolated (`SubnetType.PRIVATE_ISOLATED`)** - isolated subnets do not route from or to the Internet, and
   as such do not require NAT gateways. They can only connect to or be
   connected to from other instances in the same VPC. A default VPC configuration
@@ -260,7 +261,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 24,
       name: 'Application',
-      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
     {
       cidrMask: 28,
@@ -363,12 +364,12 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 26,
       name: 'Application1',
-      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
     {
       cidrMask: 26,
       name: 'Application2',
-      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       reserved: true,   // <---- This subnet group is reserved
     },
     {
