@@ -42,9 +42,12 @@ describe('metric filter', () => {
       metricName: 'Latency',
       metricValue: '$.latency',
       filterPattern: FilterPattern.exists('$.latency'),
-      dimensions: {
-        Foo: 'Bar',
-      },
+      dimensions: [
+        {
+          key: 'Foo',
+          value: 'Bar',
+        },
+      ],
     });
 
     // THEN
@@ -77,12 +80,12 @@ describe('metric filter', () => {
       metricName: 'Latency',
       metricValue: '$.latency',
       filterPattern: FilterPattern.exists('$.latency'),
-      dimensions: {
-        Foo: 'Bar',
-        Bar: 'Baz',
-        Baz: 'Qux',
-        Qux: 'Quux',
-      },
+      dimensions: [
+        { key: 'Foo', value: 'Bar' },
+        { key: 'Bar', value: 'Baz' },
+        { key: 'Baz', value: 'Qux' },
+        { key: 'Qux', value: 'Quux' },
+      ],
     })).toThrow(/MetricFilter only supports a maximum of 3 Dimensions/);
   });
 
