@@ -86,6 +86,30 @@ export class ProductStackHistory extends Construct {
     };
   }
 
+  /** Extracts versions from file system */
+
+  public allVersions(): CloudFormationProductVersion[] {
+    const productVersions: CloudFormationProductVersion[] = [];
+    const productStackSnapshotDirectory = this.props.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
+    const files = fs.readdirSync(productStackSnapshotDirectory);
+    for (const file of files) {
+      if (file.endsWith('product.template.json')) {
+        const templateFilePath = path.join(productStackSnapshotDirectory, file);
+        const versionName = file.split('.')[2];
+        const version = {
+          cloudFormationTemplate: CloudFormationTemplate.fromAsset(templateFilePath),
+          productVersionName: versionName,
+          description: this.props.description,
+        };
+        productVersions.push(version);
+      }
+    }
+    if (productVersions.length == 0) {
+      throw new Error(`Templates cannot be found in directory: ${productStackSnapshotDirectory}`);
+    }
+    return productVersions;
+  }
+
   /**
    * Writes current template generated from Product Stack to a snapshot directory.
    *

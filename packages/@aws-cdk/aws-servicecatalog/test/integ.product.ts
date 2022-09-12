@@ -21,29 +21,35 @@ const productStackHistory = new ProductStackHistory(stack, 'ProductStackHistory'
   currentVersionLocked: true,
 });
 
+const locallySavedVersions = productStackHistory.allVersions();
+
+const versions = [
+  {
+    validateTemplate: false,
+    cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
+      'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+  },
+  {
+    cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product1.template.json')),
+  },
+  {
+    cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product2.template.json')),
+  },
+  {
+    cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct1')),
+  },
+  {
+    cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct2')),
+  },
+  productStackHistory.currentVersion(),
+];
+
+const productVersions = versions.concat(locallySavedVersions);
+
 const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
   productName: 'testProduct',
   owner: 'testOwner',
-  productVersions: [
-    {
-      validateTemplate: false,
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
-        'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
-    },
-    {
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product1.template.json')),
-    },
-    {
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product2.template.json')),
-    },
-    {
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct1')),
-    },
-    {
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct2')),
-    },
-    productStackHistory.currentVersion(),
-  ],
+  productVersions: productVersions,
 });
 
 const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {

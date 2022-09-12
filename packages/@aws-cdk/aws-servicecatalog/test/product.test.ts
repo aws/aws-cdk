@@ -253,6 +253,36 @@ describe('Product', () => {
     expect(snapshotExists).toBe(true);
   }),
 
+  test('all product stack versions from file system', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
+      productStack: productStack,
+      currentVersionName: 'v2',
+      currentVersionLocked: false,
+    });
+
+    const versions = productStackHistory.allVersions();
+    expect(versions.length).toBe(2);
+    expect(versions[0].productVersionName).toEqual('v1');
+    expect(versions[1].productVersionName).toEqual('v2');
+  }),
+
+  test('all product stack versions from file system with nested directory', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
+      productStack: productStack,
+      currentVersionName: 'v1',
+      currentVersionLocked: false,
+      directory: 'product-stack-snapshots/nested',
+    });
+
+    const versions = productStackHistory.allVersions();
+    expect(versions.length).toBe(1);
+    expect(versions[0].productVersionName).toEqual('v1');
+  }),
+
   test('fails product test from product stack when template changes and locked', () => {
     const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
 
