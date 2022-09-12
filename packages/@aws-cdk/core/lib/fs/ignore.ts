@@ -174,6 +174,9 @@ export class GitIgnoreStrategy extends IgnoreStrategy {
     }
 
     let relativePath = path.relative(this.absoluteRootPath, absoluteFilePath);
+    if (relativePath) {
+      relativePath += absoluteFilePath.endsWith(path.sep) ? path.sep : '';
+    }
 
     return this.ignore.ignores(relativePath);
   }

@@ -65,11 +65,12 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   return hash.digest('hex');
 
   function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
-    if (!isRootDir && ignoreStrategy.ignores(symbolicPath)) {
+    const stat = fs.lstatSync(realPath);
+
+    const ignorePath = symbolicPath + (stat.isDirectory() ? path.sep : '');
+    if (!isRootDir && ignoreStrategy.ignores(ignorePath)) {
       return;
     }
-
-    const stat = fs.lstatSync(realPath);
 
     // Use relative path as hash component. Normalize it with forward slashes to ensure
     // same hash on Windows and Linux.

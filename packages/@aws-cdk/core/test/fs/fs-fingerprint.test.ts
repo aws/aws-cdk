@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { FileSystem, SymlinkFollowMode } from '../../lib/fs';
+import { FileSystem, IgnoreMode, SymlinkFollowMode } from '../../lib/fs';
 import { contentFingerprint } from '../../lib/fs/fingerprint';
 
 describe('fs fingerprint', () => {
@@ -73,6 +73,21 @@ describe('fs fingerprint', () => {
 
       fs.writeFileSync(path.join(outdir, `${hashSrc}.ignoreme`), 'Ignore me!');
       const hashCopy = FileSystem.fingerprint(outdir, { exclude: ['*.ignoreme'] });
+
+      // THEN
+      expect(hashSrc).toEqual(hashCopy);
+
+    });
+
+    test('does not ignore requested files with negate modifier', () => {
+      // GIVEN
+      const srcdir = path.join(__dirname, 'fixtures', 'test1');
+      const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+      FileSystem.copyDirectory(srcdir, outdir);
+
+      // WHEN
+      const hashSrc = FileSystem.fingerprint(srcdir, { exclude: ['*', '!*/', '!*.*'], ignoreMode: IgnoreMode.GIT });
+      const hashCopy = FileSystem.fingerprint(outdir, { ignoreMode: IgnoreMode.GIT });
 
       // THEN
       expect(hashSrc).toEqual(hashCopy);

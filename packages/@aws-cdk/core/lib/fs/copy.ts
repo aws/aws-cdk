@@ -15,15 +15,16 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
     throw new Error(`${srcDir} is not a directory`);
   }
 
-  const files = fs.readdirSync(srcDir);
+  const files = fs.readdirSync(srcDir, { withFileTypes: true });
   for (const file of files) {
-    const sourceFilePath = path.join(srcDir, file);
+    const sourceFilePath = path.join(srcDir, file.name);
 
-    if (ignoreStrategy.ignores(sourceFilePath)) {
+    const ignorePath = sourceFilePath + (file.name && file.isDirectory() ? path.sep : '');
+    if (ignoreStrategy.ignores(ignorePath)) {
       continue;
     }
 
-    const destFilePath = path.join(destDir, file);
+    const destFilePath = path.join(destDir, file.name);
 
     let stat: fs.Stats | undefined = follow === SymlinkFollowMode.ALWAYS
       ? fs.statSync(sourceFilePath)

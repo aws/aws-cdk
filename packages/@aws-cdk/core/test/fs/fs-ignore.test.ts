@@ -87,6 +87,21 @@ describe('GitIgnoreStrategy', () => {
 
     expect(strategyPermits(strategy, permits)).toEqual(permits);
   });
+
+  test('does not exclude allow listed files in subdirectories after excluding everything', () => {
+    const strategy = IgnoreStrategy.git('/tmp', ['*', '!*/', '!*.html']);
+    const ignores = [
+      '/tmp/file.ignored',
+      '/tmp/some/file.ignored',
+    ];
+    const permits = [
+      '/tmp/*.html',
+      '/tmp/some/*.html',
+    ];
+
+    expect(strategyIgnores(strategy, ignores)).toEqual(ignores);
+    expect(strategyPermits(strategy, permits)).toEqual(permits);
+  });
 });
 
 describe('DockerIgnoreStrategy', () => {
