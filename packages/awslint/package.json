@@ -18,11 +18,11 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "^1.64.0",
+    "@jsii/spec": "^1.67.0",
     "camelcase": "^6.3.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "^1.64.0",
+    "jsii-reflect": "^1.67.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {

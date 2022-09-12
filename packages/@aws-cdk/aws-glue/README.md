@@ -72,7 +72,11 @@ new glue.Job(this, 'PythonSparkStreamingJob', {
 ### Python Shell Jobs
 
 A Python shell job runs Python scripts as a shell and supports a Python version that depends on the AWS Glue version you are using.
-This can be used to schedule and run tasks that don't require an Apache Spark environment.
+This can be used to schedule and run tasks that don't require an Apache Spark environment. Currently, three flavors are supported:
+
+* PythonVersion.TWO (2.7; EOL)
+* PythonVersion.THREE (3.6)
+* PythonVersion.THREE_NINE (3.9)
 
 ```ts
 declare const bucket: s3.Bucket;
@@ -101,6 +105,24 @@ new glue.Connection(this, 'MyConnection', {
   securityGroups: [securityGroup],
   // The VPC subnet which contains the data source
   subnet,
+});
+```
+
+For RDS `Connection` by JDBC, it is recommended to manage credentials using AWS Secrets Manager. To use Secret, specify `SECRET_ID` in `properties` like the following code. Note that in this case, the subnet must have a route to the AWS Secrets Manager VPC endpoint or to the AWS Secrets Manager endpoint through a NAT gateway.
+
+```ts
+declare const securityGroup: ec2.SecurityGroup;
+declare const subnet: ec2.Subnet;
+declare const db: rds.DatabaseCluster;
+new glue.Connection(this, "RdsConnection", {
+  type: glue.ConnectionType.JDBC,
+  securityGroups: [securityGroup],
+  subnet,
+  properties: {
+    JDBC_CONNECTION_URL: `jdbc:mysql://${db.clusterEndpoint.socketAddress}/databasename`,
+    JDBC_ENFORCE_SSL: "false",
+    SECRET_ID: db.secret!.secretName,
+  },
 });
 ```
 

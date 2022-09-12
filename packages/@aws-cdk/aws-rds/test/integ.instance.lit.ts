@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
