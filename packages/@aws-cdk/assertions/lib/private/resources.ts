@@ -14,6 +14,41 @@ export function findResources(template: Template, type: string, props: any = {})
   return result.matches;
 }
 
+export function allResources(template: Template, type: string, props: any): string | void {
+  const section = template.Resources ?? {};
+  const result = matchSection(filterType(section, type), props);
+  if (result.match) {
+    if (result.mismatches) {
+      return [
+        `Template has ${result.analyzedCount} resource(s) with type ${type}, but only ${Object.keys(result.matches).length} match as expected.`,
+        formatFailure(result.mismatches),
+      ].join('\n');
+    }
+  } else if (result.closestResult) {
+    return [
+      `Template has ${result.analyzedCount} resource(s) with type ${type}, but none match as expected.`,
+      formatFailure(result.closestResult),
+    ].join('\n');
+  }
+}
+
+export function allResourcesProperties(template: Template, type: string, props: any): string | void {
+  let amended = template;
+
+  // special case to exclude AbsentMatch because adding an empty Properties object will affect its evaluation.
+  if (!Matcher.isMatcher(props) || !(props instanceof AbsentMatch)) {
+    // amended needs to be a deep copy to avoid modifying the template.
+    amended = JSON.parse(JSON.stringify(template));
+    amended = addEmptyProperties(amended);
+  }
+
+  return allResources(amended, type, Match.objectLike({
+    Properties: props,
+  }));
+
+}
+
+
 export function hasResource(template: Template, type: string, props: any): string | void {
   const section = template.Resources ?? {};
   const result = matchSection(filterType(section, type), props);

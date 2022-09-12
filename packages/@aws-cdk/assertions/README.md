@@ -103,11 +103,32 @@ template.hasResourceProperties('Foo::Bar', {
 });
 ```
 
+You can also assert that the `Properties` section of all resources of type
+`Foo::Bar` contains the specified properties -
+
+```ts
+template.allResourcesProperties('Foo::Bar', {
+  Foo: 'Bar',
+  Baz: 5,
+  Qux: [ 'Waldo', 'Fred' ],
+});
+```
+
 Alternatively, if you would like to assert the entire resource definition, you
 can use the `hasResource()` API.
 
 ```ts
 template.hasResource('Foo::Bar', {
+  Properties: { Foo: 'Bar' },
+  DependsOn: [ 'Waldo', 'Fred' ],
+});
+```
+
+You can also assert the definitions of all resources of a type using the 
+`allResources()` API.
+
+```ts
+template.allResources('Foo::Bar', {
   Properties: { Foo: 'Bar' },
   DependsOn: [ 'Waldo', 'Fred' ],
 });

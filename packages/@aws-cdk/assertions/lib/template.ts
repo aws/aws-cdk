@@ -8,7 +8,7 @@ import { checkTemplateForCyclicDependencies } from './private/cyclic';
 import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
 import { findParameters, hasParameter } from './private/parameters';
-import { countResources, countResourcesProperties, findResources, hasResource, hasResourceProperties } from './private/resources';
+import { allResources, allResourcesProperties, countResources, countResourcesProperties, findResources, hasResource, hasResourceProperties } from './private/resources';
 import { Template as TemplateType } from './private/template';
 
 /**
@@ -31,7 +31,7 @@ export class Template {
    * JSON object.
    * @param template the CloudFormation template formatted as a nested set of records
    */
-  public static fromJSON(template: { [key: string] : any }): Template {
+  public static fromJSON(template: { [key: string]: any }): Template {
     return new Template(template);
   }
 
@@ -106,7 +106,7 @@ export class Template {
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
    * To configure different behavour, use other matchers in the `Match` class.
    * @param type the resource type; ex: `AWS::S3::Bucket`
-   * @param props the entire defintion of the resource as should be expected in the template.
+   * @param props the entire definition of the resource as should be expected in the template.
    */
   public hasResource(type: string, props: any): void {
     const matchError = hasResource(this.template, type, props);
@@ -124,6 +124,36 @@ export class Template {
    */
   public findResources(type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
     return findResources(this.template, type, props);
+  }
+
+  /**
+   * Assert that all resources of the given type contain the given definition in the
+   * CloudFormation template.
+   * By default, performs partial matching on the resource, via the `Match.objectLike()`.
+   * To configure different behavour, use other matchers in the `Match` class.
+   * @param type the resource type; ex: `AWS::S3::Bucket`
+   * @param props the entire definition of the resources as they should be expected in the template.
+   */
+  public allResources(type: string, props: any): void {
+    const matchError = allResources(this.template, type, props);
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
+   * Assert that all resources of the given type contain the given properties
+   * CloudFormation template.
+   * By default, performs partial matching on the `Properties` key of the resource, via the
+   * `Match.objectLike()`. To configure different behavour, use other matchers in the `Match` class.
+   * @param type the resource type; ex: `AWS::S3::Bucket`
+   * @param props the 'Properties' section of the resource as should be expected in the template.
+   */
+  public allResourcesProperties(type: string, props: any): void {
+    const matchError = allResourcesProperties(this.template, type, props);
+    if (matchError) {
+      throw new Error(matchError);
+    }
   }
 
   /**
