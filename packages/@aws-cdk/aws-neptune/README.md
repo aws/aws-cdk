@@ -143,3 +143,36 @@ new neptune.DatabaseCluster(this, 'Cluster', {
   autoMinorVersionUpgrade: true,
 });
 ```
+
+## Logging
+
+Neptune supports various methods for monitoring performance and usage. One of those methods is logging
+
+1. Neptune provides logs e.g. audit logs which can be viewed or downloaded via the AWS Console. Audit logs can be enabled using the `neptune_enable_audit_log` parameter in `ClusterParameterGroup` or `ParameterGroup`
+2. Neptune provides the ability to export those logs to CloudWatch Logs
+
+```ts
+// Cluster parameter group with the neptune_enable_audit_log param set to 1
+const clusterParameterGroup = new neptune.ClusterParameterGroup(this, 'ClusterParams', {
+  description: 'Cluster parameter group',
+  parameters: {
+    neptune_enable_audit_log: '1'
+  },
+});
+
+const cluster = new neptune.DatabaseCluster(this, 'Database', {
+  vpc,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  // Audit logs are enabled via the clusterParameterGroup
+  clusterParameterGroup,
+  // Optionally configuring audit logs to be exported to CloudWatch Logs
+  cloudwatchLogsExports: {
+    logTypes: [neptune.LogType.AUDIT],
+    logRetention: logs.RetentionDays.ONE_MONTH,
+  },
+});
+```
+
+For more information on monitoring, refer to https://docs.aws.amazon.com/neptune/latest/userguide/monitoring.html.
+For more information on audit logs, refer to https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html.
+For more information on exporting logs to CloudWatch Logs, refer to https://docs.aws.amazon.com/neptune/latest/userguide/cloudwatch-logs.html.

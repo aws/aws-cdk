@@ -2,9 +2,10 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 
-import { ClusterParameterGroup, DatabaseCluster, EngineVersion, InstanceType } from '../lib';
+import { ClusterParameterGroup, DatabaseCluster, EngineVersion, InstanceType, LogType } from '../lib';
 
 describe('DatabaseCluster', () => {
 
@@ -660,6 +661,62 @@ describe('DatabaseCluster', () => {
 
   });
 
+  test('cloudwatchLogsExports is enabled when configured', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      cloudwatchLogsExports: {
+        logTypes: [LogType.AUDIT],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      EnableCloudwatchLogsExports: ['audit'],
+    });
+    Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 0);
+  });
+
+  test('cloudwatchLogsExports log retention is enabled when configured', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      cloudwatchLogsExports: {
+        logTypes: [LogType.AUDIT],
+        logRetention: logs.RetentionDays.ONE_MONTH,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      EnableCloudwatchLogsExports: ['audit'],
+    });
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/neptune/',
+            {
+              Ref: 'ClusterEB0386A7',
+            },
+            '/audit',
+          ],
+        ],
+      },
+      RetentionInDays: 30,
+    });
+  });
 });
 
 function testStack() {

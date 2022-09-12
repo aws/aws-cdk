@@ -1,8 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import { DatabaseCluster, InstanceType } from '../lib';
+import { DatabaseCluster, InstanceType, LogType } from '../lib';
 import { ClusterParameterGroup } from '../lib/parameter-group';
 
 /*
@@ -39,6 +40,10 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   kmsKey,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoMinorVersionUpgrade: true,
+  cloudwatchLogsExports: {
+    logTypes: [LogType.AUDIT],
+    logRetention: logs.RetentionDays.ONE_MONTH,
+  },
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/315715ffe6004c7bd7c9874629785c10fd8f65a20d6995ea8eb20188dfb82b7d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/05e1648bea40cd5f3ddef60ec15e6927f25f55c2a0716a3c25fd7105d554c873.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -213,10 +213,34 @@
             "data": "DatabaseB269D8BB"
           }
         ],
+        "/aws-cdk-neptune-integ/Database/[object Object]LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseobjectObjectLogRetentionA247AF0C"
+          }
+        ],
         "/aws-cdk-neptune-integ/Database/Instance1": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseInstance1844F58FD"
+          }
+        ],
+        "/aws-cdk-neptune-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/aws-cdk-neptune-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/aws-cdk-neptune-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
         "/aws-cdk-neptune-integ/BootstrapVersion": [
@@ -230,63 +254,56 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "Params1200F93288": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Params1200F93288",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Database12Subnets4179194B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Database12Subnets4179194B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Database12SecurityGroup4F4302E8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Database12SecurityGroup4F4302E8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Database12SecurityGroupfrom00000IndirectPort3A40EE2B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Database12SecurityGroupfrom00000IndirectPort3A40EE2B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Database12D6A36FB9": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Database12D6A36FB9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Database12Instance10D9E6224": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Database12Instance10D9E6224",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-neptune-integ"
+    },
+    "ClusterTestDefaultTestDeployAssert6A1BBA9D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ClusterTestDefaultTestDeployAssert6A1BBA9D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ClusterTestDefaultTestDeployAssert6A1BBA9D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ClusterTestDefaultTestDeployAssert6A1BBA9D.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ClusterTestDefaultTestDeployAssert6A1BBA9D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ClusterTestDefaultTestDeployAssert6A1BBA9D.assets"
+      ],
+      "metadata": {
+        "/ClusterTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ClusterTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ClusterTest/DefaultTest/DeployAssert"
     }
   }
 }

@@ -2,6 +2,7 @@ import { Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as logs from '@aws-cdk/aws-logs';
 import * as neptune from '@aws-cdk/aws-neptune';
 
 class Fixture extends Stack {
