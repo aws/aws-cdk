@@ -51,7 +51,7 @@ new apigw.HttpStage(stack, 'HttpDevStageWithExternalLogGroup', {
   httpApi: httpApiWithExternalLogGroup,
   stageName: 'dev',
   accessLogEnabled: true,
-  accessLogGroupArn: logGroup.logGroupArn,
+  accessLogGroup: logGroup,
   accessLogFormat: accessLogFormat,
 });
 

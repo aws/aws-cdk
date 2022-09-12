@@ -1,4 +1,5 @@
 import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
+import { ILogGroup } from '@aws-cdk/aws-logs';
 import { IResource } from '@aws-cdk/core';
 import { IDomainName } from './domain-name';
 
@@ -99,7 +100,7 @@ export interface StageOptions {
   /**
    * Whether or not to enable access logging.
    *
-   * @default - false
+   * @default false
    */
   readonly accessLogEnabled?: boolean;
 
@@ -107,7 +108,7 @@ export interface StageOptions {
    * Optionally, specify a log group that access log entries will be written to.
    * @default - If not specified a log group will be created if access logs are enabled.
    */
-  readonly accessLogGroupArn?: string;
+  readonly accessLogGroup?: ILogGroup;
 
   /**
    * The format and contents of an access log entry.

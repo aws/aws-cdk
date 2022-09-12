@@ -8,26 +8,6 @@
     "RouteSelectionExpression": "$request.body.action"
    }
   },
-  "WebSocketDevStagedatatraceloggingloggroup894CB79B": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/apigateway/",
-       {
-        "Ref": "WebSocketApi34BCF99B"
-       },
-       "/dev"
-      ]
-     ]
-    },
-    "RetentionInDays": 30
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "WebSocketDevStageIAMRoleForAccessLogB2EAD11C": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -61,8 +41,8 @@
    "DependsOn": [
     "WebSocketApi34BCF99B"
    ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "WebSocketDevStageaccount02DC9EE0": {
    "Type": "AWS::ApiGateway::Account",
@@ -76,9 +56,11 @@
    },
    "DependsOn": [
     "WebSocketApi34BCF99B"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
-  "WebSocketDevStageAccessLoggingGroupD9D0A523": {
+  "WebSocketDevStageAccessLoggingGroup37401E65": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 30
@@ -96,39 +78,17 @@
     "AccessLogSettings": {
      "DestinationArn": {
       "Fn::GetAtt": [
-       "WebSocketDevStageAccessLoggingGroupD9D0A523",
+       "WebSocketDevStageAccessLoggingGroup37401E65",
        "Arn"
       ]
      },
      "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
     },
     "DefaultRouteSettings": {
-     "DataTraceEnabled": true,
-     "LoggingLevel": "INFO",
      "ThrottlingBurstLimit": 1000,
      "ThrottlingRateLimit": 1000
     }
    }
-  },
-  "WebSocketProdStagedatatraceloggingloggroup36946BB8": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/apigateway/",
-       {
-        "Ref": "WebSocketApi34BCF99B"
-       },
-       "/prod"
-      ]
-     ]
-    },
-    "RetentionInDays": 30
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "WebSocketProdStageIAMRoleForAccessLog21FA1F7A": {
    "Type": "AWS::IAM::Role",
@@ -163,8 +123,8 @@
    "DependsOn": [
     "WebSocketApi34BCF99B"
    ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "WebSocketProdStageaccount61A6A2A5": {
    "Type": "AWS::ApiGateway::Account",
@@ -178,9 +138,11 @@
    },
    "DependsOn": [
     "WebSocketApi34BCF99B"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
-  "WebSocketProdStageAccessLoggingGroup79A5DEC2": {
+  "WebSocketProdStageAccessLoggingGroup8F98BA35": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 30
@@ -198,7 +160,7 @@
     "AccessLogSettings": {
      "DestinationArn": {
       "Fn::GetAtt": [
-       "WebSocketProdStageAccessLoggingGroup79A5DEC2",
+       "WebSocketProdStageAccessLoggingGroup8F98BA35",
        "Arn"
       ]
      },
@@ -211,26 +173,6 @@
      "ThrottlingRateLimit": 1000
     }
    }
-  },
-  "WebSocketBetaStagedatatraceloggingloggroupC8DEA66A": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/apigateway/",
-       {
-        "Ref": "WebSocketApi34BCF99B"
-       },
-       "/beta"
-      ]
-     ]
-    },
-    "RetentionInDays": 7
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
   },
   "WebSocketBetaStage0917B5B6": {
    "Type": "AWS::ApiGatewayV2::Stage",

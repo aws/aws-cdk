@@ -46,32 +46,6 @@
             "id": "WebSocketDevStage",
             "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage",
             "children": {
-              "data-trace-logging-log-group": {
-                "id": "data-trace-logging-log-group",
-                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/data-trace-logging-log-group",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "logGroupName": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "/aws/apigateway/",
-                          {
-                            "Ref": "WebSocketApi34BCF99B"
-                          },
-                          "/dev"
-                        ]
-                      ]
-                    },
-                    "retentionInDays": 30
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
-                  "version": "0.0.0"
-                }
-              },
               "IAMRoleForAccessLog": {
                 "id": "IAMRoleForAccessLog",
                 "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/IAMRoleForAccessLog",
@@ -143,14 +117,24 @@
               "AccessLoggingGroup": {
                 "id": "AccessLoggingGroup",
                 "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/AccessLoggingGroup",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "retentionInDays": 30
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketDevStage/AccessLoggingGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 30
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "fqn": "@aws-cdk/aws-logs.LogGroup",
                   "version": "0.0.0"
                 }
               },
@@ -167,15 +151,13 @@
                     "accessLogSettings": {
                       "destinationArn": {
                         "Fn::GetAtt": [
-                          "WebSocketDevStageAccessLoggingGroupD9D0A523",
+                          "WebSocketDevStageAccessLoggingGroup37401E65",
                           "Arn"
                         ]
                       },
                       "format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
                     },
                     "defaultRouteSettings": {
-                      "dataTraceEnabled": true,
-                      "loggingLevel": "INFO",
                       "throttlingBurstLimit": 1000,
                       "throttlingRateLimit": 1000
                     }
@@ -196,32 +178,6 @@
             "id": "WebSocketProdStage",
             "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage",
             "children": {
-              "data-trace-logging-log-group": {
-                "id": "data-trace-logging-log-group",
-                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/data-trace-logging-log-group",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "logGroupName": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "/aws/apigateway/",
-                          {
-                            "Ref": "WebSocketApi34BCF99B"
-                          },
-                          "/prod"
-                        ]
-                      ]
-                    },
-                    "retentionInDays": 30
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
-                  "version": "0.0.0"
-                }
-              },
               "IAMRoleForAccessLog": {
                 "id": "IAMRoleForAccessLog",
                 "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/IAMRoleForAccessLog",
@@ -293,14 +249,24 @@
               "AccessLoggingGroup": {
                 "id": "AccessLoggingGroup",
                 "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/AccessLoggingGroup",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "retentionInDays": 30
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketProdStage/AccessLoggingGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 30
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "fqn": "@aws-cdk/aws-logs.LogGroup",
                   "version": "0.0.0"
                 }
               },
@@ -317,7 +283,7 @@
                     "accessLogSettings": {
                       "destinationArn": {
                         "Fn::GetAtt": [
-                          "WebSocketProdStageAccessLoggingGroup79A5DEC2",
+                          "WebSocketProdStageAccessLoggingGroup8F98BA35",
                           "Arn"
                         ]
                       },
@@ -346,32 +312,6 @@
             "id": "WebSocketBetaStage",
             "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketBetaStage",
             "children": {
-              "data-trace-logging-log-group": {
-                "id": "data-trace-logging-log-group",
-                "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketBetaStage/data-trace-logging-log-group",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "logGroupName": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "/aws/apigateway/",
-                          {
-                            "Ref": "WebSocketApi34BCF99B"
-                          },
-                          "/beta"
-                        ]
-                      ]
-                    },
-                    "retentionInDays": 7
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
-                  "version": "0.0.0"
-                }
-              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test/WebSocketBetaStage/Resource",
