@@ -53,6 +53,7 @@ new glue.Job(this, 'ScalaSparkEtlJob', {
   description: 'an example Scala ETL job',
 });
 ```
+Note that the script prop must be a code asset from a single file, while the optional extraJars prop should specify an asset of a jar of dependencies required by the script.
 
 #### Streaming Jobs
 
@@ -68,6 +69,22 @@ new glue.Job(this, 'PythonSparkStreamingJob', {
   description: 'an example Python Streaming job',
 });
 ```
+
+Note that Streaming Jobs are also available in Scala:
+
+```ts
+new glue.Job(this, 'ScalaSparkStreamingJob', {
+  executable: glue.JobExecutable.scalaStreaming({
+    glueVersion: glue.GlueVersion.V2_0,
+    script: glue.Code.fromBucket(bucket, 'src/com/example/HelloWorld.scala'),
+    className: 'com.example.HelloWorld',
+    extraJars: [glue.Code.fromBucket(bucket, 'jars/HelloWorld.jar')],
+  }),
+  description: 'an example Scala Streaming job',
+  defaultArguments: {"VAL1":"value1"},
+});
+```
+In the this example, we also used the defaultArguments prop to pass our own flag to the job.
 
 ### Python Shell Jobs
 
@@ -173,6 +190,12 @@ new glue.Database(this, 'MyDatabase', {
   databaseName: 'my_database',
 });
 ```
+The Glue Catalog is populated with data using Glue Crawlers. For more information on crawlers, see [CfnCrawler](https://docs.aws.amazon.com/cdk/api/v1/docs/@aws-cdk_aws-glue.CfnCrawler.html) construct.
+
+There are some limitations between Crawlers, `Databases`, and `Tables`:
+- A Glue Crawler can write to tables within exactly one `Database`.
+- A `Database` can store tables with data written from up to two Crawlers.
+- A single Glue Crawler can write to two `Tables` wtih S3 targets within the same `Database`.
 
 ## Table
 
@@ -213,8 +236,8 @@ new glue.Table(this, 'MyTable', {
   dataFormat: glue.DataFormat.JSON,
 });
 ```
-
-By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
+Table names within the same database must be unique. 
+Because tables created by crawlers are named based off the data target, if there are data targets with similar names in the same database, create tables with this construct and pass table names to a crawler subsequently.
 
 ### Partition Keys
 
