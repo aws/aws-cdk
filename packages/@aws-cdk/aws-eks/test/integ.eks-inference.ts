@@ -1,6 +1,7 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib';
 
 class EksClusterInferenceStack extends Stack {
@@ -27,5 +28,8 @@ class EksClusterInferenceStack extends Stack {
 }
 
 const app = new App();
-new EksClusterInferenceStack(app, 'aws-cdk-eks-cluster-inference-test');
+const stack = new EksClusterInferenceStack(app, 'aws-cdk-eks-cluster-inference-test');
+new integ.IntegTest(app, 'aws-cdk-eks-cluster-interence', {
+  testCases: [stack],
+});
 app.synth();

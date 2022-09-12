@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.95"
         }
       },
       "aws-cdk-eks-cluster-inference-test": {
@@ -925,7 +925,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.95"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2873,7 +2873,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.1.95"
                     }
                   }
                 },
@@ -2960,7 +2960,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.95"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -3217,7 +3217,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3590,7 +3590,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/31c430155c95625b36488ce0fe0f03c3828e7aafd7480c8119275b497f551c94.json"
+                          "/cb422636d998286c1d01349241821548fc2974190911563807d090710463d76e.json"
                         ]
                       ]
                     },
@@ -3630,7 +3630,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.95"
             }
           },
           "awscdkeksclusterinferencetestClusterEBBBA1AC-AlbController": {
