@@ -7,27 +7,27 @@
         "file": "tree.json"
       }
     },
-    "aws-stepfunctions-tasks-eks-call-integ.assets": {
+    "aws-stepfunctions-tasks-eks-call-integ-test.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-stepfunctions-tasks-eks-call-integ.assets.json",
+        "file": "aws-stepfunctions-tasks-eks-call-integ-test.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-stepfunctions-tasks-eks-call-integ": {
+    "aws-stepfunctions-tasks-eks-call-integ-test": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-stepfunctions-tasks-eks-call-integ.template.json",
+        "templateFile": "aws-stepfunctions-tasks-eks-call-integ-test.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2a58b8d0960c9cb80748bdc5664cff0cbc6d1692aab19337fb3918aa9e0a277.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/749b0a94a8b852a978803ffba566bf15f8165c304a2d372400bbc04040ca504a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-stepfunctions-tasks-eks-call-integ.assets"
+          "aws-stepfunctions-tasks-eks-call-integ-test.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -36,485 +36,532 @@
         }
       },
       "dependencies": [
-        "aws-stepfunctions-tasks-eks-call-integ.assets"
+        "aws-stepfunctions-tasks-eks-call-integ-test.assets"
       ],
       "metadata": {
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcB24550B2"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet1/Subnet": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet1SubnetCB1D1047"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet1/RouteTable": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet1RouteTable163DE10A"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet1/RouteTableAssociation": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet1RouteTableAssociation36D085C2"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet1/DefaultRoute": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet1DefaultRouteCE5F6EF3"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet1/EIP": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet1EIPF53713C9"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet1/NATGateway": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet1NATGateway548C2CDF"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet2/Subnet": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet2SubnetA8FE675D"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet2/RouteTable": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet2RouteTable1027E4DE"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet2/RouteTableAssociation": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet2RouteTableAssociation39E2ABB3"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet2/DefaultRoute": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet2DefaultRoute8B910E5C"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet2/EIP": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet2EIP16D41D80"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PublicSubnet2/NATGateway": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPublicSubnet2NATGateway869DDCBF"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PrivateSubnet1/Subnet": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPrivateSubnet1Subnet4D665A2F"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PrivateSubnet1/RouteTable": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPrivateSubnet1RouteTable9104CFAB"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPrivateSubnet1RouteTableAssociationCC31B65B"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PrivateSubnet1/DefaultRoute": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPrivateSubnet1DefaultRoute790DE5CF"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PrivateSubnet2/Subnet": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPrivateSubnet2Subnet180B8A71"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PrivateSubnet2/RouteTable": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPrivateSubnet2RouteTable04B34031"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPrivateSubnet2RouteTableAssociation86243837"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/PrivateSubnet2/DefaultRoute": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcPrivateSubnet2DefaultRoute99A19B21"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/IGW": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcIGWCA6A3220"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/DefaultVpc/VPCGW": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterDefaultVpcVPCGW0E4A5673"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/Role/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterRoleC84B376F"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/ControlPlaneSecurityGroup/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/ControlPlaneSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterControlPlaneSecurityGroup9257A6D0"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/Resource/CreationRole/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/Resource/CreationRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterCreationRole75AABE42"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/Resource/CreationRole/DefaultPolicy/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/Resource/CreationRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterCreationRoleDefaultPolicy2DFE4D73"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/Resource/Resource/Default": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/Resource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterFAB68BDB"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/KubectlReadyBarrier": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/KubectlReadyBarrier": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterKubectlReadyBarrier502B0E83"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/MastersRole/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/MastersRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterMastersRole3F49FAC3"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/AwsAuth/manifest/Resource/Default": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/AwsAuth/manifest/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterAwsAuthmanifest4F460A9B"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterNodegroupDefaultCapacityNodeGroupRole70D09CEC"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/NodegroupDefaultCapacity/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/NodegroupDefaultCapacity/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterNodegroupDefaultCapacityA81E70F9"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/ConfigCommand": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/ConfigCommand": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterConfigCommand2AE6ED67"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/EksCluster/GetTokenCommand": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/GetTokenCommand": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterGetTokenCommandDF0BEDB9"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NodeProxyAgentLayer924C1971"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "OnEventHandlerServiceRole15A26729"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "OnEventHandlerServiceRoleDefaultPolicyC57085D4"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "OnEventHandler42BEBAE0"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandlerServiceRole5810CC58"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandler7073F4DA"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRole9FF04296"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkisCompleteServiceRoleB1087139"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkisComplete26D7B0CB"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeoutServiceRole28643D26"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeout0B47CA38"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderwaiterstatemachineRole0C7159F9"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Providerwaiterstatemachine5D4A9DF0"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ServiceprincipalMap"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksekscallintegawscdkawseksClusterResourceProviderframeworkonEvent5722A6A8Arn": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksekscallintegtestawscdkawseksClusterResourceProviderframeworkonEvent0215520BArn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "awsstepfunctionstasksekscallintegawscdkawseksClusterResourceProviderframeworkonEvent5722A6A8Arn"
+            "data": "awsstepfunctionstasksekscallintegtestawscdkawseksClusterResourceProviderframeworkonEvent0215520BArn"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awsstepfunctionstasksekscallintegEksClusterCreationRole00B486C4Arn": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awsstepfunctionstasksekscallintegtestEksClusterCreationRole0DB9A8D2Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksekscallintegEksClusterCreationRole00B486C4Arn"
+            "data": "referencetoawsstepfunctionstasksekscallintegtestEksClusterCreationRole0DB9A8D2Arn"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HandlerServiceRoleFCDC14AE"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HandlerServiceRoleDefaultPolicyCBD0CC91"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Handler886CB40B"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsCliLayerF44AAF94"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "KubectlLayer600207B5"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRole9FF04296"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/awsstepfunctionstasksekscallintegawscdkawseksKubectlProviderframeworkonEventAF076895Arn": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/awsstepfunctionstasksekscallintegtestawscdkawseksKubectlProviderframeworkonEvent890A3570Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "awsstepfunctionstasksekscallintegawscdkawseksKubectlProviderframeworkonEventAF076895Arn"
+            "data": "awsstepfunctionstasksekscallintegtestawscdkawseksKubectlProviderframeworkonEvent890A3570Arn"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegEksClusterCA674174Arn": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestEksCluster9129BC3DArn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksekscallintegEksClusterCA674174Arn"
+            "data": "referencetoawsstepfunctionstasksekscallintegtestEksCluster9129BC3DArn"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegEksClusterCreationRole00B486C4Arn": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestEksClusterCreationRole0DB9A8D2Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksekscallintegEksClusterCreationRole00B486C4Arn"
+            "data": "referencetoawsstepfunctionstasksekscallintegtestEksClusterCreationRole0DB9A8D2Arn"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegEksClusterDefaultVpcPrivateSubnet1Subnet3A6964EARef": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestEksClusterDefaultVpcPrivateSubnet1SubnetD6666893Ref": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksekscallintegEksClusterDefaultVpcPrivateSubnet1Subnet3A6964EARef"
+            "data": "referencetoawsstepfunctionstasksekscallintegtestEksClusterDefaultVpcPrivateSubnet1SubnetD6666893Ref"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegEksClusterDefaultVpcPrivateSubnet2Subnet08905A58Ref": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestEksClusterDefaultVpcPrivateSubnet2Subnet2FEDDB37Ref": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksekscallintegEksClusterDefaultVpcPrivateSubnet2Subnet08905A58Ref"
+            "data": "referencetoawsstepfunctionstasksekscallintegtestEksClusterDefaultVpcPrivateSubnet2Subnet2FEDDB37Ref"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegEksClusterCA674174ClusterSecurityGroupId": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestEksCluster9129BC3DClusterSecurityGroupId": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksekscallintegEksClusterCA674174ClusterSecurityGroupId"
+            "data": "referencetoawsstepfunctionstasksekscallintegtestEksCluster9129BC3DClusterSecurityGroupId"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/Role/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Role1ABCC5F0"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/StateMachine/Resource": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachine2E01A3A5"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/stateMachineArn": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/stateMachineArn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "stateMachineArn"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/Service-principalMap": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/Service-principalMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ServiceprincipalMap"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/BootstrapVersion": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ/CheckBootstrapVersion": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-stepfunctions-tasks-eks-call-integ"
+      "displayName": "aws-stepfunctions-tasks-eks-call-integ-test"
+    },
+    "awsstepfunctionstasksekscallintegDefaultTestDeployAssert2DF4AD1E.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awsstepfunctionstasksekscallintegDefaultTestDeployAssert2DF4AD1E.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awsstepfunctionstasksekscallintegDefaultTestDeployAssert2DF4AD1E": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awsstepfunctionstasksekscallintegDefaultTestDeployAssert2DF4AD1E.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awsstepfunctionstasksekscallintegDefaultTestDeployAssert2DF4AD1E.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awsstepfunctionstasksekscallintegDefaultTestDeployAssert2DF4AD1E.assets"
+      ],
+      "metadata": {
+        "/aws-stepfunctions-tasks-eks-call-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-stepfunctions-tasks-eks-call-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-tasks-eks-call-integ/DefaultTest/DeployAssert"
     }
   }
 }

@@ -561,38 +561,50 @@
       {
        "Action": [
         "eks:CreateCluster",
-        "eks:CreateFargateProfile",
-        "eks:DeleteCluster",
         "eks:DescribeCluster",
         "eks:DescribeUpdate",
-        "eks:TagResource",
-        "eks:UntagResource",
+        "eks:DeleteCluster",
+        "eks:UpdateClusterVersion",
         "eks:UpdateClusterConfig",
-        "eks:UpdateClusterVersion"
+        "eks:CreateFargateProfile",
+        "eks:TagResource",
+        "eks:UntagResource"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "*"
+       ]
+      },
+      {
+       "Action": [
+        "eks:DescribeFargateProfile",
+        "eks:DeleteFargateProfile"
        ],
        "Effect": "Allow",
        "Resource": "*"
       },
       {
        "Action": [
-        "eks:DeleteFargateProfile",
-        "eks:DescribeFargateProfile"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "ec2:DescribeDhcpOptions",
-        "ec2:DescribeInstances",
-        "ec2:DescribeNetworkInterfaces",
-        "ec2:DescribeRouteTables",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeVpcs",
-        "iam:CreateServiceLinkedRole",
         "iam:GetRole",
         "iam:listAttachedRolePolicies"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "iam:CreateServiceLinkedRole",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeRouteTables",
+        "ec2:DescribeDhcpOptions",
+        "ec2:DescribeVpcs"
        ],
        "Effect": "Allow",
        "Resource": "*"
@@ -990,7 +1002,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/891b2d7fc242734ebd12b9945601eb592c64f197abbb9b310f48bc5fdbe3af39.json"
+       "/e9aee046003806e01758c649a83bcecd108c5015299bfe2dcd5420c41ee8f115.json"
       ]
      ]
     },
@@ -1095,18 +1107,22 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": [
-         "emr-containers.amazonaws.com",
-         {
-          "Fn::FindInMap": [
-           "ServiceprincipalMap",
-           {
-            "Ref": "AWS::Region"
-           },
-           "states"
-          ]
-         }
-        ]
+        "Service": "emr-containers.amazonaws.com"
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": {
+         "Fn::FindInMap": [
+          "ServiceprincipalMap",
+          {
+           "Ref": "AWS::Region"
+          },
+          "states"
+         ]
+        }
        }
       }
      ],
@@ -1582,8 +1598,8 @@
       },
       {
        "Action": [
-        "emr-containers:CancelJobRun",
-        "emr-containers:DescribeJobRun"
+        "emr-containers:DescribeJobRun",
+        "emr-containers:CancelJobRun"
        ],
        "Effect": "Allow",
        "Resource": {

@@ -561,38 +561,50 @@
       {
        "Action": [
         "eks:CreateCluster",
-        "eks:CreateFargateProfile",
-        "eks:DeleteCluster",
         "eks:DescribeCluster",
         "eks:DescribeUpdate",
-        "eks:TagResource",
-        "eks:UntagResource",
+        "eks:DeleteCluster",
+        "eks:UpdateClusterVersion",
         "eks:UpdateClusterConfig",
-        "eks:UpdateClusterVersion"
+        "eks:CreateFargateProfile",
+        "eks:TagResource",
+        "eks:UntagResource"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "*"
+       ]
+      },
+      {
+       "Action": [
+        "eks:DescribeFargateProfile",
+        "eks:DeleteFargateProfile"
        ],
        "Effect": "Allow",
        "Resource": "*"
       },
       {
        "Action": [
-        "eks:DeleteFargateProfile",
-        "eks:DescribeFargateProfile"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "ec2:DescribeDhcpOptions",
-        "ec2:DescribeInstances",
-        "ec2:DescribeNetworkInterfaces",
-        "ec2:DescribeRouteTables",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeVpcs",
-        "iam:CreateServiceLinkedRole",
         "iam:GetRole",
         "iam:listAttachedRolePolicies"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "iam:CreateServiceLinkedRole",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeRouteTables",
+        "ec2:DescribeDhcpOptions",
+        "ec2:DescribeVpcs"
        ],
        "Effect": "Allow",
        "Resource": "*"
@@ -931,7 +943,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/06bec7e8cc12d0e92431a0a22a1ec94a8631664465df800cbf8d47f299fc8a3f.json"
+       "/7898fbcc6db6b68c168938b50e8d56a7d18b11f8ae6ec9a35bf6066ce31bd5f1.json"
       ]
      ]
     },
@@ -1015,18 +1027,22 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": [
-         "emr-containers.amazonaws.com",
-         {
-          "Fn::FindInMap": [
-           "ServiceprincipalMap",
-           {
-            "Ref": "AWS::Region"
-           },
-           "states"
-          ]
-         }
-        ]
+        "Service": "emr-containers.amazonaws.com"
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": {
+         "Fn::FindInMap": [
+          "ServiceprincipalMap",
+          {
+           "Ref": "AWS::Region"
+          },
+          "states"
+         ]
+        }
        }
       }
      ],
@@ -1041,16 +1057,16 @@
      "Statement": [
       {
        "Action": [
-        "s3:Abort*",
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
         "s3:GetObject*",
+        "s3:GetBucket*",
         "s3:List*",
+        "s3:DeleteObject*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
         "s3:PutObjectRetention",
         "s3:PutObjectTagging",
-        "s3:PutObjectVersionTagging"
+        "s3:PutObjectVersionTagging",
+        "s3:Abort*"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -1079,9 +1095,18 @@
       {
        "Action": [
         "logs:CreateLogStream",
-        "logs:DescribeLogStreams",
         "logs:PutLogEvents"
        ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "StartaJobRunMonitoringLogGroupD033B7AF",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogStreams",
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
@@ -1238,10 +1263,33 @@
       },
       {
        "Action": [
-        "emr-containers:CancelJobRun",
-        "emr-containers:DeleteVirtualCluster",
-        "emr-containers:DescribeJobRun"
+        "emr-containers:DescribeJobRun",
+        "emr-containers:CancelJobRun"
        ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":emr-containers:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":/virtualclusters/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "emr-containers:DeleteVirtualCluster",
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [
