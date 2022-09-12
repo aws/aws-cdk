@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.78"
+          "version": "10.1.95"
         }
       },
       "aws-cdk-config-custompolicy": {
@@ -46,7 +46,78 @@
                     },
                     "scope": {
                       "complianceResourceTypes": [
-                        "AWS::EC2::Instance"
+                        "AWS::DynamoDB::Table"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-config.CfnConfigRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-config.CustomPolicy",
+              "version": "0.0.0"
+            }
+          },
+          "sample-user": {
+            "id": "sample-user",
+            "path": "aws-cdk-config-custompolicy/sample-user",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-config-custompolicy/sample-user/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "Custom-lazy": {
+            "id": "Custom-lazy",
+            "path": "aws-cdk-config-custompolicy/Custom-lazy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-config-custompolicy/Custom-lazy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Config::ConfigRule",
+                  "aws:cdk:cloudformation:props": {
+                    "source": {
+                      "owner": "CUSTOM_POLICY",
+                      "sourceDetails": [
+                        {
+                          "eventSource": "aws.config",
+                          "messageType": "ConfigurationItemChangeNotification"
+                        },
+                        {
+                          "eventSource": "aws.config",
+                          "messageType": "OversizedConfigurationItemChangeNotification"
+                        }
+                      ],
+                      "customPolicyDetails": {
+                        "enableDebugLogDelivery": true,
+                        "policyRuntime": "guard-2.x.x",
+                        "policyText": "lazy-create-test"
+                      }
+                    },
+                    "scope": {
+                      "complianceResourceId": {
+                        "Ref": "sampleuser2D3A0B43"
+                      },
+                      "complianceResourceTypes": [
+                        "AWS::IAM::User"
                       ]
                     }
                   }
@@ -81,7 +152,7 @@
                 "path": "aws-cdk-config-custompolicy-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.78"
+                  "version": "10.1.95"
                 }
               },
               "DeployAssert": {
