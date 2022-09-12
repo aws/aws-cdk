@@ -31,6 +31,8 @@ const cluster = new redshift.Cluster(stack, 'Cluster', {
   encryptionKey: new kms.Key(stack, 'custom-kms-key'),
 });
 
+cluster.addToParameterGroup('enable_user_activity_logging', 'true');
+
 const databaseOptions = {
   cluster: cluster,
   databaseName: databaseName,
@@ -47,5 +49,4 @@ const table = new redshift.Table(stack, 'Table', {
   sortStyle: redshift.TableSortStyle.INTERLEAVED,
 });
 table.grant(user, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
-
 app.synth();
