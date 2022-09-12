@@ -40,8 +40,8 @@
    "DependsOn": [
     "HttpApiWithTwoStages0E0DEF3D"
    ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "HttpDevStageWithPropertiesaccount599CEC2F": {
    "Type": "AWS::ApiGateway::Account",
@@ -55,9 +55,11 @@
    },
    "DependsOn": [
     "HttpApiWithTwoStages0E0DEF3D"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
-  "HttpDevStageWithPropertiesAccessLoggingGroup59709639": {
+  "HttpDevStageWithPropertiesAccessLoggingGroupAC3A7C15": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 30
@@ -75,7 +77,7 @@
     "AccessLogSettings": {
      "DestinationArn": {
       "Fn::GetAtt": [
-       "HttpDevStageWithPropertiesAccessLoggingGroup59709639",
+       "HttpDevStageWithPropertiesAccessLoggingGroupAC3A7C15",
        "Arn"
       ]
      },
@@ -121,8 +123,8 @@
    "DependsOn": [
     "HttpApiWithTwoStages0E0DEF3D"
    ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "HttpProdStageWithPropertiesaccountD7482B22": {
    "Type": "AWS::ApiGateway::Account",
@@ -136,9 +138,11 @@
    },
    "DependsOn": [
     "HttpApiWithTwoStages0E0DEF3D"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
-  "HttpProdStageWithPropertiesAccessLoggingGroup04FD3616": {
+  "HttpProdStageWithPropertiesAccessLoggingGroup327D413D": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 30
@@ -156,7 +160,7 @@
     "AccessLogSettings": {
      "DestinationArn": {
       "Fn::GetAtt": [
-       "HttpProdStageWithPropertiesAccessLoggingGroup04FD3616",
+       "HttpProdStageWithPropertiesAccessLoggingGroup327D413D",
        "Arn"
       ]
      },

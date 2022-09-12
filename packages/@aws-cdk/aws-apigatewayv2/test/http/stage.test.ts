@@ -252,7 +252,7 @@ describe('HttpStage with domain mapping', () => {
       httpApi: api,
       stageName: 'dev',
       accessLogEnabled: true,
-      accessLogGroupArn: accessLogsLogGroup.logGroupArn,
+      accessLogGroup: accessLogsLogGroup,
       accessLogFormat: formatString,
     });
 

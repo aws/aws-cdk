@@ -116,14 +116,24 @@
               "AccessLoggingGroup": {
                 "id": "AccessLoggingGroup",
                 "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/AccessLoggingGroup",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "retentionInDays": 30
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/AccessLoggingGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 30
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "fqn": "@aws-cdk/aws-logs.LogGroup",
                   "version": "0.0.0"
                 }
               },
@@ -140,7 +150,7 @@
                     "accessLogSettings": {
                       "destinationArn": {
                         "Fn::GetAtt": [
-                          "HttpDevStageWithPropertiesAccessLoggingGroup59709639",
+                          "HttpDevStageWithPropertiesAccessLoggingGroupAC3A7C15",
                           "Arn"
                         ]
                       },
@@ -239,14 +249,24 @@
               "AccessLoggingGroup": {
                 "id": "AccessLoggingGroup",
                 "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/AccessLoggingGroup",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "retentionInDays": 30
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/AccessLoggingGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 30
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "fqn": "@aws-cdk/aws-logs.LogGroup",
                   "version": "0.0.0"
                 }
               },
@@ -263,7 +283,7 @@
                     "accessLogSettings": {
                       "destinationArn": {
                         "Fn::GetAtt": [
-                          "HttpProdStageWithPropertiesAccessLoggingGroup04FD3616",
+                          "HttpProdStageWithPropertiesAccessLoggingGroup327D413D",
                           "Arn"
                         ]
                       },

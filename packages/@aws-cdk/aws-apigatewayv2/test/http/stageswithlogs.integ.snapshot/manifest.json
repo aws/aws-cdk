@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a0c84cea1704082a3cc87ffd29876a4c5063b0377de97ebe184f5ba27f4938e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d32eb1e80b0ac3a81377cb7753c2f9ec0704bd4c24a0a0d7e40d6a0bb558284.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,10 +57,10 @@
             "data": "HttpDevStageWithPropertiesaccount599CEC2F"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/AccessLoggingGroup": [
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/AccessLoggingGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpDevStageWithPropertiesAccessLoggingGroup59709639"
+            "data": "HttpDevStageWithPropertiesAccessLoggingGroupAC3A7C15"
           }
         ],
         "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpDevStageWithProperties/Resource": [
@@ -81,10 +81,10 @@
             "data": "HttpProdStageWithPropertiesaccountD7482B22"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/AccessLoggingGroup": [
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/AccessLoggingGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpProdStageWithPropertiesAccessLoggingGroup04FD3616"
+            "data": "HttpProdStageWithPropertiesAccessLoggingGroup327D413D"
           }
         ],
         "/aws-cdk-aws-apigatewayv2-http-stage-test/HttpProdStageWithProperties/Resource": [

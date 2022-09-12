@@ -2,7 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import { User } from '@aws-cdk/aws-iam';
 import { LogGroup } from '@aws-cdk/aws-logs';
 import { Stack } from '@aws-cdk/core';
-import { defaultAccessLogFormat, WebSocketApi, WebSocketStage } from '../../lib';
+import { defaultAccessLogFormat, WebSocketApi, WebSocketStage, DataTraceLoggingLevel } from '../../lib';
 
 describe('WebSocketStage', () => {
   test('default', () => {
@@ -148,7 +148,7 @@ describe('WebSocketStage', () => {
         burstLimit: 123,
         rateLimit: 456,
       },
-      dataTraceLoggingLevel: 'INFO',
+      dataTraceLoggingLevel: DataTraceLoggingLevel.INFO,
     });
 
     // THEN
@@ -220,7 +220,7 @@ describe('WebSocketStage', () => {
       webSocketApi: api,
       stageName: 'dev',
       accessLogEnabled: true,
-      accessLogGroupArn: accessLogsLogGroup.logGroupArn,
+      accessLogGroup: accessLogsLogGroup,
       accessLogFormat: formatString,
     });
 

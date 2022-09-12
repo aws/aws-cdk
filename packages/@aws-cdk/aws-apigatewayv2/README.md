@@ -462,22 +462,16 @@ Valid values are OFF, ERROR and INFO.  By default, it's OFF.
 
 ```ts
 import { RemovalPolicy } from '@aws-cdk/core';
+import { DataTraceLoggingLevel } from '@aws-cdk/aws-apigatewayv2';
 
 const webSocketApi = new apigwv2.WebSocketApi(this, 'WebSocketApi');
 new apigwv2.WebSocketStage(this, 'WebSocketDev', {
   webSocketApi,
   stageName: 'dev',
   autoDeploy: true,
-  dataTraceLoggingLevel: 'INFO',
-  dataTraceLogRetention: Duration.days(7),
-  dataTraceLogRemovalPolicy: RemovalPolicy.RETAIN,
+  dataTraceLoggingLevel: DataTraceLoggingLevel.INFO,
 });
 ```
-
-The data trace log will show up with a name /aws/apigatway/<api gateway id>.  By default it'll have a retention period of
-30 days and a removal policy of DESTROY.  However, these may be overridden using the properties dataTraceLogRetention and 
-dataTraceLogRemovalPolicy as shown above.  If dataTraceLoggingLevel is not specified or if it has a value of 'OFF', then
-dataTraceLogRetention and dataTraceLogRemovalPolicy will have no effect.
 
 ## Access Logs
 
@@ -559,7 +553,6 @@ const logGroup = new logs.LogGroup(this, 'dev-access-log-group', {
 });
 
 const iamRoleForLogGroup = new iam.Role(scope, 'IAMRoleForAccessLog', {
-  roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
   assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
 });
 
@@ -579,7 +572,7 @@ new apigwv2.HttpStage(this, 'HttpDevStageWithExternalLogGroup', {
   httpApi: httpApiWithExternalLogGroup,
   stageName: 'dev',
   accessLogEnabled: true,
-  accessLogGroupArn: logGroup.logGroupArn,
+  accessLogGroup: logGroup,
 });
 ```
 
