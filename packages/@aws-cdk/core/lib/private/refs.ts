@@ -2,10 +2,13 @@
 // CROSS REFERENCES
 // ----------------------------------------------------
 
-import { IConstruct } from 'constructs';
+import * as cxapi from '@aws-cdk/cx-api';
+import { IConstruct, Construct } from 'constructs';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
+import { ExportReader } from '../custom-resource-provider/get-parameter-provider';
+import { FeatureFlags } from '../feature-flags';
 import { Names } from '../names';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
@@ -14,6 +17,7 @@ import { Token, Tokenization } from '../token';
 import { CfnReference } from './cfn-reference';
 import { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
+import { makeUniqueId } from './uniqueid';
 
 /**
  * This is called from the App level to resolve all references defined. Each
@@ -33,11 +37,16 @@ export function resolveReferences(scope: IConstruct): void {
   }
 }
 
+
 /**
  * Resolves the value for `reference` in the context of `consumer`.
  */
 function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   const producer = Stack.of(reference.target);
+  const producerAccount = !Token.isUnresolved(producer.account) ? producer.account : cxapi.UNKNOWN_ACCOUNT;
+  const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : cxapi.UNKNOWN_REGION;
+  const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : cxapi.UNKNOWN_ACCOUNT;
+  const consumerRegion = !Token.isUnresolved(consumer.region) ? consumer.region : cxapi.UNKNOWN_REGION;
 
   // produce and consumer stacks are the same, we can just return the value itself.
   if (producer === consumer) {
@@ -49,11 +58,18 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     throw new Error('Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
   }
 
-  // unsupported: stacks are not in the same environment
-  if (producer.environment !== consumer.environment) {
+  // unsupported: stacks are not in the same account
+  if (producerAccount !== consumerAccount) {
     throw new Error(
       `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
       'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack');
+  }
+
+  // Stacks are in the same account, but different regions
+  if (producerRegion !== consumerRegion) {
+    consumer.addDependency(producer,
+      `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+    return createCrossRegionImportValue(reference, consumer);
   }
 
   // ----------------------------------------------------------------------
@@ -168,6 +184,88 @@ function createImportValue(reference: Reference): Intrinsic {
 
   // I happen to know this returns a Fn.importValue() which implements Intrinsic.
   return Tokenization.reverseCompleteString(importExpr) as Intrinsic;
+}
+
+/**
+ * Imports a value from another stack in a different region by creating an "Output" with an "ExportName"
+ * in the producing stack, and a "ExportsReader" custom resource in the consumer stack
+ *
+ * Returns a reference to the ExportsReader attribute which contains the exported value
+ */
+function createCrossRegionImportValue(reference: Reference, importStack: Stack): Intrinsic {
+  const exportingStack = Stack.of(reference.target);
+  const exportName = generateExport(exportingStack, reference);
+
+  const constructName = makeUniqueId(['ExportsReader', exportingStack.region]);
+  const existing = importStack.node.tryFindChild(constructName);
+  const exportReader = existing
+    ? existing as ExportReader
+    : new ExportReader(importStack, constructName, {
+      region: exportingStack.region,
+    });
+
+  return exportReader.importValue(exportName);
+}
+
+function getCreateExportsScope(stack: Stack) {
+  const exportsName = 'Exports';
+  let stackExports = stack.node.tryFindChild(exportsName) as Construct;
+  if (stackExports === undefined) {
+    stackExports = new Construct(stack, exportsName);
+  }
+
+  return stackExports;
+}
+
+export function generateExport(stack: Stack, reference: Reference): string { // if exportValue is being called manually (which is pre onPrepare) then the logicalId
+  // could potentially be changed by a call to overrideLogicalId. This would cause our Export/Import
+  // to have an incorrect id. For a better user experience, lock the logicalId and throw an error
+  // if the user tries to override the id _after_ calling exportValue
+  if (CfnElement.isCfnElement(reference.target)) {
+    reference.target._lockLogicalId();
+  }
+
+  // "teleport" the value here, in case it comes from a nested stack. This will also
+  // ensure the value is from our own scope.
+  const exportable = referenceNestedStackValueInParent(reference, stack);
+
+  // Ensure a singleton "Exports" scoping Construct
+  // This mostly exists to trigger LogicalID munging, which would be
+  // disabled if we parented constructs directly under Stack.
+  // Also it nicely prevents likely construct name clashes
+  const exportScope = getCreateExportsScope(stack);
+
+  // Ensure a singleton CfnOutput for this value
+  const resolved = stack.resolve(exportable);
+  const id = 'Output' + JSON.stringify(resolved);
+  const exportName = generateExportName(exportScope, id);
+
+  if (Token.isUnresolved(exportName)) {
+    throw new Error(`unresolved token in generated export name: ${JSON.stringify(stack.resolve(exportName))}`);
+  }
+
+  const output = exportScope.node.tryFindChild(id) as CfnOutput;
+  if (!output) {
+    new CfnOutput(exportScope, id, { value: Token.asString(exportable), exportName });
+  }
+
+  return exportName;
+}
+
+function generateExportName(stackExports: Construct, id: string) {
+  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
+  const stack = Stack.of(stackExports);
+
+  const components = [
+    ...stackExports.node.scopes
+      .slice(stackRelativeExports ? stack.node.scopes.length : 2)
+      .map(c => c.node.id),
+    id,
+  ];
+  const prefix = stack.stackName ? stack.stackName + ':' : '';
+  const localPart = makeUniqueId(components);
+  const maxLength = 255;
+  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
 }
 
 // ------------------------------------------------------------------------------------------------

@@ -462,6 +462,311 @@ describe('stack', () => {
     });
   });
 
+  test('cross-region stack references', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+
+    // THEN
+    expect(template1).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+      },
+      Outputs: {
+        ExportsOutputFnGetAttSomeResourceExportname33D556F7: {
+          Export: {
+            Name: 'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
+          },
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'name',
+            ],
+          },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Name: {
+              'Fn::GetAtt': [
+                'ExportsReaderuseast1D746CBDB',
+                'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
+              ],
+            },
+          },
+        },
+        CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
+          Type: 'AWS::Lambda::Function',
+        },
+        ExportsReaderuseast1D746CBDB: {
+          Type: 'Custom::CrossRegionExportReader',
+        },
+      },
+    });
+  });
+
+  test('cross region stack references with multiple stacks', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-east-1' } });
+    const exportResource3 = new CfnResource(stack3, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+        Other: exportResource.getAtt('other'),
+        Other2: exportResource3.getAtt('other2'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+    const template3 = assembly.getStackByName(stack3.stackName).template;
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+
+    // THEN
+    const exportReaders = Object.entries(template2.Resources).filter((res: [string, any]) => res[1].Type === 'Custom::CrossRegionExportReader');
+    expect(exportReaders.length).toEqual(1);
+    expect(template3).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+      },
+      Outputs: {
+        ExportsOutputFnGetAttSomeResourceExportother2AC0F424D: {
+          Export: {
+            Name: 'Stack3:ExportsOutputFnGetAttSomeResourceExportother2AC0F424D',
+          },
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'other2',
+            ],
+          },
+        },
+      },
+    });
+    expect(template1).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+      },
+      Outputs: {
+        ExportsOutputFnGetAttSomeResourceExportname33D556F7: {
+          Export: {
+            Name: 'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
+          },
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'name',
+            ],
+          },
+        },
+        ExportsOutputFnGetAttSomeResourceExportotherA189B4B9: {
+          Export: {
+            Name: 'Stack1:ExportsOutputFnGetAttSomeResourceExportotherA189B4B9',
+          },
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'other',
+            ],
+          },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Name: {
+              'Fn::GetAtt': [
+                'ExportsReaderuseast1D746CBDB',
+                'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
+              ],
+            },
+            Other: {
+              'Fn::GetAtt': [
+                'ExportsReaderuseast1D746CBDB',
+                'Stack1:ExportsOutputFnGetAttSomeResourceExportotherA189B4B9',
+              ],
+            },
+            Other2: {
+              'Fn::GetAtt': [
+                'ExportsReaderuseast1D746CBDB',
+                'Stack3:ExportsOutputFnGetAttSomeResourceExportother2AC0F424D',
+              ],
+            },
+          },
+        },
+        CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
+          Type: 'AWS::Lambda::Function',
+        },
+        ExportsReaderuseast1D746CBDB: {
+          Type: 'Custom::CrossRegionExportReader',
+        },
+      },
+    });
+  });
+
+  test('cross region stack references with multiple stacks and multiple regions', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-west-1' } });
+    const exportResource3 = new CfnResource(stack3, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+        Other: exportResource.getAtt('other'),
+        Other2: exportResource3.getAtt('other2'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+    const template3 = assembly.getStackByName(stack3.stackName).template;
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+
+    // THEN
+    const exportReaders = Object.entries(template2.Resources).filter((res: [string, any]) => res[1].Type === 'Custom::CrossRegionExportReader');
+    expect(exportReaders.length).toEqual(2);
+    expect(template3).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+      },
+      Outputs: {
+        ExportsOutputFnGetAttSomeResourceExportother2AC0F424D: {
+          Export: {
+            Name: 'Stack3:ExportsOutputFnGetAttSomeResourceExportother2AC0F424D',
+          },
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'other2',
+            ],
+          },
+        },
+      },
+    });
+    expect(template1).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+      },
+      Outputs: {
+        ExportsOutputFnGetAttSomeResourceExportname33D556F7: {
+          Export: {
+            Name: 'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
+          },
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'name',
+            ],
+          },
+        },
+        ExportsOutputFnGetAttSomeResourceExportotherA189B4B9: {
+          Export: {
+            Name: 'Stack1:ExportsOutputFnGetAttSomeResourceExportotherA189B4B9',
+          },
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'other',
+            ],
+          },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Name: {
+              'Fn::GetAtt': [
+                'ExportsReaderuseast1D746CBDB',
+                'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
+              ],
+            },
+            Other: {
+              'Fn::GetAtt': [
+                'ExportsReaderuseast1D746CBDB',
+                'Stack1:ExportsOutputFnGetAttSomeResourceExportotherA189B4B9',
+              ],
+            },
+            Other2: {
+              'Fn::GetAtt': [
+                'ExportsReaderuswest1619FF90A',
+                'Stack3:ExportsOutputFnGetAttSomeResourceExportother2AC0F424D',
+              ],
+            },
+          },
+        },
+        CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
+          Type: 'AWS::Lambda::Function',
+        },
+        ExportsReaderuseast1D746CBDB: {
+          Type: 'Custom::CrossRegionExportReader',
+          Properties: {
+            Region: 'us-east-1',
+          },
+        },
+      },
+    });
+  });
+
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {
     // GIVEN
     const app = new App({
@@ -826,12 +1131,12 @@ describe('stack', () => {
     expect(stack2.dependencies.map(s => s.node.id)).toEqual(['Stack1']);
   });
 
-  test('cannot create references to stacks in other regions/accounts', () => {
+  test('cannot create references to stacks in other accounts', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
     const account1 = new ScopedAws(stack1).accountId;
-    const stack2 = new Stack(app, 'Stack2', { env: { account: '123456789012', region: 'es-norst-2' } });
+    const stack2 = new Stack(app, 'Stack2', { env: { account: '123456789013', region: 'es-norst-2' } });
 
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });

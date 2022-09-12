@@ -907,37 +907,7 @@ export class Stack extends Construct implements ITaggable {
       throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
     }
 
-    // if exportValue is being called manually (which is pre onPrepare) then the logicalId
-    // could potentially be changed by a call to overrideLogicalId. This would cause our Export/Import
-    // to have an incorrect id. For a better user experience, lock the logicalId and throw an error
-    // if the user tries to override the id _after_ calling exportValue
-    if (CfnElement.isCfnElement(resolvable.target)) {
-      resolvable.target._lockLogicalId();
-    }
-
-    // "teleport" the value here, in case it comes from a nested stack. This will also
-    // ensure the value is from our own scope.
-    const exportable = referenceNestedStackValueInParent(resolvable, this);
-
-    // Ensure a singleton "Exports" scoping Construct
-    // This mostly exists to trigger LogicalID munging, which would be
-    // disabled if we parented constructs directly under Stack.
-    // Also it nicely prevents likely construct name clashes
-    const exportsScope = getCreateExportsScope(this);
-
-    // Ensure a singleton CfnOutput for this value
-    const resolved = this.resolve(exportable);
-    const id = 'Output' + JSON.stringify(resolved);
-    const exportName = generateExportName(exportsScope, id);
-
-    if (Token.isUnresolved(exportName)) {
-      throw new Error(`unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`);
-    }
-
-    const output = exportsScope.node.tryFindChild(id) as CfnOutput;
-    if (!output) {
-      new CfnOutput(exportsScope, id, { value: Token.asString(exportable), exportName });
-    }
+    const exportName = generateExport(this, resolvable);
 
     return Fn.importValue(exportName);
   }
@@ -1323,32 +1293,6 @@ function makeStackName(components: string[]) {
   return makeUniqueResourceName(components, { maxLength: 128 });
 }
 
-function getCreateExportsScope(stack: Stack) {
-  const exportsName = 'Exports';
-  let stackExports = stack.node.tryFindChild(exportsName) as Construct;
-  if (stackExports === undefined) {
-    stackExports = new Construct(stack, exportsName);
-  }
-
-  return stackExports;
-}
-
-function generateExportName(stackExports: Construct, id: string) {
-  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
-  const stack = Stack.of(stackExports);
-
-  const components = [
-    ...stackExports.node.scopes
-      .slice(stackRelativeExports ? stack.node.scopes.length : 2)
-      .map(c => c.node.id),
-    id,
-  ];
-  const prefix = stack.stackName ? stack.stackName + ':' : '';
-  const localPart = makeUniqueId(components);
-  const maxLength = 255;
-  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
-}
-
 interface StackDependency {
   stack: Stack;
   reasons: string[];
@@ -1390,7 +1334,7 @@ import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacySt
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
-import { referenceNestedStackValueInParent } from './private/refs';
+import { generateExport } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';
