@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-vpc-endpoint-dns-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-vpc-endpoint-dns-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-vpc-endpoint-dns-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-vpc-endpoint-dns-integ.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-cdk-vpc-endpoint-dns-integ": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
-              "id": "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
-              "packaging": "zip",
-              "sourceHash": "9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90",
-              "s3BucketParameter": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F",
-              "s3KeyParameter": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058",
-              "artifactHashParameter": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90ArtifactHashC00C7285"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de06b638db4c8efbd4283ed10e155026afe9c129557ab27b91f4b7f66399f5c6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-vpc-endpoint-dns-integ.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-vpc-endpoint-dns-integ.assets"
+      ],
+      "metadata": {
         "/aws-cdk-vpc-endpoint-dns-integ/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -185,22 +195,16 @@
             "data": "PHZ45BE903D"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/EnableDns/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB"
-          }
-        ],
         "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/EnableDns/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EndpointDomainEnableDnsDACBF5A6"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/GetNames/CustomResourcePolicy/Resource": [
+        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/EnableDns/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EndpointDomainGetNamesCustomResourcePolicy141775B1"
+            "data": "EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB"
           }
         ],
         "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/GetNames/Resource/Default": [
@@ -209,22 +213,28 @@
             "data": "EndpointDomainGetNames9E697ED2"
           }
         ],
+        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/GetNames/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EndpointDomainGetNamesCustomResourcePolicy141775B1"
+          }
+        ],
         "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/DnsVerificationRecord/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EndpointDomainDnsVerificationRecord66623BDA"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/StartVerification/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6"
-          }
-        ],
         "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/StartVerification/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EndpointDomainStartVerification05E2F7A3"
+          }
+        ],
+        "/aws-cdk-vpc-endpoint-dns-integ/EndpointDomain/StartVerification/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6"
           }
         ],
         "/aws-cdk-vpc-endpoint-dns-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -239,22 +249,16 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3Bucket": [
+        "/aws-cdk-vpc-endpoint-dns-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F"
+            "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/S3VersionKey": [
+        "/aws-cdk-vpc-endpoint-dns-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/AssetParameters/9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90ArtifactHashC00C7285"
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

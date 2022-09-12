@@ -3,9 +3,9 @@
   "testCases": {
     "fargateAssetImageTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-fargate-image"
       ],
-      "assertionStack": "fargateAssetImageTestDefaultTestDeployAssert15DE6C40"
+      "assertionStack": "fargateAssetImageTest/DefaultTest/DeployAssert"
     }
   }
 }

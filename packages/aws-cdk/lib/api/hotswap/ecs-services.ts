@@ -91,7 +91,25 @@ class EcsServiceHotswapOperation implements HotswapOperation {
     // Step 1 - update the changed TaskDefinition, creating a new TaskDefinition Revision
     // we need to lowercase the evaluated TaskDef from CloudFormation,
     // as the AWS SDK uses lowercase property names for these
-    const lowercasedTaskDef = transformObjectKeys(this.taskDefinitionResource, lowerCaseFirstCharacter);
+    const lowercasedTaskDef = transformObjectKeys(this.taskDefinitionResource, lowerCaseFirstCharacter, {
+      // All the properties that take arbitrary string as keys i.e. { "string" : "string" }
+      // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RegisterTaskDefinition.html#API_RegisterTaskDefinition_RequestSyntax
+      ContainerDefinitions: {
+        DockerLabels: true,
+        FirelensConfiguration: {
+          Options: true,
+        },
+        LogConfiguration: {
+          Options: true,
+        },
+      },
+      Volumes: {
+        DockerVolumeConfiguration: {
+          DriverOpts: true,
+          Labels: true,
+        },
+      },
+    });
     const registerTaskDefResponse = await sdk.ecs().registerTaskDefinition(lowercasedTaskDef).promise();
     const taskDefRevArn = registerTaskDefResponse.taskDefinition?.taskDefinitionArn;
 
