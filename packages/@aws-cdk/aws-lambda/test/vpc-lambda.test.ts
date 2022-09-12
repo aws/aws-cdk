@@ -238,7 +238,7 @@ describe('lambda + vpc', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -303,7 +303,7 @@ describe('lambda + vpc', () => {
         },
         {
           name: 'Private',
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         },
         {
           name: 'Isolated',
@@ -322,6 +322,21 @@ describe('lambda + vpc', () => {
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
     }).toThrow(/Lambda Functions in a public subnet/);
+  });
+
+  test('specifying vpcSubnets without a vpc throws an Error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => {
+      new lambda.Function(stack, 'Function', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_14_X,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      });
+    }).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');
   });
 });
 

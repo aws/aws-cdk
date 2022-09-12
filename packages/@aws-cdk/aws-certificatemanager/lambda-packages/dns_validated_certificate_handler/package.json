@@ -29,7 +29,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.101",
+    "@types/aws-lambda": "^8.10.103",
     "@types/sinon": "^9.0.11",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "aws-sdk": "^2.596.0",

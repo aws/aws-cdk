@@ -253,27 +253,116 @@ test('create an encrypted cluster with custom KMS key', () => {
     },
   });
 });
+describe('parameter group', () => {
+  test('cluster instantiated with parameter group', () => {
+    // WHEN
+    const group = new ClusterParameterGroup(stack, 'Params', {
+      description: 'bye',
+      parameters: {
+        param: 'value',
+      },
+    });
 
-test('cluster with parameter group', () => {
-  // WHEN
-  const group = new ClusterParameterGroup(stack, 'Params', {
-    description: 'bye',
-    parameters: {
-      param: 'value',
-    },
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      parameterGroup: group,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      ClusterParameterGroupName: { Ref: 'ParamsA8366201' },
+    });
+
   });
 
-  new Cluster(stack, 'Redshift', {
-    masterUser: {
-      masterUsername: 'admin',
-    },
-    vpc,
-    parameterGroup: group,
+  test('Adding to the cluster parameter group on a cluster not instantiated with a parameter group', () => {
+
+    // WHEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      clusterName: 'foobar',
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    cluster.addToParameterGroup('foo', 'bar');
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Redshift::Cluster', {
+      ClusterParameterGroupName: { Ref: Match.anyValue() },
+    });
+
+    template.hasResourceProperties('AWS::Redshift::ClusterParameterGroup', {
+      Description: 'Parameter Group for the foobar Redshift cluster',
+      ParameterGroupFamily: 'redshift-1.0',
+      Parameters: [
+        {
+          ParameterName: 'foo',
+          ParameterValue: 'bar',
+        },
+      ],
+    });
   });
 
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
-    ClusterParameterGroupName: { Ref: 'ParamsA8366201' },
+  test('Adding to the cluster parameter group on a cluster instantiated with a parameter group', () => {
+
+    // WHEN
+    const group = new ClusterParameterGroup(stack, 'Params', {
+      description: 'lorem ipsum',
+      parameters: {
+        param: 'value',
+      },
+    });
+
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      parameterGroup: group,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Redshift::Cluster', {
+      ClusterParameterGroupName: { Ref: Match.anyValue() },
+    });
+
+    template.hasResourceProperties('AWS::Redshift::ClusterParameterGroup', {
+      Description: 'lorem ipsum',
+      ParameterGroupFamily: 'redshift-1.0',
+      Parameters: [
+        {
+          ParameterName: 'param',
+          ParameterValue: 'value',
+        },
+        {
+          ParameterName: 'foo',
+          ParameterValue: 'bar',
+        },
+      ],
+    });
+  });
+
+  test('Adding a parameter to an IClusterParameterGroup', () => {
+    // GIVEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      clusterName: 'foobar',
+      parameterGroup: ClusterParameterGroup.fromClusterParameterGroupName(stack, 'Params', 'foo'),
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    // WHEN
+    expect(() => cluster.addToParameterGroup('param', 'value2'))
+      // THEN
+      .toThrowError('Cannot add a parameter to an imported parameter group');
   });
 
 });
@@ -326,8 +415,10 @@ test('can create a cluster with logging enabled', () => {
       masterUsername: 'admin',
     },
     vpc,
-    loggingBucket: bucket,
-    loggingKeyPrefix: 'prefix',
+    loggingProperties: {
+      loggingBucket: bucket,
+      loggingKeyPrefix: 'prefix',
+    },
   });
 
   // THEN
@@ -372,7 +463,7 @@ test('throws validation error when trying to set encryptionKey without enabling 
 
   // THEN
   expect(() => {
-    new Cluster(stack, 'Redshift', props );
+    new Cluster(stack, 'Redshift', props);
   }).toThrowError();
 
 });

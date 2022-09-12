@@ -376,6 +376,49 @@ test('specifying retry policy', () => {
   });
 });
 
+test('specifying retry policy with 0 retryAttempts', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Stack');
+
+  const fn = new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.PYTHON_3_9,
+  });
+
+  // WHEN
+  new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    targets: [new targets.LambdaFunction(fn, {
+      retryAttempts: 0,
+    })],
+  });
+
+  // THEN
+  expect(() => app.synth()).not.toThrow();
+
+  // the Permission resource should be in the event stack
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 minute)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        RetryPolicy: {
+          MaximumRetryAttempts: 0,
+        },
+      },
+    ],
+  });
+});
+
 function newTestLambda(scope: constructs.Construct, suffix = '') {
   return new lambda.Function(scope, `MyLambda${suffix}`, {
     code: new lambda.InlineCode('foo'),

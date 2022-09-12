@@ -30,7 +30,9 @@
    },
    "DependsOn": [
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteFF4E2178",
-    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520"
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableAssociation8B583A17",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTableAssociation43E5803C"
    ]
   },
   "ALBFargateServiceLBSecurityGroup5DC3060E": {
@@ -129,7 +131,6 @@
    "Properties": {
     "ContainerDefinitions": [
      {
-      "Cpu": 512,
       "Essential": true,
       "Image": "amazon/amazon-ecs-sample",
       "LogConfiguration": {
@@ -144,7 +145,6 @@
         }
        }
       },
-      "Memory": 1024,
       "Name": "web",
       "PortMappings": [
        {
@@ -435,7 +435,11 @@
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteFF4E2178",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableAssociation8B583A17"
+   ]
   },
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2Subnet95FF715A": {
    "Type": "AWS::EC2::Subnet",
@@ -539,7 +543,11 @@
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTableAssociation43E5803C"
+   ]
   },
   "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1Subnet075EFF4C": {
    "Type": "AWS::EC2::Subnet",
@@ -723,7 +731,9 @@
    },
    "DependsOn": [
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteFF4E2178",
-    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520"
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableAssociation8B583A17",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520",
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTableAssociation43E5803C"
    ]
   },
   "NLBFargateServiceLBPublicListenerB0DCA73C": {
@@ -777,7 +787,6 @@
    "Properties": {
     "ContainerDefinitions": [
      {
-      "Cpu": 512,
       "Essential": true,
       "Image": "amazon/amazon-ecs-sample",
       "LogConfiguration": {
@@ -792,7 +801,6 @@
         }
        }
       },
-      "Memory": 1024,
       "Name": "web",
       "PortMappings": [
        {
@@ -975,6 +983,40 @@
      "DNSName"
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

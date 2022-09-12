@@ -7,7 +7,7 @@ import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { IClusterParameterGroup } from './parameter-group';
+import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
 import { CfnCluster } from './redshift.generated';
 import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
 
@@ -93,6 +93,24 @@ export interface Login {
    * @default default master key
    */
   readonly encryptionKey?: kms.IKey;
+}
+
+/**
+ * Logging bucket and S3 prefix combination
+ */
+export interface LoggingProperties {
+  /**
+   * Bucket to send logs to.
+   * Logging information includes queries and connection attempts, for the specified Amazon Redshift cluster.
+   *
+   */
+  readonly loggingBucket: s3.IBucket
+
+  /**
+   * Prefix used for logging.
+   *
+   */
+  readonly loggingKeyPrefix: string
 }
 
 /**
@@ -294,19 +312,11 @@ export interface ClusterProps {
   readonly defaultDatabaseName?: string;
 
   /**
-   * Bucket to send logs to.
-   * Logging information includes queries and connection attempts, for the specified Amazon Redshift cluster.
+   * Bucket details for log files to be sent to, including prefix.
    *
-   * @default - No Logs
+   * @default - No logging bucket is used
    */
-  readonly loggingBucket?: s3.IBucket
-
-  /**
-   * Prefix used for logging
-   *
-   * @default - no prefix
-   */
-  readonly loggingKeyPrefix?: string
+  readonly loggingProperties?: LoggingProperties;
 
   /**
    * The removal policy to apply when the cluster and its instances are removed
@@ -350,6 +360,7 @@ export interface ClusterProps {
  * A new or imported clustered database.
  */
 abstract class ClusterBase extends Resource implements ICluster {
+
   /**
    * Name of the cluster
    */
@@ -395,7 +406,6 @@ export class Cluster extends ClusterBase {
       public readonly instanceIdentifiers: string[] = [];
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.clusterEndpointPort);
     }
-
     return new Import(scope, id);
   }
 
@@ -432,13 +442,24 @@ export class Cluster extends ClusterBase {
    */
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
+  /**
+   * The underlying CfnCluster
+   */
+  private readonly cluster: CfnCluster;
+
+  /**
+   * The cluster's parameter group
+   */
+  protected parameterGroup?: IClusterParameterGroup;
+
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets ?? {
-      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     };
+    this.parameterGroup = props.parameterGroup;
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
@@ -475,14 +496,31 @@ export class Cluster extends ClusterBase {
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
     let loggingProperties;
-    if (props.loggingBucket) {
+    if (props.loggingProperties) {
       loggingProperties = {
-        bucketName: props.loggingBucket.bucketName,
-        s3KeyPrefix: props.loggingKeyPrefix,
+        bucketName: props.loggingProperties.loggingBucket.bucketName,
+        s3KeyPrefix: props.loggingProperties.loggingKeyPrefix,
       };
+      props.loggingProperties.loggingBucket.addToResourcePolicy(
+        new iam.PolicyStatement(
+          {
+            actions: [
+              's3:GetBucketAcl',
+              's3:PutObject',
+            ],
+            resources: [
+              props.loggingProperties.loggingBucket.arnForObjects('*'),
+              props.loggingProperties.loggingBucket.bucketArn,
+            ],
+            principals: [
+              new iam.ServicePrincipal('redshift.amazonaws.com'),
+            ],
+          },
+        ),
+      );
     }
 
-    const cluster = new CfnCluster(this, 'Resource', {
+    this.cluster = new CfnCluster(this, 'Resource', {
       // Basic
       allowVersionUpgrade: true,
       automatedSnapshotRetentionPeriod: 1,
@@ -511,15 +549,15 @@ export class Cluster extends ClusterBase {
       elasticIp: props.elasticIp,
     });
 
-    cluster.applyRemovalPolicy(removalPolicy, {
+    this.cluster.applyRemovalPolicy(removalPolicy, {
       applyToUpdateReplacePolicy: true,
     });
 
-    this.clusterName = cluster.ref;
+    this.clusterName = this.cluster.ref;
 
     // create a number token that represents the port of the cluster
-    const portAttribute = Token.asNumber(cluster.attrEndpointPort);
-    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(this.cluster.attrEndpointPort);
+    this.clusterEndpoint = new Endpoint(this.cluster.attrEndpointAddress, portAttribute);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -590,6 +628,28 @@ export class Cluster extends ClusterBase {
         throw new Error('Number of nodes for cluster type multi-node must be at least 2 and no more than 100');
       }
       return nodeCount;
+    }
+  }
+
+  /**
+   * Adds a parameter to the Clusters' parameter group
+   *
+   * @param name the parameter name
+   * @param value the parameter name
+   */
+  public addToParameterGroup(name: string, value: string): void {
+    if (!this.parameterGroup) {
+      const param: { [name: string]: string } = {};
+      param[name] = value;
+      this.parameterGroup = new ClusterParameterGroup(this, 'ParameterGroup', {
+        description: this.cluster.clusterIdentifier ? `Parameter Group for the ${this.cluster.clusterIdentifier} Redshift cluster` : 'Cluster parameter group for family redshift-1.0',
+        parameters: param,
+      });
+      this.cluster.clusterParameterGroupName = this.parameterGroup.clusterParameterGroupName;
+    } else if (this.parameterGroup instanceof ClusterParameterGroup) {
+      this.parameterGroup.addParameter(name, value);
+    } else {
+      throw new Error('Cannot add a parameter to an imported parameter group.');
     }
   }
 }

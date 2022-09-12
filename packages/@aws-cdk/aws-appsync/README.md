@@ -330,7 +330,30 @@ const zone = route53.HostedZone.fromHostedZoneAttributes(this, `HostedZone`, {
 new route53.CnameRecord(this, `CnameApiRecord`, {
   recordName: 'api',
   zone,
-  domainName: myDomainName,
+  domainName: api.appSyncDomainName,
+});
+```
+
+## Log Group
+
+AppSync automatically create a log group with the name `/aws/appsync/apis/<graphql_api_id>` upon deployment with
+log data set to never expire. If you want to set a different expiration period, use the `logConfig.retention` property.
+
+To obtain the GraphQL API's log group as a `logs.ILogGroup` use the `logGroup` property of the
+`GraphqlApi` construct.
+
+```ts
+import * as logs from '@aws-cdk/aws-logs';
+
+const logConfig: appsync.LogConfig = {
+  retention: logs.RetentionDays.ONE_WEEK,
+};
+
+new appsync.GraphqlApi(this, 'api', {
+  authorizationConfig: {},
+  name: 'myApi',
+  schema: appsync.Schema.fromAsset(path.join(__dirname, 'myApi.graphql')),
+  logConfig,
 });
 ```
 
@@ -427,7 +450,7 @@ new appsync.GraphqlApi(this, 'api', {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.LAMBDA,
       lambdaAuthorizerConfig: {
-        handler: authFunction, 
+        handler: authFunction,
         // can also specify `resultsCacheTtl` and `validationRegex`.
       },
     },

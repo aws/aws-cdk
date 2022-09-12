@@ -289,11 +289,13 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
 
   /**
    * The Network Load Balancer for the service.
+   * @deprecated - Use `loadBalancers` instead.
    */
   public readonly loadBalancer: NetworkLoadBalancer;
 
   /**
    * The listener for the service.
+   * @deprecated - Use `listeners` instead.
    */
   public readonly listener: NetworkListener;
 
@@ -303,10 +305,18 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   public readonly cluster: ICluster;
 
   protected logDriver?: LogDriver;
-  protected listeners = new Array<NetworkListener>();
-  protected targetGroups = new Array<NetworkTargetGroup>();
-
-  private loadBalancers = new Array<NetworkLoadBalancer>();
+  /**
+   * The listeners of the service.
+   */
+  public readonly listeners = new Array<NetworkListener>();
+  /**
+   * The target groups of the service.
+   */
+  public readonly targetGroups = new Array<NetworkTargetGroup>();
+  /**
+   * The load balancers of the service.
+   */
+  public readonly loadBalancers = new Array<NetworkLoadBalancer>();
 
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsServiceBase class.

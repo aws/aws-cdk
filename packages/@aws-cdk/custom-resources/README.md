@@ -421,8 +421,9 @@ the `installLatestAwsSdk` prop to `false`.
 
 ### Custom Resource Execution Policy
 
-You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
-The library provides two factory methods to quickly configure this:
+The `policy` property defines the IAM Policy that will be applied to the API calls. This must be provided
+if an existing `role` is not specified and is optional otherwise. The library provides two factory methods
+to quickly configure this:
 
 * **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM
   Policy statements based on the configured SDK calls. Keep two things in mind
@@ -531,6 +532,26 @@ new cr.AwsCustomResource(this, 'Customized', {
   }),
 });
 ```
+
+Additionally, the Lambda function can be placed in a private VPC by using the `vpc`
+and `vpcSubnets` properties.
+
+```ts
+declare const myVpc: ec2.Vpc;
+new cr.AwsCustomResource(this, 'CustomizedInVpc', {
+  vpc,
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_NAT },
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }
+})
+```
+
+Note that Lambda functions in a VPC
+[require Network Address Translation (NAT) in order to access the internet][vpc-internet].
+The subnets specified in `vpcSubnets` must be private subnets.
+
+[vpc-internet]: https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html#vpc-internet
 
 ### Restricting the output of the Custom Resource
 
