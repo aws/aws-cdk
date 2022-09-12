@@ -228,6 +228,8 @@ export class PolicyStatement {
   }
 
   private validatePolicyActions(actions: string[]) {
+    // In case of an unresolved list of actions return early
+    if (cdk.Token.isUnresolved(actions)) return;
     for (const action of actions || []) {
       if (!cdk.Token.isUnresolved(action) && !/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action)) {
         throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
