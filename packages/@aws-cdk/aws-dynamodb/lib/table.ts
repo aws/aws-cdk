@@ -538,6 +538,15 @@ export interface ITable extends IResource {
   metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
+   * Metric for throttled requests
+   *
+   * @param operation type of operation for which throttled requests metric is measured
+   * @param props properties of a metric
+   *
+   */
+  metricThrottledRequestsForOperation(operation: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
    * Metric for the successful request latency
    *
    * @param props properties of a metric
