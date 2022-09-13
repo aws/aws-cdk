@@ -49,7 +49,7 @@ export function formatAllMatches(matches: { [key: string]: any }): string {
   ].join('\n');
 }
 
-export function formatAllMismatches(matches: { [key: string]: any }, analyzed: { [key: string]: any }): string {
+export function formatAllMismatches(analyzed: { [key: string]: any }, matches: { [key: string]: any } = {}): string {
   return [
     'The following resources do not match the given definition:',
     ...Object.keys(analyzed).filter(id => !(id in matches)).map(id => `\t${id}`),

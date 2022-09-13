@@ -22,13 +22,13 @@ export function allResources(template: Template, type: string, props: any): stri
     if (result.analyzedCount > matchCount) {
       return [
         `Template has ${result.analyzedCount} resource(s) with type ${type}, but only ${matchCount} match as expected.`,
-        formatAllMismatches({}, result.analyzed),
+        formatAllMismatches(result.analyzed, result.matches),
       ].join('\n');
     }
   } else {
     return [
       `Template has ${result.analyzedCount} resource(s) with type ${type}, but none match as expected.`,
-      formatAllMismatches({}, result.analyzed),
+      formatAllMismatches(result.analyzed),
     ].join('\n');
   }
 }
