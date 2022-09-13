@@ -6,6 +6,7 @@
 
 import * as cdk from '@aws-cdk/core';
 import * as cloudwatch from '../lib';
+import { InsightRule } from '../lib';
 
 const app = new cdk.App();
 
@@ -105,6 +106,10 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 dashboard.addWidgets(new cloudwatch.CustomWidget({
   title: 'My custom alarm',
   functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+}));
+dashboard.addWidgets(new cloudwatch.ContributorInsightsWidget({
+  title: 'My Insight Widget',
+  insightRule: InsightRule.fromRuleName(stack, 'MyInsightImport', 'my-insight-rule'),
 }));
 
 app.synth();
