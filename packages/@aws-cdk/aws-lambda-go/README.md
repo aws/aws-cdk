@@ -28,7 +28,7 @@ using a Go version >= 1.11 and is using [Go modules](https://golang.org/ref/mod)
 Define a `GoFunction`:
 
 ```ts
-new lambda.GoFunction(this, 'handler', {
+new go.GoFunction(this, 'handler', {
   entry: 'app/cmd/api',
 });
 ```
@@ -112,7 +112,7 @@ By default the following environment variables are set for you:
 Use the `environment` prop to define additional environment variables when go runs:
 
 ```ts
-new lambda.GoFunction(this, 'handler', {
+new go.GoFunction(this, 'handler', {
   entry: 'app/cmd/api',
   bundling: {
     environment: {
@@ -138,7 +138,7 @@ To force bundling in a docker container even if `Go` is available in your enviro
 Use the `buildArgs` prop to pass build arguments when building the bundling image:
 
 ```ts
-new lambda.GoFunction(this, 'handler', {
+new go.GoFunction(this, 'handler', {
   entry: 'app/cmd/api',
   bundling: {
     buildArgs: {
@@ -151,7 +151,7 @@ new lambda.GoFunction(this, 'handler', {
 Use the `bundling.dockerImage` prop to use a custom bundling image:
 
 ```ts
-new lambda.GoFunction(this, 'handler', {
+new go.GoFunction(this, 'handler', {
   entry: 'app/cmd/api',
   bundling: {
     dockerImage: DockerImage.fromBuild('/path/to/Dockerfile'),
@@ -162,7 +162,7 @@ new lambda.GoFunction(this, 'handler', {
 Use the `bundling.goBuildFlags` prop to pass additional build flags to `go build`:
 
 ```ts
-new lambda.GoFunction(this, 'handler', {
+new go.GoFunction(this, 'handler', {
   entry: 'app/cmd/api',
   bundling: {
     goBuildFlags: ['-ldflags "-s -w"'],
@@ -177,7 +177,7 @@ It is  possible to run additional commands by specifying the `commandHooks` prop
 ```text
 // This example only available in TypeScript
 // Run additional commands on a GoFunction via `commandHooks` property
-new lambda.GoFunction(this, 'handler', {
+new go.GoFunction(this, 'handler', {
   bundling: {
     commandHooks: {
       // run tests
