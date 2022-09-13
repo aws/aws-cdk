@@ -667,6 +667,9 @@ describe('Template', () => {
         () => inspect.allResourcesProperties('Foo::Bar', { fred: 'waldo' }),
         [
           'Template has 2 resource(s) with type Foo::Bar, but none match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo/,
+          /Foo2/,
         ],
         done,
       );
@@ -689,6 +692,8 @@ describe('Template', () => {
         () => inspect.allResourcesProperties('Foo::Bar', { lorem: 'ipsum' }),
         [
           'Template has 2 resource(s) with type Foo::Bar, but only 1 match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo2/,
         ],
         done,
       );

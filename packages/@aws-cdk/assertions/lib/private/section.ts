@@ -1,20 +1,20 @@
 import { Match } from '../match';
 import { Matcher, MatchResult } from '../matcher';
 
-export type MatchSuccess = { match: true, matches: { [key: string]: any }, analyzedCount: number, mismatches?: MatchResult };
-export type MatchFailure = { match: false, closestResult?: MatchResult, analyzedCount: number };
+export type MatchSuccess = { match: true, matches: { [key: string]: any }, analyzed: { [key: string]: any }, analyzedCount: number };
+export type MatchFailure = { match: false, closestResult?: MatchResult, analyzed: { [key: string]: any }, analyzedCount: number };
 
 export function matchSection(section: any, props: any): MatchSuccess | MatchFailure {
   const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
   let closestResult: MatchResult | undefined = undefined;
   let matching: { [key: string]: any } = {};
-  let count = 0;
+  let analyzed: { [key: string]: any } = {};
 
   eachEntryInSection(
     section,
 
     (logicalId, entry) => {
-      count++;
+      analyzed[logicalId] = entry;
       const result = matcher.test(entry);
       result.finished();
       if (!result.hasFailed()) {
@@ -27,9 +27,9 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
     },
   );
   if (Object.keys(matching).length > 0) {
-    return { match: true, matches: matching, analyzedCount: count, mismatches: closestResult };
+    return { match: true, matches: matching, analyzedCount: Object.keys(analyzed).length, analyzed: analyzed };
   } else {
-    return { match: false, closestResult, analyzedCount: count };
+    return { match: false, closestResult, analyzedCount: Object.keys(analyzed).length, analyzed: analyzed };
   }
 }
 
@@ -46,6 +46,13 @@ function eachEntryInSection(
 export function formatAllMatches(matches: { [key: string]: any }): string {
   return [
     leftPad(JSON.stringify(matches, undefined, 2)),
+  ].join('\n');
+}
+
+export function formatAllMismatches(matches: { [key: string]: any }, analyzed: { [key: string]: any }): string {
+  return [
+    'The following resources do not match the given definition:',
+    ...Object.keys(analyzed).filter(id => !(id in matches)).map(id => `\t${id}`),
   ].join('\n');
 }
 

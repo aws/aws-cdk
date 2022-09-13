@@ -1,6 +1,6 @@
 import { Match, Matcher } from '..';
 import { AbsentMatch } from './matchers/absent';
-import { formatFailure, matchSection } from './section';
+import { formatAllMismatches, formatFailure, matchSection } from './section';
 import { Resource, Template } from './template';
 
 export function findResources(template: Template, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
@@ -18,16 +18,17 @@ export function allResources(template: Template, type: string, props: any): stri
   const section = template.Resources ?? {};
   const result = matchSection(filterType(section, type), props);
   if (result.match) {
-    if (result.mismatches) {
+    const matchCount = Object.keys(result.matches).length;
+    if (result.analyzedCount > matchCount) {
       return [
-        `Template has ${result.analyzedCount} resource(s) with type ${type}, but only ${Object.keys(result.matches).length} match as expected.`,
-        formatFailure(result.mismatches),
+        `Template has ${result.analyzedCount} resource(s) with type ${type}, but only ${matchCount} match as expected.`,
+        formatAllMismatches({}, result.analyzed),
       ].join('\n');
     }
-  } else if (result.closestResult) {
+  } else {
     return [
       `Template has ${result.analyzedCount} resource(s) with type ${type}, but none match as expected.`,
-      formatFailure(result.closestResult),
+      formatAllMismatches({}, result.analyzed),
     ].join('\n');
   }
 }
