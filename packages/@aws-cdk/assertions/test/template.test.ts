@@ -657,12 +657,16 @@ describe('Template', () => {
         type: 'Foo::Bar',
         properties: { baz: 'qux' },
       });
+      new CfnResource(stack, 'NotFoo', {
+        type: 'NotFoo::NotBar',
+        properties: { fred: 'waldo' },
+      });
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
         () => inspect.allResourcesProperties('Foo::Bar', { fred: 'waldo' }),
         [
-          /but none match as expected/,
+          'Template has 2 resource(s) with type Foo::Bar, but none match as expected.',
         ],
         done,
       );
@@ -684,7 +688,7 @@ describe('Template', () => {
       expectToThrow(
         () => inspect.allResourcesProperties('Foo::Bar', { lorem: 'ipsum' }),
         [
-          /but only \d+ match as expected/,
+          'Template has 2 resource(s) with type Foo::Bar, but only 1 match as expected.',
         ],
         done,
       );
