@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS, FUTURE_FLAGS_EXPIRED, NEW_STYLE_STACK_SYNTHESIS_CONTEXT } from '@aws-cdk/cx-api';
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS, FUTURE_FLAGS_EXPIRED } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { flatten } from '../utils';
@@ -366,9 +366,6 @@ export abstract class IntegRunner {
       // if lookups are enabled then we need to synth
       // with the "dummy" context
       ...enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
-      // This is needed so that there are no differences between
-      // running on v1 vs v2
-      [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: '',
       ...futureFlags,
       ...this.legacyContext,
       ...additionalContext,

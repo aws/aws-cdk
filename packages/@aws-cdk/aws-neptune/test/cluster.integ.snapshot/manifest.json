@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-neptune-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-neptune-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-neptune-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-neptune-integ.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/315715ffe6004c7bd7c9874629785c10fd8f65a20d6995ea8eb20188dfb82b7d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-neptune-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "aws-cdk-neptune-integ.assets"
+      ],
       "metadata": {
         "/aws-cdk-neptune-integ/VPC/Resource": [
           {
@@ -153,16 +177,16 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/aws-cdk-neptune-integ/Params/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ParamsA8366201"
-          }
-        ],
         "/aws-cdk-neptune-integ/DbSecurity/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DbSecurity381C2C15"
+          }
+        ],
+        "/aws-cdk-neptune-integ/Params/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParamsA8366201"
           }
         ],
         "/aws-cdk-neptune-integ/Database/Subnets/Resource": [
@@ -193,6 +217,72 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseInstance1844F58FD"
+          }
+        ],
+        "/aws-cdk-neptune-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-neptune-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "Params1200F93288": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Params1200F93288",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Database12Subnets4179194B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Database12Subnets4179194B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Database12SecurityGroup4F4302E8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Database12SecurityGroup4F4302E8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Database12SecurityGroupfrom00000IndirectPort3A40EE2B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Database12SecurityGroupfrom00000IndirectPort3A40EE2B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Database12D6A36FB9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Database12D6A36FB9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Database12Instance10D9E6224": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Database12Instance10D9E6224",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -170,6 +170,52 @@ describe('CodeBuild event target', () => {
     });
   });
 
+  test('specifying retry policy with 0 retryAttempts', () => {
+    // GIVEN
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 hour)'),
+    });
+
+    // WHEN
+    const eventInput = {
+      buildspecOverride: 'buildspecs/hourly.yml',
+    };
+
+    rule.addTarget(
+      new targets.CodeBuildProject(project, {
+        event: events.RuleTargetInput.fromObject(eventInput),
+        retryAttempts: 0,
+      }),
+    );
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      ScheduleExpression: 'rate(1 hour)',
+      State: 'ENABLED',
+      Targets: [
+        {
+          Arn: {
+            'Fn::GetAtt': [
+              'MyProject39F7B0AE',
+              'Arn',
+            ],
+          },
+          Id: 'Target0',
+          Input: '{"buildspecOverride":"buildspecs/hourly.yml"}',
+          RetryPolicy: {
+            MaximumRetryAttempts: 0,
+          },
+          RoleArn: {
+            'Fn::GetAtt': [
+              'MyProjectEventsRole5B7D93F5',
+              'Arn',
+            ],
+          },
+        },
+      ],
+    });
+  });
+
   test('use a Dead Letter Queue for the rule target', () => {
     // GIVEN
     const rule = new events.Rule(stack, 'Rule', {

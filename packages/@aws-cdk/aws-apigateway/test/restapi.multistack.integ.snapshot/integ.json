@@ -5,7 +5,7 @@
       "stacks": [
         "SecondStack"
       ],
-      "assertionStack": "restapimultistackDefaultTestDeployAssertFCCAE394"
+      "assertionStack": "restapi-multistack/DefaultTest/DeployAssert"
     }
   }
 }

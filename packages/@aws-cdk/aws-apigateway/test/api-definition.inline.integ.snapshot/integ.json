@@ -5,7 +5,7 @@
       "stacks": [
         "integtest-restapi-fromdefinition-inline"
       ],
-      "assertionStack": "inlineapidefinitionDefaultTestDeployAssert923CAC29"
+      "assertionStack": "inline-api-definition/DefaultTest/DeployAssert"
     }
   }
 }

@@ -124,6 +124,93 @@ describe('Template', () => {
     });
   });
 
+  describe('resourcePropertiesCountIs', () => {
+    test('resource exists', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Resource', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 1);
+
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 0);
+      }).toThrow('Expected 0 resources of type Foo::Bar but found 1');
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 2);
+      }).toThrow('Expected 2 resources of type Foo::Bar but found 1');
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'nope' }, 1);
+      }).toThrow('Expected 1 resources of type Foo::Bar but found 0');
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Baz', { baz: 'qux' }, 1);
+      }).toThrow('Expected 1 resources of type Foo::Baz but found 0');
+    });
+    test('no resource', () => {
+      const stack = new Stack();
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 0);
+
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 1);
+      }).toThrow('Expected 1 resources of type Foo::Bar but found 0');
+    });
+    test('absent - with properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', {
+        bar: Match.absent(),
+      }, 1);
+      inspect.resourcePropertiesCountIs('Foo::Bar', {
+        baz: Match.absent(),
+      }, 0);
+    });
+    test('absent - no properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', {
+        bar: Match.absent(),
+        baz: 'qux',
+      }, 0);
+      inspect.resourcePropertiesCountIs('Foo::Bar', Match.absent(), 1);
+    });
+    test('not - with properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', Match.not({
+        baz: 'boo',
+      }), 1);
+    });
+    test('not - no properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', Match.not({
+        baz: 'qux',
+      }), 1);
+    });
+  });
+
   describe('templateMatches', () => {
     test('matches', () => {
       const app = new App();

@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
@@ -314,6 +315,23 @@ export interface AwsCustomResourceProps {
    * ID for the function's name. For more information, see Name Type.
    */
   readonly functionName?: string;
+
+  /**
+   * The vpc to provision the lambda function in.
+   *
+   * @default - the function is not provisioned inside a vpc.
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets from the VPC to place the lambda function in.
+   *
+   * Only used if 'vpc' is supplied. Note: internet access for Lambdas
+   * requires a NAT gateway, so picking Public subnets is not allowed.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
 }
 
 /**
@@ -384,6 +402,8 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       role: props.role,
       logRetention: props.logRetention,
       functionName: props.functionName,
+      vpc: props.vpc,
+      vpcSubnets: props.vpcSubnets,
     });
     this.grantPrincipal = provider.grantPrincipal;
 

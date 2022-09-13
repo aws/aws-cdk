@@ -1,12 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
     "Bundling/DefaultTest": {
       "stacks": [
         "cdk-integ-lambda-bundling-docker-bundling-opts"
       ],
       "stackUpdateWorkflow": false,
-      "assertionStack": "BundlingDefaultTestDeployAssertAACA0CAF"
+      "assertionStack": "Bundling/DefaultTest/DeployAssert",
+      "assertionStackName": "BundlingDefaultTestDeployAssertAACA0CAF"
     }
   }
 }
