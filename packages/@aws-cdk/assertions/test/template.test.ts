@@ -585,7 +585,10 @@ describe('Template', () => {
       expectToThrow(
         () => inspect.allResources('Foo::Bar', { Properties: { fred: 'waldo' } }),
         [
-          /but none match as expected/,
+          'Template has 2 resource(s) with type Foo::Bar, but none match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo/,
+          /Foo2/,
         ],
         done,
       );
@@ -607,7 +610,9 @@ describe('Template', () => {
       expectToThrow(
         () => inspect.allResources('Foo::Bar', { Properties: { lorem: 'ipsum' } }),
         [
-          /but only \d+ match as expected/,
+          'Template has 2 resource(s) with type Foo::Bar, but only 1 match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo2/,
         ],
         done,
       );
