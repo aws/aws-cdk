@@ -1,16 +1,18 @@
+import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token, CustomResource, Stack, ArnFormat } from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
 import { CfnCluster } from './redshift.generated';
 import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
-
 /**
  * Possible Node Types to use in the cluster
  * used for defining {@link ClusterProps.nodeType}.
@@ -354,6 +356,12 @@ export interface ClusterProps {
    * @default - No Elastic IP
    */
   readonly elasticIp?: string
+
+  /**
+   * If this flag is set, the cluster will be rebooted when changes to the cluster's parameter group that require a restart to apply.
+   * @default false
+   */
+  readonly rebootForParameterChanges?: boolean
 }
 
 /**
@@ -451,6 +459,11 @@ export class Cluster extends ClusterBase {
    * The cluster's parameter group
    */
   protected parameterGroup?: IClusterParameterGroup;
+
+  /**
+   * Whether the cluster will be rebooted when changes to the cluster's parameter group that require a restart to apply.
+   */
+  protected rebootForParameterChangesEnabled?: boolean;
 
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
@@ -565,6 +578,9 @@ export class Cluster extends ClusterBase {
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups, defaultPort });
+    if (props.rebootForParameterChanges) {
+      this.enableRebootForParameterChanges();
+    }
   }
 
   /**
@@ -650,6 +666,56 @@ export class Cluster extends ClusterBase {
       this.parameterGroup.addParameter(name, value);
     } else {
       throw new Error('Cannot add a parameter to an imported parameter group.');
+    }
+  }
+
+  /**
+   * Enables automatic cluster rebooting when changes to the cluster's parameter group require a restart to apply.
+   */
+  public enableRebootForParameterChanges(): void {
+    if (!this.parameterGroup) {
+      throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
+    }
+    if (!(this.parameterGroup instanceof ClusterParameterGroup)) {
+      throw new Error('Cannot enable reboot for parameter changes when using an imported parameter group.');
+    }
+    if (!this.rebootForParameterChangesEnabled) {
+      this.rebootForParameterChangesEnabled = true;
+      const rebootFunction = new lambda.SingletonFunction(this, 'RedshiftClusterRebooterFunction', {
+        uuid: '511e207f-13df-4b8b-b632-c32b30b65ac2',
+        runtime: lambda.Runtime.NODEJS_16_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'cluster-parameter-change-reboot-handler')),
+        handler: 'index.handler',
+        timeout: Duration.seconds(900),
+      });
+      rebootFunction.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['redshift:DescribeClusters'],
+        resources: ['*'],
+      }));
+      rebootFunction.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['reshift:RebootCluster'],
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'redshift',
+            resource: 'cluster',
+            resourceName: this.clusterName,
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          }),
+        ],
+      }));
+      const provider = new cr.Provider(this, 'ResourceProvider', {
+        onEventHandler: rebootFunction,
+      });
+      const customResource = new CustomResource(this, 'RedshiftClusterRebooterCustomResource', {
+        resourceType: 'Custom::RedshiftClusterRebooter',
+        serviceToken: provider.serviceToken,
+        properties: {
+          ClusterId: this.cluster.getAtt('id'),
+          ParameterGroupName: this.parameterGroup.clusterParameterGroupName,
+          ParametersString: JSON.stringify(this.parameterGroup.parameters),
+        },
+      });
+      customResource.node.addDependency(this, this.parameterGroup);
     }
   }
 }

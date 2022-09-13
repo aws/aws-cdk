@@ -613,6 +613,80 @@ test('elastic ip address', () => {
   });
 });
 
+describe('reboot for Parameter Changes', () => {
+  test('cluster without parameter group', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    // WHEN
+    expect(() => cluster.enableRebootForParameterChanges())
+      // THEN
+      .toThrowError(/Cannot enable reboot for parameter changes/);
+  });
+
+  test('cluster with imported parameter group', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+
+    const cluster2 = new Cluster(stack, 'Redshift2', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster2.addToParameterGroup('foo', 'bar');
+
+    // WHEN
+    cluster.enableRebootForParameterChanges();
+    cluster2.enableRebootForParameterChanges();
+
+    //THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('Custom::RedshiftClusterRebooter', 2);
+    template.templateMatches({
+      Resources: {
+        SingletonLambda511e207f13df4b8bb632c32b30b65ac281740AC5: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Handler: 'index.handler',
+            Runtime: 'nodejs16.x',
+            Timeout: 900,
+          },
+        },
+      },
+    });
+  });
+
+
+  test('cluster with parameter group', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      parameterGroup: ClusterParameterGroup.fromClusterParameterGroupName(stack, 'foo', 'bar'),
+    });
+
+    // WHEN
+    expect(() => cluster.enableRebootForParameterChanges())
+      // THEN
+      .toThrowError(/Cannot enable reboot for parameter changes/);
+  });
+
+});
+
 function testStack() {
   const newTestStack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
   newTestStack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
