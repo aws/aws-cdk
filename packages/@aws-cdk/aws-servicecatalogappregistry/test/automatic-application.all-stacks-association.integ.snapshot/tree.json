@@ -1,0 +1,143 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.95"
+        }
+      },
+      "integ-servicecatalogappregistry-application": {
+        "id": "integ-servicecatalogappregistry-application",
+        "path": "integ-servicecatalogappregistry-application",
+        "children": {
+          "resourcesStack": {
+            "id": "resourcesStack",
+            "path": "integ-servicecatalogappregistry-application/resourcesStack",
+            "children": {
+              "AppRegistryAssociation": {
+                "id": "AppRegistryAssociation",
+                "path": "integ-servicecatalogappregistry-application/resourcesStack/AppRegistryAssociation",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "application": "AppRegistryAutomaticApplication",
+                    "resource": {
+                      "Ref": "AWS::StackId"
+                    },
+                    "resourceType": "CFN_STACK"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnResourceAssociation",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Stack",
+              "version": "0.0.0"
+            }
+          },
+          "AppRegistryAssociation": {
+            "id": "AppRegistryAssociation",
+            "path": "integ-servicecatalogappregistry-application/AppRegistryAssociation",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
+              "aws:cdk:cloudformation:props": {
+                "application": "AppRegistryAutomaticApplication",
+                "resource": {
+                  "Ref": "AWS::StackId"
+                },
+                "resourceType": "CFN_STACK"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnResourceAssociation",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "AutoApplication": {
+        "id": "AutoApplication",
+        "path": "AutoApplication",
+        "constructInfo": {
+          "fqn": "@aws-cdk/aws-servicecatalogappregistry.AutomaticApplication",
+          "version": "0.0.0"
+        }
+      },
+      "AutomaticApplicationStack": {
+        "id": "AutomaticApplicationStack",
+        "path": "AutomaticApplicationStack",
+        "children": {
+          "DefaultCdkApplication": {
+            "id": "DefaultCdkApplication",
+            "path": "AutomaticApplicationStack/DefaultCdkApplication",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AutomaticApplicationStack/DefaultCdkApplication/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "AppRegistryAutomaticApplication",
+                    "description": "Testing AppRegistry AutomaticApplication"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnApplication",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry.Application",
+              "version": "0.0.0"
+            }
+          },
+          "AppRegistryAssociation": {
+            "id": "AppRegistryAssociation",
+            "path": "AutomaticApplicationStack/AppRegistryAssociation",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
+              "aws:cdk:cloudformation:props": {
+                "application": {
+                  "Fn::GetAtt": [
+                    "DefaultCdkApplication4573D5A3",
+                    "Id"
+                  ]
+                },
+                "resource": {
+                  "Ref": "AWS::StackId"
+                },
+                "resourceType": "CFN_STACK"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnResourceAssociation",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

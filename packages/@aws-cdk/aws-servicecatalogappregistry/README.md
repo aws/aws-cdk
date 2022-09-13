@@ -21,12 +21,13 @@
 
 <!--END STABILITY BANNER-->
 
-[AWS Service Catalog App Registry](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/appregistry.html) 
+[AWS Service Catalog App Registry](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/appregistry.html)
 enables organizations to create and manage repositores of applications and associated resources.
 
 ## Table Of Contents
 
 - [Application](#application)
+- [Automatic-Application](#automatic-application)
 - [Attribute-Group](#attribute-group)
 - [Associations](#associations)
   - [Associating application with an attribute group](#attribute-group-association)
@@ -44,11 +45,11 @@ import * as appreg from '@aws-cdk/aws-servicecatalogappregistry';
 ## Application
 
 An AppRegistry application enables you to define your applications and associated resources.
-The application name must be unique at the account level, but is mutable.
+The application name must be unique at the account level and it's immutable.
 
 ```ts
 const application = new appreg.Application(this, 'MyFirstApplication', {
-  applicationName: 'MyFirstApplicationName', 
+  applicationName: 'MyFirstApplicationName',
   description: 'description for my application', // the description is optional
 });
 ```
@@ -64,6 +65,73 @@ const importedApplication = appreg.Application.fromApplicationArn(
 );
 ```
 
+## Automatic-Application
+
+An AppRegistry L2 construct to automatically create an application with the given name and description.
+The application name must be unique at the account level and it's immutable.
+`AutomaticApplication` L2 construct will automatically associate all stacks in the given scope, however
+in case of a `Pipeline` stack, stage underneath the pipeline will not automatically be associated and
+needs to be associated separately.
+If cross account stack is detected, then this construct will automatically share the application to consumer accounts.
+Cross account feature will only work for non environment agnostic stacks.
+
+Following will create an Application named `MyAutoApplication` in account `123456789012` and region `us-east-1`
+and will associate all stacks in the `App` scope to `MyAutoApplication`.
+
+```ts
+const autoApp = new appreg.AutomaticApplication(app, 'AutoApplication', {
+    applicationName: 'MyAutoApplication',
+    description: 'Testing auto application',
+    stackProps: {
+        stackName: 'MyAutoApplicationStack',
+        env: {account: '123456789012', region: 'us-east-1'},
+    },
+});
+```
+
+In case of a Pipeline stack, you need to pass the reference of `AutomaticApplication` to pipeline stack and associate
+each stage as shown below:
+
+```ts
+
+const autoApp = new appreg.AutomaticApplication(app, 'AutoApplication', {
+    applicationName: 'MyPipelineAutoApplication',
+    description: 'Testing pipeline auto app',
+    stackProps: {
+        stackName: 'MyPipelineAutoApplicationStack',
+        env: {account: '123456789012', region: 'us-east-1'},
+    },
+});
+
+const cdkPipeline = new ApplicationPipelineStack(app, 'CDKApplicationPipelineStack', {
+    application: autoApp,
+    env: {account: '123456789012', region: 'us-east-1'},
+}
+
+export interface ApplicationPipelineStackProps extends cdk.StackProps {
+  application: appreg.AutomaticApplication;
+}
+
+export class ApplicationPipelineStack extends cdk.Stack {
+  constructor(scope: cdk.App, id: string, props: ApplicationPipelineStackProps) {
+    super(scope, id, props);
+
+    const repo = new codecommit.Repository(this, 'PipelineRepo', {
+      repositoryName: "PipelineRepo",
+    });
+
+    const pipeline = new codepipeline.CodePipeline(this, 'Pipeline', {
+        ... //your pipeline properties
+    });
+
+   const beta = new cdk.Stage(this, 'MyBetaStage');
+   // Now associate the stage to automatic application.
+   props.application.associateStage(beta, this.stackName);
+   pipeline.addStage(beta);
+  }
+}
+```
+
 ## Attribute Group
 
 An AppRegistry attribute group acts as a container for user-defined attributes for an application.
@@ -71,7 +139,7 @@ Metadata is attached in a machine-readble format to integrate with automated wor
 
 ```ts
 const attributeGroup = new appreg.AttributeGroup(this, 'MyFirstAttributeGroup', {
-  attributeGroupName: 'MyFirstAttributeGroupName', 
+  attributeGroupName: 'MyFirstAttributeGroupName',
   description: 'description for my attribute group', // the description is optional,
   attributes: {
     project: 'foo',
@@ -104,7 +172,7 @@ Resources are CloudFormation stacks that you can associate with an application t
 stacks together to enable metadata rich insights into your applications and resources.
 A Cloudformation stack can only be associated with one appregistry application.
 If a stack is associated with multiple applications in your app or is already associated with one,
-CDK will fail at deploy time. 
+CDK will fail at deploy time.
 
 ### Associating application with an attribute group
 
