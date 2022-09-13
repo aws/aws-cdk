@@ -31,12 +31,10 @@ export abstract class ContainerImage {
   /**
    * Reference an image that's constructed directly from sources on disk
    *
-   * @param scope The scope within which to create the image asset
-   * @param id The id to assign to the image asset
-   * @param props The properties of a Docker image asset
+   * @param asset A Docker image asset
    */
-  public static fromAsset(scope: Construct, id: string, props: assets.DockerImageAssetProps): ContainerImage {
-    return new AssetImage(scope, id, props);
+  public static fromAsset(asset: assets.DockerImageAsset): ContainerImage {
+    return new AssetImage(asset);
   }
 
   /**
@@ -60,11 +58,8 @@ class EcrImage extends ContainerImage {
 }
 
 class AssetImage extends ContainerImage {
-  private readonly asset: assets.DockerImageAsset;
-
-  constructor(readonly scope: Construct, readonly id: string, readonly props: assets.DockerImageAssetProps) {
+  constructor(private readonly asset: assets.DockerImageAsset) {
     super();
-    this.asset = new assets.DockerImageAsset(scope, id, props);
   }
 
   public bind(_scope: Construct, model: Model): ContainerImageConfig {

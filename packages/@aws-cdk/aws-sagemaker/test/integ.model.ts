@@ -76,9 +76,10 @@ const ecrImage = sagemaker.ContainerImage.fromEcrRepository(
   }).repository,
 );
 
-const localImage = sagemaker.ContainerImage.fromAsset(stack, 'LocalImage', {
+const imageAsset = new ecr_assets.DockerImageAsset(stack, 'LocalImage', {
   directory: dockerfileDirectory,
 });
+const localImage = sagemaker.ContainerImage.fromAsset(imageAsset);
 
 /*
  * Exercise different variations of ModelData, including:
