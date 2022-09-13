@@ -248,7 +248,7 @@ export interface Contribution {
 /**
  * Represents the RuleState of the Insight Rule
  */
-enum RuleState {
+export enum RuleState {
     /**
      * The Rule is enabled
      */
