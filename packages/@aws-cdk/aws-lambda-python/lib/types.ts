@@ -76,4 +76,11 @@ export interface BundlingOptions {
    * @default - Based on `assetHashType`
    */
   readonly assetHash?: string;
+
+  /**
+   * Where to mount the specified volumes from
+   * Docker [volumes-from option](https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from)
+   * @default - no volumes-from options
+   */
+  readonly volumesFrom?: string;
 }
