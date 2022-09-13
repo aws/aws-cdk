@@ -166,10 +166,9 @@ const cluster = new neptune.DatabaseCluster(this, 'Database', {
   // Audit logs are enabled via the clusterParameterGroup
   clusterParameterGroup,
   // Optionally configuring audit logs to be exported to CloudWatch Logs
-  cloudwatchLogsExports: {
-    logTypes: [neptune.LogType.AUDIT],
-    logRetention: logs.RetentionDays.ONE_MONTH,
-  },
+  cloudwatchLogsExports: [neptune.LogType.AUDIT],
+  // Optionally set a retention period on exported CloudWatch Logs
+  cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
 });
 ```
 

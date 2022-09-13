@@ -80,7 +80,7 @@ export class LogType {
   /**
    * Audit logs
    *
-   * @see @see https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html
    */
   public static readonly AUDIT = new LogType('audit');
 
@@ -89,25 +89,6 @@ export class LogType {
    * @param value the log type
    */
   public constructor(public readonly value: string) {}
-}
-
-/**
- * Configurations to control exporting Neptune logs to CloudWatch Logs
- */
-export interface CloudwatchLogsExports {
-  /**
-   * Log types that will be exported to CloudWatch Logs
-   */
-  readonly logTypes: LogType[];
-
-  /**
-   * The number of days log events are kept in CloudWatch Logs. When updating
-   * this property, unsetting it doesn't remove the log retention policy. To
-   * remove the retention policy, set the value to `INFINITE`.
-   *
-   * @default logs.RetentionDays.INFINITE
-   */
-  readonly logRetention?: logs.RetentionDays;
 }
 
 /**
@@ -284,16 +265,32 @@ export interface DatabaseClusterProps {
   readonly autoMinorVersionUpgrade?: boolean;
 
   /**
-   * Configurations for exporting Neptune logs to CloudWatch Logs
-   *
-   * Exporting to CloudWatch Logs also requires enabling logging using parameter groups
+   * The list of log types that need to be enabled for exporting to
+   * CloudWatch Logs.
    *
    * @see https://docs.aws.amazon.com/neptune/latest/userguide/cloudwatch-logs.html
    * @see https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html#auditing-enable
    *
-   * @default - no logs are exported to CloudWatch logs
+   * @default - no log exports
    */
-  readonly cloudwatchLogsExports?: CloudwatchLogsExports;
+  readonly cloudwatchLogsExports?: LogType[];
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `Infinity`.
+   *
+   * @default - logs never expire
+   */
+  readonly cloudwatchLogsRetention?: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - a new role is created.
+   */
+  readonly cloudwatchLogsRetentionRole?: iam.IRole;
 }
 
 /**
@@ -562,7 +559,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       // CloudWatch Logs exports
-      enableCloudwatchLogsExports: props.cloudwatchLogsExports?.logTypes.map(logType => logType.value),
+      enableCloudwatchLogsExports: props.cloudwatchLogsExports?.map(logType => logType.value),
       storageEncrypted,
     });
 
@@ -578,11 +575,12 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpoint, port);
 
     // Log retention
-    const retention = props.cloudwatchLogsExports?.logRetention;
+    const retention = props.cloudwatchLogsRetention;
     if (retention) {
-      props.cloudwatchLogsExports?.logTypes.forEach(logType => {
+      props.cloudwatchLogsExports?.forEach(logType => {
         new logs.LogRetention(this, `${logType}LogRetention`, {
           logGroupName: `/aws/neptune/${this.clusterIdentifier}/${logType.value}`,
+          role: props.cloudwatchLogsRetentionRole,
           retention,
         });
       });

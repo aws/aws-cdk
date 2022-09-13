@@ -670,9 +670,7 @@ describe('DatabaseCluster', () => {
     new DatabaseCluster(stack, 'Cluster', {
       vpc,
       instanceType: InstanceType.R5_LARGE,
-      cloudwatchLogsExports: {
-        logTypes: [LogType.AUDIT],
-      },
+      cloudwatchLogsExports: [LogType.AUDIT],
     });
 
     // THEN
@@ -691,10 +689,8 @@ describe('DatabaseCluster', () => {
     new DatabaseCluster(stack, 'Cluster', {
       vpc,
       instanceType: InstanceType.R5_LARGE,
-      cloudwatchLogsExports: {
-        logTypes: [LogType.AUDIT],
-        logRetention: logs.RetentionDays.ONE_MONTH,
-      },
+      cloudwatchLogsExports: [LogType.AUDIT],
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
     });
 
     // THEN

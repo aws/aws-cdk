@@ -40,10 +40,8 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   kmsKey,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoMinorVersionUpgrade: true,
-  cloudwatchLogsExports: {
-    logTypes: [LogType.AUDIT],
-    logRetention: logs.RetentionDays.ONE_MONTH,
-  },
+  cloudwatchLogsExports: [LogType.AUDIT],
+  cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
