@@ -1,14 +1,12 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "integ.call": {
+    "aws-stepfunctions-tasks-eks-call-integ/DefaultTest": {
       "stacks": [
-        "aws-stepfunctions-tasks-eks-call-integ"
+        "aws-stepfunctions-tasks-eks-call-integ-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "assertionStack": "aws-stepfunctions-tasks-eks-call-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awsstepfunctionstasksekscallintegDefaultTestDeployAssert2DF4AD1E"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
