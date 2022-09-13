@@ -281,10 +281,20 @@ export class CfnResource extends CfnRefElement {
    * Indicates that this resource depends on another resource and cannot be
    * provisioned unless the other resource has been successfully provisioned.
    *
+   * @deprecated use addDependency
+   */
+  public addDependsOn(target: CfnResource) {
+    return this.addDependency(target);
+  }
+
+  /**
+   * Indicates that this resource depends on another resource and cannot be
+   * provisioned unless the other resource has been successfully provisioned.
+   *
    * This can be used for resources across stacks (or nested stack) boundaries
    * and the dependency will automatically be transferred to the relevant scope.
    */
-  public addDependsOn(target: CfnResource) {
+  public addDependency(target: CfnResource) {
     // skip this dependency if the target is not part of the output
     if (!target.shouldSynthesize()) {
       return;
@@ -299,7 +309,7 @@ export class CfnResource extends CfnRefElement {
    * This can be used for resources across stacks (including nested stacks)
    * and the dependency will automatically be removed from the relevant scope.
    */
-  public removeDependsOn(target: CfnResource) : void {
+  public removeDependency(target: CfnResource) : void {
     // skip this dependency if the target is not part of the output
     if (!target.shouldSynthesize()) {
       return;
@@ -314,7 +324,7 @@ export class CfnResource extends CfnRefElement {
    * This assembles dependencies on resources across stacks (including nested stacks)
    * automatically.
    */
-  public obtainDependsOn() : Element[] {
+  public obtainDependencies() : Element[] {
     return obtainDependencies(this);
   }
 
@@ -323,10 +333,10 @@ export class CfnResource extends CfnRefElement {
    * @param target The dependency to replace
    * @param newTarget The new dependency to add
    */
-  public replaceDependsOn(target: CfnResource, newTarget: CfnResource) : void {
-    if (this.obtainDependsOn().includes(target)) {
-      this.removeDependsOn(target);
-      this.addDependsOn(newTarget);
+  public replaceDependency(target: CfnResource, newTarget: CfnResource) : void {
+    if (this.obtainDependencies().includes(target)) {
+      this.removeDependency(target);
+      this.addDependency(newTarget);
     } else {
       throw new Error(`"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`);
     }
@@ -372,7 +382,7 @@ export class CfnResource extends CfnRefElement {
    * dependency between two resources that are directly defined in the same
    * stacks.
    *
-   * Use `resource.addDependsOn` to define the dependency between two resources,
+   * Use `resource.addDependency` to define the dependency between two resources,
    * which also takes stack boundaries into account.
    *
    * @internal

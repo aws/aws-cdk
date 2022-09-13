@@ -483,7 +483,7 @@ describe('stack', () => {
         RefToResource1: resourceA.ref,
       },
     });
-    resource2.addDependsOn(resourceB);
+    resource2.addDependency(resourceB);
 
     // THEN
     const assembly = app.synth();
@@ -517,6 +517,214 @@ describe('stack', () => {
 
     expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
     expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+  });
+
+  test('_addAssemblyDependency adds to _stackDependencies', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'ChildA');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
+
+    expect(childA._obtainAssemblyDependencies({ source: resourceA, target: resource1 }))
+      .toEqual([resource1]);
+    expect(childA._obtainAssemblyDependencies())
+      .toEqual([resource1, resource2]);
+    expect(childA._obtainAssemblyDependencies({ source: childA, target: child1 }))
+      .toEqual([]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+  });
+
+  test('_addAssemblyDependency adds one StackDependencyReason with defaults', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'ChildA');
+
+    childA._addAssemblyDependency(child1);
+
+    expect(childA._obtainAssemblyDependencies())
+      .toEqual([child1]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+  });
+
+  test('_addAssemblyDependency raises error on cycle', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const child2 = new Stack(parent, 'Child2');
+
+    child2._addAssemblyDependency(child1);
+    expect(() => child1._addAssemblyDependency(child2)).toThrow("'Parent/Child2' depends on");
+  });
+
+  test('_addAssemblyDependency raises error for nested stacks', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new NestedStack(parent, 'Child1');
+    const child2 = new NestedStack(parent, 'Child2');
+
+    expect(() => child1._addAssemblyDependency(child2)).toThrow('Cannot add assembly-level');
+  });
+
+  test('_addAssemblyDependency handles duplicate dependency reasons', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const child2 = new Stack(parent, 'Child2');
+
+    child2._addAssemblyDependency(child1);
+    const depsBefore = child2._obtainAssemblyDependencies();
+    child2._addAssemblyDependency(child1);
+    expect(depsBefore).toEqual(child2._obtainAssemblyDependencies());
+  });
+
+  test('_removeAssemblyDependency removes one StackDependencyReason of two from _stackDependencies', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'ChildA');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
+
+    expect(childA._obtainAssemblyDependencies({ source: resourceA, target: resource1 }))
+      .toEqual([]);
+    expect(childA._obtainAssemblyDependencies())
+      .toEqual([resource2]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+  });
+
+  test('_removeAssemblyDependency removes a StackDependency from _stackDependencies with the last reason', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'Child2');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource2 });
+
+    expect(childA._obtainAssemblyDependencies())
+      .toEqual([]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+  });
+
+  test('_removeAssemblyDependency removes a StackDependency with default reason', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'Child2');
+
+    childA._addAssemblyDependency(child1);
+    childA._removeAssemblyDependency(child1);
+
+    expect(childA._obtainAssemblyDependencies()).toEqual([]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+  });
+
+  test('_removeAssemblyDependency raises an error for nested stacks', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new NestedStack(parent, 'Child1');
+    const childA = new NestedStack(parent, 'Child2');
+
+    expect(() => childA._removeAssemblyDependency(child1)).toThrow('There cannot be assembly-level');
+  });
+
+  test('_removeAssemblyDependency handles a non-matching dependency reason', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'Child2');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1);
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
   });
 
   test('automatic cross-stack references and manual exports look the same', () => {

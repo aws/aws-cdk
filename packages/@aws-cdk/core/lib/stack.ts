@@ -736,7 +736,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @internal
    */
-  public _addAssemblyDependency(target: Stack, reason: StackDependencyReason = { description: '' }) {
+  public _addAssemblyDependency(target: Stack, reason: StackDependencyReason = {}) {
     // defensive: we should never get here for nested stacks
     if (this.nested || target.nested) {
       throw new Error('Cannot add assembly-level dependencies for nested stacks');
@@ -747,6 +747,9 @@ export class Stack extends Construct implements ITaggable {
     }
     if (!reason.target) {
       reason.target = target;
+    }
+    if (!reason.description) {
+      reason.description = `'${target.node.path}' depends on '${this.node.path}'`;
     }
 
     const cycle = target.stackDependencyReasons(this);
@@ -1439,7 +1442,7 @@ function filterReasons(dependency: StackDependency, reasonFilter: StackDependenc
 }
 
 interface StackDependencyReason {
-  description : string;
+  description? : string;
   source?: Element;
   target?: Element;
 }

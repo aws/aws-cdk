@@ -1,6 +1,5 @@
-/// !cdk-integ pragma:ignore-assets
 /*
- * Real replaceDependsOn use case to test
+ * Real replaceDependency use case to test
  *
  * TestStack verification steps:
  * - Deploy with `--no-clean`
@@ -35,11 +34,10 @@ class TestStack extends Stack {
     });
     const logRetentionResource = logRetentionFunction.node.tryFindChild('Resource') as CfnResource;
     // Without replacing the dependency, Cfn will reject the template because it references this non-existent logical id
-    logRetentionResource.replaceDependsOn(defaultPolicy, customPolicy);
+    logRetentionResource.replaceDependency(defaultPolicy, customPolicy);
     serviceRole.node.tryRemoveChild('DefaultPolicy');
   }
 }
-
 
 class TestNestedStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -58,10 +56,10 @@ class TestNestedStack extends Stack {
     }).node.defaultChild! as CfnResource;
 
     // The following two statements should cancel each other out
-    resource1.addDependsOn(resource2);
-    resource1.removeDependsOn(resource2);
+    resource1.addDependency(resource2);
+    resource1.removeDependency(resource2);
 
-    resource2.addDependsOn(resource1);
+    resource2.addDependency(resource1);
   }
 }
 

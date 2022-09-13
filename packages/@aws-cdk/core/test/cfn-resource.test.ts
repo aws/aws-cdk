@@ -3,7 +3,6 @@ import { Construct } from 'constructs';
 import * as core from '../lib';
 import { getWarnings } from './util';
 import { Names } from '../lib';
-import { addDependency } from '../lib/deps';
 
 describe('cfn resource', () => {
   describe('._toCloudFormation', () => {
@@ -137,13 +136,13 @@ describe('cfn resource', () => {
     });
   });
 
-  describe('dependsOn methods', () => {
+  describe('dependency methods', () => {
     test('can explicitly add a dependency between resources', () => {
       const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
-      resource1.addDependsOn(resource2);
+      resource1.addDependency(resource2);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
@@ -163,8 +162,8 @@ describe('cfn resource', () => {
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
-      resource1.addDependsOn(resource2);
-      resource1.removeDependsOn(resource2);
+      resource1.addDependency(resource2);
+      resource1.removeDependency(resource2);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
@@ -188,18 +187,18 @@ describe('cfn resource', () => {
       const resource2 = new core.CfnResource(stack2, 'Resource2', { type: 'Test::Resource::Fake2' });
       const resource3 = new core.CfnResource(stack1, 'Resource3', { type: 'Test::Resource::Fake3' });
 
-      resource1.addDependsOn(resource2);
+      resource1.addDependency(resource2);
       // Adding the same resource dependency twice should be a no-op
-      resource1.addDependsOn(resource2);
-      resource1.addDependsOn(resource3);
+      resource1.addDependency(resource2);
+      resource1.addDependency(resource3);
       expect(stack1.dependencies.length).toEqual(1);
       expect(stack1.dependencies[0].node.id).toEqual(stack2.node.id);
-      // obtainDependsOn should assemble and flatten resource-to-resource dependencies even across stacks
-      expect(resource1.obtainDependsOn().map(x => x.node.path)).toEqual([resource3.node.path, resource2.node.path]);
+      // obtainDependencies should assemble and flatten resource-to-resource dependencies even across stacks
+      expect(resource1.obtainDependencies().map(x => x.node.path)).toEqual([resource3.node.path, resource2.node.path]);
 
-      resource1.removeDependsOn(resource2);
+      resource1.removeDependency(resource2);
       // For symmetry, removing a dependency that doesn't exist should be a no-op
-      resource1.removeDependsOn(resource2);
+      resource1.removeDependency(resource2);
       expect(stack1.dependencies.length).toEqual(0);
     });
 
@@ -212,16 +211,16 @@ describe('cfn resource', () => {
       const resource2 = new core.CfnResource(stack2, 'Resource2', { type: 'Test::Resource::Fake2' });
       const resource3 = new core.CfnResource(stack3, 'Resource3', { type: 'Test::Resource::Fake3' });
 
-      resource1.addDependsOn(resource2);
+      resource1.addDependency(resource2);
       // Adding the same resource dependency twice should be a no-op
-      resource1.replaceDependsOn(resource2, resource3);
+      resource1.replaceDependency(resource2, resource3);
       expect(stack1.dependencies).toEqual([stack3]);
-      // obtainDependsOn should assemble and flatten resource-to-resource dependencies even across stacks
-      expect(resource1.obtainDependsOn().map(x => x.node.path)).toEqual([resource3.node.path]);
+      // obtainDependencies should assemble and flatten resource-to-resource dependencies even across stacks
+      expect(resource1.obtainDependencies().map(x => x.node.path)).toEqual([resource3.node.path]);
 
       // Replacing a dependency that doesn't exist should raise an exception
       expect(() => {
-        resource1.replaceDependsOn(resource2, resource3);
+        resource1.replaceDependency(resource2, resource3);
       }).toThrow(/ does not depend on /);
     });
 
@@ -229,7 +228,7 @@ describe('cfn resource', () => {
       const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
-      resource1.addDependsOn(resource1);
+      resource1.addDependency(resource1);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
@@ -250,8 +249,8 @@ describe('cfn resource', () => {
 
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new NoSynthResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
-      resource1.removeDependsOn(resource2);
-      resource1.addDependsOn(resource2);
+      resource1.removeDependency(resource2);
+      resource1.addDependency(resource2);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
@@ -268,28 +267,8 @@ describe('cfn resource', () => {
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
       const resource3 = new core.CfnResource(stack, 'Resource3', { type: 'Test::Resource::Fake3' });
       expect(() => {
-        resource1.replaceDependsOn(resource2, resource3);
+        resource1.replaceDependency(resource2, resource3);
       }).toThrow(/does not depend on/);
-    });
-
-    test('handle source being common stack', () => {
-      const app = new core.App();
-      const stack1 = new core.Stack(app, 'TestStack1');
-      const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
-
-      // If source is the common stack, this should be a noop
-      addDependency<core.Stack | core.CfnResource>(stack1, resource1);
-      expect(stack1.dependencies.length).toEqual(0);
-    });
-
-    test('throws error if target is common stack', () => {
-      const app = new core.App();
-      const stack1 = new core.Stack(app, 'TestStack1');
-      const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
-
-      expect(() => {
-        addDependency<core.Stack | core.CfnResource>(resource1, stack1);
-      }).toThrow(/cannot depend on /);
     });
   });
 

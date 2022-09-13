@@ -265,7 +265,7 @@ export class CustomResourceProvider extends Construct {
       },
     });
 
-    handler.addDependsOn(role);
+    handler.addDependency(role);
 
     if (this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, assetFileName);
