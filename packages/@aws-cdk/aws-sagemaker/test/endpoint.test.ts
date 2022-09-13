@@ -7,7 +7,7 @@ describe('When searching an Endpoint for a production variant', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariants: [{ variantName: 'variant', model }] });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
 
     // WHEN
@@ -21,7 +21,7 @@ describe('When searching an Endpoint for a production variant', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariants: [{ variantName: 'variant', model }] });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
 
     // WHEN
@@ -37,7 +37,7 @@ describe('When fetching production variants from an Endpoint', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariants: [{ variantName: 'variant', model }] });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
 
     // WHEN
@@ -71,7 +71,7 @@ describe('When auto-scaling a production variant\'s instance count', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariants: [{ variantName: 'variant', model }] });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
     const variant = endpoint.findProductionVariant('variant');
 
@@ -89,7 +89,7 @@ describe('When auto-scaling a production variant\'s instance count', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { productionVariants: [{ variantName: 'variant', model, initialInstanceCount: 2 }] });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model, initialInstanceCount: 2 }] });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
     const variant = endpoint.findProductionVariant('variant');
 
@@ -105,7 +105,7 @@ describe('When auto-scaling a production variant\'s instance count', () => {
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariants: [{
+      instanceProductionVariants: [{
         variantName: 'variant',
         model,
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MEDIUM),
@@ -126,7 +126,7 @@ describe('When auto-scaling a production variant\'s instance count', () => {
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      productionVariants: [{
+      instanceProductionVariants: [{
         variantName: 'variant',
         model,
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),

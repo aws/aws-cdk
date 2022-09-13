@@ -5,7 +5,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { EndpointConfig, ProductionVariant } from './endpoint-config';
+import { EndpointConfig, InstanceProductionVariant } from './endpoint-config';
 import { CfnEndpoint } from './sagemaker.generated';
 import { ScalableInstanceCount } from './scalable-instance-count';
 
@@ -131,7 +131,7 @@ class EndpointProductionVariant implements IEndpointProductionVariant {
   private readonly instanceType: ec2.InstanceType;
   private scalableInstanceCount?: ScalableInstanceCount;
 
-  constructor(endpoint: Endpoint, variant: ProductionVariant) {
+  constructor(endpoint: Endpoint, variant: InstanceProductionVariant) {
     this.initialInstanceCount = variant.initialInstanceCount;
     this.instanceType = variant.instanceType;
     this.variantName = variant.variantName;
@@ -394,7 +394,7 @@ export class Endpoint extends EndpointBase {
    * Get production variants associated with endpoint.
    */
   public get productionVariants(): IEndpointProductionVariant[] {
-    return this.endpointConfig.productionVariants.map(v => new EndpointProductionVariant(this, v));
+    return this.endpointConfig.instanceProductionVariants.map(v => new EndpointProductionVariant(this, v));
   }
 
   /**
@@ -402,7 +402,7 @@ export class Endpoint extends EndpointBase {
    * @param name Variant name from production variant
    */
   public findProductionVariant(name: string): IEndpointProductionVariant {
-    const variant = this.endpointConfig.findProductionVariant(name);
+    const variant = this.endpointConfig.findInstanceProductionVariant(name);
     return new EndpointProductionVariant(this, variant);
   }
 }

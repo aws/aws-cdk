@@ -59,7 +59,7 @@ const modelWithoutArtifactAndVpc = new sagemaker.Model(stack, 'ModelWithoutArtif
 });
 
 const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-  productionVariants: [
+  instanceProductionVariants: [
     {
       model: modelWithArtifactAndVpc,
       variantName: 'firstVariant',
@@ -71,7 +71,7 @@ const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
     },
   ],
 });
-endpointConfig.addProductionVariant({
+endpointConfig.addInstanceProductionVariant({
   model: modelWithoutArtifactAndVpc,
   variantName: 'thirdVariant',
   initialVariantWeight: 2.0,

@@ -190,11 +190,11 @@ By using the `EndpointConfig` construct, you can define a set of endpoint config
 used to provision one or more endpoints. In this configuration, you identify one or more models to
 deploy and the resources that you want Amazon SageMaker to provision. You define one or more
 production variants, each of which identifies a model. Each production variant also describes the
-resources that you want Amazon SageMaker to provision. This includes the number and type of ML
-compute instances to deploy. If you are hosting multiple models, you also assign a variant weight to
-specify how much traffic you want to allocate to each model. For example, suppose that you want to
-host two models, A and B, and you assign traffic weight 2 for model A and 1 for model B. Amazon
-SageMaker distributes two-thirds of the traffic to Model A, and one-third to model B:
+resources that you want Amazon SageMaker to provision. If you are hosting multiple models, you also
+assign a variant weight to specify how much traffic you want to allocate to each model. For example,
+suppose that you want to host two models, A and B, and you assign traffic weight 2 for model A and 1
+for model B. Amazon SageMaker distributes two-thirds of the traffic to Model A, and one-third to
+model B:
 
 ```typescript
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
@@ -203,7 +203,7 @@ declare const modelA: sagemaker.Model;
 declare const modelB: sagemaker.Model;
 
 const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
-  productionVariants: [
+  instanceProductionVariants: [
     {
       model: modelA,
       variantName: 'modelA',

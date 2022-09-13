@@ -25,9 +25,31 @@ export interface IEndpointConfig extends cdk.IResource {
 }
 
 /**
- * Construction properties for a production variant.
+ * Common construction properties for all production variant types (e.g., instance, serverless).
  */
-export interface ProductionVariantProps {
+interface ProductionVariantProps {
+  /**
+   * Determines initial traffic distribution among all of the models that you specify in the
+   * endpoint configuration. The traffic to a production variant is determined by the ratio of the
+   * variant weight to the sum of all variant weight values across all production variants.
+   *
+   * @default 1.0
+   */
+  readonly initialVariantWeight?: number;
+  /**
+   * The model to host.
+   */
+  readonly model: IModel;
+  /**
+   * Name of the production variant.
+   */
+  readonly variantName: string;
+}
+
+/**
+ * Construction properties for an instance production variant.
+ */
+export interface InstanceProductionVariantProps extends ProductionVariantProps {
   /**
    * The size of the Elastic Inference (EI) instance to use for the production variant. EI instances
    * provide on-demand GPU computing for inference.
@@ -42,25 +64,30 @@ export interface ProductionVariantProps {
    */
   readonly initialInstanceCount?: number;
   /**
-   * Determines initial traffic distribution among all of the models that you specify in the
-   * endpoint configuration. The traffic to a production variant is determined by the ratio of the
-   * variant weight to the sum of all variant weight values across all production variants.
-   *
-   * @default 1.0
-   */
-  readonly initialVariantWeight?: number;
-  /**
    * Instance type of the production variant.
    *
    * @default - ml.t2.medium instance type.
    */
   readonly instanceType?: ec2.InstanceType;
+}
+
+/**
+ * Represents common attributes of all production variant types (e.g., instance, serverless) once
+ * associated to an EndpointConfig.
+ */
+interface ProductionVariant {
   /**
-   * The model to host.
+   * Determines initial traffic distribution among all of the models that you specify in the
+   * endpoint configuration. The traffic to a production variant is determined by the ratio of the
+   * variant weight to the sum of all variant weight values across all production variants.
    */
-  readonly model: IModel;
+  readonly initialVariantWeight: number;
   /**
-   * Name of the production variant.
+   * The name of the model to host.
+   */
+  readonly modelName: string;
+  /**
+   * The name of the production variant.
    */
   readonly variantName: string;
 }
@@ -68,7 +95,7 @@ export interface ProductionVariantProps {
 /**
  * Represents a production variant that has been associated with an EndpointConfig.
  */
-export interface ProductionVariant {
+export interface InstanceProductionVariant extends ProductionVariant {
   /**
    * The size of the Elastic Inference (EI) instance to use for the production variant. EI instances
    * provide on-demand GPU computing for inference.
@@ -81,23 +108,9 @@ export interface ProductionVariant {
    */
   readonly initialInstanceCount: number;
   /**
-   * Determines initial traffic distribution among all of the models that you specify in the
-   * endpoint configuration. The traffic to a production variant is determined by the ratio of the
-   * variant weight to the sum of all variant weight values across all production variants.
-   */
-  readonly initialVariantWeight: number;
-  /**
    * Instance type of the production variant.
    */
   readonly instanceType: ec2.InstanceType;
-  /**
-   * The name of the model to host.
-   */
-  readonly modelName: string;
-  /**
-   * The name of the production variant.
-   */
-  readonly variantName: string;
 }
 
 /**
@@ -125,12 +138,12 @@ export interface EndpointConfigProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * A list of production variants. You can always add more variants later by calling
-   * {@link EndpointConfig#addProductionVariant}.
+   * A list of instance production variants. You can always add more variants later by calling
+   * {@link EndpointConfig#addInstanceProductionVariant}.
    *
    * @default - none
    */
-  readonly productionVariants?: ProductionVariantProps[];
+  readonly instanceProductionVariants?: InstanceProductionVariantProps[];
 }
 
 /**
@@ -184,7 +197,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    */
   public readonly endpointConfigName: string;
 
-  private readonly _productionVariants: { [key: string]: ProductionVariant; } = {};
+  private readonly _instanceProductionVariants: { [key: string]: InstanceProductionVariant; } = {};
 
   constructor(scope: Construct, id: string, props: EndpointConfigProps = {}) {
     super(scope, id, {
@@ -194,13 +207,13 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     // apply a name tag to the endpoint config resource
     cdk.Tags.of(this).add(NAME_TAG, this.node.path);
 
-    (props.productionVariants || []).map(p => this.addProductionVariant(p));
+    (props.instanceProductionVariants || []).map(p => this.addInstanceProductionVariant(p));
 
     // create the endpoint configuration resource
     const endpointConfig = new CfnEndpointConfig(this, 'EndpointConfig', {
       kmsKeyId: (props.encryptionKey) ? props.encryptionKey.keyArn : undefined,
       endpointConfigName: this.physicalName,
-      productionVariants: cdk.Lazy.any({ produce: () => this.renderProductionVariants() }),
+      productionVariants: cdk.Lazy.any({ produce: () => this.renderInstanceProductionVariants() }),
     });
     this.endpointConfigName = this.getResourceNameAttribute(endpointConfig.attrEndpointConfigName);
     this.endpointConfigArn = this.getResourceArnAttribute(endpointConfig.ref, {
@@ -215,12 +228,12 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    *
    * @param props The properties of a production variant to add.
    */
-  public addProductionVariant(props: ProductionVariantProps): void {
-    if (props.variantName in this._productionVariants) {
+  public addInstanceProductionVariant(props: InstanceProductionVariantProps): void {
+    if (props.variantName in this._instanceProductionVariants) {
       throw new Error(`There is already a Production Variant with name '${props.variantName}'`);
     }
     this.validateProps(props);
-    this._productionVariants[props.variantName] = {
+    this._instanceProductionVariants[props.variantName] = {
       acceleratorType: props.acceleratorType,
       initialInstanceCount: props.initialInstanceCount || 1,
       initialVariantWeight: props.initialVariantWeight || 1.0,
@@ -231,18 +244,18 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
   }
 
   /**
-   * Get production variants associated with endpoint configuration.
+   * Get instance production variants associated with endpoint configuration.
    */
-  public get productionVariants(): ProductionVariant[] {
-    return Object.values(this._productionVariants);
+  public get instanceProductionVariants(): InstanceProductionVariant[] {
+    return Object.values(this._instanceProductionVariants);
   }
 
   /**
-   * Find production variant based on variant name
+   * Find instance production variant based on variant name
    * @param name Variant name from production variant
    */
-  public findProductionVariant(name: string): ProductionVariant {
-    const ret = this._productionVariants[name];
+  public findInstanceProductionVariant(name: string): InstanceProductionVariant {
+    const ret = this._instanceProductionVariants[name];
     if (!ret) {
       throw new Error(`No variant with name: '${name}'`);
     }
@@ -252,14 +265,14 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
   protected validate(): string[] {
     const result = super.validate();
     // check we have 10 or fewer production variants
-    if (this.productionVariants.length > 10) {
+    if (this.instanceProductionVariants.length > 10) {
       result.push('Can\'t have more than 10 Production Variants');
     }
 
     return result;
   }
 
-  private validateProps(props: ProductionVariantProps): void {
+  private validateProps(props: InstanceProductionVariantProps): void {
     const errors: string[] = [];
     // check instance count is greater than zero
     if (props.initialInstanceCount !== undefined && props.initialInstanceCount < 1) {
@@ -287,10 +300,10 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
   }
 
   /**
-   * Render the list of production variants.
+   * Render the list of instance production variants.
    */
-  private renderProductionVariants(): CfnEndpointConfig.ProductionVariantProperty[] {
-    return this.productionVariants.map( v => ({
+  private renderInstanceProductionVariants(): CfnEndpointConfig.ProductionVariantProperty[] {
+    return this.instanceProductionVariants.map( v => ({
       acceleratorType: v.acceleratorType,
       initialInstanceCount: v.initialInstanceCount,
       initialVariantWeight: v.initialVariantWeight,
