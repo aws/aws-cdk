@@ -25,7 +25,7 @@ To use this module, you will need to have Docker installed.
 Define a `PythonFunction`:
 
 ```ts
-new lambda.PythonFunction(this, 'MyFunction', {
+new python.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function', // required
   runtime: Runtime.PYTHON_3_8, // required
   index: 'my_index.py', // optional, defaults to 'index.py'
@@ -44,7 +44,7 @@ layer.
 Define a `PythonLayerVersion`:
 
 ```ts
-new lambda.PythonLayerVersion(this, 'MyLayer', {
+new python.PythonLayerVersion(this, 'MyLayer', {
   entry: '/path/to/my/layer', // point this to your library's directory
 })
 ```
@@ -52,11 +52,11 @@ new lambda.PythonLayerVersion(this, 'MyLayer', {
 A layer can also be used as a part of a `PythonFunction`:
 
 ```ts
-new lambda.PythonFunction(this, 'MyFunction', {
+new python.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function',
   runtime: Runtime.PYTHON_3_8,
   layers: [
-    new lambda.PythonLayerVersion(this, 'MyLayer', {
+    new python.PythonLayerVersion(this, 'MyLayer', {
       entry: '/path/to/my/layer', // point this to your library's directory
     }),
   ],
@@ -123,7 +123,7 @@ Additional build args for bundling that refer to PyPI indexes can be specified a
 const entry = '/path/to/function';
 const image = DockerImage.fromBuild(entry);
 
-new lambda.PythonFunction(this, 'function', {
+new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
@@ -138,7 +138,7 @@ If using a custom Docker image for bundling, the dependencies are installed with
 const entry = '/path/to/function';
 const image = DockerImage.fromBuild(entry);
 
-new lambda.PythonFunction(this, 'function', {
+new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: { image },
@@ -163,7 +163,7 @@ const codeArtifactAuthToken = execSync(`aws codeartifact get-authorization-token
 
 const indexUrl = `https://aws:${codeArtifactAuthToken}@${domain}-${domainOwner}.d.codeartifact.${region}.amazonaws.com/pypi/${repoName}/simple/`;
 
-new lambda.PythonFunction(this, 'function', {
+new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
@@ -190,7 +190,7 @@ const codeArtifactAuthToken = execSync(`aws codeartifact get-authorization-token
 
 const indexUrl = `https://aws:${codeArtifactAuthToken}@${domain}-${domainOwner}.d.codeartifact.${region}.amazonaws.com/pypi/${repoName}/simple/`;
 
-new lambda.PythonFunction(this, 'function', {
+new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
