@@ -79,6 +79,7 @@ Following will create an Application named `MyAutoApplication` in account `12345
 and will associate all stacks in the `App` scope to `MyAutoApplication`.
 
 ```ts
+const app = new App();
 const autoApp = new appreg.AutomaticApplication(app, 'AutoApplication', {
     applicationName: 'MyAutoApplication',
     description: 'Testing auto application',
@@ -93,7 +94,27 @@ In case of a Pipeline stack, you need to pass the reference of `AutomaticApplica
 each stage as shown below:
 
 ```ts
+import * as cdk from "@aws-cdk/core";
+import * as codepipeline from "@aws-cdk/pipelines";
+import * as codecommit from "@aws-cdk/aws-codecommit";
+declare const repo: codecommit.Repository;
+declare const pipeline: codepipeline.CodePipeline;
+declare const beta: cdk.Stage;
+class ApplicationPipelineStack extends cdk.Stack {
+  constructor(scope: cdk.App, id: string, props: ApplicationPipelineStackProps) {
+    super(scope, id, props);
+    
+   //associate the stage to automatic application.
+   props.application.associateStage(beta, this.stackName);
+   pipeline.addStage(beta);
+  }
+};
 
+interface ApplicationPipelineStackProps extends cdk.StackProps {
+  application: appreg.AutomaticApplication;
+};
+
+const app = new App();
 const autoApp = new appreg.AutomaticApplication(app, 'AutoApplication', {
     applicationName: 'MyPipelineAutoApplication',
     description: 'Testing pipeline auto app',
@@ -106,30 +127,7 @@ const autoApp = new appreg.AutomaticApplication(app, 'AutoApplication', {
 const cdkPipeline = new ApplicationPipelineStack(app, 'CDKApplicationPipelineStack', {
     application: autoApp,
     env: {account: '123456789012', region: 'us-east-1'},
-}
-
-export interface ApplicationPipelineStackProps extends cdk.StackProps {
-  application: appreg.AutomaticApplication;
-}
-
-export class ApplicationPipelineStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props: ApplicationPipelineStackProps) {
-    super(scope, id, props);
-
-    const repo = new codecommit.Repository(this, 'PipelineRepo', {
-      repositoryName: "PipelineRepo",
-    });
-
-    const pipeline = new codepipeline.CodePipeline(this, 'Pipeline', {
-        ... //your pipeline properties
-    });
-
-   const beta = new cdk.Stage(this, 'MyBetaStage');
-   // Now associate the stage to automatic application.
-   props.application.associateStage(beta, this.stackName);
-   pipeline.addStage(beta);
-  }
-}
+});
 ```
 
 ## Attribute Group
