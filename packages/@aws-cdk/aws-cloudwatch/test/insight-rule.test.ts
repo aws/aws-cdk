@@ -11,30 +11,30 @@ describe('Insight Rule', () => {
   ];
 
   test('can create an insight rule', () => {
-      const stack = new Stack();
+    const stack = new Stack();
 
-      new InsightRule(stack, 'MyInsightRule', {
-        logGroupNames,
-        name: ruleName,
-        keys,
-      });
+    new InsightRule(stack, 'MyInsightRule', {
+      logGroupNames,
+      name: ruleName,
+      keys,
+    });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::InsightRule', {
-        ruleState: RuleState.ENABLED,
-        ruleBody: {
-          AggregateOn: AggregateOptions.COUNT,
-            Contribution: {
-                Keys: keys,
-                Filters: [],
-                ValueOf: '',
-            },
-            Schema: {
-                Name: 'CloudWatchLogRule',
-                Version: 1,
-            },
-            LogGroupNames: logGroupNames,
-            LogFormat: LogFormat.JSON,
-        }
-      });
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::InsightRule', {
+      ruleState: RuleState.ENABLED,
+      ruleBody: {
+        AggregateOn: AggregateOptions.COUNT,
+        Contribution: {
+          Keys: keys,
+          Filters: [],
+          ValueOf: '',
+        },
+        Schema: {
+          Name: 'CloudWatchLogRule',
+          Version: 1,
+        },
+        LogGroupNames: logGroupNames,
+        LogFormat: LogFormat.JSON,
+      },
+    });
   });
 });

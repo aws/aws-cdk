@@ -340,9 +340,11 @@ const insightRule = cloudwatch.InsightRule.fromRuleName(
 ```
 
 ### Insight Rule Filter
+
 [Filters](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContributorInsights-RuleSyntax.html) can be applied to an Insight Rule to scope down which log events are included in the analysis.
 
 ### Instantiating a Filter
+
 Each Filter has a `match` field that identifies the attribute of the log event to evaluate in the filter.  There are convenience functions to istantiate specific Filters based on the operator and the check to perform.
 
 ```ts
