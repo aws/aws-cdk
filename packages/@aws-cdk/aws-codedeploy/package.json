@@ -86,6 +86,7 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
@@ -124,7 +125,10 @@
   "awslint": {
     "exclude": [
       "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.IServerDeploymentConfig",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.ILambdaDeploymentConfig",
       "resource-interface-extends-resource:@aws-cdk/aws-codedeploy.IServerDeploymentConfig",
+      "resource-interface-extends-resource:@aws-cdk/aws-codedeploy.ILambdaDeploymentConfig",
+      "no-static-import:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.import",
       "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentConfig.deploymentConfigArn",
       "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.role",
       "docs-public-apis:@aws-cdk/aws-codedeploy.InstanceTagSet.instanceTagGroups",
@@ -139,6 +143,9 @@
       "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE",
       "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_2MINUTES",
       "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_3MINUTES",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.deploymentConfigName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ILambdaDeploymentConfig.deploymentConfigArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ILambdaDeploymentConfig.deploymentConfigName",
       "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentGroup",
       "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentGroup.role",
       "docs-public-apis:@aws-cdk/aws-codedeploy.LoadBalancer.generation",
