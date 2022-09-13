@@ -62,6 +62,7 @@ single-container model:
 
 ```typescript
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 import * as path from 'path';
 
@@ -69,8 +70,10 @@ const imageAsset = new ecr_assets.DockerImageAsset(this, 'Image', {
   directory: path.join('path', 'to', 'Dockerfile', 'directory')
 });
 const image = sagemaker.ContainerImage.fromAsset(imageAsset);
-const modelData = sagemaker.ModelData.fromAsset(this, 'ModelData',
-  path.join('path', 'to', 'artifact', 'file.tar.gz'));
+const modelDataAsset = new s3_assets.Asset(this, 'ModelData', {
+  path: path.join('path', 'to', 'artifact', 'file.tar.gz')
+});
+const modelData = sagemaker.ModelData.fromAsset(modelDataAsset);
 
 const model = new sagemaker.Model(this, 'PrimaryContainerModel', {
   containers: [
@@ -154,11 +157,14 @@ base class. The default is to have no model artifacts associated with a model.
 Reference local model data:
 
 ```typescript
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 import * as path from 'path';
 
-const modelData = sagemaker.ModelData.fromAsset(this, 'ModelData',
-  path.join('path', 'to', 'artifact', 'file.tar.gz'));
+const modelDataAsset = new s3_assets.Asset(this, 'ModelData', {
+  path: path.join('path', 'to', 'artifact', 'file.tar.gz')
+});
+const modelData = sagemaker.ModelData.fromAsset(modelDataAsset);
 ```
 
 #### S3 Model Data

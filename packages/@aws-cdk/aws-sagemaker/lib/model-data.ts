@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import { IModel } from './model';
 
 // The only supported extension for local asset model data
-const ARTIFACT_EXTENSION = '.tar.gz';
+const ARTIFACT_EXTENSION = '.gz';
 
 /**
  * The configuration needed to reference model artifacts.
@@ -33,12 +33,10 @@ export abstract class ModelData {
 
   /**
    * Constructs model data that will be uploaded to S3 as part of the CDK app deployment.
-   * @param scope The scope within which to create a new asset
-   * @param id The id to associate with the new asset
-   * @param path The local path to a model artifact file as a gzipped tar file
+   * @param asset An S3 asset as a gzipped tar file
    */
-  public static fromAsset(scope: Construct, id: string, path: string): ModelData {
-    return new AssetModelData(scope, id, path);
+  public static fromAsset(asset: assets.Asset): ModelData {
+    return new AssetModelData(asset);
   }
 
   /**
@@ -65,15 +63,10 @@ class S3ModelData extends ModelData {
 }
 
 class AssetModelData extends ModelData {
-  private readonly asset: assets.Asset;
-
-  constructor(readonly scope: Construct, readonly id: string, readonly path: string) {
+  constructor(private readonly asset: assets.Asset) {
     super();
-    this.asset = new assets.Asset(scope, id, {
-      path: this.path,
-    });
-    if (this.asset.isZipArchive || !path.toLowerCase().endsWith(ARTIFACT_EXTENSION)) {
-      throw new Error(`Asset must be a ${ARTIFACT_EXTENSION} file (${this.path})`);
+    if (this.asset.isZipArchive || !this.asset.assetPath.toLowerCase().endsWith(ARTIFACT_EXTENSION)) {
+      throw new Error(`Asset must be a gzipped tar file with extension ${ARTIFACT_EXTENSION} (${this.asset.assetPath})`);
     }
   }
 
