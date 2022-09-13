@@ -64,7 +64,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
     "@types/mock-fs": "^4.13.1",
-    "@types/semver": "^7.3.10",
+    "@types/semver": "^7.3.12",
     "jest": "^27.5.1",
     "mock-fs": "^4.14.0",
     "typescript-json-schema": "^0.54.0"

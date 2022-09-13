@@ -1,4 +1,4 @@
-/// !cdk-integ * pragma:ignore-assets
+/// !cdk-integ *
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';

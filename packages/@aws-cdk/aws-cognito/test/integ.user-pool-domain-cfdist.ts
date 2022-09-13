@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { UserPool } from '../lib';
 

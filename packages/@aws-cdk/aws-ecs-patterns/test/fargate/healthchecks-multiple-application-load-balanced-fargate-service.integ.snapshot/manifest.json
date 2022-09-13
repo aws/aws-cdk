@@ -7,308 +7,379 @@
         "file": "tree.json"
       }
     },
-    "aws-ecs-integ": {
+    "aws-ecs-integ-fargate-multi-alb-health.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-integ-fargate-multi-alb-health.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-ecs-integ-fargate-multi-alb-health": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-ecs-integ.template.json",
-        "validateOnSynth": false
+        "templateFile": "aws-ecs-integ-fargate-multi-alb-health.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d14d4d28827aa2ee0a3dde817ac455d876b4a26219717d3f160fc8c41ac04a5f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-integ-fargate-multi-alb-health.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "aws-ecs-integ-fargate-multi-alb-health.assets"
+      ],
       "metadata": {
-        "/aws-ecs-integ/Vpc/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet1/Subnet": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet1/RouteTable": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet1/DefaultRoute": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet1/EIP": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet1/NATGateway": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet2/Subnet": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet2/RouteTable": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet2/DefaultRoute": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet2/EIP": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2EIP3C605A87"
           }
         ],
-        "/aws-ecs-integ/Vpc/PublicSubnet2/NATGateway": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
-        "/aws-ecs-integ/Vpc/PrivateSubnet1/Subnet": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/aws-ecs-integ/Vpc/PrivateSubnet1/RouteTable": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/aws-ecs-integ/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/aws-ecs-integ/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/aws-ecs-integ/Vpc/PrivateSubnet2/Subnet": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/aws-ecs-integ/Vpc/PrivateSubnet2/RouteTable": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/aws-ecs-integ/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/aws-ecs-integ/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/aws-ecs-integ/Vpc/IGW": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/aws-ecs-integ/Vpc/VPCGW": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/aws-ecs-integ/Cluster/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterEB0386A7"
           }
         ],
-        "/aws-ecs-integ/myService/lb1/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/lb1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb1FA8CBE12"
           }
         ],
-        "/aws-ecs-integ/myService/lb1/SecurityGroup/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/lb1/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb1SecurityGroup342C51EA"
           }
         ],
-        "/aws-ecs-integ/myService/lb1/SecurityGroup/to awsecsintegmyServiceSecurityGroup8DAB5211:80": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/lb1/SecurityGroup/to awsecsintegfargatemultialbhealthmyServiceSecurityGroup340BCAFA:80": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServicelb1SecurityGrouptoawsecsintegmyServiceSecurityGroup8DAB521180E5389098"
+            "data": "myServicelb1SecurityGrouptoawsecsintegfargatemultialbhealthmyServiceSecurityGroup340BCAFA80BC12B528"
           }
         ],
-        "/aws-ecs-integ/myService/lb1/listener1/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/lb1/listener1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb1listener15ED0E805"
           }
         ],
-        "/aws-ecs-integ/myService/lb1/listener1/ECSTargetGroupweb80Group/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/lb1/listener1/ECSTargetGroupweb80Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb1listener1ECSTargetGroupweb80GroupC3F9339A"
           }
         ],
-        "/aws-ecs-integ/myService/LoadBalancerDNSlb1": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/LoadBalancerDNSlb1": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceLoadBalancerDNSlb1341EE21A"
           }
         ],
-        "/aws-ecs-integ/myService/ServiceURLlb1http": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/ServiceURLlb1http": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceServiceURLlb1httpAFA12FD3"
           }
         ],
-        "/aws-ecs-integ/myService/lb2/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/lb2/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb2C84C7BCB"
           }
         ],
-        "/aws-ecs-integ/myService/lb2/SecurityGroup/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/lb2/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb2SecurityGroupEB00B5B9"
           }
         ],
-        "/aws-ecs-integ/myService/lb2/SecurityGroup/to awsecsintegmyServiceSecurityGroup8DAB5211:90": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/lb2/SecurityGroup/to awsecsintegfargatemultialbhealthmyServiceSecurityGroup340BCAFA:90": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServicelb2SecurityGrouptoawsecsintegmyServiceSecurityGroup8DAB521190B4F7C173"
+            "data": "myServicelb2SecurityGrouptoawsecsintegfargatemultialbhealthmyServiceSecurityGroup340BCAFA90B8ACADCA"
           }
         ],
-        "/aws-ecs-integ/myService/lb2/listener2/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/lb2/listener2/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb2listener2AA6970EB"
           }
         ],
-        "/aws-ecs-integ/myService/lb2/listener2/ECSTargetGroupweb90Group/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/lb2/listener2/ECSTargetGroupweb90Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
           }
         ],
-        "/aws-ecs-integ/myService/LoadBalancerDNSlb2": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/LoadBalancerDNSlb2": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceLoadBalancerDNSlb2DDCE46C8"
           }
         ],
-        "/aws-ecs-integ/myService/ServiceURLlb2http": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/ServiceURLlb2http": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceServiceURLlb2http935C1443"
           }
         ],
-        "/aws-ecs-integ/myService/TaskDef/TaskRole/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceTaskDefTaskRole1C1DE6CC"
           }
         ],
-        "/aws-ecs-integ/myService/TaskDef/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceTaskDef7FB8322A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "myServiceTaskDef7FB8322A"
           }
         ],
-        "/aws-ecs-integ/myService/TaskDef/web/LogGroup/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/TaskDef/web/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceTaskDefwebLogGroupA1767F2C"
           }
         ],
-        "/aws-ecs-integ/myService/TaskDef/ExecutionRole/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/TaskDef/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceTaskDefExecutionRole618CD311"
           }
         ],
-        "/aws-ecs-integ/myService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceTaskDefExecutionRoleDefaultPolicyBDAEC571"
           }
         ],
-        "/aws-ecs-integ/myService/Service/Service": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/Service/Service": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceB0B6FAA0"
           }
         ],
-        "/aws-ecs-integ/myService/Service/SecurityGroup/Resource": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/Service/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceSecurityGroupC3B9D4E0"
           }
         ],
-        "/aws-ecs-integ/myService/Service/SecurityGroup/from awsecsintegmyServicelb1SecurityGroup1B4AB3AE:80": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/Service/SecurityGroup/from awsecsintegfargatemultialbhealthmyServicelb1SecurityGroupF186685F:80": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceSecurityGroupfromawsecsintegmyServicelb1SecurityGroup1B4AB3AE80AB7BEE2C"
+            "data": "myServiceSecurityGroupfromawsecsintegfargatemultialbhealthmyServicelb1SecurityGroupF186685F80E1471E22"
           }
         ],
-        "/aws-ecs-integ/myService/Service/SecurityGroup/from awsecsintegmyServicelb2SecurityGroup98A4D36A:90": [
+        "/aws-ecs-integ-fargate-multi-alb-health/myService/Service/SecurityGroup/from awsecsintegfargatemultialbhealthmyServicelb2SecurityGroup271B292A:90": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceSecurityGroupfromawsecsintegmyServicelb2SecurityGroup98A4D36A90CDB6211B"
+            "data": "myServiceSecurityGroupfromawsecsintegfargatemultialbhealthmyServicelb2SecurityGroup271B292A9014BC1AF0"
+          }
+        ],
+        "/aws-ecs-integ-fargate-multi-alb-health/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-integ-fargate-multi-alb-health/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-ecs-integ"
+      "displayName": "aws-ecs-integ-fargate-multi-alb-health"
+    },
+    "IntegDefaultTestDeployAssert4E6713E1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IntegDefaultTestDeployAssert4E6713E1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
     },
     "IntegDefaultTestDeployAssert4E6713E1": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "IntegDefaultTestDeployAssert4E6713E1.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IntegDefaultTestDeployAssert4E6713E1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IntegDefaultTestDeployAssert4E6713E1.assets"
+      ],
+      "metadata": {
+        "/Integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
       },
       "displayName": "Integ/DefaultTest/DeployAssert"
     }
