@@ -15,7 +15,7 @@ AWS CodeDeploy is a deployment service that automates application deployments to
 Amazon EC2 instances, on-premises instances, serverless Lambda functions, or
 Amazon ECS services.
 
-The CDK currently supports Amazon EC2, on-premise and AWS Lambda applications.
+The CDK currently supports Amazon EC2, on-premise, AWS Lambda, and Amazon ECS applications.
 
 ## EC2/on-premise Applications
 
@@ -143,7 +143,7 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGr
 });
 ```
 
-## Deployment Configurations
+## EC2/on-premise Deployment Configurations
 
 You can also pass a Deployment Configuration when creating the Deployment Group:
 
@@ -226,41 +226,6 @@ In order to deploy a new version of this function:
 2. Re-deploy the stack (this will trigger a deployment).
 3. Monitor the CodeDeploy deployment as traffic shifts between the versions.
 
-
-### Create a custom Deployment Config
-
-CodeDeploy for Lambda comes with built-in configurations for traffic shifting.
-If you want to specify your own strategy,
-you can do so with the CustomLambdaDeploymentConfig construct,
-letting you specify precisely how fast a new function version is deployed.
-
-```ts
-const config = new codedeploy.CustomLambdaDeploymentConfig(this, 'CustomConfig', {
-  type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
-  interval: Duration.minutes(1),
-  percentage: 5,
-});
-
-declare const application: codedeploy.LambdaApplication;
-declare const alias: lambda.Alias;
-const deploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDeployment', {
-  application,
-  alias,
-  deploymentConfig: config,
-});
-```
-
-You can specify a custom name for your deployment config, but if you do you will not be able to update the interval/percentage through CDK.
-
-```ts
-const config = new codedeploy.CustomLambdaDeploymentConfig(this, 'CustomConfig', {
-  type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
-  interval: Duration.minutes(1),
-  percentage: 5,
-  deploymentConfigName: 'MyDeploymentConfig',
-});
-```
-
 ### Rollbacks and Alarms
 
 CodeDeploy will roll back if the deployment fails. You can optionally trigger a rollback when one or more alarms are in a failed state:
@@ -326,4 +291,108 @@ const deploymentGroup = codedeploy.LambdaDeploymentGroup.fromLambdaDeploymentGro
   application,
   deploymentGroupName: 'MyExistingDeploymentGroup',
 });
+```
+
+## Lambda Deployment Configurations
+
+CodeDeploy for Lambda comes with built-in configurations for traffic shifting.
+If you want to specify your own strategy,
+you can do so with the LambdaDeploymentConfig construct,
+letting you specify precisely how fast a new function version is deployed.
+
+```ts
+const config = new codedeploy.LambdaDeploymentConfig(this, 'CustomConfig', {
+  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
+    interval: cdk.Duration.minutes(15),
+    percentage: 5,
+  }),
+});
+
+declare const application: codedeploy.LambdaApplication;
+declare const alias: lambda.Alias;
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDeployment', {
+  application,
+  alias,
+  deploymentConfig: config,
+});
+```
+
+You can specify a custom name for your deployment config, but if you do you will not be able to update the interval/percentage through CDK.
+
+```ts
+const config = new codedeploy.LambdaDeploymentConfig(this, 'CustomConfig', {
+  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
+    interval: cdk.Duration.minutes(15),
+    percentage: 5,
+  }),
+  deploymentConfigName: 'MyDeploymentConfig',
+});
+```
+
+To import an already existing Deployment Config:
+
+```ts
+const deploymentConfig = codedeploy.LambdaDeploymentConfig.fromLambdaDeploymentConfigName(
+  this,
+  'ExistingDeploymentConfiguration',
+  'MyExistingDeploymentConfiguration',
+);
+```
+
+## ECS Applications
+
+To create a new CodeDeploy Application that deploys an ECS service:
+
+```ts
+const application = new codedeploy.EcsApplication(this, 'CodeDeployApplication', {
+  applicationName: 'MyApplication', // optional property
+});
+```
+
+To import an already existing Application:
+
+```ts
+const application = codedeploy.EcsApplication.fromEcsApplicationName(
+  this,
+  'ExistingCodeDeployApplication',
+  'MyExistingApplication',
+);
+```
+
+## ECS Deployment Configurations
+
+CodeDeploy for ECS comes with built-in configurations for traffic shifting.
+If you want to specify your own strategy,
+you can do so with the EcsDeploymentConfig construct,
+letting you specify precisely how fast an ECS service is deployed.
+
+```ts
+new codedeploy.EcsDeploymentConfig(this, 'CustomConfig', {
+  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
+    interval: cdk.Duration.minutes(15),
+    percentage: 5,
+  }),
+});
+```
+
+You can specify a custom name for your deployment config, but if you do you will not be able to update the interval/percentage through CDK.
+
+```ts
+const config = new codedeploy.EcsDeploymentConfig(this, 'CustomConfig', {
+  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
+    interval: cdk.Duration.minutes(15),
+    percentage: 5,
+  }),
+  deploymentConfigName: 'MyDeploymentConfig',
+});
+```
+
+Or import an existing one:
+
+```ts
+const deploymentConfig = codedeploy.EcsDeploymentConfig.fromEcsDeploymentConfigName(
+  this,
+  'ExistingDeploymentConfiguration',
+  'MyExistingDeploymentConfiguration',
+);
 ```

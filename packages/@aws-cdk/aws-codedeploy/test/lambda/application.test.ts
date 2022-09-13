@@ -41,4 +41,13 @@ describe('CodeDeploy Lambda Application', () => {
 
     expect(() => app.synth()).toThrow('Application name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
   });
+
+  test('can be imported', () => {
+    const stack = new cdk.Stack();
+
+    const application = codedeploy.LambdaApplication.fromLambdaApplicationName(stack, 'MyApp', 'MyApp');
+
+    expect(application).not.toEqual(undefined);
+    expect(application.applicationName).toEqual('MyApp');
+  });
 });

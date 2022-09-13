@@ -1,17 +1,27 @@
+import { ArnFormat, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { arnForDeploymentConfig } from '../utils';
+import { CfnDeploymentConfig } from '../codedeploy.generated';
+import { AllAtOnceTrafficRoutingConfig, ITrafficRoutingConfig } from '../traffic-routing-config';
+import { arnForDeploymentConfig, validateName } from '../utils';
 
 /**
  * The Deployment Configuration of a Lambda Deployment Group.
+ *
+ * If you're managing the Deployment Configuration alongside the rest of your CDK resources,
+ * use the {@link LambdaDeploymentConfig} class.
+ *
+ * If you want to reference an already existing deployment configuration,
+ * or one defined in a different CDK Stack,
+ * use the {@link LambdaDeploymentConfig#fromLambdaDeploymentConfigName} method.
+ *
  * The default, pre-defined Configurations are available as constants on the {@link LambdaDeploymentConfig} class
  * (`LambdaDeploymentConfig.AllAtOnce`, `LambdaDeploymentConfig.Canary10Percent30Minutes`, etc.).
- *
- * Note: CloudFormation does not currently support creating custom lambda configs outside
- * of using a custom resource. You can import custom deployment config created outside the
- * CDK or via a custom resource with {@link LambdaDeploymentConfig#import}.
  */
 export interface ILambdaDeploymentConfig {
+  /** @attribute */
   readonly deploymentConfigName: string;
+
+  /** @attribute */
   readonly deploymentConfigArn: string;
 }
 
@@ -29,15 +39,28 @@ export interface LambdaDeploymentConfigImportProps {
 }
 
 /**
+ * Construction properties of {@link LambdaDeploymentConfig}.
+ */
+export interface LambdaDeploymentConfigProps {
+  /**
+   * The physical, human-readable name of the Deployment Configuration.
+   * @default - automatically generated name
+   */
+  readonly deploymentConfigName?: string;
+
+  /**
+   * The configuration that specifies how traffic is shifted from the 'blue'
+   * target group to the 'green' target group during a deployment.
+   * @default AllAtOnce
+   */
+  readonly trafficRoutingConfig?: ITrafficRoutingConfig;
+}
+
+/**
  * A custom Deployment Configuration for a Lambda Deployment Group.
- *
- * Note: This class currently stands as namespaced container of the default configurations
- * until CloudFormation supports custom Lambda Deployment Configs. Until then it is closed
- * (private constructor) and does not extend {@link Construct}
- *
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
-export class LambdaDeploymentConfig {
+export class LambdaDeploymentConfig extends Resource implements ILambdaDeploymentConfig {
   public static readonly ALL_AT_ONCE = deploymentConfig('CodeDeployDefault.LambdaAllAtOnce');
   public static readonly CANARY_10PERCENT_30MINUTES = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent30Minutes');
   public static readonly CANARY_10PERCENT_5MINUTES = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent5Minutes');
@@ -49,19 +72,67 @@ export class LambdaDeploymentConfig {
   public static readonly LINEAR_10PERCENT_EVERY_3MINUTES = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery3Minutes');
 
   /**
-   * Import a custom Deployment Configuration for a Lambda Deployment Group defined outside the CDK.
+   * Import a Deployment Configuration for a Lambda Deployment Group defined outside the CDK.
+   *
+   * @param scope the parent Construct for this new Construct
+   * @param id the logical ID of this new Construct
+   * @param lambdaDeploymentConfigName the name of the Lambda Deployment Configuration to import
+   * @returns a Construct representing a reference to an existing Lambda Deployment Configuration
+   */
+  public static fromLambdaDeploymentConfigName(scope: Construct, id: string, lambdaDeploymentConfigName: string): ILambdaDeploymentConfig {
+    ignore(scope);
+    ignore(id);
+    return deploymentConfig(lambdaDeploymentConfigName);
+  }
+
+  /**
+   * Import a Deployment Configuration for a Lambda Deployment Group defined outside the CDK.
    *
    * @param _scope the parent Construct for this new Construct
    * @param _id the logical ID of this new Construct
    * @param props the properties of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
+   * @deprecated use `fromLambdaDeploymentConfigName`
    */
-  public static import(_scope:Construct, _id: string, props: LambdaDeploymentConfigImportProps): ILambdaDeploymentConfig {
-    return deploymentConfig(props.deploymentConfigName);
+  public static import(_scope: Construct, _id: string, props: LambdaDeploymentConfigImportProps): ILambdaDeploymentConfig {
+    return this.fromLambdaDeploymentConfigName(_scope, _id, props.deploymentConfigName);
   }
 
-  private constructor() {
-    // nothing to do until CFN supports custom lambda deployment configurations
+  /**
+   * The name of the deployment config
+   * @attribute
+   */
+  public readonly deploymentConfigName: string;
+
+  /**
+    * The arn of the deployment config
+    * @attribute
+    */
+  public readonly deploymentConfigArn: string;
+
+  public constructor(scope: Construct, id: string, props?: LambdaDeploymentConfigProps) {
+    super(scope, id, {
+      physicalName: props?.deploymentConfigName,
+    });
+
+    // Construct the traffic routing configuration for the deployment group
+    const routingConfig = props && props.trafficRoutingConfig ? props.trafficRoutingConfig : new AllAtOnceTrafficRoutingConfig();
+
+    const resource = new CfnDeploymentConfig(this, 'Resource', {
+      deploymentConfigName: this.physicalName,
+      computePlatform: 'Lambda',
+      trafficRoutingConfig: routingConfig.renderTrafficRoutingConfig(),
+    });
+
+    this.deploymentConfigName = this.getResourceNameAttribute(resource.ref);
+    this.deploymentConfigArn = this.getResourceArnAttribute(arnForDeploymentConfig(resource.ref), {
+      service: 'codedeploy',
+      resource: 'deploymentconfig',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+
+    this.node.addValidation({ validate: () => validateName('Deployment config', this.physicalName) });
   }
 }
 
@@ -71,3 +142,5 @@ function deploymentConfig(name: string): ILambdaDeploymentConfig {
     deploymentConfigArn: arnForDeploymentConfig(name),
   };
 }
+
+function ignore(_x: any) { return; }
