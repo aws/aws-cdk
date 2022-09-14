@@ -77,6 +77,8 @@ const securityGroup2 = new ec2.SecurityGroup(this, 'SecurityGroup2', { vpc });
 lb.addSecurityGroup(securityGroup2);
 ```
 
+NOTE: Enabling ALB logs using an encryption enabled Amazon S3 Bucket is currently unsupported
+
 ### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming

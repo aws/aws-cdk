@@ -246,6 +246,9 @@ export abstract class BaseLoadBalancer extends Resource {
    * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
   public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
+    if (bucket.encryptionKey) {
+      throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
+    }
     prefix = prefix || '';
     this.setAttribute('access_logs.s3.enabled', 'true');
     this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
