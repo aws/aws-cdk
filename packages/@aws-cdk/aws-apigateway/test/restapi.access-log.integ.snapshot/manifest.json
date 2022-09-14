@@ -1,0 +1,153 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "test-apigateway-access-logs.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "test-apigateway-access-logs.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "test-apigateway-access-logs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-apigateway-access-logs.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bfcd014ed17d9d37eb988448edc7e87eb2ab77e6f7508bf3de2714a6322c99b3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "test-apigateway-access-logs.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "test-apigateway-access-logs.assets"
+      ],
+      "metadata": {
+        "/test-apigateway-access-logs/MyLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLogGroup5C0DAD85"
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApi49610EDF"
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiCloudWatchRole2BEC1A9C"
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiAccount13882D84"
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiDeploymentECB0D05E81594d6748b4b291f993111a5070d710"
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiDeploymentStageprodE1054AF0"
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiEndpoint869ABE96"
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiGETD0C7AA0C"
+          }
+        ],
+        "/test-apigateway-access-logs/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/test-apigateway-access-logs/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "test-apigateway-access-logs"
+    },
+    "apigatewayaccesslogsDefaultTestDeployAssert751ACD40.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "apigatewayaccesslogsDefaultTestDeployAssert751ACD40.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "apigatewayaccesslogsDefaultTestDeployAssert751ACD40": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apigatewayaccesslogsDefaultTestDeployAssert751ACD40.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "apigatewayaccesslogsDefaultTestDeployAssert751ACD40.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "apigatewayaccesslogsDefaultTestDeployAssert751ACD40.assets"
+      ],
+      "metadata": {
+        "/apigateway-access-logs/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/apigateway-access-logs/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "apigateway-access-logs/DefaultTest/DeployAssert"
+    }
+  }
+}
