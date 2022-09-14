@@ -108,7 +108,9 @@
   "maturity": "stable",
   "awslint": {
     "exclude": [
-      "resource-attribute:@aws-cdk/aws-globalaccelerator.Accelerator.acceleratorIpv4Addresses"
+      "resource-attribute:@aws-cdk/aws-globalaccelerator.Accelerator.acceleratorIpv4Addresses",
+      "resource-attribute:@aws-cdk/aws-globalaccelerator.Accelerator.acceleratorIpv6Addresses",
+      "resource-attribute:@aws-cdk/aws-globalaccelerator.Accelerator.acceleratorDualStackDnsName"
     ]
   },
   "awscdkio": {
