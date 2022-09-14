@@ -1,5 +1,7 @@
+import { ENABLE_CROSS_REGION_REFERENCES } from '@aws-cdk/cx-api';
 import { ArnComponents, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
+import { FeatureFlags } from './feature-flags';
 import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { Reference } from './reference';
@@ -256,7 +258,9 @@ export abstract class Resource extends Construct implements IResource {
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
 
-        if (this.stack.environment !== consumingStack.environment) {
+        if (this.stack.account !== consumingStack.account ||
+          (this.stack.region !== consumingStack.region &&
+            !FeatureFlags.of(consumingStack).isEnabled(ENABLE_CROSS_REGION_REFERENCES))) {
           this._enableCrossEnvironment();
           return this.physicalName;
         } else {
@@ -287,7 +291,9 @@ export abstract class Resource extends Construct implements IResource {
     return mimicReference(arnAttr, {
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
-        if (this.stack.environment !== consumingStack.environment) {
+        if (this.stack.account !== consumingStack.account ||
+          (this.stack.region !== consumingStack.region &&
+            !FeatureFlags.of(consumingStack).isEnabled(ENABLE_CROSS_REGION_REFERENCES))) {
           this._enableCrossEnvironment();
           return this.stack.formatArn(arnComponents);
         } else {

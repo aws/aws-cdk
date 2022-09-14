@@ -104,3 +104,22 @@ becomes:
  Principal:
    AWS: "arn:aws:iam::123456789876:root"
 ```
+
+* `@aws-cdk/core:enableCrossRegionReferencesUsingCustomResources`
+
+
+Enable this feature flag to allow native cross region stack references. This will use a CloudFormation
+Custom Resource to perform the cross region lookup.
+
+This is disabled by default.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:enableCrossRegionReferencesUsingCustomResources": true
+  }
+}
+```
+

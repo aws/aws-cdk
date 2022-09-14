@@ -7,7 +7,7 @@ import { IConstruct, Construct } from 'constructs';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
-import { ExportReader } from '../custom-resource-provider/get-parameter-provider';
+import { ExportReader } from '../custom-resource-provider/export-reader-provider';
 import { FeatureFlags } from '../feature-flags';
 import { Names } from '../names';
 import { Reference } from '../reference';
@@ -62,14 +62,16 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   if (producerAccount !== consumerAccount) {
     throw new Error(
       `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
-      'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack');
+      'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack');
   }
 
+
   // Stacks are in the same account, but different regions
-  if (producerRegion !== consumerRegion) {
-    consumer.addDependency(producer,
-      `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
-    return createCrossRegionImportValue(reference, consumer);
+  if (producerRegion !== consumerRegion && !FeatureFlags.of(consumer).isEnabled(cxapi.ENABLE_CROSS_REGION_REFERENCES)) {
+    throw new Error(
+      `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
+      'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack. ' +
+      `Set ${cxapi.ENABLE_CROSS_REGION_REFERENCES}=true to enable cross region references`);
   }
 
   // ----------------------------------------------------------------------
@@ -106,6 +108,13 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // ----------------------------------------------------------------------
   // export/import
   // ----------------------------------------------------------------------
+
+  // Stacks are in the same account, but different regions
+  if (producerRegion !== consumerRegion && FeatureFlags.of(consumer).isEnabled(cxapi.ENABLE_CROSS_REGION_REFERENCES)) {
+    consumer.addDependency(producer,
+      `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+    return createCrossRegionImportValue(reference, consumer);
+  }
 
   // export the value through a cloudformation "export name" and use an
   // Fn::ImportValue in the consumption site.

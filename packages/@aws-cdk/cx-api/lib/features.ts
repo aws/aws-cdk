@@ -353,6 +353,14 @@ export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disab
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 
 /**
+ * Enable this feature flag to allow native cross region stack references. This will use a CloudFormation
+ * Custom Resource to perform the cross region lookup.
+ *
+ * @default false
+ */
+export const ENABLE_CROSS_REGION_REFERENCES = '@aws-cdk/core:enableCrossRegionReferencesUsingCustomResources';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable

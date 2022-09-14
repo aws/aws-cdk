@@ -18,6 +18,7 @@ jest.mock('aws-sdk', () => {
 describe('get-cfn-exports entrypoint', () => {
   beforeEach(() => {
     mockListExports.mockReset();
+    jest.spyOn(console, 'info').mockImplementation(() => {});
   });
   afterEach(() => {
     jest.restoreAllMocks();

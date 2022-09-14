@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "codepipeline-integ-test/DefaultTest": {
+      "stacks": [
+        "stack2"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "codepipeline-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelineintegtestDefaultTestDeployAssert88EAAC45"
+    }
+  }
+}

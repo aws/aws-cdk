@@ -1,0 +1,249 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "cross-region-producer.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cross-region-producer.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cross-region-producer": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://580348834564/us-east-1",
+      "properties": {
+        "templateFile": "cross-region-producer.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::580348834564:role/cdk-hnb659fds-deploy-role-580348834564-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::580348834564:role/cdk-hnb659fds-cfn-exec-role-580348834564-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-580348834564-us-east-1/8c7abc3c42e024d8c1d7fcf2a5f9bcfb13b3eaf75334cffef6d4564b22a2a209.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cross-region-producer.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::580348834564:role/cdk-hnb659fds-lookup-role-580348834564-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cross-region-producer.assets"
+      ],
+      "metadata": {
+        "/cross-region-producer/IntegNested/NestedIntegQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NestedIntegQueue0DFF7C28"
+          }
+        ],
+        "/cross-region-producer/IntegNested/crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName"
+          }
+        ],
+        "/cross-region-producer/IntegNested.NestedStack/IntegNested.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
+          }
+        ],
+        "/cross-region-producer/IntegQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegQueue3A18718A"
+          }
+        ],
+        "/cross-region-producer/Exports/Output{\"Fn::GetAtt\":[\"IntegQueue3A18718A\",\"QueueName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttIntegQueue3A18718AQueueName46C58A8F"
+          }
+        ],
+        "/cross-region-producer/Exports/Output{\"Fn::GetAtt\":[\"IntegNestedNestedStackIntegNestedNestedStackResource168C5881\",\"Outputs.crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName7C64F4AE"
+          }
+        ],
+        "/cross-region-producer/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cross-region-producer/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cross-region-producer"
+    },
+    "cross-region-consumer.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cross-region-consumer.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cross-region-consumer": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://580348834564/us-east-2",
+      "properties": {
+        "templateFile": "cross-region-consumer.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::580348834564:role/cdk-hnb659fds-deploy-role-580348834564-us-east-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::580348834564:role/cdk-hnb659fds-cfn-exec-role-580348834564-us-east-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-580348834564-us-east-2/8fb619a5eea2e71b6943472a86e001a77df08f312a80b3038c556fa3510491a1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cross-region-consumer.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::580348834564:role/cdk-hnb659fds-lookup-role-580348834564-us-east-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cross-region-producer",
+        "cross-region-consumer.assets"
+      ],
+      "metadata": {
+        "/cross-region-consumer/IntegNested/IntegNestedParameter0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegNestedParameter04B9B8A01"
+          }
+        ],
+        "/cross-region-consumer/IntegNested/IntegNestedParameter1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegNestedParameter1DE6274D4"
+          }
+        ],
+        "/cross-region-consumer/IntegNested/ExportsReaderuseast1D746CBDB/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsReaderuseast1D746CBDB"
+          }
+        ],
+        "/cross-region-consumer/IntegNested/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+          }
+        ],
+        "/cross-region-consumer/IntegNested/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
+          }
+        ],
+        "/cross-region-consumer/IntegNested.NestedStack/IntegNested.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
+          }
+        ],
+        "/cross-region-consumer/IntegParameter0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegParameter02A1817A4"
+          }
+        ],
+        "/cross-region-consumer/IntegParameter1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegParameter1EDBEF1C6"
+          }
+        ],
+        "/cross-region-consumer/ExportsReaderuseast1D746CBDB/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsReaderuseast1D746CBDB"
+          }
+        ],
+        "/cross-region-consumer/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+          }
+        ],
+        "/cross-region-consumer/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
+          }
+        ],
+        "/cross-region-consumer/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cross-region-consumer/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cross-region-consumer"
+    },
+    "crossregionreferencesDefaultTestDeployAssertAB7415FD.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "crossregionreferencesDefaultTestDeployAssertAB7415FD.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "crossregionreferencesDefaultTestDeployAssertAB7415FD": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "crossregionreferencesDefaultTestDeployAssertAB7415FD.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "crossregionreferencesDefaultTestDeployAssertAB7415FD.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "crossregionreferencesDefaultTestDeployAssertAB7415FD.assets"
+      ],
+      "metadata": {
+        "/cross-region-references/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cross-region-references/DefaultTest/DeployAssert"
+    }
+  }
+}

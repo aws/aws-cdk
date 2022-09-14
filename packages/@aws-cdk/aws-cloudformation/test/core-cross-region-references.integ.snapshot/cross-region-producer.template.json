@@ -1,0 +1,86 @@
+{
+ "Resources": {
+  "IntegNestedNestedStackIntegNestedNestedStackResource168C5881": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.us-east-1.",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/cdk-hnb659fds-assets-580348834564-us-east-1/db4b89d277ac97fb3b94206516c7e60648f2e3a4d53793e2e8d073a607b04fdc.json"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "IntegQueue3A18718A": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttIntegQueue3A18718AQueueName46C58A8F": {
+   "Value": {
+    "Fn::GetAtt": [
+     "IntegQueue3A18718A",
+     "QueueName"
+    ]
+   },
+   "Export": {
+    "Name": "cross-region-producer:ExportsOutputFnGetAttIntegQueue3A18718AQueueName46C58A8F"
+   }
+  },
+  "ExportsOutputFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName7C64F4AE": {
+   "Value": {
+    "Fn::GetAtt": [
+     "IntegNestedNestedStackIntegNestedNestedStackResource168C5881",
+     "Outputs.crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName"
+    ]
+   },
+   "Export": {
+    "Name": "cross-region-producer:ExportsOutputFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName7C64F4AE"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

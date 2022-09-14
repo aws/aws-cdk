@@ -1,3 +1,4 @@
+import { ENABLE_CROSS_REGION_REFERENCES } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
@@ -171,6 +172,102 @@ describe('cross environment', () => {
     const stack2 = new Stack(app, 'Stack2', {
       env: {
         account: '234567890123',
+        region: 'bermuda-triangle-42',
+      },
+    });
+
+    // WHEN
+    const myResource = new MyResource(stack1, 'MyResource');
+    new CfnOutput(stack2, 'Output', {
+      value: myResource.name,
+    });
+
+    // THEN
+    expect(() => toCloudFormation(stack2)).toThrow(
+      /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
+  });
+
+  test(`can reference a deploy-time physical name across regions, when ${ENABLE_CROSS_REGION_REFERENCES}=true`, () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1337',
+      },
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-42',
+      },
+    });
+    stack2.node.setContext(ENABLE_CROSS_REGION_REFERENCES, true);
+
+    // WHEN
+    const myResource = new MyResource(stack1, 'MyResource');
+    new CfnOutput(stack2, 'Output', {
+      value: myResource.name,
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    expect(template1?.Outputs).toEqual({
+      'ExportsOutputRefMyResource6073B41F0296C218': {
+        'Export': {
+          'Name': 'Stack1:ExportsOutputRefMyResource6073B41F0296C218',
+        },
+        'Value': {
+          'Ref': 'MyResource6073B41F',
+        },
+      },
+    });
+    expect(template2?.Resources).toMatchObject({
+      'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68': {
+        'DependsOn': [
+          'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD',
+        ],
+        'Type': 'AWS::Lambda::Function',
+      },
+      'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD': {
+        'Type': 'AWS::IAM::Role',
+      },
+      'ExportsReaderbermudatriangle1337E63A6E15': {
+        'DeletionPolicy': 'Delete',
+        'Properties': {
+          'Region': 'bermuda-triangle-1337',
+        },
+        'Type': 'Custom::CrossRegionExportReader',
+        'UpdateReplacePolicy': 'Delete',
+      },
+    });
+    expect(template2?.Outputs).toEqual({
+      'Output': {
+        'Value': {
+          'Fn::GetAtt': [
+            'ExportsReaderbermudatriangle1337E63A6E15',
+            'Stack1:ExportsOutputRefMyResource6073B41F0296C218',
+          ],
+        },
+      },
+    });
+  });
+
+  test(`cannot reference a deploy-time physical name across regions, when ${ENABLE_CROSS_REGION_REFERENCES}=false`, () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1337',
+      },
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        account: '123456789012',
         region: 'bermuda-triangle-42',
       },
     });

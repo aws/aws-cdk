@@ -1,5 +1,9 @@
+import * as path from 'path';
+import { ENABLE_CROSS_REGION_REFERENCES } from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
+import { readFileSync } from 'fs-extra';
 import {
-  Stack, NestedStack, CfnStack,
+  Stack, NestedStack, CfnStack, Resource, CfnResource, App, CfnOutput,
 } from '../lib';
 import { toCloudFormation } from './util';
 
@@ -31,4 +35,134 @@ describe('nested-stack', () => {
 
     expect(nestedStack.templateOptions.description).toEqual(description);
   });
+
+  test(`can create cross region references when ${ENABLE_CROSS_REGION_REFERENCES}=true`, () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1337',
+      },
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-42',
+      },
+    });
+    stack2.node.setContext(ENABLE_CROSS_REGION_REFERENCES, true);
+    const nestedStack = new NestedStack(stack1, 'MyNestedStack');
+    const nestedStack2 = new NestedStack(stack2, 'MyNestedStack');
+
+    // WHEN
+    const myResource = new MyResource(nestedStack, 'MyResource');
+
+    new CfnOutput(nestedStack2, 'Output', {
+      value: myResource.name,
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const template2 = JSON.parse(readFileSync(path.join(assembly.directory, `${nestedStack2.artifactId}.nested.template.json`), 'utf8'));
+    expect(template2).toMatchObject({
+      Resources: {
+        CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
+          DependsOn: [
+            'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD',
+          ],
+          Type: 'AWS::Lambda::Function',
+        },
+        CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD: {
+          Type: 'AWS::IAM::Role',
+        },
+        ExportsReaderbermudatriangle1337E63A6E15: {
+          DeletionPolicy: 'Delete',
+          Properties: {
+            Region: 'bermuda-triangle-1337',
+          },
+          Type: 'Custom::CrossRegionExportReader',
+          UpdateReplacePolicy: 'Delete',
+        },
+      },
+      Outputs: {
+        Output: {
+          Value: {
+            'Fn::GetAtt': [
+              'ExportsReaderbermudatriangle1337E63A6E15',
+              'Stack1:ExportsOutputFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref16CD9A2F',
+            ],
+          },
+        },
+      },
+    });
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+
+    expect(template1?.Outputs).toEqual({
+      ExportsOutputFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref16CD9A2F: {
+        Export: {
+          Name: 'Stack1:ExportsOutputFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref16CD9A2F',
+        },
+        Value: {
+          'Fn::GetAtt': [
+            'MyNestedStackNestedStackMyNestedStackNestedStackResource9C617903',
+            'Outputs.Stack1MyNestedStackMyResourceEDA18296Ref',
+          ],
+        },
+      },
+    });
+  });
+
+  test(`cannot create cross region references when ${ENABLE_CROSS_REGION_REFERENCES}=false`, () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1337',
+      },
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-42',
+      },
+    });
+    const nestedStack = new NestedStack(stack1, 'MyNestedStack');
+
+    // WHEN
+    const myResource = new MyResource(nestedStack, 'MyResource');
+    new CfnOutput(stack2, 'Output', {
+      value: myResource.name,
+    });
+
+    // THEN
+    expect(() => toCloudFormation(stack2)).toThrow(
+      /Cannot use resource 'Stack1\/MyNestedStack\/MyResource' in a cross-environment fashion/);
+  });
 });
+
+class MyResource extends Resource {
+  public readonly arn: string;
+  public readonly name: string;
+
+  constructor(scope: Construct, id: string, physicalName?: string) {
+    super(scope, id, { physicalName });
+
+    const res = new CfnResource(this, 'Resource', {
+      type: 'My::Resource',
+      properties: {
+        resourceName: this.physicalName,
+      },
+    });
+
+    this.name = this.getResourceNameAttribute(res.ref.toString());
+    this.arn = this.getResourceArnAttribute(res.getAtt('Arn').toString(), {
+      region: '',
+      account: '',
+      resource: 'my-resource',
+      resourceName: this.physicalName,
+      service: 'myservice',
+    });
+  }
+}
