@@ -327,3 +327,73 @@ const deploymentGroup = codedeploy.LambdaDeploymentGroup.fromLambdaDeploymentGro
   deploymentGroupName: 'MyExistingDeploymentGroup',
 });
 ```
+
+## ECS Applications
+
+To create a new CodeDeploy Application that deploys to an ECS service:
+
+```ts
+const application = new codedeploy.EcsApplication(this, 'CodeDeployApplication', {
+  applicationName: 'MyApplication', // optional property
+});
+```
+
+To import an already existing Application:
+
+```ts
+const application = codedeploy.EcsApplication.fromEcsApplicationName(
+  this,
+  'ExistingCodeDeployApplication',
+  'MyExistingApplication',
+);
+```
+
+## ECS Deployment Groups
+
+To enable traffic shifting deployments for ECS Services, CodeDeploy uses TaskSets and TargetGroups, which can balance incoming traffic between two different versions of your function.  Before deployment, the listener sends 100% of requests to the production target group.  When you publish a new version of the task definition to your stack, CodeDeploy will send a small percentage of traffic to the new task sets, monitor, and validate before shifting 100% of traffic to the new version.
+
+To create a new CodeDeploy Deployment Group that deploys to a ECS service:
+
+```ts
+declare const myApplication: codedeploy.EcsApplication;
+declare const service: ecs.FargateService;
+declare const targetGroup = elbv2.ITargetGroup;
+declare const listener = elbv2.IApplicationListener;
+
+const deploymentGroup = new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDeployment', {
+  application: myApplication, // optional property: one will be created for you if not provided
+  services: [ 
+    service 
+  ],
+  prodTrafficRoute: {
+    listener,
+    targetGroup,
+  }
+  deploymentConfig: codedeploy.EcsDeploymentConfig.CANARY_10_PERCENT_5_MINUTES,
+});
+```
+
+### Create a custom ECS Deployment Config
+
+CodeDeploy for ECS comes with built-in configurations for traffic shifting.
+If you want to specify your own strategy,
+you can do so with the EcsDeploymentConfig construct,
+letting you specify precisely how fast a new function version is deployed.
+
+```ts
+const config = new codedeploy.EcsDeploymentConfig(this, 'CustomConfig', {
+  trafficRoutingConfig: new codeDeploy.TimeBasedCanaryTrafficRoutingConfig(5, 10);
+});
+```
+
+### Import an existing ECS Deployment Group
+
+To import an already existing Deployment Group:
+
+```ts
+declare const application: codedeploy.EcsApplication;
+const deploymentGroup = codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(this, 'ExistingCodeDeployDeploymentGroup', {
+  application,
+  deploymentGroupName: 'MyExistingDeploymentGroup',
+});
+```

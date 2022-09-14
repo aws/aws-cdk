@@ -24,6 +24,15 @@ describe('CodeDeploy ECS Application', () => {
     });
   });
 
+  test('can be imported', () => {
+    const stack = new cdk.Stack();
+
+    const application = codedeploy.EcsApplication.fromEcsApplicationName(stack, 'MyApp', 'MyApp');
+
+    expect(application).not.toEqual(undefined);
+    expect(application.applicationName).toEqual('MyApp');
+  });
+
   test('fail with more than 100 characters in name', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
