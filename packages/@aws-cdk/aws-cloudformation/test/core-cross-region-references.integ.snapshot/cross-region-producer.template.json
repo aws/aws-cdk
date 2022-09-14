@@ -11,7 +11,7 @@
        {
         "Ref": "AWS::URLSuffix"
        },
-       "/cdk-hnb659fds-assets-580348834564-us-east-1/db4b89d277ac97fb3b94206516c7e60648f2e3a4d53793e2e8d073a607b04fdc.json"
+       "/cdk-hnb659fds-assets-12345678-us-east-1/db4b89d277ac97fb3b94206516c7e60648f2e3a4d53793e2e8d073a607b04fdc.json"
       ]
      ]
     }

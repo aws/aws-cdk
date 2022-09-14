@@ -11,7 +11,7 @@
        {
         "Ref": "AWS::URLSuffix"
        },
-       "/cdk-hnb659fds-assets-580348834564-us-east-2/433a88eab9a43c81da7b3f1feb8fbd766c8c8631e8d1f0b6cd063a2f3ee51ff9.json"
+       "/cdk-hnb659fds-assets-12345678-us-east-2/f18a7bd6678575898edf76b4c96e9f9dee4f6ef1269ff16aa9d3c93a9862fd51.json"
       ]
      ]
     }
@@ -55,7 +55,7 @@
      ]
     },
     "Region": "us-east-1",
-    "RefreshToken": "d24d89c84d6bb022f6cc6b49a2218fdd"
+    "RefreshToken": "232744ad70da548e96b56a2d625574f9"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -103,7 +103,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-580348834564-us-east-2",
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-2",
      "S3Key": "1ee31a833482538af5b3690ccbb84c41ac4c66f7892bcb8802b0695553bc4ccf.zip"
     },
     "Timeout": 900,
