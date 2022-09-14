@@ -132,7 +132,7 @@
       "docs-public-apis:@aws-cdk/aws-eks-legacy.KubernetesResourceProps",
       "docs-public-apis:@aws-cdk/aws-eks-legacy.Mapping",
       "resource-attribute:@aws-cdk/aws-eks-legacy.Cluster.clusterKubernetesNetworkConfigServiceIpv6Cidr",
-      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterId"
+      "resource-attribute:@aws-cdk/aws-eks-legacy.Cluster.clusterId"
     ]
   },
   "stability": "deprecated",
