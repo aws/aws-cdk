@@ -3,7 +3,7 @@
   "testCases": {
     "codepipeline-integ-test/DefaultTest": {
       "stacks": [
-        "stack2"
+        "integ-pipeline-consumer-stack"
       ],
       "stackUpdateWorkflow": false,
       "assertionStack": "codepipeline-integ-test/DefaultTest/DeployAssert",

@@ -1,7 +1,11 @@
+import * as crypto from 'crypto';
 import * as path from 'path';
 import { Construct } from 'constructs';
+import { CfnResource } from '../cfn-resource';
 import { CustomResource } from '../custom-resource';
+import { Lazy } from '../lazy';
 import { Intrinsic } from '../private/intrinsic';
+import { Reference } from '../reference';
 import { Stack } from '../stack';
 import { CustomResourceProvider, CustomResourceProviderRuntime } from './custom-resource-provider';
 
@@ -34,9 +38,12 @@ export interface ExportReaderProps {
  *     SomeParam: exportReader.importValue('someName'),
  *   },
  * });
+ *
+ * @internal - this is intentionally not exported from core
  */
 export class ExportReader extends Construct {
   private readonly resource: CustomResource;
+  private readonly _references: Reference[] = [];
   constructor(scope: Construct, id: string, props: ExportReaderProps) {
     super(scope, id);
     const stack = Stack.of(this);
@@ -58,11 +65,24 @@ export class ExportReader extends Construct {
       serviceToken,
       properties: {
         Region: region,
-        // This is used to determine when the function has changed.
+        // This is used to determine when custom resource should be executed again.
         //
-        // We want to lookup the exports every time
-        // changed for it to take effect - a good candidate for RefreshToken.
-        RefreshToken: Date.now().toString(),
+        // We want to lookup the resources whenever any of the references
+        // change. The only reliable way to tell whether we need to perform another lookup
+        // is to check if _any_ property of the referenced resource changes
+        RefreshToken: Lazy.string({
+          produce: () => {
+            const hash = crypto.createHash('md5');
+            this._references.forEach(reference => {
+              const referenceStack = Stack.of(reference.target);
+              if (CfnResource.isCfnResource(reference.target)) {
+                const cfn = JSON.stringify(referenceStack.resolve(reference.target._toCloudFormation()));
+                hash.update(cfn);
+              }
+            });
+            return hash.digest('hex');
+          },
+        }),
       },
     });
 
@@ -86,5 +106,14 @@ export class ExportReader extends Construct {
    */
   public importValue(exportName: string): Intrinsic {
     return this.resource.getAtt(exportName);
+  }
+
+  /**
+   * Register a reference with the reader.
+   *
+   * @internal
+   */
+  public _registerExport(reference: Reference): void {
+    this._references.push(reference);
   }
 }

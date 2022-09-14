@@ -9,7 +9,7 @@
        "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::580348834564:root"
+        "AWS": "arn:aws:iam::12345678:root"
        },
        "Resource": "*"
       }
@@ -23,7 +23,7 @@
   "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/codepipeline-stack2-pipeline-d266f8ac",
+    "AliasName": "alias/codepipeline-integ-pipeline-consumer-stack-pipeline-9f1db34e",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "PipelineArtifactsBucketEncryptionKey01D58D69",
@@ -294,7 +294,7 @@
         "Id": {
          "Fn::GetAtt": [
           "ExportsReaderuseast1D746CBDB",
-          "stack1:ExportsOutputFnGetAttReplicationKeyFCE40BF4Arn53D389D6"
+          "integ-pipeline-producer-stack:ExportsOutputFnGetAttReplicationKeyFCE40BF4Arn53D389D6"
          ]
         },
         "Type": "KMS"
@@ -302,7 +302,7 @@
        "Location": {
         "Fn::GetAtt": [
          "ExportsReaderuseast1D746CBDB",
-         "stack1:ExportsOutputRefReplicationBucket70D68737E331A47A"
+         "integ-pipeline-producer-stack:ExportsOutputRefReplicationBucket70D68737E331A47A"
         ]
        },
        "Type": "S3"
@@ -343,7 +343,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::580348834564:root"
+        "AWS": "arn:aws:iam::12345678:root"
        }
       }
      ],
@@ -455,7 +455,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::580348834564:root"
+        "AWS": "arn:aws:iam::12345678:root"
        }
       }
      ],
@@ -602,7 +602,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-580348834564-us-east-2",
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-2",
      "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
     },
     "Timeout": 900,
@@ -666,7 +666,7 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:logs:us-east-2:580348834564:log-group:/aws/codebuild/",
+           "arn:aws:logs:us-east-2:12345678:log-group:/aws/codebuild/",
            {
             "Ref": "Build45A36621"
            },
@@ -678,7 +678,7 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:logs:us-east-2:580348834564:log-group:/aws/codebuild/",
+           "arn:aws:logs:us-east-2:12345678:log-group:/aws/codebuild/",
            {
             "Ref": "Build45A36621"
            }
@@ -700,7 +700,7 @@
         "Fn::Join": [
          "",
          [
-          "arn:aws:codebuild:us-east-2:580348834564:report-group/",
+          "arn:aws:codebuild:us-east-2:12345678:report-group/",
           {
            "Ref": "Build45A36621"
           },
@@ -809,7 +809,7 @@
      ]
     },
     "Region": "us-east-1",
-    "RefreshToken": "1663160447324"
+    "RefreshToken": "98880eb177b602d9fd70c7d737108d84"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -857,7 +857,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-580348834564-us-east-2",
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-2",
      "S3Key": "1ee31a833482538af5b3690ccbb84c41ac4c66f7892bcb8802b0695553bc4ccf.zip"
     },
     "Timeout": 900,

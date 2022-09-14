@@ -9,7 +9,7 @@
        "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::580348834564:root"
+        "AWS": "arn:aws:iam::12345678:root"
        },
        "Resource": "*"
       }
@@ -144,7 +144,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-580348834564-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-1",
      "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
     },
     "Timeout": 900,
@@ -181,7 +181,7 @@
     "Ref": "ReplicationBucket70D68737"
    },
    "Export": {
-    "Name": "stack1:ExportsOutputRefReplicationBucket70D68737E331A47A"
+    "Name": "integ-pipeline-producer-stack:ExportsOutputRefReplicationBucket70D68737E331A47A"
    }
   },
   "ExportsOutputFnGetAttReplicationKeyFCE40BF4Arn53D389D6": {
@@ -192,7 +192,7 @@
     ]
    },
    "Export": {
-    "Name": "stack1:ExportsOutputFnGetAttReplicationKeyFCE40BF4Arn53D389D6"
+    "Name": "integ-pipeline-producer-stack:ExportsOutputFnGetAttReplicationKeyFCE40BF4Arn53D389D6"
    }
   }
  },

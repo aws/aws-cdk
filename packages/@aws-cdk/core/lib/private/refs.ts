@@ -212,6 +212,7 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
     : new ExportReader(importStack, constructName, {
       region: exportingStack.region,
     });
+  exportReader._registerExport(reference);
 
   return exportReader.importValue(exportName);
 }

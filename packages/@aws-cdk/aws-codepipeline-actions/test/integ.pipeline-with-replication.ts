@@ -13,13 +13,13 @@ const app = new App({
   treeMetadata: false,
 });
 app.node.setContext(ENABLE_CROSS_REGION_REFERENCES, true);
-const stack1 = new Stack(app, 'stack1', {
+const stack1 = new Stack(app, 'integ-pipeline-producer-stack', {
   env: {
     region: 'us-east-1',
     account,
   },
 });
-const stack2 = new Stack(app, 'stack2', {
+const stack2 = new Stack(app, 'integ-pipeline-consumer-stack', {
   env: {
     region: 'us-east-2',
     account,
