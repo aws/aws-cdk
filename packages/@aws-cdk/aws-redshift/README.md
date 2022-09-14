@@ -68,6 +68,25 @@ const cluster = new Cluster(this, 'Redshift', {
 });
 ```
 
+Alternatively, you can use `Cluster.setLoggingProperties()` to set the logging properties after instantiating the cluster.
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as s3 from '@aws-cdk/aws-s3';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'logging-bucket');
+
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+});
+
+cluster.setLoggingProperties(bucket, 'prefix');
+```
+
 ## Connecting
 
 To control who can access the cluster, use the `.connections` attribute. Redshift Clusters have
@@ -302,7 +321,7 @@ cluster.addRotationMultiUser('MultiUserRotation', {
 
 ## Adding Parameters
 
-You can add a parameter to a parameter group with`ClusterParameterGroup.addParameter()`.
+You can add a parameter to a parameter group with `ClusterParameterGroup.addParameter()`.
 
 ```ts
 const params = new ClusterParameterGroup(stack, 'Params', {

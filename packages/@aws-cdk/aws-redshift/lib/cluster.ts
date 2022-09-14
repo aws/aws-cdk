@@ -494,32 +494,6 @@ export class Cluster extends ClusterBase {
 
     this.singleUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
-
-    let loggingProperties;
-    if (props.loggingProperties) {
-      loggingProperties = {
-        bucketName: props.loggingProperties.loggingBucket.bucketName,
-        s3KeyPrefix: props.loggingProperties.loggingKeyPrefix,
-      };
-      props.loggingProperties.loggingBucket.addToResourcePolicy(
-        new iam.PolicyStatement(
-          {
-            actions: [
-              's3:GetBucketAcl',
-              's3:PutObject',
-            ],
-            resources: [
-              props.loggingProperties.loggingBucket.arnForObjects('*'),
-              props.loggingProperties.loggingBucket.bucketArn,
-            ],
-            principals: [
-              new iam.ServicePrincipal('redshift.amazonaws.com'),
-            ],
-          },
-        ),
-      );
-    }
-
     this.cluster = new CfnCluster(this, 'Resource', {
       // Basic
       allowVersionUpgrade: true,
@@ -538,7 +512,6 @@ export class Cluster extends ClusterBase {
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       nodeType: props.nodeType || NodeType.DC2_LARGE,
       numberOfNodes: nodeCount,
-      loggingProperties,
       iamRoles: props?.roles?.map(role => role.roleArn),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
@@ -561,6 +534,10 @@ export class Cluster extends ClusterBase {
 
     if (secret) {
       this.secret = secret.attach(this);
+    }
+
+    if (props.loggingProperties) {
+      this.setLoggingProperties(props.loggingProperties.loggingBucket, props.loggingProperties.loggingKeyPrefix);
     }
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
@@ -650,6 +627,40 @@ export class Cluster extends ClusterBase {
       this.parameterGroup.addParameter(name, value);
     } else {
       throw new Error('Cannot add a parameter to an imported parameter group.');
+    }
+  }
+
+  /**
+   * Set the Bucket details for log files to be sent to, including prefix.
+   *
+   * @param loggingBucket Bucket to send logs to. Logging information includes queries and connection attempts, for the specified Amazon Redshift cluster.
+   * @param loggingKeyPrefix Prefix used for logging.
+   */
+  public setLoggingProperties(loggingBucket: s3.IBucket, loggingKeyPrefix: string): void {
+    if (this.cluster.loggingProperties) {
+      throw new Error('Cannot set logging properties when they have been previously configured.');
+    } else {
+      loggingBucket.addToResourcePolicy(
+        new iam.PolicyStatement(
+          {
+            actions: [
+              's3:GetBucketAcl',
+              's3:PutObject',
+            ],
+            resources: [
+              loggingBucket.arnForObjects('*'),
+              loggingBucket.bucketArn,
+            ],
+            principals: [
+              new iam.ServicePrincipal('redshift.amazonaws.com'),
+            ],
+          },
+        ),
+      );
+      this.cluster.loggingProperties = {
+        bucketName: loggingBucket.bucketName,
+        s3KeyPrefix: loggingKeyPrefix,
+      };
     }
   }
 }

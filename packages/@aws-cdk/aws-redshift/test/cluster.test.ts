@@ -405,28 +405,71 @@ test('imported cluster with imported security group honors allowAllOutbound', ()
   });
 });
 
-test('can create a cluster with logging enabled', () => {
-  // GIVEN
-  const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'logging-bucket');
+describe('cluster logging', () => {
+  test('can create a cluster with logging enabled', () => {
+    // GIVEN
+    const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'logging-bucket');
 
-  // WHEN
-  new Cluster(stack, 'Redshift', {
-    masterUser: {
-      masterUsername: 'admin',
-    },
-    vpc,
-    loggingProperties: {
-      loggingBucket: bucket,
-      loggingKeyPrefix: 'prefix',
-    },
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      loggingProperties: {
+        loggingBucket: bucket,
+        loggingKeyPrefix: 'prefix',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: {
+        BucketName: 'logging-bucket',
+        S3KeyPrefix: 'prefix',
+      },
+    });
   });
 
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
-    LoggingProperties: {
-      BucketName: 'logging-bucket',
-      S3KeyPrefix: 'prefix',
-    },
+  test('can set logging properties for a cluster without logging enabled', () => {
+    // GIVEN
+    const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'logging-bucket');
+
+    // WHEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster.setLoggingProperties(bucket, 'prefix');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: {
+        BucketName: 'logging-bucket',
+        S3KeyPrefix: 'prefix',
+      },
+    });
+  });
+
+  test('throws when setting logging properties for a cluster with logging enabled', () => {
+    // GIVEN
+    const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'logging-bucket');
+
+    // WHEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster.setLoggingProperties(bucket, 'prefix');
+
+    // THEN
+    expect(() => {
+      cluster.setLoggingProperties(bucket, 'prefix');
+    }).toThrowError();
   });
 });
 
