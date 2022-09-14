@@ -163,6 +163,7 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
                 logger.info("| markers: %s" % markers)
                 extract_and_replace_markers(archive, contents_dir, markers)
             else:
+                logger.info("| copying archive to: %s\n" % contents_dir)
                 aws_command("s3", "cp", s3_source_zip, contents_dir)
 
         # sync from "contents" to destination
