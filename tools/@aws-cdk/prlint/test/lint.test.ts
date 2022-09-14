@@ -114,8 +114,8 @@ describe('ban breaking changes in stable modules', () => {
   });
 });
 
-describe('integration tests required on features', () => { 
-  test('integ files changed', async () => { 
+describe('integration tests required on features', () => {
+  test('integ files changed', async () => {
     const issue = {
       title: 'feat(s3): some title',
       body: `
@@ -130,6 +130,9 @@ describe('integration tests required on features', () => {
         filename: 'integ.some-integ-test.ts'
       },
       {
+        filename: 'test/some-integ-test.integ.snapshot/integ.some-test.expected.json'
+      },
+      {
         filename: 'README.md'
       }
     ];
@@ -137,7 +140,7 @@ describe('integration tests required on features', () => {
     expect(await linter.validatePr(1000)).resolves;
   });
 
-  test('integ files not changed', async () => { 
+  test('integ files not changed in feat', async () => {
     const issue = {
       title: 'feat(s3): some title',
       body: `
@@ -152,17 +155,92 @@ describe('integration tests required on features', () => {
         filename: 'some-test.test.ts'
       },
       {
-        filename: 'integ.some-test.expected.json'
+        filename: 'test/some-integ-test.integ.snapshot/integ.some-test.expected.json'
       },
       {
         filename: 'README.md'
       }
     ];
     configureMock(issue, files)
-    await expect(linter.validatePr(1000)).rejects.toThrow('Features must contain a change to an integration test file');
+    await expect(linter.validatePr(1000)).rejects.toThrow('Features must contain a change to an integration test file.');
   });
 
-  test('integ files not changed, pr exempt', async () => { 
+  test('integ snapshots not changed in feat', async () => {
+    const issue = {
+      title: 'feat(s3): some title',
+      body: `
+        description of the commit
+
+        closes #123456789
+      `,
+      labels: []
+    };
+    const files = [
+      {
+        filename: 'some-test.test.ts'
+      },
+      {
+        filename: 'integ.some-test.ts'
+      },
+      {
+        filename: 'README.md'
+      }
+    ];
+    configureMock(issue, files)
+    await expect(linter.validatePr(1000)).rejects.toThrow('Features must contain a change to an integration test file.');
+  });
+
+  test('integ files not changed in fix', async () => {
+    const issue = {
+      title: 'fix(s3): some title',
+      body: `
+        description of the commit
+
+        closes #123456789
+      `,
+      labels: []
+    };
+    const files = [
+      {
+        filename: 'some-test.test.ts'
+      },
+      {
+        filename: 'test/some-integ-test.integ.snapshot/integ.some-test.expected.json'
+      },
+      {
+        filename: 'README.md'
+      }
+    ];
+    configureMock(issue, files);
+    await expect(linter.validatePr(1000)).rejects.toThrow('Fixes must contain a change to an integration test file.');
+  });
+
+  test('integ snapshots not changed in fix', async () => {
+    const issue = {
+      title: 'fix(s3): some title',
+      body: `
+        description of the commit
+
+        closes #123456789
+      `,
+      labels: []
+    };
+    const files = [
+      {
+        filename: 'some-test.test.ts'
+      },
+      {
+        filename: 'integ.some-test.ts'
+      },
+      {
+        filename: 'README.md'
+      }
+    ];
+    configureMock(issue, files);
+    await expect(linter.validatePr(1000)).rejects.toThrow('Fixes must contain a change to an integration test file.');
+  });
+
+  test('integ files not changed, pr exempt', async () => {
     const issue = {
       title: 'feat(s3): some title',
       body: `
@@ -184,9 +262,9 @@ describe('integration tests required on features', () => {
     expect(await linter.validatePr(1000)).resolves;
   });
 
-  test('integ files not changed, not a feature', async () => { 
+  test('integ files not changed, not a feature', async () => {
     const issue = {
-      title: 'fix(s3): some title',
+      title: 'chore(s3): some title',
       body: `
         description of the commit
 
@@ -215,6 +293,9 @@ function configureMock(issue: any, prFiles: any[] | undefined) {
           getIssue: () => {
             return { data: issue };
           },
+          createComment: () => {
+            return {};
+          }
         };
       },
       getRepo: () => {

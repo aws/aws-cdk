@@ -48,33 +48,43 @@ function integTestChanged(files: any[]) {
   return files.filter(f => f.filename.toLowerCase().match(/integ.*.ts$/)).length != 0;
 }
 
+function integTestSnapshotChanged(files: any[]) {
+  return files.filter(f => f.filename.toLowerCase().includes("integ.snapshot")).length != 0;
+}
+
 function readmeChanged(files: any[]) {
   return files.filter(f => path.basename(f.filename) == "README.md").length != 0;
 }
 
 function featureContainsReadme(issue: any, files: any[]) {
   if (isFeature(issue) && !readmeChanged(files) && !isPkgCfnspec(issue)) {
-    throw new LinterError("Features must contain a change to a README file");
+    throw new LinterError("Features must contain a change to a README file.");
   }
 };
 
 function featureContainsTest(issue: any, files: any[]) {
   if (isFeature(issue) && !testChanged(files)) {
-    throw new LinterError("Features must contain a change to a test file");
+    throw new LinterError("Features must contain a change to a test file.");
   }
 };
 
 function fixContainsTest(issue: any, files: any[]) {
   if (isFix(issue) && !testChanged(files)) {
-    throw new LinterError("Fixes must contain a change to a test file");
+    throw new LinterError("Fixes must contain a change to a test file.");
   }
 };
 
 function featureContainsIntegTest(issue: any, files: any[]) {
-  if (isFeature(issue) && !integTestChanged(files)) {
-    throw new LinterError("Features must contain a change to an integration test file");
+  if (isFeature(issue) && (!integTestChanged(files) || !integTestSnapshotChanged(files))) {
+    throw new LinterError("Features must contain a change to an integration test file.");
   }
 };
+
+function fixContainsIntegTest(issue: any, files: any[]) {
+  if (isFix(issue) && (!integTestChanged(files) || !integTestSnapshotChanged(files))) {
+    throw new LinterError("Fixes must contain a change to an integration test file.");
+  }
+}
 
 function shouldExemptReadme(issue: any) {
   return hasLabel(issue, EXEMPT_README);
@@ -110,14 +120,14 @@ function validateBreakingChangeFormat(title: string, body: string) {
   const m = re.exec(body);
   if (m) {
     if (!m[0].startsWith('BREAKING CHANGE: ')) {
-      throw new LinterError(`Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}')`);
+      throw new LinterError(`Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}').`);
     }
     if (m[0].slice('BREAKING CHANGE:'.length).trim().length === 0) {
-      throw new LinterError("The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause");
+      throw new LinterError("The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause.");
     }
     const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;
     if (!titleRe.exec(title)) {
-      throw new LinterError("The title of this PR must specify the module name that the first breaking change should be associated to");
+      throw new LinterError("The title of this PR must specify the module name that the first breaking change should be associated to.");
     }
   }
 }
@@ -138,45 +148,51 @@ export async function validatePr(number: number) {
   }
 
   const gh = createGitHubClient();
-  
+
   const issues = gh.getIssues(OWNER, REPO);
   const repo = gh.getRepo(OWNER, REPO);
-  
+
   console.log(`⌛  Fetching PR number ${number}`);
   const issue = (await issues.getIssue(number)).data;
-  
+
   console.log(`⌛  Fetching files for PR number ${number}`);
   const files = (await repo.listPullRequestFiles(number)).data;
-  
+
   console.log("⌛  Validating...");
-  
-  if (shouldExemptReadme(issue)) {
-    console.log(`Not validating README changes since the PR is labeled with '${EXEMPT_README}'`);
-  } else {
-    featureContainsReadme(issue, files);
-  }
-  
-  if (shouldExemptTest(issue)) {
-    console.log(`Not validating test changes since the PR is labeled with '${EXEMPT_TEST}'`);
-  } else {
-    featureContainsTest(issue, files);
-    fixContainsTest(issue, files);
-  }
 
-  if (shouldExemptIntegTest(issue)) {
-    console.log(`Not validating integration test changes since the PR is labeled with '${EXEMPT_INTEG_TEST}'`)
-  } else {
-    featureContainsIntegTest(issue, files);
-  }
- 
-  validateBreakingChangeFormat(issue.title, issue.body);
-  if (shouldExemptBreakingChange(issue)) {
-    console.log(`Not validating breaking changes since the PR is labeled with '${EXEMPT_BREAKING_CHANGE}'`);
-  } else {
-    assertStability(issue.title, issue.body);
-  }
+  try {
+    if (shouldExemptReadme(issue)) {
+      console.log(`Not validating README changes since the PR is labeled with '${EXEMPT_README}'`);
+    } else {
+      featureContainsReadme(issue, files);
+    }
 
-  console.log("✅  Success");
+    if (shouldExemptTest(issue)) {
+      console.log(`Not validating test changes since the PR is labeled with '${EXEMPT_TEST}'`);
+    } else {
+      featureContainsTest(issue, files);
+      fixContainsTest(issue, files);
+    }
+
+    if (shouldExemptIntegTest(issue)) {
+      console.log(`Not validating integration test changes since the PR is labeled with '${EXEMPT_INTEG_TEST}'`)
+    } else {
+      featureContainsIntegTest(issue, files);
+      fixContainsIntegTest(issue, files);
+    }
+
+    validateBreakingChangeFormat(issue.title, issue.body);
+    if (shouldExemptBreakingChange(issue)) {
+      console.log(`Not validating breaking changes since the PR is labeled with '${EXEMPT_BREAKING_CHANGE}'`);
+    } else {
+      assertStability(issue.title, issue.body);
+    }
+
+    console.log("✅  Success");
+  } catch (error) {
+    await issues.createComment(issue, `This PR does not fulfill the following requirement: ${error.message} PRs must pass status checks before we can provide a meaningful review.`);
+    throw error;
+  }
 }
 
 require('make-runnable/custom')({
