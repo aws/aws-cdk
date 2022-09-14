@@ -20,8 +20,6 @@ import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
 
-type Element = CfnResource | Stack;
-
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 
@@ -783,8 +781,8 @@ export class Stack extends Construct implements ITaggable {
    *
    * @internal
    */
-  public _obtainAssemblyDependencies(reasonFilter: StackDependencyReason={ description: '' }) {
-    let dependencies: Set<Element> = new Set();
+  public _obtainAssemblyDependencies(reasonFilter: StackDependencyReason={ description: '' }): IElement[] {
+    let dependencies: Set<IElement> = new Set();
     Object.values(this._stackDependencies).forEach((dep) => {
       filterReasons(dep, reasonFilter).forEach(r => {
         if (r.target) {
@@ -1443,15 +1441,14 @@ function filterReasons(dependency: StackDependency, reasonFilter: StackDependenc
 
 interface StackDependencyReason {
   description? : string;
-  source?: Element;
-  target?: Element;
+  source?: IElement;
+  target?: IElement;
 }
 
 interface StackDependency {
   stack: Stack;
   reasons: StackDependencyReason[];
 }
-
 
 /**
  * Options for the `stack.exportValue()` method
@@ -1479,7 +1476,7 @@ function count(xs: string[]): Record<string, number> {
 
 // These imports have to be at the end to prevent circular imports
 import { CfnOutput } from './cfn-output';
-import { addDependency } from './deps';
+import { addDependency, IElement } from './deps';
 import { FileSystem } from './fs';
 import { Names } from './names';
 import { Reference } from './reference';

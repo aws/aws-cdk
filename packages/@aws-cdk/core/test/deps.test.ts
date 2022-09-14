@@ -89,7 +89,7 @@ describe('deps', () => {
       const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
 
       // If source is the common stack, this should be a noop
-      addDependency<core.Stack | core.CfnResource>(stack1, resource1);
+      addDependency(stack1, resource1);
       expect(stack1.dependencies.length).toEqual(0);
     });
 
@@ -99,7 +99,7 @@ describe('deps', () => {
       const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
 
       expect(() => {
-        addDependency<core.Stack | core.CfnResource>(resource1, stack1);
+        addDependency(resource1, stack1);
       }).toThrow(/cannot depend on /);
     });
 

@@ -15,9 +15,6 @@ import { TagManager } from './tag-manager';
 import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
-import { Stack } from './stack';
-
-type Element = CfnResource | Stack;
 
 
 export interface CfnResourceProps {
@@ -324,7 +321,7 @@ export class CfnResource extends CfnRefElement {
    * This assembles dependencies on resources across stacks (including nested stacks)
    * automatically.
    */
-  public obtainDependencies() : Element[] {
+  public obtainDependencies() {
     return obtainDependencies(this);
   }
 
