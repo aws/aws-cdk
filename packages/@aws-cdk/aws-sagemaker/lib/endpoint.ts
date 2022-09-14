@@ -6,6 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { EndpointConfig, InstanceProductionVariant } from './endpoint-config';
+import { InstanceType } from './instance-type';
 import { CfnEndpoint } from './sagemaker.generated';
 import { ScalableInstanceCount } from './scalable-instance-count';
 
@@ -16,7 +17,7 @@ import { ScalableInstanceCount } from './scalable-instance-count';
  */
 const BURSTABLE_INSTANCE_TYPE_PREFIXES = Object.entries(ec2.InstanceClass)
   .filter(([name, _]) => name.startsWith('BURSTABLE'))
-  .map(([_, prefix]) => `${prefix}.`);
+  .map(([_, prefix]) => `ml.${prefix}.`);
 
 /**
  * The interface for a SageMaker Endpoint resource.
@@ -128,7 +129,7 @@ class EndpointProductionVariant implements IEndpointProductionVariant {
   public readonly variantName: string;
   private readonly endpoint: Endpoint;
   private readonly initialInstanceCount: number;
-  private readonly instanceType: ec2.InstanceType;
+  private readonly instanceType: InstanceType;
   private scalableInstanceCount?: ScalableInstanceCount;
 
   constructor(endpoint: Endpoint, variant: InstanceProductionVariant) {

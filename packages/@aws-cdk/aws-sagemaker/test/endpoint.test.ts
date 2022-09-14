@@ -1,4 +1,3 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as sagemaker from '../lib';
 
@@ -108,7 +107,7 @@ describe('When auto-scaling a production variant\'s instance count', () => {
       instanceProductionVariants: [{
         variantName: 'variant',
         model,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MEDIUM),
+        instanceType: sagemaker.InstanceType.T2_MEDIUM,
       }],
     });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
@@ -118,7 +117,7 @@ describe('When auto-scaling a production variant\'s instance count', () => {
     const when = () => variant.autoScaleInstanceCount({ maxCapacity: 3 });
 
     // THEN
-    expect(when).toThrow(/AutoScaling not supported for burstable instance types like t2.medium/);
+    expect(when).toThrow(/AutoScaling not supported for burstable instance types like ml.t2.medium/);
   });
 
   test('which already has auto-scaling enabled, an exception is thrown', () => {
@@ -129,7 +128,7 @@ describe('When auto-scaling a production variant\'s instance count', () => {
       instanceProductionVariants: [{
         variantName: 'variant',
         model,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+        instanceType: sagemaker.InstanceType.M5_LARGE,
       }],
     });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });

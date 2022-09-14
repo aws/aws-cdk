@@ -63,7 +63,7 @@ const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
     {
       model: modelWithArtifactAndVpc,
       variantName: 'firstVariant',
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      instanceType: sagemaker.InstanceType.M5_LARGE,
     },
     {
       model: modelWithArtifactAndVpc,

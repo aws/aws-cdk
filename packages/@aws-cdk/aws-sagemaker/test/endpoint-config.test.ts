@@ -1,4 +1,3 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as sagemaker from '../lib';
 
@@ -60,24 +59,6 @@ describe('When adding a production variant to an EndpointConfig', () => {
 
     // THEN
     expect(when).toThrow(/Invalid Production Variant Props: Cannot have negative variant weight/);
-  });
-
-  test('with an unsupported instance type, an exception is thrown', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
-
-    // WHEN
-    const when = () =>
-      endpointConfig.addInstanceProductionVariant({
-        variantName: 'new-variant',
-        model,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.ARM1, ec2.InstanceSize.XLARGE),
-      });
-
-    // THEN
-    expect(when).toThrow(/Invalid Production Variant Props: Invalid instance type for a SageMaker Endpoint Production Variant: a1.xlarge/);
   });
 
   test('with a duplicate variant name, an exception is thrown', () => {

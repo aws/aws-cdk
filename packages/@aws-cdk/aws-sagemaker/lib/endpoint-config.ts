@@ -1,8 +1,8 @@
 import { EOL } from 'os';
-import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { InstanceType } from './instance-type';
 import { IModel } from './model';
 import { CfnEndpointConfig } from './sagemaker.generated';
 
@@ -68,7 +68,7 @@ export interface InstanceProductionVariantProps extends ProductionVariantProps {
    *
    * @default - ml.t2.medium instance type.
    */
-  readonly instanceType?: ec2.InstanceType;
+  readonly instanceType?: InstanceType;
 }
 
 /**
@@ -110,7 +110,7 @@ export interface InstanceProductionVariant extends ProductionVariant {
   /**
    * Instance type of the production variant.
    */
-  readonly instanceType: ec2.InstanceType;
+  readonly instanceType: InstanceType;
 }
 
 /**
@@ -237,7 +237,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       acceleratorType: props.acceleratorType,
       initialInstanceCount: props.initialInstanceCount || 1,
       initialVariantWeight: props.initialVariantWeight || 1.0,
-      instanceType: props.instanceType || ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MEDIUM),
+      instanceType: props.instanceType || InstanceType.T2_MEDIUM,
       modelName: props.model.modelName,
       variantName: props.variantName,
     };
@@ -284,16 +284,6 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       errors.push('Cannot have negative variant weight');
     }
 
-    // validate the instance type
-    if (props.instanceType) {
-      // check if a valid SageMaker instance type
-      const instanceType = props.instanceType.toString();
-      if (!['c4', 'c5', 'c5d', 'g4dn', 'inf1', 'm4', 'm5', 'm5d', 'p2', 'p3', 'r5', 'r5d', 't2']
-        .some(instanceClass => instanceType.indexOf(instanceClass) >= 0)) {
-        errors.push(`Invalid instance type for a SageMaker Endpoint Production Variant: ${instanceType}`);
-      }
-    }
-
     if (errors.length > 0) {
       throw new Error(`Invalid Production Variant Props: ${errors.join(EOL)}`);
     }
@@ -307,7 +297,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       acceleratorType: v.acceleratorType,
       initialInstanceCount: v.initialInstanceCount,
       initialVariantWeight: v.initialVariantWeight,
-      instanceType: 'ml.' + v.instanceType.toString(),
+      instanceType: v.instanceType.toString(),
       modelName: v.modelName,
       variantName: v.variantName,
     }) );
