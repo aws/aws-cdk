@@ -473,7 +473,7 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test('createGrant - enables IAM auth and grants neptune-db:* to the specified grantee', () => {
+  test('grantConnect - enables IAM auth and grants neptune-db:* to the grantee', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -528,7 +528,7 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test('createGrant - throws if IAM auth disabled', () => {
+  test('grantConnect - throws if IAM auth disabled', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -544,7 +544,81 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(() => { cluster.grantConnect(role); }).toThrow(/Cannot grant connect when IAM authentication is disabled/);
+    expect(() => { cluster.grantConnect(role); }).toThrow(/Cannot grant permissions when IAM authentication is disabled/);
+  });
+
+  test('grant - enables IAM auth and grants specified actions to the grantee', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+    });
+    const role = new iam.Role(stack, 'DBRole', {
+      assumedBy: new iam.AccountPrincipal(stack.account),
+    });
+    cluster.grant(role, 'neptune-db:ReadDataViaQuery', 'neptune-db:WriteDataViaQuery');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      IamAuthEnabled: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: ['neptune-db:ReadDataViaQuery', 'neptune-db:WriteDataViaQuery'],
+          Resource: {
+            'Fn::Join': [
+              '', [
+                'arn:', {
+                  Ref: 'AWS::Partition',
+                },
+                ':neptune-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':',
+                {
+                  'Fn::GetAtt': [
+                    'ClusterEB0386A7',
+                    'ClusterResourceId',
+                  ],
+                },
+                '/*',
+              ],
+            ],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grant - throws if IAM auth disabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      iamAuthentication: false,
+    });
+    const role = new iam.Role(stack, 'DBRole', {
+      assumedBy: new iam.AccountPrincipal(stack.account),
+    });
+
+    // THEN
+    expect(() => { cluster.grant(role, 'neptune-db:ReadDataViaQuery', 'neptune-db:WriteDataViaQuery'); }).toThrow(/Cannot grant permissions when IAM authentication is disabled/);
   });
 
   test('autoMinorVersionUpgrade is enabled when configured', () => {
