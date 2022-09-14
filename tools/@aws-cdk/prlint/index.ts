@@ -3,17 +3,21 @@ import * as github from '@actions/github';
 import * as linter from './lint';
 
 async function run() {
-    const number = github.context.issue.number;
+  const token: string = process.env.GITHUB_TOKEN ?? core.getInput('github-token', { required: true });
+  const client = github.getOctokit(token).rest.pulls;
 
-    try {
+  const prLinter = new linter.PRLinter({
+    client,
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
+    number: github.context.issue.number,
+  });
 
-        await linter.validatePr(number);
-
-    } catch (error) {
-
-        core.setFailed(error.message);
-    }
-
+  try {
+    await prLinter.validate()
+  } catch (error) {
+    core.setFailed(error.message);
+  }
 }
 
 run()

@@ -1,12 +1,5 @@
-import * as GitHub from 'github-api';
 import * as linter from '../lint';
 import * as path from 'path';
-
-jest.mock('github-api');
-
-beforeEach(() => {
-  GitHub.mockClear();
-});
 
 beforeAll(() => {
   process.env.REPO_ROOT = path.join(__dirname, '..', '..', '..', '..');
@@ -16,6 +9,8 @@ afterAll(() => {
   process.env.REPO_ROOT = undefined;
 });
 
+let mockCreateReview: (errorMessage: string) => Promise<any>;
+
 describe('breaking changes format', () => {
   test('disallow variations to "BREAKING CHANGE:"', async () => {
     const issue = {
@@ -23,8 +18,8 @@ describe('breaking changes format', () => {
       body: 'BREAKING CHANGES:',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
-    configureMock(issue, undefined);
-    await expect(linter.validatePr(1000)).rejects.toThrow(/'BREAKING CHANGE: ', variations are not allowed/);
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validate()).rejects.toThrow(/'BREAKING CHANGE: ', variations are not allowed/);
   });
 
   test('the first breaking change should immediately follow "BREAKING CHANGE:"', async () => {
@@ -34,8 +29,8 @@ describe('breaking changes format', () => {
              * **module:** another change`,
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
-    configureMock(issue, undefined);
-    await expect(linter.validatePr(1000)).rejects.toThrow(/description of the first breaking change should immediately follow/);
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validate()).rejects.toThrow(/description of the first breaking change should immediately follow/);
   });
 
   test('invalid title', async () => {
@@ -44,8 +39,8 @@ describe('breaking changes format', () => {
       body: 'BREAKING CHANGE: this breaking change',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
-    configureMock(issue, undefined);
-    await expect(linter.validatePr(1000)).rejects.toThrow(/must specify the module name that the first breaking change/);
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validate()).rejects.toThrow(/must specify the module name that the first breaking change/);
   });
 
   test('valid title', async () => {
@@ -54,8 +49,8 @@ describe('breaking changes format', () => {
       body: 'BREAKING CHANGE: this breaking change',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
-    configureMock(issue, undefined);
-    await expect(linter.validatePr(1000)).resolves; // not throw
+    const prLinter = configureMock(issue, undefined);
+    expect(await prLinter.validate()).resolves; // not throw
   });
 });
 
@@ -66,8 +61,8 @@ describe('ban breaking changes in stable modules', () => {
       body: 'BREAKING CHANGE: this breaking change',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
-    configureMock(issue, undefined);
-    await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validate()).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
   });
 
   test('breaking changes multiple in stable modules', async () => {
@@ -80,8 +75,8 @@ describe('ban breaking changes in stable modules', () => {
       `,
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
-    configureMock(issue, undefined);
-    await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [lambda, ecs] is disallowed.');
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validate()).rejects.toThrow('Breaking changes in stable modules [lambda, ecs] is disallowed.');
   });
 
   test('unless exempt-breaking-change label added', async () => {
@@ -93,8 +88,8 @@ describe('ban breaking changes in stable modules', () => {
       `,
       labels: [{ name: 'pr-linter/exempt-breaking-change' }],
     };
-    configureMock(issue, undefined);
-    await expect(linter.validatePr(1000)).resolves; // not throw
+    const prLinter = configureMock(issue, undefined);
+    expect(await prLinter.validate()).resolves; // not throw
   });
 
   test('with additional "closes" footer', async () => {
@@ -109,8 +104,8 @@ describe('ban breaking changes in stable modules', () => {
       `,
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
-    configureMock(issue, undefined);
-    await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validate()).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
   });
 });
 
@@ -136,8 +131,8 @@ describe('integration tests required on features', () => {
         filename: 'README.md'
       }
     ];
-    configureMock(issue, files)
-    expect(await linter.validatePr(1000)).resolves;
+    const prLinter = configureMock(issue, files);
+    expect(await prLinter.validate()).resolves;
   });
 
   test('integ files not changed in feat', async () => {
@@ -161,8 +156,8 @@ describe('integration tests required on features', () => {
         filename: 'README.md'
       }
     ];
-    configureMock(issue, files)
-    await expect(linter.validatePr(1000)).rejects.toThrow('Features must contain a change to an integration test file.');
+    const prLinter = configureMock(issue, files);
+    await expect(prLinter.validate()).rejects.toThrow('Features must contain a change to an integration test file.');
   });
 
   test('integ snapshots not changed in feat', async () => {
@@ -186,8 +181,8 @@ describe('integration tests required on features', () => {
         filename: 'README.md'
       }
     ];
-    configureMock(issue, files)
-    await expect(linter.validatePr(1000)).rejects.toThrow('Features must contain a change to an integration test file.');
+    const prLinter = configureMock(issue, files);
+    await expect(prLinter.validate()).rejects.toThrow('Features must contain a change to an integration test file.');
   });
 
   test('integ files not changed in fix', async () => {
@@ -211,8 +206,8 @@ describe('integration tests required on features', () => {
         filename: 'README.md'
       }
     ];
-    configureMock(issue, files);
-    await expect(linter.validatePr(1000)).rejects.toThrow('Fixes must contain a change to an integration test file.');
+    const prLinter = configureMock(issue, files);
+    await expect(prLinter.validate()).rejects.toThrow('Fixes must contain a change to an integration test file.');
   });
 
   test('integ snapshots not changed in fix', async () => {
@@ -236,8 +231,8 @@ describe('integration tests required on features', () => {
         filename: 'README.md'
       }
     ];
-    configureMock(issue, files);
-    await expect(linter.validatePr(1000)).rejects.toThrow('Fixes must contain a change to an integration test file.');
+    const prLinter = configureMock(issue, files);
+    await expect(prLinter.validate()).rejects.toThrow('Fixes must contain a change to an integration test file.');
   });
 
   test('integ files not changed, pr exempt', async () => {
@@ -258,8 +253,8 @@ describe('integration tests required on features', () => {
         filename: 'README.md'
       }
     ];
-    configureMock(issue, files)
-    expect(await linter.validatePr(1000)).resolves;
+    const prLinter = configureMock(issue, files);
+    expect(await prLinter.validate()).resolves;
   });
 
   test('integ files not changed, not a feature', async () => {
@@ -280,31 +275,33 @@ describe('integration tests required on features', () => {
         filename: 'README.md'
       }
     ];
-    configureMock(issue, files)
-    expect(await linter.validatePr(1000)).resolves;
+    const prLinter = configureMock(issue, files);
+    expect(await prLinter.validate()).resolves;
   });
 });
 
-function configureMock(issue: any, prFiles: any[] | undefined) {
-  GitHub.mockImplementation(() => {
-    return {
-      getIssues: () => {
-        return {
-          getIssue: () => {
-            return { data: issue };
-          },
-          createComment: () => {
-            return {};
-          }
-        };
-      },
-      getRepo: () => {
-        return {
-          listPullRequestFiles: () => {
-            return { data: prFiles };
-          }
-        }
+
+function configureMock(issue: any, prFiles: any[] | undefined): linter.PRLinter {
+  const client = {
+    get(_props: { _owner: string, _repo: string, _pull_number: number }) {
+      return { data: issue };
+    },
+
+    listFiles(_props: { _owner: string, _repo: string, _pull_number: number }) {
+      return { data: prFiles };
+    },
+
+    createReview(errorMessage: string) {
+      return {
+        promise: () => mockCreateReview(errorMessage),
       }
-    };
-  });
+    }
+
+  }
+  return new linter.PRLinter({
+    owner: 'aws',
+    repo: 'aws-cdk',
+    number: 1000,
+    client
+  })
 }
