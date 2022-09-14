@@ -150,7 +150,7 @@ const cluster = new msk.Cluster(this, 'cluster', {
 ```
 
 
-### SASL/IAM alongside TLS
+### SASL/IAM + TLS
 
 To enable client authentication with TLS and IAM you can provide the configurations used for each separately as explained above but instead under the ´saslTls´ method:
 
