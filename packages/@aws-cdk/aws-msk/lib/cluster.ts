@@ -362,6 +362,13 @@ export class ClientAuthentication {
   }
 
   /**
+   * SASL + TLS authentication
+   */
+  public static saslTls(saslProps: SaslAuthProps, tlsProps: TlsAuthProps): ClientAuthentication {
+    return new ClientAuthentication(saslProps, tlsProps);
+  }
+
+  /**
    * @param saslProps - properties for SASL authentication
    * @param tlsProps - properties for TLS authentication
    */
@@ -613,9 +620,20 @@ export class Cluster extends ClusterBase {
 
     let clientAuthentication;
     if (props.clientAuthentication?.saslProps?.iam) {
-      clientAuthentication = {
-        sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
-      };
+      if (props.clientAuthentication?.tlsProps) {
+        clientAuthentication = {
+          sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
+          tls: {
+            certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities?.map(
+              (ca) => ca.certificateAuthorityArn,
+            ),
+          },
+        };
+      } else {
+        clientAuthentication = {
+          sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
+        };
+      }
     } else if (props.clientAuthentication?.saslProps?.scram) {
       clientAuthentication = {
         sasl: {
