@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Stack, App, StackProps } from '@aws-cdk/core';
+import { Stack, App, StackProps, RemovalPolicy } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as redshift from '../lib';
@@ -11,7 +11,9 @@ class RedshiftEnv extends Stack {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'VPC');
-    const loggingBucket = new s3.Bucket(this, 'S3');
+    const loggingBucket = new s3.Bucket(this, 'S3', {
+      autoDeleteObjects: true, removalPolicy: RemovalPolicy.DESTROY,
+    });
 
     new redshift.Cluster(this, 'Cluster', {
       vpc: vpc,
@@ -26,6 +28,17 @@ class RedshiftEnv extends Stack {
         loggingKeyPrefix: 'prefix',
       },
     });
+
+    const cluster2 = new redshift.Cluster(this, 'Cluster2', {
+      vpc: vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
+      },
+      masterUser: {
+        masterUsername: 'admin',
+      },
+    });
+    cluster2.setLoggingProperties(loggingBucket, 'prefix2');
   }
 }
 
