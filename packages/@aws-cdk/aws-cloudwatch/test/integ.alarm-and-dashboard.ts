@@ -108,7 +108,7 @@ dashboard.addWidgets(new cloudwatch.CustomWidget({
 }));
 dashboard.addWidgets(new cloudwatch.ContributorInsightsWidget({
   title: 'My Insight Widget',
-  insightRule: cloudwatch.InsightRule.fromRuleName(stack, 'MyInsightImport', 'my-insight-rule'),
+  insightRule: cloudwatch.InsightRule.fromInsightRuleName(stack, 'MyInsightImport', 'my-insight-rule'),
 }));
 
 app.synth();

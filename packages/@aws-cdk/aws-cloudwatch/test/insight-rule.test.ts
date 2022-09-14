@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import { Stack } from '../../core/lib/stack';
-import { AggregateOptions, InsightRule, LogFormat, RuleState } from './../lib/insight-rule';
+import { AggregateOptions, InsightRule, LogFormat } from './../lib/insight-rule';
 
 describe('Insight Rule', () => {
   let logGroupNames = ['<loggroupname>'];
@@ -15,12 +15,12 @@ describe('Insight Rule', () => {
 
     new InsightRule(stack, 'MyInsightRule', {
       logGroupNames,
-      name: ruleName,
+      ruleName,
       keys,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::InsightRule', {
-      ruleState: RuleState.ENABLED,
+      ruleState: 'ENABLED',
       ruleBody: {
         AggregateOn: AggregateOptions.COUNT,
         Contribution: {

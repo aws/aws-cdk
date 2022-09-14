@@ -1,5 +1,5 @@
 import { Duration, Stack } from '@aws-cdk/core';
-import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget } from '../lib';
+import { Alarm, AlarmWidget, Color, ContributorInsightsWidget, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget, InsightRule, TopContributors, OrderStatistic, InsightRuleMetrics } from '../lib';
 
 describe('Graphs', () => {
   test('add stacked property to graphs', () => {
@@ -257,7 +257,7 @@ describe('Graphs', () => {
   test('query result widget - line', () => {
     // GIVEN
     const stack = new Stack();
-    const logGroup = { logGroupName: 'my-log-group' } ;
+    const logGroup = { logGroupName: 'my-log-group' };
 
     // WHEN
     const widget = new LogQueryWidget({
@@ -818,6 +818,68 @@ describe('Graphs', () => {
         yAxis: {},
         stat: 'Average',
         period: 172800,
+      },
+    }]);
+  });
+
+  test('Contributor Insights Widget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const insightRule = InsightRule.fromInsightRuleName(stack, 'MyInsightRule', 'MyInsightRuleName');
+
+    // WHEN
+    const widget = new ContributorInsightsWidget({
+      insightRule,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        insightRule: {
+          maxContributorCount: TopContributors.TOP10,
+          orderBy: OrderStatistic.SUM,
+          ruleName: insightRule.insightRuleName,
+        },
+        legend: { position: LegendPosition.BOTTOM },
+        period: Duration.minutes(5).toSeconds(),
+        region: { Ref: 'AWS::Region' },
+        view: 'timeSeries',
+      },
+    }]);
+  });
+
+  test('can use insight rule metric with graph', () => {
+    // GIVEN
+    const stack = new Stack();
+    const insightRule = InsightRule.fromInsightRuleName(stack, 'MyInsightRule', 'MyInsightRuleName');
+
+    // WHEN
+    const widget = new GraphWidget({
+      title: 'My insights graph',
+      left: [
+        insightRule.metric(InsightRuleMetrics.MAX_CONTRIBUTOR_VALUE),
+      ],
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My insights graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          [{
+            label: 'INSIGHT_RULE_METRIC(\'MyInsightRuleName\', \'MaxContributorValue\')',
+            expression: 'INSIGHT_RULE_METRIC(\'MyInsightRuleName\', \'MaxContributorValue\')',
+          }],
+        ],
+        yAxis: {},
       },
     }]);
   });

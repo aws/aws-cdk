@@ -1,5 +1,6 @@
 import { Resource, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { IResource } from '../../core/lib/resource';
 import { CfnInsightRule } from './cloudwatch.generated';
 import { MathExpression, MathExpressionOptions } from './metric';
 import { IMetric } from './metric-types';
@@ -174,25 +175,6 @@ export class Filter {
 }
 
 /**
- * Represents the Schema of the insight rule definition
- */
-export interface Schema {
-  /**
-   * The name of the Schema. Should usually be 'CloudWatchLogRule'
-   *
-   * @default 'CloudWatchLogRule'
-   */
-  readonly name: string;
-
-  /**
-   * The version of the Schema. Should usually be 1.
-   *
-   * @default 1
-   */
-  readonly version: number;
-}
-
-/**
  * The applicable Log Formats for the Insight Rule
  */
 export enum LogFormat {
@@ -223,52 +205,13 @@ export enum AggregateOptions {
 }
 
 /**
- * Represents the Contribution of the Insight Rule body
- */
-export interface Contribution {
-  /**
-   * The keys in the log event to identify a Contributor
-   */
-  readonly keys: string[];
-
-  /**
-   * The value from the log event to Sum for a SUM aggreation
-   *
-   * @default none
-   */
-  readonly sumValue?: string;
-
-  /**
-   * The Filters to apply to the Insight Rule
-   *
-   * @default []
-   */
-  readonly filters?: Filter[];
-}
-
-/**
- * Represents the RuleState of the Insight Rule
- */
-export enum RuleState {
-  /**
-   * The Rule is enabled
-   */
-  ENABLED = 'ENABLED',
-
-  /**
-   * The Rule is disabled
-   */
-  DISABLED = 'DISABLED',
-}
-
-/**
  * The properties for an Insight Rule
  */
 export interface InsightRuleProps {
   /**
    * Option to Aggregate the Log Events for the Insight Rule to assess contribution
    *
-   * @default AggregateOptions.COUNT
+   * @default - COUNT
    */
   readonly aggregateOn?: AggregateOptions,
 
@@ -294,7 +237,7 @@ export interface InsightRuleProps {
   /**
    * The Log Format of the Insight Rule
    *
-   * @default LogFormat.JSON
+   * @default - JSON
    */
   readonly logFormat?: LogFormat,
 
@@ -306,10 +249,10 @@ export interface InsightRuleProps {
   /**
    * The name of the Insight Rule
    */
-  readonly name: string,
+  readonly ruleName: string,
 
   /**
-   * The name of the Schema
+   * The name of the Schema. Should usually be 'CloudWatchLogRule'
    *
    * @default 'CloudWatchLogRule'
    */
@@ -323,7 +266,7 @@ export interface InsightRuleProps {
   readonly sumValue?: string,
 
   /**
-   * The version of the Schema
+   * The version of the Schema. Should usually be 1
    *
    * @default 1
    */
@@ -333,14 +276,14 @@ export interface InsightRuleProps {
 /**
  * Represents Contributor Insight Rule
  */
-export interface IInsightRule {
+export interface IInsightRule extends IResource {
 
   /**
    * Name of this insight rule
    *
    * @attribute
    */
-  readonly ruleName: string;
+  readonly insightRuleName: string;
 
   /**
    * Get a metric for this Insight Rule
@@ -356,16 +299,16 @@ export interface IInsightRule {
  */
 abstract class InsightRuleBase extends Resource implements IInsightRule {
   /**
-   * name of this InsightRule
+   * The name of this InsightRule
    *
-   * @attribute
+   * @attribute insightRuleName
    */
-  public abstract readonly ruleName: string;
+  public abstract readonly insightRuleName: string;
 
   public metric(metricName: InsightRuleMetrics | string, metricOptions: MathExpressionOptions = {}): IMetric {
     return new MathExpression({
       ...metricOptions,
-      expression: `INSIGHT_RULE_METRIC(${this.ruleName}, ${metricName})`,
+      expression: `INSIGHT_RULE_METRIC('${this.insightRuleName}', '${metricName}')`,
     });
   }
 }
@@ -380,11 +323,11 @@ export class InsightRule extends InsightRuleBase {
   *
   * @param scope The parent creating construct (usually `this`)
   * @param id The Construct's name
-  * @param ruleName The name of the Insight Rule
+  * @param insightRuleName The name of the Insight Rule
   */
-  static fromRuleName(scope: Construct, id: string, ruleName: string): IInsightRule {
+  static fromInsightRuleName(scope: Construct, id: string, insightRuleName: string): IInsightRule {
     class Import extends InsightRuleBase {
-      public readonly ruleName = ruleName;
+      public readonly insightRuleName = insightRuleName;
     }
     return new Import(scope, id);
   }
@@ -394,21 +337,21 @@ export class InsightRule extends InsightRuleBase {
    *
    * @attribute
    */
-  public readonly ruleName: string;
+  public readonly insightRuleName: string;
 
   /**
-   * ARN of this Insight Rule
+   * ARN of this Insight Rule (i.e. arn:aws:cloudwatch:<region>:<account-id>:insight-rule/Foo)
    *
    * @attribute
    */
-  public readonly ruleArn: string;
+  public readonly insightRuleArn: string;
 
   constructor(scope: Construct, id: string, props: InsightRuleProps) {
     super(scope, id, {
-      physicalName: props.name,
+      physicalName: props.ruleName,
     });
 
-    const ruleState = props.enabled === false ? RuleState.DISABLED : RuleState.ENABLED;
+    const ruleState = props.enabled === false ? 'DISABLED' : 'ENABLED';
 
     const {
       aggregateOn,
@@ -449,12 +392,12 @@ export class InsightRule extends InsightRuleBase {
 
     const cfnInsightRule = new CfnInsightRule(scope, `${id}Resource`, {
       ruleBody,
-      ruleName: props.name,
+      ruleName: props.ruleName,
       ruleState,
     });
 
-    this.ruleName = props.name;
-    this.ruleArn = this.getResourceArnAttribute(cfnInsightRule.attrArn, {
+    this.insightRuleName = props.ruleName;
+    this.insightRuleArn = this.getResourceArnAttribute(cfnInsightRule.attrArn, {
       service: 'cloudwatch',
       resource: 'insight',
       resourceName: this.physicalName,

@@ -298,7 +298,7 @@ Contributor Insights Rules can be used to analyze log data to provide a view of 
 const insightRule = new cloudwatch.InsightRule(this, 'MyRule', {
   keys: ['$.contributorId'],
   logGroupNames: ['my-log-group-prefix*', 'my-specific-log-group'],
-  name: 'MyRuleName',
+  ruleName: 'MyRuleName',
 });
 ```
 
@@ -310,7 +310,7 @@ Insight Rules can quantify contribution by aggregating log events in two differe
 const insightRule = new cloudwatch.InsightRule(this, 'MyRule', {
   keys: ['$.vendorId'],
   logGroupNames: ['vendor-reports'],
-  name: 'VendorsByTotalSales',
+  ruleName: 'VendorsByTotalSales',
   aggregateOn: AggregateOptions.SUM,
   sumValue: '$.vendorSales',
 });
@@ -329,10 +329,10 @@ const average = insightRule.metric(cloudwatch.InsightRuleMetrics.AVERAGE);
 
 ### Imported Insight Rule
 
-When referencing an imported Insight Rule in CDK, use `fromRuleName()`.
+When referencing an imported Insight Rule in CDK, use `fromInsightRuleName()`.
 
 ```ts
-const insightRule = cloudwatch.InsightRule.fromRuleName(
+const insightRule = cloudwatch.InsightRule.fromInsightRuleName(
   this,
   'InsightRule',
   'myRuleName',
@@ -354,7 +354,7 @@ const filter2 = cloudwatch.Filter.greaterThan('$.keyWithNumValue', 100);
 const insightRule = new cloudwatch.InsightRule(this, 'MyRule', {
   keys: ['$.contributorId'],
   logGroupNames: ['my-log-group'],
-  name: 'MyRuleName',
+  ruleName: 'MyRuleName',
   filters: [filter1, filter2],
 });
 ```

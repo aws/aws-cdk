@@ -517,6 +517,8 @@ export enum OrderStatistic {
 export interface ContributorInsightsWidgetProps extends MetricWidgetProps {
   /**
    * Account the contributor insights rule comes from.
+   *
+   * @default None
    */
   readonly account?: string;
   /**
@@ -574,7 +576,7 @@ export class ContributorInsightsWidget extends ConcreteWidget {
           insightRule: {
             maxContributorCount: this.props.contributorSelection || TopContributors.TOP10,
             orderBy: this.props.orderStatistic || OrderStatistic.SUM,
-            ruleName: this.props.insightRule.ruleName,
+            ruleName: this.props.insightRule.insightRuleName,
           },
           legend: { position: this.props.legendPosition || LegendPosition.BOTTOM },
           period: (this.props.period || cdk.Duration.minutes(5)).toSeconds(),
