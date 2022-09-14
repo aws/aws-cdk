@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Stack, App, StackProps, RemovalPolicy } from '@aws-cdk/core';
+import { App, Aspects, CfnResource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import * as redshift from '../lib';
 
 class RedshiftEnv extends Stack {
@@ -43,9 +43,17 @@ class RedshiftEnv extends Stack {
 }
 
 const app = new App();
+const stack = new RedshiftEnv(app, 'redshift-loggingbucket-integ');
+Aspects.of(stack).add({
+  visit(node: IConstruct) {
+    if (CfnResource.isCfnResource(node)) {
+      node.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    }
+  },
+});
 
 new integ.IntegTest(app, 'LoggingBucketInteg', {
-  testCases: [new RedshiftEnv(app, 'redshift-loggingbucket-integ')],
+  testCases: [stack],
 });
 
 app.synth();
