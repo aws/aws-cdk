@@ -1,7 +1,7 @@
 name: Pull Request Linter
 description: Execute validation rules on GitHub Pull Requests
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 runs:
   using: node16
   main: index.js
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
