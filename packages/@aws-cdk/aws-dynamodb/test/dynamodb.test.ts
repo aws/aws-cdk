@@ -1,5 +1,6 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import { Alarm } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
@@ -3007,6 +3008,51 @@ test('L1 inside L2 expects removalpolicy to have been set', () => {
   expect(() => {
     Template.fromStack(stack);
   }).toThrow(/is a stateful resource type/);
+});
+
+test('Throttled requests metrics', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'metric', type: AttributeType.STRING },
+  });
+  const metricTableThrottled = table.metricThrottledRequestsForOperation({
+    operations: [Operation.PUT_ITEM],
+    period: Duration.minutes(1),
+  });
+  new Alarm(stack, 'TableThrottleAlarm', {
+    metric: metricTableThrottled,
+    evaluationPeriods: 1,
+    threshold: 1,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Metrics: Match.arrayWith([
+      Match.objectLike({
+        Expression: 'putitem',
+      }),
+      Match.objectLike({
+        MetricStat: Match.objectLike({
+          Metric: Match.objectLike({
+            Dimensions: Match.arrayWith([
+              Match.objectLike({
+                Name: 'Operation',
+              }),
+              Match.objectLike({
+                Name: 'TableName',
+              }),
+            ]),
+            MetricName: 'ThrottledRequests',
+            Namespace: 'AWS/DynamoDB',
+          }),
+        }),
+      }),
+    ]),
+  });
 });
 
 function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {

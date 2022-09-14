@@ -25,7 +25,7 @@ const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 /**
  * Options for configuring a system errors metric that considers multiple operations.
  */
-export interface SystemErrorsForOperationsMetricOptions extends cloudwatch.MetricOptions {
+export interface OperationsMetricOptions extends cloudwatch.MetricOptions {
 
   /**
    * The operations to apply the metric to.
@@ -513,7 +513,7 @@ export interface ITable extends IResource {
    * @param props properties of a metric
    *
    */
-  metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric;
+  metricSystemErrorsForOperations(props?: OperationsMetricOptions): cloudwatch.IMetric;
 
   /**
    * Metric for the user errors
@@ -536,6 +536,14 @@ export interface ITable extends IResource {
    *
    */
   metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for throttled requests
+   *
+   * @param props properties of a metric
+   *
+   */
+  metricThrottledRequestsForOperation(props?: OperationsMetricOptions): cloudwatch.IMetric;
 
   /**
    * Metric for the successful request latency
@@ -870,15 +878,30 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * How many requests are throttled on this table, for the given operation
+   * How many requests are throttled on this table.
    *
-   * Default: sum over 5 minutes
+   * This will sum errors across all possible operations.
+   * Note that by default, each individual metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
-  public metricThrottledRequestsForOperation(operation: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
-      ...props,
-    }).attachTo(this);
+  public metricThrottledRequestsForOperation(props?: OperationsMetricOptions): cloudwatch.IMetric {
+    if (props?.dimensions?.Operation) {
+      throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
+    }
+
+    const operations = props?.operations ?? Object.values(Operation);
+
+    const values = this.createMetricsForOperations('ThrottledRequests', operations, { statistic: 'sum', ...props });
+
+    const sum = new cloudwatch.MathExpression({
+      expression: `${Object.keys(values).join(' + ')}`,
+      usingMetrics: { ...values },
+      color: props?.color,
+      label: 'Sum of throttled requests across all operations',
+      period: props?.period,
+    });
+
+    return sum;
   }
 
   /**
@@ -911,7 +934,7 @@ abstract class TableBase extends Resource implements ITable {
    * Note that by default, each individual metric will be calculated as a sum over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
    */
-  public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric {
+  public metricSystemErrorsForOperations(props?: OperationsMetricOptions): cloudwatch.IMetric {
 
     if (props?.dimensions?.Operation) {
       throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
