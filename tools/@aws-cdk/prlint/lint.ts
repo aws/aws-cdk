@@ -153,7 +153,6 @@ function shouldExemptBreakingChange(pr: any) {
 }
 
 function hasLabel(pr: any, labelName: string) {
-  console.log(pr);
   return pr.labels.some(function (l: any) {
     return l.name === labelName;
   })
