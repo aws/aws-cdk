@@ -85,7 +85,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.103",
+    "@types/aws-lambda": "^8.10.104",
     "@types/jest": "^27.5.2",
     "@types/sinon": "^9.0.11",
     "aws-sdk": "^2.848.0",
