@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { Duration, RemovalPolicy } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as apigw from '../../lib';
 
@@ -65,44 +64,6 @@ new apigw.WebSocketStage(stack, 'WebSocketDevStageWithExternalLogGroup', {
   stageName: 'dev',
   accessLogEnabled: true,
   accessLogGroup: logGroup,
-  accessLogFormat: accessLogFormat,
-});
-
-// Stage with data trace log using non-default parameters.
-new apigw.WebSocketStage(stack, 'WebSocketBetaStage', {
-  webSocketApi,
-  stageName: 'beta',
-  throttle: {
-    rateLimit: 1000,
-    burstLimit: 1000,
-  },
-  dataTraceLoggingLevel: 'INFO',
-  dataTraceLogRetention: Duration.days(7),
-  dataTraceLogRemovalPolicy: RemovalPolicy.RETAIN,
-});
-
-const websocketApiWithExternalLogGroup = new apigw.WebSocketApi(stack, 'WebSocketApiWithExternalLogGroup');
-const logGroup = new logs.LogGroup(stack, 'dev-access-log-group', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
-  retention: 7,
-});
-
-export const accessLogFormat = JSON.stringify({
-  apigw: {
-    api_id: '$context.apiId',
-    stage: '$context.stage',
-  },
-  request: {
-    request_id: '$context.requestId',
-    extended_request_id: '$context.extendedRequestId',
-  },
-});
-
-new apigw.WebSocketStage(stack, 'WebSocketDevStageWithExternalLogGroup', {
-  webSocketApi: websocketApiWithExternalLogGroup,
-  stageName: 'dev',
-  accessLogEnabled: true,
-  accessLogGroupArn: logGroup.logGroupArn,
   accessLogFormat: accessLogFormat,
 });
 
