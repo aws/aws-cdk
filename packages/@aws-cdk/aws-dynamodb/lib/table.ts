@@ -878,33 +878,6 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * How many requests are throttled on this table.
-   *
-   * This will sum errors across all possible operations.
-   * Note that by default, each individual metric will be calculated as a sum over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
-   */
-  public metricThrottledRequestsForOperation(props?: OperationsMetricOptions): cloudwatch.IMetric {
-    if (props?.dimensions?.Operation) {
-      throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
-    }
-
-    const operations = props?.operations ?? Object.values(Operation);
-
-    const values = this.createMetricsForOperations('ThrottledRequests', operations, { statistic: 'sum', ...props });
-
-    const sum = new cloudwatch.MathExpression({
-      expression: `${Object.keys(values).join(' + ')}`,
-      usingMetrics: { ...values },
-      color: props?.color,
-      label: 'Sum of throttled requests across all operations',
-      period: props?.period,
-    });
-
-    return sum;
-  }
-
-  /**
    * Metric for the successful request latency this table.
    *
    * By default, the metric will be calculated as an average over a period of 5 minutes.
@@ -928,6 +901,17 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
+   * How many requests are throttled on this table.
+   *
+   * This will sum errors across all possible operations.
+   * Note that by default, each individual metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
+   */
+  public metricThrottledRequestsForOperation(props?: OperationsMetricOptions): cloudwatch.IMetric {
+    return this.sumMetricsForOperations('ThrottledRequests', 'Sum of throttled requests across all operations', props);
+  }
+
+  /**
    * Metric for the system errors this table.
    *
    * This will sum errors across all possible operations.
@@ -935,20 +919,30 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricSystemErrorsForOperations(props?: OperationsMetricOptions): cloudwatch.IMetric {
+    return this.sumMetricsForOperations('SystemErrors', 'Sum of errors across all operations', props);
+  }
 
+  /**
+   * Create a math expression for operations.
+   *
+   * @param metricName The metric name.
+   * @param expressionLabel Label for expression
+   * @param props operation list
+   */
+  private sumMetricsForOperations(metricName: string, expressionLabel: string, props?: OperationsMetricOptions): cloudwatch.IMetric {
     if (props?.dimensions?.Operation) {
       throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
     }
 
     const operations = props?.operations ?? Object.values(Operation);
 
-    const values = this.createMetricsForOperations('SystemErrors', operations, { statistic: 'sum', ...props });
+    const values = this.createMetricsForOperations(metricName, operations, { statistic: 'sum', ...props });
 
     const sum = new cloudwatch.MathExpression({
       expression: `${Object.keys(values).join(' + ')}`,
       usingMetrics: { ...values },
       color: props?.color,
-      label: 'Sum of errors across all operations',
+      label: expressionLabel,
       period: props?.period,
     });
 
