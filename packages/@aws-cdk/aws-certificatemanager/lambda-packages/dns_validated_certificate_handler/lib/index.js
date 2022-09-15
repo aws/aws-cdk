@@ -300,6 +300,9 @@ exports.certificateRequestHandler = async function (event, context) {
         responseData.Arn = physicalResourceId = certificateArn;
         break;
       case 'Delete':
+        if (event.ResourceProperties.RemovalPolicy === 'retain') {
+          break;
+        }
         physicalResourceId = event.PhysicalResourceId;
         // If the resource didn't create correctly, the physical resource ID won't be the
         // certificate ARN, so don't try to delete it in that case.
