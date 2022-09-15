@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1661970876829"
+    "salt": "1663236373089"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -51,7 +51,7 @@
      ]
     },
     "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
-    "salt": "1661970876830"
+    "salt": "1663236373089"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -149,7 +149,7 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAssertEqualsS3listObjectsV2": {
+  "AssertionResultsAssertEqualsS3listObjectsV2773d42ff5e69123d2a937459089e2352": {
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallS3listObjectsV2AssertEqualsS3listObjectsV26A93E391",

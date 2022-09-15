@@ -528,6 +528,7 @@ The following third-party identity providers are currently supported in the CDK 
 - [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
 - [Sign In With Apple](https://developer.apple.com/sign-in-with-apple/get-started/)
 - [OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-oidc-idp.html)
+- [SAML](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-saml-idp.html)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the

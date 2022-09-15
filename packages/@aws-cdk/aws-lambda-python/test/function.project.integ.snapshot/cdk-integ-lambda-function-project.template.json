@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f1eb849ae54216b1a7785bca3aa8031a4671eac68c1997e3b6a500336fd6d8fa.zip"
+     "S3Key": "33674c5088a855fbd87f051a085794b3bd1bd41823d88091874d5f4f1b8ad884.zip"
     },
     "CompatibleRuntimes": [
      "python3.9"
@@ -52,7 +52,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "55a6269bb8a00cf3b6d0b295a87c2fb8670afbeceb4427622bd38f248abfd3ed.zip"
+     "S3Key": "708ad240e424cc18dd8b85017f9e1173ac983ddd3b387b9f4df3577ea60e4a65.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -74,12 +74,12 @@
   }
  },
  "Outputs": {
-  "FunctionArn": {
+  "ExportsOutputRefmyhandlerD202FA8E369E8804": {
    "Value": {
-    "Fn::GetAtt": [
-     "myhandlerD202FA8E",
-     "Arn"
-    ]
+    "Ref": "myhandlerD202FA8E"
+   },
+   "Export": {
+    "Name": "cdk-integ-lambda-function-project:ExportsOutputRefmyhandlerD202FA8E369E8804"
    }
   }
  },

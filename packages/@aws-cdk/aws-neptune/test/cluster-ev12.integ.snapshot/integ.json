@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "ClusterTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-neptune-integ"
+      ],
+      "assertionStack": "ClusterTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterTestDefaultTestDeployAssert6A1BBA9D"
+    }
+  }
+}

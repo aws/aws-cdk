@@ -1,5 +1,5 @@
 {
-  "$version": "85.0.0",
+  "$version": "88.0.0",
   "PropertyTypes": {
     "AWS::ServiceDiscovery::PrivateDnsNamespace.PrivateDnsPropertiesMutable": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-servicediscovery-privatednsnamespace-privatednspropertiesmutable.html",

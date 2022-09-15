@@ -857,7 +857,7 @@
                 "Version": {
                     "Documentation": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html",
                     "PrimitiveType": "String",
-                    "Required": true,
+                    "Required": false,
                     "UpdateType": "Immutable"
                 }
             }
@@ -1347,7 +1347,25 @@
         "AWS::Serverless::Function.ScheduleEvent": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule",
             "Properties": {
+                "Description": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Enabled": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
                 "Input": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Name": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule",
                     "PrimitiveType": "String",
                     "Required": false,
@@ -1480,20 +1498,23 @@
                 },
                 "AllowHeaders": {
                     "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration-object",
-                    "PrimitiveType": "String",
+                    "PrimitiveItemType": "String",
                     "Required": false,
+                    "Type": "List",
                     "UpdateType": "Immutable"
                 },
                 "AllowMethods": {
                     "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration-object",
-                    "PrimitiveType": "String",
+                    "PrimitiveItemType": "String",
                     "Required": false,
+                    "Type": "List",
                     "UpdateType": "Immutable"
                 },
-                "AllowOrigin": {
+                "AllowOrigins": {
                     "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration-object",
-                    "PrimitiveType": "String",
+                    "PrimitiveItemType": "String",
                     "Required": false,
+                    "Type": "List",
                     "UpdateType": "Immutable"
                 },
                 "ExposeHeaders": {
@@ -1505,7 +1526,7 @@
                 },
                 "MaxAge": {
                     "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration-object",
-                    "PrimitiveType": "String",
+                    "PrimitiveType": "Integer",
                     "Required": false,
                     "UpdateType": "Immutable"
                 }

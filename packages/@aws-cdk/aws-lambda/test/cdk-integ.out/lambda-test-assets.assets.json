@@ -1,0 +1,32 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232": {
+      "source": {
+        "path": "/home/marcio/marcio/aws-cdk/packages/@aws-cdk/aws-lambda/test/my-lambda-handler",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "b7318e1b9cb46d3116b3092ae8d67eeb76f991783ed974f75c3199bbcccc1847": {
+      "source": {
+        "path": "lambda-test-assets.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b7318e1b9cb46d3116b3092ae8d67eeb76f991783ed974f75c3199bbcccc1847.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

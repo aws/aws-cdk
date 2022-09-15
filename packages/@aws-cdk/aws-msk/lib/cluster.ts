@@ -344,6 +344,11 @@ export interface TlsAuthProps {
 }
 
 /**
+ * SASL + TLS authentication properties
+ */
+export interface SaslTlsAuthProps extends SaslAuthProps, TlsAuthProps { }
+
+/**
  * Configuration properties for client authentication.
  */
 export class ClientAuthentication {
@@ -359,6 +364,13 @@ export class ClientAuthentication {
    */
   public static tls(props: TlsAuthProps): ClientAuthentication {
     return new ClientAuthentication(undefined, props);
+  }
+
+  /**
+   * SASL + TLS authentication
+   */
+  public static saslTls(saslTlsProps: SaslTlsAuthProps): ClientAuthentication {
+    return new ClientAuthentication(saslTlsProps, saslTlsProps);
   }
 
   /**
@@ -616,6 +628,16 @@ export class Cluster extends ClusterBase {
       clientAuthentication = {
         sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
       };
+      if (props.clientAuthentication?.tlsProps) {
+        clientAuthentication = {
+          sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
+          tls: {
+            certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities?.map(
+              (ca) => ca.certificateAuthorityArn,
+            ),
+          },
+        };
+      }
     } else if (props.clientAuthentication?.saslProps?.scram) {
       clientAuthentication = {
         sasl: {

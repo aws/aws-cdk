@@ -39,7 +39,7 @@
   "devDependencies": {
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "@types/node": "^14.18.27",
+    "@types/node": "^14.18.29",
     "@types/semver": "^7.3.12",
     "@types/yarnpkg__lockfile": "^1.1.5",
     "jest": "^27.5.1",

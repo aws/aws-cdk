@@ -1,14 +1,12 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "integ.start-job-run": {
+    "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest": {
       "stacks": [
-        "aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test"
+        "aws-stepfunctions-tasks-emr-containers-start-job-run-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "assertionStack": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest/DeployAssert",
+      "assertionStackName": "awsstepfunctionstasksemrcontainersstartjobrunDefaultTestDeployAssert0C0D5C7F"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

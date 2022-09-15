@@ -13,6 +13,7 @@ export * from './lambda-version';
 export * from './singleton-lambda';
 export * from './event-source';
 export * from './event-source-mapping';
+export * from './event-source-filter';
 export * from './destination';
 export * from './event-invoke-config';
 export * from './scalable-attribute-api';

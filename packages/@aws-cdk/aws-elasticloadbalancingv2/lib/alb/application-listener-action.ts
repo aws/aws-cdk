@@ -173,10 +173,7 @@ export class ListenerAction implements IListenerAction {
    * Called when the action is being used in a listener
    */
   public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
-    // Empty on purpose
-    Array.isArray(scope);
-    Array.isArray(listener);
-    Array.isArray(associatingConstruct);
+    this.next?.bind(scope, listener, associatingConstruct);
   }
 
   /**

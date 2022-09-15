@@ -2,6 +2,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib';
 import { NodegroupAmiType } from '../lib';
 
@@ -41,6 +42,8 @@ class EksClusterStack extends Stack {
 
 const app = new App();
 
-new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
-
+const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-bottlerocket-ng-test');
+new integ.IntegTest(app, 'aws-cdk-eks-cluster-bottlerocket-ng', {
+  testCases: [stack],
+});
 app.synth();

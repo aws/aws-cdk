@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.92"
         }
       },
       "aws-cdk-neptune-integ": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-neptune-integ/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-neptune-integ/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +425,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-neptune-integ/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +544,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-neptune-integ/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -659,35 +659,6 @@
               "version": "0.0.0"
             }
           },
-          "Params": {
-            "id": "Params",
-            "path": "aws-cdk-neptune-integ/Params",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-neptune-integ/Params/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Neptune::DBClusterParameterGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "description": "A nice parameter group",
-                    "family": "neptune1",
-                    "parameters": {
-                      "neptune_enable_audit_log": "1",
-                      "neptune_query_timeout": "100000"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-neptune.CfnDBClusterParameterGroup",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-neptune.ClusterParameterGroup",
-              "version": "0.0.0"
-            }
-          },
           "DbSecurity": {
             "id": "DbSecurity",
             "path": "aws-cdk-neptune-integ/DbSecurity",
@@ -736,6 +707,35 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "Params": {
+            "id": "Params",
+            "path": "aws-cdk-neptune-integ/Params",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-neptune-integ/Params/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Neptune::DBClusterParameterGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "A nice parameter group",
+                    "family": "neptune1",
+                    "parameters": {
+                      "neptune_enable_audit_log": "1",
+                      "neptune_query_timeout": "100000"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-neptune.CfnDBClusterParameterGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-neptune.ClusterParameterGroup",
               "version": "0.0.0"
             }
           },
@@ -903,14 +903,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

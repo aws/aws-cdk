@@ -1,9 +1,7 @@
-// disabling update workflow because we don't want to include the assets in the snapshot
-// python bundling changes the asset hash pretty frequently
-/// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
-import { App, CfnOutput, DockerImage, Stack, StackProps } from '@aws-cdk/core';
+import { App, DockerImage, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
@@ -13,6 +11,7 @@ import * as lambda from '../lib';
  */
 
 class TestStack extends Stack {
+  public readonly functionName: string;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -22,13 +21,22 @@ class TestStack extends Stack {
       bundling: { image: DockerImage.fromBuild(path.join(entry)) },
       runtime: Runtime.PYTHON_3_8,
     });
-
-    new CfnOutput(this, 'FunctionArn', {
-      value: fn.functionArn,
-    });
+    this.functionName = fn.functionName;
   }
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-custom-build');
+const testCase = new TestStack(app, 'cdk-integ-lambda-custom-build');
+const integ = new IntegTest(app, 'lambda-python-custom-build', {
+  testCases: [testCase],
+  stackUpdateWorkflow: false,
+});
+
+const invoke = integ.assertions.invokeFunction({
+  functionName: testCase.functionName,
+});
+
+invoke.expect(ExpectedResult.objectLike({
+  Payload: '200',
+}));
 app.synth();
