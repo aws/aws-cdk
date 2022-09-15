@@ -94,7 +94,7 @@ interface ProductionVariant {
 }
 
 /**
- * Represents a production variant that has been associated with an EndpointConfig.
+ * Represents an instance production variant that has been associated with an EndpointConfig.
  */
 export interface InstanceProductionVariant extends ProductionVariant {
   /**
