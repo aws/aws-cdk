@@ -331,6 +331,25 @@ const cluster = new Cluster(this, 'Cluster', {
 cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 ```
 
+## Rebooting for Parameter Updates
+
+In most cases, existing clusters [must be manually rebooted](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html) to apply parameter changes. You can automate parameter related reboots by setting the cluster's `rebootForParameterChanges` property to `true` , or by using `Cluster.enableRebootForParameterChanges()`.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new Cluster(this, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+    masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+  },
+  vpc,
+});
+
+cluster.addToParameterGroup('enable_user_activity_logging', 'true');
+cluster.enableRebootForParameterChanges()
+```
+
 ## Elastic IP
 
 If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.
@@ -367,4 +386,3 @@ The elastic IP address is an external IP address for accessing the cluster outsi
 ### Attach Elastic IP after Cluster creation
 
 In some cases, you might want to associate the cluster with an elastic IP address or change an elastic IP address that is associated with the cluster. To attach an elastic IP address after the cluster is created, first update the cluster so that it is not publicly accessible, then make it both publicly accessible and add an Elastic IP address in the same operation.
-

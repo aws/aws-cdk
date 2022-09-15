@@ -5,7 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token, CustomResource, Stack, ArnFormat } from '@aws-cdk/core';
+import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
@@ -693,7 +693,7 @@ export class Cluster extends ClusterBase {
         resources: ['*'],
       }));
       rebootFunction.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['reshift:RebootCluster'],
+        actions: ['redshift:RebootCluster'],
         resources: [
           Stack.of(this).formatArn({
             service: 'redshift',
@@ -710,9 +710,16 @@ export class Cluster extends ClusterBase {
         resourceType: 'Custom::RedshiftClusterRebooter',
         serviceToken: provider.serviceToken,
         properties: {
-          ClusterId: this.cluster.getAtt('id'),
+          ClusterId: this.clusterName,
           ParameterGroupName: this.parameterGroup.clusterParameterGroupName,
-          ParametersString: JSON.stringify(this.parameterGroup.parameters),
+          ParametersString: Lazy.string({
+            produce: () => {
+              if (!(this.parameterGroup instanceof ClusterParameterGroup)) {
+                throw new Error('Cannot enable reboot for parameter changes when using an imported parameter group.');
+              }
+              return JSON.stringify(this.parameterGroup.parameters);
+            },
+          }),
         },
       });
       customResource.node.addDependency(this, this.parameterGroup);

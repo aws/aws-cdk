@@ -11,25 +11,26 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   }
 }
 
-async function rebootClusterIfRequired(clusterId: string, parameterGroupName: string): Promise<void> {
+async function rebootClusterIfRequired(clusterId: string, parameterGroupName: string) {
   return executeActionForStatus(await getApplyStatus());
 
   // https://docs.aws.amazon.com/redshift/latest/APIReference/API_ClusterParameterStatus.html
-  async function executeActionForStatus(status: string, retryDurationMs?: number): Promise<void> {
-    await sleep(retryDurationMs ?? 0);
+  async function executeActionForStatus(status: string): Promise<void> {
     if (['pending-reboot', 'apply-deferred', 'apply-error', 'unknown-error'].includes(status)) {
       try {
         await redshift.rebootCluster({ ClusterIdentifier: clusterId }).promise();
       } catch (err) {
         if ((<any>err).code === 'InvalidClusterState') {
-          return await executeActionForStatus(status, 30000);
+          await sleep(60000);
+          return await executeActionForStatus(await getApplyStatus());
         } else {
           throw err;
         }
       }
       return;
     } else if (['applying', 'retry'].includes(status)) {
-      return executeActionForStatus(await getApplyStatus(), 30000);
+      await sleep(60000);
+      return executeActionForStatus(await getApplyStatus());
     }
     return;
   }

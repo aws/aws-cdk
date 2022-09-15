@@ -629,7 +629,7 @@ describe('reboot for Parameter Changes', () => {
       .toThrowError(/Cannot enable reboot for parameter changes/);
   });
 
-  test('cluster with imported parameter group', () => {
+  test('cluster with parameter group', () => {
     // Given
     const cluster = new Cluster(stack, 'Redshift', {
       masterUser: {
@@ -668,8 +668,33 @@ describe('reboot for Parameter Changes', () => {
     });
   });
 
+  test('Custom resource ParametersString property updates', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+    cluster.enableRebootForParameterChanges();
 
-  test('cluster with parameter group', () => {
+    // WHEN
+    cluster.addToParameterGroup('lorem', 'ipsum');
+
+    //THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('Custom::RedshiftClusterRebooter', {
+      ParametersString: JSON.stringify(
+        {
+          foo: 'bar',
+          lorem: 'ipsum',
+        },
+      ),
+    });
+  });
+
+  test('cluster with imported parameter group', () => {
     // Given
     const cluster = new Cluster(stack, 'Redshift', {
       masterUser: {

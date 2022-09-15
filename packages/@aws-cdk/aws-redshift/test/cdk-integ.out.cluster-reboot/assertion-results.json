@@ -1,0 +1,6 @@
+{
+  "aws-cdk-redshift-cluster-reboot-integ": {
+    "ExportsOutputRefClusterEB0386A796A0E3FE": "clustereb0386a7-dzxalxbye79k",
+    "ExportsOutputRefParameterGroup5E32DECBB33EA140": "aws-cdk-redshift-cluster-reboot-integ-parametergroup5e32decb-kuykp4syd337"
+  }
+}

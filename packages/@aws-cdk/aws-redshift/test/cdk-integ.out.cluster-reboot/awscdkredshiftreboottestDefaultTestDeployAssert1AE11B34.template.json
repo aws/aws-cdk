@@ -1,0 +1,223 @@
+{
+ "Resources": {
+  "AwsApiCallRedshiftdescribeClusters1": {
+   "Type": "Custom::DeployAssertSdkCallRedshiftdescribeClusters",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Redshift",
+    "api": "describeClusters",
+    "parameters": {
+     "ClusterIdentifier": {
+      "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefClusterEB0386A796A0E3FE"
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1663270532954"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallRedshiftdescribeClusters1AssertEqualsRedshiftdescribeClusters7634D4CC": {
+   "Type": "Custom::DeployAssertAssertEquals",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "actual": {
+     "Fn::GetAtt": [
+      "AwsApiCallRedshiftdescribeClusters1",
+      "apiCallResponse"
+     ]
+    },
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"ParameterGroupName\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefParameterGroup5E32DECBB33EA140"
+       },
+       "\",\"ParameterApplyStatus\":\"in-sync\"}}"
+      ]
+     ]
+    },
+    "salt": "1663270532954"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "redshift:DescribeClusters"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "redshift:DescribeClusterParameters"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "cc285c12352e5d673e6d5211dd6501a7b0ee8bddd523859315e7de7b6f8e1413.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallRedshiftdescribeClusterParameters1": {
+   "Type": "Custom::DeployAssertSdkCallRedshiftdescribeClusterParameters",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Redshift",
+    "api": "describeClusterParameters",
+    "parameters": {
+     "ParameterGroupName": {
+      "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefParameterGroup5E32DECBB33EA140"
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1663270532954"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallRedshiftdescribeClusterParameters1AssertEqualsRedshiftdescribeClusterParameters8AB3F568": {
+   "Type": "Custom::DeployAssertAssertEquals",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "actual": {
+     "Fn::GetAtt": [
+      "AwsApiCallRedshiftdescribeClusterParameters1",
+      "apiCallResponse"
+     ]
+    },
+    "expected": "{\"$ArrayWith\":[{\"result\":\"{\\\"$ObjectLike\\\":{\\\"ParameterName\\\":\\\"enable_user_activity_logging\\\",\\\"ParameterValue\\\":\\\"false\\\"}}\"},{\"result\":\"{\\\"$ObjectLike\\\":{\\\"ParameterName\\\":\\\"use_fips_ssl\\\",\\\"ParameterValue\\\":\\\"true\\\"}}\"}]}",
+    "salt": "1663270532954"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAssertEqualsRedshiftdescribeClusters40c948a44d1ec8afa7d4c9c91028e79b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRedshiftdescribeClusters1AssertEqualsRedshiftdescribeClusters7634D4CC",
+     "data"
+    ]
+   }
+  },
+  "AssertionResultsAssertEqualsRedshiftdescribeClusterParametersbf6470e1bedcd5ee147ac37ef100e38d": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRedshiftdescribeClusterParameters1AssertEqualsRedshiftdescribeClusterParameters8AB3F568",
+     "data"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
