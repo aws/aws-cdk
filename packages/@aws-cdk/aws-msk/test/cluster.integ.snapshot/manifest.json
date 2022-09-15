@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e78b5e231005a38236d928a77cdf100be5210512eb6c29ac1cad77234d020c49.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cfbe056d80d640f6fda522aaad2c3d4b4c1c66850a2478d379fbdd7f994a5d81.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -297,6 +297,68 @@
             "data": "BootstrapBrokers3"
           }
         ],
+        "/aws-cdk-msk-integ/CertificateAuthority": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CertificateAuthority"
+          },
+          {
+            "type": "Description",
+            "data": "Signing authority for Certificates"
+          }
+        ],
+        "/aws-cdk-msk-integ/Certificate": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Certificate"
+          },
+          {
+            "type": "Description",
+            "data": "Certificate for signing requests from MSK-Cluster"
+          }
+        ],
+        "/aws-cdk-msk-integ/CertificateActivation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CertificateActivation"
+          }
+        ],
+        "/aws-cdk-msk-integ/ClusterIAMTLS/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterIAMTLSSecurityGroup57AD0504"
+          }
+        ],
+        "/aws-cdk-msk-integ/ClusterIAMTLS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterIAMTLS84D04AEF"
+          }
+        ],
+        "/aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsB831721C"
+          }
+        ],
+        "/aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy508CF9CC"
+          }
+        ],
+        "/aws-cdk-msk-integ/BootstrapBrokers4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapBrokers4"
+          }
+        ],
+        "/aws-cdk-msk-integ/BootstrapBrokers5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapBrokers5"
+          }
+        ],
         "/aws-cdk-msk-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -328,7 +390,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d4d546e07248e011111b5bfebbc8ee5e0f9c955454a8fc6571ea6053e4d57040.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cb5e0493d7a26e47c4deaeb7990a164366846c32f89649a02126aaab808016c3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -360,7 +422,7 @@
         "/MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertEqualsS3listObjectsV2/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAssertEqualsS3listObjectsV2"
+            "data": "AssertionResultsAssertEqualsS3listObjectsV2773d42ff5e69123d2a937459089e2352"
           }
         ],
         "/MskLogging/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
