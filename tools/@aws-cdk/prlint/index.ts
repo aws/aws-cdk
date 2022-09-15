@@ -3,7 +3,7 @@ import * as github from '@actions/github';
 import * as linter from './lint';
 
 async function run() {
-  const token: string = process.env.GITHUB_TOKEN ?? core.getInput('github-token', { required: true });
+  const token: string = process.env.GITHUB_TOKEN!;
   const client = github.getOctokit(token).rest.pulls;
 
   const prLinter = new linter.PRLinter({
