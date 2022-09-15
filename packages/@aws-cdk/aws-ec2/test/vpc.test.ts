@@ -1220,6 +1220,23 @@ describe('vpc', () => {
 
 
     });
+
+    test('fromVpcAttributes passes region correctly', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      const vpcId = Fn.importValue('myVpcId');
+
+      // WHEN
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId,
+        availabilityZones: ['region-12345a', 'region-12345b', 'region-12345c'],
+        region: 'region-12345',
+      });
+
+      // THEN
+      expect(vpc.env.region).toEqual('region-12345');
+    });
   });
 
   describe('NAT instances', () => {

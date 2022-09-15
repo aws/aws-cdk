@@ -369,5 +369,5 @@ export class BottleRocketImage implements ec2.IMachineImage {
 function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string) {
   return cachedInContext
     ? ssm.StringParameter.valueFromLookup(scope, parameterName)
-    : ssm.StringParameter.valueForTypedStringParameter(scope, parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    : ssm.StringParameter.valueForTypedStringParameterV2(scope, parameterName, ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
 }
