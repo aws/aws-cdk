@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "364e47f398669aa9c127eeca9e71f7fa0a8b888971a7d062c7497dc424a948ad": {
+      "source": {
+        "path": "aws-cdk-aws-apigatewayv2-websocket-stage-test.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "364e47f398669aa9c127eeca9e71f7fa0a8b888971a7d062c7497dc424a948ad.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,157 @@
+{
+ "Resources": {
+  "WebSocketApi34BCF99B": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "WebSocketApi",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   }
+  },
+  "WebSocketDevStageAccessLoggingGroup37401E65": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "WebSocketDevStageF28AE687": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApi34BCF99B"
+    },
+    "StageName": "dev",
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "WebSocketDevStageAccessLoggingGroup37401E65",
+       "Arn"
+      ]
+     },
+     "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
+    },
+    "DefaultRouteSettings": {
+     "ThrottlingBurstLimit": 1000,
+     "ThrottlingRateLimit": 1000
+    }
+   }
+  },
+  "WebSocketProdStageAccessLoggingGroup8F98BA35": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "WebSocketProdStage7A23B950": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApi34BCF99B"
+    },
+    "StageName": "prod",
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "WebSocketProdStageAccessLoggingGroup8F98BA35",
+       "Arn"
+      ]
+     },
+     "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"client\":{\"ip\":\"$context.identity.sourceIp\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\",\"time\":\"$context.requestTime\",\"time_epoch\":\"$context.requestTimeEpoch\",\"protocol\":\"$context.protocol\"},\"integration\":{\"latency\":\"$context.integrationLatency\",\"status\":\"$context.integrationStatus\"},\"response\":{\"latency\":\"$context.responseLatency\",\"status\":\"$context.status\"},\"error\":{\"error_message\":\"$context.error.message\",\"error_responsetype\":\"$context.error.responseType\"}}"
+    },
+    "DefaultRouteSettings": {
+     "DataTraceEnabled": true,
+     "LoggingLevel": "INFO",
+     "ThrottlingBurstLimit": 1000,
+     "ThrottlingRateLimit": 1000
+    }
+   }
+  },
+  "WebSocketBetaStage0917B5B6": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApi34BCF99B"
+    },
+    "StageName": "beta",
+    "DefaultRouteSettings": {
+     "DataTraceEnabled": true,
+     "LoggingLevel": "INFO",
+     "ThrottlingBurstLimit": 1000,
+     "ThrottlingRateLimit": 1000
+    }
+   }
+  },
+  "WebSocketApiWithExternalLogGroupDCF7BBC9": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "WebSocketApiWithExternalLogGroup",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   }
+  },
+  "devaccessloggroup95A3E6FC": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "WebSocketDevStageWithExternalLogGroupBEB8F176": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApiWithExternalLogGroupDCF7BBC9"
+    },
+    "StageName": "dev",
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "devaccessloggroup95A3E6FC",
+       "Arn"
+      ]
+     },
+     "Format": "{\"apigw\":{\"api_id\":\"$context.apiId\",\"stage\":\"$context.stage\"},\"request\":{\"request_id\":\"$context.requestId\",\"extended_request_id\":\"$context.extendedRequestId\"}}"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,8 +1,6 @@
-import { CfnAccount } from '@aws-cdk/aws-apigateway';
 import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
-import { Role, ServicePrincipal, ManagedPolicy } from '@aws-cdk/aws-iam';
 import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
-import { Stack, RemovalPolicy } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
 import { StageOptions, IStage, StageAttributes, defaultAccessLogFormat } from '../common';
@@ -191,30 +189,11 @@ export class HttpStage extends HttpStageBase {
     let destinationArn: string | undefined = undefined;
     if (props.accessLogEnabled) {
       if (!props.accessLogGroup) {
-        // We need to set up the right permissions to create the log group.
-        const iamRoleForLogGroup = new Role(this, 'IAMRoleForAccessLog', {
-          assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
-        });
-
-        iamRoleForLogGroup.node.addDependency(this.api);
-        iamRoleForLogGroup.applyRemovalPolicy(RemovalPolicy.RETAIN);
-        iamRoleForLogGroup.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs'));
-
-        // It's required to register the iam role that is used to create the log group with the account
-        // if an api gateway has never been created in this account/region before.  Otherwise, this is
-        // a no-op.
-        const account = new CfnAccount(this, 'account', {
-          cloudWatchRoleArn: iamRoleForLogGroup.roleArn,
-        });
-        account.applyRemovalPolicy(RemovalPolicy.RETAIN);
-        account.node.addDependency(this.api);
-
         // Setting up some reasonable defaults for the retention policy and removal policy.
         // If the user wants something different they should create their own log group.
         const accessLogsLogGroup = new LogGroup(this, 'AccessLoggingGroup', {
           retention: RetentionDays.ONE_MONTH,
         });
-        accessLogsLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
         destinationArn = accessLogsLogGroup.logGroupArn;
       } else {

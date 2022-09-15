@@ -477,8 +477,30 @@ new apigwv2.WebSocketStage(this, 'WebSocketDev', {
 
 Access logging is available for both HTTP and WebSocket APIs.
 
-A single line written to the access log for each request that's received by the API Gateway. By default,
-access logging is turned off. To enable access logging for a set of default properties to an internally created log group for a given stage set the accessLogEnabled flag to true.  These examples use HttpApi and HttpStage, however they also apply if WebSocketApi and WebSocketStage are used instead.
+Side note:  If an api gateway has never been created in a particular account and/or region, then it's necessary
+to create a CfnAccount object somewhere (possibly in a base infrastructure stack) before you'll be allowed to
+set up an HttpStage or WebSocketStage with an access log.
+
+```ts
+import { CfnAccount } from '@aws-cdk/aws-apigateway';
+import { Role, ServicePrincipal, ManagedPolicy } from '@aws-cdk/aws-iam';
+import { RemovalPolicy } from '@aws-cdk/core';
+
+const iamRoleForLogGroup = new Role(this, 'IAMRoleForAccessLog', {
+  assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+});
+iamRoleForLogGroup.applyRemovalPolicy(RemovalPolicy.RETAIN);
+
+iamRoleForLogGroup.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs'));
+
+const account = new CfnAccount(this, 'account', {
+  cloudWatchRoleArn: iamRoleForLogGroup.roleArn,
+});
+account.applyRemovalPolicy(RemovalPolicy.RETAIN);
+```
+
+When access logging is turned on, a single line written to the access log for each request that's received by the API Gateway. 
+By default, access logging is turned off. To enable access logging for a set of default properties to an internally created log group for a given stage set the accessLogEnabled flag to true.  These examples use HttpApi and HttpStage, however they also apply if WebSocketApi and WebSocketStage are used instead.
 
 ```ts
 const httpApi = new apigwv2.HttpApi(this, 'HttpApi', { createDefaultStage: false });
