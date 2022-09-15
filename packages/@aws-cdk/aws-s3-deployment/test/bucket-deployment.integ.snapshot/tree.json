@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.95"
+          "version": "10.1.102"
         }
       },
       "test-bucket-deployments-2": {
@@ -29,10 +29,6 @@
                     "tags": [
                       {
                         "key": "aws-cdk:auto-delete-objects",
-                        "value": "true"
-                      },
-                      {
-                        "key": "aws-cdk:cr-owned:0ac1b9c4",
                         "value": "true"
                       },
                       {
@@ -233,7 +229,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -436,6 +432,12 @@
                                     },
                                     {
                                       "Fn::GetAtt": [
+                                        "Destination4368A3649",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
                                         "Destination920A3C57",
                                         "Arn"
                                       ]
@@ -461,6 +463,20 @@
                                           {
                                             "Fn::GetAtt": [
                                               "Destination3E3DC043D",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "Destination4368A3649",
                                               "Arn"
                                             ]
                                           },
@@ -548,7 +564,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "bc935fa4a9499a4b71f067e37a7f05ed05bbcdbf4dc33a44747bc8da38db7e92.zip"
+                      "s3Key": "644013c43fe76afb7d5307ed4419e99e788312b6cbbc9ec6bd5d05ea6e590435.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1264,7 +1280,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -1835,7 +1851,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "bc935fa4a9499a4b71f067e37a7f05ed05bbcdbf4dc33a44747bc8da38db7e92.zip"
+                      "s3Key": "644013c43fe76afb7d5307ed4419e99e788312b6cbbc9ec6bd5d05ea6e590435.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -2079,7 +2095,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2317,7 +2333,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2435,7 +2451,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2553,7 +2569,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2627,6 +2643,126 @@
               "version": "0.0.0"
             }
           },
+          "Destination4": {
+            "id": "Destination4",
+            "path": "test-bucket-deployments-2/Destination4",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-bucket-deployments-2/Destination4/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      },
+                      {
+                        "key": "aws-cdk:cr-owned:0ac1b9c4",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "test-bucket-deployments-2/Destination4/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-bucket-deployments-2/Destination4/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "Destination4368A3649"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:DeleteObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "Destination4368A3649",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "Destination4368A3649",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "test-bucket-deployments-2/Destination4/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "test-bucket-deployments-2/Destination4/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
           "DeployMeWithoutExtractingFilesOnDestination": {
             "id": "DeployMeWithoutExtractingFilesOnDestination",
             "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination",
@@ -2671,7 +2807,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2744,6 +2880,24 @@
               "fqn": "@aws-cdk/aws-s3-deployment.BucketDeployment",
               "version": "0.0.0"
             }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "test-bucket-deployments-2/Exports",
+            "children": {
+              "Output{\"Ref\":\"Destination4368A3649\"}": {
+                "id": "Output{\"Ref\":\"Destination4368A3649\"}",
+                "path": "test-bucket-deployments-2/Exports/Output{\"Ref\":\"Destination4368A3649\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.102"
+            }
           }
         },
         "constructInfo": {
@@ -2764,12 +2918,148 @@
                 "path": "integ-test-bucket-deployments/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.95"
+                  "version": "10.1.102"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallS3listObjects": {
+                    "id": "AwsApiCallS3listObjects",
+                    "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.102"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertEqualsS3listObjects": {
+                        "id": "AssertEqualsS3listObjects",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/AssertEqualsS3listObjects",
+                        "children": {
+                          "AssertionProvider": {
+                            "id": "AssertionProvider",
+                            "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/AssertEqualsS3listObjects/AssertionProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/AssertEqualsS3listObjects/AssertionProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.102"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/AssertEqualsS3listObjects/Default",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/AssertEqualsS3listObjects/Default/Default",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssertionResults": {
+                            "id": "AssertionResults",
+                            "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/AssertEqualsS3listObjects/AssertionResults",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnOutput",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.EqualsAssertion",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.102"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"

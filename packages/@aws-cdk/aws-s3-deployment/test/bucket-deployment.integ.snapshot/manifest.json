@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f6d1488559208af20ff7ea7a97e7d51636b54fb390cc8b82df1259251da47d0c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/98c19fc0f886dfc04c46555a458a441c18f277fd43ac7bdff2f6ff6254a50c31.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -393,6 +393,24 @@
             "data": "DeployMeWithExcludedFilesOnDestinationCustomResource48D69581"
           }
         ],
+        "/test-bucket-deployments-2/Destination4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination4368A3649"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination4/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination4Policy242B92D3"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination4/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination4AutoDeleteObjectsCustomResource0ACF1B31"
+          }
+        ],
         "/test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -403,6 +421,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DeployMeWithoutExtractingFilesOnDestinationCustomResourceF1CAAF89"
+          }
+        ],
+        "/test-bucket-deployments-2/Exports/Output{\"Ref\":\"Destination4368A3649\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDestination4368A3649E0CF338F"
           }
         ],
         "/test-bucket-deployments-2/BootstrapVersion": [
@@ -436,7 +460,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ca4a844391f99ebdcbdd6958cdc098d7b6f9ed1b52d09988389ed95c8588836.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -449,9 +473,40 @@
         }
       },
       "dependencies": [
+        "test-bucket-deployments-2",
         "integtestbucketdeploymentsDefaultTestDeployAssertCF25A2DF.assets"
       ],
       "metadata": {
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjects"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/AssertEqualsS3listObjects/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsAssertEqualsS3listObjects03999BE0"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/AssertEqualsS3listObjects/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAssertEqualsS3listObjects54ec31d56de4fac59f7da5f50523a04d"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

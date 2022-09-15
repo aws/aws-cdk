@@ -72,9 +72,15 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false,
     });
 
+    const bucket4 = new s3.Bucket(this, 'Destination4', {
+      publicReadAccess: false,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
+    });
+
     new s3deploy.BucketDeployment(this, 'DeployMeWithoutExtractingFilesOnDestination', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-      destinationBucket,
+      destinationBucket: bucket4,
       extract: false,
       retainOnDelete: false,
     });
@@ -84,8 +90,27 @@ class TestBucketDeployment extends cdk.Stack {
 
 const app = new cdk.App();
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployments-2');
-new integ.IntegTest(app, 'integ-test-bucket-deployments', {
+
+// Assert that DeployMeWithoutExtractingFilesOnDestination deploys a zip file to bucket4
+const bucket4 = testCase.node.findChild('Destination4') as s3.Bucket;
+const integTest = new integ.IntegTest(app, 'integ-test-bucket-deployments', {
   testCases: [testCase],
 });
+const listObjectsCall = integTest.assertions.awsApiCall('S3', 'listObjects', {
+  Bucket: bucket4.bucketName,
+  MaxKeys: 1,
+});
+listObjectsCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['s3:GetObject', 's3:ListBucket'],
+  Resource: ['*'],
+});
+listObjectsCall.expect(integ.ExpectedResult.objectLike({
+  Contents: [
+    {
+      Key: 'fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e.zip',
+    },
+  ],
+}));
 
 app.synth();

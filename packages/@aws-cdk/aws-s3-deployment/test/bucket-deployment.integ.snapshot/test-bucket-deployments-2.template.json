@@ -9,10 +9,6 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:0ac1b9c4",
-      "Value": "true"
-     },
-     {
       "Key": "aws-cdk:cr-owned:12c80047",
       "Value": "true"
      },
@@ -171,7 +167,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+     "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -308,6 +304,12 @@
         },
         {
          "Fn::GetAtt": [
+          "Destination4368A3649",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "Destination920A3C57",
           "Arn"
          ]
@@ -333,6 +335,20 @@
            {
             "Fn::GetAtt": [
              "Destination3E3DC043D",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Destination4368A3649",
              "Arn"
             ]
            },
@@ -374,7 +390,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bc935fa4a9499a4b71f067e37a7f05ed05bbcdbf4dc33a44747bc8da38db7e92.zip"
+     "S3Key": "644013c43fe76afb7d5307ed4419e99e788312b6cbbc9ec6bd5d05ea6e590435.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -794,7 +810,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+     "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
     },
     "Description": "/opt/awscli/aws"
    },
@@ -1238,7 +1254,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bc935fa4a9499a4b71f067e37a7f05ed05bbcdbf4dc33a44747bc8da38db7e92.zip"
+     "S3Key": "644013c43fe76afb7d5307ed4419e99e788312b6cbbc9ec6bd5d05ea6e590435.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1412,7 +1428,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+     "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1538,7 +1554,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+     "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1585,7 +1601,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+     "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1623,7 +1639,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+     "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1657,6 +1673,93 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "Destination4368A3649": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     },
+     {
+      "Key": "aws-cdk:cr-owned:0ac1b9c4",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Destination4Policy242B92D3": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "Destination4368A3649"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Destination4368A3649",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Destination4368A3649",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "Destination4AutoDeleteObjectsCustomResource0ACF1B31": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "Destination4368A3649"
+    }
+   },
+   "DependsOn": [
+    "Destination4Policy242B92D3"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "DeployMeWithoutExtractingFilesOnDestinationAwsCliLayerC65F79D8": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
@@ -1664,7 +1767,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+     "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1687,7 +1790,7 @@
      "fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e.zip"
     ],
     "DestinationBucketName": {
-     "Ref": "Destination920A3C57"
+     "Ref": "Destination4368A3649"
     },
     "RetainOnDelete": false,
     "Extract": false,
@@ -1695,6 +1798,16 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefDestination4368A3649E0CF338F": {
+   "Value": {
+    "Ref": "Destination4368A3649"
+   },
+   "Export": {
+    "Name": "test-bucket-deployments-2:ExportsOutputRefDestination4368A3649E0CF338F"
+   }
   }
  },
  "Parameters": {
