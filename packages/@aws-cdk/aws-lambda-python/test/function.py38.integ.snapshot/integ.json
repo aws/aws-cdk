@@ -1,14 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "integ.function.py38": {
+    "lambda-python-38/DefaultTest": {
       "stacks": [
         "cdk-integ-lambda-python-38"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-38/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapython38DefaultTestDeployAssertDDBFEEAF"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
