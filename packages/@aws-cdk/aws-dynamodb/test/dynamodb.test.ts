@@ -3010,6 +3010,51 @@ test('L1 inside L2 expects removalpolicy to have been set', () => {
   }).toThrow(/is a stateful resource type/);
 });
 
+test('System errors metrics', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'metric', type: AttributeType.STRING },
+  });
+  const metricTableThrottled = table.metricSystemErrorsForOperations({
+    operations: [Operation.SCAN],
+    period: Duration.minutes(1),
+  });
+  new Alarm(stack, 'TableErrorAlarm', {
+    metric: metricTableThrottled,
+    evaluationPeriods: 1,
+    threshold: 1,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Metrics: Match.arrayWith([
+      Match.objectLike({
+        Expression: 'scan',
+      }),
+      Match.objectLike({
+        MetricStat: Match.objectLike({
+          Metric: Match.objectLike({
+            Dimensions: Match.arrayWith([
+              Match.objectLike({
+                Name: 'Operation',
+              }),
+              Match.objectLike({
+                Name: 'TableName',
+              }),
+            ]),
+            MetricName: 'SystemErrors',
+            Namespace: 'AWS/DynamoDB',
+          }),
+        }),
+      }),
+    ]),
+  });
+});
+
 test('Throttled requests metrics', () => {
   // GIVEN
   const app = new App();

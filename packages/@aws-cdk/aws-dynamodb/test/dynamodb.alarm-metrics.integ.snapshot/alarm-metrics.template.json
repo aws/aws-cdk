@@ -30,7 +30,7 @@
     "EvaluationPeriods": 1,
     "Metrics": [
      {
-      "Expression": "putitem",
+      "Expression": "putitem + scan",
       "Id": "expr_1",
       "Label": "Sum of throttled requests across all operations"
      },
@@ -51,6 +51,93 @@
          }
         ],
         "MetricName": "ThrottledRequests",
+        "Namespace": "AWS/DynamoDB"
+       },
+       "Period": 60,
+       "Stat": "Sum"
+      },
+      "ReturnData": false
+     },
+     {
+      "Id": "scan",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "Operation",
+          "Value": "Scan"
+         },
+         {
+          "Name": "TableName",
+          "Value": {
+           "Ref": "TableCD117FA1"
+          }
+         }
+        ],
+        "MetricName": "ThrottledRequests",
+        "Namespace": "AWS/DynamoDB"
+       },
+       "Period": 60,
+       "Stat": "Sum"
+      },
+      "ReturnData": false
+     }
+    ],
+    "Threshold": 1
+   }
+  },
+  "TableErrorAlarm12A4E2F3": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Metrics": [
+     {
+      "Expression": "putitem + scan",
+      "Id": "expr_1",
+      "Label": "Sum of errors across all operations"
+     },
+     {
+      "Id": "putitem",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "Operation",
+          "Value": "PutItem"
+         },
+         {
+          "Name": "TableName",
+          "Value": {
+           "Ref": "TableCD117FA1"
+          }
+         }
+        ],
+        "MetricName": "SystemErrors",
+        "Namespace": "AWS/DynamoDB"
+       },
+       "Period": 60,
+       "Stat": "Sum"
+      },
+      "ReturnData": false
+     },
+     {
+      "Id": "scan",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "Operation",
+          "Value": "Scan"
+         },
+         {
+          "Name": "TableName",
+          "Value": {
+           "Ref": "TableCD117FA1"
+          }
+         }
+        ],
+        "MetricName": "SystemErrors",
         "Namespace": "AWS/DynamoDB"
        },
        "Period": 60,

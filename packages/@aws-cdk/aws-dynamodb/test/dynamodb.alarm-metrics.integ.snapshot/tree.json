@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.95"
+          "version": "10.1.102"
         }
       },
       "alarm-metrics": {
@@ -77,7 +77,7 @@
                     "evaluationPeriods": 1,
                     "metrics": [
                       {
-                        "expression": "putitem",
+                        "expression": "putitem + scan",
                         "id": "expr_1",
                         "label": "Sum of throttled requests across all operations"
                       },
@@ -104,6 +104,111 @@
                         },
                         "id": "putitem",
                         "returnData": false
+                      },
+                      {
+                        "metricStat": {
+                          "metric": {
+                            "metricName": "ThrottledRequests",
+                            "namespace": "AWS/DynamoDB",
+                            "dimensions": [
+                              {
+                                "name": "Operation",
+                                "value": "Scan"
+                              },
+                              {
+                                "name": "TableName",
+                                "value": {
+                                  "Ref": "TableCD117FA1"
+                                }
+                              }
+                            ]
+                          },
+                          "period": 60,
+                          "stat": "Sum"
+                        },
+                        "id": "scan",
+                        "returnData": false
+                      }
+                    ],
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "TableErrorAlarm": {
+            "id": "TableErrorAlarm",
+            "path": "alarm-metrics/TableErrorAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "alarm-metrics/TableErrorAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "metrics": [
+                      {
+                        "expression": "putitem + scan",
+                        "id": "expr_1",
+                        "label": "Sum of errors across all operations"
+                      },
+                      {
+                        "metricStat": {
+                          "metric": {
+                            "metricName": "SystemErrors",
+                            "namespace": "AWS/DynamoDB",
+                            "dimensions": [
+                              {
+                                "name": "Operation",
+                                "value": "PutItem"
+                              },
+                              {
+                                "name": "TableName",
+                                "value": {
+                                  "Ref": "TableCD117FA1"
+                                }
+                              }
+                            ]
+                          },
+                          "period": 60,
+                          "stat": "Sum"
+                        },
+                        "id": "putitem",
+                        "returnData": false
+                      },
+                      {
+                        "metricStat": {
+                          "metric": {
+                            "metricName": "SystemErrors",
+                            "namespace": "AWS/DynamoDB",
+                            "dimensions": [
+                              {
+                                "name": "Operation",
+                                "value": "Scan"
+                              },
+                              {
+                                "name": "TableName",
+                                "value": {
+                                  "Ref": "TableCD117FA1"
+                                }
+                              }
+                            ]
+                          },
+                          "period": 60,
+                          "stat": "Sum"
+                        },
+                        "id": "scan",
+                        "returnData": false
                       }
                     ],
                     "threshold": 1
@@ -126,25 +231,25 @@
           "version": "0.0.0"
         }
       },
-      "alarm-metric-integ": {
-        "id": "alarm-metric-integ",
-        "path": "alarm-metric-integ",
+      "alarm-metrics-integ": {
+        "id": "alarm-metrics-integ",
+        "path": "alarm-metrics-integ",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "alarm-metric-integ/DefaultTest",
+            "path": "alarm-metrics-integ/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "alarm-metric-integ/DefaultTest/Default",
+                "path": "alarm-metrics-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.95"
+                  "version": "10.1.102"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "alarm-metric-integ/DefaultTest/DeployAssert",
+                "path": "alarm-metrics-integ/DefaultTest/DeployAssert",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"

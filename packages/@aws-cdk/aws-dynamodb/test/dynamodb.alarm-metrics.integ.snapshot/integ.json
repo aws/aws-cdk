@@ -1,12 +1,12 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "alarm-metric-integ/DefaultTest": {
+    "alarm-metrics-integ/DefaultTest": {
       "stacks": [
         "alarm-metrics"
       ],
-      "assertionStack": "alarm-metric-integ/DefaultTest/DeployAssert",
-      "assertionStackName": "alarmmetricintegDefaultTestDeployAssert4350BCB8"
+      "assertionStack": "alarm-metrics-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "alarmmetricsintegDefaultTestDeployAssert8721BBC0"
     }
   }
 }

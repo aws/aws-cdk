@@ -1,20 +1,18 @@
 import { Alarm } from '@aws-cdk/aws-cloudwatch';
-import { App, Duration, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import { AttributeType, Operation, Table } from '../lib';
-import { IntegTest } from '@aws-cdk/integ-tests';
 
-const app = new App();
-
-export class AlarmMetricsInteg extends Stack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+export class TestStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
 
     const table = new Table(this, 'Table', {
       partitionKey: { name: 'metric', type: AttributeType.STRING },
     });
     const metricTableThrottled = table.metricThrottledRequestsForOperation({
-      operations: [Operation.PUT_ITEM],
+      operations: [Operation.PUT_ITEM, Operation.SCAN],
       period: Duration.minutes(1),
     });
     new Alarm(this, 'TableThrottleAlarm', {
@@ -22,13 +20,23 @@ export class AlarmMetricsInteg extends Stack {
       evaluationPeriods: 1,
       threshold: 1,
     });
+    const metricTableError = table.metricSystemErrorsForOperations({
+      operations: [Operation.PUT_ITEM, Operation.SCAN],
+      period: Duration.minutes(1),
+    });
+    new Alarm(this, 'TableErrorAlarm', {
+      metric: metricTableError,
+      evaluationPeriods: 1,
+      threshold: 1,
+    });
   }
 }
 
-new IntegTest(app, 'alarm-metric-integ', {
-  testCases: [
-    new AlarmMetricsInteg(app, 'alarm-metrics'),
-  ],
+const app = new App();
+const stack = new TestStack(app, 'alarm-metrics');
+
+new IntegTest(app, 'alarm-metrics-integ', {
+  testCases: [stack],
 });
 
 app.synth();
