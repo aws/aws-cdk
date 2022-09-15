@@ -152,7 +152,8 @@ const cluster = new msk.Cluster(this, 'cluster', {
 
 ### SASL/IAM + TLS
 
-To enable client authentication with TLS and IAM you can provide the configurations used for each separately as explained above but instead under the ´saslTls´ method:
+Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/developerguide/iam-access-control.html) 
+as well as enable client authentication with TLS by setting the `certificateAuthorityArns` property to reference your ACM Private CA. [More info on Private CAs.](https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html)
 
 ```ts
 import * as acmpca from '@aws-cdk/aws-acmpca';
