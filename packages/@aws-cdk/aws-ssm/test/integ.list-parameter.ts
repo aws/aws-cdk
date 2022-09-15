@@ -39,7 +39,7 @@ new cdk.CfnOutput(testCase, 'Output', {
 
 const fromAttrs = ssm.StringListParameter.fromListParameterAttributes(testCase, 'FromAttrs', {
   parameterName: paramName,
-  valueType: ssm.ParameterValueType.STRING,
+  elementType: ssm.ParameterValueType.STRING,
 });
 const ssmAttrsValue = new ssm.CfnParameter(testCase, 'attrs-test', {
   type: 'StringList',

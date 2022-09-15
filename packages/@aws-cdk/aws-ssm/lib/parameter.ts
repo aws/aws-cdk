@@ -202,6 +202,11 @@ abstract class ParameterBase extends Resource implements IParameter {
 
 /**
  * The type of CFN SSM Parameter
+ *
+ * Using specific types can be helpful in catching invalid values
+ * at the start of creating or updating a stack. CloudFormation validates
+ * the values against existing values in the account.
+ *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-ssm-parameter-types
  */
 export enum ParameterValueType {
@@ -372,6 +377,15 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
   /**
    * The type of the string parameter value
    *
+   * Using specific types can be helpful in catching invalid values
+   * at the start of creating or updating a stack. CloudFormation validates
+   * the values against existing values in the account.
+   *
+   * Note - if you want to allow values from different AWS accounts, use
+   * ParameterValueType.STRING
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-ssm-parameter-types
+   *
    * @default ParameterValueType.STRING
    */
   readonly valueType?: ParameterValueType;
@@ -391,11 +405,20 @@ export interface ListParameterAttributes extends CommonStringParameterAttributes
   readonly version?: number;
 
   /**
-   * The type of the string list parameter value
+   * The type of the string list parameter value.
+   *
+   * Using specific types can be helpful in catching invalid values
+   * at the start of creating or updating a stack. CloudFormation validates
+   * the values against existing values in the account.
+   *
+   * Note - if you want to allow values from different AWS accounts, use
+   * ParameterValueType.STRING
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-ssm-parameter-types
    *
    * @default ParameterValueType.STRING
    */
-  readonly valueType?: ParameterValueType;
+  readonly elementType?: ParameterValueType;
 }
 
 /**
@@ -638,7 +661,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       throw new Error('parameterName cannot be an empty string');
     }
 
-    const type = attrs.valueType ?? ParameterValueType.STRING;
+    const type = attrs.elementType ?? ParameterValueType.STRING;
     const valueType = `List<${type}>`;
 
     const stringValue = attrs.version
@@ -669,7 +692,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
 
     if (exists) { return exists.stringListValue; }
 
-    return this.fromListParameterAttributes(stack, id, { parameterName, valueType: type, version }).stringListValue;
+    return this.fromListParameterAttributes(stack, id, { parameterName, elementType: type, version }).stringListValue;
   }
 
 
