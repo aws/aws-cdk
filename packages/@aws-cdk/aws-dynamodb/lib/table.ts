@@ -534,6 +534,7 @@ export interface ITable extends IResource {
    *
    * @param props properties of a metric
    *
+   * @deprecated use `metricThrottledRequestsForOperation`
    */
   metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
