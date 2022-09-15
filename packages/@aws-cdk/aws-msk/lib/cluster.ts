@@ -344,6 +344,11 @@ export interface TlsAuthProps {
 }
 
 /**
+ * SASL + TLS authentication properties
+ */
+export interface SaslTlsAuthProps extends SaslAuthProps, TlsAuthProps { }
+
+/**
  * Configuration properties for client authentication.
  */
 export class ClientAuthentication {
@@ -364,8 +369,8 @@ export class ClientAuthentication {
   /**
    * SASL + TLS authentication
    */
-  public static saslTls(saslProps: SaslAuthProps, tlsProps: TlsAuthProps): ClientAuthentication {
-    return new ClientAuthentication(saslProps, tlsProps);
+  public static saslTls(saslTlsProps: SaslTlsAuthProps): ClientAuthentication {
+    return new ClientAuthentication(saslTlsProps, saslTlsProps);
   }
 
   /**
