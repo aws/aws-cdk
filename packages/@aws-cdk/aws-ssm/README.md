@@ -20,6 +20,19 @@ your CDK app by using `ssm.StringParameter.fromStringParameterAttributes`:
 
 [using SSM parameter](test/integ.parameter-store-string.lit.ts)
 
+You can also reference an existing SSM Parameter Store value that matches an
+[AWS specific parameter type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-specific-parameter-types):
+
+```ts
+ssm.StringParameter.valueForTypedStringParameterV2(stack, '/My/Public/Parameter', ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
+```
+
+To do the same for a SSM Parameter Store value that is stored as a list:
+
+```ts
+ssm.StringListParameter.valueForTypedListParameter(stack, '/My/Public/Parameter', ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
+```
+
 ### Lookup existing parameters
 
 You can also use an existing parameter by looking up the parameter from the AWS environment.
