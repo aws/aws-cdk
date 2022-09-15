@@ -624,13 +624,10 @@ export class Cluster extends ClusterBase {
         sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
       };
       if (props.clientAuthentication?.tlsProps) {
-        clientAuthentication = {
-          sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
-          tls: {
+        clientAuthentication.tls = {
             certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities?.map(
               (ca) => ca.certificateAuthorityArn,
             ),
-          },
         };
       }
     } else if (props.clientAuthentication?.saslProps?.scram) {
