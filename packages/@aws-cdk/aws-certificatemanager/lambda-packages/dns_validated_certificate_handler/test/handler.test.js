@@ -835,38 +835,6 @@ describe('DNS Validated Certificate Handler', () => {
       });
   });
 
-  test('Delete operation does not delete the certificate if RemovalPolicy===retain', () => {
-    const describeCertificateFake = sinon.fake.resolves({
-      Certificate: {
-        CertificateArn: testCertificateArn,
-      }
-    });
-    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
-
-    const deleteCertificateFake = sinon.fake.resolves({});
-    AWS.mock('ACM', 'deleteCertificate', deleteCertificateFake);
-
-    const request = nock(ResponseURL).put('/', body => {
-      return body.Status === 'SUCCESS';
-    }).reply(200);
-
-    return LambdaTester(handler.certificateRequestHandler)
-      .event({
-        RequestType: 'Delete',
-        RequestId: testRequestId,
-        PhysicalResourceId: testCertificateArn,
-        ResourceProperties: {
-          Region: 'us-east-1',
-          RemovalPolicy: 'retain',
-        }
-      })
-      .expectResolve(() => {
-        sinon.assert.notCalled(describeCertificateFake);
-        sinon.assert.notCalled(deleteCertificateFake);
-        expect(request.isDone()).toBe(true);
-      });
-  });
-
   test('Delete operation is idempotent', () => {
     const error = new Error();
     error.name = 'ResourceNotFoundException';

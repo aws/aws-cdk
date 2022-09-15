@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
-import { App, Stack, Token, Tags, RemovalPolicy } from '@aws-cdk/core';
+import { App, Stack, Token, Tags } from '@aws-cdk/core';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
 test('creates CloudFormation Custom Resource', () => {
@@ -265,37 +265,5 @@ test('test transparency logging settings is passed to the custom resource', () =
       Ref: 'ExampleDotCom4D1B83AA',
     },
     CertificateTransparencyLoggingPreference: 'DISABLED',
-  });
-});
-
-test('can set removal policy', () => {
-  const stack = new Stack();
-
-  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
-    zoneName: 'example.com',
-  });
-
-  const cert = new DnsValidatedCertificate(stack, 'Certificate', {
-    domainName: 'test.example.com',
-    hostedZone: exampleDotComZone,
-    subjectAlternativeNames: ['test2.example.com'],
-    cleanupRoute53Records: true,
-  });
-  cert.applyRemovalPolicy(RemovalPolicy.RETAIN);
-
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
-    DomainName: 'test.example.com',
-    SubjectAlternativeNames: ['test2.example.com'],
-    RemovalPolicy: 'retain',
-    ServiceToken: {
-      'Fn::GetAtt': [
-        'CertificateCertificateRequestorFunction5E845413',
-        'Arn',
-      ],
-    },
-    HostedZoneId: {
-      Ref: 'ExampleDotCom4D1B83AA',
-    },
-    CleanupRecords: 'true',
   });
 });

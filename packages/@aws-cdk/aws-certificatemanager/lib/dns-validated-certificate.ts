@@ -79,7 +79,6 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
   private normalizedZoneName: string;
   private hostedZoneId: string;
   private domainName: string;
-  private _removalPolicy?: cdk.RemovalPolicy;
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
@@ -133,7 +132,6 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
-        RemovalPolicy: cdk.Lazy.any({ produce: () => this._removalPolicy }),
         // Custom resources properties are always converted to strings; might as well be explict here.
         CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
         Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),
@@ -143,10 +141,6 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.certificateArn = certificate.getAtt('Arn').toString();
 
     this.node.addValidation({ validate: () => this.validateDnsValidatedCertificate() });
-  }
-
-  public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
-    this._removalPolicy = policy;
   }
 
   private validateDnsValidatedCertificate(): string[] {
