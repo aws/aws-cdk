@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.42.0](https://github.com/aws/aws-cdk/compare/v2.41.0...v2.42.0) (2022-09-15)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v88.0.0 ([#22026](https://github.com/aws/aws-cdk/issues/22026)) ([1f03e8c](https://github.com/aws/aws-cdk/commit/1f03e8c40a682a3b5aae90560c84017cfe62762e))
+* **cognito:** add SAML user pool identity provider ([#21879](https://github.com/aws/aws-cdk/issues/21879)) ([76d446b](https://github.com/aws/aws-cdk/commit/76d446b07559ee9a980446516dea5b88bc135049))
+* **lambda-event-sources:** add filters to SQS, DynamoDB, and Kinesis event sources ([#21917](https://github.com/aws/aws-cdk/issues/21917)) ([7ba5659](https://github.com/aws/aws-cdk/commit/7ba565967a02f18c66ee07eaa65094365e5f7991)), closes [#17874](https://github.com/aws/aws-cdk/issues/17874)
+* **redshift-alpha:** directly add parameters to a parameter group or indirectly through a cluster ([#20944](https://github.com/aws/aws-cdk/issues/20944)) ([0ad307b](https://github.com/aws/aws-cdk/commit/0ad307be1432f82db5295291a51439ede2a36c31)), closes [#20656](https://github.com/aws/aws-cdk/issues/20656) [#20656](https://github.com/aws/aws-cdk/issues/20656)
+* **ssm:** reference existing SSM list parameters ([#21880](https://github.com/aws/aws-cdk/issues/21880)) ([8f7ee2b](https://github.com/aws/aws-cdk/commit/8f7ee2ba58b38f3f6d9eb8bebd96c208c3d7d2ce)), closes [#12477](https://github.com/aws/aws-cdk/issues/12477) [#14364](https://github.com/aws/aws-cdk/issues/14364)
+
+
+### Bug Fixes
+
+* **apigateway:** Add contextOwnerAccountId log pattern ([#21989](https://github.com/aws/aws-cdk/issues/21989)) ([c24027b](https://github.com/aws/aws-cdk/commit/c24027bfcb12e731230ccfcbdfb5b1ca4a233815)), closes [#21731](https://github.com/aws/aws-cdk/issues/21731)
+* **aws-lambda:** fail fast if a reserved environment variable is specified ([#22039](https://github.com/aws/aws-cdk/issues/22039)) ([950ccd5](https://github.com/aws/aws-cdk/commit/950ccd56e042abaea85788e5134c5c36fde02803))
+* **elasticloadbalancingv2:** securityGroup property is not required in fromApplicationListenerAttributes ([#21934](https://github.com/aws/aws-cdk/issues/21934)) ([e501ac9](https://github.com/aws/aws-cdk/commit/e501ac94c171e6915ddaeba4eb66d0f50c2ea541)), closes [#21930](https://github.com/aws/aws-cdk/issues/21930)
+* **elbv2:** connections not created for chained listener actions ([#21939](https://github.com/aws/aws-cdk/issues/21939)) ([46cf825](https://github.com/aws/aws-cdk/commit/46cf825739af125ef7a7369413d8e9ec071f87aa)), closes [#12994](https://github.com/aws/aws-cdk/issues/12994)
+* **init-templates:** csharp and fsharp app init fails when path contains space ([#21049](https://github.com/aws/aws-cdk/issues/21049)) ([79c9ca1](https://github.com/aws/aws-cdk/commit/79c9ca1a168c38ceb55376f6e61e7297448a465e)), closes [#18803](https://github.com/aws/aws-cdk/issues/18803)
+* **lambda-event-sources:** cannot add sqs event source to an imported function ([#21970](https://github.com/aws/aws-cdk/issues/21970)) ([c33bb81](https://github.com/aws/aws-cdk/commit/c33bb818116eda2407804935c1be10ff40eba92b)), closes [#12607](https://github.com/aws/aws-cdk/issues/12607)
+* **route53:** vpc region in template overridden by stack region ([#20530](https://github.com/aws/aws-cdk/issues/20530)) ([aedc888](https://github.com/aws/aws-cdk/commit/aedc8883bfb7ec85b4d3392b3f589bcbfe22e4e0)), closes [#20496](https://github.com/aws/aws-cdk/issues/20496) [#20496](https://github.com/aws/aws-cdk/issues/20496)
+
 ## [2.41.0](https://github.com/aws/aws-cdk/compare/v2.40.0...v2.41.0) (2022-09-07)
 
 
