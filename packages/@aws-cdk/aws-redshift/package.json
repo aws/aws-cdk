@@ -126,7 +126,8 @@
       "props-physical-name:@aws-cdk/aws-redshift.ClusterSubnetGroupProps",
       "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps",
       "resource-attribute:@aws-cdk/aws-redshift.Cluster.clusterId",
-      "resource-attribute:@aws-cdk/aws-redshift.Cluster.clusterDeferMaintenanceIdentifier"
+      "resource-attribute:@aws-cdk/aws-redshift.Cluster.clusterDeferMaintenanceIdentifier",
+      "resource-attribute:@aws-cdk/aws-redshift.ClusterParameterGroup.clusterParameterGroupParameterGroupName"
     ]
   },
   "stability": "experimental",
