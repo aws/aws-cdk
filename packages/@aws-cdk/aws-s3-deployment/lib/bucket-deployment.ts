@@ -346,6 +346,10 @@ export class BucketDeployment extends Construct {
     // the sources actually has markers.
     const hasMarkers = sources.some(source => source.markers);
 
+    // Markers are not replaced if zip sources are not extracted, so throw an error
+    // if extraction is not wanted and sources have markers.
+    if (hasMarkers && props.extract == false) { throw new Error('Extract cannot be false if sources have markers'); }
+
     const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.ephemeralStorageSize, props.vpc)}`;
     this.cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,

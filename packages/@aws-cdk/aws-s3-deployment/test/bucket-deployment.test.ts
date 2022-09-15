@@ -6,6 +6,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -961,6 +962,30 @@ test('deploy without extracting files in destination', () => {
   });
 });
 
+test('given a source with markers and extract is false, BucketDeployment throws an error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const topic: sns.Topic = new sns.Topic(stack, 'SomeTopic1', {});
+
+  // WHEN
+  const file = s3deploy.Source.jsonData('MyJsonObject', {
+    'config.json': {
+      Foo: {
+        Bar: topic.topicArn, // marker
+      },
+    },
+  });
+
+  // THEN
+  expect(() => {
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [file],
+      destinationBucket: bucket,
+      extract: false,
+    });
+  }).toThrow(/Extract cannot be false if sources have markers/);
+});
 
 test('deployment allows vpc to be implicitly supplied to lambda', () => {
 
