@@ -1,3 +1,4 @@
+export * from './accelerator-type';
 export * from './container-image';
 export * from './endpoint';
 export * from './endpoint-config';

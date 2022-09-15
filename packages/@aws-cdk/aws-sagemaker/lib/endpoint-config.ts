@@ -2,6 +2,7 @@ import { EOL } from 'os';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { AcceleratorType } from './accelerator-type';
 import { InstanceType } from './instance-type';
 import { IModel } from './model';
 import { CfnEndpointConfig } from './sagemaker.generated';
@@ -147,25 +148,6 @@ export interface EndpointConfigProps {
 }
 
 /**
- * The size of the Elastic Inference (EI) instance to use for the production variant. EI instances
- * provide on-demand GPU computing for inference.
- */
-export enum AcceleratorType {
-  /**
-   * Medium accelerator type.
-   */
-  MEDIUM = 'ml.eia1.medium',
-  /**
-   * Large accelerator type.
-   */
-  LARGE = 'ml.eia1.large ',
-  /**
-   * Extra large accelerator type.
-   */
-  XLARGE = 'ml.eia1.xlarge',
-}
-
-/**
  * Defines a SageMaker EndpointConfig.
  */
 export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
@@ -294,7 +276,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    */
   private renderInstanceProductionVariants(): CfnEndpointConfig.ProductionVariantProperty[] {
     return this.instanceProductionVariants.map( v => ({
-      acceleratorType: v.acceleratorType,
+      acceleratorType: v.acceleratorType?.toString(),
       initialInstanceCount: v.initialInstanceCount,
       initialVariantWeight: v.initialVariantWeight,
       instanceType: v.instanceType.toString(),
