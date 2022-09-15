@@ -136,7 +136,8 @@ Nested stacks also support the use of Docker image and file assets.
 ## Accessing resources in a different stack
 
 You can access resources in a different stack, as long as they are in the
-same account and AWS Region. The following example defines the stack `stack1`,
+same account and AWS Region (see [next section](#accessing-resources-in-a-different-stack-and-region) for an exception).
+The following example defines the stack `stack1`,
 which defines an Amazon S3 bucket. Then it defines a second stack, `stack2`,
 which takes the bucket from stack1 as a constructor property.
 
@@ -160,6 +161,36 @@ in the producing stack and an
 [Fn::ImportValue](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html)
 in the consuming stack to transfer that information from one stack to the
 other.
+
+## Accessing resources in a different stack and region
+
+You can enable the feature flag `@aws-cdk/core:enableCrossRegionReferencesUsingCustomResources`
+in order to access resources in a different stack _and_ region. With this feature flag
+enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
+an ACM certificate in `us-east-1`.
+
+```ts
+const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+const cert = new acm.Certificate(stack1, 'Cert', {
+  domainName: '*.example.com',
+  validation: acm.CertificateValidation.fromDns(route53.PublicHostedZone.fromHostedZoneId(stack1, 'Zone', 'Z0329774B51CGXTDQV3X')),
+});
+
+const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+new cloudfront.Distribution(stack2, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('example.com'),
+  },
+  domainNames: ['dev.example.com'],
+  certificate: cert,
+});
+```
+
+When the AWS CDK determines that the resource is in a different stack _and_ is in a different
+region, it automatically synthesizes AWS
+CloudFormation [Exports](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-exports.html)
+in the producing stack. In order to "import" the exports into the consuming stack a CloudFormation
+Custom Resource is created which "imports" the values from the cross region stack.
 
 ### Removing automatic cross-stack references
 
