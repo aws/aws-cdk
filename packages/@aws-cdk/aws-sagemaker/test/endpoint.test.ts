@@ -10,7 +10,7 @@ describe('When searching an Endpoint for a production variant', () => {
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
 
     // WHEN
-    const variant = endpoint.findProductionVariant('variant');
+    const variant = endpoint.findInstanceProductionVariant('variant');
 
     // THEN
     expect(variant.variantName).toEqual('variant');
@@ -24,7 +24,7 @@ describe('When searching an Endpoint for a production variant', () => {
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
 
     // WHEN
-    const when = () => endpoint.findProductionVariant('missing-variant');
+    const when = () => endpoint.findInstanceProductionVariant('missing-variant');
 
     // THEN
     expect(when).toThrow(/No variant with name: 'missing-variant'/);
@@ -40,7 +40,7 @@ describe('When fetching production variants from an Endpoint', () => {
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
 
     // WHEN
-    const variants: sagemaker.IEndpointProductionVariant[] = endpoint.productionVariants;
+    const variants: sagemaker.IEndpointInstanceProductionVariant[] = endpoint.instanceProductionVariants;
 
     // THEN
     expect(variants.length).toEqual(1);
@@ -72,7 +72,7 @@ describe('When auto-scaling a production variant\'s instance count', () => {
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
-    const variant = endpoint.findProductionVariant('variant');
+    const variant = endpoint.findInstanceProductionVariant('variant');
 
     // WHEN
     const when = () => variant.autoScaleInstanceCount({
@@ -90,7 +90,7 @@ describe('When auto-scaling a production variant\'s instance count', () => {
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model, initialInstanceCount: 2 }] });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
-    const variant = endpoint.findProductionVariant('variant');
+    const variant = endpoint.findInstanceProductionVariant('variant');
 
     // WHEN
     const when = () => variant.autoScaleInstanceCount({ maxCapacity: 1 });
@@ -111,7 +111,7 @@ describe('When auto-scaling a production variant\'s instance count', () => {
       }],
     });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
-    const variant = endpoint.findProductionVariant('variant');
+    const variant = endpoint.findInstanceProductionVariant('variant');
 
     // WHEN
     const when = () => variant.autoScaleInstanceCount({ maxCapacity: 3 });
@@ -132,7 +132,7 @@ describe('When auto-scaling a production variant\'s instance count', () => {
       }],
     });
     const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
-    const variant = endpoint.findProductionVariant('variant');
+    const variant = endpoint.findInstanceProductionVariant('variant');
     variant.autoScaleInstanceCount({ maxCapacity: 3 });
 
     // WHEN

@@ -44,9 +44,10 @@ export interface IEndpoint extends cdk.IResource {
 }
 
 /**
- * Represents a production variant that has been associated with an endpoint.
+ * Represents the features common to all production variant types (e.g., instance, serverless) that
+ * have been associated with an endpoint.
  */
-export interface IEndpointProductionVariant {
+interface IEndpointProductionVariant {
   /**
    * The name of the production variant.
    */
@@ -57,6 +58,12 @@ export interface IEndpointProductionVariant {
    * @default - sum over 5 minutes
    */
   metric(namespace: string, metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+}
+
+/**
+ * Represents an instance production variant that has been associated with an endpoint.
+ */
+export interface IEndpointInstanceProductionVariant extends IEndpointProductionVariant {
   /**
    * Metric for the number of invocations
    *
@@ -125,7 +132,7 @@ export interface IEndpointProductionVariant {
   autoScaleInstanceCount(scalingProps: appscaling.EnableScalingProps): ScalableInstanceCount;
 }
 
-class EndpointProductionVariant implements IEndpointProductionVariant {
+class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVariant {
   public readonly variantName: string;
   private readonly endpoint: Endpoint;
   private readonly initialInstanceCount: number;
@@ -392,18 +399,18 @@ export class Endpoint extends EndpointBase {
   }
 
   /**
-   * Get production variants associated with endpoint.
+   * Get instance production variants associated with endpoint.
    */
-  public get productionVariants(): IEndpointProductionVariant[] {
-    return this.endpointConfig.instanceProductionVariants.map(v => new EndpointProductionVariant(this, v));
+  public get instanceProductionVariants(): IEndpointInstanceProductionVariant[] {
+    return this.endpointConfig.instanceProductionVariants.map(v => new EndpointInstanceProductionVariant(this, v));
   }
 
   /**
-   * Find production variant based on variant name
+   * Find instance production variant based on variant name
    * @param name Variant name from production variant
    */
-  public findProductionVariant(name: string): IEndpointProductionVariant {
+  public findInstanceProductionVariant(name: string): IEndpointInstanceProductionVariant {
     const variant = this.endpointConfig.findInstanceProductionVariant(name);
-    return new EndpointProductionVariant(this, variant);
+    return new EndpointInstanceProductionVariant(this, variant);
   }
 }

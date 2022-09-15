@@ -83,7 +83,7 @@ const invokerRole = new iam.Role(stack, 'Invoker', {
 });
 endpoint.grantInvoke(invokerRole);
 
-const productionVariant = endpoint.findProductionVariant('firstVariant');
+const productionVariant = endpoint.findInstanceProductionVariant('firstVariant');
 const instanceCount = productionVariant.autoScaleInstanceCount({
   maxCapacity: 3,
 });

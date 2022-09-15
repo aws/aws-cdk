@@ -245,7 +245,7 @@ import * as sagemaker from '@aws-cdk/aws-sagemaker';
 declare const endpointConfig: sagemaker.EndpointConfig;
 
 const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
-const productionVariant = endpoint.findProductionVariant('variantName');
+const productionVariant = endpoint.findInstanceProductionVariant('variantName');
 const instanceCount = productionVariant.autoScaleInstanceCount({
   maxCapacity: 3
 });
@@ -268,7 +268,7 @@ import * as sagemaker from '@aws-cdk/aws-sagemaker';
 declare const endpointConfig: sagemaker.EndpointConfig;
 
 const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
-const productionVariant = endpoint.findProductionVariant('variantName');
+const productionVariant = endpoint.findInstanceProductionVariant('variantName');
 productionVariant.metricModelLatency().createAlarm(this, 'ModelLatencyAlarm', {
   threshold: 100000,
   evaluationPeriods: 3,
