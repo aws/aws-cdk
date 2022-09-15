@@ -429,7 +429,7 @@ export class InstanceType {
    * @param instanceType An instance type as string
    * @returns A strongly typed InstanceType
    */
-  public static of(instanceType: string) {
+  public static of(instanceType: string): InstanceType {
     return new InstanceType(instanceType);
   }
 

@@ -40,7 +40,7 @@ export class AcceleratorType {
    * @param acceleratorType An accelerator type as string
    * @returns A strongly typed AcceleratorType
    */
-  public static of(acceleratorType: string) {
+  public static of(acceleratorType: string): AcceleratorType {
     return new AcceleratorType(acceleratorType);
   }
 
