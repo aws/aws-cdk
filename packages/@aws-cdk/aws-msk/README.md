@@ -168,7 +168,6 @@ const cluster = new msk.Cluster(this, 'Cluster', {
   },
   clientAuthentication: msk.ClientAuthentication.saslTls({
     iam: true,
-  }, {
     certificateAuthorities: [
       acmpca.CertificateAuthority.fromCertificateAuthorityArn(
         this,
