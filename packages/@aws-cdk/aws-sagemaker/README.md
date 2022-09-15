@@ -259,8 +259,8 @@ this [documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-sc
 
 ### Metrics
 
-The `IEndpointProductionVariant` interface also provides a set of APIs for referencing CloudWatch
-metrics associated with a production variant associated with an endpoint:
+To monitor CloudWatch metrics for a production variant, use one or more of the metric convenience
+methods:
 
 ```typescript
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
