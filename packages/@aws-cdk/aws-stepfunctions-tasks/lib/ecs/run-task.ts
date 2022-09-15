@@ -289,7 +289,8 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   }
 
   private configureAwsVpcNetworking() {
-    const subnetSelection = this.props.subnets ?? { subnetType: this.props.assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE_WITH_NAT };
+    const subnetSelection = this.props.subnets ??
+      { subnetType: this.props.assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE_WITH_EGRESS };
 
     this.networkConfiguration = {
       AwsvpcConfiguration: {

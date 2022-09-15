@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as core from '../lib';
@@ -254,5 +255,24 @@ describe('cfn resource', () => {
         type: 'Some::Resource',
       });
     }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
+  });
+
+  test('CfnResource has logical ID metadata with stack trace attached', () => {
+    process.env.CDK_DEBUG = '1';
+    try {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'Stack');
+      const res = new core.CfnResource(stack, 'SomeCfnResource', {
+        type: 'Some::Resource',
+      });
+
+      // THEN
+      const metadata = res.node.metadata.find(m => m.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID);
+      expect(metadata).toBeDefined();
+      expect(metadata?.trace).toBeDefined();
+      expect(metadata?.trace?.length).toBeGreaterThan(0);
+    } finally {
+      delete process.env.CDK_DEBUG;
+    }
   });
 });
