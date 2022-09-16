@@ -6,6 +6,7 @@ import { CloudFormationTemplate } from './cloudformation-template';
 import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from './common';
 import { CloudFormationProductVersion } from './product';
 import { ProductStack } from './product-stack';
+import { InputValidator } from './private/validation';
 
 /**
  * Properties for a ProductStackHistory.
@@ -94,6 +95,7 @@ export class ProductStackHistory extends Construct {
     const files = fs.readdirSync(productStackSnapshotDirectory);
     for (const file of files) {
       if (file.endsWith('product.template.json')) {
+        InputValidator.validateProductStackHistorySnapshotFile(file);
         const templateFilePath = path.join(productStackSnapshotDirectory, file);
         const versionName = file.split('.')[2];
         const version = {

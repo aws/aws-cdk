@@ -48,6 +48,10 @@ export class InputValidator {
     }
   }
 
+  public static validateProductStackHistorySnapshotFile(snapshot: string): void {
+    this.validateRegex('ProductStackHistory', 'template snapshot file', /^[\w\d]+\.[\w\d]+\.[\w\d]+\.product\.template\.json/, snapshot);
+  }
+
   private static truncateString(string: string, maxLength: number): string {
     if (string.length > maxLength) {
       return string.substring(0, maxLength) + '[truncated]';
