@@ -249,7 +249,7 @@ export interface InsightRuleProps {
   /**
    * The name of the Insight Rule
    */
-  readonly ruleName: string,
+  readonly insightRuleName: string,
 
   /**
    * The name of the Schema. Should usually be 'CloudWatchLogRule'
@@ -348,7 +348,7 @@ export class InsightRule extends InsightRuleBase {
 
   constructor(scope: Construct, id: string, props: InsightRuleProps) {
     super(scope, id, {
-      physicalName: props.ruleName,
+      physicalName: props.insightRuleName,
     });
 
     const ruleState = props.enabled === false ? 'DISABLED' : 'ENABLED';
@@ -392,11 +392,11 @@ export class InsightRule extends InsightRuleBase {
 
     const cfnInsightRule = new CfnInsightRule(scope, `${id}Resource`, {
       ruleBody,
-      ruleName: props.ruleName,
+      ruleName: props.insightRuleName,
       ruleState,
     });
 
-    this.insightRuleName = props.ruleName;
+    this.insightRuleName = props.insightRuleName;
     this.insightRuleArn = this.getResourceArnAttribute(cfnInsightRule.attrArn, {
       service: 'cloudwatch',
       resource: 'insight',

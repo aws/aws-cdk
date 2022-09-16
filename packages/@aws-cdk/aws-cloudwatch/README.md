@@ -298,7 +298,7 @@ Contributor Insights Rules can be used to analyze log data to provide a view of 
 const insightRule = new cloudwatch.InsightRule(this, 'MyRule', {
   keys: ['$.contributorId'],
   logGroupNames: ['my-log-group-prefix*', 'my-specific-log-group'],
-  ruleName: 'MyRuleName',
+  insightRuleName: 'MyRuleName',
 });
 ```
 
@@ -310,7 +310,7 @@ Insight Rules can quantify contribution by aggregating log events in two differe
 const insightRule = new cloudwatch.InsightRule(this, 'MyRule', {
   keys: ['$.vendorId'],
   logGroupNames: ['vendor-reports'],
-  ruleName: 'VendorsByTotalSales',
+  insightRuleName: 'VendorsByTotalSales',
   aggregateOn: AggregateOptions.SUM,
   sumValue: '$.vendorSales',
 });
@@ -354,7 +354,7 @@ const filter2 = cloudwatch.Filter.greaterThan('$.keyWithNumValue', 100);
 const insightRule = new cloudwatch.InsightRule(this, 'MyRule', {
   keys: ['$.contributorId'],
   logGroupNames: ['my-log-group'],
-  ruleName: 'MyRuleName',
+  insightRuleName: 'MyRuleName',
   filters: [filter1, filter2],
 });
 ```

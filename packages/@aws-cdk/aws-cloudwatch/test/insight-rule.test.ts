@@ -15,7 +15,7 @@ describe('Insight Rule', () => {
 
     new InsightRule(stack, 'MyInsightRule', {
       logGroupNames,
-      ruleName,
+      insightRuleName: ruleName,
       keys,
     });
 
