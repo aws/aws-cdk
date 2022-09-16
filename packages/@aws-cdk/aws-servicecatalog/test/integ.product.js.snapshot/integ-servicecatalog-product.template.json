@@ -52,6 +52,15 @@
        }
       },
       "Name": "v1"
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/74f4271f8bece0682bee0b51f5634cf812cc69c6815f5cfb7b9bfb7f8e9e2262.json"
+       }
+      },
+      "Name": "v1"
      }
     ]
    }
