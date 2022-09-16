@@ -1,3 +1,173 @@
+# CloudFormation Resource Specification v88.0.0
+
+## New Resource Types
+
+* AWS::CloudFront::OriginAccessControl
+* AWS::Connect::Instance
+* AWS::Connect::InstanceStorageConfig
+* AWS::ControlTower::EnabledControl
+* AWS::M2::Environment
+* AWS::Macie::AllowList
+* AWS::SupportApp::AccountAlias
+* AWS::SupportApp::SlackChannelConfiguration
+
+## Attribute Changes
+
+* AWS::EKS::Cluster Id (__added__)
+* AWS::GlobalAccelerator::Accelerator DualStackDnsName (__added__)
+* AWS::GlobalAccelerator::Accelerator Ipv6Addresses (__added__)
+* AWS::IoTWireless::WirelessGateway ThingName (__deleted__)
+* AWS::Logs::SubscriptionFilter FilterName (__added__)
+* AWS::RDS::DBParameterGroup Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html
+* AWS::RDS::DBParameterGroup DBParameterGroupName (__added__)
+* AWS::Redshift::ClusterParameterGroup ParameterGroupName (__added__)
+* AWS::SNS::Topic TopicArn (__added__)
+* AWS::SNS::Topic Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html
+
+## Property Changes
+
+* AWS::APS::Workspace LoggingConfiguration (__added__)
+* AWS::Cognito::UserPoolClient AuthSessionValidity (__added__)
+* AWS::Config::ConformancePack TemplateSSMDocumentDetails (__added__)
+* AWS::EKS::Cluster OutpostConfig (__added__)
+* AWS::IoTWireless::WirelessGateway ThingName (__added__)
+* AWS::Logs::SubscriptionFilter DestinationArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-destinationarn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-logs-subscriptionfilter-destinationarn
+* AWS::Logs::SubscriptionFilter FilterPattern.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-filterpattern
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-logs-subscriptionfilter-filterpattern
+* AWS::Logs::SubscriptionFilter LogGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-loggroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-logs-subscriptionfilter-loggroupname
+* AWS::Logs::SubscriptionFilter RoleArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-rolearn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-logs-subscriptionfilter-rolearn
+* AWS::RDS::DBParameterGroup Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+* AWS::RDS::DBParameterGroup Description.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBParameterGroup Family.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+* AWS::RDS::DBParameterGroup Family.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBParameterGroup Parameters.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveItemType (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.Type (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveType (__added__)
+* AWS::RDS::DBParameterGroup Parameters.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+* AWS::RDS::DBParameterGroup Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+* AWS::SNS::Topic DataProtectionPolicy (__added__)
+* AWS::SNS::Topic ContentBasedDeduplication.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-contentbaseddeduplication
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-contentbaseddeduplication
+* AWS::SNS::Topic DisplayName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-displayname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-displayname
+* AWS::SNS::Topic FifoTopic.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-fifotopic
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-fifotopic
+* AWS::SNS::Topic KmsMasterKeyId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-kmsmasterkeyid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-kmsmasterkeyid
+* AWS::SNS::Topic Subscription.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-subscription
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-subscription
+* AWS::SNS::Topic Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-tags
+* AWS::SNS::Topic TopicName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-topicname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-topicname
+
+## Property Type Changes
+
+* AWS::APS::Workspace.LoggingConfiguration (__added__)
+* AWS::AppMesh::Route.TcpRouteMatch (__added__)
+* AWS::AppMesh::VirtualGateway.JsonFormatRef (__added__)
+* AWS::AppMesh::VirtualGateway.LoggingFormat (__added__)
+* AWS::AppMesh::VirtualNode.JsonFormatRef (__added__)
+* AWS::AppMesh::VirtualNode.LoggingFormat (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.ServerTimingHeadersConfig (__added__)
+* AWS::EKS::Cluster.OutpostConfig (__added__)
+* AWS::AppMesh::GatewayRoute.GatewayRouteTarget Port (__added__)
+* AWS::AppMesh::GatewayRoute.GrpcGatewayRouteMatch Port (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteMatch Port (__added__)
+* AWS::AppMesh::Route.GrpcRouteMatch Port (__added__)
+* AWS::AppMesh::Route.HttpRouteMatch Port (__added__)
+* AWS::AppMesh::Route.TcpRoute Match (__added__)
+* AWS::AppMesh::Route.WeightedTarget Port (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayFileAccessLog Format (__added__)
+* AWS::AppMesh::VirtualNode.FileAccessLog Format (__added__)
+* AWS::CloudFront::Distribution.Origin OriginAccessControlId (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.ResponseHeadersPolicyConfig ServerTimingHeadersConfig (__added__)
+* AWS::Lex::Bot.VoiceSettings Engine (__added__)
+* AWS::Redshift::ClusterParameterGroup.Parameter ParameterName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-property-redshift-clusterparametergroup-parameter.html#cfn-redshift-clusterparametergroup-parameter-parametername
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshift-clusterparametergroup-parameter.html#cfn-redshift-clusterparametergroup-parameter-parametername
+* AWS::Redshift::ClusterParameterGroup.Parameter ParameterValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-property-redshift-clusterparametergroup-parameter.html#cfn-redshift-clusterparametergroup-parameter-parametervalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshift-clusterparametergroup-parameter.html#cfn-redshift-clusterparametergroup-parameter-parametervalue
+* AWS::SNS::Topic.Subscription Endpoint.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-subscription.html#cfn-sns-topic-subscription-endpoint
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic-subscription.html#cfn-sns-topic-subscription-endpoint
+* AWS::SNS::Topic.Subscription Endpoint.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SNS::Topic.Subscription Protocol.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-subscription.html#cfn-sns-topic-subscription-protocol
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic-subscription.html#cfn-sns-topic-subscription-protocol
+* AWS::SNS::Topic.Subscription Protocol.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Unapplied changes
+
+* AWS::Rekognition is at 68.0.0
+* AWS::SageMaker is at 72.0.0
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.IAMPolicyDocument Version.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Serverless::Function.ScheduleEvent Description (__added__)
+* AWS::Serverless::Function.ScheduleEvent Enabled (__added__)
+* AWS::Serverless::Function.ScheduleEvent Name (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowOrigin (__deleted__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowOrigins (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowHeaders.PrimitiveType (__deleted__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowHeaders.PrimitiveItemType (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowHeaders.Type (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowMethods.PrimitiveType (__deleted__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowMethods.PrimitiveItemType (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowMethods.Type (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject MaxAge.PrimitiveType (__changed__)
+  * Old: String
+  * New: Integer
+
 # CloudFormation Resource Specification v85.0.0
 
 ## New Resource Types

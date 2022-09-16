@@ -129,7 +129,8 @@
       "docs-public-apis:@aws-cdk/aws-logs.CrossAccountDestination.addToPolicy",
       "docs-public-apis:@aws-cdk/aws-logs.JsonPattern.jsonPatternString",
       "docs-public-apis:@aws-cdk/aws-logs.ColumnRestriction",
-      "docs-public-apis:@aws-cdk/aws-logs.SpaceDelimitedTextPattern.logPatternString"
+      "docs-public-apis:@aws-cdk/aws-logs.SpaceDelimitedTextPattern.logPatternString",
+      "resource-attribute:@aws-cdk/aws-logs.SubscriptionFilter.subscriptionFilterFilterName"
     ]
   },
   "stability": "stable",
