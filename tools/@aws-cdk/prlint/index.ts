@@ -13,6 +13,7 @@ async function run() {
   }));
 
   console.log(reviews);
+  reviews.data.forEach((review) => console.log(review.user));
 
   const prLinter = new linter.PRLinter({
     client,
