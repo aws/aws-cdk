@@ -319,10 +319,6 @@ function configureMock(issue: any, prFiles: any[] | undefined): linter.PRLinter 
 
     dismissReview() {},
 
-    listCommentsForReview() { return { data: [{ id: 1010101010 }] } },
-
-    deleteReviewComment() {},
-
   }
   return new linter.PRLinter({
     owner: 'aws',

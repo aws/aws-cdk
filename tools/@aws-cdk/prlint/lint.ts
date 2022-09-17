@@ -6,6 +6,16 @@ const EXEMPT_README = 'pr-linter/exempt-readme';
 const EXEMPT_TEST = 'pr-linter/exempt-test';
 const EXEMPT_INTEG_TEST = 'pr-linter/exempt-integ-test';
 const EXEMPT_BREAKING_CHANGE = 'pr-linter/exempt-breaking-change';
+/*
+enum PR {
+  feat = 'feat',
+  fix = 'fix',
+  chore = 'chore',
+  docs = 'docs',
+  refactor = 'refactor',
+  revert = 'Revert', // Git capitalizes this
+}
+*/
 
 class LinterError extends Error {
   constructor(message: string) {
@@ -72,7 +82,7 @@ export class PRLinter {
     this.prParams = { owner: props.owner, repo: props.repo, pull_number: props.number };
   }
 
-  private async cleanUpPreviousPRLinterReviews() {
+  private async dismissPreviousPRLinterReviews() {
     const reviews = await this.client.listReviews(this.prParams);
     reviews.data.forEach(async (review: any) => {
       if (review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') {
@@ -82,19 +92,6 @@ export class PRLinter {
           message: 'PR updated. Dissmissing previous PRLinter Review.',
         })
       }
-
-      const comments = await this.client.listCommentsForReview({
-        ...this.prParams,
-        review_id: review.id,
-      });
-
-      comments.data.forEach(async (comment: any) => {
-        await this.client.deleteReviewComment({
-          owner: this.props.owner,
-          repo: this.props.repo,
-          comment_id: comment.id,
-        })
-      });
     })
   }
 
@@ -149,7 +146,7 @@ export class PRLinter {
       testRules: [ { test: assertStability } ]
     });
 
-    await this.cleanUpPreviousPRLinterReviews();
+    await this.dismissPreviousPRLinterReviews();
     validationCollector.result().isValid() ? console.log("✅  Success") : await this.communicateResult(validationCollector.result().errors);
   }
 }
@@ -165,6 +162,12 @@ function isFeature(pr: any) {
 function isFix(pr: any) {
   return pr.title.startsWith("fix")
 }
+
+/*
+function isTitledCorrectly(pr: any) {
+  return pr.title.startsWith
+}
+*/
 
 function testChanged(files: any[]) {
   return files.filter(f => f.filename.toLowerCase().includes("test")).length != 0;
