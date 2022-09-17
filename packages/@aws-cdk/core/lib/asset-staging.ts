@@ -495,7 +495,7 @@ export class AssetStaging extends Construct {
 
       // If we're bundling an asset, include the bundling configuration in the hash
       if (bundling) {
-        hash.update(JSON.stringify(bundling));
+        hash.update(JSON.stringify(sortObject(bundling)));
       }
 
       return hash.digest('hex');
