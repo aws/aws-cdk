@@ -6,16 +6,6 @@ const EXEMPT_README = 'pr-linter/exempt-readme';
 const EXEMPT_TEST = 'pr-linter/exempt-test';
 const EXEMPT_INTEG_TEST = 'pr-linter/exempt-integ-test';
 const EXEMPT_BREAKING_CHANGE = 'pr-linter/exempt-breaking-change';
-/*
-enum PR {
-  feat = 'feat',
-  fix = 'fix',
-  chore = 'chore',
-  docs = 'docs',
-  refactor = 'refactor',
-  revert = 'Revert', // Git capitalizes this
-}
-*/
 
 class LinterError extends Error {
   constructor(message: string) {
@@ -162,12 +152,6 @@ function isFeature(pr: any) {
 function isFix(pr: any) {
   return pr.title.startsWith("fix")
 }
-
-/*
-function isTitledCorrectly(pr: any) {
-  return pr.title.startsWith
-}
-*/
 
 function testChanged(files: any[]) {
   return files.filter(f => f.filename.toLowerCase().includes("test")).length != 0;
