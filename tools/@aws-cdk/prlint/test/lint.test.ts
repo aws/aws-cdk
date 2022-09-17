@@ -24,7 +24,7 @@ describe('breaking changes format', () => {
 
   test('the first breaking change should immediately follow "BREAKING CHANGE:"', async () => {
     const issue = {
-      title: 'chore: some title',
+      title: 'chore(cdk-build-tools): some title',
       body: `BREAKING CHANGE:\x20
              * **module:** another change`,
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
@@ -35,7 +35,7 @@ describe('breaking changes format', () => {
 
   test('invalid title', async () => {
     const issue = {
-      title: 'chore(foo/bar): some title',
+      title: 'chore(): some title',
       body: 'BREAKING CHANGE: this breaking change',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
@@ -157,7 +157,11 @@ describe('integration tests required on features', () => {
       }
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validate()).rejects.toThrow('Features must contain a change to an integration test file.');
+    await expect(prLinter.validate()).rejects.toThrow(
+      'The PR Linter fails with the following errors:' +
+      '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
+      '\n\nPRs must pass status checks before we can provide a meaningful review.'
+      );
   });
 
   test('integ snapshots not changed in feat', async () => {
@@ -182,7 +186,11 @@ describe('integration tests required on features', () => {
       }
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validate()).rejects.toThrow('Features must contain a change to an integration test file.');
+    await expect(prLinter.validate()).rejects.toThrow(
+      'The PR Linter fails with the following errors:' +
+      '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
+      '\n\nPRs must pass status checks before we can provide a meaningful review.'
+      );
   });
 
   test('integ files not changed in fix', async () => {
@@ -207,7 +215,11 @@ describe('integration tests required on features', () => {
       }
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validate()).rejects.toThrow('Fixes must contain a change to an integration test file.');
+    await expect(prLinter.validate()).rejects.toThrow(
+      'The PR Linter fails with the following errors:' +
+      '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
+      '\n\nPRs must pass status checks before we can provide a meaningful review.'
+      );
   });
 
   test('integ snapshots not changed in fix', async () => {
@@ -232,7 +244,11 @@ describe('integration tests required on features', () => {
       }
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validate()).rejects.toThrow('Fixes must contain a change to an integration test file.');
+    await expect(prLinter.validate()).rejects.toThrow(
+      'The PR Linter fails with the following errors:' +
+      '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
+      '\n\nPRs must pass status checks before we can provide a meaningful review.'
+      );
   });
 
   test('integ files not changed, pr exempt', async () => {
