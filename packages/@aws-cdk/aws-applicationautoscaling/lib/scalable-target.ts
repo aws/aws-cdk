@@ -290,4 +290,9 @@ export enum ServiceNamespace {
    * ElastiCache
    */
   ELASTICACHE = 'elasticache',
+
+  /**
+   * Neptune
+   */
+  NEPTUNE = 'neptune',
 }
