@@ -412,6 +412,42 @@ describe('CodeDeploy Server Deployment Group', () => {
     expect(() => app.synth()).toThrow(/deploymentInAlarm/);
   });
 
+  test('disable automatic rollback', () => {
+    const stack = new cdk.Stack();
+
+    new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+      autoRollback: {
+        deploymentInAlarm: false,
+        failedDeployment: false,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      'AutoRollbackConfiguration': {
+        'Enabled': false,
+      },
+    });
+  });
+
+  test('disable automatic rollback when all options are false', () => {
+    const stack = new cdk.Stack();
+
+    new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+      autoRollback: {
+        deploymentInAlarm: false,
+        failedDeployment: false,
+        stoppedDeployment: false,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      'AutoRollbackConfiguration': {
+        'Enabled': false,
+      },
+    });
+  });
+
+
   test('can be used with an imported ALB Target Group as the load balancer', () => {
     const stack = new cdk.Stack();
 
