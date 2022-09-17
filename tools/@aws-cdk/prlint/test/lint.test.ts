@@ -311,7 +311,13 @@ function configureMock(issue: any, prFiles: any[] | undefined): linter.PRLinter 
       return {
         promise: () => mockCreateReview(errorMessage),
       }
-    }
+    },
+
+    listReviews(_props: { _owner: string, _repo: string, _pull_number: number }) {
+      return { data:  [{ id: 1111122222, user: { login: 'aws-cdk-automation' } }] };
+    },
+
+    dismissReview() {},
 
   }
   return new linter.PRLinter({

@@ -72,9 +72,22 @@ export class PRLinter {
     this.prParams = { owner: props.owner, repo: props.repo, pull_number: props.number };
   }
 
+  private async dismissPreviousPRLinterReviews() {
+    const reviews = await this.client.listReviews(this.prParams);
+    reviews.data.forEach(async (review: any) => {
+      if (review.user?.login === 'aws-cdk-automation') {
+        await this.client.dismissReview({
+          ...this.prParams,
+          review_id: review.id,
+          message: 'PR updated. Dissmissing previous PRLinter Review.',
+        })
+      }
+    })
+  }
+
   private async communicateResult(errors: string[]) {
     const body = `The PR Linter fails with the following errors:${this.formatErrors(errors)}PRs must pass status checks before we can provide a meaningful review.`;
-      await this.client.createReview({ ...this.prParams, body, event: 'REQUEST_CHANGES' });
+      await this.client.createReview({ ...this.prParams, body, event: 'REQUEST_CHANGES', });
       throw new LinterError(body);
   }
 
@@ -123,6 +136,7 @@ export class PRLinter {
       testRules: [ { test: assertStability } ]
     });
 
+    await this.dismissPreviousPRLinterReviews();
     validationCollector.result().isValid() ? console.log("✅  Success") : await this.communicateResult(validationCollector.result().errors);
   }
 }
