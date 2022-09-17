@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/463c83b6ad9e00f692decfa77520fc4cd05b77508abc10649196e4a8bdaabf2a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6fc64dbac5f1d7b309630619bfc02b3cb7cdcc232e7f9270016f783d2ebb5d5b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -213,10 +213,16 @@
             "data": "MyServiceSecurityGroupfromawscdkcodedeployecsdgALBSecurityGroup48D554A080C46A885A"
           }
         ],
-        "/aws-cdk-codedeploy-ecs-dg/TargetGroup/Resource": [
+        "/aws-cdk-codedeploy-ecs-dg/BlueTargetGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TargetGroup3D7CD9B8"
+            "data": "BlueTargetGroupF108EB01"
+          }
+        ],
+        "/aws-cdk-codedeploy-ecs-dg/GreenTargetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GreenTargetGroupEEB2DF3E"
           }
         ],
         "/aws-cdk-codedeploy-ecs-dg/ALB/Resource": [
@@ -259,12 +265,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CodeDeployGroupServiceRole50553EBF"
-          }
-        ],
-        "/aws-cdk-codedeploy-ecs-dg/CodeDeployGroup/TestTargetGroup": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CodeDeployGroupTestTargetGroup0A6B4870"
           }
         ],
         "/aws-cdk-codedeploy-ecs-dg/CodeDeployGroup/Resource": [

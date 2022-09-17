@@ -1,7 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { ApplicationTargetGroup, CfnTargetGroup, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -46,47 +45,6 @@ export interface IEcsDeploymentGroup extends cdk.IResource {
 }
 
 /**
- * Details about an ECS service and its corresponding ECS cluster
- */
-export type EcsService = ecs.Ec2Service | ecs.FargateService | ecs.ExternalService;
-
-/**
- * A route with an ELB listener and target group.
- */
-export interface EcsTrafficRoute {
-  /**
-   * The load balancer for the traffic route.
-   *
-   * @default - blank if empty on test traffic route. Required for prod traffic route.
-   */
-  readonly listener: elbv2.IApplicationListener | elbv2.INetworkListener | undefined;
-  /**
-   * The target group for the traffic route.
-   */
-  readonly targetGroup: elbv2.ITargetGroup;
-}
-
-/**
- * Configuration for the blue/green CodeDeploy deployment.
- */
-export interface EcsBlueGreenDeploymentConfig {
-  /**
-   * The time to wait for a ContinueDeployment after the deployment is ready.
-   * Leave blank to automatically continue once the deployment is ready.
-   *
-   * @default - automatically continue once deployment is ready
-   */
-  readonly waitTimeForContinueDeployment?: cdk.Duration;
-  /**
-   * The time to wait before terminating old tasks.
-   * Leave blank to keep the old tasks alive and deregistered from the load balancer.
-   *
-   * @default - keep the old tasks alive and deregistered from the load balancer.
-   */
-  readonly waitTimeForTermination?: cdk.Duration;
-}
-
-/**
  * Construction properties for {@link EcsDeploymentGroup}.
  */
 export interface EcsDeploymentGroupProps {
@@ -95,22 +53,7 @@ export interface EcsDeploymentGroupProps {
    *
    * [disable-awslint:ref-via-interface] because the service needs to have the deploy controller changed to Code Deploy
    */
-  readonly services: EcsService[];
-
-  /**
-   * The reference to the production traffic group for the deployment.
-   * Leave blank to disable traffic shifting
-   *
-   * @default - Traffic shifting will be disabled
-   */
-  readonly prodTrafficRoute?: EcsTrafficRoute;
-
-  /**
-   * The reference to the test traffic group for the deployment.
-   *
-   * @default - One will be created for you
-   */
-  readonly testTrafficRoute?: EcsTrafficRoute;
+  readonly services: ecs.BaseService[];
 
   /**
    * The reference to the CodeDeploy ECS Application
@@ -171,11 +114,8 @@ export interface EcsDeploymentGroupProps {
 
   /**
    * The blue/green deployment configuration
-   *
-   * @default - default BlueGreenDeploymentConfiguration which is configured to
-   *            continue deployment when ready and terminate old instances immediately.
    */
-  readonly blueGreenDeploymentConfiguration?: EcsBlueGreenDeploymentConfig;
+  readonly blueGreenDeploymentConfiguration: EcsBlueGreenDeploymentConfig;
 }
 
 /**
@@ -220,7 +160,7 @@ export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGr
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
     });
-    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
+    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECSLimited'));
     this.deploymentConfig = props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE;
 
     // Change ECS Service deployment controller to codedeploy
@@ -233,58 +173,14 @@ export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGr
       service.node.addDependency(service.taskDefinition);
     }
 
-    // create a testTrafficRoute if missing
-    let testTrafficRoute = props.testTrafficRoute;
-    if (props.prodTrafficRoute && !testTrafficRoute) {
-      const prodCfnTargetGroup = props.prodTrafficRoute.targetGroup.node.defaultChild as CfnTargetGroup;
-      const testCfnTargetGroup = new CfnTargetGroup(this, 'TestTargetGroup', {
-        healthCheckEnabled: prodCfnTargetGroup.healthCheckEnabled,
-        healthCheckIntervalSeconds: prodCfnTargetGroup.healthCheckIntervalSeconds,
-        healthCheckPath: prodCfnTargetGroup.healthCheckPath,
-        healthCheckPort: prodCfnTargetGroup.healthCheckPort,
-        healthCheckProtocol: prodCfnTargetGroup.healthCheckProtocol,
-        healthCheckTimeoutSeconds: prodCfnTargetGroup.healthCheckTimeoutSeconds,
-        healthyThresholdCount: prodCfnTargetGroup.healthyThresholdCount,
-        ipAddressType: prodCfnTargetGroup.ipAddressType,
-        matcher: prodCfnTargetGroup.matcher,
-        name: prodCfnTargetGroup.name,
-        port: prodCfnTargetGroup.port,
-        protocol: prodCfnTargetGroup.protocol,
-        protocolVersion: prodCfnTargetGroup.protocolVersion,
-        targetGroupAttributes: prodCfnTargetGroup.targetGroupAttributes,
-        targets: prodCfnTargetGroup.targets,
-        targetType: prodCfnTargetGroup.targetType,
-        unhealthyThresholdCount: prodCfnTargetGroup.unhealthyThresholdCount,
-        vpcId: prodCfnTargetGroup.vpcId,
-      });
-      if (props.prodTrafficRoute.targetGroup instanceof ApplicationTargetGroup) {
-        testTrafficRoute = {
-          targetGroup: ApplicationTargetGroup.fromTargetGroupAttributes(this, 'TestTargetGroupRef', {
-            targetGroupArn: testCfnTargetGroup.ref,
-          }),
-          listener: undefined,
-        };
-      } else if (props.prodTrafficRoute.targetGroup instanceof NetworkTargetGroup) {
-        testTrafficRoute = {
-          targetGroup: NetworkTargetGroup.fromTargetGroupAttributes(this, 'TestTargetGroupRef', {
-            targetGroupArn: testCfnTargetGroup.ref,
-          }),
-          listener: undefined,
-        };
-      }
-    }
-
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
       serviceRoleArn: this.role.roleArn,
       deploymentGroupName: this.physicalName,
       deploymentConfigName: this.deploymentConfig.deploymentConfigName,
-      deploymentStyle: (props.prodTrafficRoute && testTrafficRoute) ? {
+      deploymentStyle: {
         deploymentType: 'BLUE_GREEN',
         deploymentOption: 'WITH_TRAFFIC_CONTROL',
-      } : {
-        deploymentType: 'IN_PLACE',
-        deploymentOption: 'WITHOUT_TRAFFIC_CONTROL',
       },
       ecsServices: props.services.map(s => {
         return {
@@ -292,10 +188,11 @@ export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGr
           serviceName: s.serviceName,
         };
       }),
-      loadBalancerInfo: (props.prodTrafficRoute && testTrafficRoute) ?
-        renderLoadBalancerInfo(props.prodTrafficRoute, testTrafficRoute) : undefined,
+      loadBalancerInfo: cdk.Lazy.any({
+        produce: () => renderLoadBalancerInfo(props.blueGreenDeploymentConfiguration),
+      }),
       blueGreenDeploymentConfiguration: cdk.Lazy.any({
-        produce: () => renderBlueGreenDeploymentConfiguration(props.blueGreenDeploymentConfiguration),
+        produce: () => renderBlueGreenDeploymentConfiguration( props.blueGreenDeploymentConfiguration ),
       }),
       alarmConfiguration: cdk.Lazy.any({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
@@ -370,43 +267,50 @@ class ImportedEcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentG
 }
 
 /**
- * {@link Duration} of infinite days
+ * Configuraiton for blue green deployments.
  */
-//export const DurationInfinity = cdk.Duration.days(Number.POSITIVE_INFINITY);
+export interface EcsBlueGreenDeploymentConfig {
+  /**
+   * The reference to the production listener for the deployment.
+   */
+  readonly prodListener: elbv2.IApplicationListener | elbv2.INetworkListener;
 
-export class EcsBlueGreenDeploymentConfig {
-  static DurationInfinity = cdk.Duration.days(Number.POSITIVE_INFINITY);
+  /**
+   * The reference to the test listener for the deployment.
+   *
+   * @default - No test listener will be used
+   */
+  readonly testListener?: elbv2.IApplicationListener | elbv2.INetworkListener;
+
+  /**
+   * The target group for the blue task set.
+   */
+  readonly blueTargetGroup: elbv2.ITargetGroup;
+
+  /**
+   * The target group for the green task set.
+   */
+  readonly greenTargetGroup: elbv2.ITargetGroup;
 
   /**
    * The time to wait for a ContinueDeployment after the deployment is ready.
    *
-   * @default - undefined - automatically continue once the deployment is ready.
+   * @default 0 - automatically continue once the deployment is ready.
    */
   readonly waitTimeForContinueDeployment?: cdk.Duration;
+
   /**
    * The time to wait before terminating old tasks.
-   * Set to {@link DurationInfinity} to keep the old tasks alive and deregistered from the load balancer.
    *
-   * @default - undefined - terminate tasks immediately.
+   * @default 0 - terminate immediately
    */
   readonly waitTimeForTermination?: cdk.Duration;
 }
 
 function renderBlueGreenDeploymentConfiguration(
-  blueGreenDeploymentConfig?: EcsBlueGreenDeploymentConfig,
+  blueGreenDeploymentConfig: EcsBlueGreenDeploymentConfig,
 ): CfnDeploymentGroup.BlueGreenDeploymentConfigurationProperty {
   let deploymentReadyOption: CfnDeploymentGroup.DeploymentReadyOptionProperty;
-  if (!blueGreenDeploymentConfig) {
-    return {
-      deploymentReadyOption: {
-        actionOnTimeout: 'CONTINUE_DEPLOYMENT',
-      },
-      terminateBlueInstancesOnDeploymentSuccess: {
-        action: 'TERMINATE',
-        terminationWaitTimeInMinutes: 0,
-      },
-    };
-  }
   if (blueGreenDeploymentConfig.waitTimeForContinueDeployment) {
     deploymentReadyOption = {
       actionOnTimeout: 'STOP_DEPLOYMENT',
@@ -417,38 +321,31 @@ function renderBlueGreenDeploymentConfiguration(
       actionOnTimeout: 'CONTINUE_DEPLOYMENT',
     };
   }
-  let terminateBlueInstancesOnDeploymentSuccess: CfnDeploymentGroup.BlueInstanceTerminationOptionProperty;
-  if (!blueGreenDeploymentConfig.waitTimeForTermination
-    || blueGreenDeploymentConfig.waitTimeForTermination === EcsBlueGreenDeploymentConfig.DurationInfinity) {
-    terminateBlueInstancesOnDeploymentSuccess = {
-      action: 'KEEP_ALIVE',
-    };
-  } else {
-    terminateBlueInstancesOnDeploymentSuccess = {
-      action: 'TERMINATE',
-      terminationWaitTimeInMinutes: blueGreenDeploymentConfig.waitTimeForTermination.toMinutes(),
-    };
-  }
+  let terminateBlueInstancesOnDeploymentSuccess = {
+    action: 'TERMINATE',
+    terminationWaitTimeInMinutes: blueGreenDeploymentConfig.waitTimeForTermination ?
+      blueGreenDeploymentConfig.waitTimeForTermination.toMinutes() : 0,
+  };
   return {
     deploymentReadyOption,
     terminateBlueInstancesOnDeploymentSuccess,
   };
 }
+
 function renderLoadBalancerInfo(
-  prodTrafficRoute: EcsTrafficRoute,
-  testTrafficRoute: EcsTrafficRoute,
+  blueGreenDeploymentConfig: EcsBlueGreenDeploymentConfig,
 ): CfnDeploymentGroup.LoadBalancerInfoProperty {
   const targetGroupPairInfo: CfnDeploymentGroup.TargetGroupPairInfoProperty = {
     targetGroups: [{
-      name: prodTrafficRoute.targetGroup.targetGroupName,
+      name: blueGreenDeploymentConfig.blueTargetGroup.targetGroupName,
     }, {
-      name: testTrafficRoute.targetGroup.targetGroupName,
+      name: blueGreenDeploymentConfig.greenTargetGroup.targetGroupName,
     }],
     prodTrafficRoute: {
-      listenerArns: [prodTrafficRoute.listener!.listenerArn],
+      listenerArns: [blueGreenDeploymentConfig.prodListener.listenerArn],
     },
-    testTrafficRoute: testTrafficRoute.listener ? {
-      listenerArns: [testTrafficRoute.listener.listenerArn],
+    testTrafficRoute: blueGreenDeploymentConfig.testListener? {
+      listenerArns: [blueGreenDeploymentConfig.testListener.listenerArn],
     } : undefined,
   };
   return {

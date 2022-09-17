@@ -417,7 +417,7 @@
     "ContainerDefinitions": [
      {
       "Essential": true,
-      "Image": "nginx",
+      "Image": "nginx@sha256:79c77eb7ca32f9a117ef91bc6ac486014e0d0e75f2f06683ba24dc298f9f4dd4",
       "Name": "MyContainer",
       "PortMappings": [
        {
@@ -428,7 +428,7 @@
      }
     ],
     "Cpu": "256",
-    "Family": "awscdkcodedeployecsdgMyTaskDef6F57B141",
+    "Family": "nginx",
     "Memory": "512",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
@@ -463,7 +463,7 @@
       "ContainerName": "MyContainer",
       "ContainerPort": 80,
       "TargetGroupArn": {
-       "Ref": "TargetGroup3D7CD9B8"
+       "Ref": "BlueTargetGroupF108EB01"
       }
      }
     ],
@@ -488,7 +488,7 @@
       ]
      }
     },
-    "TaskDefinition": "awscdkcodedeployecsdgMyTaskDef6F57B141"
+    "TaskDefinition": "nginx"
    },
    "DependsOn": [
     "ALBListener3B99FF85",
@@ -541,7 +541,24 @@
     "MyTaskDefTaskRole727F9D3B"
    ]
   },
-  "TargetGroup3D7CD9B8": {
+  "BlueTargetGroupF108EB01": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "GreenTargetGroupEEB2DF3E": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "Port": 80,
@@ -632,7 +649,7 @@
     "DefaultActions": [
      {
       "TargetGroupArn": {
-       "Ref": "TargetGroup3D7CD9B8"
+       "Ref": "BlueTargetGroupF108EB01"
       },
       "Type": "forward"
      }
@@ -705,28 +722,11 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AWSCodeDeployRoleForECS"
+        ":iam::aws:policy/AWSCodeDeployRoleForECSLimited"
        ]
       ]
      }
     ]
-   }
-  },
-  "CodeDeployGroupTestTargetGroup0A6B4870": {
-   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-   "Properties": {
-    "Port": 80,
-    "Protocol": "HTTP",
-    "TargetGroupAttributes": [
-     {
-      "Key": "stickiness.enabled",
-      "Value": "false"
-     }
-    ],
-    "TargetType": "ip",
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
    }
   },
   "CodeDeployGroup58220FC8": {
@@ -792,33 +792,16 @@
         {
          "Name": {
           "Fn::GetAtt": [
-           "TargetGroup3D7CD9B8",
+           "BlueTargetGroupF108EB01",
            "TargetGroupName"
           ]
          }
         },
         {
          "Name": {
-          "Fn::Select": [
-           2,
-           {
-            "Fn::Split": [
-             "/",
-             {
-              "Fn::Select": [
-               5,
-               {
-                "Fn::Split": [
-                 ":",
-                 {
-                  "Ref": "CodeDeployGroupTestTargetGroup0A6B4870"
-                 }
-                ]
-               }
-              ]
-             }
-            ]
-           }
+          "Fn::GetAtt": [
+           "GreenTargetGroupEEB2DF3E",
+           "TargetGroupName"
           ]
          }
         }

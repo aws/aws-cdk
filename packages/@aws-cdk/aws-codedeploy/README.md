@@ -357,17 +357,19 @@ To create a new CodeDeploy Deployment Group that deploys to a ECS service:
 ```ts
 declare const myApplication: codedeploy.EcsApplication;
 declare const service: ecs.FargateService;
-declare const targetGroup = elbv2.ITargetGroup;
-declare const listener = elbv2.IApplicationListener;
+declare const blueTargetGroup = elbv2.ITargetGroup;
+declare const greenTargetGroup = elbv2.ITargetGroup;
+declare const prodListener = elbv2.IApplicationListener;
 
 const deploymentGroup = new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDeployment', {
   application: myApplication, // optional property: one will be created for you if not provided
   services: [ 
     service 
   ],
-  prodTrafficRoute: {
-    listener,
-    targetGroup,
+  blueGreenDeploymentConfiguration: {
+    prodListener,
+    blueTargetGroup,
+    greenTargetGroup,
   }
   deploymentConfig: codedeploy.EcsDeploymentConfig.CANARY_10_PERCENT_5_MINUTES,
 });

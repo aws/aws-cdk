@@ -729,7 +729,7 @@
                     "containerDefinitions": [
                       {
                         "essential": true,
-                        "image": "nginx",
+                        "image": "nginx@sha256:79c77eb7ca32f9a117ef91bc6ac486014e0d0e75f2f06683ba24dc298f9f4dd4",
                         "name": "MyContainer",
                         "portMappings": [
                           {
@@ -740,7 +740,7 @@
                       }
                     ],
                     "cpu": "256",
-                    "family": "awscdkcodedeployecsdgMyTaskDef6F57B141",
+                    "family": "nginx",
                     "memory": "512",
                     "networkMode": "awsvpc",
                     "requiresCompatibilities": [
@@ -799,7 +799,7 @@
                     "loadBalancers": [
                       {
                         "targetGroupArn": {
-                          "Ref": "TargetGroup3D7CD9B8"
+                          "Ref": "BlueTargetGroupF108EB01"
                         },
                         "containerName": "MyContainer",
                         "containerPort": 80
@@ -826,7 +826,7 @@
                         ]
                       }
                     },
-                    "taskDefinition": "awscdkcodedeployecsdgMyTaskDef6F57B141"
+                    "taskDefinition": "nginx"
                   }
                 },
                 "constructInfo": {
@@ -903,13 +903,48 @@
               "version": "0.0.0"
             }
           },
-          "TargetGroup": {
-            "id": "TargetGroup",
-            "path": "aws-cdk-codedeploy-ecs-dg/TargetGroup",
+          "BlueTargetGroup": {
+            "id": "BlueTargetGroup",
+            "path": "aws-cdk-codedeploy-ecs-dg/BlueTargetGroup",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-codedeploy-ecs-dg/TargetGroup/Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/BlueTargetGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "port": 80,
+                    "protocol": "HTTP",
+                    "targetGroupAttributes": [
+                      {
+                        "key": "stickiness.enabled",
+                        "value": "false"
+                      }
+                    ],
+                    "targetType": "ip",
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnTargetGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-elasticloadbalancingv2.ApplicationTargetGroup",
+              "version": "0.0.0"
+            }
+          },
+          "GreenTargetGroup": {
+            "id": "GreenTargetGroup",
+            "path": "aws-cdk-codedeploy-ecs-dg/GreenTargetGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/GreenTargetGroup/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                   "aws:cdk:cloudformation:props": {
@@ -1058,7 +1093,7 @@
                           {
                             "type": "forward",
                             "targetGroupArn": {
-                              "Ref": "TargetGroup3D7CD9B8"
+                              "Ref": "BlueTargetGroupF108EB01"
                             }
                           }
                         ],
@@ -1194,7 +1229,7 @@
                                 {
                                   "Ref": "AWS::Partition"
                                 },
-                                ":iam::aws:policy/AWSCodeDeployRoleForECS"
+                                ":iam::aws:policy/AWSCodeDeployRoleForECSLimited"
                               ]
                             ]
                           }
@@ -1210,39 +1245,6 @@
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "0.0.0"
-                }
-              },
-              "TestTargetGroup": {
-                "id": "TestTargetGroup",
-                "path": "aws-cdk-codedeploy-ecs-dg/CodeDeployGroup/TestTargetGroup",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "port": 80,
-                    "protocol": "HTTP",
-                    "targetGroupAttributes": [
-                      {
-                        "key": "stickiness.enabled",
-                        "value": "false"
-                      }
-                    ],
-                    "targetType": "ip",
-                    "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnTargetGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "TestTargetGroupRef": {
-                "id": "TestTargetGroupRef",
-                "path": "aws-cdk-codedeploy-ecs-dg/CodeDeployGroup/TestTargetGroupRef",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.95"
                 }
               },
               "Resource": {
@@ -1304,33 +1306,16 @@
                             {
                               "name": {
                                 "Fn::GetAtt": [
-                                  "TargetGroup3D7CD9B8",
+                                  "BlueTargetGroupF108EB01",
                                   "TargetGroupName"
                                 ]
                               }
                             },
                             {
                               "name": {
-                                "Fn::Select": [
-                                  2,
-                                  {
-                                    "Fn::Split": [
-                                      "/",
-                                      {
-                                        "Fn::Select": [
-                                          5,
-                                          {
-                                            "Fn::Split": [
-                                              ":",
-                                              {
-                                                "Ref": "CodeDeployGroupTestTargetGroup0A6B4870"
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
+                                "Fn::GetAtt": [
+                                  "GreenTargetGroupEEB2DF3E",
+                                  "TargetGroupName"
                                 ]
                               }
                             }

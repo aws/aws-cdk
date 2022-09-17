@@ -1,13 +1,14 @@
-import { Template, Match } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, CfnTargetGroup, TargetType } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, IApplicationTargetGroup, TargetType } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
 import { Duration } from '@aws-cdk/core';
 import * as codedeploy from '../../lib';
+import { EcsDeploymentGroupProps } from '../../lib';
 
-function stubService(stack: cdk.Stack) {
+function stubEcsDeploymentGroupProps(stack: cdk.Stack) : EcsDeploymentGroupProps {
   const vpc = new ec2.Vpc(stack, 'MyVpc');
   const cluster = new ecs.Cluster(stack, 'MyCluster', {
     vpc,
@@ -27,7 +28,12 @@ function stubService(stack: cdk.Stack) {
     cluster,
     taskDefinition,
   });
-  const targetGroup = new ApplicationTargetGroup(stack, 'SvcTargetGroup', {
+  const blueTargetGroup = new ApplicationTargetGroup(stack, 'BlueTargetGroup', {
+    vpc,
+    protocol: ApplicationProtocol.HTTP,
+    targetType: TargetType.IP,
+  });
+  const greenTargetGroup = new ApplicationTargetGroup(stack, 'GreenTargetGroup', {
     vpc,
     protocol: ApplicationProtocol.HTTP,
     targetType: TargetType.IP,
@@ -35,12 +41,20 @@ function stubService(stack: cdk.Stack) {
   const loadBalancer = new ApplicationLoadBalancer(stack, 'SvcALB', {
     vpc,
   });
-  loadBalancer.addListener('SvcListener', {
-    defaultTargetGroups: [targetGroup],
+  const listener = loadBalancer.addListener('SvcListener', {
+    defaultTargetGroups: [blueTargetGroup],
     port: 80,
   });
-  service.attachToApplicationTargetGroup(targetGroup);
-  return service;
+  service.attachToApplicationTargetGroup(blueTargetGroup);
+
+  return {
+    services: [service],
+    blueGreenDeploymentConfiguration: {
+      prodListener: listener,
+      blueTargetGroup,
+      greenTargetGroup,
+    },
+  };
 }
 
 describe('CodeDeploy ECS DeploymentGroup', () => {
@@ -61,11 +75,11 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
   test('service is updated', () => {
     const stack = new cdk.Stack();
 
-    const service = stubService(stack);
+    const props = stubEcsDeploymentGroupProps(stack);
     const application = new codedeploy.EcsApplication(stack, 'MyApp');
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
+      ...props,
       application,
-      services: [service],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -79,14 +93,15 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
   test('can set deploymentReadyOption', () => {
     const stack = new cdk.Stack();
 
-    const service = stubService(stack);
+    const props = stubEcsDeploymentGroupProps(stack);
     const application = new codedeploy.EcsApplication(stack, 'MyApp');
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
+      ...props,
       application,
-      services: [service],
       blueGreenDeploymentConfiguration: {
+        ...props.blueGreenDeploymentConfiguration,
         waitTimeForContinueDeployment: Duration.minutes(10),
-        waitTimeForTermination: codedeploy.EcsBlueGreenDeploymentConfig.DurationInfinity,
+        waitTimeForTermination: Duration.minutes(5),
       },
     });
 
@@ -97,7 +112,8 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
           WaitTimeInMinutes: 10,
         },
         TerminateBlueInstancesOnDeploymentSuccess: {
-          Action: 'KEEP_ALIVE',
+          Action: 'TERMINATE',
+          TerminationWaitTimeInMinutes: 5,
         },
       },
     });
@@ -107,10 +123,10 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     const stack = new cdk.Stack();
 
     const application = new codedeploy.EcsApplication(stack, 'MyApp');
-    const service = stubService(stack);
+    const props = stubEcsDeploymentGroupProps(stack);
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
+      ...props,
       application,
-      services: [service],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
@@ -118,12 +134,12 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
         Ref: 'MyApp3CE31C26',
       },
       ECSServices: [{
-        ClusterName: stack.resolve(service.cluster.clusterName),
-        ServiceName: stack.resolve(service.serviceName),
+        ClusterName: stack.resolve(props.services[0].cluster.clusterName),
+        ServiceName: stack.resolve(props.services[0].serviceName),
       }],
       DeploymentStyle: {
-        DeploymentOption: 'WITHOUT_TRAFFIC_CONTROL',
-        DeploymentType: 'IN_PLACE',
+        DeploymentOption: 'WITH_TRAFFIC_CONTROL',
+        DeploymentType: 'BLUE_GREEN',
       },
       AutoRollbackConfiguration: {
         Enabled: true,
@@ -168,8 +184,9 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       evaluationPeriods: 1,
     });
 
+    const props = stubEcsDeploymentGroupProps(stack);
     const deploymentGroup = new codedeploy.EcsDeploymentGroup(stack, 'DeploymentGroup', {
-      services: [stubService(stack)],
+      ...props,
     });
     deploymentGroup.addAlarm(alarm);
 
@@ -190,8 +207,9 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
   test('only automatically rolls back failed deployments by default', () => {
     const stack = new cdk.Stack();
 
+    const props = stubEcsDeploymentGroupProps(stack);
     new codedeploy.EcsDeploymentGroup(stack, 'DeploymentGroup', {
-      services: [stubService(stack)],
+      ...props,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
@@ -216,8 +234,9 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       evaluationPeriods: 1,
     });
 
+    const props = stubEcsDeploymentGroupProps(stack);
     const deploymentGroup = new codedeploy.EcsDeploymentGroup(stack, 'DeploymentGroup', {
-      services: [stubService(stack)],
+      ...props,
       autoRollback: {
         failedDeployment: false,
       },
@@ -238,8 +257,9 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
 
+    const props = stubEcsDeploymentGroupProps(stack);
     new codedeploy.EcsDeploymentGroup(stack, 'DeploymentGroup', {
-      services: [stubService(stack)],
+      ...props,
       autoRollback: {
         deploymentInAlarm: true,
       },
@@ -252,38 +272,20 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
 
-    const service = stubService(stack);
-    const targetGroup = new ApplicationTargetGroup(stack, 'TargetGroup', {
-      vpc: service.cluster.vpc,
-      protocol: ApplicationProtocol.HTTP,
-      targetType: TargetType.IP,
-    });
-    const testTargetGroup = new ApplicationTargetGroup(stack, 'TestTargetGroup', {
-      vpc: service.cluster.vpc,
-      protocol: ApplicationProtocol.HTTP,
-      targetType: TargetType.IP,
-    });
-    const loadBalancer = new ApplicationLoadBalancer(stack, 'ALB', {
-      vpc: service.cluster.vpc,
-    });
-    const listener = loadBalancer.addListener('Listener', {
-      defaultTargetGroups: [targetGroup],
-      port: 80,
+    const props = stubEcsDeploymentGroupProps(stack);
+    const loadBalancer = new ApplicationLoadBalancer(stack, 'testALB', {
+      vpc: props.services[0].cluster.vpc,
     });
     const testListener = loadBalancer.addListener('TestListener', {
-      defaultTargetGroups: [testTargetGroup],
+      defaultTargetGroups: [props.blueGreenDeploymentConfiguration.blueTargetGroup as IApplicationTargetGroup],
       protocol: ApplicationProtocol.HTTP,
       port: 81,
     });
     new codedeploy.EcsDeploymentGroup(stack, 'DeploymentGroup', {
-      services: [service],
-      prodTrafficRoute: {
-        listener,
-        targetGroup,
-      },
-      testTrafficRoute: {
-        targetGroup: testTargetGroup,
-        listener: testListener,
+      ...props,
+      blueGreenDeploymentConfiguration: {
+        ...props.blueGreenDeploymentConfiguration,
+        testListener,
       },
     });
 
@@ -295,13 +297,13 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       LoadBalancerInfo: {
         TargetGroupPairInfoList: [{
           TargetGroups: [{
-            Name: stack.resolve(targetGroup.targetGroupName),
+            Name: stack.resolve(props.blueGreenDeploymentConfiguration.blueTargetGroup.targetGroupName),
           }, {
-            Name: stack.resolve(testTargetGroup.targetGroupName),
+            Name: stack.resolve(props.blueGreenDeploymentConfiguration.greenTargetGroup.targetGroupName),
           }],
           ProdTrafficRoute: {
             ListenerArns: [
-              stack.resolve(listener.listenerArn),
+              stack.resolve(props.blueGreenDeploymentConfiguration.prodListener.listenerArn),
             ],
           },
           TestTrafficRoute: {
@@ -314,69 +316,12 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     });
   });
 
-  test('setting traffic shifting with auto-creation test target group', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
-
-    const service = stubService(stack);
-    const targetGroup = new ApplicationTargetGroup(stack, 'TargetGroup', {
-      vpc: service.cluster.vpc,
-      protocol: ApplicationProtocol.HTTP,
-      targetType: TargetType.IP,
-    });
-    const loadBalancer = new ApplicationLoadBalancer(stack, 'ALB', {
-      vpc: service.cluster.vpc,
-    });
-    const listener = loadBalancer.addListener('Listener', {
-      defaultTargetGroups: [targetGroup],
-      port: 80,
-    });
-    const dg = new codedeploy.EcsDeploymentGroup(stack, 'DeploymentGroup', {
-      services: [service],
-      prodTrafficRoute: {
-        listener,
-        targetGroup,
-      },
-    });
-
-    const testTargetGroup = dg.node.findChild('TestTargetGroup') as CfnTargetGroup;
-    expect(testTargetGroup).toBeTruthy();
-
-    const template = Template.fromStack(stack);
-    template.resourcePropertiesCountIs('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      Port: 80,
-      Protocol: 'HTTP',
-      TargetType: 'ip',
-    }, 3);
-
-    template.hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      DeploymentStyle: {
-        DeploymentOption: 'WITH_TRAFFIC_CONTROL',
-        DeploymentType: 'BLUE_GREEN',
-      },
-      LoadBalancerInfo: {
-        TargetGroupPairInfoList: [{
-          TargetGroups: [{
-            Name: stack.resolve(targetGroup.targetGroupName),
-          }, {
-            Name: Match.anyValue(),
-          }],
-          ProdTrafficRoute: {
-            ListenerArns: [
-              stack.resolve(listener.listenerArn),
-            ],
-          },
-        }],
-      },
-    });
-
-  });
-
   test('fail with more than 100 characters in name', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
+    const props = stubEcsDeploymentGroupProps(stack);
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
-      services: [stubService(stack)],
+      ...props,
       deploymentGroupName: 'a'.repeat(101),
     });
 
@@ -386,8 +331,9 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
   test('fail with unallowed characters in name', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
+    const props = stubEcsDeploymentGroupProps(stack);
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
-      services: [stubService(stack)],
+      ...props,
       deploymentGroupName: 'my name',
     });
 

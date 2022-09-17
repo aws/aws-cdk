@@ -37,9 +37,8 @@ export interface EcsDeploymentConfigProps {
    * The configuration that specifies how traffic is shifed from one
    * Amazon ECS task set to another during an Amazon ECS deployment.
    *
-   * @default a name will be auto-generated
    */
-  readonly trafficRoutingConfig?: ITrafficRoutingConfig;
+  readonly trafficRoutingConfig: ITrafficRoutingConfig;
 
 }
 
@@ -72,7 +71,7 @@ export class EcsDeploymentConfig extends cdk.Resource implements IEcsDeploymentC
   public readonly deploymentConfigName: string;
   public readonly deploymentConfigArn: string;
 
-  constructor(scope: Construct, id: string, props: EcsDeploymentConfigProps = {}) {
+  constructor(scope: Construct, id: string, props: EcsDeploymentConfigProps) {
     super(scope, id, {
       physicalName: props.deploymentConfigName,
     });

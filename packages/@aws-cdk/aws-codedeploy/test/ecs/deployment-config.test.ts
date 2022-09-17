@@ -9,7 +9,9 @@ describe('CodeDeploy DeploymentConfig', () => {
   test('can be created without props', () => {
     const stack = new cdk.Stack();
 
-    new codedeploy.EcsDeploymentConfig(stack, 'DeploymentConfig', {});
+    new codedeploy.EcsDeploymentConfig(stack, 'DeploymentConfig', {
+      trafficRoutingConfig: new AllAtOnceTrafficRoutingConfig(),
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
       'ComputePlatform': 'ECS',
@@ -21,6 +23,7 @@ describe('CodeDeploy DeploymentConfig', () => {
 
     new codedeploy.EcsDeploymentConfig(stack, 'DeploymentConfig', {
       deploymentConfigName: 'AAA',
+      trafficRoutingConfig: new AllAtOnceTrafficRoutingConfig(),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
@@ -95,6 +98,7 @@ describe('CodeDeploy DeploymentConfig', () => {
     const stack = new cdk.Stack(app);
     new codedeploy.EcsDeploymentConfig(stack, 'DeploymentConfig', {
       deploymentConfigName: 'a'.repeat(101),
+      trafficRoutingConfig: new AllAtOnceTrafficRoutingConfig(),
     });
 
     expect(() => app.synth()).toThrow(`Deployment config name: "${'a'.repeat(101)}" can be a max of 100 characters.`);
@@ -105,6 +109,7 @@ describe('CodeDeploy DeploymentConfig', () => {
     const stack = new cdk.Stack(app);
     new codedeploy.EcsDeploymentConfig(stack, 'DeploymentConfig', {
       deploymentConfigName: 'my name',
+      trafficRoutingConfig: new AllAtOnceTrafficRoutingConfig(),
     });
 
     expect(() => app.synth()).toThrow('Deployment config name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
