@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallS3listObjectsV2": {
-   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+  "AwsApiCallSSMgetParameters": {
+   "Type": "Custom::DeployAssert@SdkCallSSMgetParameters",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,33 +9,28 @@
       "Arn"
      ]
     },
-    "service": "S3",
-    "api": "listObjectsV2",
+    "service": "SSM",
+    "api": "getParameters",
     "parameters": {
-     "Bucket": {
-      "Fn::ImportValue": "aws-cdk-msk-integ:ExportsOutputRefLoggingBucket1E5A6F3B2AAAD6ED"
-     },
-     "MaxKeys": 1,
-     "Prefix": {
-      "Fn::Join": [
-       "",
-       [
-        "AWSLogs/",
-        {
-         "Ref": "AWS::AccountId"
-        },
-        "/KafkaBrokerLogs"
-       ]
-      ]
-     }
+     "Names": [
+      {
+       "Fn::ImportValue": "list-param:ExportsOutputRefversionvaluetestB139B4AA"
+      },
+      {
+       "Fn::ImportValue": "list-param:ExportsOutputRefvaluetest4DD5FF9D"
+      },
+      {
+       "Fn::ImportValue": "list-param:ExportsOutputRefattrstestCCA64863"
+      }
+     ]
     },
     "flattenResponse": "false",
-    "salt": "1663236373089"
+    "salt": "1661970076677"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallS3listObjectsV2AssertEqualsS3listObjectsV26A93E391": {
+  "AwsApiCallSSMgetParametersAssertEqualsSSMgetParametersE460052D": {
    "Type": "Custom::DeployAssert@AssertEquals",
    "Properties": {
     "ServiceToken": {
@@ -46,12 +41,12 @@
     },
     "actual": {
      "Fn::GetAtt": [
-      "AwsApiCallS3listObjectsV2",
+      "AwsApiCallSSMgetParameters",
       "apiCallResponse"
      ]
     },
-    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
-    "salt": "1663236373089"
+    "expected": "{\"$ObjectLike\":{\"Parameters\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Value\":\"value1,value2\"}},{\"$ObjectLike\":{\"Value\":\"value1,value2\"}},{\"$ObjectLike\":{\"Value\":\"value1,value2\"}}]}}}",
+    "salt": "1661970076678"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -84,41 +79,11 @@
        "Statement": [
         {
          "Action": [
-          "s3:ListObjectsV2"
+          "ssm:GetParameters"
          ],
          "Effect": "Allow",
          "Resource": [
           "*"
-         ]
-        },
-        {
-         "Action": [
-          "s3:ListBucket"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          {
-           "Fn::ImportValue": "aws-cdk-msk-integ:ExportsOutputFnGetAttLoggingBucket1E5A6F3BArn248EC7EA"
-          }
-         ]
-        },
-        {
-         "Action": [
-          "s3:GetObject"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             {
-              "Fn::ImportValue": "aws-cdk-msk-integ:ExportsOutputFnGetAttLoggingBucket1E5A6F3BArn248EC7EA"
-             },
-             "/*"
-            ]
-           ]
-          }
          ]
         }
        ]
@@ -149,10 +114,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAssertEqualsS3listObjectsV2773d42ff5e69123d2a937459089e2352": {
+  "AssertionResultsAssertEqualsSSMgetParameters": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallS3listObjectsV2AssertEqualsS3listObjectsV26A93E391",
+     "AwsApiCallSSMgetParametersAssertEqualsSSMgetParametersE460052D",
      "data"
     ]
    }
