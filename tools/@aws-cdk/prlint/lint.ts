@@ -72,16 +72,29 @@ export class PRLinter {
     this.prParams = { owner: props.owner, repo: props.repo, pull_number: props.number };
   }
 
-  private async dismissPreviousPRLinterReviews() {
+  private async cleanUpPreviousPRLinterReviews() {
     const reviews = await this.client.listReviews(this.prParams);
     reviews.data.forEach(async (review: any) => {
-      if (review.user?.login === 'aws-cdk-automation') {
+      if (review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') {
         await this.client.dismissReview({
           ...this.prParams,
           review_id: review.id,
           message: 'PR updated. Dissmissing previous PRLinter Review.',
         })
       }
+
+      const comments = await this.client.listCommentsForReview({
+        ...this.prParams,
+        review_id: review.id,
+      });
+
+      comments.data.forEach(async (comment: any) => {
+        await this.client.deleteReviewComment({
+          owner: this.props.owner,
+          repo: this.props.repo,
+          comment_id: comment.id,
+        })
+      });
     })
   }
 
@@ -136,7 +149,7 @@ export class PRLinter {
       testRules: [ { test: assertStability } ]
     });
 
-    await this.dismissPreviousPRLinterReviews();
+    await this.cleanUpPreviousPRLinterReviews();
     validationCollector.result().isValid() ? console.log("✅  Success") : await this.communicateResult(validationCollector.result().errors);
   }
 }

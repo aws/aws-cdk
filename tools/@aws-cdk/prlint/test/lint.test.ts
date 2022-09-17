@@ -314,10 +314,14 @@ function configureMock(issue: any, prFiles: any[] | undefined): linter.PRLinter 
     },
 
     listReviews(_props: { _owner: string, _repo: string, _pull_number: number }) {
-      return { data:  [{ id: 1111122222, user: { login: 'aws-cdk-automation' } }] };
+      return { data:  [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }] };
     },
 
     dismissReview() {},
+
+    listCommentsForReview() { return { data: [{ id: 1010101010 }] } },
+
+    deleteReviewComment() {},
 
   }
   return new linter.PRLinter({
