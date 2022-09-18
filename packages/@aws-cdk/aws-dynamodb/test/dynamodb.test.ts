@@ -1,6 +1,6 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
-import { Alarm } from '@aws-cdk/aws-cloudwatch';
+import * as watch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
@@ -3023,7 +3023,7 @@ test('System errors metrics', () => {
     operations: [Operation.SCAN],
     period: Duration.minutes(1),
   });
-  new Alarm(stack, 'TableErrorAlarm', {
+  new watch.Alarm(stack, 'TableErrorAlarm', {
     metric: metricTableThrottled,
     evaluationPeriods: 1,
     threshold: 1,
@@ -3068,7 +3068,7 @@ test('Throttled requests metrics', () => {
     operations: [Operation.PUT_ITEM],
     period: Duration.minutes(1),
   });
-  new Alarm(stack, 'TableThrottleAlarm', {
+  new watch.Alarm(stack, 'TableThrottleAlarm', {
     metric: metricTableThrottled,
     evaluationPeriods: 1,
     threshold: 1,
