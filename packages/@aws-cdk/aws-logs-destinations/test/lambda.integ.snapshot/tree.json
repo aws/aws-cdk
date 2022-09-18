@@ -189,6 +189,156 @@
           "version": "0.0.0"
         }
       },
+      "aws-logs-destinations-lambda-without-permission": {
+        "id": "aws-logs-destinations-lambda-without-permission",
+        "path": "aws-logs-destinations-lambda-without-permission",
+        "children": {
+          "MyFunctionWithoutPermission": {
+            "id": "MyFunctionWithoutPermission",
+            "path": "aws-logs-destinations-lambda-without-permission/MyFunctionWithoutPermission",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-logs-destinations-lambda-without-permission/MyFunctionWithoutPermission/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-logs-destinations-lambda-without-permission/MyFunctionWithoutPermission/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-logs-destinations-lambda-without-permission/MyFunctionWithoutPermission/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = function(event, ctx, cb) { return cb(\"hi\", null); }"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunctionWithoutPermissionServiceRoleED1E480E",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs16.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "LogGroupWithoutPermission": {
+            "id": "LogGroupWithoutPermission",
+            "path": "aws-logs-destinations-lambda-without-permission/LogGroupWithoutPermission",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-logs-destinations-lambda-without-permission/LogGroupWithoutPermission/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
+          "LogSubscriptionFilterWithoutPermission": {
+            "id": "LogSubscriptionFilterWithoutPermission",
+            "path": "aws-logs-destinations-lambda-without-permission/LogSubscriptionFilterWithoutPermission",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-logs-destinations-lambda-without-permission/LogSubscriptionFilterWithoutPermission/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::SubscriptionFilter",
+                  "aws:cdk:cloudformation:props": {
+                    "destinationArn": {
+                      "Fn::GetAtt": [
+                        "MyFunctionWithoutPermission812CACB7",
+                        "Arn"
+                      ]
+                    },
+                    "filterPattern": "",
+                    "logGroupName": {
+                      "Ref": "LogGroupWithoutPermission0C073200"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnSubscriptionFilter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.SubscriptionFilter",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
       "LogsDestinationsLambda": {
         "id": "LogsDestinationsLambda",
         "path": "LogsDestinationsLambda",

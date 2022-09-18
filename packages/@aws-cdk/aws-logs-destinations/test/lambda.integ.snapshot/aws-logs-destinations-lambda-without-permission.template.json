@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "MyFunctionServiceRole3C357FF2": {
+  "MyFunctionWithoutPermissionServiceRoleED1E480E": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,7 +31,7 @@
     ]
    }
   },
-  "MyFunction3BAA72D1": {
+  "MyFunctionWithoutPermission812CACB7": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -39,7 +39,7 @@
     },
     "Role": {
      "Fn::GetAtt": [
-      "MyFunctionServiceRole3C357FF2",
+      "MyFunctionWithoutPermissionServiceRoleED1E480E",
       "Arn"
      ]
     },
@@ -47,10 +47,10 @@
     "Runtime": "nodejs16.x"
    },
    "DependsOn": [
-    "MyFunctionServiceRole3C357FF2"
+    "MyFunctionWithoutPermissionServiceRoleED1E480E"
    ]
   },
-  "LogGroupF5B46931": {
+  "LogGroupWithoutPermission0C073200": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
@@ -58,42 +58,20 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "LogSubscriptionFilterCanInvokeLambdaD601FB53": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "MyFunction3BAA72D1",
-      "Arn"
-     ]
-    },
-    "Principal": "logs.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "LogGroupF5B46931",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "LogSubscriptionFilter4C618026": {
+  "LogSubscriptionFilterWithoutPermission940A5D5B": {
    "Type": "AWS::Logs::SubscriptionFilter",
    "Properties": {
     "DestinationArn": {
      "Fn::GetAtt": [
-      "MyFunction3BAA72D1",
+      "MyFunctionWithoutPermission812CACB7",
       "Arn"
      ]
     },
     "FilterPattern": "",
     "LogGroupName": {
-     "Ref": "LogGroupF5B46931"
+     "Ref": "LogGroupWithoutPermission0C073200"
     }
-   },
-   "DependsOn": [
-    "LogSubscriptionFilterCanInvokeLambdaD601FB53"
-   ]
+   }
   }
  },
  "Parameters": {

@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d7ca50fbf27ffc2804a0c560643b24b4531493b10675595aada71816939ba523.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f266c6be2fb603693d2adc60cf3fb7aa44b38bf75ea9346ae7f7a0fad9b3b500.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -83,6 +83,77 @@
         ]
       },
       "displayName": "aws-logs-destinations-lambda"
+    },
+    "aws-logs-destinations-lambda-without-permission.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-logs-destinations-lambda-without-permission.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-logs-destinations-lambda-without-permission": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-logs-destinations-lambda-without-permission.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/045fe7df8c30a478ac127f3fc7140ac005dc40eb8baede73f10f13058590d0ab.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-logs-destinations-lambda-without-permission.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-logs-destinations-lambda-without-permission.assets"
+      ],
+      "metadata": {
+        "/aws-logs-destinations-lambda-without-permission/MyFunctionWithoutPermission/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionWithoutPermissionServiceRoleED1E480E"
+          }
+        ],
+        "/aws-logs-destinations-lambda-without-permission/MyFunctionWithoutPermission/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionWithoutPermission812CACB7"
+          }
+        ],
+        "/aws-logs-destinations-lambda-without-permission/LogGroupWithoutPermission/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogGroupWithoutPermission0C073200"
+          }
+        ],
+        "/aws-logs-destinations-lambda-without-permission/LogSubscriptionFilterWithoutPermission/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogSubscriptionFilterWithoutPermission940A5D5B"
+          }
+        ],
+        "/aws-logs-destinations-lambda-without-permission/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-logs-destinations-lambda-without-permission/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-logs-destinations-lambda-without-permission"
     },
     "LogsDestinationsLambdaDefaultTestDeployAssert54DA156A.assets": {
       "type": "cdk:asset-manifest",

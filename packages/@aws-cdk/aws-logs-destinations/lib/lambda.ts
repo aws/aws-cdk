@@ -24,13 +24,15 @@ export class LambdaDestination implements logs.ILogSubscriptionDestination {
   public bind(scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
     const arn = logGroup.logGroupArn;
     if (this.options.addPermissions !== false) {
-      this.fn.addPermission('CanInvokeLambda', {
+      const permissionId = 'CanInvokeLambda';
+      this.fn.addPermission(permissionId, {
         principal: new iam.ServicePrincipal('logs.amazonaws.com'),
         sourceArn: arn,
         // Using SubScription Filter as scope is okay, since every Subscription Filter has only
         // one destination.
         scope,
       });
+      scope.node.addDependency(scope.node.findChild(permissionId));
     }
     return { arn: this.fn.functionArn };
   }

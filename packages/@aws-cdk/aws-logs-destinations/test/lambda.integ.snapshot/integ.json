@@ -3,7 +3,8 @@
   "testCases": {
     "LogsDestinationsLambda/DefaultTest": {
       "stacks": [
-        "aws-logs-destinations-lambda"
+        "aws-logs-destinations-lambda",
+        "aws-logs-destinations-lambda-without-permission"
       ],
       "assertionStack": "LogsDestinationsLambda/DefaultTest/DeployAssert",
       "assertionStackName": "LogsDestinationsLambdaDefaultTestDeployAssert54DA156A"
