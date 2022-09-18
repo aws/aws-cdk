@@ -115,7 +115,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - None
    */
-  readonly filters?: Array<{[key: string]: any}>;
+  readonly filters?: Array<lambda.FilterCriteria>;
 }
 
 /**

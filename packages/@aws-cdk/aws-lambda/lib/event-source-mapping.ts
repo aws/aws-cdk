@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
+import { FilterCriteria } from './event-source-filter';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
@@ -239,7 +240,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly filters?: Array<{[key: string]: any}>
+  readonly filters?: Array<FilterCriteria>; //Array<{[key: string]: any}>;
 }
 
 /**
@@ -356,6 +357,13 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
     let consumerGroupConfig = props.kafkaConsumerGroupId ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined;
 
+    let filters: Array<{[key: string]: string}> = [];
+    if (props.filters) {
+      for (let filter of props.filters) {
+        filters.push(filter.toPattern());
+      }
+    }
+
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       bisectBatchOnFunctionError: props.bisectBatchOnError,
@@ -374,7 +382,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
-      filterCriteria: props.filters ? { filters: props.filters }: undefined,
+      filterCriteria: props.filters ? { filters: filters }: undefined,
       selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
     });

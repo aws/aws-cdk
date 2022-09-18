@@ -76,7 +76,19 @@ export class FilterCriteria {
   /**
    * Filter for event source
    */
-  public static filter(filter: {[key:string]: any}): {[key:string]: any} {
-    return { pattern: JSON.stringify(filter) };
+  public static filter(filter: {[key:string]: any}): FilterCriteria {
+    return new FilterCriteria(filter);
+  }
+  private filterCriteria: {[key: string]: any};
+  private constructor(filter: {[key:string]: any}) {
+    this.filterCriteria = filter;
+  }
+  /**
+   * Returns a patter to filter criteria
+   *
+   * @returns pattern object
+   */
+  public toPattern(): {[key: string]: string} {
+    return { pattern: JSON.stringify(this.filterCriteria) };
   }
 }

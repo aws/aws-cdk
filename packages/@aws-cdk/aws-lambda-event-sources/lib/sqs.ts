@@ -45,7 +45,7 @@ export interface SqsEventSourceProps {
    *
    * @default - None
    */
-  readonly filters?: Array<{[key: string]: any}>;
+  readonly filters?: Array<lambda.FilterCriteria>;
 }
 
 /**

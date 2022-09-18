@@ -255,21 +255,26 @@ describe('DynamoEventSource', () => {
       stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
+    const filters: Array<lambda.FilterCriteria> = [
+      lambda.FilterCriteria.filter({
+        eventName: lambda.FilterRule.isEqual('INSERT'),
+        dynamodb: {
+          Keys: {
+            id: {
+              S: lambda.FilterRule.exists(),
+            },
+          },
+        },
+      }),
+    ];
+
+    expect(Array.isArray(filters)).toBe(true);
+    expect(filters[0]).toBeInstanceOf(lambda.FilterCriteria);
+
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       startingPosition: lambda.StartingPosition.LATEST,
-      filters: [
-        lambda.FilterCriteria.filter({
-          eventName: lambda.FilterRule.isEqual('INSERT'),
-          dynamodb: {
-            Keys: {
-              id: {
-                S: lambda.FilterRule.exists(),
-              },
-            },
-          },
-        }),
-      ],
+      filters: filters,
     }));
 
     // THEN
