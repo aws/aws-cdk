@@ -71,7 +71,11 @@ describe('IntegTest runIntegTests', () => {
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.any(Object),
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       profile: undefined,
       versionReporting: false,
       lookups: false,
@@ -84,7 +88,11 @@ describe('IntegTest runIntegTests', () => {
       assetMetadata: false,
       output: 'cdk-integ.out.test-with-snapshot',
       profile: undefined,
-      context: expect.any(Object),
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       versionReporting: false,
       lookups: false,
       rollback: false,
@@ -94,7 +102,11 @@ describe('IntegTest runIntegTests', () => {
       app: 'node xxxxx.test-with-snapshot.js',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.any(Object),
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       versionReporting: false,
       profile: undefined,
       force: true,
@@ -169,7 +181,7 @@ describe('IntegTest runIntegTests', () => {
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.objectContaining({
+      context: expect.not.objectContaining({
         'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
           vpcId: 'vpc-60900905',
         }),
@@ -186,7 +198,7 @@ describe('IntegTest runIntegTests', () => {
       env: expect.objectContaining({
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
-        CDK_CONTEXT_JSON: expect.anything(),
+        CDK_CONTEXT_JSON: expect.stringContaining('"vpcId":"vpc-60900905"'),
       }),
       output: 'test-with-snapshot-assets-diff.integ.snapshot',
     });
@@ -194,7 +206,7 @@ describe('IntegTest runIntegTests', () => {
       app: 'node xxxxx.test-with-snapshot-assets-diff.js',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.objectContaining({
+      context: expect.not.objectContaining({
         'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
           vpcId: 'vpc-60900905',
         }),
@@ -292,7 +304,11 @@ describe('IntegTest runIntegTests', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
-      context: expect.any(Object),
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       profile: 'test-profile',
       rollback: false,
       lookups: false,
@@ -304,7 +320,11 @@ describe('IntegTest runIntegTests', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
-      context: expect.any(Object),
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       profile: 'test-profile',
       force: true,
       all: true,
