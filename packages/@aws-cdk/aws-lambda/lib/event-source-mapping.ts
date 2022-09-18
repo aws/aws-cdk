@@ -240,7 +240,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly filters?: Array<FilterCriteria>; //Array<{[key: string]: any}>;
+  readonly filters?: Array<FilterCriteria>;
 }
 
 /**
