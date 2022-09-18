@@ -164,9 +164,10 @@ async function isLambdaFunctionCodeOnlyChange(
          */
         const tagUpdates: { [tag: string]: string | TagDeletion } = {};
         if (updatedProp?.isDifferent) {
-          updatedProp.newValue.forEach((tag: CfnDiffTagValue) => {
+          const tasks = updatedProp.newValue.map(async (tag: CfnDiffTagValue) => {
             tagUpdates[tag.Key] = await evaluateCfnTemplate.evaluateCfnExpression(tag.Value);
           });
+          await Promise.all(tasks);
 
           updatedProp.oldValue.forEach((tag: CfnDiffTagValue) => {
             if (tagUpdates[tag.Key] === undefined) {
