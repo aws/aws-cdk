@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "PullThroughCacheRuleTest/DefaultTest": {
+      "stacks": [
+        "aws-ecr-pull-through-cache-rule"
+      ],
+      "assertionStack": "PullThroughCacheRuleTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PullThroughCacheRuleTestDefaultTestDeployAssert072A4D50"
+    }
+  }
+}

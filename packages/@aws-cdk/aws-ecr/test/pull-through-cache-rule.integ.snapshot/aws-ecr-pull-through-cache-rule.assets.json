@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "3c258ec62814186039928d8f18b67e73a23b174f21fb90b6533bcd8c3d463aba": {
+      "source": {
+        "path": "aws-ecr-pull-through-cache-rule.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3c258ec62814186039928d8f18b67e73a23b174f21fb90b6533bcd8c3d463aba.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

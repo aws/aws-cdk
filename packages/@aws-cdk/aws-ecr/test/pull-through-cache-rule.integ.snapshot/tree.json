@@ -1,0 +1,92 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.102"
+        }
+      },
+      "aws-ecr-pull-through-cache-rule": {
+        "id": "aws-ecr-pull-through-cache-rule",
+        "path": "aws-ecr-pull-through-cache-rule",
+        "children": {
+          "PullThroughCacheRule": {
+            "id": "PullThroughCacheRule",
+            "path": "aws-ecr-pull-through-cache-rule/PullThroughCacheRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecr-pull-through-cache-rule/PullThroughCacheRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECR::PullThroughCacheRule",
+                  "aws:cdk:cloudformation:props": {
+                    "ecrRepositoryPrefix": "my-ecr",
+                    "upstreamRegistryUrl": "public.ecr.aws"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecr.CfnPullThroughCacheRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecr.PullThroughCacheRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "PullThroughCacheRuleTest": {
+        "id": "PullThroughCacheRuleTest",
+        "path": "PullThroughCacheRuleTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "PullThroughCacheRuleTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "PullThroughCacheRuleTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.102"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "PullThroughCacheRuleTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
