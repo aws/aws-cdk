@@ -294,7 +294,7 @@ export class InsightRule extends InsightRuleBase {
   /**
    * Name of this Insight Rule
    *
-   * @attribute
+   * @attribute InsightRuleRuleName
    */
   public readonly insightRuleName: string;
 
