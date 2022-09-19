@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.42.1](https://github.com/aws/aws-cdk/compare/v2.42.0...v2.42.1) (2022-09-19)
+
+
+### Reverts
+
+* **init-templates:** csharp and fsharp app init fails when path contains space ([#22112](https://github.com/aws/aws-cdk/issues/22112)) ([89f64d4](https://github.com/aws/aws-cdk/commit/89f64d4082d1a339caa1eab04a9ffc63b9088d9a)), closes [aws/aws-cdk#21049](https://github.com/aws/aws-cdk/issues/21049)
+
 ## [2.42.0](https://github.com/aws/aws-cdk/compare/v2.41.0...v2.42.0) (2022-09-15)
 
 
