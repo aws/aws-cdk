@@ -141,11 +141,18 @@ export async function validatePr(number: number) {
   const owner = github.context.repo.owner;
   const repo = github.context.repo.repo;
   const pull_number = github.context.issue.number;
-  gh.rest.pulls.createReview({
+  const review = await gh.rest.pulls.createReview({
     event: 'APPROVE',
     owner,
     repo,
     pull_number,
+  });
+  await gh.rest.pulls.submitReview({
+    event: 'APPROVE',
+    owner,
+    pull_number,
+    repo,
+    review_id: review.data.id,
   });
   
   // console.log(`⌛  Fetching PR number ${number}`);
