@@ -69,12 +69,11 @@ function pythonExecutable() {
   return python;
 }
 const INFO_DOT_JSON = 'info.json';
-const HOOK_DIR_PREFIX = 'tmp';
 
 export class InitTemplate {
   public static async fromName(templatesDir: string, name: string) {
     const basePath = path.join(templatesDir, name);
-    const languages = (await listDirectory(basePath));
+    const languages = (await listDirectory(basePath)).filter(f => f !== INFO_DOT_JSON);
     const info = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
     return new InitTemplate(basePath, name, languages, info);
   }
@@ -118,9 +117,6 @@ export class InitTemplate {
       name: decamelize(path.basename(path.resolve(targetDirectory))),
     };
 
-    const sourceDirectory = path.join(this.basePath, language);
-    const hookTempDirectory = path.join(this.basePath, `${HOOK_DIR_PREFIX}-${projectInfo.name}`);
-
     const hookContext: HookContext = {
       substitutePlaceholdersIn: async (...fileNames: string[]) => {
         for (const fileName of fileNames) {
@@ -131,31 +127,28 @@ export class InitTemplate {
       },
     };
 
-    try {
-      await fs.mkdir(hookTempDirectory);
-      await this.installFiles(sourceDirectory, targetDirectory, hookTempDirectory, language, projectInfo);
-      await this.applyFutureFlags(targetDirectory);
-      await this.invokeHooks(hookTempDirectory, targetDirectory, hookContext);
-    } catch (e) {
-      warning(`Unable to create ${projectInfo.name}: ${e.message}`);
-    } finally {
-      await fs.remove(hookTempDirectory);
-    }
+    const sourceDirectory = path.join(this.basePath, language);
+    const hookTempDirectory = path.join(targetDirectory, 'tmp');
+    await fs.mkdir(hookTempDirectory);
+    await this.installFiles(sourceDirectory, targetDirectory, language, projectInfo);
+    await this.applyFutureFlags(targetDirectory);
+    await this.invokeHooks(hookTempDirectory, targetDirectory, hookContext);
+    await fs.remove(hookTempDirectory);
   }
 
-  private async installFiles(sourceDirectory: string, targetDirectory: string, hookTempDirectory: string, language:string, project: ProjectInfo) {
+  private async installFiles(sourceDirectory: string, targetDirectory: string, language:string, project: ProjectInfo) {
     for (const file of await fs.readdir(sourceDirectory)) {
       const fromFile = path.join(sourceDirectory, file);
       const toFile = path.join(targetDirectory, this.expand(file, language, project));
       if ((await fs.stat(fromFile)).isDirectory()) {
         await fs.mkdir(toFile);
-        await this.installFiles(fromFile, toFile, hookTempDirectory, language, project);
+        await this.installFiles(fromFile, toFile, language, project);
         continue;
       } else if (file.match(/^.*\.template\.[^.]+$/)) {
         await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), language, project);
         continue;
       } else if (file.match(/^.*\.hook\.(d.)?[^.]+$/)) {
-        await this.installProcessed(fromFile, path.join(hookTempDirectory, file), language, project);
+        await this.installProcessed(fromFile, path.join(targetDirectory, 'tmp', file), language, project);
         continue;
       } else {
         await fs.copy(fromFile, toFile);
@@ -279,9 +272,6 @@ async function listDirectory(dirPath: string) {
   return (await fs.readdir(dirPath))
     .filter(p => !p.startsWith('.'))
     .filter(p => !(p === 'LICENSE'))
-    // if, for some reason, the temp folder for the hook doesn't get deleted we don't want to display it in this list
-    .filter(p => !p.startsWith(HOOK_DIR_PREFIX))
-    .filter(p => !(p === INFO_DOT_JSON))
     .sort();
 }
 
