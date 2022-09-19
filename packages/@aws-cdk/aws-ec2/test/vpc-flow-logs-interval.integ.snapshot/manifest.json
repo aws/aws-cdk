@@ -7,27 +7,27 @@
         "file": "tree.json"
       }
     },
-    "aws-cdk-codedeploy-server-dg.assets": {
+    "FlowLogsTestStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-codedeploy-server-dg.assets.json",
+        "file": "FlowLogsTestStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-codedeploy-server-dg": {
+    "FlowLogsTestStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-codedeploy-server-dg.template.json",
+        "templateFile": "FlowLogsTestStack.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5088f12eca5c246f5575ce7f87af7fe359933f451dfd57b1c97881139e63533b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/96d9c05ccd40ed1b767705d5c5db20f22695b36afcaf5a53a7da8a9b887ae780.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-codedeploy-server-dg.assets"
+          "FlowLogsTestStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -36,245 +36,286 @@
         }
       },
       "dependencies": [
-        "aws-cdk-codedeploy-server-dg.assets"
+        "FlowLogsTestStack.assets"
       ],
       "metadata": {
-        "/aws-cdk-codedeploy-server-dg/VPC/Resource": [
+        "/FlowLogsTestStack/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/Subnet": [
+        "/FlowLogsTestStack/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/RouteTable": [
+        "/FlowLogsTestStack/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/FlowLogsTestStack/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/DefaultRoute": [
+        "/FlowLogsTestStack/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/EIP": [
+        "/FlowLogsTestStack/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/NATGateway": [
+        "/FlowLogsTestStack/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/Subnet": [
+        "/FlowLogsTestStack/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/RouteTable": [
+        "/FlowLogsTestStack/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/FlowLogsTestStack/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/DefaultRoute": [
+        "/FlowLogsTestStack/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/EIP": [
+        "/FlowLogsTestStack/VPC/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2EIP4947BC00"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/NATGateway": [
+        "/FlowLogsTestStack/VPC/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1/Subnet": [
+        "/FlowLogsTestStack/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1/RouteTable": [
+        "/FlowLogsTestStack/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/FlowLogsTestStack/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1/DefaultRoute": [
+        "/FlowLogsTestStack/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2/Subnet": [
+        "/FlowLogsTestStack/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2/RouteTable": [
+        "/FlowLogsTestStack/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/FlowLogsTestStack/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2/DefaultRoute": [
+        "/FlowLogsTestStack/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/IGW": [
+        "/FlowLogsTestStack/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/VPC/VPCGW": [
+        "/FlowLogsTestStack/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/ASG/InstanceSecurityGroup/Resource": [
+        "/FlowLogsTestStack/VPC/FlowLogsS3/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceSecurityGroup0525485D"
+            "data": "VPCFlowLogsS3BucketFB7DC2BE"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/ASG/InstanceRole/Resource": [
+        "/FlowLogsTestStack/VPC/FlowLogsS3/Bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceRoleE263A41B"
+            "data": "VPCFlowLogsS3BucketPolicyB2C2A045"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/ASG/InstanceRole/DefaultPolicy/Resource": [
+        "/FlowLogsTestStack/VPC/FlowLogsS3/FlowLog": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceRoleDefaultPolicy7636D8BF"
+            "data": "VPCFlowLogsS3FlowLogB5256CFF"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/ASG/InstanceProfile": [
+        "/FlowLogsTestStack/VPC/FlowLogsS3KeyPrefix/FlowLog": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceProfile0A2834D7"
+            "data": "VPCFlowLogsS3KeyPrefixFlowLogB57F1746"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/ASG/LaunchConfig": [
+        "/FlowLogsTestStack/FlowLogsCW/IAMRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLaunchConfigC00AF12B"
+            "data": "FlowLogsCWIAMRole017AD736"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/ASG/ASG": [
+        "/FlowLogsTestStack/FlowLogsCW/IAMRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASG46ED3070"
+            "data": "FlowLogsCWIAMRoleDefaultPolicy943C8A20"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/FlowLogsTestStack/FlowLogsCW/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "FlowLogsCWLogGroup0398E8F8"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/ELB/SecurityGroup/Resource": [
+        "/FlowLogsTestStack/FlowLogsCW/FlowLog": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ELBSecurityGroupF148FD2E"
+            "data": "FlowLogsCWFlowLog9CED86DA"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/ELB/Resource": [
+        "/FlowLogsTestStack/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ELBF276B85D"
+            "data": "Bucket83908E77"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/Alarm1/Resource": [
+        "/FlowLogsTestStack/Bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Alarm1F9009D71"
+            "data": "BucketPolicyE9A3008A"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/CodeDeployGroup/Application/Resource": [
+        "/FlowLogsTestStack/Bucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CodeDeployGroupApplication13EFBDA6"
+            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/CodeDeployGroup/Role/Resource": [
+        "/FlowLogsTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CodeDeployGroupRole1D304F7A"
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/CodeDeployGroup/Resource": [
+        "/FlowLogsTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CodeDeployGroup58220FC8"
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/Service-principalMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceprincipalMap"
-          }
-        ],
-        "/aws-cdk-codedeploy-server-dg/BootstrapVersion": [
+        "/FlowLogsTestStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/CheckBootstrapVersion": [
+        "/FlowLogsTestStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-codedeploy-server-dg"
+      "displayName": "FlowLogsTestStack"
+    },
+    "FlowLogsDefaultTestDeployAssert6AFD1854.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "FlowLogsDefaultTestDeployAssert6AFD1854.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "FlowLogsDefaultTestDeployAssert6AFD1854": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "FlowLogsDefaultTestDeployAssert6AFD1854.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "FlowLogsDefaultTestDeployAssert6AFD1854.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "FlowLogsDefaultTestDeployAssert6AFD1854.assets"
+      ],
+      "metadata": {
+        "/FlowLogs/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/FlowLogs/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "FlowLogs/DefaultTest/DeployAssert"
     }
   }
 }
