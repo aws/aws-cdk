@@ -2621,6 +2621,22 @@ aws-sdk@^2.1211.0, aws-sdk@^2.596.0, aws-sdk@^2.928.0:
     uuid "8.0.0"
     xml2js "0.4.19"
 
+aws-sdk@^2.1211.0:
+  version "2.1218.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1218.0.tgz#51f225b11be9a9443ea30964346018a4ca49b750"
+  integrity sha512-oreF2jKfUZ8VKnIKh8TrOOOsdSfv87jHGtWQNAHdvfeyrYK5FrnvGkHUZ3bu6g6u1gHwu5FhTPiRMbgS8Re+NA==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    util "^0.12.4"
+    uuid "8.0.0"
+    xml2js "0.4.19"
+
 aws-sign2@~0.7.0:
   version "0.7.0"
   resolved "https://registry.npmjs.org/aws-sign2/-/aws-sign2-0.7.0.tgz#b46e890934a9591f2d2f6f86d7e6a9f1b3fe76a8"
