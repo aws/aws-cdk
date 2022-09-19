@@ -1314,8 +1314,10 @@ vpc.addFlowLog('FlowLogS3', {
   destination: ec2.FlowLogDestination.toS3()
 });
 
+// Only reject traffic and interval every minute.
 vpc.addFlowLog('FlowLogCloudWatch', {
-  trafficType: ec2.FlowLogTrafficType.REJECT
+  trafficType: ec2.FlowLogTrafficType.REJECT,
+  maxAggregationInterval: FlowLogMaxAggregationInterval.ONE_MINUTE,
 });
 ```
 
