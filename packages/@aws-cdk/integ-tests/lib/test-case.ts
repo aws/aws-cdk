@@ -115,6 +115,16 @@ export interface IntegTestProps extends TestOptions {
    * List of test cases that make up this test
    */
   readonly testCases: Stack[];
+
+  /**
+   * Enable lookups for this test. If lookups are enabled
+   * then `stackUpdateWorkflow` must be set to false.
+   * Lookups should only be enabled when you are explicitely testing
+   * lookups.
+   *
+   * @default false
+   */
+  readonly enableLookups?: boolean;
 }
 
 /**
@@ -127,9 +137,11 @@ export class IntegTest extends Construct {
    */
   public readonly assertions: IDeployAssert;
   private readonly testCases: IntegTestCase[];
+  private readonly enableLookups?: boolean;
   constructor(scope: Construct, id: string, props: IntegTestProps) {
     super(scope, id);
 
+    this.enableLookups = props.enableLookups;
     const defaultTestCase = new IntegTestCase(this, 'DefaultTest', {
       stacks: props.testCases.filter(stack => !IntegTestCaseStack.isIntegTestCaseStack(stack)),
       hooks: props.hooks,
@@ -152,7 +164,7 @@ export class IntegTest extends Construct {
       validate: () => {
         attachCustomSynthesis(this, {
           onSynthesize: (session: ISynthesisSession) => {
-            const synthesizer = new IntegManifestSynthesizer(this.testCases);
+            const synthesizer = new IntegManifestSynthesizer(this.testCases, this.enableLookups);
             synthesizer.synthesize(session);
           },
         });
