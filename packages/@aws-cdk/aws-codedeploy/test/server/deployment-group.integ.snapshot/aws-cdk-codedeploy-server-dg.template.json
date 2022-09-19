@@ -722,6 +722,9 @@
      ],
      "Enabled": true
     },
+    "AutoRollbackConfiguration": {
+     "Enabled": false
+    },
     "AutoScalingGroups": [
      {
       "Ref": "ASG46ED3070"
