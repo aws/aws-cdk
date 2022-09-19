@@ -340,11 +340,11 @@ By default CDK will create a CloudFormation change with the changes that will
 be deployed, and then executes it. This behavior can be controlled with the
 `--method` parameter:
 
-* `--method=change-set` (default): create and execute the change set.
-* `--method=prepare-change-set`: create teh change set but don't execute it.
+- `--method=change-set` (default): create and execute the change set.
+- `--method=prepare-change-set`: create teh change set but don't execute it.
   This is useful if you have external tools that will inspect the change set or
   you have an approval process for change sets.
-* `--method=direct`: do not create a change set but apply the change immediately.
+- `--method=direct`: do not create a change set but apply the change immediately.
   This is typically a bit faster than creating a change set, but it loses
   the progress information.
 
@@ -365,6 +365,7 @@ $ cdk deploy --method=prepare-change-set --change-set-name MyChangeSetName
 
 For more control over when stack changes are deployed, the CDK can generate a
 CloudFormation change set but not execute it.
+
 #### Hotswap deployments for faster development
 
 You can pass the `--hotswap` flag to the `deploy` command:
