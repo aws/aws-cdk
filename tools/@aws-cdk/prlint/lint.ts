@@ -104,8 +104,10 @@ function hasLabel(issue: any, labelName: string) {
  * Check this by looking for something that most likely was intended
  * to be said note, but got misspelled as "BREAKING CHANGES:" or
  * "BREAKING CHANGES(module):"
+ *
+ * Check the title format to contain the module for the changes.
  */
-function validateBreakingChangeFormat(title: string, body: string) {
+function validateChangeFormat(title: string, body: string) {
   const re = /^BREAKING.*$/m;
   const m = re.exec(body);
   if (m) {
@@ -115,10 +117,10 @@ function validateBreakingChangeFormat(title: string, body: string) {
     if (m[0].slice('BREAKING CHANGE:'.length).trim().length === 0) {
       throw new LinterError("The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause");
     }
-    const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;
-    if (!titleRe.exec(title)) {
-      throw new LinterError("The title of this PR must specify the module name that the first breaking change should be associated to");
-    }
+  }
+  const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;
+  if (!titleRe.exec(title)) {
+    throw new LinterError("The title of this PR must specify the module name that the first breaking change should be associated to");
   }
 }
 
@@ -138,24 +140,24 @@ export async function validatePr(number: number) {
   }
 
   const gh = createGitHubClient();
-  
+
   const issues = gh.getIssues(OWNER, REPO);
   const repo = gh.getRepo(OWNER, REPO);
-  
+
   console.log(`⌛  Fetching PR number ${number}`);
   const issue = (await issues.getIssue(number)).data;
-  
+
   console.log(`⌛  Fetching files for PR number ${number}`);
   const files = (await repo.listPullRequestFiles(number)).data;
-  
+
   console.log("⌛  Validating...");
-  
+
   if (shouldExemptReadme(issue)) {
     console.log(`Not validating README changes since the PR is labeled with '${EXEMPT_README}'`);
   } else {
     featureContainsReadme(issue, files);
   }
-  
+
   if (shouldExemptTest(issue)) {
     console.log(`Not validating test changes since the PR is labeled with '${EXEMPT_TEST}'`);
   } else {
@@ -168,8 +170,8 @@ export async function validatePr(number: number) {
   } else {
     featureContainsIntegTest(issue, files);
   }
- 
-  validateBreakingChangeFormat(issue.title, issue.body);
+
+  validateChangeFormat(issue.title, issue.body);
   if (shouldExemptBreakingChange(issue)) {
     console.log(`Not validating breaking changes since the PR is labeled with '${EXEMPT_BREAKING_CHANGE}'`);
   } else {
