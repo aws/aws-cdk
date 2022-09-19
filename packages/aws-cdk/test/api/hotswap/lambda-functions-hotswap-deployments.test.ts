@@ -905,3 +905,127 @@ test('calls both updateLambdaCode() and updateLambdaConfiguration() API when it 
     S3Key: 'new-key',
   });
 });
+
+test('Lambda hotswap works properly with changes of environment variables, description, tags with tokens', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      EventBus: {
+        Type: 'AWS::Events::EventBus',
+        Properties: {
+          Name: 'my-event-bus',
+        },
+      },
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 's3-bucket',
+            S3Key: 's3-key',
+          },
+          FunctionName: 'my-function',
+          Environment: {
+            Variables: {
+              token: { 'Fn::GetAtt': ['EventBus', 'Arn'] },
+              literal: 'oldValue',
+            },
+          },
+          Description: {
+            'Fn::Join': ['', [
+              'oldValue',
+              { 'Fn::GetAtt': ['EventBus', 'Arn'] },
+            ]],
+          },
+          Tags: [
+            {
+              Key: 'token',
+              Value: { 'Fn::GetAtt': ['EventBus', 'Arn'] },
+            },
+            {
+              Key: 'literal',
+              Value: 'oldValue',
+            },
+          ],
+        },
+        Metadata: {
+          'aws:asset:path': 'asset-path',
+        },
+      },
+    },
+  });
+
+  setup.pushStackResourceSummaries(
+    setup.stackSummaryOf('EventBus', 'AWS::Events::EventBus', 'my-event-bus'),
+  );
+
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        EventBus: {
+          Type: 'AWS::Events::EventBus',
+          Properties: {
+            Name: 'my-event-bus',
+          },
+        },
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 's3-bucket',
+              S3Key: 's3-key',
+            },
+            FunctionName: 'my-function',
+            Environment: {
+              Variables: {
+                token: { 'Fn::GetAtt': ['EventBus', 'Arn'] },
+                literal: 'newValue',
+              },
+            },
+            Description: {
+              'Fn::Join': ['', [
+                'newValue',
+                { 'Fn::GetAtt': ['EventBus', 'Arn'] },
+              ]],
+            },
+            Tags: [
+              {
+                Key: 'token',
+                Value: { 'Fn::GetAtt': ['EventBus', 'Arn'] },
+              },
+              {
+                Key: 'literal',
+                Value: 'newValue',
+              },
+            ],
+          },
+          Metadata: {
+            'aws:asset:path': 'asset-path',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateLambdaConfiguration).toHaveBeenCalledWith({
+    FunctionName: 'my-function',
+    Environment: {
+      Variables: {
+        token: 'arn:aws:events:here:123456789012:event-bus/my-event-bus',
+        literal: 'newValue',
+      },
+    },
+    Description: 'newValuearn:aws:events:here:123456789012:event-bus/my-event-bus',
+  });
+  expect(mockTagResource).toHaveBeenCalledWith({
+    Resource: 'arn:aws:lambda:here:123456789012:function:my-function',
+    Tags: {
+      token: 'arn:aws:events:here:123456789012:event-bus/my-event-bus',
+      literal: 'newValue',
+    },
+  });
+});
