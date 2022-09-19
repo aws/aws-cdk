@@ -96,6 +96,38 @@ describe('rules', () => {
     });
   });
 
+  test('Bucket with no transition duration fails', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN: Fail because no transition date or transition days are specified.
+    expect(() => {
+      new Bucket(stack, 'Bucket', {
+        lifecycleRules: [{
+          transitions: [{ storageClass: StorageClass.GLACIER }],
+        }],
+      });
+    }).toThrow();
+  });
+
+  test('Bucket with multiple transition duration fails', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN: Fail because both transition date and transition days are specified.
+    expect(() => {
+      new Bucket(stack, 'Bucket', {
+        lifecycleRules: [{
+          transitions: [{
+            storageClass: StorageClass.GLACIER,
+            transitionAfter: Duration.days(1),
+            transitionDate: new Date(),
+          }],
+        }],
+      });
+    }).toThrow();
+  });
+
   test('Noncurrent rule on nonversioned bucket fails', () => {
     // GIVEN
     const stack = new Stack();
