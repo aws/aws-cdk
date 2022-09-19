@@ -74,7 +74,6 @@ function pythonExecutable() {
   return python;
 }
 const INFO_DOT_JSON = 'info.json';
-const HOOK_DIR_PREFIX = 'tmp';
 
 export class InitTemplate {
   public static async fromName(templatesDir: string, name: string) {
@@ -278,7 +277,6 @@ async function listDirectory(dirPath: string) {
     .filter(p => !p.startsWith('.'))
     .filter(p => !(p === 'LICENSE'))
     // if, for some reason, the temp folder for the hook doesn't get deleted we don't want to display it in this list
-    .filter(p => !p.startsWith(HOOK_DIR_PREFIX))
     .filter(p => !(p === INFO_DOT_JSON))
     .sort();
 }
