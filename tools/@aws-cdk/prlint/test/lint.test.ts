@@ -158,7 +158,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validate()).rejects.toThrow(
-      'The PR Linter fails with the following errors:' +
+      'The Pull Request Linter fails with the following errors:' +
       '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
       '\n\nPRs must pass status checks before we can provide a meaningful review.'
       );
@@ -187,7 +187,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validate()).rejects.toThrow(
-      'The PR Linter fails with the following errors:' +
+      'The Pull Request Linter fails with the following errors:' +
       '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
       '\n\nPRs must pass status checks before we can provide a meaningful review.'
       );
@@ -216,7 +216,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validate()).rejects.toThrow(
-      'The PR Linter fails with the following errors:' +
+      'The Pull Request Linter fails with the following errors:' +
       '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
       '\n\nPRs must pass status checks before we can provide a meaningful review.'
       );
@@ -245,7 +245,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validate()).rejects.toThrow(
-      'The PR Linter fails with the following errors:' +
+      'The Pull Request Linter fails with the following errors:' +
       '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
       '\n\nPRs must pass status checks before we can provide a meaningful review.'
       );
@@ -297,7 +297,7 @@ describe('integration tests required on features', () => {
 });
 
 
-function configureMock(issue: any, prFiles: any[] | undefined): linter.PRLinter {
+function configureMock(issue: any, prFiles: any[] | undefined): linter.PullRequestLinter {
   const client = {
     get(_props: { _owner: string, _repo: string, _pull_number: number }) {
       return { data: issue };
@@ -320,7 +320,7 @@ function configureMock(issue: any, prFiles: any[] | undefined): linter.PRLinter 
     dismissReview() {},
 
   }
-  return new linter.PRLinter({
+  return new linter.PullRequestLinter({
     owner: 'aws',
     repo: 'aws-cdk',
     number: 1000,

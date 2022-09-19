@@ -2,10 +2,15 @@ import * as path from 'path';
 import { breakingModules } from './parser';
 import { findModulePath, moduleStability } from './module';
 
-const EXEMPT_README = 'pr-linter/exempt-readme';
-const EXEMPT_TEST = 'pr-linter/exempt-test';
-const EXEMPT_INTEG_TEST = 'pr-linter/exempt-integ-test';
-const EXEMPT_BREAKING_CHANGE = 'pr-linter/exempt-breaking-change';
+/**
+ * Types of exemption labels in aws-cdk project.
+ */
+enum Exemption {
+  README = 'pr-linter/exempt-readme',
+  TEST = 'pr-linter/exempt-test',
+  INTEG_TEST = 'pr-linter/exempt-integ-test',
+  BREAKING_CHANGE = 'pr-linter/exempt-breaking-change'
+}
 
 class LinterError extends Error {
   constructor(message: string) {
@@ -13,89 +18,158 @@ class LinterError extends Error {
   }
 }
 
-interface Test {
-  test: (pr: any, files: any[]) => any;
+/**
+ * Results of a single test.
+ *
+ * On a successful validation, no failures will be present.
+ * Some tests may return multiple failures.
+ */
+class TestResult {
+  public errorMessages: string[] = [];
+
+  /**
+   * Assesses the failure condition for the type of pull request being tested and adds the failure message
+   * to errorMessages if failures are present.
+   * @param failureCondition The conditions for this failure type.
+   * @param failureMessage The message to emit to the contributor.
+   */
+  public assessFailure(failureCondition: boolean, failureMessage: string): void {
+    if (failureCondition) {
+      this.errorMessages.push(failureMessage);
+    }
+  }
 }
 
-class ValidateResult {
-  constructor(public errors: string[]) {
-    this.errors = errors;
+/**
+ * Represents a single test.
+ */
+interface Test {
+  test: (pr: any, files: any[]) => TestResult;
+}
+
+/**
+ * Represents a set of tests and the conditions under which those rules exempt.
+ */
+interface ValidateRuleSetOptions {
+
+  /**
+   * The function to test for exemption from the rules in testRuleSet.
+   */
+  exemption?: (pr: any) => boolean;
+
+  /**
+   * The log message printed if the exemption is granted.
+   */
+  exemptionMessage?: string;
+
+  /**
+   * The set of rules to test against if the pull request is not exempt.
+   */
+  testRuleSet: Test[];
+}
+
+/**
+ * This class provides functionality for performing validation tests against each ruleset and
+ * collecting all the errors returned by those tests.
+ */
+class ValidationCollector {
+  public errors: string[] = [];
+
+  constructor(private pr: any, private files: string[]) { }
+
+  /**
+   * Checks for exemption criteria and then validates against the ruleset when not exempt to it.
+   * Any validation failures are collected by the ValidationCollector.
+   * @param validationOptions the options to validate against
+   */
+  public validateRuleSet(validationOptions: ValidateRuleSetOptions): void {
+    if (validationOptions.exemption ? validationOptions.exemption(this.pr) : false) {
+      console.log(validationOptions.exemptionMessage);
+    } else {
+      this.errors = this.errors.concat(...validationOptions.testRuleSet.map(((test: Test) => test.test(this.pr, this.files).errorMessages)));
+    }
   }
 
+  /**
+   * Checks whether any validation errors have been collected.
+   * @returns boolean
+   */
   public isValid() {
     return this.errors.length === 0;
   }
 }
 
-interface ValidationCollectorOptions {
-  exemption?: (pr: any) => boolean;
-  exemptionMessage?: string;
-  testRules: Test[];
-}
+/**
+ * Props used to perform linting against the pull request.
+ */
+export interface PullRequestLinterProps {
 
-class ValidationCollector {
-  private errors: string[] = [];
-
-  constructor(private pr: any, private files: string[]) {
-    this.pr = pr;
-    this.files = files;
-  }
-
-  public validateRule(validationOptions: ValidationCollectorOptions) {
-    if (validationOptions.exemption ? validationOptions.exemption(this.pr) : false) {
-      console.log(validationOptions.exemptionMessage);
-    } else {
-      this.errors = this.errors.concat(...validationOptions.testRules.map((test) =>
-      test.test(this.pr, this.files)).filter(s => s !== undefined));
-    }
-  }
-
-  public result() {
-    return new ValidateResult(this.errors);
-  }
-}
-
-export interface PRLinterProps {
+  /**
+   * GitHub client scoped to pull requests. Imported via @actions/github.
+   */
   readonly client: any;
+
+  /**
+   * Repository owner.
+   */
   readonly owner: string;
+
+  /**
+   * Repository name.
+   */
   readonly repo: string;
+
+  /**
+   * Pull request number.
+   */
   readonly number: number;
 }
 
-export class PRLinter {
+/**
+ * This class provides functionality to run lint checks against a pull request, request changes with the lint failures
+ * in the body of the review, and dismiss any previous reviews upon changes to the pull request.
+ */
+export class PullRequestLinter {
   private readonly client: any;
   private readonly prParams: { owner: string, repo: string, pull_number: number };
 
 
-  constructor(private readonly props: PRLinterProps) {
+  constructor(private readonly props: PullRequestLinterProps) {
     this.client = props.client;
     this.prParams = { owner: props.owner, repo: props.repo, pull_number: props.number };
   }
 
-  private async dismissPreviousPRLinterReviews() {
+  /**
+   * Dismisses previous reviews by aws-cdk-automation when changes have been made to the pull request.
+   */
+  private async dismissPreviousPRLinterReviews(): Promise<void> {
     const reviews = await this.client.listReviews(this.prParams);
     reviews.data.forEach(async (review: any) => {
       if (review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') {
         await this.client.dismissReview({
           ...this.prParams,
           review_id: review.id,
-          message: 'PR updated. Dissmissing previous PRLinter Review.',
+          message: 'Pull Request updated. Dissmissing previous PRLinter Review.',
         })
       }
     })
   }
 
-  private async communicateResult(errors: string[]) {
-    const body = `The PR Linter fails with the following errors:${this.formatErrors(errors)}PRs must pass status checks before we can provide a meaningful review.`;
+  /**
+   * Creates a new review, requesting changes, with the reasons that the linter did not pass.
+   * @param failureReasons The list of reasons why the linter failed
+   */
+  private async communicateResult(failureReasons: string[]): Promise<void> {
+    const body = `The Pull Request Linter fails with the following errors:${this.formatErrors(failureReasons)}PRs must pass status checks before we can provide a meaningful review.`;
       await this.client.createReview({ ...this.prParams, body, event: 'REQUEST_CHANGES', });
       throw new LinterError(body);
   }
 
-  private formatErrors(errors: string[]) {
-    return `\n\n\t❌ ${errors.join('\n\t❌ ')}\n\n`;
-  };
-
-  public async validate() {
+  /**
+   * Performs validations and communicates results via pull request comments, upon failure.
+   * This also dissmisses previous reviews so they do not remain in REQUEST_CHANGES upon fix of failures.
+   */
+  public async validate(): Promise<void> {
     const number = this.props.number;
 
     console.log(`⌛  Fetching PR number ${number}`);
@@ -108,108 +182,124 @@ export class PRLinter {
 
     const validationCollector = new ValidationCollector(pr, files);
 
-    validationCollector.validateRule({
+    validationCollector.validateRuleSet({
       exemption: shouldExemptReadme,
-      exemptionMessage: `Not validating README changes since the PR is labeled with '${EXEMPT_README}'`,
-      testRules: [ { test: featureContainsReadme } ],
+      exemptionMessage: `Not validating README changes since the PR is labeled with '${Exemption.README}'`,
+      testRuleSet: [ { test: featureContainsReadme } ],
     });
 
-    validationCollector.validateRule({
+    validationCollector.validateRuleSet({
       exemption: shouldExemptTest,
-      exemptionMessage: `Not validating test changes since the PR is labeled with '${EXEMPT_TEST}'`,
-      testRules: [ { test: featureContainsTest }, { test: fixContainsTest } ],
+      exemptionMessage: `Not validating test changes since the PR is labeled with '${Exemption.TEST}'`,
+      testRuleSet: [ { test: featureContainsTest }, { test: fixContainsTest } ],
     });
 
-    validationCollector.validateRule({
+    validationCollector.validateRuleSet({
       exemption: shouldExemptIntegTest,
-      exemptionMessage: `Not validating integration test changes since the PR is labeled with '${EXEMPT_INTEG_TEST}'`,
-      testRules: [ { test: featureContainsIntegTest}, { test: fixContainsIntegTest } ]
+      exemptionMessage: `Not validating integration test changes since the PR is labeled with '${Exemption.INTEG_TEST}'`,
+      testRuleSet: [ { test: featureContainsIntegTest}, { test: fixContainsIntegTest } ]
     });
 
-    validationCollector.validateRule({
-      testRules: [ { test: validateBreakingChangeFormat } ]
+    validationCollector.validateRuleSet({
+      testRuleSet: [ { test: validateBreakingChangeFormat } ]
     });
 
-    validationCollector.validateRule({
+    validationCollector.validateRuleSet({
       exemption: shouldExemptBreakingChange,
-      exemptionMessage: `Not validating breaking changes since the PR is labeled with '${EXEMPT_BREAKING_CHANGE}'`,
-      testRules: [ { test: assertStability } ]
+      exemptionMessage: `Not validating breaking changes since the PR is labeled with '${Exemption.BREAKING_CHANGE}'`,
+      testRuleSet: [ { test: assertStability } ]
     });
 
     await this.dismissPreviousPRLinterReviews();
-    validationCollector.result().isValid() ? console.log("✅  Success") : await this.communicateResult(validationCollector.result().errors);
+    validationCollector.isValid() ? console.log("✅  Success") : await this.communicateResult(validationCollector.errors);
   }
+
+  private formatErrors(errors: string[]) {
+    return `\n\n\t❌ ${errors.join('\n\t❌ ')}\n\n`;
+  };
 }
 
-function isPkgCfnspec(pr: any) {
+function isPkgCfnspec(pr: any): boolean {
   return pr.title.indexOf("(cfnspec)") > -1;
 }
 
-function isFeature(pr: any) {
+function isFeature(pr: any): boolean {
   return pr.title.startsWith("feat")
 }
 
-function isFix(pr: any) {
+function isFix(pr: any): boolean {
   return pr.title.startsWith("fix")
 }
 
-function testChanged(files: any[]) {
+function testChanged(files: any[]): boolean {
   return files.filter(f => f.filename.toLowerCase().includes("test")).length != 0;
 }
 
-function integTestChanged(files: any[]) {
+function integTestChanged(files: any[]): boolean {
   return files.filter(f => f.filename.toLowerCase().match(/integ.*.ts$/)).length != 0;
 }
 
-function integTestSnapshotChanged(files: any[]) {
+function integTestSnapshotChanged(files: any[]): boolean {
   return files.filter(f => f.filename.toLowerCase().includes("integ.snapshot")).length != 0;
 }
 
-function readmeChanged(files: any[]) {
+function readmeChanged(files: any[]): boolean {
   return files.filter(f => path.basename(f.filename) == "README.md").length != 0;
 }
 
-function featureContainsReadme(pr: any, files: any[]) {
-  return (isFeature(pr) && !readmeChanged(files) && !isPkgCfnspec(pr)) ? 'Features must contain a change to a README file.': undefined;
+function featureContainsReadme(pr: any, files: any[]): TestResult {
+  const result = new TestResult();
+  result.assessFailure(isFeature(pr) && !readmeChanged(files) && !isPkgCfnspec(pr), 'Features must contain a change to a README file.');
+  return result;
 };
 
-function featureContainsTest(pr: any, files: any[]) {
-  return (isFeature(pr) && !testChanged(files)) ? 'Features must contain a change to a test file.' : undefined;
+function featureContainsTest(pr: any, files: any[]): TestResult {
+  const result = new TestResult();
+  result.assessFailure(isFeature(pr) && !testChanged(files), 'Features must contain a change to a test file.');
+  return result;
 };
 
-function fixContainsTest(pr: any, files: any[]) {
-  return (isFix(pr) && !testChanged(files)) ? 'Fixes must contain a change to a test file.': undefined;
+function fixContainsTest(pr: any, files: any[]): TestResult {
+  const result = new TestResult();
+  result.assessFailure(isFix(pr) && !testChanged(files), 'Fixes must contain a change to a test file.');
+  return result;
 };
 
-function featureContainsIntegTest(pr: any, files: any[]) {
-  return (isFeature(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files))) ? 'Features must contain a change to an integration test file and the resulting snapshot.' : undefined;
+function featureContainsIntegTest(pr: any, files: any[]): TestResult {
+  const result = new TestResult();
+  result.assessFailure(isFeature(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
+    'Features must contain a change to an integration test file and the resulting snapshot.');
+  return result;
 };
 
-function fixContainsIntegTest(pr: any, files: any[]) {
-  return (isFix(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files))) ? 'Fixes must contain a change to an integration test file and the resulting snapshot.' : undefined;
-}
+function fixContainsIntegTest(pr: any, files: any[]): TestResult {
+  const result = new TestResult();
+  result.assessFailure(isFix(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
+    'Fixes must contain a change to an integration test file and the resulting snapshot.');
+  return result;
+};
 
-function shouldExemptReadme(pr: any) {
-  return hasLabel(pr, EXEMPT_README);
-}
+function shouldExemptReadme(pr: any): boolean {
+  return hasLabel(pr, Exemption.README);
+};
 
-function shouldExemptTest(pr: any) {
-  return hasLabel(pr, EXEMPT_TEST);
-}
+function shouldExemptTest(pr: any): boolean {
+  return hasLabel(pr, Exemption.TEST);
+};
 
-function shouldExemptIntegTest(pr: any) {
-  return hasLabel(pr, EXEMPT_INTEG_TEST);
-}
+function shouldExemptIntegTest(pr: any): boolean {
+  return hasLabel(pr, Exemption.INTEG_TEST);
+};
 
-function shouldExemptBreakingChange(pr: any) {
-  return hasLabel(pr, EXEMPT_BREAKING_CHANGE);
-}
+function shouldExemptBreakingChange(pr: any): boolean {
+  return hasLabel(pr, Exemption.BREAKING_CHANGE);
+};
 
-function hasLabel(pr: any, labelName: string) {
+function hasLabel(pr: any, labelName: string): boolean {
   return pr.labels.some(function (l: any) {
     return l.name === labelName;
   })
-}
+};
 
 /**
  * Check that the 'BREAKING CHANGE:' note in the body is correct.
@@ -218,34 +308,30 @@ function hasLabel(pr: any, labelName: string) {
  * to be said note, but got misspelled as "BREAKING CHANGES:" or
  * "BREAKING CHANGES(module):"
  */
-function validateBreakingChangeFormat(pr: any, _files: any[]): string[] {
+function validateBreakingChangeFormat(pr: any, _files: any[]): TestResult {
   const title = pr.title;
   const body = pr.body;
-  const errors: string[] = [];
+  const result = new TestResult();
   const re = /^BREAKING.*$/m;
   const m = re.exec(body);
   if (m) {
-    if (!m[0].startsWith('BREAKING CHANGE: ')) {
-      errors.push(`Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}').`);
-    }
-    if (m[0].slice('BREAKING CHANGE:'.length).trim().length === 0) {
-      errors.push(`The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause.`);
-    }
+    result.assessFailure(!m[0].startsWith('BREAKING CHANGE: '), `Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}').`);
+    result.assessFailure(m[0].slice('BREAKING CHANGE:'.length).trim().length === 0, `The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause.`);
     const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;
-    if (!titleRe.exec(title)) {
-      errors.push('The title of this PR must specify the module name that the first breaking change should be associated to.');
-    }
+    result.assessFailure(!titleRe.exec(title), 'The title of this pull request must specify the module name that the first breaking change should be associated to.');
   }
-  return errors;
-}
+  return result;
+};
 
-function assertStability(pr: any, _files: any[]) {
+function assertStability(pr: any, _files: any[]): TestResult {
   const title = pr.title;
   const body = pr.body;
+  const result = new TestResult();
   const breakingStable = breakingModules(title, body).filter(mod => 'stable' === moduleStability(findModulePath(mod)));
-  return breakingStable.length > 0 ? `Breaking changes in stable modules [${breakingStable.join(', ')}] is disallowed.` : undefined;
-}
+  result.assessFailure(breakingStable.length > 0, `Breaking changes in stable modules [${breakingStable.join(', ')}] is disallowed.`);
+  return result;
+};
 
 require('make-runnable/custom')({
   printOutputFrame: false
-})
+});
