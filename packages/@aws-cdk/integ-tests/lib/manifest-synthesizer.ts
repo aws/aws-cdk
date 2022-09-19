@@ -9,12 +9,15 @@ const emptyManifest: IntegManifest = {
 };
 
 export class IntegManifestSynthesizer {
-  constructor(private readonly testCases: IntegTestCase[]) {}
+  constructor(private readonly testCases: IntegTestCase[], private readonly enableLookups?: boolean) {}
 
   synthesize(session: ISynthesisSession) {
-    const manifest = this.testCases
-      .map(tc => tc.manifest)
-      .reduce(mergeManifests, emptyManifest);
+    const manifest: IntegManifest = {
+      enableLookups: this.enableLookups,
+      ...this.testCases
+        .map(tc => tc.manifest)
+        .reduce(mergeManifests, emptyManifest),
+    };
 
     const snapshotDir = session.assembly.outdir;
 
