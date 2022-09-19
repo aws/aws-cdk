@@ -32,7 +32,10 @@ export class LambdaDestination implements logs.ILogSubscriptionDestination {
         // one destination.
         scope,
       });
-      scope.node.addDependency(scope.node.findChild(permissionId));
+      const permission = scope.node.tryFindChild(permissionId);
+      if (permission) {
+        scope.node.addDependency(permission);
+      }
     }
     return { arn: this.fn.functionArn };
   }
