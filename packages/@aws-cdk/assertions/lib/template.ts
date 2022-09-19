@@ -21,34 +21,39 @@ export class Template {
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
+   * @param skipCyclicalDependenciesCheck Optional param to support unprocessed circular transform templates
    */
-  public static fromStack(stack: Stack): Template {
-    return new Template(toTemplate(stack));
+  public static fromStack(stack: Stack, skipCyclicalDependenciesCheck?: boolean): Template {
+    return new Template(toTemplate(stack), skipCyclicalDependenciesCheck);
   }
 
   /**
    * Base your assertions from an existing CloudFormation template formatted as an in-memory
    * JSON object.
    * @param template the CloudFormation template formatted as a nested set of records
+   * @param skipCyclicalDependenciesCheck Optional param to support unprocessed circular transform templates
    */
-  public static fromJSON(template: { [key: string] : any }): Template {
-    return new Template(template);
+  public static fromJSON(template: { [key: string] : any }, skipCyclicalDependenciesCheck?: boolean): Template {
+    return new Template(template, skipCyclicalDependenciesCheck);
   }
 
   /**
    * Base your assertions from an existing CloudFormation template formatted as a
    * JSON string.
    * @param template the CloudFormation template in
+   * @param skipCyclicalDependenciesCheck Optional param to support unprocessed circular transform templates
    */
-  public static fromString(template: string): Template {
-    return new Template(JSON.parse(template));
+  public static fromString(template: string, skipCyclicalDependenciesCheck?: boolean): Template {
+    return new Template(JSON.parse(template), skipCyclicalDependenciesCheck);
   }
 
   private readonly template: TemplateType;
 
-  private constructor(template: { [key: string]: any }) {
+  private constructor(template: { [key: string]: any }, skipCyclicalDependenciesCheck?: boolean) {
     this.template = template as TemplateType;
-    checkTemplateForCyclicDependencies(this.template);
+    if (skipCyclicalDependenciesCheck ?? true) {
+      checkTemplateForCyclicDependencies(this.template);
+    }
   }
 
   /**

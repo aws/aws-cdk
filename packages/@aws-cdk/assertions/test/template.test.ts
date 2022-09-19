@@ -1194,6 +1194,25 @@ describe('Template', () => {
       });
     }).toThrow(/dependency cycle/);
   });
+
+  test('does not throw when given a template with cyclic dependencies if check is skipped', () => {
+    expect(() => {
+      Template.fromJSON({
+        Resources: {
+          Res1: {
+            Type: 'Foo',
+            Properties: {
+              Thing: { Ref: 'Res2' },
+            },
+          },
+          Res2: {
+            Type: 'Foo',
+            DependsOn: ['Res1'],
+          },
+        },
+      }, false);
+    }).not.toThrow(/dependency cycle/);
+  });
 });
 
 function expectToThrow(fn: () => void, msgs: (RegExp | string)[], done: jest.DoneCallback): void {

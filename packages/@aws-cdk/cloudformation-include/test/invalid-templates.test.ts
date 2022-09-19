@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as core from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
@@ -141,16 +142,120 @@ describe('CDK Include', () => {
     }).toThrow(/Short-form Fn::GetAtt must contain a '.' in its string argument, got: 'Bucket1Arn'/);
   });
 
-  test('detects a cycle between resources in the template', () => {
+  /**
+   * A->B
+   * B->A
+   * simplified version of cycle-in-resources.json, an example of cyclical references
+   */
+  test('by default does not accept a cycle between resources in the template', () => {
     expect(() => {
       includeTestTemplate(stack, 'cycle-in-resources.json');
     }).toThrow(/Found a cycle between resources in the template: Bucket1 depends on Bucket2 depends on Bucket1/);
   });
+
+  /**
+   * A->B
+   * B->C
+   * C->{D,A}
+   * D->B
+   * simplified version of multi-cycle-in-resources.json, an example of multiple cyclical references
+   */
+  test('by default does not accept multiple cycles between resources in the template', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'multi-cycle-in-resources.json');
+    }).toThrow(/Found a cycle between resources in the template: Bucket1 depends on Bucket2 depends on Bucket3 depends on Bucket4 depends on Bucket2/);
+  });
+
+  /**
+   * A->B
+   * B->{C,A}
+   * C->A
+   * simplified version of multi-cycle-multi-dest-in-resources.json, an example of multiple cyclical references that
+   * include visiting the same destination more than once
+   */
+  test('by default does not accept multiple cycles and multiple destinations between resources in the template', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'multi-cycle-multi-dest-in-resources.json');
+    }).toThrow(/Found a cycle between resources in the template: Bucket1 depends on Bucket2 depends on Bucket3 depends on Bucket1/);
+  });
+
+  /**
+   * A->B
+   * B->A
+   * simplified version of cycle-in-resources.json, an example of cyclical references
+   */
+  test('accepts a cycle between resources in the template if allowed', () => {
+    includeTestTemplate(stack, 'cycle-in-resources.json', { allowCyclicalReferences: true });
+    Template.fromStack(stack, false).templateMatches(
+      {
+        Resources: {
+          Bucket2: { Type: 'AWS::S3::Bucket', DependsOn: ['Bucket1'] },
+          Bucket1: {
+            Type: 'AWS::S3::Bucket',
+            Properties: { BucketName: { Ref: 'Bucket2' } },
+          },
+        },
+      },
+    );
+  });
+
+  /**
+   * A->B
+   * B->C
+   * C->{D,A}
+   * D->B
+   * simplified version of multi-cycle-in-resources.json, an example of multiple cyclical references
+   */
+  test('accepts multiple cycles between resources in the template if allowed', () => {
+    includeTestTemplate(stack, 'multi-cycle-in-resources.json', { allowCyclicalReferences: true });
+    Template.fromStack(stack, false).templateMatches(
+      {
+        Resources: {
+          Bucket2: { Type: 'AWS::S3::Bucket', DependsOn: ['Bucket3'] },
+          Bucket3: { Type: 'AWS::S3::Bucket', DependsOn: ['Bucket4', 'Bucket1'] },
+          Bucket4: { Type: 'AWS::S3::Bucket', DependsOn: ['Bucket2'] },
+          Bucket1: {
+            Type: 'AWS::S3::Bucket',
+            Properties: { BucketName: { Ref: 'Bucket2' } },
+          },
+        },
+      },
+    );
+  });
+
+  /**
+   * A->B
+   * B->{C,A}
+   * C->A
+   * simplified version of multi-cycle-multi-dest-in-resources.json, an example of multiple cyclical references that
+   * include visiting the same destination more than once
+   */
+  test('accepts multiple cycles and multiple destinations between resources in the template if allowed', () => {
+    includeTestTemplate(stack, 'multi-cycle-multi-dest-in-resources.json', { allowCyclicalReferences: true });
+    Template.fromStack(stack, false).templateMatches(
+      {
+        Resources: {
+          Bucket2: { Type: 'AWS::S3::Bucket', DependsOn: ['Bucket3', 'Bucket1'] },
+          Bucket3: { Type: 'AWS::S3::Bucket', DependsOn: ['Bucket1'] },
+          Bucket1: {
+            Type: 'AWS::S3::Bucket',
+            Properties: { BucketName: { Ref: 'Bucket2' } },
+          },
+        },
+      },
+    );
+  });
 });
 
-function includeTestTemplate(scope: constructs.Construct, testTemplate: string): inc.CfnInclude {
+interface IncludeTestTemplateProps {
+  /** @default false */
+  readonly allowCyclicalReferences?: boolean;
+}
+
+function includeTestTemplate(scope: constructs.Construct, testTemplate: string, props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
+    allowCyclicalReferences: props.allowCyclicalReferences,
   });
 }
 

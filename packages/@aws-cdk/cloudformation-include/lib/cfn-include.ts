@@ -57,6 +57,15 @@ export interface CfnIncludeProps {
    * @default - parameters will retain their original definitions
    */
   readonly parameters?: { [parameterName: string]: any };
+
+  /**
+   * Specifies whether to allow cyclical references, effectively disregarding safeguards meant to avoid undeployable
+   * templates. This should only be set to true in the case of templates utilizing cloud transforms (e.g. SAM) that
+   * after processing the transform will no longer contain any circular references.
+   *
+   * @default - will throw an error on detecting any cyclical references
+   */
+  readonly allowCyclicalReferences?: boolean;
 }
 
 /**
@@ -99,9 +108,15 @@ export class CfnInclude extends core.CfnElement {
   private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
+  private readonly allowCyclicalReferences: boolean;
+  private logicalIdToPlaceholderMap: Map<string, Set<string>>;
 
   constructor(scope: Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
+
+    this.allowCyclicalReferences = props.allowCyclicalReferences ?? false;
+
+    this.logicalIdToPlaceholderMap = new Map<string, Set<string>>();
 
     this.parametersToReplace = props.parameters || {};
 
@@ -584,10 +599,44 @@ export class CfnInclude extends core.CfnElement {
     return cfnCondition;
   }
 
+  private getPlaceholderID(): string {
+    let id = 'Placeholder';
+    for (let i = 0; i < 26; i++) {
+      id = id + randomAlphaNumeric();
+    }
+    return id;
+
+    function randomAlphaNumeric(): string {
+      if (Math.random() < 0.5) {
+        return String.fromCharCode('a'.charCodeAt(0) + Math.floor(Math.random() * 26));
+      } else {
+        return Math.floor(Math.random() * 10).toString();
+      }
+    }
+  }
+
   private getOrCreateResource(logicalId: string, cycleChain: string[] = []): core.CfnResource {
     cycleChain = cycleChain.concat([logicalId]);
     if (cycleChain.length !== new Set(cycleChain).size) {
-      throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
+      if (!this.allowCyclicalReferences) {
+        throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
+      }
+      let placeholderResourceAttributes: any = this.template.Resources[logicalId];
+      let placeholderId: string = this.getPlaceholderID();
+      //handle multiple cycles
+      if (this.logicalIdToPlaceholderMap.get(logicalId)) {
+        this.logicalIdToPlaceholderMap.get(logicalId)!.add(placeholderId);
+      } else {
+        this.logicalIdToPlaceholderMap.set(logicalId, new Set<string>([placeholderId]));
+      }
+      let placeholderInstance = new core.CfnResource(this, placeholderId, {
+        type: placeholderResourceAttributes.Type,
+        properties: {},
+      });
+      placeholderInstance.overrideLogicalId(placeholderId);
+      this.resources[placeholderId] = placeholderInstance;
+
+      return placeholderInstance;
     }
 
     const ret = this.resources[logicalId];
@@ -650,6 +699,18 @@ export class CfnInclude extends core.CfnElement {
         });
         cfnParser.handleAttributes(l1Instance, resourceAttributes, logicalId);
       }
+    }
+
+    /*
+    1. remove each placeholder version of object created for cycle breaking
+    2. override each logical id before deletion so references to the placeholder instead reference the original
+     */
+    if (this.logicalIdToPlaceholderMap.get(logicalId)) {
+      this.logicalIdToPlaceholderMap.get(logicalId)!.forEach(placeholderId => {
+        this.resources[placeholderId].overrideLogicalId(logicalId);
+        this.node.tryRemoveChild(placeholderId);
+        delete this.resources[placeholderId];
+      });
     }
 
     this.overrideLogicalIdIfNeeded(l1Instance, logicalId);
