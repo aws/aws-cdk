@@ -1,5 +1,5 @@
 import { Duration, Stack } from '@aws-cdk/core';
-import { Alarm, AlarmWidget, Color, ContributorInsightsWidget, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget, InsightRule, TopContributors, OrderStatistic, InsightRuleMetrics } from '../lib';
+import { Alarm, AlarmWidget, Color, ContributorInsightsWidget, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget, InsightRule, TopContributors, OrderStatistic } from '../lib';
 
 describe('Graphs', () => {
   test('add stacked property to graphs', () => {
@@ -860,7 +860,7 @@ describe('Graphs', () => {
     const widget = new GraphWidget({
       title: 'My insights graph',
       left: [
-        insightRule.metric(InsightRuleMetrics.MAX_CONTRIBUTOR_VALUE),
+        insightRule.metric('MaxContributorValue'),
       ],
     });
 
