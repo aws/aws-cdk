@@ -20,6 +20,11 @@ export interface HookContext {
    * This makes token substitution available to non-`.template` files.
    */
   readonly substitutePlaceholdersIn: SubstitutePlaceholders;
+
+  /**
+   * Return a single placeholder
+   */
+  placeholder(name: string): string;
 }
 
 export type InvokeHook = (targetDirectory: string, context: HookContext) => Promise<void>;
@@ -119,7 +124,6 @@ export class InitTemplate {
     };
 
     const sourceDirectory = path.join(this.basePath, language);
-    const hookTempDirectory = path.join(this.basePath, `${HOOK_DIR_PREFIX}-${projectInfo.name}`);
 
     const hookContext: HookContext = {
       substitutePlaceholdersIn: async (...fileNames: string[]) => {
@@ -129,33 +133,27 @@ export class InitTemplate {
           await fs.writeFile(fullPath, this.expand(template, language, projectInfo));
         }
       },
+      placeholder: (ph: string) => this.expand(`%${ph}%`, language, projectInfo),
     };
 
-    try {
-      await fs.mkdir(hookTempDirectory);
-      await this.installFiles(sourceDirectory, targetDirectory, hookTempDirectory, language, projectInfo);
-      await this.applyFutureFlags(targetDirectory);
-      await this.invokeHooks(hookTempDirectory, targetDirectory, hookContext);
-    } catch (e) {
-      warning(`Unable to create ${projectInfo.name}: ${e.message}`);
-    } finally {
-      await fs.remove(hookTempDirectory);
-    }
+    await this.installFiles(sourceDirectory, targetDirectory, language, projectInfo);
+    await this.applyFutureFlags(targetDirectory);
+    await this.invokeHooks(sourceDirectory, targetDirectory, hookContext);
   }
 
-  private async installFiles(sourceDirectory: string, targetDirectory: string, hookTempDirectory: string, language:string, project: ProjectInfo) {
+  private async installFiles(sourceDirectory: string, targetDirectory: string, language:string, project: ProjectInfo) {
     for (const file of await fs.readdir(sourceDirectory)) {
       const fromFile = path.join(sourceDirectory, file);
       const toFile = path.join(targetDirectory, this.expand(file, language, project));
       if ((await fs.stat(fromFile)).isDirectory()) {
         await fs.mkdir(toFile);
-        await this.installFiles(fromFile, toFile, hookTempDirectory, language, project);
+        await this.installFiles(fromFile, toFile, language, project);
         continue;
       } else if (file.match(/^.*\.template\.[^.]+$/)) {
         await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), language, project);
         continue;
       } else if (file.match(/^.*\.hook\.(d.)?[^.]+$/)) {
-        await this.installProcessed(fromFile, path.join(hookTempDirectory, file), language, project);
+        // Ignore
         continue;
       } else {
         await fs.copy(fromFile, toFile);
