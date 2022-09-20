@@ -652,6 +652,7 @@ export class SpecRestApi extends RestApiBase {
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
+      disableExecuteApiEndpoint: props.disableExecuteApiEndpoint,
     });
 
     props.apiDefinition.bindAfterCreate(this, this);
