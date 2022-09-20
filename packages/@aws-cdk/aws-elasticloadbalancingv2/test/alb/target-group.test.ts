@@ -528,6 +528,27 @@ describe('tests', () => {
       }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 2 minutes');
     });
 
+  test('Throws validation error, when `configureHealthCheck()`protocol is undefined and `interval` is smaller than `timeout`', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+    });
+
+    // WHEN
+    tg.configureHealthCheck({
+      interval: cdk.Duration.seconds(60),
+      timeout: cdk.Duration.seconds(120),
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 2 minute');
+  });
+
   test('imported targetGroup has targetGroupName', () => {
     // GIVEN
     const app = new cdk.App();
