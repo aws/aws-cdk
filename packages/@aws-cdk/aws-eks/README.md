@@ -1160,7 +1160,7 @@ cluster.addHelmChart('test-chart', {
 });
 ```
 
-Nested values passed to the `values` parameter should be passed as a nested dictionary:
+Nested values passed to the `values` parameter should be provided as a nested dictionary:
 
 ```ts
 cluster.addHelmChart('ExternalSecretsOperator', {
