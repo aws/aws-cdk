@@ -205,6 +205,10 @@ export class PullRequestLinter {
     });
 
     validationCollector.validateRuleSet({
+      testRuleSet: [ { test: validateTitlePrefix } ]
+    });
+
+    validationCollector.validateRuleSet({
       exemption: shouldExemptBreakingChange,
       exemptionMessage: `Not validating breaking changes since the PR is labeled with '${Exemption.BREAKING_CHANGE}'`,
       testRuleSet: [ { test: assertStability } ]
@@ -308,7 +312,7 @@ function hasLabel(pr: any, labelName: string): boolean {
  * to be said note, but got misspelled as "BREAKING CHANGES:" or
  * "BREAKING CHANGES(module):"
  */
-function validateBreakingChangeFormat(pr: any, _files: any[]): TestResult {
+ function validateBreakingChangeFormat(pr: any, _files: any[]): TestResult {
   const title = pr.title;
   const body = pr.body;
   const result = new TestResult();
@@ -320,74 +324,19 @@ function validateBreakingChangeFormat(pr: any, _files: any[]): TestResult {
     const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;
     result.assessFailure(!titleRe.exec(title), 'The title of this pull request must specify the module name that the first breaking change should be associated to.');
   }
-}
+  return result;
+};
 
 /**
  * Check that the PR title has the correct prefix.
  */
-function validateTitlePrefix(title: string) {
-    const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test)(\([\w-]+\)){0,1}: /;
-    if (!titleRe.exec(title)) {
-      throw new LinterError("❗️ The title of this PR must have the correct conventional prefix");
-    }
-}
-
-function assertStability(title: string, body: string) {
-  const breakingStable = breakingModules(title, body)
-    .filter(mod => 'stable' === moduleStability(findModulePath(mod)));
-
-  if (breakingStable.length > 0) {
-    throw new Error(`Breaking changes in stable modules [${breakingStable.join(', ')}] is disallowed.`);
+ function validateTitlePrefix(title: string): TestResult {
+  const result = new TestResult();
+  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test)(\([\w-]+\)){0,1}: /;
+  const m = titleRe.exec(title);
+  if (m) {
+      result.assessFailure(m[0] !== undefined, "The title of this pull request must specify the module name that the first breaking change should be associated to.");
   }
-}
-
-export async function validatePr(number: number) {
-
-  if (!number) {
-    throw new Error('Must provide a PR number');
-  }
-
-  const gh = createGitHubClient();
-
-  const issues = gh.getIssues(OWNER, REPO);
-  const repo = gh.getRepo(OWNER, REPO);
-
-  console.log(`⌛  Fetching PR number ${number}`);
-  const issue = (await issues.getIssue(number)).data;
-
-  console.log(`⌛  Fetching files for PR number ${number}`);
-  const files = (await repo.listPullRequestFiles(number)).data;
-
-  console.log("⌛  Validating...");
-
-  if (shouldExemptReadme(issue)) {
-    console.log(`Not validating README changes since the PR is labeled with '${EXEMPT_README}'`);
-  } else {
-    featureContainsReadme(issue, files);
-  }
-
-  if (shouldExemptTest(issue)) {
-    console.log(`Not validating test changes since the PR is labeled with '${EXEMPT_TEST}'`);
-  } else {
-    featureContainsTest(issue, files);
-    fixContainsTest(issue, files);
-  }
-
-  if (shouldExemptIntegTest(issue)) {
-    console.log(`Not validating integration test changes since the PR is labeled with '${EXEMPT_INTEG_TEST}'`)
-  } else {
-    featureContainsIntegTest(issue, files);
-  }
-  
-  validateBreakingChangeFormat(issue.title, issue.body);
-  if (shouldExemptBreakingChange(issue)) {
-    console.log(`Not validating breaking changes since the PR is labeled with '${EXEMPT_BREAKING_CHANGE}'`);
-  } else {
-    assertStability(issue.title, issue.body);
-  }
-  validateTitlePrefix(issue.title);
-
-  console.log("✅  Success");
   return result;
 };
 

@@ -40,7 +40,7 @@ describe('breaking changes format', () => {
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validate()).rejects.toThrow(/must specify the module name that the first breaking change/);
+    await expect(prLinter.validate()).rejects.toThrow(/The title of this pull request must specify the module name that the first breaking change should be associated to./);
   });
 
   test('valid title', async () => {
