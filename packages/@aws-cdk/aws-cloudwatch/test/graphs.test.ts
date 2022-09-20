@@ -841,7 +841,7 @@ describe('Graphs', () => {
         insightRule: {
           maxContributorCount: TopContributors.TOP10,
           orderBy: OrderStatistic.SUM,
-          ruleName: insightRule.insightRuleName,
+          ruleName: insightRule.insightRuleRuleName,
         },
         legend: { position: LegendPosition.BOTTOM },
         period: Duration.minutes(5).toSeconds(),

@@ -576,7 +576,7 @@ export class ContributorInsightsWidget extends ConcreteWidget {
           insightRule: {
             maxContributorCount: this.props.contributorSelection || TopContributors.TOP10,
             orderBy: this.props.orderStatistic || OrderStatistic.SUM,
-            ruleName: this.props.insightRule.insightRuleName,
+            ruleName: this.props.insightRule.insightRuleRuleName,
           },
           legend: { position: this.props.legendPosition || LegendPosition.BOTTOM },
           period: (this.props.period || cdk.Duration.minutes(5)).toSeconds(),

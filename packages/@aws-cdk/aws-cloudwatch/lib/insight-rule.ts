@@ -242,7 +242,7 @@ export interface IInsightRule extends IResource {
    *
    * @attribute
    */
-  readonly insightRuleName: string;
+  readonly insightRuleRuleName: string;
 
   /**
    * Get a metric for this Insight Rule
@@ -262,12 +262,12 @@ abstract class InsightRuleBase extends Resource implements IInsightRule {
    *
    * @attribute insightRuleName
    */
-  public abstract readonly insightRuleName: string;
+  public abstract readonly insightRuleRuleName: string;
 
   public metric(metricName: string, metricOptions: MathExpressionOptions = {}): IMetric {
     return new MathExpression({
       ...metricOptions,
-      expression: `INSIGHT_RULE_METRIC('${this.insightRuleName}', '${metricName}')`,
+      expression: `INSIGHT_RULE_METRIC('${this.insightRuleRuleName}', '${metricName}')`,
     });
   }
 }
@@ -286,7 +286,7 @@ export class InsightRule extends InsightRuleBase {
   */
   static fromInsightRuleName(scope: Construct, id: string, insightRuleName: string): IInsightRule {
     class Import extends InsightRuleBase {
-      public readonly insightRuleName = insightRuleName;
+      public readonly insightRuleRuleName = insightRuleName;
     }
     return new Import(scope, id);
   }
@@ -294,9 +294,9 @@ export class InsightRule extends InsightRuleBase {
   /**
    * Name of this Insight Rule
    *
-   * @attribute InsightRuleRuleName
+   * @attribute
    */
-  public readonly insightRuleName: string;
+  public readonly insightRuleRuleName: string;
 
   /**
    * ARN of this Insight Rule (i.e. arn:aws:cloudwatch:<region>:<account-id>:insight-rule/Foo)
@@ -355,7 +355,7 @@ export class InsightRule extends InsightRuleBase {
       ruleState,
     });
 
-    this.insightRuleName = props.insightRuleName;
+    this.insightRuleRuleName = props.insightRuleName;
     this.insightRuleArn = this.getResourceArnAttribute(cfnInsightRule.attrArn, {
       service: 'cloudwatch',
       resource: 'insight',
