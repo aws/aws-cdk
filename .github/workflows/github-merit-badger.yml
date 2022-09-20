@@ -14,7 +14,8 @@ jobs:
         id: merit-badger
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          badges: '[first-time-contributor,repeat-contributor,valued-contributor,star-contributor,distinguished-contributor]'
-          thresholds: '[0,1,10,50,100]'
+          badges: '[beginning-contributor,repeat-contributor,valued-contributor,admired-contributor,star-contributor,distinguished-contributor]'
+          thresholds: '[0,3,6,13,25,50]'
           badge-type: 'achievement'
+          title-prefixes: '[feat,fix]'
           ignore-usernames: '[RomainMuller,rix0rrr,Jerry-AWS,MrArnoldPalmer,iliapolo,otaviomacedo,madeline-k,kaizencc,comcalvi,corymhall,peterwoodworth,ryparker,TheRealAmazonKendra,vinayak-kukreja,Naumel,mrgrain]'
