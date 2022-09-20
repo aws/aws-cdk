@@ -3,26 +3,11 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
+import { invokeBuiltinHooks } from './init-hooks';
 import { error, print, warning } from './logging';
 import { cdkHomeDir, rootDir } from './util/directories';
 import { rangeFromSemver } from './util/version-range';
 
-
-export type SubstitutePlaceholders = (...fileNames: string[]) => Promise<void>;
-
-/**
- * Helpers passed to hook functions
- */
-export interface HookContext {
-  /**
-   * Callback function to replace placeholders on arbitrary files
-   *
-   * This makes token substitution available to non-`.template` files.
-   */
-  readonly substitutePlaceholdersIn: SubstitutePlaceholders;
-}
-
-export type InvokeHook = (targetDirectory: string, context: HookContext) => Promise<void>;
 
 /* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -69,7 +54,6 @@ function pythonExecutable() {
   return python;
 }
 const INFO_DOT_JSON = 'info.json';
-const HOOK_DIR_PREFIX = 'tmp';
 
 export class InitTemplate {
   public static async fromName(templatesDir: string, name: string) {
@@ -119,9 +103,10 @@ export class InitTemplate {
     };
 
     const sourceDirectory = path.join(this.basePath, language);
-    const hookTempDirectory = path.join(this.basePath, `${HOOK_DIR_PREFIX}-${projectInfo.name}`);
 
-    const hookContext: HookContext = {
+    await this.installFiles(sourceDirectory, targetDirectory, language, projectInfo);
+    await this.applyFutureFlags(targetDirectory);
+    await invokeBuiltinHooks({ targetDirectory, language, templateName: this.name }, {
       substitutePlaceholdersIn: async (...fileNames: string[]) => {
         for (const fileName of fileNames) {
           const fullPath = path.join(targetDirectory, fileName);
@@ -129,57 +114,26 @@ export class InitTemplate {
           await fs.writeFile(fullPath, this.expand(template, language, projectInfo));
         }
       },
-    };
-
-    try {
-      await fs.mkdir(hookTempDirectory);
-      await this.installFiles(sourceDirectory, targetDirectory, hookTempDirectory, language, projectInfo);
-      await this.applyFutureFlags(targetDirectory);
-      await this.invokeHooks(hookTempDirectory, targetDirectory, hookContext);
-    } catch (e) {
-      warning(`Unable to create ${projectInfo.name}: ${e.message}`);
-    } finally {
-      await fs.remove(hookTempDirectory);
-    }
+      placeholder: (ph: string) => this.expand(`%${ph}%`, language, projectInfo),
+    });
   }
 
-  private async installFiles(sourceDirectory: string, targetDirectory: string, hookTempDirectory: string, language:string, project: ProjectInfo) {
+  private async installFiles(sourceDirectory: string, targetDirectory: string, language:string, project: ProjectInfo) {
     for (const file of await fs.readdir(sourceDirectory)) {
       const fromFile = path.join(sourceDirectory, file);
       const toFile = path.join(targetDirectory, this.expand(file, language, project));
       if ((await fs.stat(fromFile)).isDirectory()) {
         await fs.mkdir(toFile);
-        await this.installFiles(fromFile, toFile, hookTempDirectory, language, project);
+        await this.installFiles(fromFile, toFile, language, project);
         continue;
       } else if (file.match(/^.*\.template\.[^.]+$/)) {
         await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), language, project);
         continue;
       } else if (file.match(/^.*\.hook\.(d.)?[^.]+$/)) {
-        await this.installProcessed(fromFile, path.join(hookTempDirectory, file), language, project);
+        // Ignore
         continue;
       } else {
         await fs.copy(fromFile, toFile);
-      }
-    }
-  }
-
-  /**
-   * @summary   Invoke any javascript hooks that exist in the template.
-   * @description Sometimes templates need more complex logic than just replacing tokens. A 'hook' is
-   *        any file that ends in .hook.js. It should export a single function called "invoke"
-   *        that accepts a single string parameter. When the template is installed, each hook
-   *        will be invoked, passing the target directory as the only argument. Hooks are invoked
-   *        in lexical order.
-   */
-  private async invokeHooks(sourceDirectory: string, targetDirectory: string, hookContext: HookContext) {
-    const files = await fs.readdir(sourceDirectory);
-    files.sort(); // Sorting allows template authors to control the order in which hooks are invoked.
-
-    for (const file of files) {
-      if (file.match(/^.*\.hook\.js$/)) {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const invoke: InvokeHook = require(path.join(sourceDirectory, file)).invoke;
-        await invoke(targetDirectory, hookContext);
       }
     }
   }
@@ -280,7 +234,6 @@ async function listDirectory(dirPath: string) {
     .filter(p => !p.startsWith('.'))
     .filter(p => !(p === 'LICENSE'))
     // if, for some reason, the temp folder for the hook doesn't get deleted we don't want to display it in this list
-    .filter(p => !p.startsWith(HOOK_DIR_PREFIX))
     .filter(p => !(p === INFO_DOT_JSON))
     .sort();
 }
