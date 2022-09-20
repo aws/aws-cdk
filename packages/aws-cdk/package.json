@@ -97,7 +97,7 @@
     "@aws-cdk/region-info": "0.0.0",
     "@jsii/check-node": "1.67.0",
     "archiver": "^5.3.1",
-    "aws-sdk": "^2.1093.0",
+    "aws-sdk": "^2.1211.0",
     "camelcase": "^6.3.0",
     "cdk-assets": "0.0.0",
     "chokidar": "^3.5.3",
