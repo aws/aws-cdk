@@ -446,6 +446,23 @@ export class BucketDeployment extends Construct {
     return this._deployedBucket;
   }
 
+  /**
+   * The object keys for the sources deployed to the S3 bucket.
+   *
+   * This returns a list of tokenized object keys for source files that are deployed to the bucket.
+   *
+   * This can be useful when using `BucketDeployment` with `extract` set to `false` and you need to reference
+   * the object key that resides in the bucket for that zip source file somewhere else in your CDK
+   * application, such as in a CFN output.
+   *
+   * For example, use `Fn.select(0, myBucketDeployment.objectKeys)` to reference the object key of the
+   * first source file in your bucket deployment.
+   */
+  public get objectKeys(): string[] {
+    const objectKeys = cdk.Token.asList(this.cr.getAtt('SourceObjectKeys'));
+    return objectKeys;
+  }
+
   private renderUniqueId(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
     let uuid = '';
 

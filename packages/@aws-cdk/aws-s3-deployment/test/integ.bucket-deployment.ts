@@ -78,13 +78,16 @@ class TestBucketDeployment extends cdk.Stack {
       autoDeleteObjects: true, // needed for integration test cleanup
     });
 
-    new s3deploy.BucketDeployment(this, 'DeployMeWithoutExtractingFilesOnDestination', {
+    const noExtractBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployMeWithoutExtractingFilesOnDestination', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket: bucket4,
       extract: false,
       retainOnDelete: false,
     });
 
+    new cdk.CfnOutput(this, 'ObjectKey0', {
+      value: cdk.Fn.select(0, noExtractBucketDeployment.objectKeys),
+    });
   }
 }
 

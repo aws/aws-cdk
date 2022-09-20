@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/98c19fc0f886dfc04c46555a458a441c18f277fd43ac7bdff2f6ff6254a50c31.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0968a3358fd197c49e9f651d6ca44c21cb651331c3db04f74402b1cf3143bb5e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -423,6 +423,12 @@
             "data": "DeployMeWithoutExtractingFilesOnDestinationCustomResourceF1CAAF89"
           }
         ],
+        "/test-bucket-deployments-2/ObjectKey0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ObjectKey0"
+          }
+        ],
         "/test-bucket-deployments-2/Exports/Output{\"Ref\":\"Destination4368A3649\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -460,7 +466,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ca4a844391f99ebdcbdd6958cdc098d7b6f9ed1b52d09988389ed95c8588836.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/afd35caa55048830a313893994672278a347c493331a6c95789e51dc808f8ab7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -492,7 +498,7 @@
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/AssertEqualsS3listObjects/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAssertEqualsS3listObjects54ec31d56de4fac59f7da5f50523a04d"
+            "data": "AssertionResultsAssertEqualsS3listObjectsbf7bcf3cadf69373bbd3568d34e8bb76"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

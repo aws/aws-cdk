@@ -18,7 +18,7 @@
      "MaxKeys": 1
     },
     "flattenResponse": "false",
-    "salt": "1663265502502"
+    "salt": "1663692910218"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -39,7 +39,7 @@
      ]
     },
     "expected": "{\"$ObjectLike\":{\"Contents\":[{\"Key\":\"fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e.zip\"}]}}",
-    "salt": "1663265502503"
+    "salt": "1663692910218"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -117,7 +117,7 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAssertEqualsS3listObjects54ec31d56de4fac59f7da5f50523a04d": {
+  "AssertionResultsAssertEqualsS3listObjectsbf7bcf3cadf69373bbd3568d34e8bb76": {
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallS3listObjectsAssertEqualsS3listObjects03999BE0",

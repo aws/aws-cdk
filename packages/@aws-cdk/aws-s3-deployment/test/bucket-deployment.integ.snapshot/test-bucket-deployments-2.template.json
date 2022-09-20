@@ -390,7 +390,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "644013c43fe76afb7d5307ed4419e99e788312b6cbbc9ec6bd5d05ea6e590435.zip"
+     "S3Key": "6ddcf10002539818a9256eff3fb2b22aa09298d8f946e26ba121c175a600c44e.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1254,7 +1254,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "644013c43fe76afb7d5307ed4419e99e788312b6cbbc9ec6bd5d05ea6e590435.zip"
+     "S3Key": "6ddcf10002539818a9256eff3fb2b22aa09298d8f946e26ba121c175a600c44e.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1801,6 +1801,19 @@
   }
  },
  "Outputs": {
+  "ObjectKey0": {
+   "Value": {
+    "Fn::Select": [
+     0,
+     {
+      "Fn::GetAtt": [
+       "DeployMeWithoutExtractingFilesOnDestinationCustomResourceF1CAAF89",
+       "SourceObjectKeys"
+      ]
+     }
+    ]
+   }
+  },
   "ExportsOutputRefDestination4368A3649E0CF338F": {
    "Value": {
     "Ref": "Destination4368A3649"

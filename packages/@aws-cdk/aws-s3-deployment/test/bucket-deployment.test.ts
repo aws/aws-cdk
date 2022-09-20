@@ -962,6 +962,27 @@ test('deploy without extracting files in destination', () => {
   });
 });
 
+test('deploy without extracting files in destination', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+  });
+
+  // Tests object key retrieval.
+  void(cdk.Fn.select(0, deployment.objectKeys));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    Extract: false,
+  });
+});
+
 test('given a source with markers and extract is false, BucketDeployment throws an error', () => {
   // GIVEN
   const stack = new cdk.Stack();

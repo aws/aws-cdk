@@ -564,7 +564,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "644013c43fe76afb7d5307ed4419e99e788312b6cbbc9ec6bd5d05ea6e590435.zip"
+                      "s3Key": "6ddcf10002539818a9256eff3fb2b22aa09298d8f946e26ba121c175a600c44e.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1851,7 +1851,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "644013c43fe76afb7d5307ed4419e99e788312b6cbbc9ec6bd5d05ea6e590435.zip"
+                      "s3Key": "6ddcf10002539818a9256eff3fb2b22aa09298d8f946e26ba121c175a600c44e.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -2878,6 +2878,14 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-s3-deployment.BucketDeployment",
+              "version": "0.0.0"
+            }
+          },
+          "ObjectKey0": {
+            "id": "ObjectKey0",
+            "path": "test-bucket-deployments-2/ObjectKey0",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"
             }
           },
