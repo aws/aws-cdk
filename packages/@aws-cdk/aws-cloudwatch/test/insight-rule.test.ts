@@ -20,8 +20,7 @@ describe('Insight Rule', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::InsightRule', {
-      ruleState: 'ENABLED',
-      ruleBody: {
+      RuleBody: JSON.stringify({
         AggregateOn: AggregateOptions.COUNT,
         Contribution: {
           Keys: keys,
@@ -34,7 +33,9 @@ describe('Insight Rule', () => {
         },
         LogGroupNames: logGroupNames,
         LogFormat: LogFormat.JSON,
-      },
+      }),
+      RuleName: ruleName,
+      RuleState: 'ENABLED',
     });
   });
 });

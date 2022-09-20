@@ -260,7 +260,7 @@ abstract class InsightRuleBase extends Resource implements IInsightRule {
   /**
    * The name of this InsightRule
    *
-   * @attribute insightRuleName
+   * @attribute
    */
   public abstract readonly insightRuleRuleName: string;
 
@@ -332,7 +332,7 @@ export class InsightRule extends InsightRuleBase {
     }
 
     const ruleBody = JSON.stringify({
-      AggregateOn: aggregateOn,
+      AggregateOn: aggregateOn || AggregateOptions.COUNT,
       Contribution: {
         Keys: keys,
         Filters: (filters || []).map((f: Filter) => ({
