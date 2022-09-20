@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "BackupS3Resource/DefaultTest": {
+      "stacks": [
+        "cdk-backup-s3"
+      ],
+      "assertionStack": "BackupS3Resource/DefaultTest/DeployAssert",
+      "assertionStackName": "BackupS3ResourceDefaultTestDeployAssert26EDE5D7"
+    }
+  }
+}

@@ -1,0 +1,322 @@
+{
+ "Resources": {
+  "Bucket83908E77": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Vault23237E5B": {
+   "Type": "AWS::Backup::BackupVault",
+   "Properties": {
+    "BackupVaultName": "cdkbackups3Vault7528DFD2"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PlanAutoD5644F40": {
+   "Type": "AWS::Backup::BackupPlan",
+   "Properties": {
+    "BackupPlan": {
+     "BackupPlanName": "PlanAuto",
+     "BackupPlanRule": [
+      {
+       "Lifecycle": {
+        "DeleteAfterDays": 35
+       },
+       "RuleName": "Daily",
+       "ScheduleExpression": "cron(0 5 * * ? *)",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "Vault23237E5B",
+         "BackupVaultName"
+        ]
+       }
+      },
+      {
+       "Lifecycle": {
+        "DeleteAfterDays": 90
+       },
+       "RuleName": "Weekly",
+       "ScheduleExpression": "cron(0 5 ? * SAT *)",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "Vault23237E5B",
+         "BackupVaultName"
+        ]
+       }
+      },
+      {
+       "Lifecycle": {
+        "DeleteAfterDays": 1825,
+        "MoveToColdStorageAfterDays": 90
+       },
+       "RuleName": "Monthly5Year",
+       "ScheduleExpression": "cron(0 5 1 * ? *)",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "Vault23237E5B",
+         "BackupVaultName"
+        ]
+       }
+      }
+     ]
+    }
+   }
+  },
+  "PlanAutoSelectionAutoRoleEA54C847": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "backup.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSBackupServiceRolePolicyForS3Backup"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSBackupServiceRolePolicyForS3Restore"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PlanAutoSelectionAutoC98CAA71": {
+   "Type": "AWS::Backup::BackupSelection",
+   "Properties": {
+    "BackupPlanId": {
+     "Fn::GetAtt": [
+      "PlanAutoD5644F40",
+      "BackupPlanId"
+     ]
+    },
+    "BackupSelection": {
+     "IamRoleArn": {
+      "Fn::GetAtt": [
+       "PlanAutoSelectionAutoRoleEA54C847",
+       "Arn"
+      ]
+     },
+     "Resources": [
+      {
+       "Fn::GetAtt": [
+        "Bucket83908E77",
+        "Arn"
+       ]
+      }
+     ],
+     "SelectionName": "SelectionAuto"
+    }
+   }
+  },
+  "PlanExplicit6581138E": {
+   "Type": "AWS::Backup::BackupPlan",
+   "Properties": {
+    "BackupPlan": {
+     "BackupPlanName": "PlanExplicit",
+     "BackupPlanRule": [
+      {
+       "Lifecycle": {
+        "DeleteAfterDays": 35
+       },
+       "RuleName": "Daily",
+       "ScheduleExpression": "cron(0 5 * * ? *)",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "Vault23237E5B",
+         "BackupVaultName"
+        ]
+       }
+      },
+      {
+       "Lifecycle": {
+        "DeleteAfterDays": 90
+       },
+       "RuleName": "Weekly",
+       "ScheduleExpression": "cron(0 5 ? * SAT *)",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "Vault23237E5B",
+         "BackupVaultName"
+        ]
+       }
+      },
+      {
+       "Lifecycle": {
+        "DeleteAfterDays": 1825,
+        "MoveToColdStorageAfterDays": 90
+       },
+       "RuleName": "Monthly5Year",
+       "ScheduleExpression": "cron(0 5 1 * ? *)",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "Vault23237E5B",
+         "BackupVaultName"
+        ]
+       }
+      }
+     ]
+    }
+   }
+  },
+  "PlanExplicitSelectionExplicitRoleF5C7FCC1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "backup.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSBackupServiceRolePolicyForS3Backup"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSBackupServiceRolePolicyForS3Restore"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PlanExplicitSelectionExplicit5B33B8CB": {
+   "Type": "AWS::Backup::BackupSelection",
+   "Properties": {
+    "BackupPlanId": {
+     "Fn::GetAtt": [
+      "PlanExplicit6581138E",
+      "BackupPlanId"
+     ]
+    },
+    "BackupSelection": {
+     "IamRoleArn": {
+      "Fn::GetAtt": [
+       "PlanExplicitSelectionExplicitRoleF5C7FCC1",
+       "Arn"
+      ]
+     },
+     "Resources": [
+      {
+       "Fn::GetAtt": [
+        "Bucket83908E77",
+        "Arn"
+       ]
+      }
+     ],
+     "SelectionName": "SelectionExplicit"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

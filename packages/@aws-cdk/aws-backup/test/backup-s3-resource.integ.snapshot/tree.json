@@ -1,0 +1,491 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.102"
+        }
+      },
+      "cdk-backup-s3": {
+        "id": "cdk-backup-s3",
+        "path": "cdk-backup-s3",
+        "children": {
+          "Bucket": {
+            "id": "Bucket",
+            "path": "cdk-backup-s3/Bucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-backup-s3/Bucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "versioningConfiguration": {
+                      "status": "Enabled"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "Vault": {
+            "id": "Vault",
+            "path": "cdk-backup-s3/Vault",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-backup-s3/Vault/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Backup::BackupVault",
+                  "aws:cdk:cloudformation:props": {
+                    "backupVaultName": "cdkbackups3Vault7528DFD2"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-backup.CfnBackupVault",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-backup.BackupVault",
+              "version": "0.0.0"
+            }
+          },
+          "PlanAuto": {
+            "id": "PlanAuto",
+            "path": "cdk-backup-s3/PlanAuto",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-backup-s3/PlanAuto/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Backup::BackupPlan",
+                  "aws:cdk:cloudformation:props": {
+                    "backupPlan": {
+                      "backupPlanName": "PlanAuto",
+                      "backupPlanRule": [
+                        {
+                          "lifecycle": {
+                            "deleteAfterDays": 35
+                          },
+                          "ruleName": "Daily",
+                          "scheduleExpression": "cron(0 5 * * ? *)",
+                          "targetBackupVault": {
+                            "Fn::GetAtt": [
+                              "Vault23237E5B",
+                              "BackupVaultName"
+                            ]
+                          }
+                        },
+                        {
+                          "lifecycle": {
+                            "deleteAfterDays": 90
+                          },
+                          "ruleName": "Weekly",
+                          "scheduleExpression": "cron(0 5 ? * SAT *)",
+                          "targetBackupVault": {
+                            "Fn::GetAtt": [
+                              "Vault23237E5B",
+                              "BackupVaultName"
+                            ]
+                          }
+                        },
+                        {
+                          "lifecycle": {
+                            "deleteAfterDays": 1825,
+                            "moveToColdStorageAfterDays": 90
+                          },
+                          "ruleName": "Monthly5Year",
+                          "scheduleExpression": "cron(0 5 1 * ? *)",
+                          "targetBackupVault": {
+                            "Fn::GetAtt": [
+                              "Vault23237E5B",
+                              "BackupVaultName"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-backup.CfnBackupPlan",
+                  "version": "0.0.0"
+                }
+              },
+              "SelectionAuto": {
+                "id": "SelectionAuto",
+                "path": "cdk-backup-s3/PlanAuto/SelectionAuto",
+                "children": {
+                  "Role": {
+                    "id": "Role",
+                    "path": "cdk-backup-s3/PlanAuto/SelectionAuto/Role",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-backup-s3/PlanAuto/SelectionAuto/Role/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "backup.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AWSBackupServiceRolePolicyForS3Backup"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AWSBackupServiceRolePolicyForS3Restore"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-backup-s3/PlanAuto/SelectionAuto/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Backup::BackupSelection",
+                      "aws:cdk:cloudformation:props": {
+                        "backupPlanId": {
+                          "Fn::GetAtt": [
+                            "PlanAutoD5644F40",
+                            "BackupPlanId"
+                          ]
+                        },
+                        "backupSelection": {
+                          "iamRoleArn": {
+                            "Fn::GetAtt": [
+                              "PlanAutoSelectionAutoRoleEA54C847",
+                              "Arn"
+                            ]
+                          },
+                          "selectionName": "SelectionAuto",
+                          "resources": [
+                            {
+                              "Fn::GetAtt": [
+                                "Bucket83908E77",
+                                "Arn"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-backup.CfnBackupSelection",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-backup.BackupSelection",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-backup.BackupPlan",
+              "version": "0.0.0"
+            }
+          },
+          "PlanExplicit": {
+            "id": "PlanExplicit",
+            "path": "cdk-backup-s3/PlanExplicit",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-backup-s3/PlanExplicit/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Backup::BackupPlan",
+                  "aws:cdk:cloudformation:props": {
+                    "backupPlan": {
+                      "backupPlanName": "PlanExplicit",
+                      "backupPlanRule": [
+                        {
+                          "lifecycle": {
+                            "deleteAfterDays": 35
+                          },
+                          "ruleName": "Daily",
+                          "scheduleExpression": "cron(0 5 * * ? *)",
+                          "targetBackupVault": {
+                            "Fn::GetAtt": [
+                              "Vault23237E5B",
+                              "BackupVaultName"
+                            ]
+                          }
+                        },
+                        {
+                          "lifecycle": {
+                            "deleteAfterDays": 90
+                          },
+                          "ruleName": "Weekly",
+                          "scheduleExpression": "cron(0 5 ? * SAT *)",
+                          "targetBackupVault": {
+                            "Fn::GetAtt": [
+                              "Vault23237E5B",
+                              "BackupVaultName"
+                            ]
+                          }
+                        },
+                        {
+                          "lifecycle": {
+                            "deleteAfterDays": 1825,
+                            "moveToColdStorageAfterDays": 90
+                          },
+                          "ruleName": "Monthly5Year",
+                          "scheduleExpression": "cron(0 5 1 * ? *)",
+                          "targetBackupVault": {
+                            "Fn::GetAtt": [
+                              "Vault23237E5B",
+                              "BackupVaultName"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-backup.CfnBackupPlan",
+                  "version": "0.0.0"
+                }
+              },
+              "SelectionExplicit": {
+                "id": "SelectionExplicit",
+                "path": "cdk-backup-s3/PlanExplicit/SelectionExplicit",
+                "children": {
+                  "Role": {
+                    "id": "Role",
+                    "path": "cdk-backup-s3/PlanExplicit/SelectionExplicit/Role",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-backup-s3/PlanExplicit/SelectionExplicit/Role/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "backup.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AWSBackupServiceRolePolicyForS3Backup"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AWSBackupServiceRolePolicyForS3Restore"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-backup-s3/PlanExplicit/SelectionExplicit/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Backup::BackupSelection",
+                      "aws:cdk:cloudformation:props": {
+                        "backupPlanId": {
+                          "Fn::GetAtt": [
+                            "PlanExplicit6581138E",
+                            "BackupPlanId"
+                          ]
+                        },
+                        "backupSelection": {
+                          "iamRoleArn": {
+                            "Fn::GetAtt": [
+                              "PlanExplicitSelectionExplicitRoleF5C7FCC1",
+                              "Arn"
+                            ]
+                          },
+                          "selectionName": "SelectionExplicit",
+                          "resources": [
+                            {
+                              "Fn::GetAtt": [
+                                "Bucket83908E77",
+                                "Arn"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-backup.CfnBackupSelection",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-backup.BackupSelection",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-backup.BackupPlan",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "BackupS3Resource": {
+        "id": "BackupS3Resource",
+        "path": "BackupS3Resource",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "BackupS3Resource/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "BackupS3Resource/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.102"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "BackupS3Resource/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

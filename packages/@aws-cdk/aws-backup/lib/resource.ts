@@ -2,6 +2,7 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as rds from '@aws-cdk/aws-rds';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
@@ -99,7 +100,7 @@ export class BackupResource {
   }
 
   /**
-   * A RDS database cluter
+   * A RDS database cluster
    */
   public static fromRdsDatabaseCluster(cluster: rds.IDatabaseCluster) {
     const stack = Stack.of(cluster);
@@ -112,6 +113,14 @@ export class BackupResource {
   public static fromRdsServerlessCluster(cluster: rds.IServerlessCluster) {
     return BackupResource.fromArn(cluster.clusterArn);
   }
+
+  /**
+   * A S3 Bucket
+   */
+  public static fromS3Bucket(bucket: s3.IBucket) {
+    return BackupResource.fromArn(bucket.bucketArn);
+  }
+
 
   /**
    * A list of ARNs or match patterns such as

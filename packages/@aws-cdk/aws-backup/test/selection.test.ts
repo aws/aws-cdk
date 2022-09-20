@@ -1,8 +1,10 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match, Capture } from '@aws-cdk/assertions';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
+import { PrincipalWithConditions } from '@aws-cdk/aws-iam';
 import * as rds from '@aws-cdk/aws-rds';
+import * as s3 from '@aws-cdk/aws-s3';
 import { RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BackupPlan, BackupResource, BackupSelection } from '../lib';
@@ -325,6 +327,50 @@ test('fromConstruct', () => {
             ],
           ],
         },
+      ],
+      SelectionName: 'Selection',
+    },
+  });
+});
+
+test('fromS3Bucket', () => {
+  // GIVEN
+  const newBucket = new s3.Bucket(stack, 'New', {
+  });
+  const existingBucketARN = 'arn:aws:s3:::existing-bucket';
+  const existingBucket = s3.Bucket.fromBucketArn(stack, 'Existing', existingBucketARN);
+
+  // WHEN
+  // Select both a new and existing bucket
+  plan.addSelection('Selection', {
+    resources: [
+      BackupResource.fromS3Bucket(newBucket),
+      BackupResource.fromS3Bucket(existingBucket),
+    ],
+    allowS3Backup: true,
+    allowS3Restores: true,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+
+  const buckets = template.findResources(
+    'AWS::S3::Bucket', {}
+  )
+
+  // Check that the bucket resource was added properly
+  template.hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      Resources: [
+        // New Bucket
+        {
+          'Fn::GetAtt': [
+            Match.anyValue(),
+            'Arn',
+          ],
+        },
+        // Existing bucket
+        existingBucketARN,
       ],
       SelectionName: 'Selection',
     },

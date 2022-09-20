@@ -2,6 +2,7 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as rds from '@aws-cdk/aws-rds';
+import * as s3 from '@aws-cdk/aws-s3';
 import { ArnFormat, IAspect, Stack } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 
@@ -60,6 +61,15 @@ export class BackupableResourcesCollector implements IAspect {
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         resourceName: node.ref,
       }));
+    }
+
+    if (node instanceof s3.CfnBucket) {
+      this.resources.push(node.attrArn);
+      //this.resources.push(Stack.of(node).formatArn({
+      //  service: 's3',
+      //  resource: node.ref,
+      //  arnFormat: ArnFormat.NO_RESOURCE_NAME,
+      //}));
     }
   }
 }

@@ -40,6 +40,24 @@ export interface BackupSelectionOptions {
    * @default false
    */
   readonly allowRestores?: boolean;
+
+  /**
+   * Whether to automatically give S3 specific backup permissions to the role
+   * that AWS Backup uses. If `true`, the
+   * `AWSBackupServiceRolePolicyForS3Backup` managed policy will be attached to
+   * the role.
+   * @default false
+   */
+  readonly allowS3Backup?: boolean;
+
+  /**
+   * Whether to automatically give S3 specific restore permissions to the role
+   * that AWS Backup uses. If `true`, the
+   * `AWSBackupServiceRolePolicyForS3Restores` managed policy will be attached
+   * to the role.
+   * @default false
+   */
+  readonly allowS3Restores?: boolean;
 }
 
 /**
@@ -75,6 +93,11 @@ export class BackupSelection extends Resource implements iam.IGrantable {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * The service role that is being used for the backup selection.
+   */
+  public readonly role: iam.IRole;
+
   private listOfTags: CfnBackupSelection.ConditionResourceTypeProperty[] = [];
   private resources: string[] = [];
   private readonly backupableResourcesCollector = new BackupableResourcesCollector();
@@ -89,7 +112,20 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     if (props.allowRestores) {
       role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForRestores'));
     }
+
+    // Conditionally add S3 specific managed policies (Backup and Restores)
+    if (props.allowS3Backup) {
+      role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSBackupServiceRolePolicyForS3Backup'));
+    }
+    if (props.allowS3Restores) {
+      role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSBackupServiceRolePolicyForS3Restore'));
+    }
+
+
     this.grantPrincipal = role;
+
+    // Expose the service role
+    this.role = role;
 
     const selection = new CfnBackupSelection(this, 'Resource', {
       backupPlanId: props.backupPlan.backupPlanId,
