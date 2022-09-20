@@ -94,9 +94,9 @@ export class ProductStackHistory extends Construct {
     const productStackSnapshotDirectory = this.props.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
     const files = fs.readdirSync(productStackSnapshotDirectory);
     for (const file of files) {
-      if (file.endsWith('product.template.json')) {
+      const templateFilePath = path.join(productStackSnapshotDirectory, file);
+      if (!fs.statSync(templateFilePath).isDirectory()) {
         InputValidator.validateProductStackHistorySnapshotFile(file);
-        const templateFilePath = path.join(productStackSnapshotDirectory, file);
         const versionName = file.split('.')[2];
         const version = {
           cloudFormationTemplate: CloudFormationTemplate.fromAsset(templateFilePath),
