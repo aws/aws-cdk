@@ -81,7 +81,7 @@ export class AwsCliCompatible {
         () => new AWS.SsoCredentials({
           profile: theProfile,
           httpOptions: theHttpOptions,
-        });
+        }),
         () => new AWS.ProcessCredentials({ profile: theProfile }),
       ];
     }
