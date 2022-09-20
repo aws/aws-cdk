@@ -33,9 +33,6 @@ runtime code.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
    filesystem which will be zipped and uploaded to S3 before deployment. See also
    [bundling asset code](#bundling-asset-code).
- * `lambda.Code.fromAssetConstruct(asset)` - specify an Asset construct containing
-   the Lambda code bundle or a .zip file. Similar to `fromAsset()`, but you supply
-   your own Asset construct rather than having one created for you from a local path.
  * `lambda.Code.fromDockerBuild(path, options)` - use the result of a Docker
    build as code. The runtime code is expected to be located at `/asset` in the
    image and will be zipped and uploaded to S3 as an asset.
