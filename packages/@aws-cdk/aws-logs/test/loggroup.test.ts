@@ -310,7 +310,7 @@ describe('log group', () => {
     expect(metric.metricName).toEqual('Field');
   });
 
-  test('grant', () => {
+  test('grant write', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
@@ -333,6 +333,31 @@ describe('log group', () => {
       },
     });
   });
+
+  test('grant read', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    lg.grantRead(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['logs:FilterLogEvents', 'logs:GetLogEvents', 'logs:GetLogRecord'],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
 
   test('grant to service principal', () => {
     // GIVEN

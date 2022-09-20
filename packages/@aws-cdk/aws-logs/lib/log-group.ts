@@ -70,6 +70,11 @@ export interface ILogGroup extends iam.IResourceWithPolicy {
   grantWrite(grantee: iam.IGrantable): iam.Grant;
 
   /**
+   * Give permissions to read from this log group and streams
+   */
+  grantRead(grantee: iam.IGrantable): iam.Grant;
+
+  /**
    * Give the indicated permissions on this log group and all streams
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
@@ -167,6 +172,13 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    */
   public grantWrite(grantee: iam.IGrantable) {
     return this.grant(grantee, 'logs:CreateLogStream', 'logs:PutLogEvents');
+  }
+
+  /**
+   * Give permissions to read events from this log group
+   */
+  public grantRead(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'logs:FilterLogEvents', 'logs:GetLogEvents	', 'logs:GetLogRecord')
   }
 
   /**
