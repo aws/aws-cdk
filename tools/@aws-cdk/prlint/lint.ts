@@ -178,14 +178,15 @@ export async function validatePr(number: number) {
   } else {
     featureContainsIntegTest(issue, files);
   }
-
-  validateTitlePrefix(issue.title);
+  
   validateBreakingChangeFormat(issue.title, issue.body);
   if (shouldExemptBreakingChange(issue)) {
     console.log(`Not validating breaking changes since the PR is labeled with '${EXEMPT_BREAKING_CHANGE}'`);
   } else {
     assertStability(issue.title, issue.body);
   }
+
+  validateTitlePrefix(issue.title);
 
   console.log("✅  Success");
 }
