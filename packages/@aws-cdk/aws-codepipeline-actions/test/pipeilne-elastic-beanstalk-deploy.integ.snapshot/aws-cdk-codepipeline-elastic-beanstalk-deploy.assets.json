@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "c3b822f0f6f9953e08e4b5b21695b697a6098de14055e74c9c4ade297e2f1b8d": {
+      "source": {
+        "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c3b822f0f6f9953e08e4b5b21695b697a6098de14055e74c9c4ade297e2f1b8d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

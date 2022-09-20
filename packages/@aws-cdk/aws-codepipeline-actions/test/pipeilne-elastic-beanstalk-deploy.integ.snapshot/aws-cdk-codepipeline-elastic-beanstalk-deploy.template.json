@@ -1,0 +1,523 @@
+{
+ "Resources": {
+  "PipelineBucketB967BD35": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PipelineRoleD68726F7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codepipeline.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipelineRoleDefaultPolicyC7A05455": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineBucketB967BD35",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PipelineBucketB967BD35",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineDeployCodePipelineActionRole8B83082E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
+    "Roles": [
+     {
+      "Ref": "PipelineRoleD68726F7"
+     }
+    ]
+   }
+  },
+  "PipelineC660917D": {
+   "Type": "AWS::CodePipeline::Pipeline",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "PipelineRoleD68726F7",
+      "Arn"
+     ]
+    },
+    "Stages": [
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Source",
+         "Owner": "AWS",
+         "Provider": "S3",
+         "Version": "1"
+        },
+        "Configuration": {
+         "S3Bucket": {
+          "Ref": "PipelineBucketB967BD35"
+         },
+         "S3ObjectKey": "key"
+        },
+        "Name": "Source",
+        "OutputArtifacts": [
+         {
+          "Name": "SourceArtifact"
+         }
+        ],
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "Source"
+     },
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Deploy",
+         "Owner": "AWS",
+         "Provider": "ElasticBeanstalk",
+         "Version": "1"
+        },
+        "Configuration": {
+         "ApplicationName": "appName",
+         "EnvironmentName": "envName"
+        },
+        "InputArtifacts": [
+         {
+          "Name": "SourceArtifact"
+         }
+        ],
+        "Name": "Deploy",
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "PipelineDeployCodePipelineActionRole8B83082E",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "Deploy"
+     }
+    ],
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "PipelineBucketB967BD35"
+     },
+     "Type": "S3"
+    }
+   },
+   "DependsOn": [
+    "PipelineRoleDefaultPolicyC7A05455",
+    "PipelineRoleD68726F7"
+   ]
+  },
+  "PipelineSourceCodePipelineActionRoleC6F9E7F5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineBucketB967BD35",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PipelineBucketB967BD35",
+             "Arn"
+            ]
+           },
+           "/key"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineBucketB967BD35",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PipelineBucketB967BD35",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925",
+    "Roles": [
+     {
+      "Ref": "PipelineSourceCodePipelineActionRoleC6F9E7F5"
+     }
+    ]
+   }
+  },
+  "PipelineDeployCodePipelineActionRole8B83082E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipelineDeployCodePipelineActionRoleDefaultPolicyEE6D615B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "elasticbeanstalk:CreateApplicationVersion",
+        "elasticbeanstalk:DescribeEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":elasticbeanstalk:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":application/appname"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "elasticbeanstalk:CreateApplicationVersion",
+        "elasticbeanstalk:DescribeApplicationVersions",
+        "elasticbeanstalk:DescribeEnvironments",
+        "elasticbeanstalk:DescribeEvents",
+        "elasticbeanstalk:UpdateEnvironment"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":elasticbeanstalk:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":applicationversion/appname/code-pipeline-*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "elasticbeanstalk:DescribeEvents",
+        "elasticbeanstalk:UpdateEnvironment"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":elasticbeanstalk:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":configurationtemplate/appname/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "elasticbeanstalk:DescribeEnvironments",
+        "elasticbeanstalk:DescribeEvents",
+        "elasticbeanstalk:UpdateEnvironment"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":elasticbeanstalk:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":environment/appname/envname"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineBucketB967BD35",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PipelineBucketB967BD35",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipelineDeployCodePipelineActionRoleDefaultPolicyEE6D615B",
+    "Roles": [
+     {
+      "Ref": "PipelineDeployCodePipelineActionRole8B83082E"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

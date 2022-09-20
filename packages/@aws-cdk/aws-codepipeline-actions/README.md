@@ -945,6 +945,28 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 });
 ```
 
+### Elastic Beanstalk Deployment
+
+To deploy an Elastic Beanstalk Application in CodePipeline:
+
+```ts
+const sourceOutput = new codepipeline.Artifact();
+const targetBucket = new s3.Bucket(this, 'MyBucket');
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const deployAction = mew codepipeline_actions.ElasticBeanstalkDeployAction({
+  actionName: 'ElasticBeanstalkDeploy',
+  input: sourceOutput,
+  environmentName: 'envName',
+  applicationName: 'appName',
+});
+
+const deployStage = pipeline.addStage({
+  stageName: 'Deploy',
+  actions: [deployAction],
+});
+```
+
 ### Alexa Skill
 
 You can deploy to Alexa using CodePipeline with the following Action:
