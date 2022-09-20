@@ -71,6 +71,13 @@ const logGroup = new logs.LogGroup(this, 'LogGroup');
 logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
+Similarily, read permissions can be granted to the log group as follows.
+
+```ts
+const logGroup = new logs.logGroup(this, 'LogGroup');
+logGroup.grantRead(new iam.ServicePrincipal(es.amazonaws.com));
+```
+
 Be aware that any ARNs or tokenized values passed to the resource policy will be converted into AWS Account IDs.
 This is because CloudWatch Logs Resource Policies do not accept ARNs as principals, but they do accept
 Account ID strings. Non-ARN principals, like Service principals or Any princpals, are accepted by CloudWatch.
