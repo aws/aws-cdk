@@ -65,8 +65,8 @@ class S3ModelData extends ModelData {
 class AssetModelData extends ModelData {
   constructor(private readonly asset: assets.Asset) {
     super();
-    if (this.asset.isZipArchive || !this.asset.assetPath.toLowerCase().endsWith(ARTIFACT_EXTENSION)) {
-      throw new Error(`Asset must be a gzipped tar file with extension ${ARTIFACT_EXTENSION} (${this.asset.assetPath})`);
+    if (this.asset.isZipArchive && !this.asset.assetPath.toLowerCase().endsWith(ARTIFACT_EXTENSION)) {
+      throw new Error(`Asset must be a gzipped tar file with extension ${ARTIFACT_EXTENSION} (${this.asset.assetPath}), ${this.asset.isZipArchive} ${!this.asset.assetPath.toLowerCase().endsWith(ARTIFACT_EXTENSION)}`);
     }
   }
 
