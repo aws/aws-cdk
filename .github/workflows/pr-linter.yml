@@ -16,7 +16,7 @@ jobs:
   validate-pr:
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
 
@@ -29,5 +29,5 @@ jobs:
       - name: Validate
         uses: ./tools/@aws-cdk/prlint
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           REPO_ROOT: ${{ github.workspace }}
