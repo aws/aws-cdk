@@ -8,10 +8,8 @@ import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, NetworkLoadBalancer, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { Duration } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
 
 test('test ECS loadbalanced construct', () => {
@@ -70,56 +68,6 @@ test('test ECS loadbalanced construct', () => {
         },
       }),
     ],
-  });
-});
-
-testLegacyBehavior('ApplicationLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
-  // GIVEN
-  const stack = new cdk.Stack(app);
-  stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
-
-  const vpc = new ec2.Vpc(stack, 'VPC');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
-
-  // WHEN
-  new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
-    cluster,
-    memoryLimitMiB: 1024,
-    taskImageOptions: {
-      image: ecs.ContainerImage.fromRegistry('test'),
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: Match.absent(),
-  });
-});
-
-testLegacyBehavior('ApplicationLoadBalancedFargateService desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
-  // GIVEN
-  const stack = new cdk.Stack(app);
-  stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
-
-  const vpc = new ec2.Vpc(stack, 'VPC');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-  // WHEN
-  new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-    cluster,
-    taskImageOptions: {
-      image: ecs.ContainerImage.fromRegistry('test'),
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: Match.absent(),
   });
 });
 
@@ -238,56 +186,6 @@ test('NetworkLoadBalancedEc2Service multiple capacity provider strategies are se
         Weight: 2,
       },
     ]),
-  });
-});
-
-testLegacyBehavior('NetworkLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
-  // GIVEN
-  const stack = new cdk.Stack(app);
-  stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
-
-  const vpc = new ec2.Vpc(stack, 'VPC');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
-
-  // WHEN
-  new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
-    cluster,
-    memoryLimitMiB: 1024,
-    taskImageOptions: {
-      image: ecs.ContainerImage.fromRegistry('test'),
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: Match.absent(),
-  });
-});
-
-testLegacyBehavior('NetworkLoadBalancedFargateService desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
-  // GIVEN
-  const stack = new cdk.Stack(app);
-  stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
-
-  const vpc = new ec2.Vpc(stack, 'VPC');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-  // WHEN
-  new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
-    cluster,
-    taskImageOptions: {
-      image: ecs.ContainerImage.fromRegistry('test'),
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: Match.absent(),
   });
 });
 

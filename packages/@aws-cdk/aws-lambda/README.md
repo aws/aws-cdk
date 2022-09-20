@@ -635,6 +635,26 @@ fn.addEventSource(new eventsources.S3EventSource(bucket, {
 }));
 ```
 
+The following code adds an DynamoDB notification as an event source filtering insert events:
+
+```ts
+import * as eventsources from '@aws-cdk/aws-lambda-event-sources';
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+
+declare const fn: lambda.Function;
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  stream: dynamodb.StreamViewType.NEW_IMAGE,
+});
+fn.addEventSource(new eventsources.DynamoEventSource(table, {
+  startingPosition: lambda.StartingPosition.LATEST,
+  filters: [{ eventName: lambda.FilterRule.isEqual('INSERT') }],
+}));
+```
+
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
 ## Imported Lambdas
