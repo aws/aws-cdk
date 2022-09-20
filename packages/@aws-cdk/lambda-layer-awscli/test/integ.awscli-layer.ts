@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import * as integ from '@aws-cdk/integ-tests';
 
 import { AwsCliLayer } from '../lib';
 
@@ -10,12 +11,10 @@ import { AwsCliLayer } from '../lib';
  */
 
 const app = new cdk.App();
-
 const stack = new cdk.Stack(app, 'lambda-layer-awscli-integ-stack');
 const layer = new AwsCliLayer(stack, 'AwsCliLayer');
 
 const runtimes = [
-  lambda.Runtime.PYTHON_3_6,
   lambda.Runtime.PYTHON_3_7,
   lambda.Runtime.PYTHON_3_9,
 ];
@@ -36,5 +35,9 @@ for (const runtime of runtimes) {
     serviceToken: provider.serviceToken,
   });
 }
+
+new integ.IntegTest(app, 'lambda-layer-awscli-integ-test', {
+  testCases: [stack],
+});
 
 app.synth();

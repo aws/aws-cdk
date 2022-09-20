@@ -3,27 +3,6 @@
   "TopicBFC7AF6E": {
    "Type": "AWS::SNS::Topic"
   },
-  "PublishCustomResourcePolicyDF696FCA": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sns:Publish",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "PublishCustomResourcePolicyDF696FCA",
-    "Roles": [
-     {
-      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-     }
-    ]
-   }
-  },
   "Publish2E9BDF73": {
    "Type": "Custom::SNSPublisher",
    "Properties": {
@@ -73,6 +52,27 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "PublishCustomResourcePolicyDF696FCA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PublishCustomResourcePolicyDF696FCA",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   }
+  },
   "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -109,41 +109,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -152,12 +120,32 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 120
    },
    "DependsOn": [
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
+  },
+  "ListTopicsCE1E0341": {
+   "Type": "Custom::AWS",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
+    "Update": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
+    "InstallLatestAwsSdk": true
+   },
+   "DependsOn": [
+    "ListTopicsCustomResourcePolicy31A8396A",
+    "TopicBFC7AF6E"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ListTopicsCustomResourcePolicy31A8396A": {
    "Type": "AWS::IAM::Policy",
@@ -183,52 +171,11 @@
     "TopicBFC7AF6E"
    ]
   },
-  "ListTopicsCE1E0341": {
-   "Type": "Custom::AWS",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-      "Arn"
-     ]
-    },
-    "Create": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
-    "Update": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
-    "InstallLatestAwsSdk": true
-   },
-   "DependsOn": [
-    "ListTopicsCustomResourcePolicy31A8396A",
-    "TopicBFC7AF6E"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "DummyParameter53662B67": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
     "Value": "1337"
-   }
-  },
-  "GetParameterCustomResourcePolicyD8E5D455": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "ssm:GetParameter",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "GetParameterCustomResourcePolicyD8E5D455",
-    "Roles": [
-     {
-      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-     }
-    ]
    }
   },
   "GetParameter42B0A00E": {
@@ -271,20 +218,103 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Parameters": {
-  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3BucketB21FB59F": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
   },
-  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90S3VersionKey73D4F058": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
+  "GetParameterCustomResourcePolicyD8E5D455": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ssm:GetParameter",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GetParameterCustomResourcePolicyD8E5D455",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   }
   },
-  "AssetParameters9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90ArtifactHashC00C7285": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"9d784cf317cead201dfe56ed0404d6d23eba6d499ca7354138230c2267f2fe90\""
+  "CustomRole6D8E6809": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CustomRoleDefaultPolicyC5C189DF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ssm:*",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomRoleDefaultPolicyC5C189DF",
+    "Roles": [
+     {
+      "Ref": "CustomRole6D8E6809"
+     }
+    ]
+   }
+  },
+  "GetParameterNoPolicyFCF7AA3B": {
+   "Type": "Custom::SSMParameter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"SSM\",\"action\":\"getParameter\",\"parameters\":{\"Name\":\"",
+       {
+        "Ref": "DummyParameter53662B67"
+       },
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"SSM\",\"action\":\"getParameter\",\"parameters\":{\"Name\":\"",
+       {
+        "Ref": "DummyParameter53662B67"
+       },
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -311,6 +341,48 @@
      "Parameter.Value"
     ]
    }
+  },
+  "ParameterValueNoPolicy": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GetParameterNoPolicyFCF7AA3B",
+     "Parameter.Value"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

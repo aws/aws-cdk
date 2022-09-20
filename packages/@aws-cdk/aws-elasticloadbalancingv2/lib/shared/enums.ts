@@ -98,9 +98,46 @@ export enum ApplicationProtocolVersion {
  */
 export enum SslPolicy {
   /**
-   * The recommended security policy
+   * The recommended security policy for TLS listeners.
+   * This is the default policy for listeners created using the AWS Management Console
+   */
+  RECOMMENDED_TLS = 'ELBSecurityPolicy-TLS13-1-2-2021-06',
+
+  /**
+   * The recommended policy for http listeners.
+   * This is the default security policy for listeners created using the AWS CLI
    */
   RECOMMENDED = 'ELBSecurityPolicy-2016-08',
+
+  /**
+   * TLS1.2 and 1.3
+   */
+  TLS13_RES = 'ELBSecurityPolicy-TLS13-1-2-Res-2021-06',
+
+  /**
+   * TLS1.2 and 1.3 and no SHA ciphers
+   */
+  TLS13_EXT1 = 'ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06',
+
+  /**
+   * TLS1.2 and 1.3 with all ciphers
+   */
+  TLS13_EXT2 = 'ELBSecurityPolicy-TLS13-1-2-Ext2-2021-06',
+
+  /**
+   * TLS1.0 through 1.3 with all ciphers
+   */
+  TLS13_10 = 'ELBSecurityPolicy-TLS13-1-0-2021-06',
+
+  /**
+   * TLS1.1 through 1.3 with all ciphers
+   */
+  TLS13_11 = 'ELBSecurityPolicy-TLS13-1-1-2021-06',
+
+  /**
+   * TLS1.3 only
+   */
+  TLS13_13 = 'ELBSecurityPolicy-TLS13-1-3-2021-06',
 
   /**
    * Strong foward secrecy ciphers and TLV1.2 only (2020 edition).
@@ -119,7 +156,7 @@ export enum SslPolicy {
   FORWARD_SECRECY_TLS12 = 'ELBSecurityPolicy-FS-1-2-2019-08',
 
   /**
-   * Forward secrecy ciphers only with TLS1.1 and higher
+   * Forward secrecy ciphers only with TLS1.1 and 1.2
    */
   FORWARD_SECRECY_TLS11 = 'ELBSecurityPolicy-FS-1-1-2019-08',
 
@@ -139,7 +176,7 @@ export enum SslPolicy {
   TLS12_EXT = 'ELBSecurityPolicy-TLS-1-2-Ext-2018-06',
 
   /**
-   * TLS1.1 and higher with all ciphers
+   * TLS1.1 and 1.2 with all ciphers
    */
   TLS11 = 'ELBSecurityPolicy-TLS-1-1-2017-01',
 

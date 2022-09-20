@@ -118,7 +118,11 @@
       "Value": "aws-cdk-rds-instance/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -222,7 +226,11 @@
       "Value": "aws-cdk-rds-instance/VPC/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
   },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
@@ -424,6 +432,7 @@
    "Properties": {
     "EngineName": "oracle-se2",
     "MajorEngineVersion": "19",
+    "OptionGroupDescription": "Option group for oracle-se2 19",
     "OptionConfigurations": [
      {
       "OptionName": "LOCATOR"
@@ -440,8 +449,7 @@
        }
       ]
      }
-    ],
-    "OptionGroupDescription": "Option group for oracle-se2 19"
+    ]
    }
   },
   "InstanceSubnetGroupF2CBA54F": {
@@ -654,11 +662,11 @@
   "InstanceC1063A87": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.medium",
     "AllocatedStorage": "100",
     "AutoMinorVersionUpgrade": true,
     "BackupRetentionPeriod": 7,
     "CopyTagsToSnapshot": true,
+    "DBInstanceClass": "db.t3.medium",
     "DBName": "ORCL",
     "DBParameterGroupName": {
      "Ref": "ParameterGroup5E32DECB"
@@ -901,7 +909,9 @@
      },
      "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "InstanceAvailabilityAD5D452C": {
    "Type": "AWS::Events::Rule",
@@ -1036,41 +1046,9 @@
     "Runtime": "nodejs14.x",
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3Bucket0D8A173B"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1148,7 +1126,7 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs12.x"
+    "Runtime": "nodejs14.x"
    },
    "DependsOn": [
     "FunctionServiceRole675BB04A"
@@ -1172,17 +1150,37 @@
   }
  },
  "Parameters": {
-  "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3Bucket0D8A173B": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665\""
-  },
-  "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665S3VersionKeyE95BF332": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665\""
-  },
-  "AssetParameters22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665ArtifactHashF4A1E70E": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665\""
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

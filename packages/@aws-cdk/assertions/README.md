@@ -10,7 +10,7 @@
 <!--END STABILITY BANNER-->
 
 If you're migrating from the old `assert` library, the migration guide can be found in
-[our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assertions/MIGRATING.md).
+[our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/assertions/MIGRATING.md).
 
 Functions for writing test asserting against CDK applications, with focus on CloudFormation templates.
 
@@ -74,6 +74,17 @@ in a template.
 
 ```ts
 template.resourceCountIs('Foo::Bar', 2);
+```
+
+You can also count the number of resources of a specific type whose `Properties`
+section contains the specified properties:
+
+```ts
+template.resourcePropertiesCountIs('Foo::Bar', {
+  Foo: 'Bar',
+  Baz: 5,
+  Qux: [ 'Waldo', 'Fred' ],
+}, 1);
 ```
 
 ## Resource Matching & Retrieval

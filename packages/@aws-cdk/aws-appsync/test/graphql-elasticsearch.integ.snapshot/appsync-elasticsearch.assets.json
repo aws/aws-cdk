@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "08fe8252ae99e2f46d03e04321cb848d70ee9c2656baeb387f3baae1575b1d87": {
+      "source": {
+        "path": "appsync-elasticsearch.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "08fe8252ae99e2f46d03e04321cb848d70ee9c2656baeb387f3baae1575b1d87.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

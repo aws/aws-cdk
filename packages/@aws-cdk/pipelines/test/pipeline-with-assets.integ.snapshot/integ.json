@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "pipelines/test/integ.pipeline-with-assets": {
+    "integ.pipeline-with-assets": {
       "stacks": [
         "PipelineStack"
       ],

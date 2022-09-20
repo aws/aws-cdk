@@ -56,7 +56,7 @@ jest.mock('../lib/logging', () => ({
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Bootstrapper } from '../lib/api/bootstrap';
-import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudformation-deployments';
+import { CloudFormationDeployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
@@ -457,7 +457,10 @@ describe('deploy', () => {
 
     test('with sns notification arns', async () => {
       // GIVEN
-      const notificationArns = ['arn:aws:sns:::cfn-notifications', 'arn:aws:sns:::my-cool-topic'];
+      const notificationArns = [
+        'arn:aws:sns:us-east-2:444455556666:MyTopic',
+        'arn:aws:sns:eu-west-1:111155556666:my-great-topic',
+      ];
       const toolkit = new CdkToolkit({
         cloudExecutable,
         configuration: cloudExecutable.configuration,
@@ -475,8 +478,30 @@ describe('deploy', () => {
       });
     });
 
-    test('globless bootstrap uses environment without question', async () => {
+    test('fail with incorrect sns notification arns', async () => {
       // GIVEN
+      const notificationArns = ['arn:::cfn-my-cool-topic'];
+      const toolkit = new CdkToolkit({
+        cloudExecutable,
+        configuration: cloudExecutable.configuration,
+        sdkProvider: cloudExecutable.sdkProvider,
+        cloudFormation: new FakeCloudFormation({
+          'Test-Stack-A': { Foo: 'Bar' },
+        }, notificationArns),
+      });
+
+      // WHEN
+      await expect(() =>
+        toolkit.deploy({
+          selector: { patterns: ['Test-Stack-A'] },
+          notificationArns,
+        }),
+      ).rejects.toThrow('Notification arn arn:::cfn-my-cool-topic is not a valid arn for an SNS topic');
+
+    });
+
+    test('globless bootstrap uses environment without question', async () => {
+    // GIVEN
       const toolkit = defaultToolkitSetup();
 
       // WHEN
@@ -530,6 +555,21 @@ describe('deploy', () => {
       expect(cloudExecutable.hasApp).toEqual(false);
       expect(mockSynthesize).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('destroy', () => {
+  test('destroy correct stack', async () => {
+    const toolkit = defaultToolkitSetup();
+
+    await expect(() => {
+      return toolkit.destroy({
+        selector: { patterns: ['Test-Stack-A/Test-Stack-C'] },
+        exclusively: true,
+        force: true,
+        fromDeploy: true,
+      });
+    }).resolves;
   });
 });
 
@@ -615,6 +655,18 @@ describe('watch', () => {
     expect(excludeArgs.length).toBe(6);
     expect(excludeArgs[0]).toBe('my-dir1');
     expect(excludeArgs[1]).toBe('**/my-dir2');
+  });
+
+  test('allows watching with deploy concurrency', async () => {
+    cloudExecutable.configuration.settings.set(['watch'], {});
+    const toolkit = defaultToolkitSetup();
+    const cdkDeployMock = jest.fn();
+    toolkit.deploy = cdkDeployMock;
+
+    await toolkit.watch({ selector: { patterns: [] }, concurrency: 3 });
+    fakeChokidarWatcherOn.readyCallback();
+
+    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ concurrency: 3 }));
   });
 
   describe('with file change events', () => {
@@ -892,6 +944,11 @@ class FakeCloudFormation extends CloudFormationDeployments {
       outputs: { StackName: options.stack.stackName },
       stackArtifact: options.stack,
     });
+  }
+
+  public destroyStack(options: DestroyStackOptions): Promise<void> {
+    expect(options.stack).toBeDefined();
+    return Promise.resolve();
   }
 
   public readCurrentTemplate(stack: cxapi.CloudFormationStackArtifact): Promise<Template> {

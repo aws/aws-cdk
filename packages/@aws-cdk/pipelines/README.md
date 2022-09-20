@@ -34,7 +34,7 @@ to the new version if possible.
 > allows more control of CodeBuild project generation; supports deployment
 > engines other than CodePipeline.
 >
-> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
+> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
 
 ## At a glance
 
@@ -725,8 +725,11 @@ new pipelines.CodeBuildStep('Synth', {
 
   // Control Elastic Network Interface creation
   vpc: vpc,
-  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
+  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
   securityGroups: [mySecurityGroup],
+
+  // Control caching
+  cache: codebuild.Cache.bucket(new s3.Bucket(this, 'Cache')),
 
   // Additional policy statements for the execution role
   rolePolicyStatements: [
@@ -770,7 +773,7 @@ new pipelines.CodePipeline(this, 'Pipeline', {
 
     // Control Elastic Network Interface creation
     vpc: vpc,
-    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
+    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     securityGroups: [mySecurityGroup],
 
     // Additional policy statements for the execution role
@@ -831,6 +834,34 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
   }
 }
 ```
+
+### Using an existing AWS Codepipeline
+
+If you wish to use an existing `CodePipeline.Pipeline` while using the modern API's
+methods and classes, you can pass in the existing `CodePipeline.Pipeline` to be built upon
+instead of having the `pipelines.CodePipeline` construct create a new `CodePipeline.Pipeline`.
+This also gives you more direct control over the underlying `CodePipeline.Pipeline` construct
+if the way the modern API creates it doesn't allow for desired configurations.
+
+Here's an example of passing in an existing pipeline:
+
+```ts
+declare const codePipeline: codepipeline.Pipeline;
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+    }),
+    commands: ['npm ci','npm run build','npx cdk synth'],
+  }),
+  codePipeline: codePipeline,
+});
+```
+
+Note that if you provide an existing pipeline, you cannot provide values for
+`pipelineName`, `crossAccountKeys`, `reuseCrossRegionSupportStacks`, or `role`
+because those values are passed in directly to the underlying `codepipeline.Pipeline`.
 
 ## Using Docker in the pipeline
 
@@ -1375,6 +1406,47 @@ const pipeline = new pipelines.CdkPipeline(this, 'MyPipeline', {
 After turning on `privilegedMode: true`, you will need to do a one-time manual cdk deploy of your
 pipeline to get it going again (as with a broken 'synth' the pipeline will not be able to self
 update to the right state).
+
+### Not authorized to perform sts:AssumeRole on arn:aws:iam::\*:role/\*-lookup-role-\*
+
+You may get an error like the following in the **Synth** step:
+
+```text
+Could not assume role in target account using current credentials (which are for account 111111111111). User:
+arn:aws:sts::111111111111:assumed-role/PipelineStack-PipelineBuildSynthCdkBuildProje-..../AWSCodeBuild-....
+is not authorized to perform: sts:AssumeRole on resource:
+arn:aws:iam::222222222222:role/cdk-hnb659fds-lookup-role-222222222222-us-east-1.
+Please make sure that this role exists in the account. If it doesn't exist, (re)-bootstrap the environment with
+the right '--trust', using the latest version of the CDK CLI.
+```
+
+This is a sign that the CLI is trying to do Context Lookups during the **Synth** step, which are failing
+because it cannot assume the right role. We recommend you don't rely on Context Lookups in the pipeline at
+all, and commit a file called `cdk.context.json` with the right lookup values in it to source control.
+
+If you do want to do lookups in the pipeline, the cause is one of the following:
+
+* The target environment has not been bootstrapped; OR
+* The target environment has been bootstrapped without the right `--trust` relationship; OR
+* The CodeBuild execution role does not have permissions to call `sts:AssumeRole`.
+
+See the section called **Context Lookups** for more information on using this feature.
+
+### IAM policies: Cannot exceed quota for PoliciesPerRole / Maximum policy size exceeded
+
+This happens as a result of having a lot of targets in the Pipeline: the IAM policies that
+get generated enumerate all required roles and grow too large.
+
+Make sure you are on version `2.26.0` or higher, and that your `cdk.json` contains the
+following:
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-iam:minimizePolicies": true
+  }
+}
+```
 
 ### S3 error: Access Denied
 

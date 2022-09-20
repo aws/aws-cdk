@@ -1,14 +1,13 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "aws-lambda-python/test/integ.function.nodeps": {
+    "lambda-python-nodeps/DefaultTest": {
       "stacks": [
-        "cdk-integ-lambda-python"
+        "integ-lambda-python-nodeps"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-nodeps/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythonnodepsDefaultTestDeployAssert72A584F7"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

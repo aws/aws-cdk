@@ -65,6 +65,7 @@ declare const cluster: msk.Cluster;
 new CfnOutput(this, 'BootstrapBrokers', { value: cluster.bootstrapBrokers });
 new CfnOutput(this, 'BootstrapBrokersTls', { value: cluster.bootstrapBrokersTls });
 new CfnOutput(this, 'BootstrapBrokersSaslScram', { value: cluster.bootstrapBrokersSaslScram });
+new CfnOutput(this, 'BootstrapBrokerStringSaslIam', { value: cluster.bootstrapBrokersSaslIam });
 new CfnOutput(this, 'ZookeeperConnection', { value: cluster.zookeeperConnectionString });
 new CfnOutput(this, 'ZookeeperConnectionTls', { value: cluster.zookeeperConnectionStringTls });
 ```
@@ -82,8 +83,6 @@ const cluster = msk.Cluster.fromClusterArn(this, 'Cluster',
 ## Client Authentication
 
 [MSK supports](https://docs.aws.amazon.com/msk/latest/developerguide/kafka_apis_iam.html) the following authentication mechanisms.
-
-> Only one authentication method can be enabled.
 
 ### TLS
 
@@ -149,3 +148,71 @@ const cluster = new msk.Cluster(this, 'cluster', {
   }),
 });
 ```
+
+
+### SASL/IAM + TLS
+
+Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/developerguide/iam-access-control.html) 
+as well as enable client authentication with TLS by setting the `certificateAuthorityArns` property to reference your ACM Private CA. [More info on Private CAs.](https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html)
+
+```ts
+import * as acmpca from '@aws-cdk/aws-acmpca';
+
+declare const vpc: ec2.Vpc;
+const cluster = new msk.Cluster(this, 'Cluster', {
+  clusterName: 'myCluster',
+  kafkaVersion: msk.KafkaVersion.V2_8_1,
+  vpc,
+  encryptionInTransit: {
+    clientBroker: msk.ClientBrokerEncryption.TLS,
+  },
+  clientAuthentication: msk.ClientAuthentication.saslTls({
+    iam: true,
+    certificateAuthorities: [
+      acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+        this,
+        'CertificateAuthority',
+        'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+      ),
+    ],
+  }),
+});
+```
+
+
+## Logging
+
+You can deliver Apache Kafka broker logs to one or more of the following destination types:
+Amazon CloudWatch Logs, Amazon S3, Amazon Kinesis Data Firehose.
+
+To configure logs to be sent to an S3 bucket, provide a bucket in the `logging` config.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const bucket: s3.IBucket;
+const cluster = new msk.Cluster(this, 'cluster', {
+  clusterName: 'myCluster',
+  kafkaVersion: msk.KafkaVersion.V2_8_1,
+  vpc,
+  logging: {
+    s3: {
+      bucket,
+    },
+  },
+});
+```
+
+When the S3 destination is configured, AWS will automatically create an S3 bucket policy
+that allows the service to write logs to the bucket. This makes it impossible to later update
+that bucket policy. To have CDK create the bucket policy so that future updates can be made,
+the `@aws-cdk/aws-s3:createDefaultLoggingPolicy` [feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) can be used. This can be set
+in the `cdk.json` file.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true
+  }
+}
+```
+

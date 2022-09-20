@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as apigateway from '../lib';
 
 /*
@@ -12,6 +13,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integtest-restapi-fromdefinition-asset');
 
 const api = new apigateway.SpecRestApi(stack, 'my-api', {
+  cloudWatchRole: true,
   apiDefinition: apigateway.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml')),
 });
 
@@ -35,4 +37,6 @@ new cdk.CfnOutput(stack, 'BooksURL', {
   value: api.urlForPath('/books'),
 });
 
-app.synth();
+new IntegTest(app, 'restapi-fromdefinition', {
+  testCases: [stack],
+});

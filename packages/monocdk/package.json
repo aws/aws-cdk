@@ -1,6 +1,7 @@
 {
   "name": "monocdk",
   "version": "0.0.0",
+  "private": true,
   "description": "An experiment to bundle the entire CDK into a single module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -61,7 +62,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.MonoCDK",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
         "versionSuffix": "-devpreview"
       },
       "java": {
@@ -106,7 +107,7 @@
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
     "ignore": "^5.2.0",
-    "jsonschema": "^1.4.0",
+    "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
     "semver": "^7.3.7",
@@ -172,6 +173,7 @@
     "@aws-cdk/aws-cognito-identitypool": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
     "@aws-cdk/aws-connect": "0.0.0",
+    "@aws-cdk/aws-controltower": "0.0.0",
     "@aws-cdk/aws-cur": "0.0.0",
     "@aws-cdk/aws-customerprofiles": "0.0.0",
     "@aws-cdk/aws-databrew": "0.0.0",
@@ -192,7 +194,6 @@
     "@aws-cdk/aws-ecs-patterns": "0.0.0",
     "@aws-cdk/aws-efs": "0.0.0",
     "@aws-cdk/aws-eks": "0.0.0",
-    "@aws-cdk/aws-eks-legacy": "0.0.0",
     "@aws-cdk/aws-elasticache": "0.0.0",
     "@aws-cdk/aws-elasticbeanstalk": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancing": "0.0.0",
@@ -202,6 +203,7 @@
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-emr": "0.0.0",
     "@aws-cdk/aws-emrcontainers": "0.0.0",
+    "@aws-cdk/aws-emrserverless": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
@@ -264,6 +266,7 @@
     "@aws-cdk/aws-lookoutequipment": "0.0.0",
     "@aws-cdk/aws-lookoutmetrics": "0.0.0",
     "@aws-cdk/aws-lookoutvision": "0.0.0",
+    "@aws-cdk/aws-m2": "0.0.0",
     "@aws-cdk/aws-macie": "0.0.0",
     "@aws-cdk/aws-managedblockchain": "0.0.0",
     "@aws-cdk/aws-mediaconnect": "0.0.0",
@@ -291,6 +294,7 @@
     "@aws-cdk/aws-ram": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-redshift": "0.0.0",
+    "@aws-cdk/aws-redshiftserverless": "0.0.0",
     "@aws-cdk/aws-refactorspaces": "0.0.0",
     "@aws-cdk/aws-rekognition": "0.0.0",
     "@aws-cdk/aws-resiliencehub": "0.0.0",
@@ -329,9 +333,11 @@
     "@aws-cdk/aws-sso": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-stepfunctions-tasks": "0.0.0",
+    "@aws-cdk/aws-supportapp": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
     "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
+    "@aws-cdk/aws-voiceid": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
@@ -355,18 +361,18 @@
     "@aws-cdk/ubergen": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/node": "^10.17.60",
-    "constructs": "^3.3.69",
+    "@types/node": "^14.18.29",
+    "constructs": "^10.0.0",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
   },
   "peerDependencies": {
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "keywords": [
     "aws",
@@ -377,7 +383,7 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   },
   "preferredCdkCliVersion": "1"
 }

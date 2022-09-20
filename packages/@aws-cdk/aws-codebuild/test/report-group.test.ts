@@ -4,6 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as codebuild from '../lib';
+import { ReportGroupType } from '../lib';
 
 /* eslint-disable quote-props */
 /* eslint-disable quotes */
@@ -140,6 +141,105 @@ describe('Test Reports Groups', () => {
     Template.fromStack(stack).hasResource('AWS::CodeBuild::ReportGroup', {
       "DeletionPolicy": "Delete",
       "UpdateReplacePolicy": "Delete",
+    });
+  });
+
+  test('can be created with type=CODE_COVERAGE', () => {
+    const stack = new cdk.Stack();
+
+    new codebuild.ReportGroup(stack, 'ReportGroup', {
+      type: ReportGroupType.CODE_COVERAGE,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
+      "Type": "CODE_COVERAGE",
+    });
+  });
+
+  test('defaults to report group type=TEST when not specified explicitly', () => {
+    const stack = new cdk.Stack();
+
+    new codebuild.ReportGroup(stack, 'ReportGroup', {});
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
+      "Type": "TEST",
+    });
+  });
+
+  test.each([
+    [ReportGroupType.CODE_COVERAGE, 'codebuild:BatchPutCodeCoverages'],
+    [ReportGroupType.TEST, 'codebuild:BatchPutTestCases'],
+  ])('has correct policy when type is %s', (type: ReportGroupType, policyStatement: string) => {
+    const stack = new cdk.Stack();
+
+    const reportGroup = new codebuild.ReportGroup(stack, 'ReportGroup', {
+      type,
+    });
+
+    const project = new codebuild.Project(stack, 'TestProject', {
+      buildSpec: {
+        toBuildSpec: () => '',
+        isImmediate: true,
+      },
+    });
+    reportGroup.grantWrite(project);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              "codebuild:CreateReport",
+              "codebuild:UpdateReport",
+              policyStatement,
+            ],
+            Effect: "Allow",
+            Resource: {
+              "Fn::GetAtt": [
+                "ReportGroup8A84C76D",
+                "Arn",
+              ],
+            },
+          },
+        ]),
+        Version: "2012-10-17",
+      },
+    });
+  });
+
+  test('has policy for type test when type is not defined', () => {
+    const stack = new cdk.Stack();
+
+    const reportGroup = new codebuild.ReportGroup(stack, 'ReportGroup');
+
+    const project = new codebuild.Project(stack, 'TestProject', {
+      buildSpec: {
+        toBuildSpec: () => '',
+        isImmediate: true,
+      },
+    });
+    reportGroup.grantWrite(project);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              "codebuild:CreateReport",
+              "codebuild:UpdateReport",
+              "codebuild:BatchPutTestCases",
+            ],
+            Effect: "Allow",
+            Resource: {
+              "Fn::GetAtt": [
+                "ReportGroup8A84C76D",
+                "Arn",
+              ],
+            },
+          },
+        ]),
+        Version: "2012-10-17",
+      },
     });
   });
 });

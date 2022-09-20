@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "appsync-opensearch": {
@@ -66,9 +66,6 @@
                       "instanceType": "r5.large.search",
                       "zoneAwarenessEnabled": false
                     },
-                    "cognitoOptions": {
-                      "enabled": false
-                    },
                     "domainEndpointOptions": {
                       "enforceHttps": true,
                       "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
@@ -81,7 +78,7 @@
                     "encryptionAtRestOptions": {
                       "enabled": true
                     },
-                    "engineVersion": "OpenSearch_1.2",
+                    "engineVersion": "OpenSearch_1.3",
                     "logPublishingOptions": {},
                     "nodeToNodeEncryptionOptions": {
                       "enabled": true
@@ -155,6 +152,14 @@
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-appsync.CfnApiKey",
                   "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "appsync-opensearch/api/LogGroup",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "ds": {
@@ -358,14 +363,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

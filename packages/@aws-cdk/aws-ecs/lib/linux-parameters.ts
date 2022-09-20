@@ -2,10 +2,6 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnTaskDefinition } from './ecs.generated';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * The properties for defining Linux-specific options that are applied to the container.
  */
@@ -18,26 +14,62 @@ export interface LinuxParametersProps {
   readonly initProcessEnabled?: boolean;
 
   /**
-   * The value for the size (in MiB) of the /dev/shm volume.
+   * The value for the size of the /dev/shm volume.
    *
    * @default No shared memory.
    */
   readonly sharedMemorySize?: number;
+
+  /**
+   * The total amount of swap memory a container can use. This parameter
+   * will be translated to the --memory-swap option to docker run.
+   *
+   * This parameter is only supported when you are using the EC2 launch type.
+   * Accepted values are positive integers.
+   *
+   * @default No swap.
+   */
+  readonly maxSwap?: cdk.Size;
+
+  /**
+    * This allows you to tune a container's memory swappiness behavior. This parameter
+    * maps to the --memory-swappiness option to docker run. The swappiness relates
+    * to the kernel's tendency to swap memory. A value of 0 will cause swapping to
+    * not happen unless absolutely necessary. A value of 100 will cause pages to
+    * be swapped very aggressively.
+    *
+    * This parameter is only supported when you are using the EC2 launch type.
+    * Accepted values are whole numbers between 0 and 100. If a value is not
+    * specified for maxSwap then this parameter is ignored.
+    *
+    * @default 60
+    */
+  readonly swappiness?: number;
 }
 
 /**
  * Linux-specific options that are applied to the container.
  */
-export class LinuxParameters extends CoreConstruct {
+export class LinuxParameters extends Construct {
   /**
    * Whether the init process is enabled
    */
   private readonly initProcessEnabled?: boolean;
 
   /**
-   * The shared memory size. Not valid for Fargate launch type
+   * The shared memory size (in MiB). Not valid for Fargate launch type
    */
   private readonly sharedMemorySize?: number;
+
+  /**
+   * The max swap memory
+   */
+  private readonly maxSwap?: cdk.Size;
+
+  /**
+   * The swappiness behavior
+   */
+  private readonly swappiness?: number;
 
   /**
    * Capabilities to be added
@@ -65,8 +97,30 @@ export class LinuxParameters extends CoreConstruct {
   constructor(scope: Construct, id: string, props: LinuxParametersProps = {}) {
     super(scope, id);
 
+    this.validateProps(props);
+
     this.sharedMemorySize = props.sharedMemorySize;
     this.initProcessEnabled = props.initProcessEnabled;
+    this.maxSwap = props.maxSwap;
+    this.swappiness = props.maxSwap ? props.swappiness : undefined;
+  }
+
+  private validateProps(props: LinuxParametersProps) {
+    if (
+      !cdk.Token.isUnresolved(props.sharedMemorySize) &&
+      props.sharedMemorySize !== undefined &&
+      (!Number.isInteger(props.sharedMemorySize) || props.sharedMemorySize < 0)
+    ) {
+      throw new Error(`sharedMemorySize: Must be an integer greater than 0; received ${props.sharedMemorySize}.`);
+    }
+
+    if (
+      !cdk.Token.isUnresolved(props.swappiness) &&
+      props.swappiness !== undefined &&
+      (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)
+    ) {
+      throw new Error(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`);
+    }
   }
 
   /**
@@ -110,6 +164,8 @@ export class LinuxParameters extends CoreConstruct {
     return {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
+      maxSwap: this.maxSwap?.toMebibytes(),
+      swappiness: this.swappiness,
       capabilities: {
         add: cdk.Lazy.list({ produce: () => this.capAdd }, { omitEmpty: true }),
         drop: cdk.Lazy.list({ produce: () => this.capDrop }, { omitEmpty: true }),

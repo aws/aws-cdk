@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "LambdaStack": {
@@ -73,16 +73,16 @@
                 "id": "LambdaSourceBucketNameParameter",
                 "path": "LambdaStack/Lambda/LambdaSourceBucketNameParameter",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "LambdaSourceObjectKeyParameter": {
                 "id": "LambdaSourceObjectKeyParameter",
                 "path": "LambdaStack/Lambda/LambdaSourceObjectKeyParameter",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "Resource": {
@@ -122,8 +122,8 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "PipelineStack": {
@@ -195,7 +195,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                       "aws:cdk:cloudformation:props": {
-                        "aliasName": "alias/codepipeline-pipelinestackpipeline9db740af",
+                        "aliasName": "alias/codepipeline-pipelinestack-pipeline-9db740af",
                         "targetKeyId": {
                           "Fn::GetAtt": [
                             "PipelineArtifactsBucketEncryptionKey01D58D69",
@@ -857,8 +857,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "LambdaCode_Source": {
@@ -1020,14 +1020,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "EventsRole": {
@@ -1234,8 +1234,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "Lambda_Build": {
@@ -1342,14 +1342,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "Deploy": {
@@ -1408,8 +1408,8 @@
                             "id": "8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "path": "PipelineStack/Pipeline/Deploy/Lambda_CFN_Deploy/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.Construct",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.85"
                             }
                           },
                           "DefaultPolicy": {
@@ -1656,14 +1656,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Construct",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -2418,14 +2418,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

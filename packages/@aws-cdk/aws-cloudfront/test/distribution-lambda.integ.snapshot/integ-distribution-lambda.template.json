@@ -53,7 +53,7 @@
     "LambdaServiceRoleA8ED4D3B"
    ]
   },
-  "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d": {
+  "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -72,7 +72,7 @@
        {
         "EventType": "origin-request",
         "LambdaFunctionARN": {
-         "Ref": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
+         "Ref": "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc"
         }
        }
       ],
@@ -93,6 +93,40 @@
      ]
     }
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

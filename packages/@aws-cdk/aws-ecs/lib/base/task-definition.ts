@@ -377,7 +377,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private _executionRole?: iam.IRole;
 
-  private _referencesSecretJsonField?: boolean;
+  private _passRoleStatement?: iam.PolicyStatement;
 
   private runtimePlatform?: RuntimePlatform;
 
@@ -413,8 +413,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
     }
 
-    if (this.isExternalCompatible && this.networkMode !== NetworkMode.BRIDGE) {
-      throw new Error(`External tasks can only have Bridge network mode, got: ${this.networkMode}`);
+    if (this.isExternalCompatible && ![NetworkMode.BRIDGE, NetworkMode.HOST, NetworkMode.NONE].includes(this.networkMode)) {
+      throw new Error(`External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`);
     }
 
     if (!this.isFargateCompatible && props.runtimePlatform) {
@@ -481,6 +481,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.taskDefinitionArn = taskDef.ref;
+    this.node.addValidation({ validate: () => this.validateTaskDefinition() });
   }
 
   public get executionRole(): iam.IRole | undefined {
@@ -611,9 +612,6 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
-    if (container.referencesSecretJsonField) {
-      this._referencesSecretJsonField = true;
-    }
   }
 
   /**
@@ -654,6 +652,25 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   /**
+   * Grants permissions to run this task definition
+   *
+   * This will grant the following permissions:
+   *
+   *   - ecs:RunTask
+   *   - iam:PassRole
+   *
+   * @param grantee Principal to grant consume rights to
+   */
+  public grantRun(grantee: iam.IGrantable) {
+    grantee.grantPrincipal.addToPrincipalPolicy(this.passRoleStatement);
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecs:RunTask'],
+      resourceArns: [this.taskDefinitionArn],
+    });
+  }
+
+  /**
    * Creates the task execution IAM role if it doesn't already exist.
    */
   public obtainExecutionRole(): iam.IRole {
@@ -663,6 +680,7 @@ export class TaskDefinition extends TaskDefinitionBase {
         // needed for cross-account access with TagParameterContainerImage
         roleName: PhysicalName.GENERATE_IF_NEEDED,
       });
+      this.passRoleStatement.addResources(this._executionRole.roleArn);
     }
     return this._executionRole;
   }
@@ -672,14 +690,19 @@ export class TaskDefinition extends TaskDefinitionBase {
    * specific JSON field of a secret stored in Secrets Manager.
    */
   public get referencesSecretJsonField(): boolean | undefined {
-    return this._referencesSecretJsonField;
+    for (const container of this.containers) {
+      if (container.referencesSecretJsonField) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
    * Validates the task definition.
    */
-  protected validate(): string[] {
-    const ret = super.validate();
+  private validateTaskDefinition(): string[] {
+    const ret = new Array<string>();
 
     if (isEc2Compatible(this.compatibility)) {
       // EC2 mode validations
@@ -699,6 +722,21 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   public findContainer(containerName: string): ContainerDefinition | undefined {
     return this.containers.find(c => c.containerName === containerName);
+  }
+
+  private get passRoleStatement() {
+    if (!this._passRoleStatement) {
+      this._passRoleStatement = new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['iam:PassRole'],
+        resources: this.executionRole ? [this.taskRole.roleArn, this.executionRole.roleArn] : [this.taskRole.roleArn],
+        conditions: {
+          StringLike: { 'iam:PassedToService': 'ecs-tasks.amazonaws.com' },
+        },
+      });
+    }
+
+    return this._passRoleStatement;
   }
 
   private renderNetworkMode(networkMode: NetworkMode): string | undefined {

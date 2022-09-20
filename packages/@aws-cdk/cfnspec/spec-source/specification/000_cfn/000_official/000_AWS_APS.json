@@ -1,6 +1,18 @@
 {
-  "$version": "68.0.0",
-  "PropertyTypes": {},
+  "$version": "88.0.0",
+  "PropertyTypes": {
+    "AWS::APS::Workspace.LoggingConfiguration": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-aps-workspace-loggingconfiguration.html",
+      "Properties": {
+        "LogGroupArn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-aps-workspace-loggingconfiguration.html#cfn-aps-workspace-loggingconfiguration-loggrouparn",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    }
+  },
   "ResourceTypes": {
     "AWS::APS::RuleGroupsNamespace": {
       "Attributes": {
@@ -62,6 +74,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html#cfn-aps-workspace-alias",
           "PrimitiveType": "String",
           "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "LoggingConfiguration": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html#cfn-aps-workspace-loggingconfiguration",
+          "Required": false,
+          "Type": "LoggingConfiguration",
           "UpdateType": "Mutable"
         },
         "Tags": {

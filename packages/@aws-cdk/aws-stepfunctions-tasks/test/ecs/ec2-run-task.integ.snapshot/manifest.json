@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,27 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-sfn-tasks-ecs-ec2-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-sfn-tasks-ecs-ec2-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-sfn-tasks-ecs-ec2-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-sfn-tasks-ecs-ec2-integ.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-sfn-tasks-ecs-ec2-integ": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "repositoryName": "aws-cdk/assets",
-              "imageTag": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
-              "id": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
-              "packaging": "container-image",
-              "path": "asset.7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2",
-              "sourceHash": "7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b308ba1dd93545cab75713746baa2767df80dd74c303b88ab396500f81304f8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-sfn-tasks-ecs-ec2-integ.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-sfn-tasks-ecs-ec2-integ.assets"
+      ],
+      "metadata": {
         "/aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -277,7 +288,10 @@
         "/aws-sfn-tasks-ecs-ec2-integ/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570"
+            "data": "TaskDef54694570",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-sfn-tasks-ecs-ec2-integ/TaskDef/TheContainer/LogGroup/Resource": [
@@ -326,6 +340,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ServiceprincipalMap"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-ec2-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-ec2-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

@@ -1,0 +1,180 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "lambda-ecr-docker-arm64": {
+        "id": "lambda-ecr-docker-arm64",
+        "path": "lambda-ecr-docker-arm64",
+        "children": {
+          "MyLambda": {
+            "id": "MyLambda",
+            "path": "lambda-ecr-docker-arm64/MyLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "lambda-ecr-docker-arm64/MyLambda/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-ecr-docker-arm64/MyLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "AssetImage": {
+                "id": "AssetImage",
+                "path": "lambda-ecr-docker-arm64/MyLambda/AssetImage",
+                "children": {
+                  "Staging": {
+                    "id": "Staging",
+                    "path": "lambda-ecr-docker-arm64/MyLambda/AssetImage/Staging",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Repository": {
+                    "id": "Repository",
+                    "path": "lambda-ecr-docker-arm64/MyLambda/AssetImage/Repository",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-ecr-docker-arm64/MyLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "imageUri": {
+                        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:027b9b499ce9e488d4c3cfa41abdbdc6afe203989a5bd77258f471da03f3f040"
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyLambdaServiceRole4539ECB6",
+                        "Arn"
+                      ]
+                    },
+                    "architectures": [
+                      "arm64"
+                    ],
+                    "packageType": "Image"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.DockerImageFunction",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "lambda-docker-arm64": {
+        "id": "lambda-docker-arm64",
+        "path": "lambda-docker-arm64",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "lambda-docker-arm64/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "lambda-docker-arm64/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "lambda-docker-arm64/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

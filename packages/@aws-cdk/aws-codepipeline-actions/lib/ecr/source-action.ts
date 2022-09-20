@@ -1,14 +1,12 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ecr from '@aws-cdk/aws-ecr';
+import { Rule } from '@aws-cdk/aws-events';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
 import { Names } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The CodePipeline variables emitted by the ECR source Action.
@@ -36,7 +34,8 @@ export interface EcrSourceVariables {
 export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The image tag that will be checked for changes.
-   * Provide an empty string to trigger on changes to any tag.
+   *
+   * It is not possible to trigger on changes to more than one tag.
    *
    * @default 'latest'
    */
@@ -87,16 +86,27 @@ export class EcrSourceAction extends Action {
     };
   }
 
-  protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['ecr:DescribeImages'],
       resources: [this.props.repository.repositoryArn],
     }));
 
-    this.props.repository.onCloudTrailImagePushed(Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule', {
-      target: new targets.CodePipeline(stage.pipeline),
-      imageTag: this.props.imageTag === '' ? undefined : (this.props.imageTag ?? 'latest'),
+    new Rule(scope, Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule', {
+      targets: [
+        new targets.CodePipeline(stage.pipeline),
+      ],
+      eventPattern: {
+        detailType: ['ECR Image Action'],
+        source: ['aws.ecr'],
+        detail: {
+          'result': ['SUCCESS'],
+          'repository-name': [this.props.repository.repositoryName],
+          'image-tag': [this.props.imageTag === '' ? undefined : (this.props.imageTag ?? 'latest')],
+          'action-type': ['PUSH'],
+        },
+      },
     });
 
     // the Action Role also needs to write to the Pipeline's bucket

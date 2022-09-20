@@ -107,6 +107,21 @@ item.addMethod('GET');   // GET /items/{item}
 item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 ```
 
+Additionally, `integrationOptions` can be supplied to explicitly define
+options of the Lambda integration:
+
+```ts
+declare const backend: lambda.Function;
+
+const api = new apigateway.LambdaRestApi(this, 'myapi', {
+  handler: backend,
+  integrationOptions: {
+    allowTestInvoke: false,
+    timeout: Duration.seconds(1),
+  }
+})
+```
+
 ## AWS StepFunctions backed APIs
 
 You can use Amazon API Gateway with AWS Step Functions as the backend integration, specifically Synchronous Express Workflows.
@@ -426,7 +441,7 @@ have to define your models and mappings for the request, response, and integrati
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });
@@ -827,18 +842,29 @@ API.
 The following example will configure API Gateway to emit logs and data traces to
 AWS CloudWatch for all API calls:
 
-> By default, an IAM role will be created and associated with API Gateway to
-allow it to write logs and metrics to AWS CloudWatch unless `cloudWatchRole` is
-set to `false`.
+> Note: whether or not this is enabled or disabled by default is controlled by the
+`@aws-cdk/aws-apigateway:disableCloudWatchRole` feature flag. When this feature flag
+is set to `false` the default behavior will set `cloudWatchRole=true`
+
+This is controlled via the `@aws-cdk/aws-apigateway:disableCloudWatchRole` feature flag and
+is disabled by default. When enabled (or `@aws-cdk/aws-apigateway:disableCloudWatchRole=false`),
+an IAM role will be created and associated with API Gateway to allow it to write logs and metrics to AWS CloudWatch.
 
 ```ts
 const api = new apigateway.RestApi(this, 'books', {
+  cloudWatchRole: true,
   deployOptions: {
     loggingLevel: apigateway.MethodLoggingLevel.INFO,
     dataTraceEnabled: true
   }
 })
 ```
+
+> Note: there can only be a single apigateway.CfnAccount per AWS environment
+so if you create multiple `RestApi`s with `cloudWatchRole=true` each new `RestApi`
+will overwrite the `CfnAccount`. It is recommended to set `cloudWatchRole=false`
+(the default behavior if `@aws-cdk/aws-apigateway:disableCloudWatchRole` is enabled)
+and only create a single CloudWatch role and account per environment.
 
 ### Deep dive: Invalidation of deployments
 
@@ -1290,13 +1316,19 @@ in your openApi file.
 ## Metrics
 
 The API Gateway service sends metrics around the performance of Rest APIs to Amazon CloudWatch.
-These metrics can be referred to using the metric APIs available on the `RestApi` construct.
-The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
-the method below refers to the client side errors metric for this API.
+These metrics can be referred to using the metric APIs available on the `RestApi`, `Stage` and `Method` constructs.
+Note that detailed metrics must be enabled for a stage to use the `Method` metrics.
+Read more about [API Gateway metrics](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-metrics-and-dimensions.html), including enabling detailed metrics.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example:
 
 ```ts
 const api = new apigateway.RestApi(this, 'my-api');
-const clientErrorMetric = api.metricClientError();
+const stage = api.deploymentStage;
+const method = api.root.addMethod('GET');
+
+const clientErrorApiMetric = api.metricClientError();
+const serverErrorStageMetric = stage.metricServerError();
+const latencyMethodMetric = method.metricLatency(stage);
 ```
 
 ## APIGateway v2

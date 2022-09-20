@@ -62,7 +62,7 @@ export class Duration {
   /**
    * Parse a period formatted according to the ISO 8601 standard
    *
-   * @see https://www.iso.org/fr/standard/70907.html
+   * @see https://www.iso.org/standard/70907.html
    * @param duration an ISO-formtted duration to be parsed.
    * @returns the parsed `Duration`.
    */
@@ -167,7 +167,7 @@ export class Duration {
    * Return an ISO 8601 representation of this period
    *
    * @returns a string starting with 'P' describing the period
-   * @see https://www.iso.org/fr/standard/70907.html
+   * @see https://www.iso.org/standard/70907.html
    */
   public toIsoString(): string {
     if (this.amount === 0) { return 'PT0S'; }
@@ -190,7 +190,7 @@ export class Duration {
    * Return an ISO 8601 representation of this period
    *
    * @returns a string starting with 'P' describing the period
-   * @see https://www.iso.org/fr/standard/70907.html
+   * @see https://www.iso.org/standard/70907.html
    * @deprecated Use `toIsoString()` instead.
    */
   public toISOString(): string {
@@ -313,8 +313,12 @@ class TimeUnit {
 }
 
 function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integral = true }: TimeConversionOptions) {
-  if (fromUnit.inMillis === toUnit.inMillis) { return amount; }
-
+  if (fromUnit.inMillis === toUnit.inMillis) {
+    if (integral && !Token.isUnresolved(amount) && !Number.isInteger(amount)) {
+      throw new Error(`${amount} must be a whole number of ${toUnit}.`);
+    }
+    return amount;
+  }
   if (Token.isUnresolved(amount)) {
     throw new Error(`Duration must be specified as 'Duration.${toUnit}()' here since its value comes from a token and cannot be converted (got Duration.${fromUnit})`);
   }

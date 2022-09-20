@@ -1,0 +1,32 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286": {
+      "source": {
+        "path": "asset.105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "de06b638db4c8efbd4283ed10e155026afe9c129557ab27b91f4b7f66399f5c6": {
+      "source": {
+        "path": "aws-cdk-vpc-endpoint-dns-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "de06b638db4c8efbd4283ed10e155026afe9c129557ab27b91f4b7f66399f5c6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

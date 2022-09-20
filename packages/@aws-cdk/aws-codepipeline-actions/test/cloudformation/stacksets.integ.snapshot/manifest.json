@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,40 +7,38 @@
         "file": "tree.json"
       }
     },
+    "StackSetPipelineStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "StackSetPipelineStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "StackSetPipelineStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "StackSetPipelineStack.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/StackSetPipelineStack": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
-              "id": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
-              "packaging": "zip",
-              "sourceHash": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824",
-              "s3BucketParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232",
-              "s3KeyParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE",
-              "artifactHashParameter": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2"
-            }
-          },
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2",
-              "id": "5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2",
-              "packaging": "zip",
-              "sourceHash": "5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2",
-              "s3BucketParameter": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651",
-              "s3KeyParameter": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F",
-              "artifactHashParameter": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2ArtifactHashA83BA1E9"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/653d4a55c5386d60ee07e1497f3ebe390125c910eec89af40972b159dd2d3cd6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "StackSetPipelineStack.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "StackSetPipelineStack.assets"
+      ],
+      "metadata": {
         "/StackSetPipelineStack/ArtifactBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -69,42 +67,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/StackSetPipelineStack/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232"
-          }
-        ],
-        "/StackSetPipelineStack/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
-          }
-        ],
-        "/StackSetPipelineStack/AssetParameters/be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2"
-          }
-        ],
-        "/StackSetPipelineStack/AssetParameters/5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3Bucket3C8B9651"
-          }
-        ],
-        "/StackSetPipelineStack/AssetParameters/5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2S3VersionKeyD144071F"
-          }
-        ],
-        "/StackSetPipelineStack/AssetParameters/5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters5bcf205623ea5b34a1944fea4c9982e835555e710235ae6f60172097737302e2ArtifactHashA83BA1E9"
           }
         ],
         "/StackSetPipelineStack/Pipeline/Role/Resource": [
@@ -171,6 +133,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineCfnInstancesCodePipelineActionRoleDefaultPolicy38A9673E"
+          }
+        ],
+        "/StackSetPipelineStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/StackSetPipelineStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

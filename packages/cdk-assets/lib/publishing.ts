@@ -1,6 +1,7 @@
 import { AssetManifest, IManifestEntry } from './asset-manifest';
 import { IAws } from './aws';
 import { IHandlerHost } from './private/asset-handler';
+import { DockerFactory } from './private/docker';
 import { makeAssetHandler } from './private/handlers';
 import { EventType, IPublishProgress, IPublishProgressListener } from './progress';
 
@@ -30,6 +31,20 @@ export interface AssetPublishingOptions {
    * @default false
    */
   readonly publishInParallel?: boolean;
+
+  /**
+   * Whether to build assets
+   *
+   * @default true
+   */
+  readonly buildAssets?: boolean;
+
+  /**
+   * Whether to publish assets
+   *
+   * @default true
+   */
+  readonly publishAssets?: boolean;
 }
 
 /**
@@ -65,17 +80,53 @@ export class AssetPublishing implements IPublishProgress {
   private aborted = false;
   private readonly handlerHost: IHandlerHost;
   private readonly publishInParallel: boolean;
+  private readonly buildAssets: boolean;
+  private readonly publishAssets: boolean;
+  private readonly startMessagePrefix: string;
+  private readonly successMessagePrefix: string;
+  private readonly errorMessagePrefix: string;
 
   constructor(private readonly manifest: AssetManifest, private readonly options: AssetPublishingOptions) {
     this.assets = manifest.entries;
     this.totalOperations = this.assets.length;
     this.publishInParallel = options.publishInParallel ?? false;
+    this.buildAssets = options.buildAssets ?? true;
+    this.publishAssets = options.publishAssets ?? true;
+
+    const getMessages = () => {
+      if (this.buildAssets && this.publishAssets) {
+        return {
+          startMessagePrefix: 'Building and publishing',
+          successMessagePrefix: 'Built and published',
+          errorMessagePrefix: 'Error building and publishing',
+        };
+      } else if (this.buildAssets) {
+        return {
+          startMessagePrefix: 'Building',
+          successMessagePrefix: 'Built',
+          errorMessagePrefix: 'Error building',
+        };
+      } else {
+        return {
+          startMessagePrefix: 'Publishing',
+          successMessagePrefix: 'Published',
+          errorMessagePrefix: 'Error publishing',
+        };
+      }
+    };
+
+    const messages = getMessages();
+
+    this.startMessagePrefix = messages.startMessagePrefix;
+    this.successMessagePrefix = messages.successMessagePrefix;
+    this.errorMessagePrefix = messages.errorMessagePrefix;
 
     const self = this;
     this.handlerHost = {
       aws: this.options.aws,
       get aborted() { return self.aborted; },
       emitMessage(t, m) { self.progressEvent(t, m); },
+      dockerFactory: new DockerFactory(),
     };
   }
 
@@ -94,7 +145,7 @@ export class AssetPublishing implements IPublishProgress {
     }
 
     if ((this.options.throwOnError ?? true) && this.failures.length > 0) {
-      throw new Error(`Error publishing: ${this.failures.map(e => e.error.message)}`);
+      throw new Error(`${this.errorMessagePrefix}: ${this.failures.map(e => e.error.message)}`);
     }
   }
 
@@ -105,17 +156,24 @@ export class AssetPublishing implements IPublishProgress {
    */
   private async publishAsset(asset: IManifestEntry) {
     try {
-      if (this.progressEvent(EventType.START, `Publishing ${asset.id}`)) { return false; }
+      if (this.progressEvent(EventType.START, `${this.startMessagePrefix} ${asset.id}`)) { return false; }
 
       const handler = makeAssetHandler(this.manifest, asset, this.handlerHost);
-      await handler.publish();
+
+      if (this.buildAssets) {
+        await handler.build();
+      }
+
+      if (this.publishAssets) {
+        await handler.publish();
+      }
 
       if (this.aborted) {
         throw new Error('Aborted');
       }
 
       this.completedOperations++;
-      if (this.progressEvent(EventType.SUCCESS, `Published ${asset.id}`)) { return false; }
+      if (this.progressEvent(EventType.SUCCESS, `${this.successMessagePrefix} ${asset.id}`)) { return false; }
     } catch (e) {
       this.failures.push({ asset, error: e });
       this.completedOperations++;

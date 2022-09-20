@@ -1,14 +1,13 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "aws-lambda-python/test/integ.function.custom-build": {
+    "lambda-python-custom-build/DefaultTest": {
       "stacks": [
         "cdk-integ-lambda-custom-build"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-custom-build/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythoncustombuildDefaultTestDeployAssert3F59C307"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

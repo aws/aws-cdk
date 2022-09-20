@@ -1,14 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs-patterns/test/fargate/integ.special-listener": {
+    "publicQueueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-fargate-special-listener"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

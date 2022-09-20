@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { BaseInstanceProps, InstanceBase } from './instance';
-import { NamespaceType } from './namespace';
-import { IService } from './service';
+import { defaultDiscoveryType } from './private/utils';
+import { IService, DiscoveryType } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 
 export interface NonIpInstanceBaseProps extends BaseInstanceProps {
@@ -37,7 +37,8 @@ export class NonIpInstance extends InstanceBase {
   constructor(scope: Construct, id: string, props: NonIpInstanceProps) {
     super(scope, id);
 
-    if (props.service.namespace.type !== NamespaceType.HTTP) {
+    const discoveryType = props.service.discoveryType || defaultDiscoveryType(props.service.namespace);
+    if (discoveryType !== DiscoveryType.API) {
       throw new Error('This type of instance can only be registered for HTTP namespaces.');
     }
 

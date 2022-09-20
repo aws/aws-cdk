@@ -3,14 +3,10 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { App, Aws, Lazy, SecretValue, Stack, Token } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
-
-const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 describe('', () => {
   describe('Lambda invoke Action', () => {
@@ -160,11 +156,11 @@ describe('', () => {
       }));
     });
 
-    testFutureBehavior("assigns the Action's Role with write permissions to the Bucket if it has only outputs", s3GrantWriteCtx, App, (app) => {
+    test("assigns the Action's Role with write permissions to the Bucket if it has only outputs", () => {
       const stack = stackIncludingLambdaInvokeCodePipeline({
         lambdaOutput: new codepipeline.Artifact(),
         // no input to the Lambda Action - we want write permissions only in this case
-      }, app);
+      });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyName: 'PipelineInvokeLambdaCodePipelineActionRoleDefaultPolicy103F34DA',
@@ -205,11 +201,11 @@ describe('', () => {
       });
     });
 
-    testFutureBehavior("assigns the Action's Role with read-write permissions to the Bucket if it has both inputs and outputs", s3GrantWriteCtx, App, (app) => {
+    test("assigns the Action's Role with read-write permissions to the Bucket if it has both inputs and outputs", () => {
       const stack = stackIncludingLambdaInvokeCodePipeline({
         lambdaInput: new codepipeline.Artifact(),
         lambdaOutput: new codepipeline.Artifact(),
-      }, app);
+      });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyName: 'PipelineInvokeLambdaCodePipelineActionRoleDefaultPolicy103F34DA',
@@ -361,7 +357,7 @@ function stackIncludingLambdaInvokeCodePipeline(props: HelperProps, app?: App) {
             lambda: new lambda.Function(stack, 'Lambda', {
               code: lambda.Code.fromCfnParameters(),
               handler: 'index.handler',
-              runtime: lambda.Runtime.NODEJS_10_X,
+              runtime: lambda.Runtime.NODEJS_14_X,
             }),
             userParameters: props.userParams,
             userParametersString: props.userParamsString,

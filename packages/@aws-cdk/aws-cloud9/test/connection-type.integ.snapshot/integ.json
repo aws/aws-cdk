@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "cloud-9-connection-type/DefaultTest": {
+      "stacks": [
+        "C9ConnectionTypeStack"
+      ],
+      "assertionStack": "cloud-9-connection-type/DefaultTest/DeployAssert"
+    }
+  }
+}

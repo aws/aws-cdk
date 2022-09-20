@@ -121,7 +121,7 @@ describe('given an AutoScalingGroup and no role', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.index',
     });
 
@@ -165,7 +165,7 @@ describe('given an AutoScalingGroup and no role', () => {
     const key = new kms.Key(stack, 'key');
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.index',
     });
 
@@ -297,7 +297,7 @@ describe('given an AutoScalingGroup and a role', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.index',
     });
     const myrole = new iam.Role(stack, 'MyRole', {

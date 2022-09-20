@@ -1,14 +1,13 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "aws-lambda-python/test/integ.function.poetry": {
+    "poetry/DefaultTest": {
       "stacks": [
-        "cdk-integ-lambda-python"
+        "integ-lambda-python-poetry"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "stackUpdateWorkflow": false,
+      "assertionStack": "poetry/DefaultTest/DeployAssert",
+      "assertionStackName": "poetryDefaultTestDeployAssertE9C9CB8F"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

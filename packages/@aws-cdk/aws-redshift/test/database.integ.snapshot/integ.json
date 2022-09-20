@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "aws-redshift/test/integ.database": {
+    "integ.database": {
       "stacks": [
         "aws-cdk-redshift-cluster-database"
       ],

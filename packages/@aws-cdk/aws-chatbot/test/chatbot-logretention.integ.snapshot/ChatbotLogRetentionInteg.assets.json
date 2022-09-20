@@ -1,0 +1,32 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347": {
+      "source": {
+        "path": "asset.d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "99a36eb4f06baf7fc18c9d97a7558266d81bb3ba32434c95fceca54221c29668": {
+      "source": {
+        "path": "ChatbotLogRetentionInteg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "99a36eb4f06baf7fc18c9d97a7558266d81bb3ba32434c95fceca54221c29668.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

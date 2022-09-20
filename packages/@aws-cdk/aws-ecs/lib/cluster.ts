@@ -6,16 +6,12 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, IConstruct, ArnFormat } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, ArnFormat } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties used to define an ECS cluster.
@@ -68,7 +64,7 @@ export interface ClusterProps {
   /**
    * If true CloudWatch Container Insights will be enabled for the cluster
    *
-   * @default - Container Insights will be disabled for this cluser.
+   * @default - Container Insights will be disabled for this cluster.
    */
   readonly containerInsights?: boolean;
 
@@ -342,7 +338,7 @@ export class Cluster extends Resource implements ICluster {
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       vpc: this.vpc,
       machineImage,
-      updateType: options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
+      updateType: !!options.updatePolicy ? undefined : options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
       ...options,
     });
 
@@ -370,6 +366,7 @@ export class Cluster extends Resource implements ICluster {
       machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
       taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
+      canContainersAccessInstanceRole: options.canContainersAccessInstanceRole ?? provider.canContainersAccessInstanceRole,
     });
 
     this._capacityProviderNames.push(provider.capacityProviderName);
@@ -1087,7 +1084,7 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
  * tasks, and can ensure that instances are not prematurely terminated while
  * there are still tasks running on them.
  */
-export class AsgCapacityProvider extends CoreConstruct {
+export class AsgCapacityProvider extends Construct {
   /**
    * Capacity provider name
    * @default Chosen by CloudFormation
@@ -1109,12 +1106,21 @@ export class AsgCapacityProvider extends CoreConstruct {
    */
   readonly enableManagedTerminationProtection?: boolean;
 
+  /**
+   * Specifies whether the containers can access the container instance role.
+   *
+   * @default false
+   */
+  readonly canContainersAccessInstanceRole?: boolean;
+
   constructor(scope: Construct, id: string, props: AsgCapacityProviderProps) {
     super(scope, id);
 
     this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
 
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
+
+    this.canContainersAccessInstanceRole = props.canContainersAccessInstanceRole;
 
     this.enableManagedTerminationProtection =
       props.enableManagedTerminationProtection === undefined ? true : props.enableManagedTerminationProtection;
@@ -1150,12 +1156,12 @@ export class AsgCapacityProvider extends CoreConstruct {
  * the caller created any EC2 Capacity Providers.
  */
 class MaybeCreateCapacityProviderAssociations implements IAspect {
-  private scope: CoreConstruct;
+  private scope: Construct;
   private id: string;
   private capacityProviders: string[]
   private resource?: CfnClusterCapacityProviderAssociations
 
-  constructor(scope: CoreConstruct, id: string, capacityProviders: string[] ) {
+  constructor(scope: Construct, id: string, capacityProviders: string[] ) {
     this.scope = scope;
     this.id = id;
     this.capacityProviders = capacityProviders;

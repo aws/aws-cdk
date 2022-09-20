@@ -1,12 +1,14 @@
-import * as crypto from 'crypto';
+import { CfnResourceShare } from '@aws-cdk/aws-ram';
 import * as cdk from '@aws-cdk/core';
+import { Names } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAttributeGroup } from './attribute-group';
+import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { InputValidator } from './private/validation';
 import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from './servicecatalogappregistry.generated';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
+const APPLICATION_READ_ONLY_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly';
+const APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation';
 
 /**
  * A Service Catalog AppRegistry Application.
@@ -26,15 +28,24 @@ export interface IApplication extends cdk.IResource {
 
   /**
    * Associate thisapplication with an attribute group.
+   *
    * @param attributeGroup AppRegistry attribute group
    */
   associateAttributeGroup(attributeGroup: IAttributeGroup): void;
 
   /**
    * Associate this application with a CloudFormation stack.
+   *
    * @param stack a CFN stack
    */
   associateStack(stack: cdk.Stack): void;
+
+  /**
+   * Share this application with other IAM entities, accounts, or OUs.
+   *
+   * @param shareOptions The options for the share.
+   */
+  shareApplication(shareOptions: ShareOptions): void;
 }
 
 /**
@@ -92,9 +103,42 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   }
 
   /**
+   * Share an application with accounts, organizations and OUs, and IAM roles and users.
+   * The application will become available to end users within those principals.
+   *
+   * @param shareOptions The options for the share.
+   */
+  public shareApplication(shareOptions: ShareOptions): void {
+    const principals = getPrincipalsforSharing(shareOptions);
+    const shareName = `RAMShare${hashValues(Names.nodeUniqueId(this.node), this.node.children.length.toString())}`;
+    new CfnResourceShare(this, shareName, {
+      name: shareName,
+      allowExternalPrincipals: false,
+      principals: principals,
+      resourceArns: [this.applicationArn],
+      permissionArns: [this.getApplicationSharePermissionARN(shareOptions)],
+    });
+  }
+
+  /**
    * Create a unique id
    */
   protected abstract generateUniqueHash(resourceAddress: string): string;
+
+  /**
+   * Get the correct permission ARN based on the SharePermission
+   */
+  private getApplicationSharePermissionARN(shareOptions: ShareOptions): string {
+    switch (shareOptions.sharePermission) {
+      case SharePermission.ALLOW_ACCESS:
+        return APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN;
+      case SharePermission.READ_ONLY:
+        return APPLICATION_READ_ONLY_RAM_PERMISSION_ARN;
+
+      default:
+        return shareOptions.sharePermission ?? APPLICATION_READ_ONLY_RAM_PERMISSION_ARN;
+    }
+  }
 }
 
 /**
@@ -158,13 +202,4 @@ export class Application extends ApplicationBase {
     InputValidator.validateRegex(this.node.path, 'application name', /^[a-zA-Z0-9-_]+$/, props.applicationName);
     InputValidator.validateLength(this.node.path, 'application description', 0, 1024, props.description);
   }
-}
-
-/**
- * Generates a unique hash identfifer using SHA256 encryption algorithm
- */
-function hashValues(...values: string[]): string {
-  const sha256 = crypto.createHash('sha256');
-  values.forEach(val => sha256.update(val));
-  return sha256.digest('hex').slice(0, 12);
 }

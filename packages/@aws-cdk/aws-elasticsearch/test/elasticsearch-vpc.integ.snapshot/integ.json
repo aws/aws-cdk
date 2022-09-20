@@ -1,14 +1,12 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "aws-elasticsearch/test/integ.elasticsearch-vpc": {
+    "cdk-integ-elasticsearch-vpc-test/DefaultTest": {
       "stacks": [
         "cdk-integ-elasticsearch-vpc"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-integ-elasticsearch-vpc-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegelasticsearchvpctestDefaultTestDeployAssert0B044175"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

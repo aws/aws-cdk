@@ -185,12 +185,32 @@ describe('getTsconfigCompilerOptions', () => {
     const tsconfig = path.join(__dirname, '..', 'tsconfig.json');
     const compilerOptions = getTsconfigCompilerOptions(tsconfig);
     expect(compilerOptions).toEqual([
-      '--alwaysStrict --charset utf8 --declaration --experimentalDecorators',
-      '--inlineSourceMap --inlineSources --lib es2019 --module CommonJS',
-      '--newLine lf --noEmitOnError --noFallthroughCasesInSwitch --noImplicitAny',
-      '--noImplicitReturns --noImplicitThis --noUnusedLocals --noUnusedParameters',
-      '--resolveJsonModule --strict --strictNullChecks --strictPropertyInitialization',
-      '--target ES2019 --rootDir ./ --outDir ./',
+      '--alwaysStrict',
+      '--charset utf8',
+      '--declaration',
+      '--declarationMap false',
+      '--experimentalDecorators',
+      '--incremental false',
+      '--inlineSourceMap',
+      '--inlineSources',
+      '--lib es2020',
+      '--module CommonJS',
+      '--newLine lf',
+      '--noEmitOnError',
+      '--noFallthroughCasesInSwitch',
+      '--noImplicitAny',
+      '--noImplicitReturns',
+      '--noImplicitThis',
+      '--noUnusedLocals',
+      '--noUnusedParameters',
+      '--outDir ./',
+      '--resolveJsonModule',
+      '--rootDir ./',
+      '--strict',
+      '--strictNullChecks',
+      '--strictPropertyInitialization',
+      '--stripInternal false',
+      '--target ES2020',
     ].join(' '));
   });
 });

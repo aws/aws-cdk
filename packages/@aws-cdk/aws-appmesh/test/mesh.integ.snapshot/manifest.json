@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "mesh-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "mesh-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "mesh-stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "mesh-stack.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec4bc0974fc8b71ab8d34be8fe53f41a594bd0c03588e03d5a46ac8919288992.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "mesh-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "mesh-stack.assets"
+      ],
       "metadata": {
         "/mesh-stack/vpc/Resource": [
           {
@@ -291,6 +315,12 @@
             "data": "meshgateway1gateway1routegrpc2FAC1FF36"
           }
         ],
+        "/mesh-stack/mesh-with-preference/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "meshwithpreferenceCC9682C9"
+          }
+        ],
         "/mesh-stack/service/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -325,6 +355,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "gateway3F9F16554"
+          }
+        ],
+        "/mesh-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/mesh-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

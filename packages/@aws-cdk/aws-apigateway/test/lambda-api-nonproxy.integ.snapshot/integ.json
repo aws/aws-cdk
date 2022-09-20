@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "lambda-non-proxy-integration/DefaultTest": {
+      "stacks": [
+        "LambdaApiIntegrationOptionsNonProxyIntegrationStack"
+      ],
+      "assertionStack": "lambda-non-proxy-integration/DefaultTest/DeployAssert"
+    }
+  }
+}

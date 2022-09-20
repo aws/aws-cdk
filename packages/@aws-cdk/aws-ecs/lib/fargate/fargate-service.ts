@@ -1,9 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
-import { fromServiceAtrributes } from '../base/from-service-attributes';
+import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 
@@ -105,16 +104,16 @@ export class FargateService extends BaseService implements IFargateService {
   public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
-      public readonly serviceName = cdk.Stack.of(scope).splitArn(fargateServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+      public readonly serviceName = extractServiceNameFromArn(this, fargateServiceArn);
     }
     return new Import(scope, id);
   }
 
   /**
-   * Imports from the specified service attrributes.
+   * Imports from the specified service attributes.
    */
   public static fromFargateServiceAttributes(scope: Construct, id: string, attrs: FargateServiceAttributes): IBaseService {
-    return fromServiceAtrributes(scope, id, attrs);
+    return fromServiceAttributes(scope, id, attrs);
   }
 
   /**
@@ -129,11 +128,6 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
-    if (props.taskDefinition.referencesSecretJsonField
-        && props.platformVersion
-        && SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS.includes(props.platformVersion)) {
-      throw new Error(`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`);
-    }
     super(scope, id, {
       ...props,
       desiredCount: props.desiredCount,
@@ -154,6 +148,14 @@ export class FargateService extends BaseService implements IFargateService {
     }
 
     this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
+
+    this.node.addValidation({
+      validate: () => this.taskDefinition.referencesSecretJsonField
+      && props.platformVersion
+      && SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS.includes(props.platformVersion)
+        ? [`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`]
+        : [],
+    });
 
     this.node.addValidation({
       validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],

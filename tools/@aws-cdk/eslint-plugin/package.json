@@ -16,8 +16,8 @@
   "devDependencies": {
     "@types/eslint": "^7.29.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.5.0",
-    "@types/node": "^10.17.60",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^14.18.29",
     "@types/estree": "*",
     "eslint-plugin-rulesdir": "^0.2.1",
     "jest": "^27.5.1",

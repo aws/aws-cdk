@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "rest-api-origin/DefaultTest": {
+      "stacks": [
+        "integ-cloudfront-rest-api-origin"
+      ],
+      "assertionStack": "rest-api-origin/DefaultTest/DeployAssert"
+    }
+  }
+}

@@ -72,6 +72,7 @@ export class Runtime {
 
   /**
    * The NodeJS 12.x runtime (nodejs12.x)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_12_X = new Runtime('nodejs12.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
@@ -92,7 +93,10 @@ export class Runtime {
   public static readonly PYTHON_2_7 = new Runtime('python2.7', RuntimeFamily.PYTHON, { supportsInlineCode: true });
 
   /**
-   * The Python 3.6 runtime (python3.6)
+   * The Python 3.6 runtime (python3.6) (not recommended)
+   *
+   * The Python 3.6 runtime is deprecated as of July 2022.
+   *
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
   public static readonly PYTHON_3_6 = new Runtime('python3.6', RuntimeFamily.PYTHON, {

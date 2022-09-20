@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-ses-receipt.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-ses-receipt.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-ses-receipt": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-ses-receipt.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-cdk-ses-receipt": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34",
-              "id": "96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34",
-              "packaging": "zip",
-              "sourceHash": "96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34",
-              "s3BucketParameter": "AssetParameters96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34S3Bucket6AFCBA5F",
-              "s3KeyParameter": "AssetParameters96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34S3VersionKey02BA9086",
-              "artifactHashParameter": "AssetParameters96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34ArtifactHash6BE57680"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee744103b0ff86d6e8eaedb70b7771744a9a7e81060c30a8a8a4fc3f64a4fb7a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-ses-receipt.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ses-receipt.assets"
+      ],
+      "metadata": {
         "/aws-cdk-ses-receipt/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -113,22 +123,16 @@
             "data": "SingletonLambda224e77f9a32e4b4dac32983477abba16AllowSesB42DF904"
           }
         ],
-        "/aws-cdk-ses-receipt/AssetParameters/96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34/S3Bucket": [
+        "/aws-cdk-ses-receipt/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34S3Bucket6AFCBA5F"
+            "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-ses-receipt/AssetParameters/96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34/S3VersionKey": [
+        "/aws-cdk-ses-receipt/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34S3VersionKey02BA9086"
-          }
-        ],
-        "/aws-cdk-ses-receipt/AssetParameters/96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34ArtifactHash6BE57680"
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

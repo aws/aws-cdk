@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-lambda-autoscaling": {
@@ -140,7 +140,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaCurrentVersionE7A382CCc9b5d5d60612e848a9b7c670d8802822",
+                        "MyLambdaCurrentVersionE7A382CC0be4c7f7b82230afaf72d130ee920da9",
                         "Version"
                       ]
                     },

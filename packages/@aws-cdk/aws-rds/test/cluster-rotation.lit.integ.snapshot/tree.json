@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-cdk-rds-cluster-rotation": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +425,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +544,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -983,10 +983,10 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
-                    "dbInstanceClass": "db.t3.small",
                     "dbClusterIdentifier": {
                       "Ref": "DatabaseB269D8BB"
                     },
+                    "dbInstanceClass": "db.t3.small",
                     "dbSubnetGroupName": {
                       "Ref": "DatabaseSubnets56F17B9A"
                     },
@@ -1004,10 +1004,10 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
-                    "dbInstanceClass": "db.t3.small",
                     "dbClusterIdentifier": {
                       "Ref": "DatabaseB269D8BB"
                     },
+                    "dbInstanceClass": "db.t3.small",
                     "dbSubnetGroupName": {
                       "Ref": "DatabaseSubnets56F17B9A"
                     },
@@ -1061,8 +1061,8 @@
                     "id": "SARMapping",
                     "path": "aws-cdk-rds-cluster-rotation/Database/RotationSingleUser/SARMapping",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnMapping",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "Resource": {
@@ -1159,14 +1159,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

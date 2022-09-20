@@ -117,7 +117,11 @@
       "Value": "mesh-stack/vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+   ]
   },
   "vpcPublicSubnet2Subnet009B674F": {
    "Type": "AWS::EC2::Subnet",
@@ -969,7 +973,8 @@
      ],
      "ServiceDiscovery": {
       "DNS": {
-       "Hostname": "node1.domain.local"
+       "Hostname": "node1.domain.local",
+       "IpPreference": "IPv4_ONLY"
       }
      }
     },
@@ -1672,6 +1677,17 @@
     "GatewayRouteName": "meshstackmeshgateway1gateway1routegrpc2AE8379FD"
    }
   },
+  "meshwithpreferenceCC9682C9": {
+   "Type": "AWS::AppMesh::Mesh",
+   "Properties": {
+    "MeshName": "meshstackmeshwithpreference13C624E1",
+    "Spec": {
+     "ServiceDiscovery": {
+      "IpPreference": "IPv4_ONLY"
+     }
+    }
+   }
+  },
   "service6D174F83": {
    "Type": "AWS::AppMesh::VirtualService",
    "Properties": {
@@ -1838,6 +1854,40 @@
     },
     "VirtualGatewayName": "meshstackgateway34EC5ED00"
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

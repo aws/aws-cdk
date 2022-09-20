@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "integ-distribution-lambda": {
@@ -136,8 +136,8 @@
                 "id": "Origin1",
                 "path": "integ-distribution-lambda/Dist/Origin1",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "Resource": {
@@ -166,7 +166,7 @@
                         "lambdaFunctionAssociations": [
                           {
                             "lambdaFunctionArn": {
-                              "Ref": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
+                              "Ref": "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc"
                             },
                             "eventType": "origin-request"
                           }
@@ -190,14 +190,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

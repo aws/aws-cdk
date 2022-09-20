@@ -31,9 +31,16 @@
 export const ENABLE_STACK_NAME_DUPLICATES_CONTEXT = '@aws-cdk/core:enableStackNameDuplicates';
 
 /**
- * IF this is set, `cdk diff` will always exit with 0.
+ * Determines what status code `cdk diff` should return when the specified stack
+ * differs from the deployed stack or the local CloudFormation template:
  *
- * Use `cdk diff --fail` to exit with 1 if there's a diff.
+ *  * aws-cdk:enableDiffNoFail=true => status code == 0
+ *  * aws-cdk:enableDiffNoFail=false => status code == 1
+ *
+ * You can override this behavior with the --fail flag:
+ *
+ *  * --fail => status code == 1
+ *  * --no-fail => status code == 0
  */
 export const ENABLE_DIFF_NO_FAIL_CONTEXT = 'aws-cdk:enableDiffNoFail';
 /** @deprecated use `ENABLE_DIFF_NO_FAIL_CONTEXT` */
@@ -174,6 +181,18 @@ export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptio
 export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
 
 /**
+ * Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the
+ * `fn.currentVersion`.
+ *
+ * This flag correct incorporates Lambda Layer properties into the Lambda Function Version.
+ *
+ * See 'currentVersion' section in the aws-lambda module's README for more details.
+ *
+ * [PERMANENT]
+ */
+export const LAMBDA_RECOGNIZE_LAYER_VERSION = '@aws-cdk/aws-lambda:recognizeLayerVersion';
+
+/**
  * Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.
  *
  * The security policy can also be configured explicitly using the `minimumProtocolVersion` property.
@@ -225,6 +244,19 @@ export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-contai
 export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueImdsv2TemplateName';
 
 /**
+ * ARN format used by ECS. In the new ARN format, the cluster name is part
+ * of the resource ID.
+ *
+ * If this flag is not set, the old ARN format (without cluster name) for ECS is used.
+ * If this flag is set, the new ARN format (with cluster name) for ECS is used.
+ *
+ * This is a feature flag as the old format is still valid for existing ECS clusters.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids
+ */
+export const ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME = '@aws-cdk/aws-ecs:arnFormatIncludesClusterName';
+
+/**
  * Minimize IAM policies by combining Principals, Actions and Resources of two
  * Statements in the policies, as long as it doesn't change the meaning of the
  * policy.
@@ -232,6 +264,93 @@ export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueIm
  * [PERMANENT]
  */
 export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
+
+/**
+ * Makes sure we do not allow snapshot removal policy on resources that do not support it.
+ * If supplied on an unsupported resource, CloudFormation ignores the policy altogether.
+ * This flag will reduce confusion and unexpected loss of data when erroneously supplying
+ * the snapshot removal policy.
+ *
+ * [PERMANENT]
+ */
+export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotRemovalPolicy';
+
+/**
+ * Enable this feature flag to have CodePipeline generate a unique cross account key alias name using the stack name.
+ *
+ * Previously, when creating multiple pipelines with similar naming conventions and when crossAccountKeys is true,
+ * the KMS key alias name created for these pipelines may be the same due to how the uniqueId is generated.
+ *
+ * This new implementation creates a stack safe resource name for the alias using the stack name instead of the stack ID.
+ */
+export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName';
+
+/**
+ * Enable this feature flag to create an S3 bucket policy by default in cases where
+ * an AWS service would automatically create the Policy if one does not exist.
+ *
+ * For example, in order to send VPC flow logs to an S3 bucket, there is a specific Bucket Policy
+ * that needs to be attached to the bucket. If you create the bucket without a policy and then add the
+ * bucket as the flow log destination, the service will automatically create the bucket policy with the
+ * necessary permissions. If you were to then try and add your own bucket policy CloudFormation will throw
+ * and error indicating that a bucket policy already exists.
+ *
+ * In cases where we know what the required policy is we can go ahead and create the policy so we can
+ * remain in control of it.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3
+ */
+export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLoggingPolicy';
+
+/**
+* Enable this feature flag to restrict the decryption of a SQS queue, which is subscribed to a SNS topic, to
+* only the topic which it is subscribed to and not the whole SNS service of an account.
+*
+* Previously the decryption was only restricted to the SNS service principal. To make the SQS subscription more
+* secure, it is a good practice to restrict the decryption further and only allow the connected SNS topic to decryption
+* the subscribed queue.
+*
+*/
+export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption';
+
+/**
+ * Enable this feature flag to change the default behavior for aws-apigateway.RestApi and aws-apigateway.SpecRestApi
+ * to _not_ create a CloudWatch role and Account. There is only a single ApiGateway account per AWS
+ * environment which means that each time you create a RestApi in your account the ApiGateway account
+ * is overwritten. If at some point the newest RestApi is deleted, the ApiGateway Account and CloudWatch
+ * role will also be deleted, breaking any existing ApiGateways that were depending on them.
+ *
+ * When this flag is enabled you should either create the ApiGateway account and CloudWatch role
+ * separately _or_ only enable the cloudWatchRole on a single RestApi.
+ */
+export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disableCloudWatchRole';
+
+/**
+ * Enable this feature flag to get partition names as string literals in Stacks with known regions defined in
+ * their environment, such as "aws" or "aws-cn".  Previously the CloudFormation intrinsic function
+ * "Ref: AWS::Partition" was used.  For example:
+ *
+ * ```yaml
+ * Principal:
+ *   AWS:
+ *     Fn::Join:
+ *       - ""
+ *       - - "arn:"
+ *         - Ref: AWS::Partition
+ *         - :iam::123456789876:root
+ * ```
+ *
+ * becomes:
+ *
+ * ```
+ * Principal:
+ *   AWS: "arn:aws:iam::123456789876:root"
+ * ```
+ *
+ * The intrinsic function will still be used in Stacks where no region is defined or the region's partition
+ * is unknown.
+ */
+export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 
 /**
  * Flag values that should apply for new projects
@@ -255,11 +374,19 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [RDS_LOWERCASE_DB_IDENTIFIER]: true,
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+  [LAMBDA_RECOGNIZE_LAYER_VERSION]: true,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
   [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: true,
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
   [CHECK_SECRET_USAGE]: true,
   [IAM_MINIMIZE_POLICIES]: true,
+  [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true,
+  [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true,
+  [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true,
+  [S3_CREATE_DEFAULT_LOGGING_POLICY]: true,
+  [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
+  [APIGATEWAY_DISABLE_CLOUDWATCH_ROLE]: true,
+  [ENABLE_PARTITION_LITERALS]: true,
 };
 
 /**
@@ -274,6 +401,14 @@ export const NEW_PROJECT_DEFAULT_CONTEXT: { [key: string]: any} = {
  * and block usages of old feature flags in the new major version of CDK.
  */
 export const FUTURE_FLAGS_EXPIRED: string[] = [
+  DOCKER_IGNORE_SUPPORT,
+  ECS_REMOVE_DEFAULT_DESIRED_COUNT,
+  EFS_DEFAULT_ENCRYPTION_AT_REST,
+  ENABLE_DIFF_NO_FAIL_CONTEXT,
+  ENABLE_STACK_NAME_DUPLICATES_CONTEXT,
+  KMS_DEFAULT_KEY_POLICIES,
+  S3_GRANT_WRITE_WITHOUT_ACL,
+  SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME,
 ];
 
 /**
@@ -286,6 +421,24 @@ export const FUTURE_FLAGS_EXPIRED: string[] = [
  * major version!
  */
 const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
+  [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: true,
+  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: true,
+  [ENABLE_DIFF_NO_FAIL_CONTEXT]: true,
+  [STACK_RELATIVE_EXPORTS_CONTEXT]: true,
+  [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: true,
+  [DOCKER_IGNORE_SUPPORT]: true,
+  [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: true,
+  [KMS_DEFAULT_KEY_POLICIES]: true,
+  [S3_GRANT_WRITE_WITHOUT_ACL]: true,
+  [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
+  [RDS_LOWERCASE_DB_IDENTIFIER]: true,
+  [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
+  [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  // Every feature flag below this should have its default behavior set to "not
+  // activated", as it was introduced AFTER v2 was released.
+  [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: false,
+  [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {

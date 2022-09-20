@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-aws-api-target-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-aws-api-target-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-aws-api-target-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-aws-api-target-integ.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-cdk-aws-api-target-integ": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742",
-              "id": "542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742",
-              "packaging": "zip",
-              "sourceHash": "542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742",
-              "s3BucketParameter": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3Bucket45BA9D5A",
-              "s3KeyParameter": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3VersionKey7B97424D",
-              "artifactHashParameter": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742ArtifactHashE8F9EA66"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4af128bac5226d7009c0878dfe9fd46c30aeb8307378645ab2ed33683836c92d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-aws-api-target-integ.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-aws-api-target-integ.assets"
+      ],
+      "metadata": {
         "/aws-cdk-aws-api-target-integ/ScheduleRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -65,24 +75,6 @@
             "data": "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620"
           }
         ],
-        "/aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3Bucket45BA9D5A"
-          }
-        ],
-        "/aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3VersionKey7B97424D"
-          }
-        ],
-        "/aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742ArtifactHashE8F9EA66"
-          }
-        ],
         "/aws-cdk-aws-api-target-integ/PatternRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -93,6 +85,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PatternRuleAllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464BB49C5D3"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

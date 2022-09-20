@@ -1,0 +1,228 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.92"
+        }
+      },
+      "integ-user-pool-identity-provider-saml-stack": {
+        "id": "integ-user-pool-identity-provider-saml-stack",
+        "path": "integ-user-pool-identity-provider-saml-stack",
+        "children": {
+          "pool": {
+            "id": "pool",
+            "path": "integ-user-pool-identity-provider-saml-stack/pool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-pool-identity-provider-saml-stack/pool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              },
+              "client": {
+                "id": "client",
+                "path": "integ-user-pool-identity-provider-saml-stack/pool/client",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-user-pool-identity-provider-saml-stack/pool/client/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "userPoolId": {
+                          "Ref": "pool056F3F7E"
+                        },
+                        "allowedOAuthFlows": [
+                          "implicit",
+                          "code"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          "profile",
+                          "phone",
+                          "email",
+                          "openid",
+                          "aws.cognito.signin.user.admin"
+                        ],
+                        "callbackUrLs": [
+                          "https://example.com"
+                        ],
+                        "supportedIdentityProviders": [
+                          {
+                            "Ref": "cdk52888317"
+                          },
+                          "COGNITO"
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolClient",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.UserPoolClient",
+                  "version": "0.0.0"
+                }
+              },
+              "domain": {
+                "id": "domain",
+                "path": "integ-user-pool-identity-provider-saml-stack/pool/domain",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-user-pool-identity-provider-saml-stack/pool/domain/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "cdk-test-pool",
+                        "userPoolId": {
+                          "Ref": "pool056F3F7E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolDomain",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.UserPoolDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "cdk": {
+            "id": "cdk",
+            "path": "integ-user-pool-identity-provider-saml-stack/cdk",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-pool-identity-provider-saml-stack/cdk/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolIdentityProvider",
+                  "aws:cdk:cloudformation:props": {
+                    "providerName": "cdk",
+                    "providerType": "SAML",
+                    "userPoolId": {
+                      "Ref": "pool056F3F7E"
+                    },
+                    "providerDetails": {
+                      "IDPSignout": false,
+                      "MetadataURL": "https://fujifish.github.io/samling/public/metadata.xml"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPoolIdentityProvider",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPoolIdentityProviderSaml",
+              "version": "0.0.0"
+            }
+          },
+          "SignInLink": {
+            "id": "SignInLink",
+            "path": "integ-user-pool-identity-provider-saml-stack/SignInLink",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-user-pool-identity-provider-saml-test": {
+        "id": "integ-user-pool-identity-provider-saml-test",
+        "path": "integ-user-pool-identity-provider-saml-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-user-pool-identity-provider-saml-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-user-pool-identity-provider-saml-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.92"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-user-pool-identity-provider-saml-test/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

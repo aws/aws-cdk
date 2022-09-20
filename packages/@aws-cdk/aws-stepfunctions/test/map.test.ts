@@ -43,6 +43,7 @@ describe('Map State', () => {
       },
     });
   }),
+
   test('State Machine With Map State and ResultSelector', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -84,6 +85,7 @@ describe('Map State', () => {
       },
     });
   }),
+
   test('synth is successful', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -96,6 +98,7 @@ describe('Map State', () => {
 
     app.synth();
   }),
+
   test('fails in synthesis if iterator is missing', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -108,6 +111,7 @@ describe('Map State', () => {
 
     expect(() => app.synth()).toThrow(/Map state must have a non-empty iterator/);
   }),
+
   test('fails in synthesis when maxConcurrency is a float', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -121,6 +125,7 @@ describe('Map State', () => {
 
     expect(() => app.synth()).toThrow(/maxConcurrency has to be a positive integer/);
   }),
+
   test('fails in synthesis when maxConcurrency is a negative integer', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -134,6 +139,7 @@ describe('Map State', () => {
 
     expect(() => app.synth()).toThrow(/maxConcurrency has to be a positive integer/);
   }),
+
   test('fails in synthesis when maxConcurrency is too big to be an integer', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -147,22 +153,42 @@ describe('Map State', () => {
 
     expect(() => app.synth()).toThrow(/maxConcurrency has to be a positive integer/);
   }),
+
+  test('does not fail synthesis when maxConcurrency is a jsonPath', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.Map(stack, 'Map State', {
+        maxConcurrency: stepfunctions.JsonPath.numberAt('$.maxConcurrency'),
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      });
+      map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+      return map;
+    });
+
+    expect(() => app.synth()).not.toThrow();
+  });
+
   test('isPositiveInteger is false with negative number', () => {
     expect(stepfunctions.isPositiveInteger(-1)).toEqual(false);
   }),
+
   test('isPositiveInteger is false with decimal number', () => {
     expect(stepfunctions.isPositiveInteger(1.2)).toEqual(false);
   }),
+
   test('isPositiveInteger is false with a value greater than safe integer', () => {
     const valueToTest = Number.MAX_SAFE_INTEGER + 1;
     expect(stepfunctions.isPositiveInteger(valueToTest)).toEqual(false);
   }),
+
   test('isPositiveInteger is true with 0', () => {
     expect(stepfunctions.isPositiveInteger(0)).toEqual(true);
   }),
+
   test('isPositiveInteger is true with 10', () => {
     expect(stepfunctions.isPositiveInteger(10)).toEqual(true);
   }),
+
   test('isPositiveInteger is true with max integer value', () => {
     expect(stepfunctions.isPositiveInteger(Number.MAX_SAFE_INTEGER)).toEqual(true);
   });

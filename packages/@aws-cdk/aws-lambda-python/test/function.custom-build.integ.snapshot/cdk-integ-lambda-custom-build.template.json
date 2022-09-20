@@ -36,41 +36,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82S3BucketC9B359BB"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82S3VersionKeyBF16F8DD"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82S3VersionKeyBF16F8DD"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "ba7fde4a6e034e2591e4b55fb4371a38236de097c96f5bba56c3fba49d3f18fa.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -86,28 +54,48 @@
    ]
   }
  },
- "Parameters": {
-  "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82S3BucketC9B359BB": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82\""
-  },
-  "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82S3VersionKeyBF16F8DD": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82\""
-  },
-  "AssetParameters89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82ArtifactHashFF99ACF4": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82\""
+ "Outputs": {
+  "ExportsOutputRefmyhandlerD202FA8E369E8804": {
+   "Value": {
+    "Ref": "myhandlerD202FA8E"
+   },
+   "Export": {
+    "Name": "cdk-integ-lambda-custom-build:ExportsOutputRefmyhandlerD202FA8E369E8804"
+   }
   }
  },
- "Outputs": {
-  "FunctionArn": {
-   "Value": {
-    "Fn::GetAtt": [
-     "myhandlerD202FA8E",
-     "Arn"
-    ]
-   }
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

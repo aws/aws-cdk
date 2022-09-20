@@ -25,10 +25,6 @@ import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
 const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
@@ -405,7 +401,7 @@ export interface CommonClusterOptions {
    *
    * For example, to only select private subnets, supply the following:
    *
-   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]`
+   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]`
    *
    * @default - All public and private subnets
    */
@@ -564,7 +560,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'proxy-agent-layer', {
    *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
-   *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X],
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
    * });
    * ```
    *
@@ -616,6 +612,12 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - The controller is not installed.
    */
   readonly albController?: AlbControllerOptions;
+  /**
+   * The cluster log types which you want to enable.
+   *
+   * @default - none
+   */
+  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -757,13 +759,6 @@ export interface ClusterProps extends ClusterOptions {
    * @default - none
    */
   readonly tags?: { [key: string]: string };
-
-  /**
-   * The cluster log types which you want to enable.
-   *
-   * @default - none
-   */
-  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -1055,10 +1050,10 @@ abstract class ClusterBase extends Resource implements ICluster {
       this.addSpotInterruptHandler();
     }
 
-    if (this instanceof Cluster) {
+    if (this instanceof Cluster && this.albController) {
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
-      this.albController?.node.addDependency(autoScalingGroup);
+      Node.of(this.albController).addDependency(autoScalingGroup);
     }
   }
 }
@@ -1342,7 +1337,7 @@ export class Cluster extends ClusterBase {
       description: 'EKS Control Plane Security Group',
     });
 
-    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
+    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }];
 
     const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
@@ -2054,6 +2049,7 @@ class ImportedCluster extends ClusterBase {
     this.clusterName = props.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
+    this.kubectlLambdaRole = props.kubectlLambdaRole;
     this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
@@ -2185,7 +2181,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
+  public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,
@@ -2284,8 +2280,9 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
   return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
-      CpuArch.X86_64;
+    INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
+      INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
+        CpuArch.X86_64;
 }
 
 function flatten<A>(xss: A[][]): A[] {

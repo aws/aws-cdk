@@ -29,7 +29,7 @@ runtime code.
  * `lambda.Code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object
    that contains the archive of your runtime code.
  * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
-   limited to supported runtimes and the code cannot exceed 4KiB.
+   limited to supported runtimes.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
    filesystem which will be zipped and uploaded to S3 before deployment. See also
    [bundling asset code](#bundling-asset-code).
@@ -81,6 +81,16 @@ new lambda.DockerImageFunction(this, 'ECRFunction', {
 The props for these docker image resources allow overriding the image's `CMD`, `ENTRYPOINT`, and `WORKDIR`
 configurations as well as choosing a specific tag or digest. See their docs for more information.
 
+To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify `Architecture.ARM_64` in `architecture`.
+This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` even if build within an `x86_64` host.
+
+```ts
+new DockerImageFunction(this, 'AssetFunction', {
+  code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
+  architecture: Architecture.ARM_64,
+});
+```
+
 ## Execution Role
 
 Lambda functions assume an IAM role during execution. In CDK by default, Lambda
@@ -105,7 +115,7 @@ it appropriate permissions:
 
 ```ts
 const myRole = new iam.Role(this, 'My Role', {
-  assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 
 const fn = new lambda.Function(this, 'MyFunction', {
@@ -155,12 +165,13 @@ if (fn.timeout) {
 
 AWS Lambda supports resource-based policies for controlling access to Lambda
 functions and layers on a per-resource basis. In particular, this allows you to
-give permission to AWS services and other AWS accounts to modify and invoke your
-functions. You can also restrict permissions given to AWS services by providing
-a source account or ARN (representing the account and identifier of the resource
-that accesses the function or layer).
+give permission to AWS services, AWS Organizations, or other AWS accounts to
+modify and invoke your functions.
+
+### Grant function access to AWS services
 
 ```ts
+// Grant permissions to a service
 declare const fn: lambda.Function;
 const principal = new iam.ServicePrincipal('my-service');
 
@@ -172,9 +183,57 @@ fn.addPermission('my-service Invocation', {
 });
 ```
 
-For more information, see [Resource-based
-policies](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html)
+You can also restrict permissions given to AWS services by providing
+a source account or ARN (representing the account and identifier of the resource
+that accesses the function or layer).
+
+For more information, see
+[Granting function access to AWS services](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html#permissions-resource-serviceinvoke)
 in the AWS Lambda Developer Guide.
+
+### Grant function access to an AWS Organization
+
+```ts
+// Grant permissions to an entire AWS organization
+declare const fn: lambda.Function;
+const org = new iam.OrganizationPrincipal('o-xxxxxxxxxx');
+
+fn.grantInvoke(org);
+```
+
+In the above example, the `principal` will be `*` and all users in the
+organization `o-xxxxxxxxxx` will get function invocation permissions.
+
+You can restrict permissions given to the organization by specifying an
+AWS account or role as the `principal`:
+
+```ts
+// Grant permission to an account ONLY IF they are part of the organization
+declare const fn: lambda.Function;
+const account = new iam.AccountPrincipal('123456789012');
+
+fn.grantInvoke(account.inOrganization('o-xxxxxxxxxx'));
+```
+
+For more information, see
+[Granting function access to an organization](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html#permissions-resource-xorginvoke)
+in the AWS Lambda Developer Guide.
+
+### Grant function access to other AWS accounts
+
+```ts
+// Grant permission to other AWS account
+declare const fn: lambda.Function;
+const account = new iam.AccountPrincipal('123456789012');
+
+fn.grantInvoke(account);
+```
+
+For more information, see
+[Granting function access to other accounts](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html#permissions-resource-xaccountinvoke)
+in the AWS Lambda Developer Guide.
+
+### Grant function access to unowned principals
 
 Providing an unowned principal (such as account principals, generic ARN
 principals, service principals, and principals in other accounts) to a call to
@@ -198,13 +257,6 @@ const servicePrincipalWithConditions = servicePrincipal.withConditions({
 });
 
 fn.grantInvoke(servicePrincipalWithConditions);
-
-// Equivalent to:
-fn.addPermission('my-service Invocation', {
-  principal: servicePrincipal,
-  sourceArn: sourceArn,
-  sourceAccount: sourceAccount,
-});
 ```
 
 ## Versions
@@ -288,11 +340,20 @@ This has been fixed in the AWS CDK but *existing* users need to opt-in via a
 [feature flag]. Users who have run `cdk init` since this fix will be opted in,
 by default.
 
-Existing users will need to enable the [feature flag]
+Otherwise, you will need to enable the [feature flag]
 `@aws-cdk/aws-lambda:recognizeVersionProps`. Since CloudFormation does not
-allow duplicate versions, they will also need to make some modification to
-their function so that a new version can be created. Any trivial change such as
-a whitespace change in the code or a no-op environment variable will suffice.
+allow duplicate versions, you will also need to make some modification to
+your function so that a new version can be created. To efficiently and trivially
+modify all your lambda functions at once, you can attach the
+`FunctionVersionUpgrade` aspect to the stack, which slightly alters the
+function description. This aspect is intended for one-time use to upgrade the
+version of all your functions at the same time, and can safely be removed after
+deploying once.
+
+```ts
+const stack = new Stack();
+Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_VERSION_PROPS));
+```
 
 When the new logic is in effect, you may rarely come across the following error:
 `The following properties are not recognized as version properties`. This will
@@ -303,6 +364,32 @@ To overcome this error, use the API `Function.classifyVersionProperty()` to
 record whether a new version should be generated when this property is changed.
 This can be typically determined by checking whether the property can be
 modified using the *[UpdateFunctionConfiguration]* API or not.
+
+### `currentVersion`: Updated hashing logic for layer versions
+
+An additional update to the hashing logic fixes two issues surrounding layers.
+Prior to this change, updating the lambda layer version would have no effect on
+the function version. Also, the order of lambda layers provided to the function
+was unnecessarily baked into the hash.
+
+This has been fixed in the AWS CDK starting with version 2.27. If you ran
+`cdk init` with an earlier version, you will need to opt-in via a [feature flag].
+If you run `cdk init` with v2.27 or later, this fix will be opted in, by default.
+
+Existing users will need to enable the [feature flag]
+`@aws-cdk/aws-lambda:recognizeLayerVersion`. Since CloudFormation does not
+allow duplicate versions, they will also need to make some modification to
+their function so that a new version can be created. To efficiently and trivially
+modify all your lambda functions at once, users can attach the
+`FunctionVersionUpgrade` aspect to the stack, which slightly alters the
+function description. This aspect is intended for one-time use to upgrade the
+version of all your functions at the same time, and can safely be removed after
+deploying once.
+
+```ts
+const stack = new Stack();
+Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
+```
 
 [feature flag]: https://docs.aws.amazon.com/cdk/latest/guide/featureflags.html
 [property overrides]: https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html#cfn_layer_raw
@@ -545,6 +632,26 @@ fn.addEventSource(new eventsources.S3EventSource(bucket, {
 }));
 ```
 
+The following code adds an DynamoDB notification as an event source filtering insert events:
+
+```ts
+import * as eventsources from '@aws-cdk/aws-lambda-event-sources';
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+
+declare const fn: lambda.Function;
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  stream: dynamodb.StreamViewType.NEW_IMAGE,
+});
+fn.addEventSource(new eventsources.DynamoEventSource(table, {
+  startingPosition: lambda.StartingPosition.LATEST,
+  filters: [{ eventName: lambda.FilterRule.isEqual('INSERT') }],
+}));
+```
+
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
 ## Imported Lambdas
@@ -651,7 +758,7 @@ profiling group -
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.PYTHON_3_6,
+  runtime: lambda.Runtime.PYTHON_3_9,
   handler: 'index.handler',
   code: lambda.Code.fromAsset('lambda-handler'),
   profiling: true,
@@ -858,8 +965,8 @@ new lambda.Function(this, 'Function', {
 
 Language-specific higher level constructs are provided in separate modules:
 
-* `@aws-cdk/aws-lambda-nodejs`: [Github](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-nodejs-readme.html)
-* `@aws-cdk/aws-lambda-python`: [Github](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-python) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-python-readme.html)
+* `@aws-cdk/aws-lambda-nodejs`: [Github](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda-nodejs) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-nodejs-readme.html)
+* `@aws-cdk/aws-lambda-python`: [Github](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda-python) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-python-readme.html)
 
 ## Code Signing
 

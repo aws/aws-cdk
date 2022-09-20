@@ -1525,6 +1525,7 @@ describe('auto scaling group', () => {
       launchTemplateId: 'test-lt-id',
       versionNumber: '0',
     });
+    const vpc = mockVpc(stack);
 
     // THEN
     expect(() => {
@@ -1535,9 +1536,16 @@ describe('auto scaling group', () => {
           generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
           cpuType: AmazonLinuxCpuType.X86_64,
         }),
-        vpc: mockVpc(stack),
+        vpc,
       });
     }).toThrow('Setting \'machineImage\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg-2', {
+        launchTemplate: lt,
+        associatePublicIpAddress: true,
+        vpc,
+      });
+    }).toThrow('Setting \'associatePublicIpAddress\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
   });
 
   test('Cannot specify Launch Template without instance type', () => {
@@ -1732,6 +1740,32 @@ describe('auto scaling group', () => {
       asg.addSecurityGroup(mockSecurityGroup(stack));
     }).toThrow('You cannot add security groups when the Auto Scaling Group is created from a Launch Template.');
   });
+
+  test('Should not throw when LaunchTemplate is used with CloudformationInit', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = new LaunchTemplate(stack, 'LaunchTemplate', {
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new ec2.InstanceType('t3.micro'),
+      userData: ec2.UserData.forLinux(),
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'ImportedSg', 'securityGroupId'),
+      role: iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MockRole'),
+    });
+
+    const cfInit = ec2.CloudFormationInit.fromElements(
+      ec2.InitCommand.shellCommand('/bash'),
+    );
+
+    // THEN
+    expect(() => new autoscaling.AutoScalingGroup(stack, 'Asg', {
+      launchTemplate: lt,
+      init: cfInit,
+      vpc: mockVpc(stack),
+      signals: autoscaling.Signals.waitForAll(),
+    })).not.toThrow();
+
+  });
 });
 
 function mockVpc(stack: cdk.Stack) {
@@ -1791,7 +1825,7 @@ test('can use Vpc imported from unparseable list tokens', () => {
     vpc,
     allowAllOutbound: false,
     associatePublicIpAddress: false,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
   });
 
   // THEN

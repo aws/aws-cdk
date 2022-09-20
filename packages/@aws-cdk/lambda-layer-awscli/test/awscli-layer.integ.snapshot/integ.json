@@ -1,14 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "lambda-layer-awscli/test/integ.awscli-layer": {
+    "lambda-layer-awscli-integ-test/DefaultTest": {
       "stacks": [
         "lambda-layer-awscli-integ-stack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "lambda-layer-awscli-integ-test/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

@@ -34,7 +34,7 @@ test('creates CloudFormation Custom Resource', () => {
   });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.certificateRequestHandler',
-    Runtime: 'nodejs12.x',
+    Runtime: 'nodejs14.x',
     Timeout: 900,
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -222,5 +222,48 @@ test('works with imported role', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Role: 'arn:aws:iam::account-id:role/role-name',
+  });
+});
+
+
+test('throws when domain name is longer than 64 characters', () => {
+  const stack = new Stack();
+
+  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+    zoneName: 'example.com',
+  });
+  expect(() => {
+    new DnsValidatedCertificate(stack, 'Cert', {
+      domainName: 'example.com'.repeat(7),
+      hostedZone: exampleDotComZone,
+    });
+  }).toThrow(/Domain name must be 64 characters or less/);
+}),
+
+test('test transparency logging settings is passed to the custom resource', () => {
+  const stack = new Stack();
+
+  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+    zoneName: 'example.com',
+  });
+
+  new DnsValidatedCertificate(stack, 'Cert', {
+    domainName: 'example.com',
+    hostedZone: exampleDotComZone,
+    transparencyLoggingEnabled: false,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    ServiceToken: {
+      'Fn::GetAtt': [
+        'CertCertificateRequestorFunction98FDF273',
+        'Arn',
+      ],
+    },
+    DomainName: 'example.com',
+    HostedZoneId: {
+      Ref: 'ExampleDotCom4D1B83AA',
+    },
+    CertificateTransparencyLoggingPreference: 'DISABLED',
   });
 });

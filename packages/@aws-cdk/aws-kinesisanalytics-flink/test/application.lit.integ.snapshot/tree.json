@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "FlinkAppTest": {
@@ -84,7 +84,7 @@
                                           },
                                           ":s3:::",
                                           {
-                                            "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67"
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                           },
                                           "/*"
                                         ]
@@ -100,7 +100,7 @@
                                           },
                                           ":s3:::",
                                           {
-                                            "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67"
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                           }
                                         ]
                                       ]
@@ -208,8 +208,8 @@
                     "id": "Stage",
                     "path": "FlinkAppTest/App/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -253,44 +253,12 @@
                                   },
                                   ":s3:::",
                                   {
-                                    "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67"
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   }
                                 ]
                               ]
                             },
-                            "fileKey": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  {
-                                    "Fn::Select": [
-                                      0,
-                                      {
-                                        "Fn::Split": [
-                                          "||",
-                                          {
-                                            "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3VersionKey5922697E"
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "Fn::Select": [
-                                      1,
-                                      {
-                                        "Fn::Split": [
-                                          "||",
-                                          {
-                                            "Ref": "AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3VersionKey5922697E"
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              ]
-                            }
+                            "fileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
                           }
                         },
                         "codeContentType": "ZIPFILE"
@@ -407,50 +375,6 @@
               "version": "0.0.0"
             }
           },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "FlinkAppTest/AssetParameters",
-            "children": {
-              "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577": {
-                "id": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577",
-                "path": "FlinkAppTest/AssetParameters/8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "FlinkAppTest/AssetParameters/8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "FlinkAppTest/AssetParameters/8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "FlinkAppTest/AssetParameters/8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
-            }
-          },
           "Alarm": {
             "id": "Alarm",
             "path": "FlinkAppTest/Alarm",
@@ -491,14 +415,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

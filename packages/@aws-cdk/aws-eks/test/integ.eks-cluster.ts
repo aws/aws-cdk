@@ -1,10 +1,11 @@
-/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
+/// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
 import * as constructs from 'constructs';
@@ -62,6 +63,8 @@ class EksClusterStack extends Stack {
     this.assertNodeGroupSpot();
 
     this.assertNodeGroupArm();
+
+    this.assertNodeGroupGraviton3();
 
     this.assertNodeGroupCustomAmi();
 
@@ -244,6 +247,15 @@ class EksClusterStack extends Stack {
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
     });
   }
+  private assertNodeGroupGraviton3() {
+    // add a Graviton3 nodegroup
+    this.cluster.addNodegroupCapacity('extra-ng-arm3', {
+      instanceType: new ec2.InstanceType('c7g.large'),
+      minSize: 1,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+    });
+  }
   private assertSpotCapacity() {
     // spot instances (up to 10)
     this.cluster.addAutoScalingGroupCapacity('spot', {
@@ -294,7 +306,7 @@ class EksClusterStack extends Stack {
 }
 
 // this test uses both the bottlerocket image and the inf1 instance, which are only supported in these
-// regions. see https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-eks#bottlerocket
+// regions. see https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-eks#bottlerocket
 // and https://aws.amazon.com/about-aws/whats-new/2019/12/introducing-amazon-ec2-inf1-instances-high-performance-and-the-lowest-cost-machine-learning-inference-in-the-cloud/
 const supportedRegions = [
   'us-east-1',
@@ -324,5 +336,8 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 }
 
+new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
+  testCases: [stack],
+});
 
 app.synth();

@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "ed901e66b7acf96c8ebcadf9fd0aaeb42bf743292ffe4bf02e2ce83a0d5ca40b": {
+      "source": {
+        "path": "aws-stepfunctions-tasks-databrew-start-job-run-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ed901e66b7acf96c8ebcadf9fd0aaeb42bf743292ffe4bf02e2ce83a0d5ca40b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,6 +1,6 @@
 import * as child_process from 'child_process';
 import { CdkCliWrapper } from '../lib/cdk-wrapper';
-import { RequireApproval } from '../lib/commands';
+import { RequireApproval, StackActivityProgress } from '../lib/commands';
 let spawnSyncMock: jest.SpyInstance;
 
 beforeEach(() => {
@@ -32,8 +32,8 @@ test('default deploy', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
-    ['deploy', '--app', 'node bin/my-app.js', 'test-stack1'],
+    expect.stringMatching(/cdk/),
+    ['deploy', '--progress', 'events', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.anything(),
       cwd: '/project',
@@ -82,11 +82,12 @@ test('deploy with all arguments', () => {
     toolkitStackName: 'Toolkit',
     versionReporting: true,
     usePreviousParameters: true,
+    progress: StackActivityProgress.BAR,
   });
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     expect.arrayContaining([
       'deploy',
       '--no-strict',
@@ -120,13 +121,14 @@ test('deploy with all arguments', () => {
       '--change-set-name', 'my-change-set',
       '--toolkit-stack-name', 'Toolkit',
       '--previous-parameters',
+      '--progress', 'bar',
       '--app',
       'node bin/my-app.js',
       'test-stack1',
     ]),
     expect.objectContaining({
       env: expect.anything(),
-      stdio: ['ignore', 'pipe', 'inherit'],
+      stdio: ['ignore', 'pipe', 'pipe'],
       cwd: '/project',
     }),
   );
@@ -146,9 +148,10 @@ test('can parse boolean arguments', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     [
       'deploy',
+      '--progress', 'events',
       '--app',
       'node bin/my-app.js',
       '--json',
@@ -179,11 +182,12 @@ test('can parse parameters', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     [
       'deploy',
       '--parameters', 'myparam=test',
       '--parameters', 'test-stack1:myotherparam=test',
+      '--progress', 'events',
       '--app',
       'node bin/my-app.js',
       'test-stack1',
@@ -211,9 +215,10 @@ test('can parse context', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     [
       'deploy',
+      '--progress', 'events',
       '--app',
       'node bin/my-app.js',
       '--context', 'myContext=value',
@@ -243,11 +248,12 @@ test('can parse array arguments', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     [
       'deploy',
       '--notification-arns', 'arn:aws:us-east-1:1111111111:some:resource',
       '--notification-arns', 'arn:aws:us-east-1:1111111111:some:other-resource',
+      '--progress', 'events',
       '--app',
       'node bin/my-app.js',
       'test-stack1',
@@ -274,8 +280,8 @@ test('can provide additional environment', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
-    ['deploy', '--app', 'node bin/my-app.js', 'test-stack1'],
+    expect.stringMatching(/cdk/),
+    ['deploy', '--progress', 'events', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.objectContaining({
         KEY: 'value',
@@ -300,7 +306,7 @@ test('default synth', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['synth', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.objectContaining({
@@ -326,7 +332,7 @@ test('synth arguments', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['destroy', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.objectContaining({
@@ -354,7 +360,7 @@ test('destroy arguments', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['destroy', '--force', '--no-exclusively', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.objectContaining({
@@ -380,7 +386,7 @@ test('default ls', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['ls', '--app', 'node bin/my-app.js', '*'],
     expect.objectContaining({
       env: expect.objectContaining({
@@ -415,7 +421,7 @@ test('ls arguments', () => {
 
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    expect.stringMatching(/aws-cdk\/bin\/cdk/),
+    expect.stringMatching(/cdk/),
     ['ls', '--long', '--app', 'node bin/my-app.js', '*'],
     expect.objectContaining({
       env: expect.objectContaining({
@@ -458,6 +464,28 @@ test('can synth fast', () => {
         CDK_OUTDIR: 'cdk.output',
         CDK_CONTEXT_JSON: '{\"CONTEXT\":\"value\"}',
       }),
+      cwd: '/project',
+    }),
+  );
+});
+
+test('can show output', () => {
+  // WHEN
+  const cdk = new CdkCliWrapper({
+    directory: '/project',
+    showOutput: true,
+  });
+  cdk.synthFast({
+    execCmd: ['node', 'bin/my-app.js'],
+  });
+
+  // THEN
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'node',
+    ['bin/my-app.js'],
+    expect.objectContaining({
+      env: expect.anything(),
+      stdio: ['ignore', 'pipe', 'inherit'],
       cwd: '/project',
     }),
   );

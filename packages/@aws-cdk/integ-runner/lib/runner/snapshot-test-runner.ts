@@ -1,9 +1,8 @@
 import * as path from 'path';
 import { Writable, WritableOptions } from 'stream';
-import { StringDecoder, NodeStringDecoder } from 'string_decoder';
+import { StringDecoder } from 'string_decoder';
 import { diffTemplate, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
-import { Diagnostic, DiagnosticReason, DestructiveChange } from '../workers/common';
-import { canonicalizeTemplate } from './private/canonicalize-assets';
+import { Diagnostic, DiagnosticReason, DestructiveChange, SnapshotVerificationOptions } from '../workers/common';
 import { AssemblyManifestReader } from './private/cloud-assembly';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
 
@@ -22,7 +21,8 @@ export class IntegSnapshotRunner extends IntegRunner {
    *
    * @returns any diagnostics and any destructive changes
    */
-  public testSnapshot(): { diagnostics: Diagnostic[], destructiveChanges: DestructiveChange[] } {
+  public testSnapshot(options: SnapshotVerificationOptions = {}): { diagnostics: Diagnostic[], destructiveChanges: DestructiveChange[] } {
+    let doClean = true;
     try {
       // read the existing snapshot
       const expectedStacks = this.readAssembly(this.snapshotDir);
@@ -39,17 +39,21 @@ export class IntegSnapshotRunner extends IntegRunner {
       // the cdkOutDir exists already, but for some reason generateActualSnapshot
       // generates an incorrect snapshot and I have no idea why so synth again here
       // to produce the "correct" snapshot
+      const env = {
+        ...DEFAULT_SYNTH_OPTIONS.env,
+        CDK_CONTEXT_JSON: JSON.stringify(this.getContext({
+          ...this.actualTestSuite.enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
+        })),
+      };
       this.cdk.synthFast({
         execCmd: this.cdkApp.split(' '),
-        env: {
-          ...DEFAULT_SYNTH_OPTIONS.env,
-          CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
-        },
-        output: this.cdkOutDir,
+        env,
+        output: path.relative(this.directory, this.cdkOutDir),
       });
 
       // read the "actual" snapshot
-      const actualStacks = this.readAssembly(path.join(this.directory, this.cdkOutDir));
+      const actualDir = this.cdkOutDir;
+      const actualStacks = this.readAssembly(actualDir);
       // only diff stacks that are part of the test case
       const actualStacksToDiff: Record<string, any> = {};
       for (const [stackName, template] of Object.entries(actualStacks)) {
@@ -60,11 +64,46 @@ export class IntegSnapshotRunner extends IntegRunner {
 
       // diff the existing snapshot (expected) with the integration test (actual)
       const diagnostics = this.diffAssembly(expectedStacksToDiff, actualStacksToDiff);
+
+      if (diagnostics.diagnostics.length) {
+        // Attach additional messages to the first diagnostic
+        const additionalMessages: string[] = [];
+
+        if (options.retain) {
+          additionalMessages.push(
+            `(Failure retained) Expected: ${path.relative(process.cwd(), this.snapshotDir)}`,
+            `                   Actual:   ${path.relative(process.cwd(), actualDir)}`,
+          ),
+          doClean = false;
+        }
+
+        if (options.verbose) {
+          // Show the command necessary to repro this
+          const envSet = Object.entries(env)
+            .filter(([k, _]) => k !== 'CDK_CONTEXT_JSON')
+            .map(([k, v]) => `${k}='${v}'`);
+          const envCmd = envSet.length > 0 ? ['env', ...envSet] : [];
+
+          additionalMessages.push(
+            'Repro:',
+            `  ${[...envCmd, 'cdk synth', `-a '${this.cdkApp}'`, `-o '${this.cdkOutDir}'`, ...Object.entries(this.getContext()).flatMap(([k, v]) => typeof v !== 'object' ? [`-c '${k}=${v}'`] : [])].join(' ')}`,
+
+          );
+        }
+
+        diagnostics.diagnostics[0] = {
+          ...diagnostics.diagnostics[0],
+          additionalMessages,
+        };
+      }
+
       return diagnostics;
     } catch (e) {
       throw e;
     } finally {
-      this.cleanup();
+      if (doClean) {
+        this.cleanup();
+      }
     }
   }
 
@@ -129,8 +168,8 @@ export class IntegSnapshotRunner extends IntegRunner {
         // asset hashes from the templates so they are not part of the diff
         // comparison
         if (!this.actualTestSuite.getOptionsForStack(templateId)?.diffAssets) {
-          actualTemplate = canonicalizeTemplate(actualTemplate);
-          expectedTemplate = canonicalizeTemplate(expectedTemplate);
+          actualTemplate = this.canonicalizeTemplate(actualTemplate, templateId, this.cdkOutDir);
+          expectedTemplate = this.canonicalizeTemplate(expectedTemplate, templateId, this.snapshotDir);
         }
         const templateDiff = diffTemplate(expectedTemplate, actualTemplate);
         if (!templateDiff.isEmpty) {
@@ -188,11 +227,92 @@ export class IntegSnapshotRunner extends IntegRunner {
 
     return stacks;
   }
+
+  /**
+  * Reduce template to a normal form where asset references have been normalized
+  *
+  * This makes it possible to compare templates if all that's different between
+  * them is the hashes of the asset values.
+  */
+  private canonicalizeTemplate(template: any, stackName: string, manifestDir: string): any {
+    const assetsSeen = new Set<string>();
+    const stringSubstitutions = new Array<[RegExp, string]>();
+
+    // Find assets via parameters (for LegacyStackSynthesizer)
+    const paramRe = /^AssetParameters([a-zA-Z0-9]{64})(S3Bucket|S3VersionKey|ArtifactHash)([a-zA-Z0-9]{8})$/;
+    for (const paramName of Object.keys(template?.Parameters || {})) {
+      const m = paramRe.exec(paramName);
+      if (!m) { continue; }
+      if (assetsSeen.has(m[1])) { continue; }
+
+      assetsSeen.add(m[1]);
+      const ix = assetsSeen.size;
+
+      // Full parameter reference
+      stringSubstitutions.push([
+        new RegExp(`AssetParameters${m[1]}(S3Bucket|S3VersionKey|ArtifactHash)([a-zA-Z0-9]{8})`),
+        `Asset${ix}$1`,
+      ]);
+      // Substring asset hash reference
+      stringSubstitutions.push([
+        new RegExp(`${m[1]}`),
+        `Asset${ix}Hash`,
+      ]);
+    }
+
+    // find assets defined in the asset manifest
+    try {
+      const manifest = AssemblyManifestReader.fromPath(manifestDir);
+      const assets = manifest.getAssetIdsForStack(stackName);
+      assets.forEach(asset => {
+        if (!assetsSeen.has(asset)) {
+          assetsSeen.add(asset);
+          const ix = assetsSeen.size;
+          stringSubstitutions.push([
+            new RegExp(asset),
+            `Asset${ix}$1`,
+          ]);
+        }
+      });
+    } catch {
+      // if there is no asset manifest that is fine.
+    }
+
+    // Substitute them out
+    return substitute(template);
+
+    function substitute(what: any): any {
+      if (Array.isArray(what)) {
+        return what.map(substitute);
+      }
+
+      if (typeof what === 'object' && what !== null) {
+        const ret: any = {};
+        for (const [k, v] of Object.entries(what)) {
+          ret[stringSub(k)] = substitute(v);
+        }
+        return ret;
+      }
+
+      if (typeof what === 'string') {
+        return stringSub(what);
+      }
+
+      return what;
+    }
+
+    function stringSub(x: string) {
+      for (const [re, replacement] of stringSubstitutions) {
+        x = x.replace(re, replacement);
+      }
+      return x;
+    }
+  }
 }
 
 class StringWritable extends Writable {
   public data: string;
-  private _decoder: NodeStringDecoder;
+  private _decoder: StringDecoder;
   constructor(options: WritableOptions) {
     super(options);
     this._decoder = new StringDecoder();

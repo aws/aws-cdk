@@ -1,14 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-apigateway/test/integ.restapi.defaults": {
+    "apigateway-restapi-defaults/DefaultTest": {
       "stacks": [
         "test-apigateway-restapi-defaults"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "apigateway-restapi-defaults/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

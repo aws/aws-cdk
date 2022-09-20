@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "IntegApiGatewayV2Iam": {
@@ -339,44 +339,44 @@
             "id": "API",
             "path": "IntegApiGatewayV2Iam/API",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "TESTACCESSKEYID": {
             "id": "TESTACCESSKEYID",
             "path": "IntegApiGatewayV2Iam/TESTACCESSKEYID",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "TESTSECRETACCESSKEY": {
             "id": "TESTSECRETACCESSKEY",
             "path": "IntegApiGatewayV2Iam/TESTSECRETACCESSKEY",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "TESTREGION": {
             "id": "TESTREGION",
             "path": "IntegApiGatewayV2Iam/TESTREGION",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

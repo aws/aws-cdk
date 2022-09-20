@@ -1,14 +1,12 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "aws-eks/test/integ.eks-oidc-provider": {
+    "aws-cdk-eks-oidc-provider/DefaultTest": {
       "stacks": [
-        "oidc-provider-integ-test"
+        "aws-eks-oidc-provider-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-cdk-eks-oidc-provider/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksoidcproviderDefaultTestDeployAssert0BFFC9B9"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

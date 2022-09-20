@@ -1,14 +1,12 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "aws-ecs/test/ec2/integ.secret-json-field": {
+    "aws-ecs-ec2-integ-secret-json-field/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-secret-json-field"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-ecs-ec2-integ-secret-json-field/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsec2integsecretjsonfieldDefaultTestDeployAssert5B8058F0"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

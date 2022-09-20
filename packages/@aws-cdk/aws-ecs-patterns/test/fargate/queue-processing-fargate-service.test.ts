@@ -1,13 +1,13 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
-import { MachineImage } from '@aws-cdk/aws-ec2';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
+import { MachineImage } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { Queue } from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
 
 test('test fargate queue worker service construct - with only required props', () => {
@@ -32,7 +32,6 @@ test('test fargate queue worker service construct - with only required props', (
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'FARGATE',
   });
 
@@ -112,8 +111,6 @@ test('test fargate queue worker service construct - with only required props', (
 test('test fargate queue worker service construct - with remove default desiredCount feature flag', () => {
   // GIVEN
   const stack = new cdk.Stack();
-  stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
-
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -156,7 +153,6 @@ test('test fargate queue worker service construct - with optional props for queu
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'FARGATE',
   });
 
@@ -231,6 +227,77 @@ test('test fargate queue worker service construct - with optional props for queu
       }),
     ],
     Family: 'ServiceQueueProcessingTaskDef83DB34F1',
+  });
+});
+
+test('test Fargate queue worker service construct - with ECS Exec', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 512,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    enableExecuteCommand: true,
+  });
+
+  // THEN
+  // ECS Exec
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'ssmmessages:CreateControlChannel',
+            'ssmmessages:CreateDataChannel',
+            'ssmmessages:OpenControlChannel',
+            'ssmmessages:OpenDataChannel',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'logs:DescribeLogGroups',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: [
+            'logs:CreateLogStream',
+            'logs:DescribeLogStreams',
+            'logs:PutLogEvents',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: [
+            'sqs:ReceiveMessage',
+            'sqs:ChangeMessageVisibility',
+            'sqs:GetQueueUrl',
+            'sqs:DeleteMessage',
+            'sqs:GetQueueAttributes',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'ServiceEcsProcessingQueueC266885C',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'ServiceQueueProcessingTaskDefTaskRoleDefaultPolicy11D50174',
+    Roles: [
+      {
+        Ref: 'ServiceQueueProcessingTaskDefTaskRoleBDE5D3C6',
+      },
+    ],
   });
 });
 
@@ -352,7 +419,6 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
     image: ecs.ContainerImage.fromRegistry('test'),
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
-    desiredTaskCount: 2,
     environment: {
       TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
       TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
@@ -369,7 +435,6 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 2,
     DeploymentConfiguration: {
       MinimumHealthyPercent: 60,
       MaximumPercent: 150,
@@ -463,7 +528,7 @@ test('can set custom networking options', () => {
       {
         cidrMask: 24,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       },
     ],
   });
@@ -477,7 +542,7 @@ test('can set custom networking options', () => {
     memoryLimitMiB: 512,
     image: ecs.ContainerImage.fromRegistry('test'),
     securityGroups: [securityGroup],
-    taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+    taskSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
   });
 
   // THEN - NetworkConfiguration is created with the specific security groups and selected subnets
@@ -585,4 +650,93 @@ test('can set capacity provider strategies', () => {
       },
     ],
   });
+});
+
+it('can set queue props by queue construct', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const queue = new Queue(stack, 'Queue', {
+    queueName: 'custom-queue',
+    visibilityTimeout: cdk.Duration.seconds(200),
+    deadLetterQueue: {
+      queue: new Queue(stack, 'DeadLetterQueue', {
+        queueName: 'custom-dead-letter-queue',
+        retentionPeriod: cdk.Duration.seconds(100),
+      }),
+      maxReceiveCount: 10,
+    },
+  });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    queue: queue,
+  });
+
+  // Queue
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
+    QueueName: 'custom-queue',
+    VisibilityTimeout: 200,
+    RedrivePolicy: {
+      maxReceiveCount: 10,
+    },
+  });
+  // DLQ
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
+    QueueName: 'custom-dead-letter-queue',
+    MessageRetentionPeriod: 100,
+  });
+});
+
+it('can set queue props by QueueProcessingServiceBaseProps', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    retentionPeriod: cdk.Duration.seconds(100),
+    visibilityTimeout: cdk.Duration.seconds(200),
+    maxReceiveCount: 10,
+  });
+
+  // Queue
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
+    QueueName: Match.absent(),
+    VisibilityTimeout: 200,
+    RedrivePolicy: {
+      maxReceiveCount: 10,
+    },
+  });
+  // DLQ
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
+    QueueName: Match.absent(),
+    MessageRetentionPeriod: 100,
+  });
+});
+
+it('throws validation errors of the specific queue prop, when setting queue and queue related props at same time', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const queue = new Queue(stack, 'Queue');
+
+  // Setting all retentionPeriod, visibilityTimeout and maxReceiveCount
+  expect(() => {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service1', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      queue: queue,
+      retentionPeriod: cdk.Duration.seconds(100),
+      visibilityTimeout: cdk.Duration.seconds(200),
+      maxReceiveCount: 10,
+    });
+  }).toThrow(new Error('retentionPeriod, visibilityTimeout, maxReceiveCount can be set only when queue is not set. Specify them in the QueueProps of the queue'));
+
+  // Setting only visibilityTimeout
+  expect(() => {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service2', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      queue: queue,
+      visibilityTimeout: cdk.Duration.seconds(200),
+    });
+  }).toThrow(new Error('visibilityTimeout can be set only when queue is not set. Specify them in the QueueProps of the queue'));
 });

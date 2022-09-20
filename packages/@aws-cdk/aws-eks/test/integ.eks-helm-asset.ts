@@ -4,6 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib/index';
 
 class EksClusterStack extends Stack {
@@ -53,7 +54,7 @@ class EksClusterStack extends Stack {
       chart: 's3-chart',
       release: 's3-chart',
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/s3-chart',
-      version: 'v0.0.19',
+      version: 'v0.1.0',
       namespace: 'ack-system',
       createNamespace: true,
     });
@@ -62,7 +63,10 @@ class EksClusterStack extends Stack {
 
 const app = new App();
 
-new EksClusterStack(app, 'aws-cdk-eks-helm-test');
+const stack = new EksClusterStack(app, 'aws-cdk-eks-helm-test');
+new integ.IntegTest(app, 'aws-cdk-eks-helm', {
+  testCases: [stack],
+});
 
 app.synth();
 

@@ -1,14 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-stepfunctions-tasks/test/apigateway/integ.call-rest-api": {
+    "call-rest-api/DefaultTest": {
       "stacks": [
         "CallRestApiInteg"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "call-rest-api/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

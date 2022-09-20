@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,27 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-ecs-patterns-queue-public.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-patterns-queue-public.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-ecs-patterns-queue-public": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-patterns-queue-public.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-ecs-patterns-queue-public": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "repositoryName": "aws-cdk/assets",
-              "imageTag": "95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417",
-              "id": "95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417",
-              "packaging": "container-image",
-              "path": "asset.95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417",
-              "sourceHash": "95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca8ddbaa4e4101a5a1e35a0a759b355d5278113d651f0d993c11a3ef5ba20561.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-patterns-queue-public.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-patterns-queue-public.assets"
+      ],
+      "metadata": {
         "/aws-ecs-patterns-queue-public/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -217,7 +228,10 @@
         "/aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PublicQueueServiceQueueProcessingTaskDef858327F6"
+            "data": "PublicQueueServiceQueueProcessingTaskDef858327F6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource": [
@@ -291,9 +305,68 @@
             "type": "aws:cdk:logicalId",
             "data": "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3"
           }
+        ],
+        "/aws-ecs-patterns-queue-public/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-patterns-queue-public/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
         ]
       },
       "displayName": "aws-ecs-patterns-queue-public"
+    },
+    "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6.assets"
+      ],
+      "metadata": {
+        "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

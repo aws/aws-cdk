@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "aws-lambda/test/integ.log-retention": {
+    "integ.log-retention": {
       "stacks": [
         "aws-cdk-lambda-log-retention"
       ],

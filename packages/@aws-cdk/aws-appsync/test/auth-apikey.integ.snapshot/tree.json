@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-appsync-integ": {
@@ -66,13 +66,20 @@
                         "ApiF70053CD",
                         "ApiId"
                       ]
-                    },
-                    "expires": 1658053715
+                    }
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-appsync.CfnApiKey",
                   "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "aws-appsync-integ/Api/LogGroup",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "testDataSource": {
@@ -231,7 +238,7 @@
                             "typeName": "Query",
                             "dataSourceName": "testDataSource",
                             "kind": "UNIT",
-                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
+                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
                             "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                           }
                         },
@@ -327,8 +334,8 @@
                 "id": "ScalingRole",
                 "path": "aws-appsync-integ/TestTable/ScalingRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -339,14 +346,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

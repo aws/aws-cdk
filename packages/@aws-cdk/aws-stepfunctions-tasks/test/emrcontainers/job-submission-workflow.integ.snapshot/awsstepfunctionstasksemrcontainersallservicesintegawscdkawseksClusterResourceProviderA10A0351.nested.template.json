@@ -5,41 +5,9 @@
    "Properties": {
     "Content": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3BucketE001F8ECRef"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3VersionKey112AFD6DRef"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3VersionKey112AFD6DRef"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06ee.zip"
     },
     "Description": "/opt/nodejs/node_modules/proxy-agent"
    }
@@ -103,41 +71,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3Bucket0849589DRef"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey75C4235ARef"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey75C4235ARef"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -146,13 +82,18 @@
      ]
     },
     "Description": "onEvent handler for EKS cluster resource provider",
+    "Environment": {
+     "Variables": {
+      "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+     }
+    },
     "Handler": "index.onEvent",
     "Layers": [
      {
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 60
    },
    "DependsOn": [
@@ -219,41 +160,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3Bucket0849589DRef"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey75C4235ARef"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey75C4235ARef"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -262,13 +171,18 @@
      ]
     },
     "Description": "isComplete handler for EKS cluster resource provider",
+    "Environment": {
+     "Variables": {
+      "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+     }
+    },
     "Handler": "index.isComplete",
     "Layers": [
      {
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 60
    },
    "DependsOn": [
@@ -318,12 +232,6 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
          ]
@@ -334,12 +242,24 @@
           [
            {
             "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
+             "OnEventHandler42BEBAE0",
              "Arn"
             ]
            },
            ":*"
           ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
          ]
         },
         {
@@ -348,7 +268,7 @@
           [
            {
             "Fn::GetAtt": [
-             "OnEventHandler42BEBAE0",
+             "IsCompleteHandler7073F4DA",
              "Arn"
             ]
            },
@@ -381,41 +301,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketF1A8BC02Ref"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -444,7 +332,7 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -494,12 +382,6 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
          ]
@@ -510,12 +392,24 @@
           [
            {
             "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
+             "OnEventHandler42BEBAE0",
              "Arn"
             ]
            },
            ":*"
           ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
          ]
         },
         {
@@ -524,7 +418,7 @@
           [
            {
             "Fn::GetAtt": [
-             "OnEventHandler42BEBAE0",
+             "IsCompleteHandler7073F4DA",
              "Arn"
             ]
            },
@@ -550,41 +444,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketF1A8BC02Ref"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -610,7 +472,7 @@
      }
     },
     "Handler": "framework.isComplete",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -660,12 +522,6 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
          ]
@@ -676,12 +532,24 @@
           [
            {
             "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
+             "OnEventHandler42BEBAE0",
              "Arn"
             ]
            },
            ":*"
           ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
          ]
         },
         {
@@ -690,7 +558,7 @@
           [
            {
             "Fn::GetAtt": [
-             "OnEventHandler42BEBAE0",
+             "IsCompleteHandler7073F4DA",
              "Arn"
             ]
            },
@@ -716,41 +584,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketF1A8BC02Ref"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -776,7 +612,7 @@
      }
     },
     "Handler": "framework.onTimeout",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -825,12 +661,6 @@
          ]
         },
         {
-         "Fn::GetAtt": [
-          "ProviderframeworkonTimeout0B47CA38",
-          "Arn"
-         ]
-        },
-        {
          "Fn::Join": [
           "",
           [
@@ -842,6 +672,18 @@
            },
            ":*"
           ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ProviderframeworkonTimeout0B47CA38",
+          "Arn"
          ]
         },
         {
@@ -1014,25 +856,7 @@
   }
  },
  "Parameters": {
-  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3BucketE001F8ECRef": {
-   "Type": "String"
-  },
-  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3VersionKey112AFD6DRef": {
-   "Type": "String"
-  },
   "referencetoawsstepfunctionstasksemrcontainersallservicesintegintegrationtesteksclusterCreationRole78F8A91EArn": {
-   "Type": "String"
-  },
-  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3Bucket0849589DRef": {
-   "Type": "String"
-  },
-  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters4b85e8c141d9b886acbf891007402913e39574073ba1f533288a75c9f56082c6S3VersionKey75C4235ARef": {
-   "Type": "String"
-  },
-  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3BucketF1A8BC02Ref": {
-   "Type": "String"
-  },
-  "referencetoawsstepfunctionstasksemrcontainersallservicesintegAssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey15167950Ref": {
    "Type": "String"
   }
  }

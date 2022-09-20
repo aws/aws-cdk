@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.92"
         }
       },
       "aws-ecs-integ-secret": {
@@ -113,6 +113,20 @@
                                 ]
                               ]
                             }
+                          },
+                          {
+                            "name": "APIKEY",
+                            "valueFrom": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  {
+                                    "Ref": "SecretA720EF05"
+                                  },
+                                  ":apikey::"
+                                ]
+                              ]
+                            }
                           }
                         ]
                       }
@@ -139,7 +153,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.CfnTaskDefinition",
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -147,8 +161,8 @@
                 "id": "web",
                 "path": "aws-ecs-integ-secret/TaskDef/web",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.92"
                 }
               },
               "ExecutionRole": {
@@ -232,13 +246,49 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ecs.FargateTaskDefinition",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "aws-ecs-fargate-integ-secret": {
+        "id": "aws-ecs-fargate-integ-secret",
+        "path": "aws-ecs-fargate-integ-secret",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "aws-ecs-fargate-integ-secret/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "aws-ecs-fargate-integ-secret/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.92"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "aws-ecs-fargate-integ-secret/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

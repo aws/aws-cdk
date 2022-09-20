@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "ChatbotLogRetentionInteg": {
@@ -125,8 +125,8 @@
                     "id": "Resource",
                     "path": "ChatbotLogRetentionInteg/MySlackChannel/LogRetention/Resource",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   }
                 },
@@ -153,8 +153,8 @@
                     "id": "Stage",
                     "path": "ChatbotLogRetentionInteg/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -266,70 +266,26 @@
                 "id": "Resource",
                 "path": "ChatbotLogRetentionInteg/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "ChatbotLogRetentionInteg/AssetParameters",
-            "children": {
-              "22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665": {
-                "id": "22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665",
-                "path": "ChatbotLogRetentionInteg/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "ChatbotLogRetentionInteg/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "ChatbotLogRetentionInteg/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "ChatbotLogRetentionInteg/AssetParameters/22bb41d703c8e7a9a1712308f455fcf58cc012b0a386c9df563a6244a61e6665/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

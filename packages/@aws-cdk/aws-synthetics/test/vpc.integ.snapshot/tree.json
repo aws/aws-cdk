@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "canary-vpc": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "canary-vpc/MyVpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "canary-vpc/MyVpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +425,8 @@
                     "id": "Acl",
                     "path": "canary-vpc/MyVpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +544,8 @@
                     "id": "Acl",
                     "path": "canary-vpc/MyVpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -898,8 +898,8 @@
                     "id": "Stage",
                     "path": "canary-vpc/MyVpcCanary/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -970,41 +970,9 @@
                     "code": {
                       "handler": "canary.handler",
                       "s3Bucket": {
-                        "Ref": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3Bucket705C3761"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3VersionKeyE546342B"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersb1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820S3VersionKeyE546342B"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820.zip"
                     },
                     "executionRoleArn": {
                       "Fn::GetAtt": [
@@ -1052,61 +1020,17 @@
               "fqn": "@aws-cdk/aws-synthetics.Canary",
               "version": "0.0.0"
             }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "canary-vpc/AssetParameters",
-            "children": {
-              "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820": {
-                "id": "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820",
-                "path": "canary-vpc/AssetParameters/b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "canary-vpc/AssetParameters/b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "canary-vpc/AssetParameters/b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "canary-vpc/AssetParameters/b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
-            }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "cdk-backup": {
@@ -53,8 +53,8 @@
                 "id": "ScalingRole",
                 "path": "cdk-backup/Table/ScalingRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -85,7 +85,10 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Backup::BackupVault",
                   "aws:cdk:cloudformation:props": {
-                    "backupVaultName": "cdkbackupVaultC2A6D3CB"
+                    "backupVaultName": "cdkbackupVaultC2A6D3CB",
+                    "lockConfiguration": {
+                      "minRetentionDays": 5
+                    }
                   }
                 },
                 "constructInfo": {
@@ -311,14 +314,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

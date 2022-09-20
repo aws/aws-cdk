@@ -45,6 +45,14 @@
                         "type": "string"
                     }
                 },
+                "assertionStack": {
+                    "description": "The node id of the stack that contains assertions.\nThis is the value that can be used to deploy the stack with the CDK CLI (Default - no assertion stack)",
+                    "type": "string"
+                },
+                "assertionStackName": {
+                    "description": "The name of the stack that contains assertions (Default - no assertion stack)",
+                    "type": "string"
+                },
                 "stackUpdateWorkflow": {
                     "description": "Run update workflow on this test case\nThis should only be set to false to test scenarios\nthat are not possible to test as part of the update workflow (Default true)",
                     "type": "boolean"

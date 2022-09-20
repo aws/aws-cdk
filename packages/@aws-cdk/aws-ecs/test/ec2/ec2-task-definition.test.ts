@@ -5,7 +5,6 @@ import { Repository } from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
@@ -108,7 +107,6 @@ describe('ec2 task definition', () => {
             Type: 'memberOf',
           },
         ],
-
       });
     });
 
@@ -227,7 +225,8 @@ describe('ec2 task definition', () => {
 
     test('all container definition options defined', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new cdk.Stack(app);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const secret = new secretsmanager.Secret(stack, 'Secret');
@@ -708,50 +707,6 @@ describe('ec2 task definition', () => {
       Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     });
 
-    testFutureBehavior('correctly sets containers from asset using default props', { [cxapi.DOCKER_IGNORE_SUPPORT]: true }, cdk.App, (app) => {
-      // GIVEN
-      const stack = new cdk.Stack(app, 'Stack');
-
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
-
-      // WHEN
-      taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromAsset(path.join(__dirname, '..', 'demo-image')),
-        memoryLimitMiB: 512,
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        Family: 'StackEc2TaskDefF03698CF',
-        ContainerDefinitions: [
-          {
-            Essential: true,
-            Image: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  '.dkr.ecr.',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  '.',
-                  {
-                    Ref: 'AWS::URLSuffix',
-                  },
-                  '/aws-cdk/assets:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
-                ],
-              ],
-            },
-            Memory: 512,
-            Name: 'web',
-          },
-        ],
-      });
-    });
-
     test('correctly sets containers from asset using all props', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -830,8 +785,7 @@ describe('ec2 task definition', () => {
       {
         container: dependency2,
         condition: ecs.ContainerDependencyCondition.SUCCESS,
-      },
-      );
+      });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -855,6 +809,7 @@ describe('ec2 task definition', () => {
         })],
       });
     });
+
     test('correctly sets links', () => {
       const stack = new cdk.Stack();
 

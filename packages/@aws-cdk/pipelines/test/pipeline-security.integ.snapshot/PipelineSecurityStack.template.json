@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824.zip"
+     "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -123,7 +123,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -212,7 +212,7 @@
   "TestPipelineArtifactsBucketEncryptionKeyAliasE8D86DD3": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/codepipeline-pipelinesecuritystacktestpipelinef7060861",
+    "AliasName": "alias/codepipeline-pipelinesecuritystack-testpipeline-f7060861",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "TestPipelineArtifactsBucketEncryptionKey13258842",
@@ -2363,7 +2363,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6c6c8f170c2cc5c6e35d90fe172fbc17cae75777b84707d58332dee79f444404.zip"
+     "S3Key": "3e97a33351ca88612e307e6409bd3556457d97bc85dce281e230b8aad8bc66ff.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -2372,7 +2372,7 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 300
    },
    "DependsOn": [
@@ -2603,7 +2603,7 @@
     },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:1.0",
+     "Image": "aws/codebuild/standard:5.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -2623,7 +2623,7 @@
         {
          "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKPipelinesAutoApprove1EE0AA81"
         },
-        " --invocation-type Event --payload \\\"$payload\\\" lambda.out; export MESSAGE=\\\"No security-impacting changes detected.\\\"; else [ -z \\\"${NOTIFICATION_ARN}\\\" ] || aws sns publish --topic-arn $NOTIFICATION_ARN --subject \\\"$NOTIFICATION_SUBJECT\\\" --message \\\"An upcoming change would broaden security changes in $PIPELINE_NAME.\\nReview and approve the changes in CodePipeline to proceed with the deployment.\\n\\nReview the changes in CodeBuild:\\n\\n$LINK\\n\\nApprove the changes in CodePipeline (stage $STAGE_NAME, action $ACTION_NAME):\\n\\n$PIPELINE_LINK\\\"; export MESSAGE=\\\"Deployment would make security-impacting changes. Click the link below to inspect them, then click Approve if all changes are expected.\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
+        " --invocation-type Event --cli-binary-format raw-in-base64-out --payload \\\"$payload\\\" lambda.out; export MESSAGE=\\\"No security-impacting changes detected.\\\"; else [ -z \\\"${NOTIFICATION_ARN}\\\" ] || aws sns publish --topic-arn $NOTIFICATION_ARN --subject \\\"$NOTIFICATION_SUBJECT\\\" --message \\\"An upcoming change would broaden security changes in $PIPELINE_NAME.\\nReview and approve the changes in CodePipeline to proceed with the deployment.\\n\\nReview the changes in CodeBuild:\\n\\n$LINK\\n\\nApprove the changes in CodePipeline (stage $STAGE_NAME, action $ACTION_NAME):\\n\\n$PIPELINE_LINK\\\"; export MESSAGE=\\\"Deployment would make security-impacting changes. Click the link below to inspect them, then click Approve if all changes are expected.\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
        ]
       ]
      },
@@ -2707,7 +2707,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6c6c8f170c2cc5c6e35d90fe172fbc17cae75777b84707d58332dee79f444404.zip"
+     "S3Key": "3e97a33351ca88612e307e6409bd3556457d97bc85dce281e230b8aad8bc66ff.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -2716,7 +2716,7 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs12.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 300
    },
    "DependsOn": [
@@ -2947,7 +2947,7 @@
     },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:1.0",
+     "Image": "aws/codebuild/standard:5.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -2967,7 +2967,7 @@
         {
          "Ref": "UnattachedStageStageApplicationSecurityCheckCDKPipelinesAutoApprove249F82F9"
         },
-        " --invocation-type Event --payload \\\"$payload\\\" lambda.out; export MESSAGE=\\\"No security-impacting changes detected.\\\"; else [ -z \\\"${NOTIFICATION_ARN}\\\" ] || aws sns publish --topic-arn $NOTIFICATION_ARN --subject \\\"$NOTIFICATION_SUBJECT\\\" --message \\\"An upcoming change would broaden security changes in $PIPELINE_NAME.\\nReview and approve the changes in CodePipeline to proceed with the deployment.\\n\\nReview the changes in CodeBuild:\\n\\n$LINK\\n\\nApprove the changes in CodePipeline (stage $STAGE_NAME, action $ACTION_NAME):\\n\\n$PIPELINE_LINK\\\"; export MESSAGE=\\\"Deployment would make security-impacting changes. Click the link below to inspect them, then click Approve if all changes are expected.\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
+        " --invocation-type Event --cli-binary-format raw-in-base64-out --payload \\\"$payload\\\" lambda.out; export MESSAGE=\\\"No security-impacting changes detected.\\\"; else [ -z \\\"${NOTIFICATION_ARN}\\\" ] || aws sns publish --topic-arn $NOTIFICATION_ARN --subject \\\"$NOTIFICATION_SUBJECT\\\" --message \\\"An upcoming change would broaden security changes in $PIPELINE_NAME.\\nReview and approve the changes in CodePipeline to proceed with the deployment.\\n\\nReview the changes in CodeBuild:\\n\\n$LINK\\n\\nApprove the changes in CodePipeline (stage $STAGE_NAME, action $ACTION_NAME):\\n\\n$PIPELINE_LINK\\\"; export MESSAGE=\\\"Deployment would make security-impacting changes. Click the link below to inspect them, then click Approve if all changes are expected.\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
        ]
       ]
      },

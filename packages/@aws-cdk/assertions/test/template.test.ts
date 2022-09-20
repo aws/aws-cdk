@@ -1,4 +1,4 @@
-import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, NestedStack, Stack } from '@aws-cdk/core';
+import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, LegacyStackSynthesizer, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../lib';
 
@@ -124,9 +124,99 @@ describe('Template', () => {
     });
   });
 
+  describe('resourcePropertiesCountIs', () => {
+    test('resource exists', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Resource', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 1);
+
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 0);
+      }).toThrow('Expected 0 resources of type Foo::Bar but found 1');
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 2);
+      }).toThrow('Expected 2 resources of type Foo::Bar but found 1');
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'nope' }, 1);
+      }).toThrow('Expected 1 resources of type Foo::Bar but found 0');
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Baz', { baz: 'qux' }, 1);
+      }).toThrow('Expected 1 resources of type Foo::Baz but found 0');
+    });
+    test('no resource', () => {
+      const stack = new Stack();
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 0);
+
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 1);
+      }).toThrow('Expected 1 resources of type Foo::Bar but found 0');
+    });
+    test('absent - with properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', {
+        bar: Match.absent(),
+      }, 1);
+      inspect.resourcePropertiesCountIs('Foo::Bar', {
+        baz: Match.absent(),
+      }, 0);
+    });
+    test('absent - no properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', {
+        bar: Match.absent(),
+        baz: 'qux',
+      }, 0);
+      inspect.resourcePropertiesCountIs('Foo::Bar', Match.absent(), 1);
+    });
+    test('not - with properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', Match.not({
+        baz: 'boo',
+      }), 1);
+    });
+    test('not - no properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', Match.not({
+        baz: 'qux',
+      }), 1);
+    });
+  });
+
   describe('templateMatches', () => {
     test('matches', () => {
-      const stack = new Stack();
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        synthesizer: new LegacyStackSynthesizer(),
+      });
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
         properties: { baz: 'qux' },
@@ -811,7 +901,8 @@ describe('Template', () => {
       expectToThrow(
         () => inspect.hasParameter('*', { Type: 'CommaDelimitedList' }),
         [
-          /2 parameters/,
+          // Third parameter is automatically included as part of DefaultSynthesizer
+          /3 parameters/,
           /Expected CommaDelimitedList but received String/,
         ],
         done,

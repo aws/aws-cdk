@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "aws-lambda/test/integ.current-version": {
+    "integ.current-version": {
       "stacks": [
         "lambda-test-current-version"
       ],

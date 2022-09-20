@@ -27,6 +27,10 @@ const userpool = new UserPool(stack, 'myuserpool', {
     email: true,
     phone: true,
   },
+  keepOriginal: {
+    email: true,
+    phone: true,
+  },
   standardAttributes: {
     fullname: {
       required: true,
@@ -90,7 +94,7 @@ function dummyTrigger(name: string): IFunction {
   return new Function(stack, name, {
     functionName: name,
     handler: 'index.handler',
-    runtime: Runtime.NODEJS_12_X,
+    runtime: Runtime.NODEJS_14_X,
     code: Code.fromInline('foo'),
   });
 }

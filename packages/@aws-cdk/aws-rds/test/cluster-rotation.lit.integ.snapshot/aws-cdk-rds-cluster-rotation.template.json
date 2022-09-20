@@ -118,7 +118,11 @@
       "Value": "aws-cdk-rds-cluster-rotation/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -222,7 +226,11 @@
       "Value": "aws-cdk-rds-cluster-rotation/VPC/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
   },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
@@ -581,10 +589,10 @@
   "DatabaseInstance1844F58FD": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.small",
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
+    "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
@@ -592,7 +600,9 @@
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
-    "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -600,10 +610,10 @@
   "DatabaseInstance2AA380DEE": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.small",
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
+    "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
@@ -611,7 +621,9 @@
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
-    "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -694,7 +706,9 @@
      },
      "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Mappings": {
@@ -711,6 +725,40 @@
     "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSMySQLRotationSingleUser",
     "semanticVersion": "1.1.93"
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

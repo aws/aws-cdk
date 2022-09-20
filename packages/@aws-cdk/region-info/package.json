@@ -17,14 +17,14 @@
       "dotnet": {
         "namespace": "Amazon.CDK.RegionInfo",
         "packageId": "Amazon.CDK.RegionInfo",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.region-info",
         "module": "aws_cdk.region_info",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -63,7 +63,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^27.5.2",
     "fs-extra": "^9.1.0"
   },
   "repository": {
@@ -77,7 +77,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "maturity": "stable",
@@ -97,6 +97,6 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }

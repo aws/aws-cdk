@@ -4,9 +4,9 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { FileAssetSource, FileAssetLocation, FileAssetPackaging, DockerImageAssetSource, DockerImageAssetLocation } from '../assets';
 import { Fn } from '../cfn-fn';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { resolvedOr } from './_shared';
+import { ISynthesisSession } from './types';
 
 /**
  * Build an manifest from assets added to a stack synthesizer
@@ -82,7 +82,7 @@ export class AssetManifestBuilder {
     role?: RoleOptions,
   ): DockerImageAssetLocation {
     validateDockerImageAssetSource(asset);
-    const imageTag = dockerTagPrefix + asset.sourceHash;
+    const imageTag = `${dockerTagPrefix}${asset.sourceHash}`;
 
     // Add to manifest
     this.dockerImages[asset.sourceHash] = {
@@ -93,6 +93,7 @@ export class AssetManifestBuilder {
         dockerBuildTarget: asset.dockerBuildTarget,
         dockerFile: asset.dockerFile,
         networkMode: asset.networkMode,
+        platform: asset.platform,
       },
       destinations: {
         [this.manifestEnvName(stack)]: {
@@ -113,6 +114,7 @@ export class AssetManifestBuilder {
       imageUri: cfnify(
         `${account}.dkr.ecr.${region}.${urlSuffix}/${repositoryName}:${imageTag}`,
       ),
+      imageTag: cfnify(imageTag),
     };
   }
 

@@ -56,7 +56,18 @@
      },
      "Username": "aws"
     },
-    "CustomHeaders": "customHeaders:\n  - pattern: \"*.json\"\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-1\n      - key: custom-header-name-2\n        value: custom-header-value-2\n  - pattern: /path/*\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-2\n",
+    "CustomHeaders": {
+     "Fn::Join": [
+      "",
+      [
+       "customHeaders:\n  - pattern: \"*.json\"\n    headers:\n      - key: \"custom-header-name-1\"\n        value: \"custom-header-value-1\"\n      - key: \"custom-header-name-2\"\n        value: \"custom-header-value-2\"\n  - pattern: \"/path/*\"\n    headers:\n      - key: \"custom-header-name-1\"\n        value: \"custom-header-value-2\"\n      - key: \"x-aws-url-suffix\"\n        value: \"this-is-the-suffix-",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "\"\n"
+      ]
+     ]
+    },
     "CustomRules": [
      {
       "Source": "/source",
@@ -71,7 +82,7 @@
     }
    }
   },
-  "Appmaster71597E87": {
+  "AppmainF505BAED": {
    "Type": "AWS::Amplify::Branch",
    "Properties": {
     "AppId": {
@@ -80,7 +91,7 @@
       "AppId"
      ]
     },
-    "BranchName": "master",
+    "BranchName": "main",
     "EnableAutoBuild": true,
     "EnablePullRequestPreview": true,
     "EnvironmentVariables": [
@@ -90,6 +101,40 @@
      }
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

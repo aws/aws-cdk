@@ -1,6 +1,6 @@
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as efs from '@aws-cdk/aws-efs';
-import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { App, Duration, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as backup from '../lib';
 
@@ -21,6 +21,9 @@ class TestStack extends Stack {
 
     const vault = new backup.BackupVault(this, 'Vault', {
       removalPolicy: RemovalPolicy.DESTROY,
+      lockConfiguration: {
+        minRetention: Duration.days(5),
+      },
     });
     const plan = backup.BackupPlan.dailyWeeklyMonthly5YearRetention(this, 'Plan', vault);
 

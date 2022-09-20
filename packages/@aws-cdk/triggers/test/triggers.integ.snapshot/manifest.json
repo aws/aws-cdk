@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "MyStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MyStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "MyStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "MyStack.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/MyStack": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2",
-              "id": "6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2",
-              "packaging": "zip",
-              "sourceHash": "6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2",
-              "s3BucketParameter": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3Bucket2EB34879",
-              "s3KeyParameter": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3VersionKey03A4DC8B",
-              "artifactHashParameter": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2ArtifactHash29DBC1FA"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e1b247eb3c41fa99451971925f9a24d2d7e5dec4d36ed03c43640d0b477a41ce.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MyStack.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MyStack.assets"
+      ],
+      "metadata": {
         "/MyStack/Topic1/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -62,7 +72,7 @@
         "/MyStack/MyFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunctionCurrentVersion197490AF776ea8de2edf446759649703b18110a4"
+            "data": "MyFunctionCurrentVersion197490AF2cb2bc11080c1ef11d3b49c1f1603957"
           }
         ],
         "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Role": [
@@ -77,22 +87,16 @@
             "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderHandler97BECD91"
           }
         ],
-        "/MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/S3Bucket": [
+        "/MyStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3Bucket2EB34879"
+            "data": "BootstrapVersion"
           }
         ],
-        "/MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/S3VersionKey": [
+        "/MyStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3VersionKey03A4DC8B"
-          }
-        ],
-        "/MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2ArtifactHash29DBC1FA"
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

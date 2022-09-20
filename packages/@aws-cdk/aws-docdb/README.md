@@ -25,7 +25,7 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
     excludeCharacters: '\"@/:', // optional, defaults to the set "\"@/" and is also used for eventually created rotations
     secretName: '/myapp/mydocdb/masteruser', // optional, if you prefer to specify the secret name
   },
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
   vpcSubnets: {
     subnetType: ec2.SubnetType.PUBLIC,
   },
@@ -78,7 +78,7 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
   masterUser: {
     username: 'myuser',
   },
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
   vpcSubnets: {
     subnetType: ec2.SubnetType.PUBLIC,
   },
@@ -129,7 +129,7 @@ cluster.addRotationMultiUser('MyUser', { // Add rotation using the multi user sc
 **Note**: This user must be created manually in the database using the master credentials.
 The rotation will start as soon as this user exists.
 
-See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters.
+See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters.
 
 ## Audit and profiler Logs
 
@@ -150,7 +150,7 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
   masterUser: {
     username: 'myuser',
   },
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
   vpcSubnets: {
     subnetType: ec2.SubnetType.PUBLIC,
   },

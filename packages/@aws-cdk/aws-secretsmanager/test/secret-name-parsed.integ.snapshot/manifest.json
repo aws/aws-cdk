@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "Integ-SecretsManager-ParsedSecretName.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Integ-SecretsManager-ParsedSecretName.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "Integ-SecretsManager-ParsedSecretName": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "Integ-SecretsManager-ParsedSecretName.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/Integ-SecretsManager-ParsedSecretName": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33.handler",
-              "id": "7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33",
-              "packaging": "zip",
-              "sourceHash": "7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33",
-              "s3BucketParameter": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33S3Bucket499DB3A2",
-              "s3KeyParameter": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33S3VersionKey8F35128C",
-              "artifactHashParameter": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33ArtifactHashD7AC58BE"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4c572ece1d7e4cc8d2eb55701e841603cbe785b8050ce922eacca96963f4528.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Integ-SecretsManager-ParsedSecretName.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "Integ-SecretsManager-ParsedSecretName.assets"
+      ],
+      "metadata": {
         "/Integ-SecretsManager-ParsedSecretName/DefaultSecret/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -65,28 +75,22 @@
             "data": "CustomIntegVerificationSecretNameMatchesCustomResourceProviderHandler2A57F6AE"
           }
         ],
-        "/Integ-SecretsManager-ParsedSecretName/AssetParameters/7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33S3Bucket499DB3A2"
-          }
-        ],
-        "/Integ-SecretsManager-ParsedSecretName/AssetParameters/7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33S3VersionKey8F35128C"
-          }
-        ],
-        "/Integ-SecretsManager-ParsedSecretName/AssetParameters/7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters7452e934e8e327a54ba0c8e462065f22bf095d0722d22cc4c29d2ed4c2f2ff33ArtifactHashD7AC58BE"
-          }
-        ],
         "/Integ-SecretsManager-ParsedSecretName/SecretNameVerification/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecretNameVerification"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

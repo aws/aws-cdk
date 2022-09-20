@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "lambda-ecr-docker": {
@@ -103,23 +103,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "imageUri": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ".dkr.ecr.",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ".",
-                            {
-                              "Ref": "AWS::URLSuffix"
-                            },
-                            "/aws-cdk/assets:768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610"
-                          ]
-                        ]
+                        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610"
                       }
                     },
                     "role": {

@@ -1,0 +1,180 @@
+{
+ "Resources": {
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.dev."
+   }
+  },
+  "ExistingRecord8E2B2167": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "integ.cdk.dev.",
+    "Type": "A",
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "TTL": "1800"
+   }
+  },
+  "NewRecordB9E8EE35": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "integ.cdk.dev.",
+    "Type": "A",
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "TTL": "7200"
+   },
+   "DependsOn": [
+    "ExistingRecord8E2B2167",
+    "NewRecordDeleteExistingRecordSetCustomResource3CF98631"
+   ]
+  },
+  "NewRecordDeleteExistingRecordSetCustomResource3CF98631": {
+   "Type": "Custom::DeleteExistingRecordSet",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomDeleteExistingRecordSetCustomResourceProviderHandlerAD00231E",
+      "Arn"
+     ]
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "RecordName": "integ.cdk.dev.",
+    "RecordType": "A"
+   },
+   "DependsOn": [
+    "ExistingRecord8E2B2167"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomDeleteExistingRecordSetCustomResourceProviderRole03A7ED08": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": "route53:GetChange",
+         "Resource": "*"
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "route53:ChangeResourceRecordSets",
+          "route53:ListResourceRecordSets"
+         ],
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":route53:::hostedzone/",
+            {
+             "Ref": "HostedZoneDB99F866"
+            }
+           ]
+          ]
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomDeleteExistingRecordSetCustomResourceProviderHandlerAD00231E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "421f670fab8460498f88755d8ad58385e2dec77a5f71a197a0f6452f8ba3c98e.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomDeleteExistingRecordSetCustomResourceProviderRole03A7ED08",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "CustomDeleteExistingRecordSetCustomResourceProviderRole03A7ED08"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

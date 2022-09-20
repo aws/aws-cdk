@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-cdk-lambda-runtime-inlinecode": {
@@ -102,97 +102,6 @@
           "NODEJS_12_X-functionName": {
             "id": "NODEJS_12_X-functionName",
             "path": "aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X-functionName",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "PYTHON_3_6": {
-            "id": "PYTHON_3_6",
-            "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_6",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_6/ServiceRole",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_6/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_6/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "zipFile": "def handler(event, context):\n  return \"success\""
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "PYTHON36ServiceRole814B3AD9",
-                        "Arn"
-                      ]
-                    },
-                    "handler": "index.handler",
-                    "runtime": "python3.6"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
-              "version": "0.0.0"
-            }
-          },
-          "PYTHON_3_6-functionName": {
-            "id": "PYTHON_3_6-functionName",
-            "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_6-functionName",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"

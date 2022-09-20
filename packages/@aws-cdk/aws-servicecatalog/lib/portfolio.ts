@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { MessageLanguage } from './common';
 import {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions,
@@ -12,10 +13,6 @@ import { InputValidator } from './private/validation';
 import { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * Options for portfolio share.
@@ -332,7 +329,7 @@ export class Portfolio extends PortfolioBase {
     });
     this.portfolioId = this.portfolio.ref;
     this.portfolioArn = cdk.Stack.of(this).formatArn({
-      service: 'servicecatalog',
+      service: 'catalog',
       resource: 'portfolio',
       resourceName: this.portfolioId,
     });

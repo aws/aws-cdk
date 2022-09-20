@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,40 +7,38 @@
         "file": "tree.json"
       }
     },
+    "AuthorizerInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AuthorizerInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "AuthorizerInteg": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "AuthorizerInteg.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/AuthorizerInteg": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3a",
-              "id": "74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3a",
-              "packaging": "zip",
-              "sourceHash": "74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3a",
-              "s3BucketParameter": "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aS3Bucket7FA0095F",
-              "s3KeyParameter": "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aS3VersionKeyC54BEE58",
-              "artifactHashParameter": "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aArtifactHash06752181"
-            }
-          },
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cda.handler",
-              "id": "1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cda",
-              "packaging": "zip",
-              "sourceHash": "1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cda",
-              "s3BucketParameter": "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaS3Bucket2E6D85D3",
-              "s3KeyParameter": "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaS3VersionKey22B8E7C6",
-              "artifactHashParameter": "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaArtifactHash82A279EA"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4eca206174995529e6f14fd5d16aaf201875882e3a7cdf7c049110c2ae2772dd.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AuthorizerInteg.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AuthorizerInteg.assets"
+      ],
+      "metadata": {
         "/AuthorizerInteg/MyHttpApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -95,42 +93,6 @@
             "data": "authfunction96361832"
           }
         ],
-        "/AuthorizerInteg/AssetParameters/74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3a/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aS3Bucket7FA0095F"
-          }
-        ],
-        "/AuthorizerInteg/AssetParameters/74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3a/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aS3VersionKeyC54BEE58"
-          }
-        ],
-        "/AuthorizerInteg/AssetParameters/74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3a/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3aArtifactHash06752181"
-          }
-        ],
-        "/AuthorizerInteg/AssetParameters/1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cda/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaS3Bucket2E6D85D3"
-          }
-        ],
-        "/AuthorizerInteg/AssetParameters/1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cda/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaS3VersionKey22B8E7C6"
-          }
-        ],
-        "/AuthorizerInteg/AssetParameters/1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cda/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cdaArtifactHash82A279EA"
-          }
-        ],
         "/AuthorizerInteg/lambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -147,6 +109,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "URL"
+          }
+        ],
+        "/AuthorizerInteg/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AuthorizerInteg/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

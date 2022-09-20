@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "Integ-SecretsManager-Secret": {
@@ -301,17 +301,59 @@
               "fqn": "@aws-cdk/aws-secretsmanager.Secret",
               "version": "0.0.0"
             }
+          },
+          "JSONSecret": {
+            "id": "JSONSecret",
+            "path": "Integ-SecretsManager-Secret/JSONSecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-Secret/JSONSecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "secretString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"username\":\"",
+                          {
+                            "Ref": "User00B015A1"
+                          },
+                          "\",\"database\":\"foo\",\"password\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "AccessKeyE6B25659",
+                              "SecretAccessKey"
+                            ]
+                          },
+                          "\"}"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

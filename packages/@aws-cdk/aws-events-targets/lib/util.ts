@@ -2,11 +2,8 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ConstructNode, IConstruct, Names, Token, TokenComparison, Duration, PhysicalName } from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Annotations, Names, Token, TokenComparison, Duration, PhysicalName } from '@aws-cdk/core';
+import { Construct, IConstruct, Node } from 'constructs';
 
 /**
  * The generic properties for an RuleTarget
@@ -54,7 +51,7 @@ export function bindBaseTargetConfig(props: TargetBaseProps) {
 
   return {
     deadLetterConfig: deadLetterQueue ? { arn: deadLetterQueue?.queueArn } : undefined,
-    retryPolicy: retryAttempts || maxEventAge
+    retryPolicy: (retryAttempts !== undefined && retryAttempts >= 0) || maxEventAge
       ? {
         maximumRetryAttempts: retryAttempts,
         maximumEventAgeInSeconds: maxEventAge?.toSeconds({ integral: true }),
@@ -71,7 +68,7 @@ export function bindBaseTargetConfig(props: TargetBaseProps) {
  * events have the same target, they will share a role.
  * @internal
  */
-export function singletonEventRole(scope: IConstruct, policyStatements: iam.PolicyStatement[]): iam.IRole {
+export function singletonEventRole(scope: IConstruct): iam.IRole {
   const id = 'EventsRole';
   const existing = scope.node.tryFindChild(id) as iam.IRole;
   if (existing) { return existing; }
@@ -80,8 +77,6 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
     roleName: PhysicalName.GENERATE_IF_NEEDED,
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
-
-  policyStatements.forEach(role.addToPolicy.bind(role));
 
   return role;
 }
@@ -92,7 +87,7 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
  */
 export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunction): void {
   let scope: Construct | undefined;
-  let node: ConstructNode = handler.permissionsNode;
+  let node: Node = handler.permissionsNode;
   let permissionId = `AllowEventRule${Names.nodeUniqueId(rule.node)}`;
   if (rule instanceof Construct) {
     // Place the Permission resource in the same stack as Rule rather than the Function

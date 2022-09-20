@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,80 +7,162 @@
         "file": "tree.json"
       }
     },
+    "cdk-integ-lambda-python-vpc.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-lambda-python-vpc.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "cdk-integ-lambda-python-vpc": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-lambda-python-vpc.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/cdk-integ-lambda-python-vpc": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb",
-              "id": "559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb",
-              "packaging": "zip",
-              "sourceHash": "559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb",
-              "s3BucketParameter": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbS3Bucket616AA48B",
-              "s3KeyParameter": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbS3VersionKey47E0D73B",
-              "artifactHashParameter": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbArtifactHash49D96B7B"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ce6ccc522282d726af7d10e96bac782bf7551895e5a1ec08cdac3512dccd530.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-lambda-python-vpc.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-lambda-python-vpc.assets"
+      ],
+      "metadata": {
         "/cdk-integ-lambda-python-vpc/my_vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myvpc9455A260"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/Subnet": [
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myvpcingressSubnet1Subnet82F0259C"
+            "data": "myvpcPublicSubnet1Subnet6BD75C12"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/RouteTable": [
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myvpcingressSubnet1RouteTableD6322DD5"
+            "data": "myvpcPublicSubnet1RouteTableF7E8D7F1"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/RouteTableAssociation": [
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myvpcingressSubnet1RouteTableAssociation12FE9C06"
+            "data": "myvpcPublicSubnet1RouteTableAssociationC697FA56"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/DefaultRoute": [
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myvpcingressSubnet1DefaultRoute6FCDFDDF"
+            "data": "myvpcPublicSubnet1DefaultRouteBE259807"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/Subnet": [
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myvpcingressSubnet2Subnet56945106"
+            "data": "myvpcPublicSubnet1EIP88D18203"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/RouteTable": [
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myvpcingressSubnet2RouteTable2112B53A"
+            "data": "myvpcPublicSubnet1NATGatewayD3DC5B8D"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/RouteTableAssociation": [
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myvpcingressSubnet2RouteTableAssociation08B3BE06"
+            "data": "myvpcPublicSubnet2Subnet844B7F05"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/DefaultRoute": [
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myvpcingressSubnet2DefaultRouteBF3C1EC8"
+            "data": "myvpcPublicSubnet2RouteTable9A4CA50C"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPublicSubnet2RouteTableAssociation28F6DD6F"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPublicSubnet2DefaultRoute22D543BA"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPublicSubnet2EIPA3AF827D"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPublicSubnet2NATGateway45472CCD"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPrivateSubnet1SubnetAE3DECEE"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPrivateSubnet1RouteTable991B69A9"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPrivateSubnet1RouteTableAssociation91351DDE"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPrivateSubnet1DefaultRouteA1815BF3"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPrivateSubnet2SubnetE09939FB"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPrivateSubnet2RouteTableF2B44BF5"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPrivateSubnet2RouteTableAssociation071745F0"
+          }
+        ],
+        "/cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcPrivateSubnet2DefaultRouteB54E314A"
           }
         ],
         "/cdk-integ-lambda-python-vpc/my_vpc/IGW": [
@@ -113,32 +195,182 @@
             "data": "myhandlerD202FA8E"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/AssetParameters/559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb/S3Bucket": [
+        "/cdk-integ-lambda-python-vpc/Exports/Output{\"Ref\":\"myhandlerD202FA8E\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbS3Bucket616AA48B"
+            "data": "ExportsOutputRefmyhandlerD202FA8E369E8804"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/AssetParameters/559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb/S3VersionKey": [
+        "/cdk-integ-lambda-python-vpc/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbS3VersionKey47E0D73B"
+            "data": "BootstrapVersion"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/AssetParameters/559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edb/ArtifactHash": [
+        "/cdk-integ-lambda-python-vpc/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters559d32eb3462d6eed6dd9c4b226d614e4ae4b66f3ae51c35dee3ae5eafcd4edbArtifactHash49D96B7B"
+            "data": "CheckBootstrapVersion"
           }
         ],
-        "/cdk-integ-lambda-python-vpc/FunctionArn": [
+        "myvpcingressSubnet1Subnet82F0259C": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FunctionArn"
+            "data": "myvpcingressSubnet1Subnet82F0259C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myvpcingressSubnet1RouteTableD6322DD5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet1RouteTableD6322DD5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myvpcingressSubnet1RouteTableAssociation12FE9C06": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet1RouteTableAssociation12FE9C06",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myvpcingressSubnet1DefaultRoute6FCDFDDF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet1DefaultRoute6FCDFDDF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myvpcingressSubnet2Subnet56945106": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet2Subnet56945106",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myvpcingressSubnet2RouteTable2112B53A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet2RouteTable2112B53A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myvpcingressSubnet2RouteTableAssociation08B3BE06": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet2RouteTableAssociation08B3BE06",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myvpcingressSubnet2DefaultRouteBF3C1EC8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myvpcingressSubnet2DefaultRouteBF3C1EC8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
       "displayName": "cdk-integ-lambda-python-vpc"
+    },
+    "lambdapythonvpcDefaultTestDeployAssert54E0DCFB.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdapythonvpcDefaultTestDeployAssert54E0DCFB.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdapythonvpcDefaultTestDeployAssert54E0DCFB": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdapythonvpcDefaultTestDeployAssert54E0DCFB.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a0651ad741f16b986ca00083720eb4e40348df935c5cfef88d6f8b4bff635617.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdapythonvpcDefaultTestDeployAssert54E0DCFB.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-lambda-python-vpc",
+        "lambdapythonvpcDefaultTestDeployAssert54E0DCFB.assets"
+      ],
+      "metadata": {
+        "/lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke431773224924ebf10c8a31d363a6bf16"
+          }
+        ],
+        "/lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke431773224924ebf10c8a31d363a6bf16Invoke9BC0E67F"
+          }
+        ],
+        "/lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke431773224924ebf10c8a31d363a6bf16AssertEqualsLambdainvokeF6179C6B"
+          }
+        ],
+        "/lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAssertEqualsLambdainvoke29290e026919ecb85e75d0aca122fdc1"
+          }
+        ],
+        "/lambda-python-vpc/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/lambda-python-vpc/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/lambda-python-vpc/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-python-vpc/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-python-vpc/DefaultTest/DeployAssert"
     }
   }
 }

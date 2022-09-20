@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-stepfunctions-integ": {
@@ -24,8 +24,8 @@
                 "id": "Stage",
                 "path": "aws-stepfunctions-integ/Glue Job Script/Stage",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "AssetBucket": {
@@ -39,50 +39,6 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-s3-assets.Asset",
-              "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "aws-stepfunctions-integ/AssetParameters",
-            "children": {
-              "d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d": {
-                "id": "d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d",
-                "path": "aws-stepfunctions-integ/AssetParameters/d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "aws-stepfunctions-integ/AssetParameters/d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "aws-stepfunctions-integ/AssetParameters/d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "aws-stepfunctions-integ/AssetParameters/d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
               "version": "0.0.0"
             }
           },
@@ -159,7 +115,7 @@
                                       },
                                       ":s3:::",
                                       {
-                                        "Ref": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dS3BucketB8F6851B"
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                       },
                                       "/*"
                                     ]
@@ -175,7 +131,7 @@
                                       },
                                       ":s3:::",
                                       {
-                                        "Ref": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dS3BucketB8F6851B"
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                       }
                                     ]
                                   ]
@@ -225,35 +181,9 @@
                       [
                         "s3://",
                         {
-                          "Ref": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dS3BucketB8F6851B"
+                          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                         },
-                        "/",
-                        {
-                          "Fn::Select": [
-                            0,
-                            {
-                              "Fn::Split": [
-                                "||",
-                                {
-                                  "Ref": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dS3VersionKey7BCC06FC"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "Fn::Select": [
-                            1,
-                            {
-                              "Fn::Split": [
-                                "||",
-                                {
-                                  "Ref": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dS3VersionKey7BCC06FC"
-                                }
-                              ]
-                            }
-                          ]
-                        }
+                        "/d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d.py"
                       ]
                     ]
                   }
@@ -448,28 +378,28 @@
             "id": "State Machine ARN Output",
             "path": "aws-stepfunctions-integ/State Machine ARN Output",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "Service-principalMap": {
             "id": "Service-principalMap",
             "path": "aws-stepfunctions-integ/Service-principalMap",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnMapping",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

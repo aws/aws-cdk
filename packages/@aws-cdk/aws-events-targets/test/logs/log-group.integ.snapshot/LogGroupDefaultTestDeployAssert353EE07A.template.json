@@ -1,0 +1,204 @@
+{
+ "Resources": {
+  "AwsApiCallEventBridgeputEvents": {
+   "Type": "Custom::DeployAssert@SdkCallEventBridgeputEvents",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EventBridge",
+    "api": "putEvents",
+    "parameters": {
+     "Entries": [
+      {
+       "Detail": "{\"date\":\"abc1661947671805\"}",
+       "DetailType": "cdk-integ-custom-rule",
+       "Source": "cdk-integ"
+      }
+     ]
+    },
+    "flattenResponse": "false",
+    "salt": "1661947671807"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "eventbridge:PutEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "events:PutEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "logs:FilterLogEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallCloudWatchLogsfilterLogEvents": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchLogsfilterLogEvents",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatchLogs",
+    "api": "filterLogEvents",
+    "parameters": {
+     "logGroupName": {
+      "Fn::ImportValue": "log-group-events:ExportsOutputRefloggroup2F19C5C9B4F4C6918"
+     },
+     "startTime": "1661947671805",
+     "limit": 1
+    },
+    "flattenResponse": "true",
+    "salt": "1661947671807"
+   },
+   "DependsOn": [
+    "AwsApiCallEventBridgeputEvents"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudWatchLogsfilterLogEventsAssertEqualsCloudWatchLogsfilterLogEvents148E959E": {
+   "Type": "Custom::DeployAssert@AssertEquals",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "actual": {
+     "Fn::GetAtt": [
+      "AwsApiCallCloudWatchLogsfilterLogEvents",
+      "apiCallResponse.events.0.message"
+     ]
+    },
+    "expected": "{\"$StringLike\":\"abc1661947671805\"}",
+    "salt": "1661947671808"
+   },
+   "DependsOn": [
+    "AwsApiCallEventBridgeputEvents"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAssertEqualsCloudWatchLogsfilterLogEvents": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchLogsfilterLogEventsAssertEqualsCloudWatchLogsfilterLogEvents148E959E",
+     "data"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

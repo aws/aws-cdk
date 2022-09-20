@@ -1,16 +1,14 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
-  DatabaseInstanceEngine, SqlServerEngineVersion,
+  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour,
 } from '../lib';
 
 describe('cluster', () => {
@@ -120,6 +118,36 @@ describe('cluster', () => {
         ]],
       },
     });
+  });
+
+  test('can create a cluster with ROLLING instance update behaviour', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 5,
+      instanceProps: {
+        vpc,
+      },
+      instanceUpdateBehaviour: InstanceUpdateBehaviour.ROLLING,
+    });
+
+    // THEN
+    const instanceResources = Template.fromStack(stack).findResources('AWS::RDS::DBInstance');
+    const instances = Object.keys(instanceResources);
+    const instanceDependencies = Object.values(instanceResources)
+      .map(properties => (properties.DependsOn as string[]).filter(dependency => instances.includes(dependency)));
+    // check that there are only required dependencies to form a chain of dependant instances
+    for (const dependencies of instanceDependencies) {
+      expect(dependencies.length).toBeLessThanOrEqual(1);
+    }
+    // check that all but one instance are a dependency of another instance
+    const dependantInstances = instanceDependencies.flat();
+    expect(dependantInstances).toHaveLength(instances.length - 1);
+    expect(instances.filter(it => !dependantInstances.includes(it))).toHaveLength(1);
   });
 
   test('can create a cluster with imported vpc and security group', () => {
@@ -704,7 +732,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_5_7_12 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_02_0 }),
       credentials: {
         username: 'admin',
         password: cdk.SecretValue.unsafePlainText('tooshort'),
@@ -917,7 +945,7 @@ describe('cluster', () => {
     cluster.addRotationSingleUser({
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -974,7 +1002,7 @@ describe('cluster', () => {
       secret: userSecret.attach(cluster),
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -1394,9 +1422,9 @@ describe('cluster', () => {
     });
   });
 
-  testFutureBehavior('create a cluster with s3 export buckets', { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true }, cdk.App, (app) => {
+  test('create a cluster with s3 export buckets', () => {
     // GIVEN
-    const stack = testStack(app);
+    const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const bucket = new s3.Bucket(stack, 'Bucket');
@@ -2026,6 +2054,109 @@ describe('cluster', () => {
         ]],
       },
     });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Database', Match.stringLikeRegexp('Generated credentials will not be applied to cluster'));
+  });
+
+  test('can generate a new snapshot password', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: SnapshotCredentials.fromGeneratedSecret('admin', {
+        excludeCharacters: '"@/\\',
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      MasterUsername: Match.absent(),
+      MasterUserPassword: {
+        'Fn::Join': ['', [
+          '{{resolve:secretsmanager:',
+          { Ref: 'DatabaseSnapshotSecret2B5748BB8ee0a797cad8a68dbeb85f8698cdb5bb' },
+          ':SecretString:password::}}',
+        ]],
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      Description: {
+        'Fn::Join': ['', ['Generated by the CDK for stack: ', { Ref: 'AWS::StackName' }]],
+      },
+      GenerateSecretString: {
+        ExcludeCharacters: '\"@/\\',
+        GenerateStringKey: 'password',
+        PasswordLength: 30,
+        SecretStringTemplate: '{"username":"admin"}',
+      },
+    });
+  });
+
+  test('fromGeneratedSecret with replica regions', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: SnapshotCredentials.fromGeneratedSecret('admin', {
+        replicaRegions: [{ region: 'eu-west-1' }],
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      ReplicaRegions: [
+        {
+          Region: 'eu-west-1',
+        },
+      ],
+    });
+  });
+
+  test('throws if generating a new password without a username', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    expect(() => new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: { generatePassword: true },
+    })).toThrow(/`snapshotCredentials` `username` must be specified when `generatePassword` is set to true/);
+  });
+
+  test('can set a new snapshot password from an existing Secret', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const secret = new DatabaseSecret(stack, 'DBSecret', {
+      username: 'admin',
+      encryptionKey: new kms.Key(stack, 'PasswordKey'),
+    });
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: SnapshotCredentials.fromSecret(secret),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      MasterUsername: Match.absent(),
+      MasterUserPassword: {
+        'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'DBSecretD58955BC' }, ':SecretString:password::}}']],
+      },
+    });
   });
 
   test('create a cluster from a snapshot with encrypted storage', () => {
@@ -2294,7 +2425,7 @@ describe('cluster', () => {
       instanceProps: {
         vpc,
         vpcSubnets: {
-          subnetType: ec2.SubnetType.PRIVATE,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         },
         publiclyAccessible: true,
       },
@@ -2351,12 +2482,9 @@ describe('cluster', () => {
     });
   });
 
-  test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
+  test('changes the case of the cluster identifier', () => {
     // GIVEN
-    const app = new cdk.App({
-      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
-    });
-    const stack = testStack(app);
+    const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN

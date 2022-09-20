@@ -1,14 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs-patterns/test/ec2/integ.scheduled-ecs-task.lit": {
+    "scheduledEc2TaskTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-ecs"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "scheduledEc2TaskTestDefaultTestDeployAssertF02313CA"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
