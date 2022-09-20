@@ -26,7 +26,7 @@ export interface ElasticBeanstalkDeployActionProps extends codepipeline.CommonAw
 }
 
 /**
- * something here
+ * CodePipeline actin to deploy an AWS ElasticBeanstalk Application.
  */
 export class ElasticBeanstalkDeployAction extends Action {
   private readonly applicationName: string;
