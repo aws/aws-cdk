@@ -48,6 +48,9 @@ export class InputValidator {
     }
   }
 
+  /**
+   * Validates snapshot filename format for locally saved ProductStackHistory snapshot files
+   */
   public static validateProductStackHistorySnapshotFile(snapshot: string): void {
     this.validateRegex('ProductStackHistory', 'template snapshot file', /^[\w\d]+\.[\w\d]+\.[\w\d]+\.product\.template\.json/, snapshot);
   }
