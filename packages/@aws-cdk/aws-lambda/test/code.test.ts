@@ -100,53 +100,6 @@ describe('code', () => {
     });
   });
 
-  describe('lambda.Code.fromAssetConstruct', () => {
-    test('fails if a non-zip asset is used', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const fileAsset = new s3_assets.Asset(stack, 'CodeAsset', {
-        path: path.join(__dirname, 'my-lambda-handler', 'index.py'),
-      });
-      const code = lambda.Code.fromAssetConstruct(fileAsset);
-
-      // THEN
-      expect(() => defineFunction(code)).toThrow(/Asset must be a \.zip file or a directory/);
-    });
-
-    test('able to re-use one Asset object in multiple functions', () => {
-      // GIVEN
-      const app = new cdk.App({
-        context: {
-          [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-        },
-      });
-      const stack = new cdk.Stack(app, 'MyStack');
-      const directoryAsset = new s3_assets.Asset(stack, 'CodeAsset', {
-        path: path.join(__dirname, 'my-lambda-handler'),
-      });
-      const code = lambda.Code.fromAssetConstruct(directoryAsset);
-
-      // WHEN
-      new lambda.Function(stack, 'Func1', {
-        handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_14_X,
-        code,
-      });
-
-      new lambda.Function(stack, 'Func2', {
-        handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_14_X,
-        code,
-      });
-
-      // THEN
-      const assembly = app.synth();
-      const synthesized = assembly.stacks[0];
-
-      expect(synthesized.assets.length).toEqual(1);
-    });
-  });
-
   describe('lambda.Code.fromCfnParameters', () => {
     test("automatically creates the Bucket and Key parameters when it's used in a Function", () => {
       const stack = new cdk.Stack();
@@ -530,8 +483,9 @@ describe('code', () => {
   });
 });
 
-function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_14_X, stack?: cdk.Stack) {
-  return new lambda.Function(stack ?? new cdk.Stack(), 'Func', {
+function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_14_X) {
+  const stack = new cdk.Stack();
+  return new lambda.Function(stack, 'Func', {
     handler: 'foom',
     code,
     runtime,

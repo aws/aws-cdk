@@ -55,15 +55,6 @@ export abstract class Code {
   }
 
   /**
-   * Loads the function code from an Asset construct.
-   *
-   * @param asset An Asset construct containing the Lambda code bundle or a .zip file
-   */
-  public static fromAssetConstruct(asset: s3_assets.Asset): AssetConstructCode {
-    return new AssetConstructCode(asset);
-  }
-
-  /**
    * Loads the function code from an asset created by a Docker build.
    *
    * By default, the asset is expected to be located at `/asset` in the
@@ -324,32 +315,6 @@ export interface ResourceBindOptions {
    * @default Code
    */
   readonly resourceProperty?: string;
-}
-
-/**
- * Lambda code from an Asset.
- */
-export class AssetConstructCode extends Code {
-  public readonly isInline = false;
-  /**
-   * @param asset An Asset construct containing the Lambda code bundle or a .zip file.
-   */
-  constructor(private readonly asset: s3_assets.Asset) {
-    super();
-  }
-
-  public bind(_scope: Construct): CodeConfig {
-    if (!this.asset.isZipArchive) {
-      throw new Error(`Asset must be a .zip file or a directory ${this.asset.assetPath}`);
-    }
-
-    return {
-      s3Location: {
-        bucketName: this.asset.s3BucketName,
-        objectKey: this.asset.s3ObjectKey,
-      },
-    };
-  }
 }
 
 /**
