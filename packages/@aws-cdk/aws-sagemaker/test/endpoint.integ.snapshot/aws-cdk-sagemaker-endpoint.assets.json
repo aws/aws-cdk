@@ -1,9 +1,9 @@
 {
-  "version": "17.0.0",
+  "version": "21.0.0",
   "files": {
     "126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916": {
       "source": {
-        "path": "asset.126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz",
+        "path": "asset.126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.tar.gz",
         "packaging": "file"
       },
       "destinations": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "01b0bc07eea43fe1e74bddded83425d5282f7b29e6b18e6ccfc13c0b20a4badb": {
+    "f4b12ad155704f8646edd58b494ef9a04ed70730c3f4099c878725e7b9d4b0d3": {
       "source": {
         "path": "aws-cdk-sagemaker-endpoint.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "01b0bc07eea43fe1e74bddded83425d5282f7b29e6b18e6ccfc13c0b20a4badb.json",
+          "objectKey": "f4b12ad155704f8646edd58b494ef9a04ed70730c3f4099c878725e7b9d4b0d3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
