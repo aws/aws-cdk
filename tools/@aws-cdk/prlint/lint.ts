@@ -122,6 +122,16 @@ function validateBreakingChangeFormat(title: string, body: string) {
   }
 }
 
+/**
+ * Check that the PR title has the correct prefix.
+ */
+function validateTitlePrefix(title: string) {
+    const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test)(\([\w-]+\)){0,1}: /;
+    if (!titleRe.exec(title)) {
+      throw new LinterError("❗️ The title of this PR must have the correct conventional prefix");
+    }
+}
+
 function assertStability(title: string, body: string) {
   const breakingStable = breakingModules(title, body)
     .filter(mod => 'stable' === moduleStability(findModulePath(mod)));
@@ -138,24 +148,24 @@ export async function validatePr(number: number) {
   }
 
   const gh = createGitHubClient();
-  
+
   const issues = gh.getIssues(OWNER, REPO);
   const repo = gh.getRepo(OWNER, REPO);
-  
+
   console.log(`⌛  Fetching PR number ${number}`);
   const issue = (await issues.getIssue(number)).data;
-  
+
   console.log(`⌛  Fetching files for PR number ${number}`);
   const files = (await repo.listPullRequestFiles(number)).data;
-  
+
   console.log("⌛  Validating...");
-  
+
   if (shouldExemptReadme(issue)) {
     console.log(`Not validating README changes since the PR is labeled with '${EXEMPT_README}'`);
   } else {
     featureContainsReadme(issue, files);
   }
-  
+
   if (shouldExemptTest(issue)) {
     console.log(`Not validating test changes since the PR is labeled with '${EXEMPT_TEST}'`);
   } else {
@@ -168,13 +178,15 @@ export async function validatePr(number: number) {
   } else {
     featureContainsIntegTest(issue, files);
   }
- 
+  
   validateBreakingChangeFormat(issue.title, issue.body);
   if (shouldExemptBreakingChange(issue)) {
     console.log(`Not validating breaking changes since the PR is labeled with '${EXEMPT_BREAKING_CHANGE}'`);
   } else {
     assertStability(issue.title, issue.body);
   }
+
+  validateTitlePrefix(issue.title);
 
   console.log("✅  Success");
 }
