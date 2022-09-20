@@ -31,6 +31,7 @@
     "patch-package": "^6.4.7",
     "semver": "^6.3.0",
     "standard-version": "^9.5.0",
+    "typescript": "~3.9.10",
     "typescript": "~3.9.10"
   },
   "resolutions": {
