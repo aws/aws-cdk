@@ -134,6 +134,9 @@ const globalTable = new dynamodb.Table(this, 'Table', {
 });
 ```
 
+A maximum of 10 tables with replication can be added to a stack without a limit increase.
+Consider splitting your tables across multiple stacks if your reach this limit.
+
 ## Encryption
 
 All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
