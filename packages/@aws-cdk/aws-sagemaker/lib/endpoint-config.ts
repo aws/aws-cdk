@@ -203,6 +203,9 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       resource: 'endpoint-config',
       resourceName: this.physicalName,
     });
+
+    // post-construction validation
+    this.node.addValidation({ validate: () => this.validateProductionVariants() });
   }
 
   /**
@@ -244,9 +247,10 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     return ret;
   }
 
-  protected validate(): string[] {
-    const result = super.validate();
-    // check we have 10 or fewer production variants
+  private validateProductionVariants(): string[] {
+    const result = Array<string>();
+
+    // validate number of production variants
     if (this.instanceProductionVariants.length > 10) {
       result.push('Can\'t have more than 10 Production Variants');
     }

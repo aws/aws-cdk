@@ -2,9 +2,10 @@ import * as cdk from '@aws-cdk/core';
 import * as sagemaker from '../lib';
 
 describe('When validating stack containing an EndpointConfig', () => {
-  test('with more than 10 production variants, an error is recorded', () => {
+  test('with more than 10 production variants, an exception is thrown on synthesis', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
       instanceProductionVariants: [{
@@ -17,10 +18,10 @@ describe('When validating stack containing an EndpointConfig', () => {
     }
 
     // WHEN
-    const errors = cdk.ConstructNode.validate(stack.node);
+    const when = () => app.synth();
 
     // THEN
-    expect(errors.map(e => e.message)).toEqual(["Can\'t have more than 10 Production Variants"]);
+    expect(when).toThrow(/Can\'t have more than 10 Production Variants/);
   });
 });
 

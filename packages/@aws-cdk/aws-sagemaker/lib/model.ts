@@ -308,6 +308,9 @@ export class Model extends ModelBase {
       resourceName: this.physicalName,
     });
 
+    // post-construction validation
+    this.node.addValidation({ validate: () => this.validateContainers() });
+
     /*
      * SageMaker model creation will fail if the model's execution role does not have read access to
      * its model data in S3. Since the CDK uses a separate AWS::IAM::Policy CloudFormation resource
@@ -326,8 +329,8 @@ export class Model extends ModelBase {
     this.containers.push(this.renderContainer(container));
   }
 
-  protected validate(): string[] {
-    const result = super.validate();
+  private validateContainers(): string[] {
+    const result = Array<string>();
 
     // validate number of containers
     if (this.containers.length < 1) {

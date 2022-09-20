@@ -7,9 +7,10 @@ import * as constructs from 'constructs';
 import * as sagemaker from '../lib';
 
 describe('When instantiating SageMaker Model', () => {
-  test('with more than 15 containers, an exception is thrown', () => {
+  test('with more than 15 containers, an exception is thrown on synthesis', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
     const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
     const containers = [{ image: sagemaker.ContainerImage.fromEcrRepository(testRepo) }];
     for (let i = 0; i < 15; i++) {
@@ -21,22 +22,23 @@ describe('When instantiating SageMaker Model', () => {
     new sagemaker.Model(stack, 'Model', { containers });
 
     // WHEN
-    const errors = cdk.ConstructNode.validate(stack.node);
+    const when = () => app.synth();
 
     // THEN
-    expect(errors.map(e => e.message)).toEqual(['Cannot have more than 15 containers in inference pipeline']);
+    expect(when).toThrow(/Cannot have more than 15 containers in inference pipeline/);
   });
 
-  test('with no containers, an error is recorded', () => {
+  test('with no containers, an exception is thrown on synthesis', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
     new sagemaker.Model(stack, 'Model');
 
     // WHEN
-    const errors = cdk.ConstructNode.validate(stack.node);
+    const when = () => app.synth();
 
     // THEN
-    expect(errors.map(e => e.message)).toEqual(['Must configure at least 1 container for model']);
+    expect(when).toThrow(/Must configure at least 1 container for model/);
   });
 
   test('with a ContainerImage implementation which adds constructs of its own, the new constructs are present', () => {
