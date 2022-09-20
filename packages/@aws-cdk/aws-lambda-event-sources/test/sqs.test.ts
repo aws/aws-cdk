@@ -403,7 +403,7 @@ describe('SQSEventSource', () => {
 
     // WHEN
     fn.addEventSource(new sources.SqsEventSource(q, {
-      filters: [
+      filterCriteria: [
         lambda.FilterCriteria.filter({
           body: {
             id: lambda.FilterRule.exists(),

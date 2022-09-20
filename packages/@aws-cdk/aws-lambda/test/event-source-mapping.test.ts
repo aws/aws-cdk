@@ -223,7 +223,7 @@ describe('event source mapping', () => {
       target: fn,
       eventSourceArn: eventSourceArn,
       kafkaTopic: topicNameParam.valueAsString,
-      filters: [
+      filterCriteria: [
         FilterCriteria.filter({
           numericEquals: FilterRule.isEqual(1),
         }),
@@ -252,7 +252,7 @@ describe('event source mapping', () => {
       target: fn,
       eventSourceArn: eventSourceArn,
       kafkaTopic: topicNameParam.valueAsString,
-      filters: [
+      filterCriteria: [
         FilterCriteria.filter({
           orFilter: FilterRule.or('one', 'two'),
           stringEquals: FilterRule.isEqual('test'),

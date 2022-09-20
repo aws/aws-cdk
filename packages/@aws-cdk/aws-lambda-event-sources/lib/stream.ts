@@ -114,8 +114,16 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * Add filter criteria option
    *
    * @default - None
+   * @deprecated see `filterCriteria`
    */
-  readonly filters?: Array<lambda.FilterCriteria>;
+  readonly filters?: Array<{[key: string]: any}>;
+
+  /**
+   * Add filter criteria option
+   *
+   * @default - none
+   */
+  readonly filterCriteria?: Array<lambda.FilterCriteria>;
 }
 
 /**
@@ -141,7 +149,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       onFailure: this.props.onFailure,
       tumblingWindow: this.props.tumblingWindow,
       enabled: this.props.enabled,
-      filters: this.props.filters,
+      filterCriteria: this.props.filterCriteria,
     };
   }
 }

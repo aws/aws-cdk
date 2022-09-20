@@ -274,7 +274,7 @@ describe('DynamoEventSource', () => {
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       startingPosition: lambda.StartingPosition.LATEST,
-      filters: filters,
+      filterCriteria: filters,
     }));
 
     // THEN
