@@ -13,10 +13,10 @@ import { ScalableInstanceCount } from './scalable-instance-count';
 /*
  * Amazon SageMaker automatic scaling doesn't support automatic scaling for burstable instances such
  * as T2, because they already allow for increased capacity under increased workloads.
- * https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-auto-scaling-add-policy.html
+ * https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-auto-scaling-add-console.html
  */
 const BURSTABLE_INSTANCE_TYPE_PREFIXES = Object.entries(ec2.InstanceClass)
-  .filter(([name, _]) => name.startsWith('BURSTABLE'))
+  .filter(([name, _]) => name.startsWith('T'))
   .map(([_, prefix]) => `ml.${prefix}.`);
 
 /**
