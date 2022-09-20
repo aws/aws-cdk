@@ -954,7 +954,7 @@ const sourceOutput = new codepipeline.Artifact();
 const targetBucket = new s3.Bucket(this, 'MyBucket');
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const deployAction = mew codepipeline_actions.ElasticBeanstalkDeployAction({
+const deployAction = new codepipeline_actions.ElasticBeanstalkDeployAction({
   actionName: 'ElasticBeanstalkDeploy',
   input: sourceOutput,
   environmentName: 'envName',
