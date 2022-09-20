@@ -41,6 +41,11 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@aws-cdk/asset-awscli-v1@0.0.13":
+  version "0.0.13"
+  resolved "https://registry.npmjs.org/@aws-cdk/asset-awscli-v1/-/asset-awscli-v1-0.0.13.tgz#8964f075ad3647a6fde657ea29f020b6ec903841"
+  integrity sha512-dZ856tGTmh9zR0fomydNwDnW2JDlCdnNzY5AwAoOB8ZgifXTYQxMzQ6dVoVEN6VPOB+UDW/eULeF3a7ER7xRvA==
+
 "@babel/code-frame@7.12.11":
   version "7.12.11"
   resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.12.11.tgz#f4ad435aa263db935b8f10f2c552d23fb716a63f"
@@ -7035,11 +7040,6 @@ kleur@^3.0.3:
   version "3.0.3"
   resolved "https://registry.npmjs.org/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
-
-lambda-layer-awscli-v1@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.npmjs.org/lambda-layer-awscli-v1/-/lambda-layer-awscli-v1-0.0.2.tgz#651314a5ed3cc99f2d8036ad418526ba3a69767d"
-  integrity sha512-ON04uY5Z1O6Bl6udXvpvOILUOt3w8wiEfMSXPXZAC6H8YrFfvwqy5+AKZkVWTpjGhXHfI1EpfTNgXlnPF2wmjg==
 
 lambda-leak@^2.0.0:
   version "2.0.0"

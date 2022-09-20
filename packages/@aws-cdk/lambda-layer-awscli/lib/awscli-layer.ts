@@ -2,6 +2,7 @@
 import * as childproc from 'child_process';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
@@ -10,9 +11,10 @@ import { Construct } from 'constructs';
  */
 export class AwsCliLayer extends lambda.LayerVersion {
 
-  private static readonly assetPackageName: string = 'asset-awscli-v1';
+  private static readonly assetPackageName: string = '@aws-cdk/asset-awscli-v1';
   private static readonly fallbackLocation: string = '';
   private static assetPackage: any;
+  private static asset: s3_assets.Asset;
 
   private static requireWrapper(id: string): any {
     try {
@@ -61,8 +63,10 @@ export class AwsCliLayer extends lambda.LayerVersion {
       throw new Error(`Unable to load ${AwsCliLayer.assetPackageName}@${targetVersion}`);
     }
 
+    AwsCliLayer.asset = new AwsCliLayer.assetPackage.AwsCliAsset(scope, `${id}-asset`);
+
     super(scope, id, {
-      code: lambda.Code.fromAssetConstruct(new AwsCliLayer.assetPackage.AwsCliAsset(scope, `${id}-asset`)),
+      code: lambda.Code.fromBucket(AwsCliLayer.asset.bucket, AwsCliLayer.asset.s3ObjectKey),
       description: '/opt/awscli/aws',
     });
 
