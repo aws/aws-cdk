@@ -328,8 +328,8 @@ substituting it when its deployed to the destination with the actual value.
 ## Keep Files Zipped
 
 By default, files are zipped, then extracted into the destination bucket.
-You can use the option `extract: false` to disable this behavior, in which case, files will remain in a zip file when deployed to S3. To reference the object keys, or filenames, which will be deployed to the bucket, you can
-use the `objectKeys` getter on the bucket deployment.
+
+You can use the option `extract: false` to disable this behavior, in which case, files will remain in a zip file when deployed to S3. To reference the object keys, or filenames, which will be deployed to the bucket, you can use the `objectKeys` getter on the bucket deployment.
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
