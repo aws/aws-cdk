@@ -104,10 +104,8 @@ function hasLabel(issue: any, labelName: string) {
  * Check this by looking for something that most likely was intended
  * to be said note, but got misspelled as "BREAKING CHANGES:" or
  * "BREAKING CHANGES(module):"
- *
- * Check the title format to contain the module for the changes.
  */
-function validateChangeFormat(title: string, body: string) {
+function validateBreakingChangeFormat(title: string, body: string) {
   const re = /^BREAKING.*$/m;
   const m = re.exec(body);
   if (m) {
@@ -117,11 +115,21 @@ function validateChangeFormat(title: string, body: string) {
     if (m[0].slice('BREAKING CHANGE:'.length).trim().length === 0) {
       throw new LinterError("The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause");
     }
+    const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;
+    if (!titleRe.exec(title)) {
+      throw new LinterError("The title of this PR must specify the module name that the first breaking change should be associated to");
+    }
   }
-  const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;
-  if (!titleRe.exec(title)) {
-    throw new LinterError("The title of this PR must specify the module name that the first breaking change should be associated to");
-  }
+}
+
+/**
+ * Check that the PR title has the correct prefix.
+ */
+function validateTitlePrefix(title: string) {
+    const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test)(\([\w-]+\)){0,1}: /;
+    if (!titleRe.exec(title)) {
+      throw new LinterError("❗️ The title of this PR must have the correct conventional prefix");
+    }
 }
 
 function assertStability(title: string, body: string) {
@@ -171,7 +179,8 @@ export async function validatePr(number: number) {
     featureContainsIntegTest(issue, files);
   }
 
-  validateChangeFormat(issue.title, issue.body);
+  validateTitlePrefix(issue.title);
+  validateBreakingChangeFormat(issue.title, issue.body);
   if (shouldExemptBreakingChange(issue)) {
     console.log(`Not validating breaking changes since the PR is labeled with '${EXEMPT_BREAKING_CHANGE}'`);
   } else {
