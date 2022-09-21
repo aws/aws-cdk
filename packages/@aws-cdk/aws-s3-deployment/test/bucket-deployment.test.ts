@@ -1150,6 +1150,28 @@ test('throws if destinationKeyPrefix is too long', () => {
 
 });
 
+test('skips destinationKeyPrefix validation if token', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  // trick the cdk into creating a very long token
+  const prefixToken = cdk.Token.asString(5, { displayHint: 'longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglong' });
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: prefixToken,
+    memoryLimit: 256,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    DestinationBucketKeyPrefix: 5,
+  });
+
+});
+
 test('bucket has multiple deployments', () => {
 
   // GIVEN
