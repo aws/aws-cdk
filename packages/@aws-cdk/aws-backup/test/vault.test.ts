@@ -291,6 +291,21 @@ test('import from name', () => {
   }));
 });
 
+test('import from parameter', () => {
+  // WHEN
+  const vaultName = '${myVaultName}';
+  const vault = BackupVault.fromBackupVaultName(stack, 'Vault', vaultName);
+
+  // THEN
+  expect(vault.backupVaultName).toEqual(vaultName);
+  expect(vault.backupVaultArn).toEqual(stack.formatArn({
+    service: 'backup',
+    resource: 'backup-vault',
+    resourceName: '${myVaultName}',
+    arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+  }));
+});
+
 test('grant action', () => {
   // GIVEN
   const vaultName = 'myVaultName';
