@@ -51,7 +51,11 @@ export interface HelmChartOptions {
 
   /**
    * The values to be used by the chart.
-   * For nested values use a nested dictionary, i.e. { installationCRDs: true, webhook: { port: 9443 } }
+   * For nested values use a nested dictionary, i.e. 
+   * values: { 
+   *  installationCRDs: true,
+   *  webhook: { port: 9443 } 
+   * }
    * @default - No values are provided to the chart.
    */
   readonly values?: {[key: string]: any};
