@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
-import { LogType, InvocationType, ExpectedResult, ActualResult } from '../../lib/assertions';
+import { ActualResult, ExpectedResult, InvocationType, LogType } from '../../lib/assertions';
 import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
 
 describe('DeployAssert', () => {
@@ -144,6 +144,23 @@ describe('DeployAssert', () => {
       template.resourceCountIs('AWS::Lambda::Function', 1);
       template.resourceCountIs('Custom::DeployAssert@SdkCallMyServiceMyApi1', 1);
       template.resourceCountIs('Custom::DeployAssert@SdkCallMyServiceMyApi2', 1);
+    });
+
+    test('custom resource type length is truncated when greater than 60 characters', () => {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const deplossert = new DeployAssert(app);
+      deplossert.awsApiCall('Pangram', 'TheQuickBrownFoxJumpsOverTheLazyDog');
+
+      // THEN
+      const truncatedType = 'Custom::DeployAssert@SdkCallPangramTheQuickBrownFoxJumpsOver';
+      expect(truncatedType.length).toEqual(60);
+
+      const template = Template.fromStack(deplossert.scope);
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.resourceCountIs(truncatedType, 1);
     });
   });
 });
