@@ -176,7 +176,9 @@ export class IntegTestRunner extends IntegRunner {
       } else {
         const env: Record<string, any> = {
           ...DEFAULT_SYNTH_OPTIONS.env,
-          CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+          CDK_CONTEXT_JSON: JSON.stringify(this.getContext({
+            ...this.actualTestSuite.enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
+          })),
         };
         this.cdk.synthFast({
           execCmd: this.cdkApp.split(' '),
