@@ -151,11 +151,11 @@ describe('DatabaseInstance', () => {
     });
 
     // WHEN
-    const metric = instance.metric('SparqlErrors');
+    const metric = instance.metric('SparqlRequestsPerSec');
     new cloudwatch.Alarm(stack, 'Alarm', {
       evaluationPeriods: 1,
-      threshold: 0,
-      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+      threshold: 1,
+      comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
       metric: metric,
     });
 
@@ -165,20 +165,20 @@ describe('DatabaseInstance', () => {
       dimensionsMap: {
         DBInstanceIdentifier: instance.instanceIdentifier,
       },
-      metricName: 'SparqlErrors',
+      metricName: 'SparqlRequestsPerSec',
     }));
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Namespace: 'AWS/Neptune',
-      MetricName: 'SparqlErrors',
+      MetricName: 'SparqlRequestsPerSec',
       Dimensions: [
         {
           Name: 'DBInstanceIdentifier',
           Value: stack.resolve(instance.instanceIdentifier),
         },
       ],
-      ComparisonOperator: 'GreaterThanThreshold',
+      ComparisonOperator: 'LessThanThreshold',
       EvaluationPeriods: 1,
-      Threshold: 0,
+      Threshold: 1,
     });
   });
 });

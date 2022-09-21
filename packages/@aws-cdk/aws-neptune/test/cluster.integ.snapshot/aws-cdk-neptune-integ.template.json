@@ -542,7 +542,7 @@
   "Alarm7103F465": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
-    "ComparisonOperator": "GreaterThanThreshold",
+    "ComparisonOperator": "LessThanThreshold",
     "EvaluationPeriods": 1,
     "Dimensions": [
      {
@@ -552,11 +552,11 @@
       }
      }
     ],
-    "MetricName": "SparqlErrors",
+    "MetricName": "SparqlRequestsPerSec",
     "Namespace": "AWS/Neptune",
     "Period": 300,
-    "Statistic": "Sum",
-    "Threshold": 0
+    "Statistic": "Average",
+    "Threshold": 1
    }
   }
  },

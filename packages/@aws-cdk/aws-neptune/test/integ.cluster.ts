@@ -44,11 +44,11 @@ const cluster = new DatabaseCluster(stack, 'Database', {
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
-const metric = cluster.metric('SparqlErrors', { statistic: cloudwatch.Statistic.SUM });
+const metric = cluster.metric('SparqlRequestsPerSec');
 new cloudwatch.Alarm(stack, 'Alarm', {
   evaluationPeriods: 1,
-  threshold: 0,
-  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+  threshold: 1,
+  comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
   metric: metric,
 });
 

@@ -152,8 +152,8 @@ Both `DatabaseCluster` and `DatabaseInstance` provide a `metric()` method to hel
 declare const cluster: neptune.DatabaseCluster;
 declare const instance: neptune.DatabaseInstance;
 
-cluster.metric('SparqlErrors'); // cluster-level SparqlErrors metric
-instance.metric('SparqlErrors') // instance-level SparqlErrors metric
+cluster.metric('SparqlRequestsPerSec'); // cluster-level SparqlErrors metric
+instance.metric('SparqlRequestsPerSec') // instance-level SparqlErrors metric
 ```
 
 For more details on the available metrics, refer to https://docs.aws.amazon.com/neptune/latest/userguide/cw-metrics.html
