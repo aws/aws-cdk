@@ -89,12 +89,20 @@ async function parseCommandLineArguments() {
       .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not output CloudFormation Template to stdout', default: false }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', (yargs: Argv) => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
-      .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined, conflicts: 'bootstrap-customer-key' })
+      .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption for the S3 bucket', default: undefined, conflicts: 'bootstrap-customer-key' })
       .option('bootstrap-ecr-key-id', {
         type: 'string',
-        desc: 'Encrypts the bootstrap ECR repository with an Customer Master Key (CMK) or with the key given by an optional key-Id' +
-          'Note: Changes to encryption settings of an existing repository is not possible! You must first manually delete the repository before changing the encryption settings.',
+        desc: 'AWS KMS master key ID used for the SSE-KMS encryption for the ECR repository' +
+          'Note: Changes to encryption settings of an existing repository is not possible! You must first manually delete the bootstrap stack before changing the encryption settings.',
         default: undefined,
+        conflicts: 'bootstrap-ecr-customer-key',
+      })
+      .option('bootstrap-ecr-customer-key', {
+        type: 'boolean',
+        desc: 'Create a Customer Master Key (CMK) for the bootstrap ECR repository' +
+          'Note: Changes to encryption settings of an existing repository is not possible! You must first manually delete the bootstrap stack before changing the encryption settings.',
+        default: undefined,
+        conflicts: 'bootstrap-ecr-key-id',
       })
       .option('bootstrap-customer-key', { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' })
       .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
@@ -451,6 +459,7 @@ async function initCommandLine() {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
             ecrKeyId: configuration.settings.get(['toolkitRepository', 'kmsKeyId']),
+            ecrCreateCustomerMasterKey: configuration.settings.get(['toolkitRepository', 'kmsCustomerMasterKey']),
             createCustomerMasterKey: args.bootstrapCustomerKey,
             qualifier: args.qualifier,
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,

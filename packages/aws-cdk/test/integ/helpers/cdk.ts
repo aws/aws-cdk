@@ -264,6 +264,16 @@ interface CommonCdkBootstrapCommandOptions {
   readonly cliOptions?: CdkCliOptions;
 
   /**
+   * @default - SSE-KMS with AWS managed key
+   */
+  readonly cmkBucketEncryption?: boolean
+
+  /**
+   * @default - use AES-256
+   */
+  readonly cmkRepositoryEncryption?: boolean
+
+  /**
    * @default - none
    */
   readonly tags?: string;
@@ -401,6 +411,12 @@ export class TestFixture {
     args.push('--toolkit-stack-name', options.toolkitStackName);
     if (options.bootstrapBucketName) {
       args.push('--bootstrap-bucket-name', options.bootstrapBucketName);
+    }
+    if (options.cmkBucketEncryption) {
+      args.push('--bootstrap-customer-key');
+    }
+    if (options.cmkRepositoryEncryption) {
+      args.push('--bootstrap-ecr-customer-key');
     }
     args.push('--qualifier', this.qualifier);
     if (options.cfnExecutionPolicy) {

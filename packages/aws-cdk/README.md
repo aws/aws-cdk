@@ -531,10 +531,16 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 ### `cdk bootstrap`
 
 Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket
-and ECR reposity that `cdk deploy` will use to store synthesized templates and the related assets, before
+and ECR repository that `cdk deploy` will use to store synthesized templates and the related assets, before
 triggering a CloudFormation stack update. The name of the deployed stack can be configured using the
 `--toolkit-stack-name` argument. The S3 Bucket Public Access Block Configuration can be configured using
 the `--public-access-block-configuration` argument. ECR uses immutable tags for images.
+It is also possible to encrypt the S3 bucket and the ECR repository with CMKs. CDK will create a key for you
+if you use `--bootstrap-customer-key` (S3 bucket) and/or `--bootstrap-ecr-customer-key` (ECR repository).
+If you supply both options they will share a CMK.
+
+In case you need to supply your own KMS key you can use `--bootstrap-kms-key-id` (S3 bucket) and/or 
+`--bootstrap-ecr-key-id` (ECR repository) to encrypt the resources.
 
 ```console
 $ # Deploys to all environments
@@ -560,8 +566,6 @@ $ cdk bootstrap --show-template > bootstrap-template.yaml
 # Tell CDK to use the customized template
 $ cdk bootstrap --template bootstrap-template.yaml
 ```
-
-If you have the need to encrypt the bootstrap artifacts, you can do this via the parameters `--bootstrap-ecr-key`.
 
 ### `cdk doctor`
 

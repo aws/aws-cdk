@@ -276,3 +276,38 @@ integTest('create ECR with tag IMMUTABILITY to set on', withDefaultFixture(async
 
   expect(ecrResponse.repositories?.[0].imageTagMutability).toEqual('IMMUTABLE');
 }));
+
+integTest('can bootstrap with encrypted bucket and repository', withDefaultFixture(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+  const bucketName = `aws-cdk-bootstrap-integ-test-${randomString()}`;
+
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: bootstrapStackName,
+    bootstrapBucketName: bucketName,
+    cmkBucketEncryption: true,
+    cmkRepositoryEncryption: true,
+  });
+
+  const response = await fixture.aws.cloudFormation('describeStackResources', {
+    StackName: bootstrapStackName,
+  });
+  const ecrResource = response.StackResources?.find(resource => resource.LogicalResourceId === 'ContainerAssetsRepository');
+  expect(ecrResource).toBeDefined();
+
+  const ecrResponse = await fixture.aws.ecr('describeRepositories', {
+    repositoryNames: [
+      // This is set, as otherwise we don't end up here
+      ecrResource?.PhysicalResourceId ?? '',
+    ],
+  });
+
+  const ecrKeyId = ecrResponse.repositories?.[0].encryptionConfiguration?.kmsKey;
+  expect(ecrKeyId).not.toBeUndefined();
+
+  const s3Response = await fixture.aws.s3('getBucketEncryption', {
+    Bucket: bucketName,
+  });
+  const s3KeyId = s3Response.ServerSideEncryptionConfiguration?.Rules[0].ApplyServerSideEncryptionByDefault?.KMSMasterKeyID;
+  expect(s3KeyId).toEqual(ecrKeyId);
+}));

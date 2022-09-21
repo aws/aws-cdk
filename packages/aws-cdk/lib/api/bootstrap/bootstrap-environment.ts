@@ -83,6 +83,9 @@ export class Bootstrapper {
     if (params.createCustomerMasterKey !== undefined && params.kmsKeyId) {
       throw new Error('You cannot pass \'--bootstrap-kms-key-id\' and \'--bootstrap-customer-key\' together. Specify one or the other');
     }
+    if (params.ecrCreateCustomerMasterKey !== undefined && params.ecrKeyId) {
+      throw new Error('You cannot pass \'--bootstrap-ecr-key-id\' and \'--bootstrap-ecr-customer-key\' together. Specify one or the other');
+    }
 
     // If people re-bootstrap, existing parameter values are reused so that people don't accidentally change the configuration
     // on their bootstrap stack (this happens automatically in deployStack). However, to do proper validation on the
@@ -135,12 +138,12 @@ export class Bootstrapper {
           undefined);
 
     let kmsEcrKeyId = USE_DEFAULT_ENCRYPTION;
-    if (params.ecrKeyId) {
-      // key is given
-      kmsEcrKeyId = params.ecrKeyId;
-    } else if (params.ecrKeyId === '') {
-      // key shall be created
+    if (params.ecrCreateCustomerMasterKey === true) {
+      // use bootstrap key
       kmsEcrKeyId = CREATE_NEW_KEY;
+    }
+    if (params.ecrKeyId) {
+      kmsEcrKeyId = params.ecrKeyId;
     }
 
     return current.update(

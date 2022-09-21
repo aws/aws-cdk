@@ -281,7 +281,8 @@ export class Settings {
         kmsKeyId: argv.bootstrapKmsKeyId,
       },
       toolkitRepository: {
-        kmsKeyId: argv.bootstrapEcrKey,
+        kmsKeyId: argv.bootstrapEcrKeyId,
+        kmsCustomerMasterKey: argv.bootstrapEcrCustomerKey,
       },
       versionReporting: argv.versionReporting,
       staging: argv.staging,

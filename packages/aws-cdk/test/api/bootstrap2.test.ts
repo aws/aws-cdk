@@ -310,11 +310,34 @@ describe('Bootstrapping v2', () => {
     test.each([
       // Default case
       [undefined, 'DEFAULT_ENCRYPTION'],
-      // Create a new key
-      ['', 'BOOTSTRAP_KEY'],
+      // Use bootstrap key
+      [true, 'BOOTSTRAP_KEY'],
+      [false, 'DEFAULT_ENCRYPTION'],
+    ])('(new stack) ecrCustomerKey=%p => parameter becomes %p ', async (ecrCustomerKey, paramKeyId) => {
+      // GIVEN: no existing stack
+
+      // WHEN
+      await bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          ecrCreateCustomerMasterKey: ecrCustomerKey,
+          cloudFormationExecutionPolicies: ['arn:booh'],
+        },
+      });
+
+      // THEN
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        parameters: expect.objectContaining({
+          ImageAssetsEcrKmsKeyId: paramKeyId,
+        }),
+      }));
+    });
+
+    test.each([
+      // Default case
+      [undefined, 'DEFAULT_ENCRYPTION'],
+      ['', 'DEFAULT_ENCRYPTION'],
       // Use given key
       ['my-key-id', 'my-key-id'],
-      ['AWS_DEFAULT_KEY', 'AWS_DEFAULT_KEY'],
       ['arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'],
     ])('(new stack) ecrKeyId=%p => parameter becomes %p ', async (ecrKeyId, paramKeyId) => {
       // GIVEN: no existing stack
@@ -333,6 +356,16 @@ describe('Bootstrapping v2', () => {
           ImageAssetsEcrKmsKeyId: paramKeyId,
         }),
       }));
+    });
+
+    test('throws error if ecr key id and ecrCreateCustomerKey in parameters ', async () => {
+      await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          cloudFormationExecutionPolicies: ['arn:policy'],
+          ecrKeyId: 'my-kms-key-id',
+          ecrCreateCustomerMasterKey: true,
+        },
+      })).rejects.toThrowError();
     });
 
     test.each([

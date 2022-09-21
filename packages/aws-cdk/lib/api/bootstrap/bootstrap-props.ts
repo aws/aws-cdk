@@ -72,6 +72,11 @@ export interface BootstrappingParameters {
   readonly createCustomerMasterKey?: boolean;
 
   /**
+   * Whether or not to create a new customer master key (CMK)
+   */
+  readonly ecrCreateCustomerMasterKey?: boolean;
+
+  /**
    * The list of AWS account IDs that are trusted to deploy into the environment being bootstrapped.
    *
    * @default - only the bootstrapped account can deploy into this environment
