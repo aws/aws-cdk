@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import * as childproc from 'child_process';
 import * as path from 'path';
+import * as os from 'os';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 /**
@@ -12,9 +12,10 @@ import { Construct } from 'constructs';
 export class AwsCliLayer extends lambda.LayerVersion {
 
   private static readonly assetPackageName: string = '@aws-cdk/asset-awscli-v1';
-  private static readonly fallbackLocation: string = '';
   private static assetPackage: any;
   private static asset: s3_assets.Asset;
+  private static wellKnownInstallDir: string;
+
 
   private static requireWrapper(id: string): any {
     try {
@@ -42,37 +43,31 @@ export class AwsCliLayer extends lambda.LayerVersion {
   }
 
   constructor(scope: Construct, id: string) {
+    const installParentDir = os.homedir() ?? os.tmpdir();
+    AwsCliLayer.wellKnownInstallDir = path.join(installParentDir, '.cdk/npm-cache');
 
-    const targetVersion = AwsCliLayer.requireWrapper(path.join(__dirname, '../package.json')).devDependencies[AwsCliLayer.assetPackageName];
-    const pathOfModuleIfAlreadyInstalled = require.resolve(`${AwsCliLayer.assetPackageName}`);
-    const versionAlreadyInstalled = AwsCliLayer.requireWrapper(path.join(pathOfModuleIfAlreadyInstalled, '../../package.json')).version;
-    let usedFallback = false;
+    if (!AwsCliLayer.asset) {
+      const targetVersion = AwsCliLayer.requireWrapper(path.join(__dirname, '../package.json')).devDependencies[AwsCliLayer.assetPackageName];
+      const pathOfModuleIfAlreadyInstalled = require.resolve(`${AwsCliLayer.assetPackageName}`);
+      const versionAlreadyInstalled = AwsCliLayer.requireWrapper(path.join(pathOfModuleIfAlreadyInstalled, '../../package.json')).version;
 
-    if (targetVersion === versionAlreadyInstalled) {
-      AwsCliLayer.assetPackage = AwsCliLayer.requireWrapper(AwsCliLayer.assetPackageName);
-    }
-    if (!AwsCliLayer.assetPackage) {
-      AwsCliLayer.assetPackage = AwsCliLayer.installNpmPackage();
-    }
-    if (!AwsCliLayer.assetPackage) {
-      AwsCliLayer.assetPackage = AwsCliLayer.requireWrapper(AwsCliLayer.fallbackLocation);
-      usedFallback = true;
-    }
-    if (!AwsCliLayer.assetPackage) {
-      // This case should never happen, until the fallback to a package bundled in aws-cdk-lib is removed.
-      throw new Error(`Unable to load ${AwsCliLayer.assetPackageName}@${targetVersion}`);
-    }
+      if (targetVersion === versionAlreadyInstalled) {
+        AwsCliLayer.assetPackage = AwsCliLayer.requireWrapper(AwsCliLayer.assetPackageName);
+      }
+      if (!AwsCliLayer.assetPackage) {
+        AwsCliLayer.assetPackage = AwsCliLayer.installNpmPackage();
+      }
+      if (!AwsCliLayer.assetPackage) {
+        // In this case, use the fallback to a package bundled in aws-cdk-lib.
+        throw new Error(`Unable to load ${AwsCliLayer.assetPackageName}@${targetVersion}`);
+      }
 
-    AwsCliLayer.asset = new AwsCliLayer.assetPackage.AwsCliAsset(scope, `${id}-asset`);
+      AwsCliLayer.asset = new AwsCliLayer.assetPackage.AwsCliAsset(scope, `${id}-asset`);
+    }
 
     super(scope, id, {
       code: lambda.Code.fromBucket(AwsCliLayer.asset.bucket, AwsCliLayer.asset.s3ObjectKey),
       description: '/opt/awscli/aws',
     });
-
-    if (usedFallback) {
-      cdk.Annotations.of(this).addWarning('This CDK app will be impacted by an upcoming change...');
-      // TODO add a 'marker' construct to the construct tree so that we can create a CLI notice for this scenario
-    }
   }
 }

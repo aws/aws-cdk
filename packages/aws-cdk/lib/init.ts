@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { invokeBuiltinHooks } from './init-hooks';
 import { error, print, warning } from './logging';
-import { cdkHomeDir, rootDir } from './util/directories';
+import { rootDir } from './util/directories';
 import { rangeFromSemver } from './util/version-range';
 
 
@@ -164,7 +164,7 @@ export class InitTemplate {
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
       .replace(/%cdk-version%/g, cdkVersion)
       .replace(/%constructs-version%/g, constructsVersion)
-      .replace(/%cdk-home%/g, cdkHomeDir())
+      .replace(/%cdk-home%/g, cxapi.cdkHomeDir())
       .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
       .replace(/%python-executable%/g, pythonExecutable())
       .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));

@@ -20,3 +20,4 @@ export * from './metadata';
 export * from './features';
 export * from './placeholders';
 export * from './app';
+export * from './directories';
