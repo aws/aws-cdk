@@ -70,16 +70,18 @@ const artifactFilePath = path.join(__dirname, 'test-artifacts', 'valid-artifact.
  * - AssetImage as vended by ContainerImage.fromAsset
  */
 
-const ecrImage = sagemaker.ContainerImage.fromEcrRepository(
-  new ecr_assets.DockerImageAsset(stack, 'EcrImage', {
-    directory: dockerfileDirectory,
-  }).repository,
-);
-
-const imageAsset = new ecr_assets.DockerImageAsset(stack, 'LocalImage', {
+const ecrImageAsset = new ecr_assets.DockerImageAsset(stack, 'EcrImage', {
   directory: dockerfileDirectory,
 });
-const localImage = sagemaker.ContainerImage.fromAsset(imageAsset);
+const ecrImage = sagemaker.ContainerImage.fromEcrRepository(
+  ecrImageAsset.repository,
+  ecrImageAsset.imageTag,
+);
+
+const localImageAsset = new ecr_assets.DockerImageAsset(stack, 'LocalImage', {
+  directory: dockerfileDirectory,
+});
+const localImage = sagemaker.ContainerImage.fromAsset(localImageAsset);
 
 /*
  * Exercise different variations of ModelData, including:
