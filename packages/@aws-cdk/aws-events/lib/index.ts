@@ -12,3 +12,6 @@ export * from './api-destination';
 
 // AWS::Events CloudFormation Resources:
 export * from './events.generated';
+
+// Metrics
+export * from './events-canned-metrics.generated';
