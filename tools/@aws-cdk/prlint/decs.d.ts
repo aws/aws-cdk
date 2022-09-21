@@ -1,5 +1,3 @@
-declare module 'github-api';
-
 declare module 'conventional-commits-parser' {
   function sync(commitMsg: string): Parsed;
 

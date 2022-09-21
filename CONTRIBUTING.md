@@ -267,10 +267,10 @@ Integration tests perform a few functions in the CDK code base -
 
 The following list contains common scenarios where we _know_ that integration tests are required.
 This is not an exhaustive list and we will, by default, require integration tests for all
-new features unless there is a good reason why one is not needed.
+new features and all fixes unless there is a good reason why one is not needed.
 
-1. Adding a new feature that is using previously unused CloudFormation resource types
-2. Adding a new feature that is using previously unused (or untested) CloudFormation properties
+1. Adding a new feature
+2. Adding a fix to an existing feature
 3. Involves configuring resource types across services (i.e. integrations)
 4. Adding a new supported version (e.g. a new [AuroraMysqlEngineVersion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_rds.AuroraMysqlEngineVersion.html))
 5. Adding any functionality via a [Custom Resource](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.custom_resources-readme.html)

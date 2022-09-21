@@ -1,7 +1,7 @@
-import { CustomResource, Reference, Lazy, CfnResource, Stack, ArnFormat } from '@aws-cdk/core';
+import { ArnFormat, CfnResource, CustomResource, Lazy, Reference, Stack } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { EqualsAssertion } from './assertions';
-import { ExpectedResult, ActualResult } from './common';
+import { ActualResult, ExpectedResult } from './common';
 import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
 
 /**
@@ -113,7 +113,7 @@ export interface AwsApiCallOptions {
 /**
  * Options for creating an SDKQuery provider
  */
-export interface AwsApiCallProps extends AwsApiCallOptions {}
+export interface AwsApiCallProps extends AwsApiCallOptions { }
 
 /**
  * Construct that creates a custom resource that will perform
@@ -142,7 +142,7 @@ export class AwsApiCall extends Construct implements IAwsApiCall {
         flattenResponse: Lazy.string({ produce: () => this.flattenResponse }),
         salt: Date.now().toString(),
       },
-      resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`,
+      resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`.substring(0, 60),
     });
 
     // Needed so that all the policies set up by the provider should be available before the custom resource is provisioned.

@@ -13,6 +13,7 @@ import { IVpc, SubnetSelection } from './vpc';
 export interface IVpnConnection extends IResource {
   /**
    * The id of the VPN connection.
+   * @attribute VpnConnectionId
    */
   readonly vpnId: string;
 
@@ -177,12 +178,71 @@ export class VpnGateway extends Resource implements IVpnGateway {
     this.gatewayId = vpnGW.ref;
   }
 }
+
+/**
+ * Attributes of an imported VpnConnection.
+ */
+export interface VpnConnectionAttributes {
+
+  /**
+   * The id of the VPN connection.
+   */
+  readonly vpnId: string;
+
+  /**
+   * The id of the customer gateway.
+   */
+  readonly customerGatewayId: string;
+
+  /**
+   * The ip address of the customer gateway.
+   */
+  readonly customerGatewayIp: string;
+
+  /**
+   * The ASN of the customer gateway.
+   */
+  readonly customerGatewayAsn: number;
+
+}
+
+/**
+ * Base class for Vpn connections.
+ */
+export abstract class VpnConnectionBase extends Resource implements IVpnConnection {
+
+  public abstract readonly vpnId: string;
+  public abstract readonly customerGatewayId: string;
+  public abstract readonly customerGatewayIp: string;
+  public abstract readonly customerGatewayAsn: number;
+
+}
+
 /**
  * Define a VPN Connection
  *
  * @resource AWS::EC2::VPNConnection
  */
-export class VpnConnection extends Resource implements IVpnConnection {
+export class VpnConnection extends VpnConnectionBase {
+
+  /**
+   * Import a VPN connection by supplying all attributes directly
+   */
+  public static fromVpnConnectionAttributes(scope: Construct, id: string, attrs: VpnConnectionAttributes): IVpnConnection {
+
+    class Import extends VpnConnectionBase {
+
+      public readonly vpnId: string = attrs.vpnId;
+      public readonly customerGatewayId: string = attrs.customerGatewayId;
+      public readonly customerGatewayIp: string = attrs.customerGatewayIp;
+      public readonly customerGatewayAsn: number = attrs.customerGatewayAsn;
+
+    }
+
+    return new Import(scope, id);
+
+  }
+
   /**
    * Return the given named metric for all VPN connections in the account/region.
    */

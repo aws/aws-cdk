@@ -18,16 +18,6 @@ describe('breakingModules', () => {
     expect(breakingModules(title, body)).toEqual(['m1']);
   });
 
-  test('errors on missing scope', () => {
-    const title = 'feat: this is a breaking change';
-    const body = `
-    a breaking change description
-    BREAKING CHANGE: unintended breaking change
-    `;
-
-    expect(() => breakingModules(title, body)).toThrow(/must specify a "scope"/);
-  });
-
   test('multiple breaking changes', () => {
     const title = 'feat(m1): this is a breaking change';
     const body = `
