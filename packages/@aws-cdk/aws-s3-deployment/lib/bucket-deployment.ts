@@ -372,8 +372,8 @@ export class BucketDeployment extends Construct {
     // the tag key limit of 128
     // '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long?????'
     // better to throw an error here than wait for CloudFormation to fail
-    if (tagKey.length > 128) {
-      throw new Error('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters');
+    if (!cdk.Token.isUnresolved(tagKey) && tagKey.length > 128) {
+      throw new Error('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.');
     }
 
     /*
