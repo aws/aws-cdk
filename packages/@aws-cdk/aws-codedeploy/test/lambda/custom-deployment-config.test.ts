@@ -1,5 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as codedeploy from '../../lib';
 
@@ -30,7 +31,7 @@ beforeEach(() => {
 });
 
 
-test('custom resource created', () => {
+testDeprecated('custom resource created', () => {
   // WHEN
   const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
     type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
@@ -75,7 +76,7 @@ test('custom resource created', () => {
   });
 });
 
-test('custom resource created with specific name', () => {
+testDeprecated('custom resource created with specific name', () => {
   // WHEN
   const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
     type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
@@ -97,7 +98,7 @@ test('custom resource created with specific name', () => {
   });
 });
 
-test('fail with more than 100 characters in name', () => {
+testDeprecated('fail with more than 100 characters in name', () => {
   const app = new cdk.App();
   const stackWithApp = new cdk.Stack(app);
   new codedeploy.CustomLambdaDeploymentConfig(stackWithApp, 'CustomConfig', {
@@ -110,7 +111,7 @@ test('fail with more than 100 characters in name', () => {
   expect(() => app.synth()).toThrow(`Deployment config name: "${'a'.repeat(101)}" can be a max of 100 characters.`);
 });
 
-test('fail with unallowed characters in name', () => {
+testDeprecated('fail with unallowed characters in name', () => {
   const app = new cdk.App();
   const stackWithApp = new cdk.Stack(app);
   new codedeploy.CustomLambdaDeploymentConfig(stackWithApp, 'CustomConfig', {
@@ -123,7 +124,7 @@ test('fail with unallowed characters in name', () => {
   expect(() => app.synth()).toThrow('Deployment config name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
 });
 
-test('can create linear custom config', () => {
+testDeprecated('can create linear custom config', () => {
   // WHEN
   const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
     type: codedeploy.CustomLambdaDeploymentConfigType.LINEAR,
@@ -142,7 +143,7 @@ test('can create linear custom config', () => {
   });
 });
 
-test('can create canary custom config', () => {
+testDeprecated('can create canary custom config', () => {
   // WHEN
   const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
     type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
@@ -161,7 +162,7 @@ test('can create canary custom config', () => {
   });
 });
 
-test('dependency on the config exists to ensure ordering', () => {
+testDeprecated('dependency on the config exists to ensure ordering', () => {
   // WHEN
   const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
     type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
