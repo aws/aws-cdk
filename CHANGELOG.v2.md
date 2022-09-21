@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 * **cfnspec:** cloudformation spec v89.0.0 ([#22105](https://github.com/aws/aws-cdk/issues/22105)) ([9726e8f](https://github.com/aws/aws-cdk/commit/9726e8fa07bcf496c79f8ab3be1c9f04b0e5dc3a))
-* **ec2:** flowlog setting add MaxAggregationInterval ([#22098](https://github.com/aws/aws-cdk/issues/22098)) ([dbede40](https://github.com/aws/aws-cdk/commit/dbede408ee21e2e62137867a7fd040890daf77c7)), closes [/docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-flowlog.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-flowlog.html/issues/cfn-ec2)
+* **ec2:** flowlog setting add MaxAggregationInterval ([#22098](https://github.com/aws/aws-cdk/issues/22098)) ([dbede40](https://github.com/aws/aws-cdk/commit/dbede408ee21e2e62137867a7fd040890daf77c7))
 * **stepfunctions-tasks:** additional IAM statements for AWS SDK service integration ([#22070](https://github.com/aws/aws-cdk/issues/22070)) ([fbb941f](https://github.com/aws/aws-cdk/commit/fbb941f848fc363c93ae79d899532ed4522f31b1)), closes [#22006](https://github.com/aws/aws-cdk/issues/22006)
 
 
@@ -21,10 +21,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **codedeploy:** unable to configure disable automatically rollback ([#22083](https://github.com/aws/aws-cdk/issues/22083)) ([ce27789](https://github.com/aws/aws-cdk/commit/ce277899e9df2ae9d69e94bdaa931e130cd4c95a)), closes [#21691](https://github.com/aws/aws-cdk/issues/21691)
 * **s3-deployment:** fails when `destinationKeyPrefix` is a token with a long string representation ([#22163](https://github.com/aws/aws-cdk/issues/22163)) ([ce59b6a](https://github.com/aws/aws-cdk/commit/ce59b6aaa7a19ec074547824c3641822ab853213))
 
-
-### Reverts
-
-* **init-templates:** csharp and fsharp app init fails when path contains space ([#22112](https://github.com/aws/aws-cdk/issues/22112)) ([205e493](https://github.com/aws/aws-cdk/commit/205e493e7bd6c5212f0ae374fdee28128ea49afe)), closes [aws/aws-cdk#21049](https://github.com/aws/aws-cdk/issues/21049)
 
 ## [2.42.1](https://github.com/aws/aws-cdk/compare/v2.42.0...v2.42.1) (2022-09-19)
 
