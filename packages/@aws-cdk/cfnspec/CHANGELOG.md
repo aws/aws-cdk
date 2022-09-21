@@ -1,3 +1,63 @@
+# CloudFormation Resource Specification v89.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::EC2::VPNConnection Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnection.html
+* AWS::EC2::VPNConnection VpnConnectionId (__added__)
+
+## Property Changes
+
+* AWS::EC2::VPNConnection CustomerGatewayId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection.html#cfn-ec2-vpnconnection-customergatewayid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnection.html#cfn-ec2-vpnconnection-customergatewayid
+* AWS::EC2::VPNConnection StaticRoutesOnly.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection.html#cfn-ec2-vpnconnection-StaticRoutesOnly
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnection.html#cfn-ec2-vpnconnection-staticroutesonly
+* AWS::EC2::VPNConnection Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection.html#cfn-ec2-vpnconnection-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnection.html#cfn-ec2-vpnconnection-tags
+* AWS::EC2::VPNConnection TransitGatewayId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection.html#cfn-ec2-vpnconnection-transitgatewayid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnection.html#cfn-ec2-vpnconnection-transitgatewayid
+* AWS::EC2::VPNConnection Type.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection.html#cfn-ec2-vpnconnection-type
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnection.html#cfn-ec2-vpnconnection-type
+* AWS::EC2::VPNConnection VpnGatewayId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection.html#cfn-ec2-vpnconnection-vpngatewayid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnection.html#cfn-ec2-vpnconnection-vpngatewayid
+* AWS::EC2::VPNConnection VpnTunnelOptionsSpecifications.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection.html#cfn-ec2-vpnconnection-vpntunneloptionsspecifications
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnection.html#cfn-ec2-vpnconnection-vpntunneloptionsspecifications
+* AWS::EC2::VPNConnection VpnTunnelOptionsSpecifications.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::Evidently::Project AppConfigResource (__added__)
+* AWS::IoT::CACertificate RemoveAutoRegistration (__added__)
+* AWS::Logs::Destination DestinationPolicy.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::DBInstance CustomIAMInstanceProfile (__added__)
+* AWS::RDS::DBInstance NcharCharacterSetName (__added__)
+* AWS::Redshift::ClusterParameterGroup Parameters.DuplicatesAllowed (__deleted__)
+* AWS::Redshift::ClusterParameterGroup Tags.DuplicatesAllowed (__deleted__)
+
+## Property Type Changes
+
+* AWS::Evidently::Project.AppConfigResourceObject (__added__)
+* AWS::MediaPackage::OriginEndpoint.CmafEncryption EncryptionMethod (__added__)
+
+## Unapplied changes
+
+* AWS::ConnectCampaigns is at 0.0.0
+* AWS::Rekognition is at 68.0.0
+* AWS::RolesAnywhere is at 0.0.0
+* AWS::SageMaker is at 72.0.0
+
 # CloudFormation Resource Specification v88.0.0
 
 ## New Resource Types
