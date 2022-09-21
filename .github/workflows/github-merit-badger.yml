@@ -17,4 +17,4 @@ jobs:
           badges: '[beginning-contributor,repeat-contributor,valued-contributor,admired-contributor,star-contributor,distinguished-contributor]'
           thresholds: '[0,3,6,13,25,50]'
           badge-type: 'achievement'
-          ignore-usernames: '[RomainMuller,rix0rrr,Jerry-AWS,MrArnoldPalmer,iliapolo,otaviomacedo,madeline-k,kaizencc,comcalvi,corymhall,peterwoodworth,ryparker,TheRealAmazonKendra,vinayak-kukreja,Naumel,mrgrain]'
+          ignore-usernames: '[RomainMuller,rix0rrr,Jerry-AWS,MrArnoldPalmer,iliapolo,otaviomacedo,madeline-k,kaizencc,comcalvi,corymhall,peterwoodworth,ryparker,TheRealAmazonKendra,vinayak-kukreja,Naumel,mrgrain,aws-cdk-automation,dependabot,mergify]'
