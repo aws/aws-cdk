@@ -1,3 +1,503 @@
+# CloudFormation Resource Specification v88.0.0
+
+## New Resource Types
+
+* AWS::CloudFront::OriginAccessControl
+* AWS::Connect::Instance
+* AWS::Connect::InstanceStorageConfig
+* AWS::ControlTower::EnabledControl
+* AWS::M2::Environment
+* AWS::Macie::AllowList
+* AWS::SupportApp::AccountAlias
+* AWS::SupportApp::SlackChannelConfiguration
+
+## Attribute Changes
+
+* AWS::EKS::Cluster Id (__added__)
+* AWS::GlobalAccelerator::Accelerator DualStackDnsName (__added__)
+* AWS::GlobalAccelerator::Accelerator Ipv6Addresses (__added__)
+* AWS::IoTWireless::WirelessGateway ThingName (__deleted__)
+* AWS::Logs::SubscriptionFilter FilterName (__added__)
+* AWS::RDS::DBParameterGroup Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html
+* AWS::RDS::DBParameterGroup DBParameterGroupName (__added__)
+* AWS::Redshift::ClusterParameterGroup ParameterGroupName (__added__)
+* AWS::SNS::Topic TopicArn (__added__)
+* AWS::SNS::Topic Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html
+
+## Property Changes
+
+* AWS::APS::Workspace LoggingConfiguration (__added__)
+* AWS::Cognito::UserPoolClient AuthSessionValidity (__added__)
+* AWS::Config::ConformancePack TemplateSSMDocumentDetails (__added__)
+* AWS::EKS::Cluster OutpostConfig (__added__)
+* AWS::IoTWireless::WirelessGateway ThingName (__added__)
+* AWS::Logs::SubscriptionFilter DestinationArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-destinationarn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-logs-subscriptionfilter-destinationarn
+* AWS::Logs::SubscriptionFilter FilterPattern.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-filterpattern
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-logs-subscriptionfilter-filterpattern
+* AWS::Logs::SubscriptionFilter LogGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-loggroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-logs-subscriptionfilter-loggroupname
+* AWS::Logs::SubscriptionFilter RoleArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-rolearn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-logs-subscriptionfilter-rolearn
+* AWS::RDS::DBParameterGroup Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+* AWS::RDS::DBParameterGroup Description.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBParameterGroup Family.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+* AWS::RDS::DBParameterGroup Family.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBParameterGroup Parameters.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveItemType (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.Type (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveType (__added__)
+* AWS::RDS::DBParameterGroup Parameters.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+* AWS::RDS::DBParameterGroup Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+* AWS::SNS::Topic DataProtectionPolicy (__added__)
+* AWS::SNS::Topic ContentBasedDeduplication.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-contentbaseddeduplication
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-contentbaseddeduplication
+* AWS::SNS::Topic DisplayName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-displayname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-displayname
+* AWS::SNS::Topic FifoTopic.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-fifotopic
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-fifotopic
+* AWS::SNS::Topic KmsMasterKeyId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-kmsmasterkeyid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-kmsmasterkeyid
+* AWS::SNS::Topic Subscription.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-subscription
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-subscription
+* AWS::SNS::Topic Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-tags
+* AWS::SNS::Topic TopicName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html#cfn-sns-topic-topicname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-topicname
+
+## Property Type Changes
+
+* AWS::APS::Workspace.LoggingConfiguration (__added__)
+* AWS::AppMesh::Route.TcpRouteMatch (__added__)
+* AWS::AppMesh::VirtualGateway.JsonFormatRef (__added__)
+* AWS::AppMesh::VirtualGateway.LoggingFormat (__added__)
+* AWS::AppMesh::VirtualNode.JsonFormatRef (__added__)
+* AWS::AppMesh::VirtualNode.LoggingFormat (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.ServerTimingHeadersConfig (__added__)
+* AWS::EKS::Cluster.OutpostConfig (__added__)
+* AWS::AppMesh::GatewayRoute.GatewayRouteTarget Port (__added__)
+* AWS::AppMesh::GatewayRoute.GrpcGatewayRouteMatch Port (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteMatch Port (__added__)
+* AWS::AppMesh::Route.GrpcRouteMatch Port (__added__)
+* AWS::AppMesh::Route.HttpRouteMatch Port (__added__)
+* AWS::AppMesh::Route.TcpRoute Match (__added__)
+* AWS::AppMesh::Route.WeightedTarget Port (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayFileAccessLog Format (__added__)
+* AWS::AppMesh::VirtualNode.FileAccessLog Format (__added__)
+* AWS::CloudFront::Distribution.Origin OriginAccessControlId (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.ResponseHeadersPolicyConfig ServerTimingHeadersConfig (__added__)
+* AWS::Lex::Bot.VoiceSettings Engine (__added__)
+* AWS::Redshift::ClusterParameterGroup.Parameter ParameterName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-property-redshift-clusterparametergroup-parameter.html#cfn-redshift-clusterparametergroup-parameter-parametername
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshift-clusterparametergroup-parameter.html#cfn-redshift-clusterparametergroup-parameter-parametername
+* AWS::Redshift::ClusterParameterGroup.Parameter ParameterValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-property-redshift-clusterparametergroup-parameter.html#cfn-redshift-clusterparametergroup-parameter-parametervalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshift-clusterparametergroup-parameter.html#cfn-redshift-clusterparametergroup-parameter-parametervalue
+* AWS::SNS::Topic.Subscription Endpoint.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-subscription.html#cfn-sns-topic-subscription-endpoint
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic-subscription.html#cfn-sns-topic-subscription-endpoint
+* AWS::SNS::Topic.Subscription Endpoint.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SNS::Topic.Subscription Protocol.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-subscription.html#cfn-sns-topic-subscription-protocol
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic-subscription.html#cfn-sns-topic-subscription-protocol
+* AWS::SNS::Topic.Subscription Protocol.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Unapplied changes
+
+* AWS::ConnectCampaigns is at 0.0.0
+* AWS::Rekognition is at 68.0.0
+* AWS::RolesAnywhere is at 0.0.0
+* AWS::SageMaker is at 72.0.0
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.IAMPolicyDocument Version.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Serverless::Function.ScheduleEvent Description (__added__)
+* AWS::Serverless::Function.ScheduleEvent Enabled (__added__)
+* AWS::Serverless::Function.ScheduleEvent Name (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowOrigin (__deleted__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowOrigins (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowHeaders.PrimitiveType (__deleted__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowHeaders.PrimitiveItemType (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowHeaders.Type (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowMethods.PrimitiveType (__deleted__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowMethods.PrimitiveItemType (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject AllowMethods.Type (__added__)
+* AWS::Serverless::HttpApi.CorsConfigurationObject MaxAge.PrimitiveType (__changed__)
+  * Old: String
+  * New: Integer
+
+# CloudFormation Resource Specification v85.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::RDS::DBParameterGroup Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html
+* AWS::RDS::DBParameterGroup DBParameterGroupName (__deleted__)
+
+## Property Changes
+
+* AWS::Connect::ContactFlow Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::LaunchTemplate VersionDescription (__added__)
+* AWS::Lambda::EventSourceMapping AmazonManagedKafkaEventSourceConfig (__added__)
+* AWS::Lambda::EventSourceMapping SelfManagedKafkaEventSourceConfig (__added__)
+* AWS::OpenSearchService::Domain AdvancedSecurityOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBInstance AvailabilityZone.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBParameterGroup Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-description
+* AWS::RDS::DBParameterGroup Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBParameterGroup Family.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-family
+* AWS::RDS::DBParameterGroup Family.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveType (__deleted__)
+* AWS::RDS::DBParameterGroup Parameters.DuplicatesAllowed (__added__)
+* AWS::RDS::DBParameterGroup Parameters.PrimitiveItemType (__added__)
+* AWS::RDS::DBParameterGroup Parameters.Type (__added__)
+* AWS::RDS::DBParameterGroup Parameters.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
+* AWS::RDS::DBParameterGroup Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbparametergroup.html#cfn-rds-dbparametergroup-tags
+* AWS::Redshift::EndpointAccess ClusterIdentifier.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Redshift::EndpointAccess SubnetGroupName.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Property Type Changes
+
+* AWS::EC2::NetworkInsightsAnalysis.AdditionalDetail (__added__)
+* AWS::Lambda::EventSourceMapping.AmazonManagedKafkaEventSourceConfig (__added__)
+* AWS::Lambda::EventSourceMapping.SelfManagedKafkaEventSourceConfig (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.AnalysisRouteTableRoute State (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.Explanation ComponentAccount (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.Explanation ComponentRegion (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.PathComponent AdditionalDetails (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.PathComponent ElasticLoadBalancerListener (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.PathComponent Explanations (__added__)
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput InternalUserDatabaseEnabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput MasterUserOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::OpenSearchService::Domain.EBSOptions Throughput (__added__)
+* AWS::OpenSearchService::Domain.MasterUserOptions MasterUserARN.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::OpenSearchService::Domain.MasterUserOptions MasterUserName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::OpenSearchService::Domain.MasterUserOptions MasterUserPassword.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Unapplied changes
+
+* AWS::ConnectCampaigns is at 0.0.0
+* AWS::Rekognition is at 68.0.0
+* AWS::RolesAnywhere is at 0.0.0
+* AWS::SageMaker is at 72.0.0
+
+# CloudFormation Resource Specification v84.0.0
+
+## New Resource Types
+
+* AWS::MSK::ServerlessCluster
+
+## Attribute Changes
+
+* AWS::RDS::DBInstance Endpoint.HostedZoneId (__added__)
+* AWS::RDS::DBInstance Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html
+
+## Property Changes
+
+* AWS::EC2::IPAMPool AwsService (__added__)
+* AWS::FMS::Policy SecurityServicePolicyData.PrimitiveType (__deleted__)
+* AWS::FMS::Policy SecurityServicePolicyData.Type (__added__)
+* AWS::RDS::DBInstance AllocatedStorage.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-allocatedstorage
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-allocatedstorage
+* AWS::RDS::DBInstance AllowMajorVersionUpgrade.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-allowmajorversionupgrade
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-allowmajorversionupgrade
+* AWS::RDS::DBInstance AssociatedRoles.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBInstance AssociatedRoles.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-associatedroles
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-associatedroles
+* AWS::RDS::DBInstance AutoMinorVersionUpgrade.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-autominorversionupgrade
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-autominorversionupgrade
+* AWS::RDS::DBInstance AutoMinorVersionUpgrade.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::RDS::DBInstance AvailabilityZone.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-availabilityzone
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-availabilityzone
+* AWS::RDS::DBInstance BackupRetentionPeriod.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-backupretentionperiod
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-backupretentionperiod
+* AWS::RDS::DBInstance BackupRetentionPeriod.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::RDS::DBInstance CACertificateIdentifier.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-cacertificateidentifier
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-cacertificateidentifier
+* AWS::RDS::DBInstance CharacterSetName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-charactersetname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-charactersetname
+* AWS::RDS::DBInstance CopyTagsToSnapshot.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-copytagstosnapshot
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-copytagstosnapshot
+* AWS::RDS::DBInstance DBClusterIdentifier.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-dbclusteridentifier
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-dbclusteridentifier
+* AWS::RDS::DBInstance DBInstanceClass.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-dbinstanceclass
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-dbinstanceclass
+* AWS::RDS::DBInstance DBInstanceClass.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::DBInstance DBInstanceIdentifier.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-dbinstanceidentifier
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-dbinstanceidentifier
+* AWS::RDS::DBInstance DBName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-dbname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-dbname
+* AWS::RDS::DBInstance DBParameterGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-dbparametergroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-dbparametergroupname
+* AWS::RDS::DBInstance DBParameterGroupName.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::RDS::DBInstance DBSecurityGroups.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-dbsecuritygroups
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-dbsecuritygroups
+* AWS::RDS::DBInstance DBSecurityGroups.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::DBInstance DBSnapshotIdentifier.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-dbsnapshotidentifier
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-dbsnapshotidentifier
+* AWS::RDS::DBInstance DBSubnetGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-dbsubnetgroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-dbsubnetgroupname
+* AWS::RDS::DBInstance DeleteAutomatedBackups.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-deleteautomatedbackups
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-deleteautomatedbackups
+* AWS::RDS::DBInstance DeletionProtection.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-deletionprotection
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-deletionprotection
+* AWS::RDS::DBInstance Domain.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-domain
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-domain
+* AWS::RDS::DBInstance DomainIAMRoleName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-domainiamrolename
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-domainiamrolename
+* AWS::RDS::DBInstance EnableCloudwatchLogsExports.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBInstance EnableCloudwatchLogsExports.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-enablecloudwatchlogsexports
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-enablecloudwatchlogsexports
+* AWS::RDS::DBInstance EnableIAMDatabaseAuthentication.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-enableiamdatabaseauthentication
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-enableiamdatabaseauthentication
+* AWS::RDS::DBInstance EnablePerformanceInsights.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-enableperformanceinsights
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-enableperformanceinsights
+* AWS::RDS::DBInstance Engine.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-engine
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-engine
+* AWS::RDS::DBInstance Engine.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::RDS::DBInstance EngineVersion.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-engineversion
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-engineversion
+* AWS::RDS::DBInstance EngineVersion.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::RDS::DBInstance Iops.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-iops
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-iops
+* AWS::RDS::DBInstance KmsKeyId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-kmskeyid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-kmskeyid
+* AWS::RDS::DBInstance LicenseModel.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-licensemodel
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-licensemodel
+* AWS::RDS::DBInstance MasterUserPassword.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-masteruserpassword
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-masteruserpassword
+* AWS::RDS::DBInstance MasterUsername.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-masterusername
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-masterusername
+* AWS::RDS::DBInstance MaxAllocatedStorage.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-maxallocatedstorage
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-maxallocatedstorage
+* AWS::RDS::DBInstance MonitoringInterval.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-monitoringinterval
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-monitoringinterval
+* AWS::RDS::DBInstance MonitoringInterval.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::RDS::DBInstance MonitoringRoleArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-monitoringrolearn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-monitoringrolearn
+* AWS::RDS::DBInstance MultiAZ.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-multiaz
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-multiaz
+* AWS::RDS::DBInstance MultiAZ.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::RDS::DBInstance OptionGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-optiongroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-optiongroupname
+* AWS::RDS::DBInstance PerformanceInsightsKMSKeyId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-performanceinsightskmskeyid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-performanceinsightskmskeyid
+* AWS::RDS::DBInstance PerformanceInsightsKMSKeyId.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::RDS::DBInstance PerformanceInsightsRetentionPeriod.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-performanceinsightsretentionperiod
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-performanceinsightsretentionperiod
+* AWS::RDS::DBInstance Port.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-port
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-port
+* AWS::RDS::DBInstance PreferredBackupWindow.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-preferredbackupwindow
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-preferredbackupwindow
+* AWS::RDS::DBInstance PreferredMaintenanceWindow.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-preferredmaintenancewindow
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-preferredmaintenancewindow
+* AWS::RDS::DBInstance PreferredMaintenanceWindow.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::RDS::DBInstance ProcessorFeatures.DuplicatesAllowed (__deleted__)
+* AWS::RDS::DBInstance ProcessorFeatures.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-processorfeatures
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-processorfeatures
+* AWS::RDS::DBInstance PromotionTier.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-promotiontier
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-promotiontier
+* AWS::RDS::DBInstance PubliclyAccessible.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-publiclyaccessible
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-publiclyaccessible
+* AWS::RDS::DBInstance SourceDBInstanceIdentifier.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-sourcedbinstanceidentifier
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-sourcedbinstanceidentifier
+* AWS::RDS::DBInstance SourceRegion.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-sourceregion
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-sourceregion
+* AWS::RDS::DBInstance StorageEncrypted.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-storageencrypted
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-storageencrypted
+* AWS::RDS::DBInstance StorageType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-storagetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-storagetype
+* AWS::RDS::DBInstance StorageType.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::RDS::DBInstance Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-tags
+* AWS::RDS::DBInstance Timezone.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-timezone
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-timezone
+* AWS::RDS::DBInstance UseDefaultProcessorFeatures.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-usedefaultprocessorfeatures
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-usedefaultprocessorfeatures
+* AWS::RDS::DBInstance VPCSecurityGroups.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-vpcsecuritygroups
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-vpcsecuritygroups
+* AWS::RDS::DBInstance VPCSecurityGroups.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::Redshift::ScheduledAction.PauseClusterMessage (__removed__)
+* AWS::Redshift::ScheduledAction.ResizeClusterMessage (__removed__)
+* AWS::Redshift::ScheduledAction.ResumeClusterMessage (__removed__)
+* AWS::FMS::Policy.NetworkFirewallPolicy (__added__)
+* AWS::FMS::Policy.PolicyOption (__added__)
+* AWS::FMS::Policy.SecurityServicePolicyData (__added__)
+* AWS::FMS::Policy.ThirdPartyFirewallPolicy (__added__)
+* AWS::RDS::DBInstance.Endpoint (__added__)
+
+## Unapplied changes
+
+* AWS::ConnectCampaigns is at 0.0.0
+* AWS::Rekognition is at 68.0.0
+* AWS::RolesAnywhere is at 0.0.0
+* AWS::SageMaker is at 72.0.0
+
 # CloudFormation Resource Specification v83.0.0
 
 ## New Resource Types

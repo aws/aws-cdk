@@ -7,7 +7,6 @@
  * * verify that an email was sent from the SNS
  * * rm testfile.txt
  */
-/// !cdk-integ pragma:ignore-assets
 import * as iot from '@aws-cdk/aws-iot';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';

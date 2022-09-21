@@ -5,7 +5,7 @@
       "stacks": [
         "restapi-metrics"
       ],
-      "assertionStack": "MetricsTestDefaultTestDeployAssertEA4ED73F"
+      "assertionStack": "MetricsTest/DefaultTest/DeployAssert"
     }
   }
 }

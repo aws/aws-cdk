@@ -3,9 +3,9 @@
   "testCases": {
     "networkMultipleTargetGroupsFargateServiceTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-fargate-multi-nlb-health"
       ],
-      "assertionStack": "networkMultipleTargetGroupsFargateServiceTestDefaultTestDeployAssertC9049A80"
+      "assertionStack": "networkMultipleTargetGroupsFargateServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

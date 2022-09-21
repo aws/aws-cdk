@@ -587,13 +587,16 @@ describe('fargate service', () => {
         },
       });
 
+      // Errors on validation, not on construction.
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        platformVersion: ecs.FargatePlatformVersion.VERSION1_3,
+      });
+
       // THEN
       expect(() => {
-        new ecs.FargateService(stack, 'FargateService', {
-          cluster,
-          taskDefinition,
-          platformVersion: ecs.FargatePlatformVersion.VERSION1_3,
-        });
+        Template.fromStack(stack);
       }).toThrow(new RegExp(`uses at least one container that references a secret JSON field.+platform version ${ecs.FargatePlatformVersion.VERSION1_4} or later`));
     });
 
@@ -1262,7 +1265,7 @@ describe('fargate service', () => {
               containerPort: 8001,
             })],
           });
-        }).toThrow(/No container named 'SideContainer'. Did you call "addContainer()"?/);
+        }).toThrow(/No container named 'SideContainer'. Did you call "addContainer\(\)"?/);
       });
     });
 
@@ -2178,7 +2181,7 @@ describe('fargate service', () => {
           ],
         });
       });
-    }),
+    });
 
     test('with serviceArn old format', () => {
       // GIVEN

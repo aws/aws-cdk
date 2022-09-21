@@ -6,14 +6,12 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as s3deploy from '../lib';
 
 /* eslint-disable max-len */
-
-const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 test('deploy from local directory asset', () => {
   // GIVEN
@@ -616,9 +614,9 @@ test('fails if distribution paths don\'t start with "/"', () => {
   })).toThrow(/Distribution paths must start with "\/"/);
 });
 
-testFutureBehavior('lambda execution role gets permissions to read from the source bucket and read/write in destination', s3GrantWriteCtx, cdk.App, (app) => {
+test('lambda execution role gets permissions to read from the source bucket and read/write in destination', () => {
   // GIVEN
-  const stack = new cdk.Stack(app);
+  const stack = new cdk.Stack();
   const source = new s3.Bucket(stack, 'Source');
   const bucket = new s3.Bucket(stack, 'Dest');
 
@@ -711,9 +709,9 @@ testFutureBehavior('lambda execution role gets permissions to read from the sour
   });
 });
 
-testFutureBehavior('lambda execution role gets putObjectAcl permission when deploying with accessControl', s3GrantWriteCtx, cdk.App, (app) => {
+test('lambda execution role gets putObjectAcl permission when deploying with accessControl', () => {
   // GIVEN
-  const stack = new cdk.Stack(app);
+  const stack = new cdk.Stack();
   const source = new s3.Bucket(stack, 'Source');
   const bucket = new s3.Bucket(stack, 'Dest');
 
@@ -1149,6 +1147,28 @@ test('throws if destinationKeyPrefix is too long', () => {
     destinationKeyPrefix: '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long??????',
     memoryLimit: 256,
   })).toThrow(/The BucketDeployment construct requires that/);
+
+});
+
+test('skips destinationKeyPrefix validation if token', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  // trick the cdk into creating a very long token
+  const prefixToken = cdk.Token.asString(5, { displayHint: 'longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglong' });
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: prefixToken,
+    memoryLimit: 256,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    DestinationBucketKeyPrefix: 5,
+  });
 
 });
 

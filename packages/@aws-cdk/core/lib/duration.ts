@@ -62,7 +62,7 @@ export class Duration {
   /**
    * Parse a period formatted according to the ISO 8601 standard
    *
-   * @see https://www.iso.org/fr/standard/70907.html
+   * @see https://www.iso.org/standard/70907.html
    * @param duration an ISO-formtted duration to be parsed.
    * @returns the parsed `Duration`.
    */
@@ -167,7 +167,7 @@ export class Duration {
    * Return an ISO 8601 representation of this period
    *
    * @returns a string starting with 'P' describing the period
-   * @see https://www.iso.org/fr/standard/70907.html
+   * @see https://www.iso.org/standard/70907.html
    */
   public toIsoString(): string {
     if (this.amount === 0) { return 'PT0S'; }
@@ -190,7 +190,7 @@ export class Duration {
    * Return an ISO 8601 representation of this period
    *
    * @returns a string starting with 'P' describing the period
-   * @see https://www.iso.org/fr/standard/70907.html
+   * @see https://www.iso.org/standard/70907.html
    * @deprecated Use `toIsoString()` instead.
    */
   public toISOString(): string {

@@ -20,7 +20,7 @@
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rolesanywhere-trustanchor-sourcedata.html"
     }
   },
-  "ResourceSpecificationVersion": "83.0.0",
+  "ResourceSpecificationVersion": "88.0.0",
   "ResourceTypes": {
     "AWS::RolesAnywhere::CRL": {
       "Attributes": {

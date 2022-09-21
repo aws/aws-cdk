@@ -5,7 +5,7 @@
       "stacks": [
         "redshift-loggingbucket-integ"
       ],
-      "assertionStack": "LoggingBucketIntegDefaultTestDeployAssert2827ECC1"
+      "assertionStack": "LoggingBucketInteg/DefaultTest/DeployAssert"
     }
   }
 }

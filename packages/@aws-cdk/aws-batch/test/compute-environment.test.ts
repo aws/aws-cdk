@@ -1,5 +1,5 @@
 import { throws } from 'assert';
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
@@ -375,7 +375,7 @@ describe('Batch Compute Environment', () => {
           ],
           type: batch.ComputeResourceType.ON_DEMAND,
           vpcSubnets: {
-            subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+            subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           },
         } as batch.ComputeResources,
         enabled: false,
@@ -581,6 +581,49 @@ describe('Batch Compute Environment', () => {
             Type: batch.ComputeResourceType.ON_DEMAND,
           }),
         });
+      });
+    });
+
+    describe('without useNetworkInterfaceSecurityGroups', () => {
+      test('should not have securityGroups', () => {
+        // THEN
+        throws(() => {
+          // WHEN
+          new batch.ComputeEnvironment(stack, 'test-compute-env', {
+            managed: true,
+            computeResources: {
+              vpc,
+              launchTemplate: {
+                useNetworkInterfaceSecurityGroups: true,
+                launchTemplateName: 'dummyname',
+              },
+              securityGroups: [],
+            },
+          });
+        });
+      });
+
+      test('should not have a SecurityGroupIds output', () => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'efa-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            launchTemplate: {
+              useNetworkInterfaceSecurityGroups: true,
+              launchTemplateName: 'dummyname',
+            },
+          },
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties(
+          'AWS::Batch::ComputeEnvironment', {
+            ComputeResources: {
+              SecurityGroupIds: Match.absent(),
+            },
+          },
+        );
       });
     });
 

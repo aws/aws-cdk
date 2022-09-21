@@ -2561,6 +2561,10 @@ describe('function', () => {
           'LambdaSGtoEfsEfsSecurityGroupFCE2954020499719694A',
           'MyFunctionServiceRoleDefaultPolicyB705ABD4',
           'MyFunctionServiceRole3C357FF2',
+          'VpcPrivateSubnet1DefaultRouteBE02A9ED',
+          'VpcPrivateSubnet1RouteTableAssociation70C59FA6',
+          'VpcPrivateSubnet2DefaultRoute060D2087',
+          'VpcPrivateSubnet2RouteTableAssociationA89CAD56',
         ],
       });
     });
@@ -3108,6 +3112,18 @@ test('FunctionVersionUpgrade adds new description to function', () => {
       Description: 'my description version-hash:54f18c47346ed84843c2dac547de81fa',
     },
   });
+});
+
+test('function using a reserved environment variable', () => {
+  const stack = new cdk.Stack();
+  expect(() => new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'index.handler',
+    runtime: lambda.Runtime.PYTHON_3_9,
+    environment: {
+      AWS_REGION: 'ap-southeast-2',
+    },
+  })).toThrow(/AWS_REGION environment variable is reserved/);
 });
 
 function newTestLambda(scope: constructs.Construct) {
