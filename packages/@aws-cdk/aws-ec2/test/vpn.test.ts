@@ -273,6 +273,48 @@ describe('vpn', () => {
 
   });
 
+  test('can import a vpn connection from attributes', () => {
+
+    const stack = new Stack();
+
+    const vpn = VpnConnection.fromVpnConnectionAttributes(stack, 'Connection', {
+      vpnId: 'idv',
+      customerGatewayIp: 'ip',
+      customerGatewayId: 'idc',
+      customerGatewayAsn: 6500,
+    });
+
+    expect(vpn.vpnId).toEqual('idv');
+    expect(vpn.customerGatewayAsn).toEqual(6500);
+    expect(vpn.customerGatewayId).toEqual('idc');
+    expect(vpn.customerGatewayIp).toEqual('ip');
+
+    expect(stack.resolve(vpn.metricTunnelState())).toEqual({
+      dimensions: { VpnId: 'idv' },
+      namespace: 'AWS/VPN',
+      metricName: 'TunnelState',
+      period: Duration.minutes(5),
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(vpn.metricTunnelDataIn())).toEqual({
+      dimensions: { VpnId: 'idv' },
+      namespace: 'AWS/VPN',
+      metricName: 'TunnelDataIn',
+      period: Duration.minutes(5),
+      statistic: 'Sum',
+    });
+
+    expect(stack.resolve(vpn.metricTunnelDataOut())).toEqual({
+      dimensions: { VpnId: 'idv' },
+      namespace: 'AWS/VPN',
+      metricName: 'TunnelDataOut',
+      period: Duration.minutes(5),
+      statistic: 'Sum',
+    });
+
+  });
+
   test('can use metricAllTunnelDataOut', () => {
     // GIVEN
     const stack = new Stack();
