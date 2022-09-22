@@ -1,7 +1,20 @@
 {
   "version": "21.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "2a53dc40a7dae81c8850e125ab49e5f55d80b7b8ceac86976f2a4119393cab72": {
+      "source": {
+        "path": "asset.2a53dc40a7dae81c8850e125ab49e5f55d80b7b8ceac86976f2a4119393cab72.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2a53dc40a7dae81c8850e125ab49e5f55d80b7b8ceac86976f2a4119393cab72.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "f05eb2af39626bd9531564d273d47976f2ebb13291decf51280184544f945c8e": {
       "source": {
         "path": "integtestendpointDefaultTestDeployAssert02E18E07.template.json",
         "packaging": "file"
@@ -9,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "f05eb2af39626bd9531564d273d47976f2ebb13291decf51280184544f945c8e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

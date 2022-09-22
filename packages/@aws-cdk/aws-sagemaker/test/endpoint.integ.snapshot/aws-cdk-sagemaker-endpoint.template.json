@@ -1153,6 +1153,19 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputFnGetAttEndpoint8024A810EndpointNameC77E4EFF": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Endpoint8024A810",
+     "EndpointName"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-sagemaker-endpoint:ExportsOutputFnGetAttEndpoint8024A810EndpointNameC77E4EFF"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

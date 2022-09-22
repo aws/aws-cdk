@@ -1895,6 +1895,24 @@
               "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
               "version": "0.0.0"
             }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-sagemaker-endpoint/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"Endpoint8024A810\",\"EndpointName\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"Endpoint8024A810\",\"EndpointName\"]}",
+                "path": "aws-cdk-sagemaker-endpoint/Exports/Output{\"Fn::GetAtt\":[\"Endpoint8024A810\",\"EndpointName\"]}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.102"
+            }
           }
         },
         "constructInfo": {
@@ -1921,6 +1939,142 @@
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "integtest-endpoint/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallSageMakerRuntimeinvokeEndpoint": {
+                    "id": "AwsApiCallSageMakerRuntimeinvokeEndpoint",
+                    "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.102"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertEqualsSageMakerRuntimeinvokeEndpoint": {
+                        "id": "AssertEqualsSageMakerRuntimeinvokeEndpoint",
+                        "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/AssertEqualsSageMakerRuntimeinvokeEndpoint",
+                        "children": {
+                          "AssertionProvider": {
+                            "id": "AssertionProvider",
+                            "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/AssertEqualsSageMakerRuntimeinvokeEndpoint/AssertionProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/AssertEqualsSageMakerRuntimeinvokeEndpoint/AssertionProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.102"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/AssertEqualsSageMakerRuntimeinvokeEndpoint/Default",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/AssertEqualsSageMakerRuntimeinvokeEndpoint/Default/Default",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssertionResults": {
+                            "id": "AssertionResults",
+                            "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/AssertEqualsSageMakerRuntimeinvokeEndpoint/AssertionResults",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnOutput",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.EqualsAssertion",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "integtest-endpoint/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integtest-endpoint/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integtest-endpoint/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integtest-endpoint/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.102"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"

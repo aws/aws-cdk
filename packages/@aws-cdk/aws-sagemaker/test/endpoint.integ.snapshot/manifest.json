@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4b12ad155704f8646edd58b494ef9a04ed70730c3f4099c878725e7b9d4b0d3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/92eb0d4f6f8e308653ce1e7a2d762e203950c54094f2af5a87878deb2154faba.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -315,6 +315,12 @@
             "data": "GPUMemoryUtilizationAlarmD03813BC"
           }
         ],
+        "/aws-cdk-sagemaker-endpoint/Exports/Output{\"Fn::GetAtt\":[\"Endpoint8024A810\",\"EndpointName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttEndpoint8024A810EndpointNameC77E4EFF"
+          }
+        ],
         "/aws-cdk-sagemaker-endpoint/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -346,7 +352,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f05eb2af39626bd9531564d273d47976f2ebb13291decf51280184544f945c8e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -359,9 +365,40 @@
         }
       },
       "dependencies": [
+        "aws-cdk-sagemaker-endpoint",
         "integtestendpointDefaultTestDeployAssert02E18E07.assets"
       ],
       "metadata": {
+        "/integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSageMakerRuntimeinvokeEndpoint"
+          }
+        ],
+        "/integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/AssertEqualsSageMakerRuntimeinvokeEndpoint/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSageMakerRuntimeinvokeEndpointAssertEqualsSageMakerRuntimeinvokeEndpointC69E5C0F"
+          }
+        ],
+        "/integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/AssertEqualsSageMakerRuntimeinvokeEndpoint/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAssertEqualsSageMakerRuntimeinvokeEndpoint2a4aef90ed608f74027dda24921eea17"
+          }
+        ],
+        "/integtest-endpoint/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integtest-endpoint/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
         "/integtest-endpoint/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

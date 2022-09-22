@@ -4,7 +4,7 @@ import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
-import { IntegTest } from '@aws-cdk/integ-tests';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
 import * as sagemaker from '../lib';
 
 /*
@@ -132,6 +132,21 @@ productionVariant.metricGpuMemoryUtilization().createAlarm(stack, 'GPUMemoryUtil
   evaluationPeriods: 29,
 });
 
-new IntegTest(app, 'integtest-endpoint', {
+const integ = new IntegTest(app, 'integtest-endpoint', {
   testCases: [stack],
 });
+
+const invoke = integ.assertions.awsApiCall('SageMakerRuntime', 'invokeEndpoint', {
+  EndpointName: endpoint.endpointName,
+  TargetVariant: 'thirdVariant',
+  Body: 'any string',
+});
+invoke.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: 'sagemaker:InvokeEndpoint',
+  Resource: '*',
+});
+invoke.expect(ExpectedResult.objectLike({
+  InvokedProductionVariant: 'thirdVariant',
+  Body: Buffer.from('Artifact info: No artifacts are present\n').toJSON(),
+}));

@@ -1,4 +1,127 @@
 {
+ "Resources": {
+  "AwsApiCallSageMakerRuntimeinvokeEndpoint": {
+   "Type": "Custom::DeployAssert@SdkCallSageMakerRuntimeinvokeEndpoint",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SageMakerRuntime",
+    "api": "invokeEndpoint",
+    "parameters": {
+     "EndpointName": {
+      "Fn::ImportValue": "aws-cdk-sagemaker-endpoint:ExportsOutputFnGetAttEndpoint8024A810EndpointNameC77E4EFF"
+     },
+     "TargetVariant": "thirdVariant",
+     "Body": "any string"
+    },
+    "flattenResponse": "false",
+    "salt": "1663870880215"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSageMakerRuntimeinvokeEndpointAssertEqualsSageMakerRuntimeinvokeEndpointC69E5C0F": {
+   "Type": "Custom::DeployAssert@AssertEquals",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "actual": {
+     "Fn::GetAtt": [
+      "AwsApiCallSageMakerRuntimeinvokeEndpoint",
+      "apiCallResponse"
+     ]
+    },
+    "expected": "{\"$ObjectLike\":{\"InvokedProductionVariant\":\"thirdVariant\",\"Body\":{\"type\":\"Buffer\",\"data\":[65,114,116,105,102,97,99,116,32,105,110,102,111,58,32,78,111,32,97,114,116,105,102,97,99,116,115,32,97,114,101,32,112,114,101,115,101,110,116,10]}}}",
+    "salt": "1663870880215"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "runtime.sagemaker:InvokeEndpoint"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": "sagemaker:InvokeEndpoint",
+         "Resource": "*"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "2a53dc40a7dae81c8850e125ab49e5f55d80b7b8ceac86976f2a4119393cab72.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAssertEqualsSageMakerRuntimeinvokeEndpoint2a4aef90ed608f74027dda24921eea17": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSageMakerRuntimeinvokeEndpointAssertEqualsSageMakerRuntimeinvokeEndpointC69E5C0F",
+     "data"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
