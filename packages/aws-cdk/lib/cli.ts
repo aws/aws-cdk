@@ -488,6 +488,9 @@ async function initCommandLine() {
           case 'prepare-change-set':
             deploymentMethod = { method: 'change-set', execute: false, changeSetName: args.changeSetName };
             break;
+          case undefined:
+            deploymentMethod = { method: 'change-set', execute: args.execute ?? true, changeSetName: args.changeSetName };
+            break;
         }
 
         return cli.deploy({
