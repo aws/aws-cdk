@@ -241,7 +241,7 @@ export class PullRequestLinter {
     });
 
     validationCollector.validateRuleSet({
-      exemption: cliIntegTested,
+      exemption: (pr) => hasLabel(pr, Exemption.CLI_INTEG_TESTED),
       testRuleSet: [ { test: noCliChanges } ],
     });
 
@@ -331,10 +331,6 @@ function shouldExemptIntegTest(pr: GitHubPr): boolean {
 function shouldExemptBreakingChange(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.BREAKING_CHANGE);
 };
-
-function cliIntegTested(pr: GitHubPr): boolean {
-  return hasLabel(pr, Exemption.CLI_INTEG_TESTED);
-}
 
 function hasLabel(pr: GitHubPr, labelName: string): boolean {
   return pr.labels.some(function (l: any) {
