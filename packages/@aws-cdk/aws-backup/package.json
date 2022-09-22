@@ -84,8 +84,9 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2"
   },
@@ -97,6 +98,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^10.0.0"
@@ -109,6 +111,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^10.0.0"

@@ -64,12 +64,8 @@ export class BackupableResourcesCollector implements IAspect {
     }
 
     if (node instanceof s3.CfnBucket) {
+      // S3 Bucket exposes ARN directly so don't need to format
       this.resources.push(node.attrArn);
-      //this.resources.push(Stack.of(node).formatArn({
-      //  service: 's3',
-      //  resource: node.ref,
-      //  arnFormat: ArnFormat.NO_RESOURCE_NAME,
-      //}));
     }
   }
 }

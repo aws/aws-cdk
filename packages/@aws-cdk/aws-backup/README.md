@@ -36,6 +36,7 @@ Assigning resources to a plan can be done with `addSelection()`:
 declare const plan: backup.BackupPlan;
 declare const vpc: ec2.Vpc;
 const myTable = dynamodb.Table.fromTableName(this, 'Table', 'myTableName');
+const myBucket = new s3.Bucket(this, 'Bucket', {});
 const myDatabaseInstance = new rds.DatabaseInstance(this, 'DatabaseInstance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_26 }),
   vpc,
@@ -60,6 +61,7 @@ plan.addSelection('Selection', {
     backup.BackupResource.fromRdsDatabaseInstance(myDatabaseInstance), // A RDS instance
     backup.BackupResource.fromRdsDatabaseCluster(myDatabaseCluster), // A RDS database cluster
     backup.BackupResource.fromRdsServerlessCluster(myServerlessCluster), // An Aurora Serverless cluster
+    backup.BackupResource.fromS3Bucket(myBucket), // An S3 Bucket
     backup.BackupResource.fromTag('stage', 'prod'), // All resources that are tagged stage=prod in the region/account
     backup.BackupResource.fromConstruct(myCoolConstruct), // All backupable resources in `myCoolConstruct`
   ]
@@ -68,6 +70,22 @@ plan.addSelection('Selection', {
 
 If not specified, a new IAM role with a managed policy for backup will be
 created for the selection. The `BackupSelection` implements `IGrantable`.
+
+The IAM role used by a plan can be accessed using the `role` property of a
+`BackupSelection`. For example, you could add an additional managed policy to
+the automatically generated IAM role:
+
+```ts
+// BackupSelection
+declare const selection: backup.BackupSelection;
+
+// use the exposed role property to add additional policies
+const iamRole = selection.role;
+
+// add example fake managed policy to auto generated IAM role
+const fakePolicyName = 'FakePolicyName';
+iamRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(fakePolicyName));
+```
 
 To add rules to a plan, use `addRule()`:
 
@@ -180,7 +198,7 @@ const vault = new backup.BackupVault(this, 'Vault', {
 })
 ```
 
-Alternativately statements can be added to the vault policy using `addToAccessPolicy()`.
+Alternatively, statements can be added to the vault policy using `addToAccessPolicy()`.
 
 Use the `blockRecoveryPointDeletion` property or the `blockRecoveryPointDeletion()` method to add
 a statement to the vault access policy that prevents recovery point deletions in your vault:
@@ -218,3 +236,27 @@ const role = new iam.Role(this, 'Access Role', { assumedBy: new iam.ServicePrinc
 
 importedVault.grant(role, 'backup:StartBackupJob');
 ```
+
+## Backup selection IAM role policies
+
+When creating a new `BackupSelection`, if no user IAM role is provided, a new
+IAM role with a managed policy for backup will be created for the selection. 
+
+All policies, by default, include the `AWSBackupServiceRolePolicyForBackup` AWS
+managed policy. Adding the `allowRestores` flag adds the
+`AWSBackupServiceRolePolicyForRestores` managed policy.
+
+If you are creating a selection which includes an **S3 Bucket**, then the
+default service roles are not sufficient for backup nor restore operations. To
+enable S3 backups for a selection, include the `allowS3Backup` flag (the
+`AWSBackupServiceRolePolicyForS3Backup` managed policy). To enable S3 restores
+for a selection, include the `allowS3Restores` flag (the
+`AWSBackupServiceRolePolicyForS3Restore` managed policy). Both of these flags
+are `false` by default.
+
+If the generated IAM roles for a `BackupSelection` are insufficient, you can
+either include your own IAM role using the optional `role` field, or access the
+generated IAM role with the read only `role` property. If you want to have
+complete control over role policies, you should provide your own role with the
+`role` field and disable any automatic addition of managed policies with the
+`customRole` field.

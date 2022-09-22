@@ -1,8 +1,8 @@
-import { Template, Match, Capture } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
-import { PrincipalWithConditions } from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import * as rds from '@aws-cdk/aws-rds';
 import * as s3 from '@aws-cdk/aws-s3';
 import { RemovalPolicy, Stack } from '@aws-cdk/core';
@@ -81,6 +81,201 @@ test('create a selection', () => {
   });
 });
 
+test('generated IAM role with customRole flag', () => {
+  // WHEN
+
+  // Create a backup selection
+  const selection = new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn1'),
+    ],
+    customRole: true,
+  });
+
+  // use the exposed role property to add additional policies
+  const iamRole = selection.role;
+  const fakePolicyName = 'FakePolicyName';
+  // add example fake managed policy
+  iamRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(fakePolicyName));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/' + fakePolicyName,
+          ],
+        ],
+      },
+    ],
+  });
+});
+
+test('provided IAM role with customRole flag', () => {
+  // WHEN
+
+  // User provided role
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
+  });
+
+  // Add a policy to the provided role
+  const fakePolicyName = 'FakePolicyName';
+
+  // add example fake managed policy
+  role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(fakePolicyName));
+
+  // Create a backup selection
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn1'),
+    ],
+    role: role,
+    customRole: true,
+  });
+
+  // Get the template
+  const template = Template.fromStack(stack);
+
+  // Discover the added bucket
+  const roles = template.findResources(
+    'AWS::IAM::Role', {},
+  );
+
+  // Get bucket ID
+  expect(Object.keys(roles)).toHaveLength(1);
+  const roleName = Object.keys(roles)[0];
+
+  // THEN
+
+  // Has a role with only the users custom policy
+  template.hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/' + fakePolicyName,
+          ],
+        ],
+      },
+    ],
+  });
+
+  // Has a Backup selection which uses the custom role
+  template.hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      IamRoleArn: {
+        'Fn::GetAtt': [
+          roleName,
+          'Arn',
+        ],
+      },
+    },
+  });
+
+});
+
+
+test('customised IAM role with default policies', () => {
+  // WHEN
+
+  // Create a backup selection
+  const selection = new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn1'),
+    ],
+    allowRestores: true,
+    allowS3Backup: true,
+    allowS3Restores: true,
+  });
+
+  // use the exposed role property to add additional policies
+  const iamRole = selection.role;
+  const fakePolicyName = 'FakePolicyName';
+  // add example fake managed policy
+  iamRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(fakePolicyName));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup',
+          ],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores',
+          ],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/AWSBackupServiceRolePolicyForS3Backup',
+          ],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/AWSBackupServiceRolePolicyForS3Restore',
+          ],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/' + fakePolicyName,
+          ],
+        ],
+      },
+    ],
+  });
+});
+
 test('allow restores', () => {
   // WHEN
   new BackupSelection(stack, 'Selection', {
@@ -122,6 +317,127 @@ test('allow restores', () => {
   });
 });
 
+test('allow S3 backup', () => {
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn1'),
+    ],
+    allowRestores: true,
+    allowS3Backup: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup',
+          ],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores',
+          ],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/AWSBackupServiceRolePolicyForS3Backup',
+          ],
+        ],
+      },
+    ],
+  });
+});
+
+test('allow S3 backup and restore', () => {
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn1'),
+    ],
+    allowRestores: true,
+    allowS3Backup: true,
+    allowS3Restores: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup',
+          ],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores',
+          ],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/AWSBackupServiceRolePolicyForS3Backup',
+          ],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/AWSBackupServiceRolePolicyForS3Restore',
+          ],
+        ],
+      },
+    ],
+  });
+});
+
 test('fromConstruct', () => {
   // GIVEN
   class EfsConstruct extends Construct {
@@ -141,6 +457,8 @@ test('fromConstruct', () => {
           type: dynamodb.AttributeType.STRING,
         },
       });
+
+      new s3.Bucket(this, 'Bucket', {});
 
       new EfsConstruct(this, 'EFS');
 
@@ -178,8 +496,20 @@ test('fromConstruct', () => {
     ],
   });
 
+  // Get the template
+  const template = Template.fromStack(stack);
+
+  // Discover the added bucket
+  const buckets = template.findResources(
+    'AWS::S3::Bucket', {},
+  );
+
+  // Get bucket ID
+  expect(Object.keys(buckets)).toHaveLength(1);
+  const newBucketName = Object.keys(buckets)[0];
+
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
+  template.hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupSelection: {
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -209,6 +539,13 @@ test('fromConstruct', () => {
                 Ref: 'MyConstructTable25959456',
               },
             ],
+          ],
+        },
+        // New bucket ARN
+        {
+          'Fn::GetAtt': [
+            newBucketName,
+            'Arn',
           ],
         },
         {
@@ -352,24 +689,31 @@ test('fromS3Bucket', () => {
   });
 
   // THEN
+
+  // Get the template
   const template = Template.fromStack(stack);
 
+  // Discover the added bucket
   const buckets = template.findResources(
-    'AWS::S3::Bucket', {}
-  )
+    'AWS::S3::Bucket', {},
+  );
 
-  // Check that the bucket resource was added properly
+  // Get bucket ID
+  expect(Object.keys(buckets)).toHaveLength(1);
+  const newBucketName = Object.keys(buckets)[0];
+
+  // Check that the new and existing bucket resource was added properly
   template.hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupSelection: {
       Resources: [
-        // New Bucket
+        // New Bucket ARN reference
         {
           'Fn::GetAtt': [
-            Match.anyValue(),
+            newBucketName,
             'Arn',
           ],
         },
-        // Existing bucket
+        // Existing bucket ARN directly
         existingBucketARN,
       ],
       SelectionName: 'Selection',
