@@ -21,7 +21,20 @@ describe('When validating stack containing an EndpointConfig', () => {
     const when = () => app.synth();
 
     // THEN
-    expect(when).toThrow(/Can\'t have more than 10 Production Variants/);
+    expect(when).toThrow(/Can\'t have more than 10 production variants/);
+  });
+
+  test('with no production variants, an exception is thrown on synthesis', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    new sagemaker.EndpointConfig(stack, 'EndpointConfig');
+
+    // WHEN
+    const when = () => app.synth();
+
+    // THEN
+    expect(when).toThrow(/Must configure at least 1 production variant/);
   });
 });
 

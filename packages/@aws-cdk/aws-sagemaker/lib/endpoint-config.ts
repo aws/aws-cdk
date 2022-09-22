@@ -251,8 +251,10 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     const result = Array<string>();
 
     // validate number of production variants
-    if (this.instanceProductionVariants.length > 10) {
-      result.push('Can\'t have more than 10 Production Variants');
+    if (this.instanceProductionVariants.length < 1) {
+      result.push('Must configure at least 1 production variant');
+    } else if (this.instanceProductionVariants.length > 10) {
+      result.push('Can\'t have more than 10 production variants');
     }
 
     return result;
