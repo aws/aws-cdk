@@ -1056,6 +1056,44 @@
               "fqn": "constructs.Construct",
               "version": "10.1.95"
             }
+          },
+          "Alarm": {
+            "id": "Alarm",
+            "path": "aws-cdk-neptune-integ/Alarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-neptune-integ/Alarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "LessThanThreshold",
+                    "evaluationPeriods": 1,
+                    "dimensions": [
+                      {
+                        "name": "DBClusterIdentifier",
+                        "value": {
+                          "Ref": "DatabaseB269D8BB"
+                        }
+                      }
+                    ],
+                    "metricName": "SparqlRequestsPerSec",
+                    "namespace": "AWS/Neptune",
+                    "period": 300,
+                    "statistic": "Average",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {

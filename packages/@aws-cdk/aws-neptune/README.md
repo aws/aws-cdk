@@ -121,7 +121,7 @@ const cluster = new neptune.DatabaseCluster(this, 'Database', {
 });
 ```
 
-Additionally it is also possible to add replicas using `DatabaseInstance` for an existing cluster.
+Additionally, it is also possible to add replicas using `DatabaseInstance` for an existing cluster.
 
 ```ts fixture=with-cluster
 const replica1 = new neptune.DatabaseInstance(this, 'Instance', {
@@ -175,3 +175,17 @@ const cluster = new neptune.DatabaseCluster(this, 'Database', {
 For more information on monitoring, refer to https://docs.aws.amazon.com/neptune/latest/userguide/monitoring.html.
 For more information on audit logs, refer to https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html.
 For more information on exporting logs to CloudWatch Logs, refer to https://docs.aws.amazon.com/neptune/latest/userguide/cloudwatch-logs.html.
+
+## Metrics
+
+Both `DatabaseCluster` and `DatabaseInstance` provide a `metric()` method to help with cluster-level and instance-level monitoring.
+
+```ts
+declare const cluster: neptune.DatabaseCluster;
+declare const instance: neptune.DatabaseInstance;
+
+cluster.metric('SparqlRequestsPerSec'); // cluster-level SparqlErrors metric
+instance.metric('SparqlRequestsPerSec') // instance-level SparqlErrors metric
+```
+
+For more details on the available metrics, refer to https://docs.aws.amazon.com/neptune/latest/userguide/cw-metrics.html

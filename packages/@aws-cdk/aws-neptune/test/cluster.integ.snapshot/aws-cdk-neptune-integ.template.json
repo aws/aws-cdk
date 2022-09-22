@@ -643,6 +643,26 @@
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
    ]
+  },
+  "Alarm7103F465": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanThreshold",
+    "EvaluationPeriods": 1,
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": {
+       "Ref": "DatabaseB269D8BB"
+      }
+     }
+    ],
+    "MetricName": "SparqlRequestsPerSec",
+    "Namespace": "AWS/Neptune",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
   }
  },
  "Parameters": {

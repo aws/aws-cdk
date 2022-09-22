@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.92"
+          "version": "10.1.95"
         }
       },
       "aws-cdk-neptune-integ": {
@@ -1026,7 +1026,7 @@
                 "path": "ClusterTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.92"
+                  "version": "10.1.95"
                 }
               },
               "DeployAssert": {
