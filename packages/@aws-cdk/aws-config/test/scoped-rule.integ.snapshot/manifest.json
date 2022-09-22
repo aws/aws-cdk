@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/334d65f391737c79c5dd4a7f1fd9b8b58c86d362835cfcfd1a3873245cb214e0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce24448515abcdc66d5b46f4e7b5a3a4bad2eda8fa9f00dde24710cbc9860c87.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,10 +51,10 @@
             "data": "CustomFunctionBADD59E7"
           }
         ],
-        "/aws-cdk-config-rule-scoped-integ/CustomFunction/Permission": [
+        "/aws-cdk-config-rule-scoped-integ/CustomFunction/CustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5Q=": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomFunctionPermission41887A5E"
+            "data": "CustomFunctionCustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5QED54A3F8"
           }
         ],
         "/aws-cdk-config-rule-scoped-integ/Custom/Resource": [
@@ -73,6 +73,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "CustomFunctionPermission41887A5E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomFunctionPermission41887A5E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

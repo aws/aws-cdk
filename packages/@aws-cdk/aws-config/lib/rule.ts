@@ -2,7 +2,7 @@ import { createHash } from 'crypto';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnConfigRule } from './config.generated';
 
@@ -356,8 +356,8 @@ export class CustomRule extends RuleNew {
     const hash = createHash('sha256')
       .update(JSON.stringify({
         fnName: props.lambdaFunction.functionName.toString,
-        accountId: this.env.account,
-        region: this.env.region,
+        accountId: Stack.of(this).resolve(this.env.account),
+        region: Stack.of(this).resolve(this.env.region),
       }), 'utf8')
       .digest('base64');
     const customRulePermissionId: string = `CustomRulePermission${hash}`;
