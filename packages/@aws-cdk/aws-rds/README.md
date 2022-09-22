@@ -31,7 +31,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
     vpc,
   },
@@ -99,7 +99,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   credentials: rds.Credentials.fromGeneratedSecret('syscdk'), // Optional - will default to 'admin' username and generated password
   vpc,
   vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   }
 });
 ```
@@ -175,7 +175,7 @@ new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   },
   publiclyAccessible: true,
 });
@@ -186,7 +186,7 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
   instanceProps: {
     vpc,
     vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
     publiclyAccessible: true,
   },
@@ -355,7 +355,7 @@ declare const instance: rds.DatabaseInstance;
 declare const myEndpoint: ec2.InterfaceVpcEndpoint;
 
 instance.addRotationSingleUser({
-  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }, // Place rotation Lambda in private subnets
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }, // Place rotation Lambda in private subnets
   endpoint: myEndpoint, // Use VPC interface endpoint
 });
 ```

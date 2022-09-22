@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,50 +7,54 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-codecommit-repo-contents-zip-file.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-codecommit-repo-contents-zip-file.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-codecommit-repo-contents-zip-file": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-codecommit-repo-contents-zip-file.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-cdk-codecommit-repo-contents-zip-file": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.ea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18.zip",
-              "id": "ea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18",
-              "packaging": "file",
-              "sourceHash": "ea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18",
-              "s3BucketParameter": "AssetParametersea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18S3Bucket361A4B4D",
-              "s3KeyParameter": "AssetParametersea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18S3VersionKeyFDE2007C",
-              "artifactHashParameter": "AssetParametersea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18ArtifactHash21ADA702"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3228f97c4d242bfed09bc10f82123d45af7d38f285de9f706ee674c9485ee857.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-codecommit-repo-contents-zip-file.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-codecommit-repo-contents-zip-file.assets"
+      ],
+      "metadata": {
         "/aws-cdk-codecommit-repo-contents-zip-file/Repo/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Repo02AC86CF"
           }
         ],
-        "/aws-cdk-codecommit-repo-contents-zip-file/AssetParameters/ea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18/S3Bucket": [
+        "/aws-cdk-codecommit-repo-contents-zip-file/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18S3Bucket361A4B4D"
+            "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-codecommit-repo-contents-zip-file/AssetParameters/ea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18/S3VersionKey": [
+        "/aws-cdk-codecommit-repo-contents-zip-file/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18S3VersionKeyFDE2007C"
-          }
-        ],
-        "/aws-cdk-codecommit-repo-contents-zip-file/AssetParameters/ea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18ArtifactHash21ADA702"
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

@@ -5,7 +5,7 @@
       "stacks": [
         "integ-cloudfront-rest-api-origin"
       ],
-      "assertionStack": "restapioriginDefaultTestDeployAssert6BBA15BA"
+      "assertionStack": "rest-api-origin/DefaultTest/DeployAssert"
     }
   }
 }

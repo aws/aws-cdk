@@ -1,5 +1,5 @@
 {
-  "$version": "85.0.0",
+  "$version": "89.0.0",
   "PropertyTypes": {
     "AWS::MediaPackage::Asset.EgressEndpoint": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediapackage-asset-egressendpoint.html",
@@ -51,6 +51,12 @@
       "Properties": {
         "ConstantInitializationVector": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediapackage-originendpoint-cmafencryption.html#cfn-mediapackage-originendpoint-cmafencryption-constantinitializationvector",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "EncryptionMethod": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediapackage-originendpoint-cmafencryption.html#cfn-mediapackage-originendpoint-cmafencryption-encryptionmethod",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"

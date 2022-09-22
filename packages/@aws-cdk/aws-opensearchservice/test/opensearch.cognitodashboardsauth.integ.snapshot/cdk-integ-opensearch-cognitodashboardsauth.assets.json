@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "3a775caaee27411e3f0b828747ee79d41933fe7f48252b614b1992e509a3ceb7": {
+      "source": {
+        "path": "cdk-integ-opensearch-cognitodashboardsauth.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3a775caaee27411e3f0b828747ee79d41933fe7f48252b614b1992e509a3ceb7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

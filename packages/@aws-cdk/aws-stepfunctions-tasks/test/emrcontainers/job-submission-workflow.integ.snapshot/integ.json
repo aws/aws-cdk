@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "integ.job-submission-workflow": {
+    "aws-stepfunctions-tasks-emr-containers-all-services/DefaultTest": {
       "stacks": [
-        "aws-stepfunctions-tasks-emr-containers-all-services-integ"
+        "aws-stepfunctions-tasks-emr-containers-all-services-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "assertionStack": "aws-stepfunctions-tasks-emr-containers-all-services/DefaultTest/DeployAssert",
+      "assertionStackName": "awsstepfunctionstasksemrcontainersallservicesDefaultTestDeployAssertE09C88B0"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,40 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-redshift-cluster-database.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-redshift-cluster-database.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-redshift-cluster-database": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-redshift-cluster-database.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-cdk-redshift-cluster-database": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.fb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3",
-              "id": "fb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3",
-              "packaging": "zip",
-              "sourceHash": "fb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3",
-              "s3BucketParameter": "AssetParametersfb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3S3BucketDE954F71",
-              "s3KeyParameter": "AssetParametersfb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3S3VersionKey2FB7F01A",
-              "artifactHashParameter": "AssetParametersfb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3ArtifactHash96DA1306"
-            }
-          },
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671",
-              "id": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671",
-              "packaging": "zip",
-              "sourceHash": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671",
-              "s3BucketParameter": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket766250D8",
-              "s3KeyParameter": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey850D9181",
-              "artifactHashParameter": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671ArtifactHashC40EE1D5"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/784177efbde5b0ae9662ffc9f5f85895be269347870d0564efaa1281f8a1c38e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-redshift-cluster-database.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-redshift-cluster-database.assets"
+      ],
+      "metadata": {
         "/aws-cdk-redshift-cluster-database/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -215,6 +213,15 @@
             "data": "ClusterEB0386A7"
           }
         ],
+        "/aws-cdk-redshift-cluster-database/Cluster/ParameterGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterParameterGroup879806FD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
         "/aws-cdk-redshift-cluster-database/User/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -293,42 +300,6 @@
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997"
           }
         ],
-        "/aws-cdk-redshift-cluster-database/AssetParameters/fb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersfb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3S3BucketDE954F71"
-          }
-        ],
-        "/aws-cdk-redshift-cluster-database/AssetParameters/fb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersfb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3S3VersionKey2FB7F01A"
-          }
-        ],
-        "/aws-cdk-redshift-cluster-database/AssetParameters/fb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersfb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3ArtifactHash96DA1306"
-          }
-        ],
-        "/aws-cdk-redshift-cluster-database/AssetParameters/3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket766250D8"
-          }
-        ],
-        "/aws-cdk-redshift-cluster-database/AssetParameters/3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3VersionKey850D9181"
-          }
-        ],
-        "/aws-cdk-redshift-cluster-database/AssetParameters/3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671ArtifactHashC40EE1D5"
-          }
-        ],
         "/aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -351,6 +322,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Table7ABB320E"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
