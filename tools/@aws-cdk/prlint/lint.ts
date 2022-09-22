@@ -14,18 +14,18 @@ enum Exemption {
   CLI_INTEG_TESTED = 'pr-linter/cli-integ-tested',
 }
 
-interface GitHubPr {
+export interface GitHubPr {
   readonly number: number;
   readonly title: string;
   readonly body: string | null;
   readonly labels: GitHubLabel[];
 }
 
-interface GitHubLabel {
+export interface GitHubLabel {
   readonly name: string;
 }
 
-interface GitHubFile {
+export interface GitHubFile {
   readonly filename: string;
 }
 
@@ -365,11 +365,11 @@ function hasLabel(pr: GitHubPr, labelName: string): boolean {
  */
  function validateTitlePrefix(pr: GitHubPr): TestResult {
   const result = new TestResult();
-  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test)(\([\w-]+\)){0,1}: /;
+  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test)(\([\w_-]+\))?: /;
   const m = titleRe.exec(pr.title);
-  if (m) {
-      result.assessFailure(m[0] !== undefined, "The title of this pull request must specify the module name that the first breaking change should be associated to.");
-  }
+  result.assessFailure(
+    !m,
+    "The title of this pull request does not follow the Conventional Commits format, see https://www.conventionalcommits.org/.");
   return result;
 };
 
@@ -385,7 +385,7 @@ function assertStability(pr: GitHubPr, _files: GitHubFile[]): TestResult {
 function noCliChanges(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const branch = `pull/${pr.number}/head`;
 
-  const cliCodeChanged = files.some(f => f.filename.toLowerCase().includes('/packages/aws-cdk/lib/') && f.filename.endsWith('.ts'));
+  const cliCodeChanged = files.some(f => f.filename.toLowerCase().includes('packages/aws-cdk/lib/') && f.filename.endsWith('.ts'));
 
   return TestResult.fromFailure(
     cliCodeChanged,
