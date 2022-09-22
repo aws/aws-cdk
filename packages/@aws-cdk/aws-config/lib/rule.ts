@@ -360,7 +360,7 @@ export class CustomRule extends RuleNew {
         region: this.env.region,
       }), 'utf8')
       .digest('base64');
-    const customRulePermissionId: string = `customRulePermission-${hash}`;
+    const customRulePermissionId: string = `CustomRulePermission${hash}`;
     if (!props.lambdaFunction.permissionsNode.tryFindChild(customRulePermissionId)) {
       props.lambdaFunction.addPermission(customRulePermissionId, {
         principal: new iam.ServicePrincipal('config.amazonaws.com'),
