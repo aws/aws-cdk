@@ -413,7 +413,7 @@ describe('rule', () => {
     });
   });
 
-  test('create two custom rule and one function', () => {
+  test('create two custom rules and one function', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
