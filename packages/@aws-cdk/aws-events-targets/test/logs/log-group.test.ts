@@ -295,3 +295,67 @@ testDeprecated('specifying retry policy and dead letter queue', () => {
     ],
   });
 });
+
+testDeprecated('specifying retry policy with 0 retryAttempts', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+    event: events.RuleTargetInput.fromObject({
+      timestamp: events.EventField.time,
+      message: events.EventField.fromPath('$'),
+    }),
+    retryAttempts: 0,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 minute)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':logs:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':log-group:',
+              {
+                Ref: 'MyLogGroup5C0DAD85',
+              },
+            ],
+          ],
+        },
+        Id: 'Target0',
+        InputTransformer: {
+          InputPathsMap: {
+            time: '$.time',
+            f2: '$',
+          },
+          InputTemplate: '{"timestamp":<time>,"message":<f2>}',
+        },
+        RetryPolicy: {
+          MaximumRetryAttempts: 0,
+        },
+      },
+    ],
+  });
+});

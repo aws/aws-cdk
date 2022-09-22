@@ -161,4 +161,11 @@ export interface VpcContextResponse {
    * @default - no subnet groups will be returned unless {@link VpcContextQuery.returnAsymmetricSubnets} is true
    */
   readonly subnetGroups?: VpcSubnetGroup[];
+
+  /**
+   * The region in which the VPC is in.
+   *
+   * @default - Region of the parent stack
+   */
+  readonly region?: string;
 }

@@ -1,5 +1,5 @@
 {
-  "$version": "85.0.0",
+  "$version": "89.0.0",
   "PropertyTypes": {
     "AWS::IoT::AccountAuditConfiguration.AuditCheckConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-accountauditconfiguration-auditcheckconfiguration.html",
@@ -1711,6 +1711,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot-cacertificate.html#cfn-iot-cacertificate-registrationconfig",
           "Required": false,
           "Type": "RegistrationConfig",
+          "UpdateType": "Mutable"
+        },
+        "RemoveAutoRegistration": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot-cacertificate.html#cfn-iot-cacertificate-removeautoregistration",
+          "PrimitiveType": "Boolean",
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "Status": {

@@ -1,7 +1,7 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "files": {
-    "17a5a69a211ef8dbec63fd5adb29382dfaac5da65c78d9ec193450eb3933fd98": {
+    "c3aa283b33e47bc3d0cb943f014017d1742247b6577982270570cb6cbf5a778c": {
       "source": {
         "path": "aws-cdk-neptune-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "17a5a69a211ef8dbec63fd5adb29382dfaac5da65c78d9ec193450eb3933fd98.json",
+          "objectKey": "c3aa283b33e47bc3d0cb943f014017d1742247b6577982270570cb6cbf5a778c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
