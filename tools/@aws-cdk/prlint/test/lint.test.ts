@@ -310,7 +310,8 @@ describe('integration tests required on features', () => {
     expect(await prlinter.validate()).resolves;
   });
 
-  test('CLI changed, require label', async () => {
+  describe('CLI file changed', () => {
+    const labels: linter.GitHubLabel[] = [];
     const issue = {
       number: 23,
       title: 'chore(cli): change the help or something',
@@ -318,11 +319,21 @@ describe('integration tests required on features', () => {
         description of the commit
         closes #123456789
       `,
-      labels: []
+      labels,
     };
     const files = [ { filename: 'packages/aws-cdk/lib/cdk-toolkit.ts' } ];
-    const prLinter = configureMock(issue, files);
-    await expect(prLinter.validate()).rejects.toThrow(/CLI code has changed. A maintainer must/);
+
+    test('no label throws error', async () => {
+      const prLinter = configureMock(issue, files);
+      await expect(prLinter.validate()).rejects.toThrow(/CLI code has changed. A maintainer must/);
+    });
+
+    test('with label no error', async () => {
+      labels.push({ name: 'pr-linter/cli-integ-tested' });
+      const prLinter = configureMock(issue, files);
+      await prLinter.validate();
+      // THEN: no exception
+    });
   });
 });
 
