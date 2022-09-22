@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "SelectionPolicies/DefaultTest": {
+      "stacks": [
+        "cdk-selection-policies"
+      ],
+      "assertionStack": "SelectionPolicies/DefaultTest/DeployAssert",
+      "assertionStackName": "SelectionPoliciesDefaultTestDeployAssert8FB9C15B"
+    }
+  }
+}

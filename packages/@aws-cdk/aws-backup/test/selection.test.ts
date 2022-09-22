@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
@@ -81,7 +81,7 @@ test('create a selection', () => {
   });
 });
 
-test('generated IAM role with customRole flag', () => {
+test('generated IAM role with no allows', () => {
   // WHEN
 
   // Create a backup selection
@@ -90,14 +90,16 @@ test('generated IAM role with customRole flag', () => {
     resources: [
       BackupResource.fromArn('arn1'),
     ],
-    customRole: true,
+    // Do not allow default backup role
+    allowBackup: false,
+    // All others default to false
   });
 
   // use the exposed role property to add additional policies
   const iamRole = selection.role;
-  const fakePolicyName = 'FakePolicyName';
-  // add example fake managed policy
-  iamRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(fakePolicyName));
+  const managedPolicyName = 'ManagedPolicyName';
+  // add example managed policy
+  iamRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(managedPolicyName));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -110,7 +112,7 @@ test('generated IAM role with customRole flag', () => {
             {
               Ref: 'AWS::Partition',
             },
-            ':iam::aws:policy/' + fakePolicyName,
+            ':iam::aws:policy/' + managedPolicyName,
           ],
         ],
       },
@@ -118,7 +120,7 @@ test('generated IAM role with customRole flag', () => {
   });
 });
 
-test('provided IAM role with customRole flag', () => {
+test('provided IAM role with no allows', () => {
   // WHEN
 
   // User provided role
@@ -127,10 +129,10 @@ test('provided IAM role with customRole flag', () => {
   });
 
   // Add a policy to the provided role
-  const fakePolicyName = 'FakePolicyName';
+  const managedPolicyName = 'ManagedPolicyName';
 
-  // add example fake managed policy
-  role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(fakePolicyName));
+  // add example managed policy
+  role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(managedPolicyName));
 
   // Create a backup selection
   new BackupSelection(stack, 'Selection', {
@@ -138,8 +140,8 @@ test('provided IAM role with customRole flag', () => {
     resources: [
       BackupResource.fromArn('arn1'),
     ],
+    allowBackup: false,
     role: role,
-    customRole: true,
   });
 
   // Get the template
@@ -167,7 +169,7 @@ test('provided IAM role with customRole flag', () => {
             {
               Ref: 'AWS::Partition',
             },
-            ':iam::aws:policy/' + fakePolicyName,
+            ':iam::aws:policy/' + managedPolicyName,
           ],
         ],
       },
@@ -189,7 +191,7 @@ test('provided IAM role with customRole flag', () => {
 });
 
 
-test('customised IAM role with default policies', () => {
+test('customised IAM role with all additional policies', () => {
   // WHEN
 
   // Create a backup selection
@@ -205,9 +207,9 @@ test('customised IAM role with default policies', () => {
 
   // use the exposed role property to add additional policies
   const iamRole = selection.role;
-  const fakePolicyName = 'FakePolicyName';
-  // add example fake managed policy
-  iamRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(fakePolicyName));
+  const managedPolicyName = 'ManagedPolicyName';
+  // add example managed policy
+  iamRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(managedPolicyName));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -268,7 +270,7 @@ test('customised IAM role with default policies', () => {
             {
               Ref: 'AWS::Partition',
             },
-            ':iam::aws:policy/' + fakePolicyName,
+            ':iam::aws:policy/' + managedPolicyName,
           ],
         ],
       },
@@ -435,6 +437,22 @@ test('allow S3 backup and restore', () => {
         ],
       },
     ],
+  });
+});
+
+test('No policy additions when allow backup disabled', () => {
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn1'),
+    ],
+    allowBackup: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: Match.absent(),
   });
 });
 

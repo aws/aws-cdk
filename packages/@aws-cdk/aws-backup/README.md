@@ -17,11 +17,12 @@ configure backup policies and monitor backup activity for your AWS resources in 
 
 ## Backup plan and selection
 
-In AWS Backup, a *backup plan* is a policy expression that defines when and how you want to back up
- your AWS resources, such as Amazon DynamoDB tables or Amazon Elastic File System (Amazon EFS) file
- systems. You can assign resources to backup plans, and AWS Backup automatically backs up and retains
- backups for those resources according to the backup plan. You can create multiple backup plans if you
- have workloads with different backup requirements.
+In AWS Backup, a *backup plan* is a policy expression that defines when and how
+ you want to back up your AWS resources, such as S3 Buckets, Amazon DynamoDB
+ tables or Amazon Elastic File System (Amazon EFS) file systems. You can assign
+ resources to backup plans, and AWS Backup automatically backs up and retains
+ backups for those resources according to the backup plan. You can create
+ multiple backup plans if you have workloads with different backup requirements.
 
 This module provides ready-made backup plans (similar to the console experience):
 
@@ -69,23 +70,9 @@ plan.addSelection('Selection', {
 ```
 
 If not specified, a new IAM role with a managed policy for backup will be
-created for the selection. The `BackupSelection` implements `IGrantable`.
-
-The IAM role used by a plan can be accessed using the `role` property of a
-`BackupSelection`. For example, you could add an additional managed policy to
-the automatically generated IAM role:
-
-```ts
-// BackupSelection
-declare const selection: backup.BackupSelection;
-
-// use the exposed role property to add additional policies
-const iamRole = selection.role;
-
-// add example fake managed policy to auto generated IAM role
-const fakePolicyName = 'FakePolicyName';
-iamRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(fakePolicyName));
-```
+created for the selection. The `BackupSelection` implements `IGrantable`. For
+more information about how to customize the IAM role used by the
+`BackupSelection`, see the _Backup selection IAM role policies_ section.
 
 To add rules to a plan, use `addRule()`:
 
@@ -239,12 +226,23 @@ importedVault.grant(role, 'backup:StartBackupJob');
 
 ## Backup selection IAM role policies
 
-When creating a new `BackupSelection`, if no user IAM role is provided, a new
-IAM role with a managed policy for backup will be created for the selection. 
+When creating a new `BackupSelection`, if no existing IAM role is provided, a
+new IAM role with a managed policy for backup will be created for the selection. 
 
-All policies, by default, include the `AWSBackupServiceRolePolicyForBackup` AWS
-managed policy. Adding the `allowRestores` flag adds the
-`AWSBackupServiceRolePolicyForRestores` managed policy.
+Many of the [AWS managed policies for AWS
+Backup](https://docs.aws.amazon.com/aws-backup/latest/devguide/security-iam-awsmanpol.html)
+ can be added to the auto generated or supplied IAM role using the flags:
+`allowBackup`, `allowRestores`, `allowS3Backup` and `allowS3Backups`. 
+
+The relevant service policies for each flag are shown in the table below: 
+
+| Field name        | AWS managed policy name                 | Default |
+|-------------------|-----------------------------------------|---------|
+| `allowBackup`     | AWSBackupServiceRolePolicyForBackup     | `true`  |
+| `allowRestores`   | AWSBackupServiceRolePolicyForRestores   | `false` |
+| `allowS3Backup`   | AWSBackupServiceRolePolicyForS3Backup   | `false` |
+| `allowS3Restores` | AWSBackupServiceRolePolicyForS3Restores | `false` |
+
 
 If you are creating a selection which includes an **S3 Bucket**, then the
 default service roles are not sufficient for backup nor restore operations. To
@@ -254,9 +252,45 @@ for a selection, include the `allowS3Restores` flag (the
 `AWSBackupServiceRolePolicyForS3Restore` managed policy). Both of these flags
 are `false` by default.
 
-If the generated IAM roles for a `BackupSelection` are insufficient, you can
-either include your own IAM role using the optional `role` field, or access the
-generated IAM role with the read only `role` property. If you want to have
-complete control over role policies, you should provide your own role with the
-`role` field and disable any automatic addition of managed policies with the
-`customRole` field.
+For example, this selection would enable backup and restore permissions for an
+S3 bucket along with the standard backup and restore policies:
+
+```ts
+// Backup plan 
+declare const plan: backup.BackupPlan;
+
+// Bucket
+declare const bucket: s3.Bucket;
+
+// Selection
+const selection = new BackupSelection(stack, 'Selection', {
+  backupPlan: plan,
+  resources: [
+    BackupResource.fromS3Bucket(bucket),
+    // other resources here
+  ],
+
+  // Standard AWS Backup policies
+  allowRestores: true,
+
+  // S3 specific policies
+  allowS3Backup: true,
+  allowS3Restores: true,
+});
+```
+
+The IAM role used by a plan can be accessed using the `role` property of a
+`BackupSelection`. For example, you could add an additional managed policy to
+the automatically generated IAM role:
+
+```ts
+// BackupSelection
+declare const selection: backup.BackupSelection;
+
+// use the exposed role property to add additional policies
+const iamRole = selection.role;
+
+// add example managed policy to auto generated IAM role
+const managedPolicyName = 'ManagedPolicyName';
+iamRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(managedPolicyName));
+```
