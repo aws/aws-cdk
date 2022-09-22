@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.43.0](https://github.com/aws/aws-cdk/compare/v2.42.1...v2.43.0) (2022-09-21)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v89.0.0 ([#22105](https://github.com/aws/aws-cdk/issues/22105)) ([9726e8f](https://github.com/aws/aws-cdk/commit/9726e8fa07bcf496c79f8ab3be1c9f04b0e5dc3a))
+* **ec2:** flowlog setting add MaxAggregationInterval ([#22098](https://github.com/aws/aws-cdk/issues/22098)) ([dbede40](https://github.com/aws/aws-cdk/commit/dbede408ee21e2e62137867a7fd040890daf77c7))
+* **stepfunctions-tasks:** additional IAM statements for AWS SDK service integration ([#22070](https://github.com/aws/aws-cdk/issues/22070)) ([fbb941f](https://github.com/aws/aws-cdk/commit/fbb941f848fc363c93ae79d899532ed4522f31b1)), closes [#22006](https://github.com/aws/aws-cdk/issues/22006)
+
+
+### Bug Fixes
+
+* **api-gateway:** SpecRestApi ignores disableExecuteApiEndpoint property ([#22133](https://github.com/aws/aws-cdk/issues/22133)) ([a4364ce](https://github.com/aws/aws-cdk/commit/a4364ceb9a5303768c5c1447857af44f1fe9e8ce)), closes [#21295](https://github.com/aws/aws-cdk/issues/21295)
+* **certificatemanager:** unable to set removal policy on DnsValidatedCertificate ([#22040](https://github.com/aws/aws-cdk/issues/22040)) ([b3c9464](https://github.com/aws/aws-cdk/commit/b3c9464d0e0d333db132daec96cdd283145a6ce5)), closes [#20649](https://github.com/aws/aws-cdk/issues/20649)
+* **cli:** "EACCES: Permission denied" on 'cdk init' ([#22111](https://github.com/aws/aws-cdk/issues/22111)) ([384ba2b](https://github.com/aws/aws-cdk/commit/384ba2b7fc2ae9c5a70d0e5633fcc463b2cea282)), closes [#21049](https://github.com/aws/aws-cdk/issues/21049) [#22090](https://github.com/aws/aws-cdk/issues/22090)
+* **cli:** Lambda hotswap fails if environment contains tokens ([#22099](https://github.com/aws/aws-cdk/issues/22099)) ([8280709](https://github.com/aws/aws-cdk/commit/8280709219d95ac4bd76e21bfe8214a02afaa413)), closes [#22088](https://github.com/aws/aws-cdk/issues/22088)
+* **codedeploy:** unable to configure disable automatically rollback ([#22083](https://github.com/aws/aws-cdk/issues/22083)) ([ce27789](https://github.com/aws/aws-cdk/commit/ce277899e9df2ae9d69e94bdaa931e130cd4c95a)), closes [#21691](https://github.com/aws/aws-cdk/issues/21691)
+* **s3-deployment:** fails when `destinationKeyPrefix` is a token with a long string representation ([#22163](https://github.com/aws/aws-cdk/issues/22163)) ([ce59b6a](https://github.com/aws/aws-cdk/commit/ce59b6aaa7a19ec074547824c3641822ab853213))
+
+
 ## [2.42.1](https://github.com/aws/aws-cdk/compare/v2.42.0...v2.42.1) (2022-09-19)
 
 
