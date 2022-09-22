@@ -6,7 +6,7 @@ on:
 
 jobs:
   call-action:
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    if: ${{ github.actor != 'dependabot[bot]' }} && ${{ github.actor != 'mergify[bot]' }}
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -18,4 +18,4 @@ jobs:
           badges: '[beginning-contributor,repeat-contributor,valued-contributor,admired-contributor,star-contributor,distinguished-contributor]'
           thresholds: '[0,3,6,13,25,50]'
           badge-type: 'achievement'
-          ignore-usernames: '[RomainMuller,rix0rrr,Jerry-AWS,MrArnoldPalmer,iliapolo,otaviomacedo,madeline-k,kaizencc,comcalvi,corymhall,peterwoodworth,ryparker,TheRealAmazonKendra,vinayak-kukreja,Naumel,mrgrain,aws-cdk-automation,mergify]'
+          ignore-usernames: '[RomainMuller,rix0rrr,Jerry-AWS,MrArnoldPalmer,iliapolo,otaviomacedo,madeline-k,kaizencc,comcalvi,corymhall,peterwoodworth,ryparker,TheRealAmazonKendra,vinayak-kukreja,Naumel,mrgrain,aws-cdk-automation]'
