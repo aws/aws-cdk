@@ -1,10 +1,24 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { IBucket } from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
+import { ProductStackAssetBucket } from './product-stack-asset-bucket';
 import { ProductStackHistory } from './product-stack-history';
+
+/**
+ * Product stack props.
+ */
+export interface ProductStackProps {
+  /**
+   * Product stack asset bucket.
+   *
+   * @default - None
+   */
+  readonly assetBucket?: ProductStackAssetBucket;
+}
 
 /**
  * A Service Catalog product stack, which is similar in form to a Cloudformation nested stack.
@@ -20,10 +34,11 @@ export class ProductStack extends cdk.Stack {
   private _parentProductStackHistory?: ProductStackHistory;
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
+  private assetBucket?: IBucket;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: ProductStackProps = {}) {
     super(scope, id, {
-      synthesizer: new ProductStackSynthesizer(),
+      synthesizer: new ProductStackSynthesizer(props.assetBucket),
     });
 
     this._parentStack = findParentStack(scope);
@@ -50,6 +65,32 @@ export class ProductStack extends cdk.Stack {
     return cdk.Lazy.uncachedString({ produce: () => this._templateUrl });
   }
 
+  /**
+   * Fetch the asset bucket.
+   *
+   * @internal
+   */
+  public _getAssetBucket(): IBucket | undefined {
+    return this.assetBucket;
+  }
+
+  /**
+   * Fetch the parent stack.
+   *
+   * @internal
+   */
+  public _getParentStack(): cdk.Stack {
+    return this._parentStack;
+  }
+
+  /**
+   * Set the asset bucket.
+   *
+   * @internal
+   */
+  public _setAssetBucket(assetBucket: IBucket) {
+    this.assetBucket = assetBucket;
+  }
   /**
    * Synthesize the product stack template, overrides the `super` class method.
    *

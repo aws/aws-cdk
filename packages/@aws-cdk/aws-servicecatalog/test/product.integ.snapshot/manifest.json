@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/055a185452c29b6ca4df318d9059b86b1bd73d14c95904474dde4df581580c4a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/446ca80dfab2994c36ce13a2838692a7d08bad798b902800353e48f702628f91.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,6 +39,54 @@
         "integ-servicecatalog-product.assets"
       ],
       "metadata": {
+        "/integ-servicecatalog-product/TestAssetBucket/AssetsBucketDeployment/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketAssetsBucketDeploymentAwsCliLayerACBB7455"
+          }
+        ],
+        "/integ-servicecatalog-product/TestAssetBucket/AssetsBucketDeployment/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketAssetsBucketDeploymentCustomResource258ED7DF"
+          }
+        ],
+        "/integ-servicecatalog-product/TestAssetBucketS3Bucket/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketS3BucketKey38BEC382"
+          }
+        ],
+        "/integ-servicecatalog-product/TestAssetBucketS3Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketS3Bucket4A5DDF18"
+          }
+        ],
+        "/integ-servicecatalog-product/TestAssetBucketS3Bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketS3BucketPolicy08D19836"
+          }
+        ],
+        "/integ-servicecatalog-product/TestAssetBucketS3Bucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketS3BucketAutoDeleteObjectsCustomResourceD24444DA"
+          }
+        ],
+        "/integ-servicecatalog-product/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/integ-servicecatalog-product/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
         "/integ-servicecatalog-product/TestProduct/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -79,6 +127,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TagOptionsa260cbbd99c416C40F73"
+          }
+        ],
+        "/integ-servicecatalog-product/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/integ-servicecatalog-product/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+          }
+        ],
+        "/integ-servicecatalog-product/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
           }
         ],
         "/integ-servicecatalog-product/BootstrapVersion": [

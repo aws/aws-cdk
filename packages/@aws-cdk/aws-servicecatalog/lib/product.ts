@@ -1,3 +1,4 @@
+import { IBucket } from '@aws-cdk/aws-s3';
 import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
@@ -22,6 +23,13 @@ export interface IProduct extends IResource {
    * @attribute
    */
   readonly productId: string;
+
+  /**
+   * The asset bucket of a product created via product stack.
+   * @atrribute
+   * @default - None
+   */
+  readonly assetBucket?: IBucket;
 
   /**
    * Associate Tag Options.
@@ -172,6 +180,13 @@ export class CloudFormationProduct extends Product {
   public readonly productArn: string;
   public readonly productId: string;
 
+  /**
+   * The asset bucket of a product created via product stack.
+   * @param
+   * @default - None
+   */
+  public assetBucket?: IBucket;
+
   constructor(scope: Construct, id: string, props: CloudFormationProductProps) {
     super(scope, id);
 
@@ -206,6 +221,7 @@ export class CloudFormationProduct extends Product {
     props: CloudFormationProductProps): CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] {
     return props.productVersions.map(productVersion => {
       const template = productVersion.cloudFormationTemplate.bind(this);
+      this.assetBucket = template.assetBucket;
       InputValidator.validateUrl(this.node.path, 'provisioning template url', template.httpUrl);
       return {
         name: productVersion.productVersionName,
