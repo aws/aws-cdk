@@ -900,10 +900,84 @@
               "fqn": "@aws-cdk/aws-neptune.DatabaseCluster",
               "version": "0.0.0"
             }
+          },
+          "Alarm": {
+            "id": "Alarm",
+            "path": "aws-cdk-neptune-integ/Alarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-neptune-integ/Alarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanThreshold",
+                    "evaluationPeriods": 1,
+                    "dimensions": [
+                      {
+                        "name": "DBClusterIdentifier",
+                        "value": {
+                          "Ref": "DatabaseB269D8BB"
+                        }
+                      }
+                    ],
+                    "metricName": "SparqlErrors",
+                    "namespace": "AWS/Neptune",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ClusterTest": {
+        "id": "ClusterTest",
+        "path": "ClusterTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ClusterTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ClusterTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.92"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ClusterTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
