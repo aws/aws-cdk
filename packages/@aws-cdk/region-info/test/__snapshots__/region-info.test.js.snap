@@ -629,7 +629,7 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "me-central-1": Object { 
+  "me-central-1": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
     "lambdaInsightsArmVersions": Object {
