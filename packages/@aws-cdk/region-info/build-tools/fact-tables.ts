@@ -123,6 +123,7 @@ export const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'eu-west-1': '156460612806',
   'eu-west-2': '652711504416',
   'eu-west-3': '009996457667',
+  'me-central-1': '031864735024',
   'me-south-1': '076674570225',
   'sa-east-1': '507241528517',
   'us-east-1': '127311923021',
