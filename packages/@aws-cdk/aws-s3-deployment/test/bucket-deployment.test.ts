@@ -962,7 +962,7 @@ test('deploy without extracting files in destination', () => {
   });
 });
 
-test('deploy without extracting files in destination', () => {
+test('deploy without extracting files in destination and get the object key', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -1005,7 +1005,7 @@ test('given a source with markers and extract is false, BucketDeployment throws 
       destinationBucket: bucket,
       extract: false,
     });
-  }).toThrow(/Extract cannot be false if sources have markers/);
+  }).toThrow('Some sources are incompatible with extract=false; sources with deploy-time values (such as \'snsTopic.topicArn\') must be extracted.');
 });
 
 test('deployment allows vpc to be implicitly supplied to lambda', () => {

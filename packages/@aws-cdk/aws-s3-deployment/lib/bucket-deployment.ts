@@ -348,7 +348,9 @@ export class BucketDeployment extends Construct {
 
     // Markers are not replaced if zip sources are not extracted, so throw an error
     // if extraction is not wanted and sources have markers.
-    if (hasMarkers && props.extract == false) { throw new Error('Extract cannot be false if sources have markers'); }
+    if (hasMarkers && props.extract == false) {
+      throw new Error('Some sources are incompatible with extract=false; sources with deploy-time values (such as \'snsTopic.topicArn\') must be extracted.');
+    }
 
     const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.ephemeralStorageSize, props.vpc)}`;
     this.cr = new cdk.CustomResource(this, crUniqueId, {
