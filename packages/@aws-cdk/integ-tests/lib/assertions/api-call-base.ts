@@ -95,7 +95,7 @@ export interface IApiCall extends IConstruct {
    * declare const first: IApiCall;
    * declare const next: IApiCall;
    *
-   * first.next(next);
+   * first.then(next);
    */
   then(next: IApiCall): IApiCall;
 }
