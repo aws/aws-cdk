@@ -890,7 +890,6 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
     const instance = new CfnDBInstance(cluster, `Instance${instanceIndex}`, {
       // Link to cluster
       engine: props.engine.engineType,
-      engineVersion: props.engine.engineVersion?.fullVersion,
       dbClusterIdentifier: cluster.clusterIdentifier,
       dbInstanceIdentifier: instanceIdentifier,
       // Instance properties

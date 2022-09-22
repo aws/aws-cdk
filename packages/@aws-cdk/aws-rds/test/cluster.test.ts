@@ -2599,6 +2599,22 @@ describe('cluster', () => {
       BacktrackWindow: 24 * 60 * 60,
     });
   });
+
+  test('DB instances should not have engine version set when part of a cluster', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+      instanceProps: { vpc },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineVersion: Match.absent(),
+    });
+  });
 });
 
 test.each([
