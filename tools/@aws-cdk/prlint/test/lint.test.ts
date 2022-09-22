@@ -14,6 +14,7 @@ let mockCreateReview: (errorMessage: string) => Promise<any>;
 describe('breaking changes format', () => {
   test('disallow variations to "BREAKING CHANGE:"', async () => {
     const issue = {
+      number: 1,
       title: 'chore: some title',
       body: 'BREAKING CHANGES:',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
@@ -24,6 +25,7 @@ describe('breaking changes format', () => {
 
   test('the first breaking change should immediately follow "BREAKING CHANGE:"', async () => {
     const issue = {
+      number: 1,
       title: 'chore(cdk-build-tools): some title',
       body: `BREAKING CHANGE:\x20
              * **module:** another change`,
@@ -35,6 +37,7 @@ describe('breaking changes format', () => {
 
   test('invalid title', async () => {
     const issue = {
+      number: 1,
       title: 'chore(): some title',
       body: 'BREAKING CHANGE: this breaking change',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
@@ -45,6 +48,7 @@ describe('breaking changes format', () => {
 
   test('valid title', async () => {
     const issue = {
+      number: 1,
       title: 'chore(cdk-build-tools): some title',
       body: 'BREAKING CHANGE: this breaking change',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
@@ -57,6 +61,7 @@ describe('breaking changes format', () => {
 describe('ban breaking changes in stable modules', () => {
   test('breaking change in stable module', async () => {
     const issue = {
+      number: 1,
       title: 'chore(s3): some title',
       body: 'BREAKING CHANGE: this breaking change',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
@@ -67,6 +72,7 @@ describe('ban breaking changes in stable modules', () => {
 
   test('breaking changes multiple in stable modules', async () => {
     const issue = {
+      number: 1,
       title: 'chore(lambda): some title',
       body: `
         BREAKING CHANGE: this breaking change
@@ -81,6 +87,7 @@ describe('ban breaking changes in stable modules', () => {
 
   test('unless exempt-breaking-change label added', async () => {
     const issue = {
+      number: 1,
       title: 'chore(lambda): some title',
       body: `
         BREAKING CHANGE: this breaking change
@@ -94,6 +101,7 @@ describe('ban breaking changes in stable modules', () => {
 
   test('with additional "closes" footer', async () => {
     const issue = {
+      number: 1,
       title: 'chore(s3): some title',
       body: `
         description of the commit
@@ -112,6 +120,7 @@ describe('ban breaking changes in stable modules', () => {
 describe('integration tests required on features', () => {
   test('integ files changed', async () => {
     const issue = {
+      number: 1,
       title: 'feat(s3): some title',
       body: `
         description of the commit
@@ -137,6 +146,7 @@ describe('integration tests required on features', () => {
 
   test('integ files not changed in feat', async () => {
     const issue = {
+      number: 1,
       title: 'feat(s3): some title',
       body: `
         description of the commit
@@ -166,6 +176,7 @@ describe('integration tests required on features', () => {
 
   test('integ snapshots not changed in feat', async () => {
     const issue = {
+      number: 1,
       title: 'feat(s3): some title',
       body: `
         description of the commit
@@ -195,6 +206,7 @@ describe('integration tests required on features', () => {
 
   test('integ files not changed in fix', async () => {
     const issue = {
+      number: 1,
       title: 'fix(s3): some title',
       body: `
         description of the commit
@@ -224,6 +236,7 @@ describe('integration tests required on features', () => {
 
   test('integ snapshots not changed in fix', async () => {
     const issue = {
+      number: 1,
       title: 'fix(s3): some title',
       body: `
         description of the commit
@@ -253,6 +266,7 @@ describe('integration tests required on features', () => {
 
   test('integ files not changed, pr exempt', async () => {
     const issue = {
+      number: 1,
       title: 'feat(s3): some title',
       body: `
         description of the commit
@@ -275,6 +289,7 @@ describe('integration tests required on features', () => {
 
   test('integ files not changed, not a feature', async () => {
     const issue = {
+      number: 1,
       title: 'chore(s3): some title',
       body: `
         description of the commit
@@ -288,23 +303,49 @@ describe('integration tests required on features', () => {
         filename: 'some-test.test.ts'
       },
       {
-        filename: 'README.md'
+        filename: 'readme.md'
       }
     ];
-    const prLinter = configureMock(issue, files);
-    expect(await prLinter.validate()).resolves;
+    const prlinter = configureMock(issue, files);
+    expect(await prlinter.validate()).resolves;
+  });
+
+  describe('CLI file changed', () => {
+    const labels: linter.GitHubLabel[] = [];
+    const issue = {
+      number: 23,
+      title: 'chore(cli): change the help or something',
+      body: `
+        description of the commit
+        closes #123456789
+      `,
+      labels,
+    };
+    const files = [ { filename: 'packages/aws-cdk/lib/cdk-toolkit.ts' } ];
+
+    test('no label throws error', async () => {
+      const prLinter = configureMock(issue, files);
+      await expect(prLinter.validate()).rejects.toThrow(/CLI code has changed. A maintainer must/);
+    });
+
+    test('with label no error', async () => {
+      labels.push({ name: 'pr-linter/cli-integ-tested' });
+      const prLinter = configureMock(issue, files);
+      await prLinter.validate();
+      // THEN: no exception
+    });
   });
 });
 
 
-function configureMock(issue: any, prFiles: any[] | undefined): linter.PullRequestLinter {
-  const client = {
+function configureMock(pr: linter.GitHubPr, prFiles?: linter.GitHubFile[]): linter.PullRequestLinter {
+  const pullsClient = {
     get(_props: { _owner: string, _repo: string, _pull_number: number }) {
-      return { data: issue };
+      return { data: pr };
     },
 
     listFiles(_props: { _owner: string, _repo: string, _pull_number: number }) {
-      return { data: prFiles };
+      return { data: prFiles ?? [] };
     },
 
     createReview(errorMessage: string) {
@@ -324,6 +365,10 @@ function configureMock(issue: any, prFiles: any[] | undefined): linter.PullReque
     owner: 'aws',
     repo: 'aws-cdk',
     number: 1000,
-    client
+
+    // hax hax
+    client: {
+      pulls: pullsClient as any,
+    } as any,
   })
 }
