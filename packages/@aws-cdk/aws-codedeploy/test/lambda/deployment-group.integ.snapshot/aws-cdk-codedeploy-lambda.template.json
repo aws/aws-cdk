@@ -531,6 +531,9 @@
    "eu-west-3": {
     "codedeploy": "codedeploy.eu-west-3.amazonaws.com"
    },
+   "me-central-1": {
+    "codedeploy": "codedeploy.me-central-1.amazonaws.com"
+   },
    "me-south-1": {
     "codedeploy": "codedeploy.me-south-1.amazonaws.com"
    },
