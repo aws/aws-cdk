@@ -1,3 +1,4 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -284,6 +285,14 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable {
    * Grant the given identity connection access to the database.
    */
   grantConnect(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Return the given named metric associated with this DatabaseCluster instance
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cw-metrics.html
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cw-dimensions.html
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -397,6 +406,17 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
 
   public grantConnect(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'neptune-db:*');
+  }
+
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Neptune',
+      dimensionsMap: {
+        DBClusterIdentifier: this.clusterIdentifier,
+      },
+      metricName,
+      ...props,
+    });
   }
 }
 
