@@ -182,7 +182,7 @@ There are two main scenarios in which assertions are created.
 - Part of an integration test using `integ-runner`
 
 In this case you would create an integration test using the `IntegTest` construct and then make assertions using the `assert` property.
-You should **not** utilize the assertion constructs directly, but should instead use the `methods` on `IntegTest.assert`.
+You should **not** utilize the assertion constructs directly, but should instead use the `methods` on `IntegTest.assertions`.
 
 ```ts
 declare const app: App;
@@ -407,6 +407,24 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 // assert the results
 describe.expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
+}));
+```
+
+#### Chain ApiCalls
+
+Sometimes it may be necessary to chain API Calls. Since each API call is its own resource, all you
+need to do is add a dependency between the calls. There is an helper method `then` that can be used.
+
+```ts
+declare const integ: IntegTest;
+
+integ.assertions.awsApiCall('S3', 'putObject', {
+  Bucket: 'my-bucket',
+  Key: 'my-key',
+  Body: 'helloWorld',
+}).then(integ.assertions.awsApiCall('S3', 'getObject', {
+  Bucket: 'my-bucket',
+  Key: 'my-key',
 }));
 ```
 
