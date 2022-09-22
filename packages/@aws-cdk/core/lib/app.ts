@@ -90,7 +90,7 @@ export interface AppProps {
    * // determine whether to take the context passed in the CLI or not
    * const determineValue = process.env.PROD ? cliContext.SOMEKEY : 'my-prod-value';
    * new App({
-   *   finalContext: {
+   *   postCliContext: {
    *     SOMEKEY: determineValue,
    *   },
    * });
