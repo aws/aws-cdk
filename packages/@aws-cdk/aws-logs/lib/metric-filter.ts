@@ -28,7 +28,7 @@ export class MetricFilter extends Resource {
     this.metricName = props.metricName;
     this.metricNamespace = props.metricNamespace;
 
-    if (props.dimensions && props.dimensions.length > 3) {
+    if (Object.keys(props.dimensions ?? {}).length > 3) {
       throw new Error('MetricFilter only supports a maximum of 3 Dimensions');
     }
 
@@ -48,7 +48,7 @@ export class MetricFilter extends Resource {
         metricName: props.metricName,
         metricValue: props.metricValue ?? '1',
         defaultValue: props.defaultValue,
-        dimensions: props.dimensions,
+        dimensions: props.dimensions ? Object.entries(props.dimensions).map(([key, value]) => ({ key, value })) : undefined,
       }],
     });
   }

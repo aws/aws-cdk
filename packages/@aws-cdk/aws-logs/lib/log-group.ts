@@ -496,21 +496,6 @@ export interface SubscriptionFilterOptions {
 }
 
 /**
- * Key-value pair that is part of the identity of a metric
- */
-export interface MetricDimensionProperty {
-  /**
-   * Name of the dimension
-   */
-  readonly key: string;
-
-  /**
-   * Value of the dimension
-   */
-  readonly value: string;
-}
-
-/**
  * Properties for a MetricFilter created from a LogGroup
  */
 export interface MetricFilterOptions {
@@ -559,5 +544,5 @@ export interface MetricFilterOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-dimensions
    * @default - No dimensions attached to metrics.
    */
-  readonly dimensions?: MetricDimensionProperty[];
+  readonly dimensions?: Record<string, string>;
 }

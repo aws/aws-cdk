@@ -16,12 +16,9 @@ class TestStack extends Stack {
       metricName: 'Latency',
       filterPattern: FilterPattern.exists('$.latency'),
       metricValue: '$.latency',
-      dimensions: [
-        {
-          key: 'ErrorCode',
-          value: '$.errorCode',
-        },
-      ],
+      dimensions: {
+        ErrorCode: '$.errorCode',
+      },
     });
   }
 }
