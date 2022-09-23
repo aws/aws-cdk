@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.43.1](https://github.com/aws/aws-cdk/compare/v2.43.0...v2.43.1) (2022-09-23)
+
+
+### Bug Fixes
+
+* cannot use values that return an instance of a deprecated class for non TS / JS language ([#22204](https://github.com/aws/aws-cdk/issues/22204)) ([6182d33](https://github.com/aws/aws-cdk/commit/6182d33fdd3b4714e1888305a2e1c689a10e38ea))
+
 ## [2.43.0](https://github.com/aws/aws-cdk/compare/v2.42.1...v2.43.0) (2022-09-21)
 
 
