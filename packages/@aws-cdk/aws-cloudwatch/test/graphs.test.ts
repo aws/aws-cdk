@@ -1,5 +1,5 @@
 import { Duration, Stack } from '@aws-cdk/core';
-import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget, GaugeWidget } from '../lib';
 
 describe('Graphs', () => {
   test('add stacked property to graphs', () => {
@@ -791,6 +791,34 @@ describe('Graphs', () => {
         ],
         yAxis: {},
         setPeriodToTimeRange: true,
+      },
+    }]);
+  });
+
+  test('add GaugeWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GaugeWidget({
+      metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'gauge',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {
+          left: {
+            min: 0,
+            max: 100,
+          },
+        },
       },
     }]);
   });

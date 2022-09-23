@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "GaugeAlarmIntegrationTest/DefaultTest": {
+      "stacks": [
+        "gauge-alarm"
+      ],
+      "assertionStack": "GaugeAlarmIntegrationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GaugeAlarmIntegrationTestDefaultTestDeployAssertF43E2A2D"
+    }
+  }
+}
