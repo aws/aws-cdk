@@ -9,7 +9,7 @@ import { Stack } from '../stack';
 import { CustomResourceProvider, CustomResourceProviderRuntime } from './custom-resource-provider';
 
 type CrossRegionExports = { [exportName: string]: string };
-export const SSM_EXPORT_PATH = 'cdk/exports/';
+export const SSM_EXPORT_PATH_PREFIX = 'cdk/exports/';
 
 /**
  * Properties for an ExportReader
@@ -60,7 +60,7 @@ export class ExportWriter extends Construct {
           service: 'ssm',
           resource: 'parameter',
           region,
-          resourceName: `${SSM_EXPORT_PATH}*`,
+          resourceName: `${SSM_EXPORT_PATH_PREFIX}${Stack.of(this).stackName}/*`,
         }),
         Action: [
           'ssm:GetParametersByPath',
@@ -75,10 +75,10 @@ export class ExportWriter extends Construct {
       serviceToken,
       properties: {
         Region: region,
+        StackName: stack.stackName,
         Exports: Lazy.any({ produce: () => this._references }),
       },
     });
-
   }
 
   /**
@@ -93,7 +93,9 @@ export class ExportWriter extends Construct {
    * @returns a dynamic reference to an ssm parameter
    */
   public exportValue(exportName: string, reference: Reference): Intrinsic {
-    this._references[exportName] = Stack.of(this).resolve(reference.toString());
-    return new CfnDynamicReference(CfnDynamicReferenceService.SSM, `/${SSM_EXPORT_PATH}${exportName}`);
+    const stack = Stack.of(this);
+    const parameterName = `/${SSM_EXPORT_PATH_PREFIX}${stack.stackName}/${exportName}`;
+    this._references[parameterName] = stack.resolve(reference.toString());
+    return new CfnDynamicReference(CfnDynamicReferenceService.SSM, parameterName);
   }
 }

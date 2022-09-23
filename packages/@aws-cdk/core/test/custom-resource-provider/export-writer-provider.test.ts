@@ -23,7 +23,7 @@ describe('export writer provider', () => {
     const staging = stack.node.tryFindChild('Custom::CrossRegionExportWriterCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
     const assetHash = staging.assetHash;
 
-    expect(stack.resolve(exportValue)).toEqual('{{resolve:ssm:/cdk/exports/MyResourceName}}');
+    expect(stack.resolve(exportValue)).toEqual('{{resolve:ssm:/cdk/exports/Default/MyResourceName}}');
     expect(cfn).toEqual({
       Resources: {
         MyResource: {
@@ -67,7 +67,7 @@ describe('export writer provider', () => {
                             {
                               Ref: 'AWS::AccountId',
                             },
-                            ':parameter/cdk/exports/*',
+                            ':parameter/cdk/exports/Default/*',
                           ],
                         ],
                       },
@@ -96,13 +96,14 @@ describe('export writer provider', () => {
               ],
             },
             Exports: {
-              MyResourceName: {
+              '/cdk/exports/Default/MyResourceName': {
                 'Fn::GetAtt': [
                   'MyResource',
                   'arn',
                 ],
               },
             },
+            StackName: 'Default',
           },
           Type: 'Custom::CrossRegionExportWriter',
           UpdateReplacePolicy: 'Delete',

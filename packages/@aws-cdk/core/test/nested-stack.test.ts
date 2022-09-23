@@ -68,7 +68,7 @@ describe('nested-stack', () => {
     expect(nestedTemplate2).toMatchObject({
       Outputs: {
         Output: {
-          Value: '{{resolve:ssm:/cdk/exports/Stack1-MyNestedStackNestedStackMyNestedStackNestedStackResourceFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref94C8BA6D}}',
+          Value: '{{resolve:ssm:/cdk/exports/Stack1/MyNestedStackNestedStackMyNestedStackNestedStackResourceFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref94C8BA6D}}',
         },
       },
     });
@@ -87,13 +87,14 @@ describe('nested-stack', () => {
         DeletionPolicy: 'Delete',
         Properties: {
           Exports: {
-            'Stack1-MyNestedStackNestedStackMyNestedStackNestedStackResourceFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref94C8BA6D': {
+            '/cdk/exports/Stack1/MyNestedStackNestedStackMyNestedStackNestedStackResourceFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref94C8BA6D': {
               'Fn::GetAtt': [
                 'MyNestedStackNestedStackMyNestedStackNestedStackResource9C617903',
                 'Outputs.Stack1MyNestedStackMyResourceEDA18296Ref',
               ],
             },
           },
+          StackName: 'Stack1',
           Region: 'bermuda-triangle-42',
           ServiceToken: {
             'Fn::GetAtt': [

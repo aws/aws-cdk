@@ -495,13 +495,14 @@ describe('stack', () => {
           DeletionPolicy: 'Delete',
           Properties: {
             Exports: {
-              'Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914': {
+              '/cdk/exports/Stack1/SomeResourceExportFnGetAttSomeResourceExportname1C71E914': {
                 'Fn::GetAtt': [
                   'SomeResourceExport',
                   'name',
                 ],
               },
             },
+            StackName: 'Stack1',
             Region: 'us-east-2',
             ServiceToken: {
               'Fn::GetAtt': [
@@ -519,7 +520,7 @@ describe('stack', () => {
         SomeResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
-            Name: '{{resolve:ssm:/cdk/exports/Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914}}',
+            Name: '{{resolve:ssm:/cdk/exports/Stack1/SomeResourceExportFnGetAttSomeResourceExportname1C71E914}}',
           },
         },
       },
@@ -584,9 +585,9 @@ describe('stack', () => {
         SomeResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
-            Name: '{{resolve:ssm:/cdk/exports/Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914}}',
-            Other: '{{resolve:ssm:/cdk/exports/Stack1-SomeResourceExportFnGetAttSomeResourceExportotherB49CE033}}',
-            Other2: '{{resolve:ssm:/cdk/exports/Stack3-SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5}}',
+            Name: '{{resolve:ssm:/cdk/exports/Stack1/SomeResourceExportFnGetAttSomeResourceExportname1C71E914}}',
+            Other: '{{resolve:ssm:/cdk/exports/Stack1/SomeResourceExportFnGetAttSomeResourceExportotherB49CE033}}',
+            Other2: '{{resolve:ssm:/cdk/exports/Stack3/SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5}}',
           },
         },
       },
@@ -601,7 +602,7 @@ describe('stack', () => {
           DeletionPolicy: 'Delete',
           Properties: {
             Exports: {
-              'Stack3-SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5': {
+              '/cdk/exports/Stack3/SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5': {
                 'Fn::GetAtt': [
                   'SomeResourceExport',
                   'other2',
@@ -609,6 +610,7 @@ describe('stack', () => {
               },
             },
             Region: 'us-east-2',
+            StackName: 'Stack3',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -629,13 +631,13 @@ describe('stack', () => {
           DeletionPolicy: 'Delete',
           Properties: {
             Exports: {
-              'Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914': {
+              '/cdk/exports/Stack1/SomeResourceExportFnGetAttSomeResourceExportname1C71E914': {
                 'Fn::GetAtt': [
                   'SomeResourceExport',
                   'name',
                 ],
               },
-              'Stack1-SomeResourceExportFnGetAttSomeResourceExportotherB49CE033': {
+              '/cdk/exports/Stack1/SomeResourceExportFnGetAttSomeResourceExportotherB49CE033': {
                 'Fn::GetAtt': [
                   'SomeResourceExport',
                   'other',
@@ -643,6 +645,7 @@ describe('stack', () => {
               },
             },
             Region: 'us-east-2',
+            StackName: 'Stack1',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -697,9 +700,9 @@ describe('stack', () => {
         SomeResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
-            Name: '{{resolve:ssm:/cdk/exports/Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914}}',
-            Other: '{{resolve:ssm:/cdk/exports/Stack1-SomeResourceExportFnGetAttSomeResourceExportotherB49CE033}}',
-            Other2: '{{resolve:ssm:/cdk/exports/Stack3-SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5}}',
+            Name: '{{resolve:ssm:/cdk/exports/Stack1/SomeResourceExportFnGetAttSomeResourceExportname1C71E914}}',
+            Other: '{{resolve:ssm:/cdk/exports/Stack1/SomeResourceExportFnGetAttSomeResourceExportotherB49CE033}}',
+            Other2: '{{resolve:ssm:/cdk/exports/Stack3/SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5}}',
           },
         },
       },
@@ -714,7 +717,7 @@ describe('stack', () => {
           DeletionPolicy: 'Delete',
           Properties: {
             Exports: {
-              'Stack3-SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5': {
+              '/cdk/exports/Stack3/SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5': {
                 'Fn::GetAtt': [
                   'SomeResourceExport',
                   'other2',
@@ -722,6 +725,7 @@ describe('stack', () => {
               },
             },
             Region: 'us-east-2',
+            StackName: 'Stack3',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -742,13 +746,13 @@ describe('stack', () => {
           DeletionPolicy: 'Delete',
           Properties: {
             Exports: {
-              'Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914': {
+              '/cdk/exports/Stack1/SomeResourceExportFnGetAttSomeResourceExportname1C71E914': {
                 'Fn::GetAtt': [
                   'SomeResourceExport',
                   'name',
                 ],
               },
-              'Stack1-SomeResourceExportFnGetAttSomeResourceExportotherB49CE033': {
+              '/cdk/exports/Stack1/SomeResourceExportFnGetAttSomeResourceExportotherB49CE033': {
                 'Fn::GetAtt': [
                   'SomeResourceExport',
                   'other',
@@ -756,6 +760,7 @@ describe('stack', () => {
               },
             },
             Region: 'us-east-2',
+            StackName: 'Stack1',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',

@@ -1,11 +1,11 @@
 /*eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from 'aws-sdk';
-const SSM_EXPORT_PATH = '/cdk/exports/';
 type CrossRegionExports = { [exportName: string]: string };
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const props = event.ResourceProperties;
+const ssmPathPrefix = `/cdk/exports/${props.StackName}/`;
   const exports: CrossRegionExports = props.Exports;
 
   const ssm = new SSM({ region: props.Region });
@@ -17,7 +17,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         return;
       case 'Update':
         console.info(`Reading existing SSM Parameter exports in region ${props.Region}`);
-        const existing = await getExistingParameters(ssm);
+        const existing = await getExistingParameters(ssm, ssmPathPrefix);
         const paramsToDelete = returnMissing(existing, exports);
         console.info(`Deleting unused SSM Parameter exports in region ${props.Region}`);
         if (paramsToDelete.length > 0) {
@@ -30,7 +30,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         return;
       case 'Delete':
         console.info(`Reading existing SSM Parameter exports in region ${props.Region}`);
-        const existingParams = await getExistingParameters(ssm);
+        const existingParams = await getExistingParameters(ssm, ssmPathPrefix);
         console.info(`Deleting all SSM Parameter exports in region ${props.Region}`);
         await ssm.deleteParameters({
           Names: Array.from(Object.keys(existingParams)),
@@ -51,7 +51,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 async function putParameters(ssm: SSM, parameters: CrossRegionExports): Promise<void> {
   await Promise.all(Array.from(Object.entries(parameters), ([name, value]) => {
     return ssm.putParameter({
-      Name: `${SSM_EXPORT_PATH}${name}`,
+      Name: name,
       Value: value,
       Type: 'String',
     }).promise();
@@ -71,7 +71,7 @@ function returnMissing(a: CrossRegionExports, b: CrossRegionExports): string[] {
 /**
  * Get existing exports from SSM parameters
  */
-async function getExistingParameters(ssm: SSM): Promise<CrossRegionExports> {
+async function getExistingParameters(ssm: SSM, ssmPathPrefix: string): Promise<CrossRegionExports> {
   const existingExports: CrossRegionExports = {};
   function recordParameters(parameters: SSM.ParameterList) {
     parameters.forEach(param => {
@@ -81,13 +81,13 @@ async function getExistingParameters(ssm: SSM): Promise<CrossRegionExports> {
     });
   }
   const res = await ssm.getParametersByPath({
-    Path: `${SSM_EXPORT_PATH}`,
+    Path: ssmPathPrefix,
   }).promise();
   recordParameters(res.Parameters ?? []);
 
   while (res.NextToken) {
     const nextRes = await ssm.getParametersByPath({
-      Path: `${SSM_EXPORT_PATH}`,
+      Path: ssmPathPrefix,
       NextToken: res.NextToken,
     }).promise();
     recordParameters(nextRes.Parameters ?? []);

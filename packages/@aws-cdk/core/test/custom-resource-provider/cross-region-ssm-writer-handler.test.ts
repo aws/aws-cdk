@@ -1,5 +1,5 @@
 import { handler } from '../../lib/custom-resource-provider/cross-region-ssm-writer-handler';
-import { SSM_EXPORT_PATH } from '../../lib/custom-resource-provider/export-writer-provider';
+import { SSM_EXPORT_PATH_PREFIX } from '../../lib/custom-resource-provider/export-writer-provider';
 
 let mockPutParameter: jest.Mock ;
 let mockGetParametersByPath: jest.Mock;
@@ -49,8 +49,9 @@ describe('cross-region-ssm-writer entrypoint', () => {
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
         Region: 'us-east-1',
+        StackName: 'MyStack',
         Exports: {
-          MyExport: 'Value',
+          '/cdk/exports/MyStack/MyExport': 'Value',
         },
       },
     });
@@ -60,8 +61,9 @@ describe('cross-region-ssm-writer entrypoint', () => {
 
     // THEN
     expect(mockPutParameter).toHaveBeenCalledWith({
-      Name: `/${SSM_EXPORT_PATH}MyExport`,
+      Name: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
       Value: 'Value',
+      Type: 'String',
     });
     expect(mockPutParameter).toHaveBeenCalledTimes(1);
     expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
@@ -75,8 +77,9 @@ describe('cross-region-ssm-writer entrypoint', () => {
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
         Region: 'us-east-1',
+        StackName: 'MyStack',
         Exports: {
-          MyExport: 'Value',
+          '/cdk/exports/MyStack/MyExport': 'Value',
         },
       },
     });
@@ -85,7 +88,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
     mockGetParametersByPath.mockImplementation(() => {
       return {
         Parameters: [{
-          Name: 'MyExport',
+          Name: '/cdk/exports/MyStack/MyExport',
           Value: 'Value',
         }],
       };
@@ -94,8 +97,9 @@ describe('cross-region-ssm-writer entrypoint', () => {
 
     // THEN
     expect(mockPutParameter).toHaveBeenCalledWith({
-      Name: `/${SSM_EXPORT_PATH}MyExport`,
+      Name: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
       Value: 'Value',
+      Type: 'String',
     });
     expect(mockPutParameter).toHaveBeenCalledTimes(1);
     expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
@@ -109,9 +113,10 @@ describe('cross-region-ssm-writer entrypoint', () => {
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
         Region: 'us-east-1',
+        StackName: 'MyStack',
         Exports: {
-          MyExport: 'Value',
-          MyOtherExport: 'MyOtherValue',
+          '/cdk/exports/MyStack/MyExport': 'Value',
+          '/cdk/exports/MyStack/MyOtherExport': 'MyOtherValue',
         },
       },
     });
@@ -121,14 +126,14 @@ describe('cross-region-ssm-writer entrypoint', () => {
       return {
         NextToken: 'abc',
         Parameters: [{
-          Name: 'MyExport',
+          Name: '/cdk/exports/MyStack/MyExport',
           Value: 'Value',
         }],
       };
     }).mockImplementation(() => {
       return {
         Parameters: [{
-          Name: 'MyOtherExport',
+          Name: '/cdk/exports/MyStack/MyOtherExport',
           Value: 'MyOtherValue',
         }],
       };
@@ -137,8 +142,9 @@ describe('cross-region-ssm-writer entrypoint', () => {
 
     // THEN
     expect(mockPutParameter).toHaveBeenCalledWith({
-      Name: `/${SSM_EXPORT_PATH}MyExport`,
+      Name: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
       Value: 'Value',
+      Type: 'String',
     });
     expect(mockPutParameter).toHaveBeenCalledTimes(2);
     expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
@@ -152,9 +158,10 @@ describe('cross-region-ssm-writer entrypoint', () => {
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
         Region: 'us-east-1',
+        StackName: 'MyStack',
         Exports: {
-          MyExport: 'Value',
-          MyOtherExport: 'MyOtherValue',
+          '/cdk/exports/MyStack/MyExport': 'Value',
+          '/cdk/exports/MyStack/MyOtherExport': 'MyOtherValue',
         },
       },
     });
@@ -172,12 +179,14 @@ describe('cross-region-ssm-writer entrypoint', () => {
 
     // THEN
     expect(mockPutParameter).toHaveBeenCalledWith({
-      Name: `/${SSM_EXPORT_PATH}MyExport`,
+      Name: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
       Value: 'Value',
+      Type: 'String',
     });
     expect(mockPutParameter).toHaveBeenCalledWith({
-      Name: `/${SSM_EXPORT_PATH}MyOtherExport`,
+      Name: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyOtherExport`,
       Value: 'MyOtherValue',
+      Type: 'String',
     });
     expect(mockDeleteParameters).toHaveBeenCalledWith({
       Names: ['RemovedExport'],
@@ -193,9 +202,10 @@ describe('cross-region-ssm-writer entrypoint', () => {
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
         Region: 'us-east-1',
+        StackName: 'MyStack',
         Exports: {
-          MyExport: 'Value',
-          MyOtherExport: 'MyOtherValue',
+          '/cdk/exports/MyStack/MyExport': 'Value',
+          '/cdk/exports/MyStack/MyOtherExport': 'MyOtherValue',
         },
       },
     });

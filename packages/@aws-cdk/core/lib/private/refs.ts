@@ -234,13 +234,13 @@ function generateExportName(stack: Stack, reference: Reference, id: string): str
       .map(c => c.node.id),
     id,
   ];
-  const prefix = stack.stackName ? stack.stackName + '-' : '';
+  const prefix = stack.stackName;
   const localPart = makeUniqueId(components);
   // max name length for a system manager parameter is 1011 characters
   // including the arn, i.e.
-  // arn:aws:ssm:us-east-2:111122223333:parameter/cdk/exports/${name}
+  // arn:aws:ssm:us-east-2:111122223333:parameter/cdk/exports/${stackName}/${name}
   const maxLength = 900;
-  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
+  return localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
 }
 
 export function getExportable(stack: Stack, reference: Reference): Reference {
