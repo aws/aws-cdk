@@ -155,6 +155,34 @@ class TestHandler(unittest.TestCase):
             ["s3", "sync", "--delete", "--exclude", "/sample/*", "--include", "/sample/*.json", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
+    def test_create_no_extract_file(self):
+        invoke_handler("Create", {
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
+            "DestinationBucketName": "<dest-bucket-name>",
+            "Extract": "false"
+        })
+
+        self.assertAwsCommands(
+                ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "/tmp/contents"],
+                ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
+        )
+
+    def test_update_no_extract_file(self):
+        invoke_handler("Update", {
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
+            "DestinationBucketName": "<dest-bucket-name>",
+            "Extract": "false"
+        }, old_resource_props={
+            "DestinationBucketName": "<dest-bucket-name>",
+        }, physical_id="<physical-id>")
+
+        self.assertAwsCommands(
+                ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "/tmp/contents"],
+                ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
+        )
+
     def test_create_multiple_include_exclude(self):
         invoke_handler("Create", {
             "SourceBucketNames": ["<source-bucket>"],

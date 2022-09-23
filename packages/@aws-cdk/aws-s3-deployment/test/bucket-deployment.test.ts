@@ -6,6 +6,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -943,6 +944,70 @@ test('deploy with multiple exclude and include filters', () => {
   });
 });
 
+test('deploy without extracting files in destination', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    Extract: false,
+  });
+});
+
+test('deploy without extracting files in destination and get the object key', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+  });
+
+  // Tests object key retrieval.
+  void(cdk.Fn.select(0, deployment.objectKeys));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    Extract: false,
+  });
+});
+
+test('given a source with markers and extract is false, BucketDeployment throws an error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const topic: sns.Topic = new sns.Topic(stack, 'SomeTopic1', {});
+
+  // WHEN
+  const file = s3deploy.Source.jsonData('MyJsonObject', {
+    'config.json': {
+      Foo: {
+        Bar: topic.topicArn, // marker
+      },
+    },
+  });
+
+  // THEN
+  expect(() => {
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [file],
+      destinationBucket: bucket,
+      extract: false,
+    });
+  }).toThrow('Some sources are incompatible with extract=false; sources with deploy-time values (such as \'snsTopic.topicArn\') must be extracted.');
+});
+
 test('deployment allows vpc to be implicitly supplied to lambda', () => {
 
   // GIVEN
@@ -1147,6 +1212,28 @@ test('throws if destinationKeyPrefix is too long', () => {
     destinationKeyPrefix: '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long??????',
     memoryLimit: 256,
   })).toThrow(/The BucketDeployment construct requires that/);
+
+});
+
+test('skips destinationKeyPrefix validation if token', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  // trick the cdk into creating a very long token
+  const prefixToken = cdk.Token.asString(5, { displayHint: 'longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglong' });
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: prefixToken,
+    memoryLimit: 256,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    DestinationBucketKeyPrefix: 5,
+  });
 
 });
 
