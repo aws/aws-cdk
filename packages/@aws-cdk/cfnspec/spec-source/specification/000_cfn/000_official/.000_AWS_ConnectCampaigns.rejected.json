@@ -27,7 +27,7 @@
       }
     }
   },
-  "ResourceSpecificationVersion": "85.0.0",
+  "ResourceSpecificationVersion": "89.0.0",
   "ResourceTypes": {
     "AWS::ConnectCampaigns::Campaign": {
       "Attributes": {
