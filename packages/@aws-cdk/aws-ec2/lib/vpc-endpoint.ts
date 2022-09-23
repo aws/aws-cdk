@@ -322,6 +322,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly LAMBDA = new InterfaceVpcEndpointAwsService('lambda');
   public static readonly TRANSCRIBE = new InterfaceVpcEndpointAwsService('transcribe');
   public static readonly XRAY = new InterfaceVpcEndpointAwsService('xray');
+  public static readonly SECURITYHUB = new InterfaceVpcEndpointAwsService('securityhub');
 
   /**
    * The name of the service. e.g. com.amazonaws.us-east-1.ecs
