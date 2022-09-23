@@ -27,7 +27,10 @@ export interface BackupSelectionOptions {
    * The role that AWS Backup uses to authenticate when backing up or restoring
    * the resources. By default, the `AWSBackupServiceRolePolicyForBackup`
    * managed policy will be attached to this role. If you want to disable the
-   * addition of all managed policies, then include the customRole flag.
+   * addition of all managed policies, then specify allowBackup as false. If you
+   * would like additional roles to be added for you, make use of the
+   * allowBackup and allowRestore flags below. See the package overview for more
+   * examples.
    *
    * @default - a new role will be created
    */
