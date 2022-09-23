@@ -8,7 +8,6 @@ import { IntegTest } from '@aws-cdk/integ-tests';
 import { S3SourceAction, CodeBuildAction } from '../lib';
 
 
-const account = process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT;
 const app = new App({
   treeMetadata: false,
 });
@@ -16,13 +15,11 @@ app.node.setContext(ENABLE_CROSS_REGION_REFERENCES, true);
 const stack1 = new Stack(app, 'integ-pipeline-producer-stack', {
   env: {
     region: 'us-east-1',
-    account,
   },
 });
 const stack2 = new Stack(app, 'integ-pipeline-consumer-stack', {
   env: {
     region: 'us-east-2',
-    account,
   },
 });
 

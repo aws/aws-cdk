@@ -11,7 +11,11 @@
        {
         "Ref": "AWS::URLSuffix"
        },
-       "/cdk-hnb659fds-assets-539334897376-us-east-1/db4b89d277ac97fb3b94206516c7e60648f2e3a4d53793e2e8d073a607b04fdc.json"
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+       },
+       "/db4b89d277ac97fb3b94206516c7e60648f2e3a4d53793e2e8d073a607b04fdc.json"
       ]
      ]
     }
@@ -80,7 +84,18 @@
        "Statement": [
         {
          "Effect": "Allow",
-         "Resource": "arn:aws:ssm:us-east-2:539334897376:parameter/cdk/exports/*",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:ssm:us-east-2:",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":parameter/cdk/exports/*"
+           ]
+          ]
+         },
          "Action": [
           "ssm:GetParametersByPath",
           "ssm:PutParameter",
@@ -97,7 +112,9 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-539334897376-us-east-1",
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
      "S3Key": "81ce50203f1ecfd42920cc23099e4751011d8596f9eb0671f9b703f703b1c989.zip"
     },
     "Timeout": 900,

@@ -18,7 +18,6 @@ class ProducerStack extends Stack {
     super(scope, id, {
       env: {
         region: 'us-east-1',
-        account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
       },
     });
     const nested = new NestedStack(this, 'IntegNested');
@@ -36,7 +35,6 @@ class ConsumerStack extends Stack {
       ...props,
       env: {
         region: 'us-east-2',
-        account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
       },
     });
 

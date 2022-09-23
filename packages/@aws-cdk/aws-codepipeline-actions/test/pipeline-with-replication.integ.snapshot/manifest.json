@@ -11,20 +11,20 @@
     },
     "integ-pipeline-producer-stack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://12345678/us-east-1",
+      "environment": "aws://unknown-account/us-east-1",
       "properties": {
         "templateFile": "integ-pipeline-producer-stack.template.json",
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/cd81916f97f443b595350f121a34cc07641fedfc3e39d80b64772fbf5e7a48be.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/f6b8517d223bcb31f6544cef17261ee6be38b83b8bb0e212b76d81a03df462a5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "integ-pipeline-producer-stack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -69,16 +69,22 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/integ-pipeline-producer-stack/Exports/Output{\"Ref\":\"ReplicationBucket70D68737\"}": [
+        "/integ-pipeline-producer-stack/ExportsWriteruseast2828FA26B/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefReplicationBucket70D68737E331A47A"
+            "data": "ExportsWriteruseast2828FA26B"
           }
         ],
-        "/integ-pipeline-producer-stack/Exports/Output{\"Fn::GetAtt\":[\"ReplicationKeyFCE40BF4\",\"Arn\"]}": [
+        "/integ-pipeline-producer-stack/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttReplicationKeyFCE40BF4Arn53D389D6"
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
+          }
+        ],
+        "/integ-pipeline-producer-stack/Custom::CrossRegionExportWriterCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A"
           }
         ],
         "/integ-pipeline-producer-stack/BootstrapVersion": [
@@ -106,20 +112,20 @@
     },
     "integ-pipeline-consumer-stack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://12345678/us-east-2",
+      "environment": "aws://unknown-account/us-east-2",
       "properties": {
         "templateFile": "integ-pipeline-consumer-stack.template.json",
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-2",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-2/a0e7b5e05681c4b759e7ec2d86e5ffa92067757e6a136c7516438235b9ea2a4c.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/e7cbbedc5cef94e341632c341639a71c30895ee9de9827d4fcb3450a70c7c85c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "integ-pipeline-consumer-stack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-us-east-2",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-2",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -241,24 +247,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Build45A36621"
-          }
-        ],
-        "/integ-pipeline-consumer-stack/ExportsReaderuseast1D746CBDB/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsReaderuseast1D746CBDB"
-          }
-        ],
-        "/integ-pipeline-consumer-stack/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
-          }
-        ],
-        "/integ-pipeline-consumer-stack/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
           }
         ],
         "/integ-pipeline-consumer-stack/BootstrapVersion": [

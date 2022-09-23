@@ -9,7 +9,18 @@
        "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::12345678:root"
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
        },
        "Resource": "*"
       }
@@ -144,7 +155,9 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-1",
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
      "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
     },
     "Timeout": 900,
@@ -173,27 +186,107 @@
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
-  }
- },
- "Outputs": {
-  "ExportsOutputRefReplicationBucket70D68737E331A47A": {
-   "Value": {
-    "Ref": "ReplicationBucket70D68737"
+  },
+  "ExportsWriteruseast2828FA26B": {
+   "Type": "Custom::CrossRegionExportWriter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A",
+      "Arn"
+     ]
+    },
+    "Region": "us-east-2",
+    "Exports": {
+     "integ-pipeline-producer-stack-ReplicationBucketRefReplicationBucket70D6873707044AE1": {
+      "Ref": "ReplicationBucket70D68737"
+     },
+     "integ-pipeline-producer-stack-ReplicationKeyFnGetAttReplicationKeyFCE40BF4ArnFBFE312D": {
+      "Fn::GetAtt": [
+       "ReplicationKeyFCE40BF4",
+       "Arn"
+      ]
+     }
+    }
    },
-   "Export": {
-    "Name": "integ-pipeline-producer-stack:ExportsOutputRefReplicationBucket70D68737E331A47A"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:ssm:us-east-2:",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":parameter/cdk/exports/*"
+           ]
+          ]
+         },
+         "Action": [
+          "ssm:GetParametersByPath",
+          "ssm:PutParameter",
+          "ssm:DeleteParameters"
+         ]
+        }
+       ]
+      }
+     }
+    ]
    }
   },
-  "ExportsOutputFnGetAttReplicationKeyFCE40BF4Arn53D389D6": {
-   "Value": {
-    "Fn::GetAtt": [
-     "ReplicationKeyFCE40BF4",
-     "Arn"
-    ]
+  "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "81ce50203f1ecfd42920cc23099e4751011d8596f9eb0671f9b703f703b1c989.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x"
    },
-   "Export": {
-    "Name": "integ-pipeline-producer-stack:ExportsOutputFnGetAttReplicationKeyFCE40BF4Arn53D389D6"
-   }
+   "DependsOn": [
+    "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
+   ]
   }
  },
  "Parameters": {

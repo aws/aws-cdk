@@ -11,7 +11,11 @@
        {
         "Ref": "AWS::URLSuffix"
        },
-       "/cdk-hnb659fds-assets-539334897376-us-east-2/61c5467a13581c441143dacb7d8878bb691678bb777668c0d4bbf28d05538404.json"
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
+       },
+       "/61c5467a13581c441143dacb7d8878bb691678bb777668c0d4bbf28d05538404.json"
       ]
      ]
     }
