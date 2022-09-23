@@ -1160,6 +1160,23 @@ cluster.addHelmChart('test-chart', {
 });
 ```
 
+Nested values passed to the `values` parameter should be provided as a nested dictionary:
+
+```ts
+cluster.addHelmChart('ExternalSecretsOperator', {
+  chart: 'external-secrets',
+  release: 'external-secrets',
+  repository: 'https://charts.external-secrets.io',
+  namespace: 'external-secrets',
+  values: {
+    installCRDs: true,
+    webhook: {
+      port: 9443
+    }
+  },
+});
+```
+
 ### OCI Charts
 
 OCI charts are also supported.

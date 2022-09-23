@@ -223,6 +223,24 @@ const listBuckets = new tasks.CallAwsService(this, 'ListBuckets', {
 });
 ```
 
+Use the `additionalIamStatements` prop to pass additional IAM statements that will be added to the
+state machine role's policy. Use it in the case where the call requires more than a single statement
+to be executed:
+
+```ts
+const detectLabels = new tasks.CallAwsService(stack, 'DetectLabels', {
+  service: 'rekognition',
+  action: 'detectLabels',
+  iamResources: ['*'],
+  additionalIamStatements: [
+    new iam.PolicyStatement({
+      actions: ['s3:getObject'],
+      resources: ['arn:aws:s3:::my-bucket/*'],
+    }),
+  ],
+});
+```
+
 ## Athena
 
 Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html) through the service integration pattern.
