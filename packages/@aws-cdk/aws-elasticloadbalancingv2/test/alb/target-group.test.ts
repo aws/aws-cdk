@@ -541,4 +541,51 @@ describe('tests', () => {
     // THEN
     expect(importedTg.targetGroupName).toEqual('myAlbTargetGroup');
   });
+
+  test('imported targetGroup with imported ARN has targetGroupName', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const importedTgArn = cdk.Fn.importValue('ImportTargetGroupArn');
+    const importedTg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: importedTgArn,
+    });
+    new cdk.CfnOutput(stack, 'TargetGroupOutput', {
+      value: importedTg.targetGroupName,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasOutput('TargetGroupOutput', {
+      Value: {
+        'Fn::Select': [
+          // myAlbTargetGroup
+          1,
+          {
+            'Fn::Split': [
+              // [targetgroup, myAlbTargetGroup, 73e2d6bc24d8a067]
+              '/',
+              {
+                'Fn::Select': [
+                  // targetgroup/myAlbTargetGroup/73e2d6bc24d8a067
+                  5,
+                  {
+                    'Fn::Split': [
+                      // [arn, aws, elasticloadbalancing, us-west-2, 123456789012, targetgroup/myAlbTargetGroup/73e2d6bc24d8a067]
+                      ':',
+                      {
+                        // arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067
+                        'Fn::ImportValue': 'ImportTargetGroupArn',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
 });
