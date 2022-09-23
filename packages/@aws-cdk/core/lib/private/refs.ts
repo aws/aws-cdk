@@ -3,11 +3,11 @@
 // ----------------------------------------------------
 
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct, Construct } from 'constructs';
+import { IConstruct } from 'constructs';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
-import { ExportReader } from '../custom-resource-provider/export-reader-provider';
+import { ExportWriter } from '../custom-resource-provider/export-reader-provider';
 import { FeatureFlags } from '../feature-flags';
 import { Names } from '../names';
 import { Reference } from '../reference';
@@ -203,31 +203,47 @@ function createImportValue(reference: Reference): Intrinsic {
  */
 function createCrossRegionImportValue(reference: Reference, importStack: Stack): Intrinsic {
   const exportingStack = Stack.of(reference.target);
-  const exportName = generateExport(exportingStack, reference);
 
-  const constructName = makeUniqueId(['ExportsReader', exportingStack.region]);
-  const existing = importStack.node.tryFindChild(constructName);
-  const exportReader = existing
-    ? existing as ExportReader
-    : new ExportReader(importStack, constructName, {
-      region: exportingStack.region,
-    });
-  exportReader._registerExport(reference);
-
-  return exportReader.importValue(exportName);
-}
-
-function getCreateExportsScope(stack: Stack) {
-  const exportsName = 'Exports';
-  let stackExports = stack.node.tryFindChild(exportsName) as Construct;
-  if (stackExports === undefined) {
-    stackExports = new Construct(stack, exportsName);
+  // generate an export name
+  const exportable = getExportable(exportingStack, reference);
+  const id = JSON.stringify(exportingStack.resolve(exportable));
+  const exportName = generateExportName(exportingStack, reference, id);
+  if (Token.isUnresolved(exportName)) {
+    throw new Error(`unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
   }
 
-  return stackExports;
+  // get or create the export writer
+  const constructName = makeUniqueId(['ExportsWriter', importStack.region]);
+  const existing = exportingStack.node.tryFindChild(constructName);
+  const exportReader = existing
+    ? existing as ExportWriter
+    : new ExportWriter(exportingStack, constructName, {
+      region: importStack.region,
+    });
+
+  return exportReader.exportValue(exportName, reference);
 }
 
-export function generateExport(stack: Stack, reference: Reference): string { // if exportValue is being called manually (which is pre onPrepare) then the logicalId
+/**
+ * Generate a unique physical name for the export
+ */
+function generateExportName(stack: Stack, reference: Reference, id: string): string {
+  const components = [
+    ...reference.target.node.scopes
+      .slice(stack.node.scopes.length)
+      .map(c => c.node.id),
+    id,
+  ];
+  const prefix = stack.stackName ? stack.stackName + '-' : '';
+  const localPart = makeUniqueId(components);
+  // max name length for a system manager parameter is 1011 characters
+  // including the arn, i.e.
+  // arn:aws:ssm:us-east-2:111122223333:parameter/cdk/exports/${name}
+  const maxLength = 900;
+  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
+}
+
+export function getExportable(stack: Stack, reference: Reference): Reference {
   // could potentially be changed by a call to overrideLogicalId. This would cause our Export/Import
   // to have an incorrect id. For a better user experience, lock the logicalId and throw an error
   // if the user tries to override the id _after_ calling exportValue
@@ -237,45 +253,7 @@ export function generateExport(stack: Stack, reference: Reference): string { // 
 
   // "teleport" the value here, in case it comes from a nested stack. This will also
   // ensure the value is from our own scope.
-  const exportable = referenceNestedStackValueInParent(reference, stack);
-
-  // Ensure a singleton "Exports" scoping Construct
-  // This mostly exists to trigger LogicalID munging, which would be
-  // disabled if we parented constructs directly under Stack.
-  // Also it nicely prevents likely construct name clashes
-  const exportScope = getCreateExportsScope(stack);
-
-  // Ensure a singleton CfnOutput for this value
-  const resolved = stack.resolve(exportable);
-  const id = 'Output' + JSON.stringify(resolved);
-  const exportName = generateExportName(exportScope, id);
-
-  if (Token.isUnresolved(exportName)) {
-    throw new Error(`unresolved token in generated export name: ${JSON.stringify(stack.resolve(exportName))}`);
-  }
-
-  const output = exportScope.node.tryFindChild(id) as CfnOutput;
-  if (!output) {
-    new CfnOutput(exportScope, id, { value: Token.asString(exportable), exportName });
-  }
-
-  return exportName;
-}
-
-function generateExportName(stackExports: Construct, id: string) {
-  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
-  const stack = Stack.of(stackExports);
-
-  const components = [
-    ...stackExports.node.scopes
-      .slice(stackRelativeExports ? stack.node.scopes.length : 2)
-      .map(c => c.node.id),
-    id,
-  ];
-  const prefix = stack.stackName ? stack.stackName + ':' : '';
-  const localPart = makeUniqueId(components);
-  const maxLength = 255;
-  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
+  return referenceNestedStackValueInParent(reference, stack);
 }
 
 // ------------------------------------------------------------------------------------------------

@@ -215,43 +215,30 @@ describe('cross environment', () => {
     const template1 = assembly.getStackByName(stack1.stackName).template;
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
-    expect(template1?.Outputs).toEqual({
-      'ExportsOutputRefMyResource6073B41F0296C218': {
-        'Export': {
-          'Name': 'Stack1:ExportsOutputRefMyResource6073B41F0296C218',
-        },
-        'Value': {
-          'Ref': 'MyResource6073B41F',
-        },
-      },
-    });
-    expect(template2?.Resources).toMatchObject({
-      'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68': {
-        'DependsOn': [
-          'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD',
-        ],
-        'Type': 'AWS::Lambda::Function',
-      },
-      'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD': {
-        'Type': 'AWS::IAM::Role',
-      },
-      'ExportsReaderbermudatriangle1337E63A6E15': {
+    expect(template1?.Resources).toMatchObject({
+      'ExportsWriterbermudatriangle42E5959427': {
         'DeletionPolicy': 'Delete',
         'Properties': {
-          'Region': 'bermuda-triangle-1337',
+          'Exports': {
+            'Stack1-MyResourceRefMyResource6073B41F992B761C': {
+              'Ref': 'MyResource6073B41F',
+            },
+          },
+          'Region': 'bermuda-triangle-42',
+          'ServiceToken': {
+            'Fn::GetAtt': [
+              'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+              'Arn',
+            ],
+          },
         },
-        'Type': 'Custom::CrossRegionExportReader',
+        'Type': 'Custom::CrossRegionExportWriter',
         'UpdateReplacePolicy': 'Delete',
       },
     });
     expect(template2?.Outputs).toEqual({
       'Output': {
-        'Value': {
-          'Fn::GetAtt': [
-            'ExportsReaderbermudatriangle1337E63A6E15',
-            'Stack1:ExportsOutputRefMyResource6073B41F0296C218',
-          ],
-        },
+        'Value': '{{resolve:ssm:/cdk/exports/Stack1-MyResourceRefMyResource6073B41F992B761C}}',
       },
     });
   });

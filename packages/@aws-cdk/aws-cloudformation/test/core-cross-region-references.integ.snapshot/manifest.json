@@ -11,20 +11,20 @@
     },
     "cross-region-producer": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://12345678/us-east-1",
+      "environment": "aws://539334897376/us-east-1",
       "properties": {
         "templateFile": "cross-region-producer.template.json",
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/1b51dc5002497b083a035e23c4860bcb5629e1bc736934175db5d6e44994d6a0.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::539334897376:role/cdk-hnb659fds-deploy-role-539334897376-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::539334897376:role/cdk-hnb659fds-cfn-exec-role-539334897376-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-539334897376-us-east-1/53d01d6d16adb4ed7a288c6b057ad8862a46c20a65e8d446381b09ca57dc7570.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "cross-region-producer.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::539334897376:role/cdk-hnb659fds-lookup-role-539334897376-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -57,16 +57,22 @@
             "data": "IntegQueue3A18718A"
           }
         ],
-        "/cross-region-producer/Exports/Output{\"Fn::GetAtt\":[\"IntegQueue3A18718A\",\"QueueName\"]}": [
+        "/cross-region-producer/ExportsWriteruseast2828FA26B/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttIntegQueue3A18718AQueueName46C58A8F"
+            "data": "ExportsWriteruseast2828FA26B"
           }
         ],
-        "/cross-region-producer/Exports/Output{\"Fn::GetAtt\":[\"IntegNestedNestedStackIntegNestedNestedStackResource168C5881\",\"Outputs.crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName\"]}": [
+        "/cross-region-producer/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName7C64F4AE"
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
+          }
+        ],
+        "/cross-region-producer/Custom::CrossRegionExportWriterCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A"
           }
         ],
         "/cross-region-producer/BootstrapVersion": [
@@ -94,20 +100,20 @@
     },
     "cross-region-consumer": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://12345678/us-east-2",
+      "environment": "aws://539334897376/us-east-2",
       "properties": {
         "templateFile": "cross-region-consumer.template.json",
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-2",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-2/e26c2dfd5f9b7ba5526b3f009caa48d05359ab46c53a1b9652d10a9a8b01161e.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::539334897376:role/cdk-hnb659fds-deploy-role-539334897376-us-east-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::539334897376:role/cdk-hnb659fds-cfn-exec-role-539334897376-us-east-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-539334897376-us-east-2/3fd74b699f4b03ce328ef95703bb87b2b203a4ea68994f06947d0d1c46130a55.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "cross-region-consumer.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-us-east-2",
+          "arn": "arn:${AWS::Partition}:iam::539334897376:role/cdk-hnb659fds-lookup-role-539334897376-us-east-2",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -129,24 +135,6 @@
             "data": "IntegNestedParameter1DE6274D4"
           }
         ],
-        "/cross-region-consumer/IntegNested/ExportsReaderuseast1D746CBDB/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsReaderuseast1D746CBDB"
-          }
-        ],
-        "/cross-region-consumer/IntegNested/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
-          }
-        ],
-        "/cross-region-consumer/IntegNested/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
-          }
-        ],
         "/cross-region-consumer/IntegNested.NestedStack/IntegNested.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
@@ -163,24 +151,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegParameter1EDBEF1C6"
-          }
-        ],
-        "/cross-region-consumer/ExportsReaderuseast1D746CBDB/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsReaderuseast1D746CBDB"
-          }
-        ],
-        "/cross-region-consumer/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
-          }
-        ],
-        "/cross-region-consumer/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
           }
         ],
         "/cross-region-consumer/BootstrapVersion": [

@@ -4,12 +4,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Value": {
-     "Fn::GetAtt": [
-      "ExportsReaderuseast1D746CBDB",
-      "cross-region-producer:ExportsOutputFnGetAttIntegQueue3A18718AQueueName46C58A8F"
-     ]
-    },
+    "Value": "{{resolve:ssm:/cdk/exports/cross-region-producer-IntegQueueFnGetAttIntegQueue3A18718AQueueName6E52E429}}",
     "Name": "integ-nested-parameter0"
    }
   },
@@ -17,90 +12,9 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Value": {
-     "Fn::GetAtt": [
-      "ExportsReaderuseast1D746CBDB",
-      "cross-region-producer:ExportsOutputFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName7C64F4AE"
-     ]
-    },
+    "Value": "{{resolve:ssm:/cdk/exports/cross-region-producer-IntegNestedNestedStackIntegNestedNestedStackResourceFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC3296698}}",
     "Name": "integ-nested-parameter1"
    }
-  },
-  "ExportsReaderuseast1D746CBDB": {
-   "Type": "Custom::CrossRegionExportReader",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68",
-      "Arn"
-     ]
-    },
-    "Region": "us-east-1",
-    "RefreshToken": "232744ad70da548e96b56a2d625574f9"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ],
-    "Policies": [
-     {
-      "PolicyName": "Inline",
-      "PolicyDocument": {
-       "Version": "2012-10-17",
-       "Statement": [
-        {
-         "Effect": "Allow",
-         "Resource": "*",
-         "Action": [
-          "cloudformation:ListExports"
-         ]
-        }
-       ]
-      }
-     }
-    ]
-   }
-  },
-  "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-2",
-     "S3Key": "1ee31a833482538af5b3690ccbb84c41ac4c66f7892bcb8802b0695553bc4ccf.zip"
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs14.x"
-   },
-   "DependsOn": [
-    "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
-   ]
   }
  }
 }

@@ -1,5 +1,5 @@
-import { App, Stack, AssetStaging } from '../../lib';
-import { ExportReader } from '../../lib/custom-resource-provider/export-reader-provider';
+import { App, Stack, AssetStaging, CfnResource } from '../../lib';
+import { ExportWriter } from '../../lib/custom-resource-provider/export-reader-provider';
 import { toCloudFormation } from '../util';
 
 
@@ -8,20 +8,28 @@ describe('export reader provider', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app);
+    const resource = new CfnResource(stack, 'MyResource', {
+      type: 'Custom::MyResource',
+    });
 
     // WHEN
-    new ExportReader(stack, 'ExportReader', {
+    const exportWriter = new ExportWriter(stack, 'ExportWriter', {
       region: 'us-east-1',
     });
+    const exportValue = exportWriter.exportValue('MyResourceName', resource.getAtt('arn'));
 
     // THEN
     const cfn = toCloudFormation(stack);
-    const staging = stack.node.tryFindChild('Custom::CrossRegionExportReaderCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
+    const staging = stack.node.tryFindChild('Custom::CrossRegionExportWriterCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
     const assetHash = staging.assetHash;
 
+    expect(stack.resolve(exportValue)).toEqual('{{resolve:ssm:/cdk/exports/MyResourceName}}');
     expect(cfn).toEqual({
       Resources: {
-        CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD: {
+        MyResource: {
+          Type: 'Custom::MyResource',
+        },
+        CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1: {
           Type: 'AWS::IAM::Role',
           Properties: {
             AssumeRolePolicyDocument: {
@@ -42,10 +50,27 @@ describe('export reader provider', () => {
                   Statement: [
                     {
                       Action: [
-                        'cloudformation:ListExports',
+                        'ssm:GetParametersByPath',
+                        'ssm:PutParameter',
+                        'ssm:DeleteParameters',
                       ],
                       Effect: 'Allow',
-                      Resource: '*',
+                      Resource: {
+                        'Fn::Join': [
+                          '',
+                          [
+                            'arn:',
+                            {
+                              Ref: 'AWS::Partition',
+                            },
+                            ':ssm:us-east-1:',
+                            {
+                              Ref: 'AWS::AccountId',
+                            },
+                            ':parameter/cdk/exports/*',
+                          ],
+                        ],
+                      },
                     },
                   ],
                   Version: '2012-10-17',
@@ -60,22 +85,29 @@ describe('export reader provider', () => {
             ],
           },
         },
-        ExportReader: {
+        ExportWriter: {
           DeletionPolicy: 'Delete',
           Properties: {
-            RefreshToken: expect.any(String),
             Region: 'us-east-1',
             ServiceToken: {
               'Fn::GetAtt': [
-                'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
                 'Arn',
               ],
             },
+            Exports: {
+              MyResourceName: {
+                'Fn::GetAtt': [
+                  'MyResource',
+                  'arn',
+                ],
+              },
+            },
           },
-          Type: 'Custom::CrossRegionExportReader',
+          Type: 'Custom::CrossRegionExportWriter',
           UpdateReplacePolicy: 'Delete',
         },
-        CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
+        CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A: {
           Type: 'AWS::Lambda::Function',
           Properties: {
             Code: {
@@ -89,14 +121,14 @@ describe('export reader provider', () => {
             Handler: '__entrypoint__.handler',
             Role: {
               'Fn::GetAtt': [
-                'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD',
+                'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
                 'Arn',
               ],
             },
             Runtime: 'nodejs14.x',
           },
           DependsOn: [
-            'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD',
+            'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
           ],
         },
       },

@@ -64,51 +64,46 @@ describe('nested-stack', () => {
 
     // THEN
     const assembly = app.synth();
-    const template2 = JSON.parse(readFileSync(path.join(assembly.directory, `${nestedStack2.artifactId}.nested.template.json`), 'utf8'));
-    expect(template2).toMatchObject({
-      Resources: {
-        CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
-          DependsOn: [
-            'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD',
-          ],
-          Type: 'AWS::Lambda::Function',
-        },
-        CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD: {
-          Type: 'AWS::IAM::Role',
-        },
-        ExportsReaderbermudatriangle1337E63A6E15: {
-          DeletionPolicy: 'Delete',
-          Properties: {
-            Region: 'bermuda-triangle-1337',
-          },
-          Type: 'Custom::CrossRegionExportReader',
-          UpdateReplacePolicy: 'Delete',
-        },
-      },
+    const nestedTemplate2 = JSON.parse(readFileSync(path.join(assembly.directory, `${nestedStack2.artifactId}.nested.template.json`), 'utf8'));
+    expect(nestedTemplate2).toMatchObject({
       Outputs: {
         Output: {
-          Value: {
-            'Fn::GetAtt': [
-              'ExportsReaderbermudatriangle1337E63A6E15',
-              'Stack1:ExportsOutputFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref16CD9A2F',
-            ],
-          },
+          Value: '{{resolve:ssm:/cdk/exports/Stack1-MyNestedStackNestedStackMyNestedStackNestedStackResourceFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref94C8BA6D}}',
         },
       },
     });
     const template1 = assembly.getStackByName(stack1.stackName).template;
-
-    expect(template1?.Outputs).toEqual({
-      ExportsOutputFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref16CD9A2F: {
-        Export: {
-          Name: 'Stack1:ExportsOutputFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref16CD9A2F',
-        },
+    const nestedTemplate1 = JSON.parse(readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8'));
+    expect(nestedTemplate1?.Outputs).toEqual({
+      Stack1MyNestedStackMyResourceEDA18296Ref: {
         Value: {
-          'Fn::GetAtt': [
-            'MyNestedStackNestedStackMyNestedStackNestedStackResource9C617903',
-            'Outputs.Stack1MyNestedStackMyResourceEDA18296Ref',
-          ],
+          Ref: 'MyResource6073B41F',
         },
+      },
+    });
+
+    expect(template1?.Resources).toMatchObject({
+      ExportsWriterbermudatriangle42E5959427: {
+        DeletionPolicy: 'Delete',
+        Properties: {
+          Exports: {
+            'Stack1-MyNestedStackNestedStackMyNestedStackNestedStackResourceFnGetAttMyNestedStackNestedStackMyNestedStackNestedStackResource9C617903OutputsStack1MyNestedStackMyResourceEDA18296Ref94C8BA6D': {
+              'Fn::GetAtt': [
+                'MyNestedStackNestedStackMyNestedStackNestedStackResource9C617903',
+                'Outputs.Stack1MyNestedStackMyResourceEDA18296Ref',
+              ],
+            },
+          },
+          Region: 'bermuda-triangle-42',
+          ServiceToken: {
+            'Fn::GetAtt': [
+              'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+              'Arn',
+            ],
+          },
+        },
+        Type: 'Custom::CrossRegionExportWriter',
+        UpdateReplacePolicy: 'Delete',
       },
     });
   });

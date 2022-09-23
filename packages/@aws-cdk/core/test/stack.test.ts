@@ -490,17 +490,25 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-      },
-      Outputs: {
-        ExportsOutputFnGetAttSomeResourceExportname33D556F7: {
-          Export: {
-            Name: 'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
-          },
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'name',
-            ],
+        ExportsWriteruseast2828FA26B: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            Exports: {
+              'Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914': {
+                'Fn::GetAtt': [
+                  'SomeResourceExport',
+                  'name',
+                ],
+              },
+            },
+            Region: 'us-east-2',
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
           },
         },
       },
@@ -511,19 +519,8 @@ describe('stack', () => {
         SomeResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
-            Name: {
-              'Fn::GetAtt': [
-                'ExportsReaderuseast1D746CBDB',
-                'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
-              ],
-            },
+            Name: '{{resolve:ssm:/cdk/exports/Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914}}',
           },
-        },
-        CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
-          Type: 'AWS::Lambda::Function',
-        },
-        ExportsReaderuseast1D746CBDB: {
-          Type: 'Custom::CrossRegionExportReader',
         },
       },
     });
@@ -582,24 +579,42 @@ describe('stack', () => {
     const template1 = assembly.getStackByName(stack1.stackName).template;
 
     // THEN
-    const exportReaders = Object.entries(template2.Resources).filter((res: [string, any]) => res[1].Type === 'Custom::CrossRegionExportReader');
-    expect(exportReaders.length).toEqual(1);
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Name: '{{resolve:ssm:/cdk/exports/Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914}}',
+            Other: '{{resolve:ssm:/cdk/exports/Stack1-SomeResourceExportFnGetAttSomeResourceExportotherB49CE033}}',
+            Other2: '{{resolve:ssm:/cdk/exports/Stack3-SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5}}',
+          },
+        },
+      },
+    });
     expect(template3).toMatchObject({
       Resources: {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-      },
-      Outputs: {
-        ExportsOutputFnGetAttSomeResourceExportother2AC0F424D: {
-          Export: {
-            Name: 'Stack3:ExportsOutputFnGetAttSomeResourceExportother2AC0F424D',
-          },
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'other2',
-            ],
+        ExportsWriteruseast2828FA26B: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            Exports: {
+              'Stack3-SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5': {
+                'Fn::GetAtt': [
+                  'SomeResourceExport',
+                  'other2',
+                ],
+              },
+            },
+            Region: 'us-east-2',
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
           },
         },
       },
@@ -609,63 +624,32 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-      },
-      Outputs: {
-        ExportsOutputFnGetAttSomeResourceExportname33D556F7: {
-          Export: {
-            Name: 'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
-          },
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'name',
-            ],
-          },
-        },
-        ExportsOutputFnGetAttSomeResourceExportotherA189B4B9: {
-          Export: {
-            Name: 'Stack1:ExportsOutputFnGetAttSomeResourceExportotherA189B4B9',
-          },
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'other',
-            ],
-          },
-        },
-      },
-    });
-
-    expect(template2).toMatchObject({
-      Resources: {
-        SomeResource: {
-          Type: 'AWS::S3::Bucket',
+        ExportsWriteruseast2828FA26B: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
           Properties: {
-            Name: {
-              'Fn::GetAtt': [
-                'ExportsReaderuseast1D746CBDB',
-                'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
-              ],
+            Exports: {
+              'Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914': {
+                'Fn::GetAtt': [
+                  'SomeResourceExport',
+                  'name',
+                ],
+              },
+              'Stack1-SomeResourceExportFnGetAttSomeResourceExportotherB49CE033': {
+                'Fn::GetAtt': [
+                  'SomeResourceExport',
+                  'other',
+                ],
+              },
             },
-            Other: {
+            Region: 'us-east-2',
+            ServiceToken: {
               'Fn::GetAtt': [
-                'ExportsReaderuseast1D746CBDB',
-                'Stack1:ExportsOutputFnGetAttSomeResourceExportotherA189B4B9',
-              ],
-            },
-            Other2: {
-              'Fn::GetAtt': [
-                'ExportsReaderuseast1D746CBDB',
-                'Stack3:ExportsOutputFnGetAttSomeResourceExportother2AC0F424D',
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
               ],
             },
           },
-        },
-        CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
-          Type: 'AWS::Lambda::Function',
-        },
-        ExportsReaderuseast1D746CBDB: {
-          Type: 'Custom::CrossRegionExportReader',
         },
       },
     });
@@ -701,24 +685,49 @@ describe('stack', () => {
     const template1 = assembly.getStackByName(stack1.stackName).template;
 
     // THEN
-    const exportReaders = Object.entries(template2.Resources).filter((res: [string, any]) => res[1].Type === 'Custom::CrossRegionExportReader');
-    expect(exportReaders.length).toEqual(2);
     expect(template3).toMatchObject({
       Resources: {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
       },
-      Outputs: {
-        ExportsOutputFnGetAttSomeResourceExportother2AC0F424D: {
-          Export: {
-            Name: 'Stack3:ExportsOutputFnGetAttSomeResourceExportother2AC0F424D',
+    });
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Name: '{{resolve:ssm:/cdk/exports/Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914}}',
+            Other: '{{resolve:ssm:/cdk/exports/Stack1-SomeResourceExportFnGetAttSomeResourceExportotherB49CE033}}',
+            Other2: '{{resolve:ssm:/cdk/exports/Stack3-SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5}}',
           },
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'other2',
-            ],
+        },
+      },
+    });
+    expect(template3).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+        ExportsWriteruseast2828FA26B: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            Exports: {
+              'Stack3-SomeResourceExportFnGetAttSomeResourceExportother297A3A2C5': {
+                'Fn::GetAtt': [
+                  'SomeResourceExport',
+                  'other2',
+                ],
+              },
+            },
+            Region: 'us-east-2',
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
           },
         },
       },
@@ -728,65 +737,31 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-      },
-      Outputs: {
-        ExportsOutputFnGetAttSomeResourceExportname33D556F7: {
-          Export: {
-            Name: 'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
-          },
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'name',
-            ],
-          },
-        },
-        ExportsOutputFnGetAttSomeResourceExportotherA189B4B9: {
-          Export: {
-            Name: 'Stack1:ExportsOutputFnGetAttSomeResourceExportotherA189B4B9',
-          },
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'other',
-            ],
-          },
-        },
-      },
-    });
-
-    expect(template2).toMatchObject({
-      Resources: {
-        SomeResource: {
-          Type: 'AWS::S3::Bucket',
+        ExportsWriteruseast2828FA26B: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
           Properties: {
-            Name: {
+            Exports: {
+              'Stack1-SomeResourceExportFnGetAttSomeResourceExportname1C71E914': {
+                'Fn::GetAtt': [
+                  'SomeResourceExport',
+                  'name',
+                ],
+              },
+              'Stack1-SomeResourceExportFnGetAttSomeResourceExportotherB49CE033': {
+                'Fn::GetAtt': [
+                  'SomeResourceExport',
+                  'other',
+                ],
+              },
+            },
+            Region: 'us-east-2',
+            ServiceToken: {
               'Fn::GetAtt': [
-                'ExportsReaderuseast1D746CBDB',
-                'Stack1:ExportsOutputFnGetAttSomeResourceExportname33D556F7',
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
               ],
             },
-            Other: {
-              'Fn::GetAtt': [
-                'ExportsReaderuseast1D746CBDB',
-                'Stack1:ExportsOutputFnGetAttSomeResourceExportotherA189B4B9',
-              ],
-            },
-            Other2: {
-              'Fn::GetAtt': [
-                'ExportsReaderuswest1619FF90A',
-                'Stack3:ExportsOutputFnGetAttSomeResourceExportother2AC0F424D',
-              ],
-            },
-          },
-        },
-        CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
-          Type: 'AWS::Lambda::Function',
-        },
-        ExportsReaderuseast1D746CBDB: {
-          Type: 'Custom::CrossRegionExportReader',
-          Properties: {
-            Region: 'us-east-1',
           },
         },
       },
