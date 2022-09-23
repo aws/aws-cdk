@@ -1,9 +1,9 @@
 import { App, Stack, AssetStaging, CfnResource } from '../../lib';
-import { ExportWriter } from '../../lib/custom-resource-provider/export-reader-provider';
+import { ExportWriter } from '../../lib/custom-resource-provider/export-writer-provider';
 import { toCloudFormation } from '../util';
 
 
-describe('export reader provider', () => {
+describe('export writer provider', () => {
   test('basic configuration', () => {
     // GIVEN
     const app = new App();

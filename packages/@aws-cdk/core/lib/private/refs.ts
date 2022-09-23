@@ -7,7 +7,7 @@ import { IConstruct } from 'constructs';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
-import { ExportWriter } from '../custom-resource-provider/export-reader-provider';
+import { ExportWriter } from '../custom-resource-provider/export-writer-provider';
 import { FeatureFlags } from '../feature-flags';
 import { Names } from '../names';
 import { Reference } from '../reference';
