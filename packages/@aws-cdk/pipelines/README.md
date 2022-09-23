@@ -1563,6 +1563,93 @@ We recommend you avoid specifying the `cliVersion` parameter at all. By default
 the pipeline will use the latest CLI version, which will support all cloud assembly
 versions.
 
+## Using Drop-in Docker Replacements
+
+By default, the AWS CDK will build and publish Docker image assets using the
+`docker` command. However, by specifying the `CDK_DOCKER` environment variable,
+you can override the command that will be used to build and publish your
+assets.
+
+In CDK Pipelines, the drop-in replacement for the `docker` command must be
+included in the CodeBuild environment and configured for your pipeline.
+
+### Adding to the default CodeBuild image
+
+You can add a drop-in Docker replacement command to the default CodeBuild
+environment by adding install-phase commands that encode how to install
+your tooling and by adding the `CDK_DOCKER` environment variable to your
+build environment.
+
+```ts
+declare const source: pipelines.IFileSetProducer; // the repository source
+declare const synthCommands: string[]; // Commands to synthesize your app
+declare const installCommands: string[]; // Commands to install your toolchain
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  // Standard CodePipeline properties...
+  synth: new pipelines.ShellStep('Synth', {
+    input: source,
+    commands: synthCommands,
+  }),
+
+  // Configure CodeBuild to use a drop-in Docker replacement.
+  codeBuildDefaults: {
+    buildEnvironment: {
+      partialBuildSpec: Codebuild.BuildSpec.fromObject({
+        phases: {
+          install: {
+            // Add the shell commands to install your drop-in Docker
+            // replacement to the CodeBuild enviromment.
+            commands: installCommands,
+          }
+        }
+      }),
+      environmentVariables: {
+        // Instruct the AWS CDK to use `drop-in-replacement` instead of
+        // `docker` when building / publishing docker images.
+        // e.g., `drop-in-replacement build . -f path/to/Dockerfile`
+        CDK_DOCKER: 'drop-in-replacement',
+      }
+    }
+  },
+});
+```
+
+### Using a custom build image
+
+If you're using a custom build image in CodeBuild, you can override the
+command the AWS CDK uses to build Docker images by providing `CDK_DOCKER` as
+an `ENV` in your `Dockerfile` or by providing the environment variable in the
+pipeline as shown below.
+
+```ts
+declare const source: pipelines.IFileSetProducer; // the repository source
+declare const synthCommands: string[]; // Commands to synthesize your app
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  // Standard CodePipeline properties...
+  synth: new pipelines.ShellStep('Synth', {
+    input: source,
+    commands: synthCommands,
+  }),
+
+  // Configure CodeBuild to use a drop-in Docker replacement.
+  codeBuildDefaults: {
+    buildEnvironment: {
+      // Provide a custom build image containing your toolchain and the
+      // pre-installed replacement for the `docker` command.
+      buildImage: codebuild.LinuxBuildImage.fromDockerRegistry('your-docker-registry'),
+      environmentVariables: {
+        // If you haven't provided an `ENV` in your Dockerfile that overrides
+        // `CDK_DOCKER`, then you must provide the name of the command that
+        // the AWS CDK should run instead of `docker` here.
+        CDK_DOCKER: 'drop-in-replacement',
+      }
+    }
+  },
+});
+```
+
 ## Known Issues
 
 There are some usability issues that are caused by underlying technology, and
