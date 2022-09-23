@@ -4,6 +4,7 @@ import {
   IntegTest,
   IntegTestCaseStack,
   AwsApiCall,
+  IApiCall,
   EqualsAssertion,
   ActualResult,
   ExpectedResult,
