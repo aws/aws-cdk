@@ -1,5 +1,6 @@
+import { IApiCall } from './api-call-base';
 import { ExpectedResult, ActualResult } from './common';
-import { IAwsApiCall, LambdaInvokeFunctionProps } from './sdk';
+import { LambdaInvokeFunctionProps } from './sdk';
 
 /**
  * Interface that allows for registering a list of assertions
@@ -26,7 +27,7 @@ export interface IDeployAssert {
    *   Messages: [{ Body: 'hello' }],
    * }));
    */
-  awsApiCall(service: string, api: string, parameters?: any): IAwsApiCall;
+  awsApiCall(service: string, api: string, parameters?: any): IApiCall;
 
   /**
    * Invoke a lambda function and return the response which can be asserted
@@ -41,7 +42,7 @@ export interface IDeployAssert {
    *   Payload: '200',
    * }));
    */
-  invokeFunction(props: LambdaInvokeFunctionProps): IAwsApiCall;
+  invokeFunction(props: LambdaInvokeFunctionProps): IApiCall;
 
   /**
    * Assert that the ExpectedResult is equal
