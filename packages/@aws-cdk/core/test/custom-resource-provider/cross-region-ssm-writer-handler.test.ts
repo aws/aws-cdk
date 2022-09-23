@@ -1,5 +1,5 @@
 import { handler } from '../../lib/custom-resource-provider/cross-region-ssm-writer-handler';
-import { SSM_EXPORT_PATH } from '../../lib/custom-resource-provider/export-reader-provider';
+import { SSM_EXPORT_PATH } from '../../lib/custom-resource-provider/export-writer-provider';
 
 let mockPutParameter: jest.Mock ;
 let mockGetParametersByPath: jest.Mock;
