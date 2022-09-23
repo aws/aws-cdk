@@ -413,7 +413,7 @@ describe.expect(ExpectedResult.objectLike({
 #### Chain ApiCalls
 
 Sometimes it may be necessary to chain API Calls. Since each API call is its own resource, all you
-need to do is add a dependency between the calls. There is an helper method `then` that can be used.
+need to do is add a dependency between the calls. There is an helper method `next` that can be used.
 
 ```ts
 declare const integ: IntegTest;
@@ -422,7 +422,7 @@ integ.assertions.awsApiCall('S3', 'putObject', {
   Bucket: 'my-bucket',
   Key: 'my-key',
   Body: 'helloWorld',
-}).then(integ.assertions.awsApiCall('S3', 'getObject', {
+}).next(integ.assertions.awsApiCall('S3', 'getObject', {
   Bucket: 'my-bucket',
   Key: 'my-key',
 }));

@@ -29,7 +29,7 @@ describe('AwsApiCall', () => {
 
     // WHEN
     const first = deplossert.awsApiCall('MyService', 'MyApi');
-    first.then(deplossert.awsApiCall('MyOtherService', 'MyOtherApi'));
+    first.next(deplossert.awsApiCall('MyOtherService', 'MyOtherApi'));
 
     // THEN
     const template = Template.fromStack(deplossert.scope);

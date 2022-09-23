@@ -93,11 +93,11 @@ export interface IApiCall extends IConstruct {
    *
    * @example
    * declare const first: IApiCall;
-   * declare const next: IApiCall;
+   * declare const second: IApiCall;
    *
-   * first.then(next);
+   * first.next(second);
    */
-  then(next: IApiCall): IApiCall;
+  next(next: IApiCall): IApiCall;
 }
 
 /**
@@ -132,7 +132,7 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
 
   public abstract assertAtPath(path: string, expected: ExpectedResult): void;
 
-  public then(next: IApiCall): IApiCall {
+  public next(next: IApiCall): IApiCall {
     next.node.addDependency(this);
     return next;
   }
