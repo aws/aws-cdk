@@ -826,9 +826,22 @@ function renderEnvironmentFiles(partition: string, environmentFiles: Environment
 }
 
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
-  if (hc.interval?.toSeconds() < hc.timeout?.toSeconds()) {
-    throw new Error('Health check interval should be longer than timeout.');
+  if (hc.interval?.toSeconds() != undefined && hc.timeout?.toSeconds() != undefined) {
+    if (5 > hc.interval?.toSeconds() && hc.interval?.toSeconds() > 300) {
+      throw new Error('Interval must be between 5 seconds and 300 seconds.');
+    }
+    if (2 > hc.timeout?.toSeconds() && hc.timeout?.toSeconds() > 120) {
+      throw new Error('Timeout must be between 2 seconds and 120 seconds.');
+    }
+    if (hc.interval?.toSeconds() < hc.timeout?.toSeconds()) {
+      throw new Error('Health check interval should be longer than timeout.');
+    }
   }
+
+  if (hc.retries?.toString() != undefined && 2 < hc.retries && hc.retries < 10 ) {
+    throw new Error('Retries must be between 2 seconds and 10 times.');
+  }
+
 
   return {
     command: getHealthCheckCommand(hc),
