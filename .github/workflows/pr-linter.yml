@@ -3,7 +3,8 @@
 
 name: PR Linter
 on:
-  pull_request:
+  # Necessary to have sufficient permissions to write to the PR
+  pull_request_target:
     types:
       - labeled
       - unlabeled
