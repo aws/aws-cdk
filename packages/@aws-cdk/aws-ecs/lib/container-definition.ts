@@ -837,12 +837,7 @@ function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProper
       throw new Error('Health check interval should be longer than timeout.');
     }
   }
-
-  if (hc.retries?.toString() != undefined && 2 < hc.retries && hc.retries < 10 ) {
-    throw new Error('Retries must be between 2 seconds and 10 times.');
-  }
-
-
+  
   return {
     command: getHealthCheckCommand(hc),
     interval: hc.interval?.toSeconds() ?? 30,
