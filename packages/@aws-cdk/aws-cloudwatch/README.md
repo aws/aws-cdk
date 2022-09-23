@@ -400,6 +400,7 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 ```
 
 ### Gauge widget
+
 Gauge graph requires the max and min value of the left Y axis, if no value is informed the limits will be from 0 to 100.
 
 ```ts
