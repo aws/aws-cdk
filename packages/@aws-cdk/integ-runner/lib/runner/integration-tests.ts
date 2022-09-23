@@ -159,42 +159,113 @@ export interface IntegrationTestsDiscoveryOptions {
   readonly tests?: string[];
 
   /**
-    * Detect integration test files matching any of these JavaScript regex patterns.
-    *
-    * @default
-    */
-  readonly testRegex?: string[];
-
-  /**
-   * The CLI command used to run this test.
-   * If it contains {filePath}, the test file names will be substituted at that place in the command for each run.
+   * A map of of the app commands to run integration tests with,
+   * and the regex patterns matching the integration test files each app command.
    *
-   * @default - test run command will be `node {filePath}`
+   * If the app command contains {filePath}, the test file names will be substituted at that place in the command for each run.
    */
-  readonly app?: string;
+  readonly testCases: {
+    [app: string]: string[]
+  }
 }
 
+/**
+ * Returns the name of the Python executable for the current OS
+ */
+function pythonExecutable() {
+  let python = 'python3';
+  if (process.platform === 'win32') {
+    python = 'python';
+  }
+  return python;
+}
 
 /**
  * Discover integration tests
  */
 export class IntegrationTests {
+  constructor(private readonly directory: string) {}
+
   /**
-   * Return configuration options from a file
+   * Get integration tests discovery options from CLI options
    */
-  public static configFromFile(fileName?: string): Record<string, any> {
-    if (!fileName) {
-      return {};
+  public async fromCliOptions(options: {
+    app?: string;
+    exclude?: boolean,
+    language?: string[],
+    testRegex?: string[],
+    tests?: string[],
+  }): Promise<IntegTest[]> {
+    const baseOptions = {
+      tests: options.tests,
+      exclude: options.exclude,
+    };
+
+    // Explicitly set both, app and test-regex
+    if (options.app && options.testRegex) {
+      return this.discover({
+        testCases: {
+          [options.app]: options.testRegex,
+        },
+        ...baseOptions,
+      });
     }
 
-    try {
-      return JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' }));
-    } catch {
-      return {};
+    // Use the selected presets
+    if (!options.app && !options.testRegex) {
+      return this.discover({
+        testCases: this.getLanguagePresets(options.language),
+        ...baseOptions,
+      });
     }
+
+    // Only one of app or test-regex is set, with a single preset selected
+    // => override either app or test-regex
+    if (options.language?.length === 1) {
+      const [presetApp, presetTestRegex] = this.getLanguagePreset(options.language[0]);
+      return this.discover({
+        testCases: {
+          [options.app ?? presetApp]: options.testRegex ?? presetTestRegex,
+        },
+        ...baseOptions,
+      });
+    }
+
+    // Only one of app or test-regex is set, with multiple presets
+    // => impossible to resolve
+    const option = options.app ? '--app' : '--test-regex';
+    throw new Error(`Only a single "--language" can be used with "${option}". Alternatively provide both "--app" and "--test-regex" to fully customize the configuration.`);
   }
 
-  constructor(private readonly directory: string) {
+  /**
+   * Get the default configuration for a language
+   */
+  private getLanguagePreset(language: string) {
+    const languagePresets: {
+      [language: string]: [string, string[]]
+    } = {
+      javascript: ['node {filePath}', ['^integ\\..*\\.js$']],
+      typescript: ['node -r ts-node/register {filePath}', ['^integ\\.(?!.*\\.d\\.ts$).*\\.ts$']],
+      python: [`${pythonExecutable()} {filePath}`, ['^integ_.*\\.py$']],
+      csharp: ['dotnet run --project {filePath}', ['^Integ.*\\.csproj$']],
+      fsharp: ['dotnet run --project {filePath}', ['^Integ.*\\.fsproj$']],
+      // these are still unconfirmed and need testing
+      go: ['go mod download && go run {filePath}', ['^integ_.*\\.go$']],
+      java: ['mvn -e -q compile exec:java', ['^Integ.*\\.java$']],
+    };
+
+    return languagePresets[language];
+  }
+
+  /**
+   * Get the config for all selected languages
+   */
+  private getLanguagePresets(languages: string[] = []) {
+    return Object.fromEntries(
+      languages
+        .map(language => this.getLanguagePreset(language))
+        .filter(Boolean),
+    );
   }
 
   /**
@@ -208,7 +279,6 @@ export class IntegrationTests {
     if (!requestedTests) {
       return discoveredTests;
     }
-
 
     const allTests = discoveredTests.filter(t => {
       const matches = requestedTests.some(pattern => t.matches(pattern));
@@ -237,29 +307,21 @@ export class IntegrationTests {
    * @param tests Tests to include or exclude, undefined means include all tests.
    * @param exclude Whether the 'tests' list is inclusive or exclusive (inclusive by default).
    */
-  public async fromCliArgs(options: IntegrationTestsDiscoveryOptions = {}): Promise<IntegTest[]> {
-    return this.discover(options);
-  }
-
   private async discover(options: IntegrationTestsDiscoveryOptions): Promise<IntegTest[]> {
-    const patterns = options.testRegex ?? ['^integ\\..*\\.js$'];
-
     const files = await this.readTree();
-    const integs = files.filter(fileName => patterns.some((p) => {
-      const regex = new RegExp(p);
-      return regex.test(fileName) || regex.test(path.basename(fileName));
-    }));
 
-    return this.request(integs, options);
-  }
-
-  private request(files: string[], options: IntegrationTestsDiscoveryOptions): IntegTest[] {
-    const discoveredTests = files.map(fileName => new IntegTest({
-      discoveryRoot: this.directory,
-      fileName,
-      appCommand: options.app,
-    }));
-
+    const discoveredTests = Object.entries(options.testCases)
+      .flatMap(([appCommand, patterns]) => files
+        .filter(fileName => patterns.some((pattern) => {
+          const regex = new RegExp(pattern);
+          return regex.test(fileName) || regex.test(path.basename(fileName));
+        }))
+        .map(fileName => new IntegTest({
+          discoveryRoot: this.directory,
+          fileName,
+          appCommand,
+        })),
+      );
 
     return this.filterTests(discoveredTests, options.tests, options.exclude);
   }
