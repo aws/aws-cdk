@@ -1,10 +1,11 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import { Octokit } from '@octokit/rest';
 import * as linter from './lint';
 
 async function run() {
   const token: string = process.env.GITHUB_TOKEN!;
-  const client = github.getOctokit(token).rest.pulls;
+  const client = new Octokit({ auth: token });
 
   const prLinter = new linter.PullRequestLinter({
     client,

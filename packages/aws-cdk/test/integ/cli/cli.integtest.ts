@@ -206,6 +206,19 @@ integTest('deploy', withDefaultFixture(async (fixture) => {
   expect(response.StackResources?.length).toEqual(2);
 }));
 
+integTest('deploy --method=direct', withDefaultFixture(async (fixture) => {
+  const stackArn = await fixture.cdkDeploy('test-2', {
+    options: ['--method=direct'],
+    captureStderr: false,
+  });
+
+  // verify the number of resources in the stack
+  const response = await fixture.aws.cloudFormation('describeStackResources', {
+    StackName: stackArn,
+  });
+  expect(response.StackResources?.length).toBeGreaterThan(0);
+}));
+
 integTest('deploy all', withDefaultFixture(async (fixture) => {
   const arns = await fixture.cdkDeploy('test-*', { captureStderr: false });
 

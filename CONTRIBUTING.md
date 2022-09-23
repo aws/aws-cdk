@@ -42,6 +42,7 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
   - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
+- [Badges (Pilot Program)](#badges-pilot-program)
 - [Related Repositories](#related-repositories)
 
 ## Getting Started
@@ -1115,6 +1116,24 @@ $ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/jest -i -t 'TESTNAME'
 ```
 
 3. On the `Run` pane of VSCode, select the run configuration **Attach to NodeJS** and click the button.
+
+## Badges (Pilot Program)
+
+> CDK Merit Badges is a Pilot Program. The badges you get are experimental and may change.
+
+CDK Merit Badges is a program aimed at enhancing the CDK contributor experience. When you
+submit new pull requests to the CDK repository, you will receive a merit badge that reflects
+how many prior successful contributions you have to the repository. Right now, these badges
+are just for fun and are meant as a small incentive to continued contributions to the CDK.
+
+The badges have the following meaning:
+
+- `beginning-contributor`: contributed between 0-2 PRs to the CDK
+- `repeat-contributor`: contributed between 3-5 PRs to the CDK
+- `valued-contributor`: contributed between 6-12 PRs to the CDK
+- `admired-contributor`: contributed between 13-24 PRs to the CDK
+- `star-contributor`: contributed between 25-49 PRs to the CDK
+- `distinguished-contributor`: contributed 50+ PRs to the CDK
 
 ## Related Repositories
 
