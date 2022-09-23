@@ -187,10 +187,11 @@ new cloudfront.Distribution(stack2, 'Distribution', {
 ```
 
 When the AWS CDK determines that the resource is in a different stack _and_ is in a different
-region, it automatically synthesizes AWS
-CloudFormation [Exports](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-exports.html)
-in the producing stack. In order to "import" the exports into the consuming stack a CloudFormation
-Custom Resource is created which "imports" the values from the cross region stack.
+region, it will "export" the value by creating a custom resource in the producing stack which
+creates SSM Parameters in the consuming region for each exported value. The parameters will be
+created with the name '/cdk/exports/${export-name}'.
+In order to "import" the exports into the consuming stack a [SSM Dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-ssm)
+is used to reference the SSM parameter which was created.
 
 ### Removing automatic cross-stack references
 

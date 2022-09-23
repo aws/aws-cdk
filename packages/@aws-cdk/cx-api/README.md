@@ -109,7 +109,7 @@ becomes:
 
 
 Enable this feature flag to allow native cross region stack references. This will use a CloudFormation
-Custom Resource to perform the cross region lookup.
+Custom Resource to perform the cross region export.
 
 This is disabled by default.
 
