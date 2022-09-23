@@ -353,7 +353,7 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
           },
         });
-      }).toThrowError(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`);
+      }).toThrowError(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), 4096 (4 vCPU), 8192 (8 vCPU) or 16448 (16 vCPU). Provided value was: 128`);
 
       // Memory is not in 1 GB increments.
       expect(() => {
@@ -367,7 +367,7 @@ describe('fargate task definition', () => {
         });
       }).toThrowError('If provided cpu is 1024, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was 1025.');
 
-      // Check runtimePlatform was been defined ,but not undefined cpu and memoryLimitMiB.
+      // Check runtimePlatform was been defined, but not undefined cpu and memoryLimitMiB.
       expect(() => {
         new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
           runtimePlatform: {
@@ -375,8 +375,31 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2004_CORE,
           },
         });
-      }).toThrowError('If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: 256');
+      }).toThrowError('If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), 4096 (4 vCPU), 8192 (8 vCPU) or 16448 (16 vCPU). Provided value was: 256');
 
+      // Memory is not in 4 GB increments.
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDefMemory4Increments', {
+          cpu: 8192,
+          memoryLimitMiB: 17000,
+          runtimePlatform: {
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+            operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+          },
+        });
+      }).toThrowError('If provided cpu is 8192, then memoryMiB must have a min of 16384 and a max of 61440, in 4096 increments. Provided memoryMiB was 17000.');
+
+      // Memory is not in 8 GB increments.
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDefMemory8Increments', {
+          cpu: 16384,
+          memoryLimitMiB: 40000,
+          runtimePlatform: {
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+            operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+          },
+        });
+      }).toThrowError('If provided cpu is 16384, then memoryMiB must have a min of 32768 and a max of 122880, in 8192 increments. Provided memoryMiB was 40000.');
     });
 
   });

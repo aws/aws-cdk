@@ -764,7 +764,10 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     return this.containers.map(x => x.renderContainerDefinition());
   }
-
+  /**
+   * Check Fargate Window Based Task Size.
+   * @see: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
+   */
   private checkFargateWindowsBasedTasksSize(cpu: string, memory: string, runtimePlatform: RuntimePlatform) {
     if (Number(cpu) === 1024) {
       if (Number(memory) < 1024 || Number(memory) > 8192 || (Number(memory)% 1024 !== 0)) {
@@ -778,8 +781,16 @@ export class TaskDefinition extends TaskDefinitionBase {
       if (Number(memory) < 8192 || Number(memory) > 30720 || (Number(memory) % 1024 !== 0)) {
         throw new Error(`If provided cpu is ${ cpu }, then memoryMiB must have a min of 8192 and a max of 30720, in 1024 increments.Provided memoryMiB was ${ Number(memory) }.`);
       }
+    } else if (Number(cpu) === 8192) {
+      if (Number(memory) < 16384 || Number(memory) > 61440 || (Number(memory) % 4096 !== 0)) {
+        throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 16384 and a max of 61440, in 4096 increments. Provided memoryMiB was ${Number(memory)}.`);
+      }
+    } else if (Number(cpu) === 16384) {
+      if (Number(memory) < 32768 || Number(memory) > 122880 || (Number(memory) % 8192 !== 0)) {
+        throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 32768 and a max of 122880, in 8192 increments. Provided memoryMiB was ${Number(memory)}.`);
+      }
     } else {
-      throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
+      throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), 4096 (4 vCPU), 8192 (8 vCPU) or 16448 (16 vCPU). Provided value was: ${cpu}`);
     }
   };
 }
