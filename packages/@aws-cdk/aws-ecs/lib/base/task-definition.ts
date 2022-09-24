@@ -149,6 +149,10 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * 4096 (4 vCPU) - Available memory values: Between 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB)
    *
+   * 8192 (8 vCPU) - Available memory values: Between 16384 (16 GB) and 61440 (60 GB) in increments of 4096 (4 GB)
+   *
+   * 16384 (16 vCPU) - Available memory values: Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB)
+   *
    * @default - CPU units are not specified.
    */
   readonly cpu?: string;
@@ -169,6 +173,10 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * Between 4096 (4 GB) and 16384 (16 GB) in increments of 1024 (1 GB) - Available cpu values: 2048 (2 vCPU)
    *
    * Between 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB) - Available cpu values: 4096 (4 vCPU)
+   *
+   * Between 16384 (16 GB) and 61440 (60 GB) in increments of 4096 (4 GB) - Available cpu values: 8192 (8 vCPU)
+   *
+   * Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB) - Available cpu values: 16384 (16 vCPU)
    *
    * @default - Memory used by task is not specified.
    */
@@ -378,8 +386,6 @@ export class TaskDefinition extends TaskDefinitionBase {
   private _executionRole?: iam.IRole;
 
   private _passRoleStatement?: iam.PolicyStatement;
-
-  private _referencesSecretJsonField?: boolean;
 
   private runtimePlatform?: RuntimePlatform;
 
@@ -614,9 +620,6 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
-    if (container.referencesSecretJsonField) {
-      this._referencesSecretJsonField = true;
-    }
   }
 
   /**
@@ -695,7 +698,12 @@ export class TaskDefinition extends TaskDefinitionBase {
    * specific JSON field of a secret stored in Secrets Manager.
    */
   public get referencesSecretJsonField(): boolean | undefined {
-    return this._referencesSecretJsonField;
+    for (const container of this.containers) {
+      if (container.referencesSecretJsonField) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

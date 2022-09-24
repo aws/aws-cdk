@@ -41,7 +41,9 @@ export class IntegSnapshotRunner extends IntegRunner {
       // to produce the "correct" snapshot
       const env = {
         ...DEFAULT_SYNTH_OPTIONS.env,
-        CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+        CDK_CONTEXT_JSON: JSON.stringify(this.getContext({
+          ...this.actualTestSuite.enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
+        })),
       };
       this.cdk.synthFast({
         execCmd: this.cdkApp.split(' '),
@@ -85,6 +87,7 @@ export class IntegSnapshotRunner extends IntegRunner {
           additionalMessages.push(
             'Repro:',
             `  ${[...envCmd, 'cdk synth', `-a '${this.cdkApp}'`, `-o '${this.cdkOutDir}'`, ...Object.entries(this.getContext()).flatMap(([k, v]) => typeof v !== 'object' ? [`-c '${k}=${v}'`] : [])].join(' ')}`,
+
           );
         }
 
