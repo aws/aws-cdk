@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
-import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc } from '../lib';
+import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, Vpc } from '../lib';
 
 describe('vpc flow logs', () => {
   test('with defaults set, it successfully creates with cloudwatch logs destination', () => {
@@ -452,7 +452,56 @@ describe('vpc flow logs', () => {
 
     expect(flowlog.node.defaultChild).toBeDefined();
   });
+  test('flowlog change maxAggregationInterval', () => {
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    new FlowLog(stack, 'FlowLog', {
+      resourceType: FlowLogResourceType.fromVpc(vpc),
+      maxAggregationInterval: FlowLogMaxAggregationInterval.ONE_MINUTE,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'VPC',
+      TrafficType: 'ALL',
+
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['FlowLogIAMRoleDCBD2EB4', 'Arn'],
+      },
+      LogDestinationType: 'cloud-watch-logs',
+      LogGroupName: {
+        Ref: 'FlowLogLogGroupAFFB9038',
+      },
+      MaxAggregationInterval: 60,
+    });
+  });
 });
+
+test('add to vpc with maxAggregationInterval', () => {
+  const stack = getTestStack();
+
+  const vpc = new Vpc(stack, 'VPC');
+  vpc.addFlowLog('FlowLogs', {
+    maxAggregationInterval: FlowLogMaxAggregationInterval.ONE_MINUTE,
+  });
+
+  Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+    ResourceType: 'VPC',
+    TrafficType: 'ALL',
+    ResourceId: {
+      Ref: 'VPCB9E5F0B4',
+    },
+    DeliverLogsPermissionArn: {
+      'Fn::GetAtt': ['VPCFlowLogsIAMRole55343234', 'Arn'],
+    },
+    LogGroupName: {
+      Ref: 'VPCFlowLogsLogGroupF48E1B0A',
+    },
+    MaxAggregationInterval: 60,
+  });
+});
+
 
 function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', {
