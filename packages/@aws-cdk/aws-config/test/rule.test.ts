@@ -42,7 +42,6 @@ describe('rule', () => {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
-      functionName: 'coolname',
     });
 
     // WHEN
