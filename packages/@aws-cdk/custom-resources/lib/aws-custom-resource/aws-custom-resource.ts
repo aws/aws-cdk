@@ -152,6 +152,15 @@ export interface AwsSdkCall {
    * @default - run without assuming role
    */
   readonly assumedRoleArn?: string;
+
+  /**
+   * The encoding to use when converting values to strings that were returned
+   * as Buffer objects by the API call.
+   *
+   * @see https://nodejs.org/docs/latest-v14.x/api/buffer.html#buffer_buffers_and_character_encodings
+   * @default utf8
+   */
+  readonly encoding?: string;
 }
 
 /**

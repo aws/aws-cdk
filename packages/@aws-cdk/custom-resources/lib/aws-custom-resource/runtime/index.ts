@@ -19,15 +19,16 @@ export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
  * Flattens a nested object
  *
  * @param object the object to be flattened
+ * @param encoding the encoding to use for Buffer values
  * @returns a flat object with path as keys
  */
-export function flatten(object: object): { [key: string]: any } {
+export function flatten(object: object, encoding: string): { [key: string]: any } {
   return Object.assign(
     {},
     ...function _flatten(child: any, path: string[] = []): any {
       return [].concat(...Object.keys(child)
         .map(key => {
-          const childKey = Buffer.isBuffer(child[key]) ? child[key].toString('utf8') : child[key];
+          const childKey = Buffer.isBuffer(child[key]) ? child[key].toString(encoding) : child[key];
           return typeof childKey === 'object' && childKey !== null
             ? _flatten(childKey, path.concat([key]))
             : ({ [path.concat([key]).join('.')]: childKey });
@@ -189,7 +190,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         flatData = {
           apiVersion: awsService.config.apiVersion, // For test purposes: check if apiVersion was correctly passed.
           region: awsService.config.region, // For test purposes: check if region was correctly passed.
-          ...flatten(response),
+          ...flatten(response, call.encoding ?? 'utf8'),
         };
 
         let outputPaths: string[] | undefined;

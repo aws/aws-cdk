@@ -391,7 +391,7 @@ test('flatten correctly flattens a nested object', () => {
       { e: 'f' },
       { g: 'h', i: 1, j: null, k: { l: false } },
     ],
-  })).toEqual({
+  }, 'utf8')).toEqual({
     'a.b': 'c',
     'd.0.e': 'f',
     'd.1.g': 'h',
@@ -401,21 +401,39 @@ test('flatten correctly flattens a nested object', () => {
   });
 });
 
-test('flatten correctly flattens an object with buffers', () => {
+test('flatten correctly flattens an object with UTF-8 encoded buffers', () => {
   expect(flatten({
-    body: Buffer.from('body'),
+    body: Buffer.from('body', 'utf8'),
     nested: {
-      buffer: Buffer.from('buffer'),
+      buffer: Buffer.from('buffer', 'utf8'),
       array: [
-        Buffer.from('array.0'),
-        Buffer.from('array.1'),
+        Buffer.from('array.0', 'utf8'),
+        Buffer.from('array.1', 'utf8'),
       ],
     },
-  })).toEqual({
+  }, 'utf8')).toEqual({
     'body': 'body',
     'nested.buffer': 'buffer',
     'nested.array.0': 'array.0',
     'nested.array.1': 'array.1',
+  });
+});
+
+test('flatten correctly flattens an object with Base64 encoded buffers', () => {
+  expect(flatten({
+    body: Buffer.from('6rI5H7uqQB2gSEJOy1eWtg==', 'base64'),
+    nested: {
+      buffer: Buffer.from('q/4G2RKm1t42s/xgddYB7w==', 'base64'),
+      array: [
+        Buffer.from('kvIo94Tu1HXYgSwHmUFejg==', 'base64'),
+        Buffer.from('ZnOO35uMfYVqc2frLgD3WQ==', 'base64'),
+      ],
+    },
+  }, 'base64')).toEqual({
+    'body': '6rI5H7uqQB2gSEJOy1eWtg==',
+    'nested.buffer': 'q/4G2RKm1t42s/xgddYB7w==',
+    'nested.array.0': 'kvIo94Tu1HXYgSwHmUFejg==',
+    'nested.array.1': 'ZnOO35uMfYVqc2frLgD3WQ==',
   });
 });
 
