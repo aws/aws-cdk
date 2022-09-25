@@ -53,6 +53,13 @@ export interface StageProps {
    * temporary directory will be created.
    */
   readonly outdir?: string;
+
+  /**
+   * Name of this stage.
+   *
+   * @default - Derived from the id.
+   */
+  readonly stageName?: string;
 }
 
 /**
@@ -136,7 +143,7 @@ export class Stage extends Construct {
     this.account = props.env?.account ?? this.parentStage?.account;
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
-    this.stageName = [this.parentStage?.stageName, id].filter(x => x).join('-');
+    this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
   }
 
   /**
