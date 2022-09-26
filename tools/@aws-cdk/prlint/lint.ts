@@ -171,7 +171,7 @@ export class PullRequestLinter {
   private async dismissPreviousPRLinterReviews(): Promise<void> {
     const reviews = await this.client.pulls.listReviews(this.prParams);
     reviews.data.forEach(async (review: any) => {
-      if (review.user?.login === 'github-actions[bot]' && review.state !== 'DISMISSED') {
+      if (review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') {
         await this.client.pulls.dismissReview({
           ...this.prParams,
           review_id: review.id,
