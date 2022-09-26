@@ -1,3 +1,4 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -58,6 +59,10 @@ export class EngineVersion {
    * Neptune engine version 1.1.1.0
    */
   public static readonly V1_1_1_0 = new EngineVersion('1.1.1.0');
+  /**
+   * Neptune engine version 1.2.0.0
+   */
+  public static readonly V1_2_0_0 = new EngineVersion('1.2.0.0');
 
   /**
    * Constructor for specifying a custom engine version
@@ -268,9 +273,26 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable {
   readonly clusterReadEndpoint: Endpoint;
 
   /**
+   * Grant the given identity the specified actions
+   * @param grantee the identity to be granted the actions
+   * @param actions the data-access actions
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/iam-dp-actions.html
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
    * Grant the given identity connection access to the database.
    */
   grantConnect(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Return the given named metric associated with this DatabaseCluster instance
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cw-metrics.html
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cw-dimensions.html
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -360,15 +382,15 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
 
   protected abstract enableIamAuthentication?: boolean;
 
-  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (this.enableIamAuthentication === false) {
-      throw new Error('Cannot grant connect when IAM authentication is disabled');
+      throw new Error('Cannot grant permissions when IAM authentication is disabled');
     }
 
     this.enableIamAuthentication = true;
     return iam.Grant.addToPrincipal({
       grantee,
-      actions: ['neptune-db:*'],
+      actions,
       resourceArns: [
         [
           'arn',
@@ -379,6 +401,21 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
           `${this.clusterResourceIdentifier}/*`,
         ].join(':'),
       ],
+    });
+  }
+
+  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, 'neptune-db:*');
+  }
+
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Neptune',
+      dimensionsMap: {
+        DBClusterIdentifier: this.clusterIdentifier,
+      },
+      metricName,
+      ...props,
     });
   }
 }

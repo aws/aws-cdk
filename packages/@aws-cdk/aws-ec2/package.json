@@ -88,7 +88,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.103",
+    "@types/aws-lambda": "^8.10.104",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
@@ -323,6 +323,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.LAMBDA",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TRANSCRIBE",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.XRAY",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SECURITYHUB",
       "docs-public-apis:@aws-cdk/aws-ec2.Port.toString",
       "docs-public-apis:@aws-cdk/aws-ec2.PrivateSubnet.fromPrivateSubnetAttributes",
       "docs-public-apis:@aws-cdk/aws-ec2.PublicSubnet.fromPublicSubnetAttributes",

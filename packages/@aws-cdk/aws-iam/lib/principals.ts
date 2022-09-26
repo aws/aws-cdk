@@ -459,7 +459,7 @@ export class AccountPrincipal extends ArnPrincipal {
 
   /**
    *
-   * @param accountId AWS account ID (i.e. 123456789012)
+   * @param accountId AWS account ID (i.e. '123456789012')
    */
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
