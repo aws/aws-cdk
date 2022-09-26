@@ -11,7 +11,7 @@ export class TestStack extends Stack {
     const table = new Table(this, 'Table', {
       partitionKey: { name: 'metric', type: AttributeType.STRING },
     });
-    const metricTableThrottled = table.metricThrottledRequestsForOperation({
+    const metricTableThrottled = table.metricThrottledRequestsForOperations({
       operations: [Operation.PUT_ITEM, Operation.SCAN],
       period: Duration.minutes(1),
     });

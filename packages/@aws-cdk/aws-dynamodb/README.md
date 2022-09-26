@@ -211,7 +211,7 @@ const table = new dynamodb.Table(this, 'Table', {
 
 ## Alarm metrics
 
-Alarms can be configurated on the DynamoDB table to captured metric data
+Alarms can be configured on the DynamoDB table to captured metric data
 
 ```ts
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
@@ -220,7 +220,7 @@ const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
 });
 
-const metric = table.metricThrottledRequestsForOperation({
+const metric = table.metricThrottledRequestsForOperations({
   operations: [dynamodb.Operation.PUT_ITEM],
   period: Duration.minutes(1),
 });

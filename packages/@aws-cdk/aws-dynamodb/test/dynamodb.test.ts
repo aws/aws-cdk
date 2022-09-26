@@ -3064,7 +3064,7 @@ test('Throttled requests metrics', () => {
   const table = new Table(stack, 'Table', {
     partitionKey: { name: 'metric', type: AttributeType.STRING },
   });
-  const metricTableThrottled = table.metricThrottledRequestsForOperation({
+  const metricTableThrottled = table.metricThrottledRequestsForOperations({
     operations: [Operation.PUT_ITEM],
     period: Duration.minutes(1),
   });
