@@ -165,7 +165,7 @@ describe('vpc from lookup', () => {
       });
 
       // WHEN
-      const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_WITH_NAT, onePerAz: true });
+      const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_WITH_EGRESS, onePerAz: true });
 
       // THEN: we got 2 subnets and not 4
       expect(subnets.subnets.map(s => s.availabilityZone)).toEqual(['us-east-1c', 'us-east-1d']);
@@ -268,12 +268,32 @@ describe('vpc from lookup', () => {
 
       restoreContextProvider(previous);
     });
+
+    test('passes region to LookedUpVpc correctly', () => {
+      const previous = mockVpcContextProviderWith({
+        vpcId: 'vpc-1234',
+        subnetGroups: [],
+        region: 'region-1234',
+      }, options => {
+        expect(options.region).toEqual('region-1234');
+      });
+
+      const stack = new Stack();
+      const vpc = Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: 'vpc-1234',
+        region: 'region-1234',
+      });
+
+      expect(vpc.env.region).toEqual('region-1234');
+      restoreContextProvider(previous);
+    });
   });
 });
 
 interface MockVcpContextResponse {
   readonly vpcId: string;
   readonly subnetGroups: cxapi.VpcSubnetGroup[];
+  readonly region?: string;
 }
 
 function mockVpcContextProviderWith(

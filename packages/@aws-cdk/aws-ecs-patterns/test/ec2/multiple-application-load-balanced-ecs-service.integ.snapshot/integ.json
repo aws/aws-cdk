@@ -3,9 +3,9 @@
   "testCases": {
     "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-multiple-alb"
       ],
-      "assertionStack": "applicationMultipleTargetGroupsEc2ServiceTestDefaultTestDeployAssert1194B50F"
+      "assertionStack": "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest/DeployAssert"
     }
   }
 }

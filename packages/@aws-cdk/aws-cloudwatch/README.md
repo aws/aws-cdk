@@ -399,6 +399,24 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 }));
 ```
 
+### Gauge widget
+
+Gauge graph requires the max and min value of the left Y axis, if no value is informed the limits will be from 0 to 100.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+declare const errorAlarm: cloudwatch.Alarm;
+declare const gaugeMetric: cloudwatch.Metric;
+
+dashboard.addWidgets(new cloudwatch.GaugeWidget({
+  metrics: [gaugeMetric],
+  leftYAxis: {
+    min: 0,
+    max: 1000,
+  }
+}));
+```
+
 ### Alarm widget
 
 An alarm widget shows the graph and the alarm line of a single alarm:
@@ -430,6 +448,7 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 
 Show as many digits as can fit, before rounding.
 
+
 ```ts
 declare const dashboard: cloudwatch.Dashboard;
 
@@ -437,6 +456,18 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   metrics: [ /* ... */ ],
 
   fullPrecision: true,
+}));
+```
+
+Sparkline allows you to glance the trend of a metric by displaying a simplified linegraph below the value. You can't use `sparkline: true` together with `setPeriodToTimeRange: true`
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.SingleValueWidget({
+  metrics: [ /* ... */ ],
+
+  sparkline: true,
 }));
 ```
 

@@ -10,7 +10,7 @@ beforeEach(() => {
   //GIVEN
   stack = new Stack();
   cluster = new eks.Cluster(stack, 'Cluster', {
-    version: eks.KubernetesVersion.V1_18,
+    version: eks.KubernetesVersion.V1_21,
     clusterName: 'eksCluster',
   });
 });

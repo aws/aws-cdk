@@ -5,7 +5,7 @@
       "stacks": [
         "batch-stack"
       ],
-      "assertionStack": "BatchWithEFSTestDefaultTestDeployAssert0F887B55"
+      "assertionStack": "BatchWithEFSTest/DefaultTest/DeployAssert"
     }
   }
 }

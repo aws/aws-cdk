@@ -41,7 +41,7 @@
     "@types/fs-extra": "^8.1.2",
     "@types/glob": "^7.2.0",
     "@types/jest": "^27.5.2",
-    "@types/semver": "^7.3.10",
+    "@types/semver": "^7.3.12",
     "@types/yargs": "^15.0.14",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",

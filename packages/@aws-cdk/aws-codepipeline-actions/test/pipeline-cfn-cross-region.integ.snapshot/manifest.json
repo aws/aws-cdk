@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-codepipeline-cloudformation-cross-region.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-codepipeline-cloudformation-cross-region.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-codepipeline-cloudformation-cross-region": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/us-west-2",
       "properties": {
         "templateFile": "aws-cdk-codepipeline-cloudformation-cross-region.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/467910b069a59112c4b66a4dad3646a80abd58738ff4ed3c7bfa0d6440529e3a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-codepipeline-cloudformation-cross-region.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "aws-cdk-codepipeline-cloudformation-cross-region.assets"
+      ],
       "metadata": {
         "/aws-cdk-codepipeline-cloudformation-cross-region/MyBucket/Resource": [
           {
@@ -73,6 +97,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPipelineCFNCFNDeployRoleDefaultPolicy65876BA0"
+          }
+        ],
+        "/aws-cdk-codepipeline-cloudformation-cross-region/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-codepipeline-cloudformation-cross-region/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

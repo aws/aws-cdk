@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 /*
  * Stack verification steps:
  * - Deploy with `--no-clean`

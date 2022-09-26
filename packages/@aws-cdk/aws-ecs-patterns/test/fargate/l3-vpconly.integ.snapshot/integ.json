@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ-l3-vpconly"
       ],
-      "assertionStack": "vpcOnlyFargateTestDefaultTestDeployAssertEB558D64"
+      "assertionStack": "vpcOnlyFargateTest/DefaultTest/DeployAssert"
     }
   }
 }

@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-integ-lb-fargate"
       ],
-      "assertionStack": "l3CapacityProviderStrategiesTestDefaultTestDeployAssertCE3F86E7"
+      "assertionStack": "l3CapacityProviderStrategiesTest/DefaultTest/DeployAssert"
     }
   }
 }

@@ -5,6 +5,10 @@ type Stack = cxapi.CloudFormationStackArtifact;
 
 const sleep = async (duration: number) => new Promise<void>((resolve) => setTimeout(() => resolve(), duration));
 
+// Not great to have actual sleeps in the tests, but they mostly just exist to give 'p-queue'
+// a chance to start new tasks.
+const SLOW = 200;
+
 /**
  * Repurposing unused stack attributes to create specific test scenarios
  * - stack.name          = deployment duration
@@ -43,7 +47,7 @@ describe('DeployStacks', () => {
       scenario: 'A (slow), B',
       concurrency: 1,
       toDeploy: [
-        { id: 'A', dependencies: [], name: 10 },
+        { id: 'A', dependencies: [], name: SLOW },
         { id: 'B', dependencies: [] },
       ],
       expected: ['A', 'B'],
@@ -63,7 +67,7 @@ describe('DeployStacks', () => {
       scenario: 'A (slow) -> B, C -> D',
       concurrency: 1,
       toDeploy: [
-        { id: 'A', dependencies: [], name: 10 },
+        { id: 'A', dependencies: [], name: SLOW },
         { id: 'B', dependencies: [{ id: 'A' }] },
         { id: 'C', dependencies: [] },
         { id: 'D', dependencies: [{ id: 'C' }] },
@@ -83,7 +87,7 @@ describe('DeployStacks', () => {
       scenario: 'A, B',
       concurrency: 2,
       toDeploy: [
-        { id: 'A', dependencies: [], name: 10 },
+        { id: 'A', dependencies: [], name: SLOW },
         { id: 'B', dependencies: [] },
       ],
       expected: ['B', 'A'],
@@ -103,12 +107,20 @@ describe('DeployStacks', () => {
       scenario: 'A (slow) -> B, C -> D',
       concurrency: 2,
       toDeploy: [
-        { id: 'A', dependencies: [], name: 10 },
+        { id: 'A', dependencies: [], name: SLOW },
         { id: 'B', dependencies: [{ id: 'A' }] },
         { id: 'C', dependencies: [] },
         { id: 'D', dependencies: [{ id: 'C' }] },
       ],
       expected: ['C', 'D', 'A', 'B'],
+    },
+    {
+      scenario: 'A -> B, A not selected',
+      concurrency: 1,
+      toDeploy: [
+        { id: 'B', dependencies: [{ id: 'A' }] },
+      ],
+      expected: ['B'],
     },
   ])('Success - Concurrency: $concurrency - $scenario', async ({ concurrency, expected, toDeploy }) => {
     await expect(deployStacks(toDeploy as unknown as Stack[], { concurrency, deployStack })).resolves.toBeUndefined();
@@ -142,7 +154,7 @@ describe('DeployStacks', () => {
       toDeploy: [
         { id: 'A', dependencies: [] },
         { id: 'B', dependencies: [{ id: 'A' }] },
-        { id: 'C', dependencies: [], displayName: 'C', name: 100 },
+        { id: 'C', dependencies: [], displayName: 'C', name: SLOW },
         { id: 'D', dependencies: [{ id: 'C' }] },
       ],
       expectedError: 'C',
@@ -173,7 +185,7 @@ describe('DeployStacks', () => {
       toDeploy: [
         { id: 'A', dependencies: [] },
         { id: 'B', dependencies: [{ id: 'A' }] },
-        { id: 'C', dependencies: [], displayName: 'C', name: 100 },
+        { id: 'C', dependencies: [], displayName: 'C', name: SLOW },
         { id: 'D', dependencies: [{ id: 'C' }] },
       ],
       expectedError: 'C',

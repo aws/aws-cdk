@@ -30,7 +30,7 @@ export class AssertionHandler extends CustomResourceHandler<AssertionRequest, As
     } else {
       result = {
         data: JSON.stringify({
-          status: 'pass',
+          status: 'success',
         }),
       };
     }

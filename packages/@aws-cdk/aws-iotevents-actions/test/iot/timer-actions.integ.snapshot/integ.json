@@ -5,7 +5,7 @@
       "stacks": [
         "iotevents-timer-actions-test-stack"
       ],
-      "assertionStack": "TimerActionsDefaultTestDeployAssert89D9000B"
+      "assertionStack": "TimerActions/DefaultTest/DeployAssert"
     }
   }
 }

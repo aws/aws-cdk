@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,50 +7,54 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-multi-assets.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-multi-assets.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-multi-assets": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-multi-assets.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-cdk-multi-assets": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt",
-              "id": "78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197",
-              "packaging": "file",
-              "sourceHash": "78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197",
-              "s3BucketParameter": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A",
-              "s3KeyParameter": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35",
-              "artifactHashParameter": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197ArtifactHash22BFFA67"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/39fadf6337c79806a4823ec000b2543cc32efd1daab0c5bae4bfe61bba71cf22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-multi-assets.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-multi-assets.assets"
+      ],
+      "metadata": {
         "/aws-cdk-multi-assets/DummyResource/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DummyResourceF3AB250A"
           }
         ],
-        "/aws-cdk-multi-assets/AssetParameters/78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197/S3Bucket": [
+        "/aws-cdk-multi-assets/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A"
+            "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-multi-assets/AssetParameters/78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197/S3VersionKey": [
+        "/aws-cdk-multi-assets/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35"
-          }
-        ],
-        "/aws-cdk-multi-assets/AssetParameters/78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197ArtifactHash22BFFA67"
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

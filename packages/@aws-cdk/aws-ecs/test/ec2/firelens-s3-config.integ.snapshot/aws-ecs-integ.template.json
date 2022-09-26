@@ -117,7 +117,11 @@
       "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+   ]
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -887,35 +895,9 @@
            },
            ":s3:::",
            {
-            "Ref": "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61S3Bucket4E939944"
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
            },
-           "/",
-           {
-            "Fn::Select": [
-             0,
-             {
-              "Fn::Split": [
-               "||",
-               {
-                "Ref": "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61S3VersionKeyF30A2E72"
-               }
-              ]
-             }
-            ]
-           },
-           {
-            "Fn::Select": [
-             1,
-             {
-              "Fn::Split": [
-               "||",
-               {
-                "Ref": "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61S3VersionKeyF30A2E72"
-               }
-              ]
-             }
-            ]
-           }
+           "/2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61.conf"
           ]
          ]
         }
@@ -1042,35 +1024,9 @@
           },
           ":s3:::",
           {
-           "Ref": "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61S3Bucket4E939944"
+           "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "/",
-          {
-           "Fn::Select": [
-            0,
-            {
-             "Fn::Split": [
-              "||",
-              {
-               "Ref": "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61S3VersionKeyF30A2E72"
-              }
-             ]
-            }
-           ]
-          },
-          {
-           "Fn::Select": [
-            1,
-            {
-             "Fn::Split": [
-              "||",
-              {
-               "Ref": "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61S3VersionKeyF30A2E72"
-              }
-             ]
-            }
-           ]
-          }
+          "/2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61.conf"
          ]
         ]
        }
@@ -1088,7 +1044,7 @@
           },
           ":s3:::",
           {
-           "Ref": "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61S3Bucket4E939944"
+           "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           }
          ]
         ]
@@ -1180,21 +1136,41 @@
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
   },
-  "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61S3Bucket4E939944": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61\""
-  },
-  "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61S3VersionKeyF30A2E72": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61\""
-  },
-  "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61ArtifactHashB4EEDAF3": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61\""
-  },
   "SsmParameterValueawsserviceawsforfluentbit210C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/aws/service/aws-for-fluent-bit/2.1.0"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

@@ -4,7 +4,7 @@
     "xxxxx.test-with-snapshot-assets": {
       "stacks": ["test-stack"],
       "stackUpdateWorkflow": false,
-      "diffAssets": true,
+      "diffAssets": false,
       "hooks": {
         "preDeploy": ["echo \"preDeploy\""],
         "postDeploy": ["echo \"postDeploy\""],

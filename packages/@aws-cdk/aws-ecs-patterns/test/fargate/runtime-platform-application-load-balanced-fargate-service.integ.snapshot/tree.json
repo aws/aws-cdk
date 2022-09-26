@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.65"
+          "version": "10.1.85"
         }
       },
       "aws-ecs-runtime-integ": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "aws-ecs-runtime-integ/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "aws-ecs-runtime-integ/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -516,23 +516,7 @@
                           {
                             "essential": true,
                             "image": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ".dkr.ecr.",
-                                  {
-                                    "Ref": "AWS::Region"
-                                  },
-                                  ".",
-                                  {
-                                    "Ref": "AWS::URLSuffix"
-                                  },
-                                  "/aws-cdk/assets:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
-                                ]
-                              ]
+                              "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
                             },
                             "name": "ScheduledContainer",
                             "logConfiguration": {
@@ -593,8 +577,8 @@
                             "id": "Staging",
                             "path": "aws-ecs-runtime-integ/ScheduledFargateTask/ScheduledTaskDef/ScheduledContainer/AssetImage/Staging",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.85"
                             }
                           },
                           "Repository": {
@@ -703,7 +687,10 @@
                                             {
                                               "Ref": "AWS::AccountId"
                                             },
-                                            ":repository/aws-cdk/assets"
+                                            ":repository/",
+                                            {
+                                              "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                                            }
                                           ]
                                         ]
                                       }
@@ -906,8 +893,8 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "Integ": {
@@ -923,15 +910,15 @@
                 "path": "Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.65"
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "Integ/DefaultTest/DeployAssert",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -948,8 +935,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

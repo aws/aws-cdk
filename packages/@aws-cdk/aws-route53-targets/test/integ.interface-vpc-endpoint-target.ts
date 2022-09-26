@@ -21,7 +21,7 @@ const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'InterfaceEndpo
   },
   privateDnsEnabled: false,
   subnets: {
-    subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   },
 });
 const zone = new route53.PrivateHostedZone(stack, 'PrivateZone', {

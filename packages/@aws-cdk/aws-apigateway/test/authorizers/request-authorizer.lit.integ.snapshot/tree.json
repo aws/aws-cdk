@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.63"
+          "version": "10.1.85"
         }
       },
       "RequestAuthorizerInteg": {
@@ -77,8 +77,8 @@
                     "id": "Stage",
                     "path": "RequestAuthorizerInteg/MyAuthorizerFunction/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -103,41 +103,9 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0S3BucketD7637C1B"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0S3VersionKeyC19FD924"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0S3VersionKeyC19FD924"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -206,50 +174,6 @@
             "constructInfo": {
               "fqn": "@aws-cdk/aws-lambda.Function",
               "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "RequestAuthorizerInteg/AssetParameters",
-            "children": {
-              "3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0": {
-                "id": "3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0",
-                "path": "RequestAuthorizerInteg/AssetParameters/3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "RequestAuthorizerInteg/AssetParameters/3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "RequestAuthorizerInteg/AssetParameters/3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "RequestAuthorizerInteg/AssetParameters/3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.63"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.63"
             }
           },
           "MyRestApi": {
@@ -399,8 +323,8 @@
                 "id": "Endpoint",
                 "path": "RequestAuthorizerInteg/MyRestApi/Endpoint",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "Default": {
@@ -553,14 +477,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

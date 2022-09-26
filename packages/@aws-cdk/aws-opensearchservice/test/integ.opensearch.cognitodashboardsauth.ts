@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';

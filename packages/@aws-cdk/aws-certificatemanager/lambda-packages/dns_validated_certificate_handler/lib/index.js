@@ -78,7 +78,7 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
  * @param {map} tags Tags to add to the requested certificate
  * @returns {string} Validated certificate ARN
  */
-const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId, region, route53Endpoint, tags) {
+const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, certificateTransparencyLoggingPreference, hostedZoneId, region, route53Endpoint, tags) {
   const crypto = require('crypto');
   const acm = new aws.ACM({ region });
   const route53 = route53Endpoint ? new aws.Route53({ endpoint: route53Endpoint }) : new aws.Route53();
@@ -92,6 +92,9 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
   const reqCertResponse = await acm.requestCertificate({
     DomainName: domainName,
     SubjectAlternativeNames: subjectAlternativeNames,
+    Options: {
+      CertificateTransparencyLoggingPreference: certificateTransparencyLoggingPreference
+    },
     IdempotencyToken: crypto.createHash('sha256').update(requestId).digest('hex').slice(0, 32),
     ValidationMethod: 'DNS'
   }).promise();
@@ -288,6 +291,7 @@ exports.certificateRequestHandler = async function (event, context) {
           event.RequestId,
           event.ResourceProperties.DomainName,
           event.ResourceProperties.SubjectAlternativeNames,
+          event.ResourceProperties.CertificateTransparencyLoggingPreference,
           event.ResourceProperties.HostedZoneId,
           event.ResourceProperties.Region,
           event.ResourceProperties.Route53Endpoint,

@@ -1,18 +1,12 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import { App, Duration, Stack, CfnParameter } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { Stream, StreamEncryption, StreamMode } from '../lib';
 
-/* eslint-disable quote-props */
-
 describe('Kinesis data streams', () => {
-
   test('default stream', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream');
 
     Template.fromStack(stack).templateMatches({
@@ -67,7 +61,6 @@ describe('Kinesis data streams', () => {
 
   test('multiple default streams only have one condition for encryption', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream');
     new Stream(stack, 'MyOtherStream');
 
@@ -145,7 +138,6 @@ describe('Kinesis data streams', () => {
 
   test('stream from attributes', () => {
     const stack = new Stack();
-
     const s = Stream.fromStreamAttributes(stack, 'MyStream', {
       streamArn: 'arn:aws:kinesis:region:account-id:stream/stream-name',
     });
@@ -155,7 +147,6 @@ describe('Kinesis data streams', () => {
 
   test('uses explicit shard count', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream', {
       shardCount: 2,
     });
@@ -212,7 +203,6 @@ describe('Kinesis data streams', () => {
 
   test('uses explicit retention period', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream', {
       retentionPeriod: Duration.hours(168),
     });
@@ -351,7 +341,6 @@ describe('Kinesis data streams', () => {
 
   test('auto-creates KMS key if encryption type is KMS but no key is provided', () => {
     const stack = new Stack();
-
     const stream = new Stream(stack, 'MyStream', {
       encryption: StreamEncryption.KMS,
     });
@@ -370,11 +359,9 @@ describe('Kinesis data streams', () => {
 
   test('uses explicit KMS key if encryption type is KMS and a key is provided', () => {
     const stack = new Stack();
-
     const explicitKey = new kms.Key(stack, 'ExplicitKey', {
       description: 'Explicit Key',
     });
-
     new Stream(stack, 'MyStream', {
       encryption: StreamEncryption.KMS,
       encryptionKey: explicitKey,
@@ -399,7 +386,6 @@ describe('Kinesis data streams', () => {
 
   test('uses explicit provisioned streamMode', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream', {
       streamMode: StreamMode.PROVISIONED,
     });
@@ -456,7 +442,6 @@ describe('Kinesis data streams', () => {
 
   test('uses explicit on-demand streamMode', () => {
     const stack = new Stack();
-
     new Stream(stack, 'MyStream', {
       streamMode: StreamMode.ON_DEMAND,
     });
@@ -526,7 +511,6 @@ describe('Kinesis data streams', () => {
     const stream = new Stream(stack, 'MyStream', {
       encryption: StreamEncryption.KMS,
     });
-
     const user = new iam.User(stack, 'MyUser');
     stream.grantRead(user);
 
@@ -547,302 +531,11 @@ describe('Kinesis data streams', () => {
     });
   });
 
-  // only applicable to legacy behaviour
-  // With the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag, KMS key policy is not updated.
-  testLegacyBehavior('grantRead creates and attaches a policy with read only access to EncryptionKey', App, (app) => {
-    const stack = new Stack(app);
-    const stream = new Stream(stack, 'MyStream', {
-      encryption: StreamEncryption.KMS,
-    });
-
-    const user = new iam.User(stack, 'MyUser');
-    stream.grantRead(user);
-
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        MyStreamKey76F3300E: {
-          Type: 'AWS::KMS::Key',
-          Properties: {
-            KeyPolicy: {
-              Statement: [
-                {
-                  Action: [
-                    'kms:Create*',
-                    'kms:Describe*',
-                    'kms:Enable*',
-                    'kms:List*',
-                    'kms:Put*',
-                    'kms:Update*',
-                    'kms:Revoke*',
-                    'kms:Disable*',
-                    'kms:Get*',
-                    'kms:Delete*',
-                    'kms:ScheduleKeyDeletion',
-                    'kms:CancelKeyDeletion',
-                    'kms:GenerateDataKey',
-                    'kms:TagResource',
-                    'kms:UntagResource',
-                  ],
-                  Effect: 'Allow',
-                  Principal: {
-                    AWS: {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          {
-                            Ref: 'AWS::Partition',
-                          },
-                          ':iam::',
-                          {
-                            Ref: 'AWS::AccountId',
-                          },
-                          ':root',
-                        ],
-                      ],
-                    },
-                  },
-                  Resource: '*',
-                },
-                {
-                  Action: 'kms:Decrypt',
-                  Effect: 'Allow',
-                  Principal: {
-                    AWS: {
-                      'Fn::GetAtt': ['MyUserDC45028B', 'Arn'],
-                    },
-                  },
-                  Resource: '*',
-                },
-              ],
-              Version: '2012-10-17',
-            },
-            Description: 'Created by Default/MyStream',
-          },
-          UpdateReplacePolicy: 'Retain',
-          DeletionPolicy: 'Retain',
-        },
-        MyStream5C050E93: {
-          Type: 'AWS::Kinesis::Stream',
-          Properties: {
-            ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
-            RetentionPeriodHours: 24,
-            StreamEncryption: {
-              EncryptionType: 'KMS',
-              KeyId: {
-                'Fn::GetAtt': ['MyStreamKey76F3300E', 'Arn'],
-              },
-            },
-          },
-        },
-        MyUserDC45028B: {
-          Type: 'AWS::IAM::User',
-        },
-        MyUserDefaultPolicy7B897426: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: [
-                    'kinesis:DescribeStreamSummary',
-                    'kinesis:GetRecords',
-                    'kinesis:GetShardIterator',
-                    'kinesis:ListShards',
-                    'kinesis:SubscribeToShard',
-                    'kinesis:DescribeStream',
-                    'kinesis:ListStreams',
-                  ],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
-                  },
-                },
-                {
-                  Action: 'kms:Decrypt',
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': ['MyStreamKey76F3300E', 'Arn'],
-                  },
-                },
-              ],
-              Version: '2012-10-17',
-            },
-            PolicyName: 'MyUserDefaultPolicy7B897426',
-            Users: [
-              {
-                Ref: 'MyUserDC45028B',
-              },
-            ],
-          },
-        },
-      },
-    });
-  }),
-
-  test('grantWrite creates and attaches a policy with write only access to the principal', () => {
-    const stack = new Stack();
-    const stream = new Stream(stack, 'MyStream', {
-      encryption: StreamEncryption.KMS,
-    });
-
-    const user = new iam.User(stack, 'MyUser');
-    stream.grantWrite(user);
-
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
-          Effect: 'Allow',
-          Resource: stack.resolve(stream.encryptionKey?.keyArn),
-        }]),
-      },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
-      StreamEncryption: {
-        KeyId: stack.resolve(stream.encryptionKey?.keyArn),
-      },
-    });
-  });
-
-  // only applicable to legacy behaviour
-  // With the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag, KMS key policy is not updated.
-  testLegacyBehavior('grantWrite creates and attaches a policy with write only access to EncryptionKey', App, (app) => {
-    const stack = new Stack(app);
-    const stream = new Stream(stack, 'MyStream', {
-      encryption: StreamEncryption.KMS,
-    });
-
-    const user = new iam.User(stack, 'MyUser');
-    stream.grantWrite(user);
-
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        MyStreamKey76F3300E: {
-          Type: 'AWS::KMS::Key',
-          Properties: {
-            KeyPolicy: {
-              Statement: [
-                {
-                  Action: [
-                    'kms:Create*',
-                    'kms:Describe*',
-                    'kms:Enable*',
-                    'kms:List*',
-                    'kms:Put*',
-                    'kms:Update*',
-                    'kms:Revoke*',
-                    'kms:Disable*',
-                    'kms:Get*',
-                    'kms:Delete*',
-                    'kms:ScheduleKeyDeletion',
-                    'kms:CancelKeyDeletion',
-                    'kms:GenerateDataKey',
-                    'kms:TagResource',
-                    'kms:UntagResource',
-                  ],
-                  Effect: 'Allow',
-                  Principal: {
-                    AWS: {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          {
-                            Ref: 'AWS::Partition',
-                          },
-                          ':iam::',
-                          {
-                            Ref: 'AWS::AccountId',
-                          },
-                          ':root',
-                        ],
-                      ],
-                    },
-                  },
-                  Resource: '*',
-                },
-                {
-                  Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
-                  Effect: 'Allow',
-                  Principal: {
-                    AWS: {
-                      'Fn::GetAtt': ['MyUserDC45028B', 'Arn'],
-                    },
-                  },
-                  Resource: '*',
-                },
-              ],
-              Version: '2012-10-17',
-            },
-            Description: 'Created by Default/MyStream',
-          },
-          UpdateReplacePolicy: 'Retain',
-          DeletionPolicy: 'Retain',
-        },
-        MyStream5C050E93: {
-          Type: 'AWS::Kinesis::Stream',
-          Properties: {
-            ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
-            RetentionPeriodHours: 24,
-            StreamEncryption: {
-              EncryptionType: 'KMS',
-              KeyId: {
-                'Fn::GetAtt': ['MyStreamKey76F3300E', 'Arn'],
-              },
-            },
-          },
-        },
-        MyUserDC45028B: {
-          Type: 'AWS::IAM::User',
-        },
-        MyUserDefaultPolicy7B897426: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
-                  },
-                },
-                {
-                  Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': ['MyStreamKey76F3300E', 'Arn'],
-                  },
-                },
-              ],
-              Version: '2012-10-17',
-            },
-            PolicyName: 'MyUserDefaultPolicy7B897426',
-            Users: [
-              {
-                Ref: 'MyUserDC45028B',
-              },
-            ],
-          },
-        },
-      },
-    });
-  }),
-
   test('grantReadWrite creates and attaches a policy to the principal', () => {
     const stack = new Stack();
     const stream = new Stream(stack, 'MyStream', {
       encryption: StreamEncryption.KMS,
     });
-
     const user = new iam.User(stack, 'MyUser');
     stream.grantReadWrite(user);
 
@@ -863,148 +556,9 @@ describe('Kinesis data streams', () => {
     });
   });
 
-  // only applicable to legacy behaviour
-  // With the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag, KMS key policy is not updated.
-  testLegacyBehavior('grantReadWrite creates and attaches a policy with access to EncryptionKey', App, (app) => {
-    const stack = new Stack(app);
-    const stream = new Stream(stack, 'MyStream', {
-      encryption: StreamEncryption.KMS,
-    });
-
-    const user = new iam.User(stack, 'MyUser');
-    stream.grantReadWrite(user);
-
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        MyStreamKey76F3300E: {
-          Type: 'AWS::KMS::Key',
-          Properties: {
-            Description: 'Created by Default/MyStream',
-            KeyPolicy: {
-              Statement: [
-                {
-                  Action: [
-                    'kms:Create*',
-                    'kms:Describe*',
-                    'kms:Enable*',
-                    'kms:List*',
-                    'kms:Put*',
-                    'kms:Update*',
-                    'kms:Revoke*',
-                    'kms:Disable*',
-                    'kms:Get*',
-                    'kms:Delete*',
-                    'kms:ScheduleKeyDeletion',
-                    'kms:CancelKeyDeletion',
-                    'kms:GenerateDataKey',
-                    'kms:TagResource',
-                    'kms:UntagResource',
-                  ],
-                  Effect: 'Allow',
-                  Principal: {
-                    AWS: {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          {
-                            Ref: 'AWS::Partition',
-                          },
-                          ':iam::',
-                          {
-                            Ref: 'AWS::AccountId',
-                          },
-                          ':root',
-                        ],
-                      ],
-                    },
-                  },
-                  Resource: '*',
-                },
-                {
-                  Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
-                  Effect: 'Allow',
-                  Principal: {
-                    AWS: {
-                      'Fn::GetAtt': ['MyUserDC45028B', 'Arn'],
-                    },
-                  },
-                  Resource: '*',
-                },
-              ],
-              Version: '2012-10-17',
-            },
-          },
-          DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Retain',
-        },
-        MyStream5C050E93: {
-          Type: 'AWS::Kinesis::Stream',
-          Properties: {
-            ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
-            RetentionPeriodHours: 24,
-            StreamEncryption: {
-              EncryptionType: 'KMS',
-              KeyId: {
-                'Fn::GetAtt': ['MyStreamKey76F3300E', 'Arn'],
-              },
-            },
-          },
-        },
-        MyUserDC45028B: {
-          Type: 'AWS::IAM::User',
-        },
-        MyUserDefaultPolicy7B897426: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: [
-                    'kinesis:DescribeStreamSummary',
-                    'kinesis:GetRecords',
-                    'kinesis:GetShardIterator',
-                    'kinesis:ListShards',
-                    'kinesis:SubscribeToShard',
-                    'kinesis:DescribeStream',
-                    'kinesis:ListStreams',
-                    'kinesis:PutRecord',
-                    'kinesis:PutRecords',
-                  ],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
-                  },
-                },
-                {
-                  Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': ['MyStreamKey76F3300E', 'Arn'],
-                  },
-                },
-              ],
-              Version: '2012-10-17',
-            },
-            PolicyName: 'MyUserDefaultPolicy7B897426',
-            Users: [
-              {
-                Ref: 'MyUserDC45028B',
-              },
-            ],
-          },
-        },
-      },
-    });
-  }),
-
   test('grantRead creates and associates a policy with read only access to Stream', () => {
     const stack = new Stack();
     const stream = new Stream(stack, 'MyStream');
-
     const user = new iam.User(stack, 'MyUser');
     stream.grantRead(user);
 
@@ -1095,7 +649,6 @@ describe('Kinesis data streams', () => {
   test('grantWrite creates and attaches a policy with write only access to Stream', () => {
     const stack = new Stack();
     const stream = new Stream(stack, 'MyStream');
-
     const user = new iam.User(stack, 'MyUser');
     stream.grantWrite(user);
 
@@ -1178,7 +731,6 @@ describe('Kinesis data streams', () => {
   test('grantReadWrite creates and attaches a policy with write only access to Stream', () => {
     const stack = new Stack();
     const stream = new Stream(stack, 'MyStream');
-
     const user = new iam.User(stack, 'MyUser');
     stream.grantReadWrite(user);
 
@@ -1271,7 +823,6 @@ describe('Kinesis data streams', () => {
   test('grant creates and attaches a policy to Stream which includes supplied permissions', () => {
     const stack = new Stack();
     const stream = new Stream(stack, 'MyStream');
-
     const user = new iam.User(stack, 'MyUser');
     stream.grant(user, 'kinesis:DescribeStream');
 
@@ -1420,22 +971,8 @@ describe('Kinesis data streams', () => {
     });
   }),
 
-  // legacy behaviour as this is fixed with the feature flag. see subsequent test.
-  testLegacyBehavior('fails with encryption due to cyclic dependency', App, (app) => {
-    const stackA = new Stack(app, 'stackA');
-    const streamFromStackA = new Stream(stackA, 'MyStream', {
-      encryption: StreamEncryption.KMS,
-    });
-
-    const stackB = new Stack(app, 'stackB');
-    const user = new iam.User(stackB, 'UserWhoNeedsAccess');
-    streamFromStackA.grantRead(user);
-    expect(() => {
-      app.synth();
-    }).toThrow(/'stack.' depends on 'stack.'/);
-  });
-
-  testFutureBehavior('cross stack permissions - with encryption', { [cxapi.KMS_DEFAULT_KEY_POLICIES]: true }, App, (app) => {
+  test('cross stack permissions - with encryption', () => {
+    const app = new App();
     const stackA = new Stack(app, 'stackA');
     const streamFromStackA = new Stream(stackA, 'MyStream', {
       encryption: StreamEncryption.KMS,
@@ -1460,7 +997,6 @@ describe('Kinesis data streams', () => {
 
   test('accepts if retentionPeriodHours is a Token', () => {
     const stack = new Stack();
-
     const parameter = new CfnParameter(stack, 'my-retention-period', {
       type: 'Number',
       default: 48,
@@ -1537,7 +1073,6 @@ describe('Kinesis data streams', () => {
   test('basic stream-level metrics (StreamName dimension only)', () => {
     // GIVEN
     const stack = new Stack();
-
     const fiveMinutes = {
       amount: 5,
       unit: {
@@ -1684,7 +1219,6 @@ describe('Kinesis data streams', () => {
   test('allow to overide metric options', () => {
     // GIVEN
     const stack = new Stack();
-
     const fiveMinutes = {
       amount: 5,
       unit: {

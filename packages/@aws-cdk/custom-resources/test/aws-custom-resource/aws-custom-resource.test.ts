@@ -1,4 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -762,7 +763,6 @@ test('can provide no policy if using existing role', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/CoolRole');
-
   // WHEN
   new AwsCustomResource(stack, 'AwsSdk', {
     onCreate: {
@@ -772,8 +772,142 @@ test('can provide no policy if using existing role', () => {
     },
     role,
   });
-
   // THEN
   Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
   Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+});
+
+test('can specify VPC', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'TestVpc');
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    VpcConfig: {
+      SubnetIds: stack.resolve(vpc.privateSubnets.map(subnet => subnet.subnetId)),
+    },
+  });
+});
+
+test('specifying public subnets results in a synthesis error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'TestVpc');
+
+  // THEN
+  expect(() => {
+    new AwsCustomResource(stack, 'AwsSdk', {
+      onCreate: {
+        service: 'service',
+        action: 'action',
+        physicalResourceId: PhysicalResourceId.of('id'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    });
+  }).toThrow(/Lambda Functions in a public subnet/);
+});
+
+test('not specifying vpcSubnets when only public subnets exist on a VPC results in an error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'TestPublicOnlyVpc', {
+    subnetConfiguration: [{ name: 'public', subnetType: ec2.SubnetType.PUBLIC }],
+  });
+
+  // THEN
+  expect(() => {
+    new AwsCustomResource(stack, 'AwsSdk', {
+      onCreate: {
+        service: 'service',
+        action: 'action',
+        physicalResourceId: PhysicalResourceId.of('id'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      vpc,
+    });
+  }).toThrow(/Lambda Functions in a public subnet/);
+});
+
+test('vpcSubnets filter is not required when only isolated subnets exist', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'TestPrivateOnlyVpc', {
+    subnetConfiguration: [
+      { name: 'test1private', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      { name: 'test2private', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    ],
+  });
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    VpcConfig: {
+      SubnetIds: stack.resolve(vpc.isolatedSubnets.map(subnet => subnet.subnetId)),
+    },
+  });
+});
+
+test('vpcSubnets filter is not required for the default VPC configuration', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'TestVpc');
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    VpcConfig: {
+      SubnetIds: stack.resolve(vpc.privateSubnets.map(subnet => subnet.subnetId)),
+    },
+  });
+});
+
+test('vpcSubnets without vpc results in an error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  expect(() => new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+  })).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');
 });

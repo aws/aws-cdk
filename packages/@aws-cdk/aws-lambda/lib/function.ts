@@ -898,6 +898,30 @@ export class Function extends FunctionBase {
    * @param options Environment variable options.
    */
   public addEnvironment(key: string, value: string, options?: EnvironmentOptions): this {
+    // Reserved environment variables will fail during cloudformation deploy if they're set.
+    // This check is just to allow CDK to fail faster when these are specified.
+    const reservedEnvironmentVariables = [
+      '_HANDLER',
+      '_X_AMZN_TRACE_ID',
+      'AWS_REGION',
+      'AWS_EXECUTION_ENV',
+      'AWS_LAMBDA_FUNCTION_NAME',
+      'AWS_LAMBDA_FUNCTION_MEMORY_SIZE',
+      'AWS_LAMBDA_FUNCTION_VERSION',
+      'AWS_LAMBDA_INITIALIZATION_TYPE',
+      'AWS_LAMBDA_LOG_GROUP_NAME',
+      'AWS_LAMBDA_LOG_STREAM_NAME',
+      'AWS_ACCESS_KEY',
+      'AWS_ACCESS_KEY_ID',
+      'AWS_SECRET_ACCESS_KEY',
+      'AWS_SESSION_TOKEN',
+      'AWS_LAMBDA_RUNTIME_API',
+      'LAMBDA_TASK_ROOT',
+      'LAMBDA_RUNTIME_DIR',
+    ];
+    if (reservedEnvironmentVariables.includes(key)) {
+      throw new Error(`${key} environment variable is reserved by the lambda runtime and can not be set manually. See https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html`);
+    }
     this.environment[key] = { value, ...options };
     return this;
   }
@@ -1105,6 +1129,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return undefined;
     }
 
+
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
       throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
     }
@@ -1135,21 +1160,22 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     const allowPublicSubnet = props.allowPublicSubnet ?? false;
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
-    for (const subnetId of subnetIds) {
+    for (const subnetId of selectedSubnets.subnetIds) {
       if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
         throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
           'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true');
       }
     }
+    this.node.addDependency(selectedSubnets.internetConnectivityEstablished);
 
     // List can't be empty here, if we got this far you intended to put your Lambda
     // in subnets. We're going to guarantee that we get the nice error message by
     // making VpcNetwork do the selection again.
 
     return {
-      subnetIds,
+      subnetIds: selectedSubnets.subnetIds,
       securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
   }

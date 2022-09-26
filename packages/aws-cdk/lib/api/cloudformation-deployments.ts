@@ -2,11 +2,11 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
 import { Tag } from '../cdk-toolkit';
 import { debug, warning } from '../logging';
-import { publishAssets } from '../util/asset-publishing';
+import { buildAssets, publishAssets } from '../util/asset-publishing';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { SdkProvider } from './aws-auth/sdk-provider';
-import { deployStack, DeployStackResult, destroyStack, makeBodyParameterAndUpload } from './deploy-stack';
+import { deployStack, DeployStackResult, destroyStack, makeBodyParameterAndUpload, DeploymentMethod } from './deploy-stack';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate } from './nested-stack-helpers';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
@@ -104,79 +104,89 @@ export interface DeployStackOptions {
   /**
    * Stack to deploy
    */
-  stack: cxapi.CloudFormationStackArtifact;
+  readonly stack: cxapi.CloudFormationStackArtifact;
 
   /**
    * Execution role for the deployment (pass through to CloudFormation)
    *
    * @default - Current role
    */
-  roleArn?: string;
+  readonly roleArn?: string;
 
   /**
    * Topic ARNs to send a message when deployment finishes (pass through to CloudFormation)
    *
    * @default - No notifications
    */
-  notificationArns?: string[];
+  readonly notificationArns?: string[];
 
   /**
    * Override name under which stack will be deployed
    *
    * @default - Use artifact default
    */
-  deployName?: string;
+  readonly deployName?: string;
 
   /**
    * Don't show stack deployment events, just wait
    *
    * @default false
    */
-  quiet?: boolean;
+  readonly quiet?: boolean;
 
   /**
    * Name of the toolkit stack, if not the default name
    *
    * @default 'CDKToolkit'
    */
-  toolkitStackName?: string;
+  readonly toolkitStackName?: string;
 
   /**
    * List of asset IDs which should NOT be built or uploaded
    *
    * @default - Build all assets
    */
-  reuseAssets?: string[];
+  readonly reuseAssets?: string[];
 
   /**
    * Stack tags (pass through to CloudFormation)
    */
-  tags?: Tag[];
+  readonly tags?: Tag[];
 
   /**
    * Stage the change set but don't execute it
    *
-   * @default - false
+   * @default - true
+   * @deprecated Use 'deploymentMethod' instead
    */
-  execute?: boolean;
+  readonly execute?: boolean;
 
   /**
    * Optional name to use for the CloudFormation change set.
    * If not provided, a name will be generated automatically.
+   *
+   * @deprecated Use 'deploymentMethod' instead
    */
-  changeSetName?: string;
+  readonly changeSetName?: string;
+
+  /**
+   * Select the deployment method (direct or using a change set)
+   *
+   * @default - Change set with default options
+   */
+  readonly deploymentMethod?: DeploymentMethod;
 
   /**
    * Force deployment, even if the deployed template is identical to the one we are about to deploy.
    * @default false deployment will be skipped if the template is identical
    */
-  force?: boolean;
+  readonly force?: boolean;
 
   /**
    * Extra parameters for CloudFormation
    * @default - no additional parameters will be passed to the template
    */
-  parameters?: { [name: string]: string | undefined };
+  readonly parameters?: { [name: string]: string | undefined };
 
   /**
    * Use previous values for unspecified parameters
@@ -185,7 +195,7 @@ export interface DeployStackOptions {
    *
    * @default true
    */
-  usePreviousParameters?: boolean;
+  readonly usePreviousParameters?: boolean;
 
   /**
    * Display mode for stack deployment progress.
@@ -193,7 +203,7 @@ export interface DeployStackOptions {
    * @default - StackActivityProgress.Bar - stack events will be displayed for
    *   the resource currently being deployed.
    */
-  progress?: StackActivityProgress;
+  readonly progress?: StackActivityProgress;
 
   /**
    * Whether we are on a CI system
@@ -236,6 +246,43 @@ export interface DeployStackOptions {
    * @default - Use the stored template
    */
   readonly overrideTemplate?: any;
+
+  /**
+   * Whether to build assets before publishing.
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly buildAssets?: boolean;
+}
+
+export interface BuildStackAssetsOptions {
+  /**
+   * Stack with assets to build.
+   */
+  readonly stack: cxapi.CloudFormationStackArtifact;
+
+  /**
+   * Name of the toolkit stack, if not the default name.
+   *
+   * @default 'CDKToolkit'
+   */
+  readonly toolkitStackName?: string;
+
+  /**
+   * Execution role for the building.
+   *
+   * @default - Current role
+   */
+  readonly roleArn?: string;
+}
+
+interface PublishStackAssetsOptions {
+  /**
+   * Whether to build assets before publishing.
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly buildAssets?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -334,13 +381,27 @@ export class CloudFormationDeployments {
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
+    let deploymentMethod = options.deploymentMethod;
+    if (options.changeSetName || options.execute !== undefined) {
+      if (deploymentMethod) {
+        throw new Error('You cannot supply both \'deploymentMethod\' and \'changeSetName/execute\'. Supply one or the other.');
+      }
+      deploymentMethod = {
+        method: 'change-set',
+        changeSetName: options.changeSetName,
+        execute: options.execute,
+      };
+    }
+
     const { stackSdk, resolvedEnvironment, cloudFormationRoleArn } = await this.prepareSdkFor(options.stack, options.roleArn);
 
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
 
     // Publish any assets before doing the actual deploy (do not publish any assets on import operation)
     if (options.resourcesToImport === undefined) {
-      await this.publishStackAssets(options.stack, toolkitInfo);
+      await this.publishStackAssets(options.stack, toolkitInfo, {
+        buildAssets: options.buildAssets ?? true,
+      });
     }
 
     // Do a verification of the bootstrap stack version
@@ -362,8 +423,7 @@ export class CloudFormationDeployments {
       reuseAssets: options.reuseAssets,
       toolkitInfo,
       tags: options.tags,
-      execute: options.execute,
-      changeSetName: options.changeSetName,
+      deploymentMethod,
       force: options.force,
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,
@@ -452,9 +512,31 @@ export class CloudFormationDeployments {
   }
 
   /**
+   * Build a stack's assets.
+   */
+  public async buildStackAssets(options: BuildStackAssetsOptions) {
+    const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(options.stack, options.roleArn);
+    const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
+
+    const stackEnv = await this.sdkProvider.resolveEnvironment(options.stack.environment);
+    const assetArtifacts = options.stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
+
+    for (const assetArtifact of assetArtifacts) {
+      await this.validateBootstrapStackVersion(
+        options.stack.stackName,
+        assetArtifact.requiresBootstrapStackVersion,
+        assetArtifact.bootstrapStackVersionSsmParameter,
+        toolkitInfo);
+
+      const manifest = AssetManifest.fromFile(assetArtifact.file);
+      await buildAssets(manifest, this.sdkProvider, stackEnv);
+    }
+  }
+
+  /**
    * Publish all asset manifests that are referenced by the given stack
    */
-  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo) {
+  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo, options: PublishStackAssetsOptions = {}) {
     const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
     const assetArtifacts = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
 
@@ -466,7 +548,9 @@ export class CloudFormationDeployments {
         toolkitInfo);
 
       const manifest = AssetManifest.fromFile(assetArtifact.file);
-      await publishAssets(manifest, this.sdkProvider, stackEnv);
+      await publishAssets(manifest, this.sdkProvider, stackEnv, {
+        buildAssets: options.buildAssets ?? true,
+      });
     }
   }
 

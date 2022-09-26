@@ -143,6 +143,29 @@ integTest('automatic ordering with concurrency', withDefaultFixture(async (fixtu
   await fixture.cdkDestroy('order-providing');
 }));
 
+integTest('--exclusively selects only selected stack', withDefaultFixture(async (fixture) => {
+  // Deploy the "depends-on-failed" stack, with --exclusively. It will NOT fail (because
+  // of --exclusively) and it WILL create an output we can check for to confirm that it did
+  // get deployed.
+  const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+  await fs.mkdir(path.dirname(outputsFile), { recursive: true });
+
+  await fixture.cdkDeploy('depends-on-failed', {
+    options: [
+      '--exclusively',
+      '--outputs-file', outputsFile,
+    ],
+  });
+
+  // Verify the output to see that the stack deployed
+  const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+  expect(outputs).toEqual({
+    [`${fixture.stackNamePrefix}-depends-on-failed`]: {
+      TopicName: `${fixture.stackNamePrefix}-depends-on-failedMyTopic`,
+    },
+  });
+}));
+
 integTest('context setting', withDefaultFixture(async (fixture) => {
   await fs.writeFile(path.join(fixture.integTestDir, 'cdk.context.json'), JSON.stringify({
     contextkey: 'this is the context value',
@@ -181,6 +204,19 @@ integTest('deploy', withDefaultFixture(async (fixture) => {
     StackName: stackArn,
   });
   expect(response.StackResources?.length).toEqual(2);
+}));
+
+integTest('deploy --method=direct', withDefaultFixture(async (fixture) => {
+  const stackArn = await fixture.cdkDeploy('test-2', {
+    options: ['--method=direct'],
+    captureStderr: false,
+  });
+
+  // verify the number of resources in the stack
+  const response = await fixture.aws.cloudFormation('describeStackResources', {
+    StackName: stackArn,
+  });
+  expect(response.StackResources?.length).toBeGreaterThan(0);
 }));
 
 integTest('deploy all', withDefaultFixture(async (fixture) => {

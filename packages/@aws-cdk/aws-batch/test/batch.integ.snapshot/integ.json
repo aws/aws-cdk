@@ -5,7 +5,7 @@
       "stacks": [
         "batch-stack"
       ],
-      "assertionStack": "batchtestsDefaultTestDeployAssertA73A8412"
+      "assertionStack": "batch-tests/DefaultTest/DeployAssert"
     }
   }
 }
