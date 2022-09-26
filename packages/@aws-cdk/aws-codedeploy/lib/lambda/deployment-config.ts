@@ -18,10 +18,16 @@ import { arnForDeploymentConfig, validateName } from '../utils';
  * (`LambdaDeploymentConfig.AllAtOnce`, `LambdaDeploymentConfig.Canary10Percent30Minutes`, etc.).
  */
 export interface ILambdaDeploymentConfig {
-  /** @attribute */
+  /**
+   * The physical, human-readable name of the Deployment Configuration.
+   * @attribute
+   */
   readonly deploymentConfigName: string;
 
-  /** @attribute */
+  /**
+   * The ARN of the Deployment Configuration.
+   * @attribute
+   */
   readonly deploymentConfigArn: string;
 }
 
@@ -61,14 +67,23 @@ export interface LambdaDeploymentConfigProps {
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
 export class LambdaDeploymentConfig extends Resource implements ILambdaDeploymentConfig {
+  /** CodeDeploy predefined deployment configuration that shifts all traffic to the updated Lambda function at once. */
   public static readonly ALL_AT_ONCE = deploymentConfig('CodeDeployDefault.LambdaAllAtOnce');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed 30 minutes later. */
   public static readonly CANARY_10PERCENT_30MINUTES = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent30Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed five minutes later. */
   public static readonly CANARY_10PERCENT_5MINUTES = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent5Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed 10 minutes later. */
   public static readonly CANARY_10PERCENT_10MINUTES = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent10Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed 15 minutes later. */
   public static readonly CANARY_10PERCENT_15MINUTES = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent15Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every 10 minutes until all traffic is shifted. */
   public static readonly LINEAR_10PERCENT_EVERY_10MINUTES = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery10Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every minute until all traffic is shifted. */
   public static readonly LINEAR_10PERCENT_EVERY_1MINUTE = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery1Minute');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every two minutes until all traffic is shifted. */
   public static readonly LINEAR_10PERCENT_EVERY_2MINUTES = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery2Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every three minutes until all traffic is shifted. */
   public static readonly LINEAR_10PERCENT_EVERY_3MINUTES = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery3Minutes');
 
   /**

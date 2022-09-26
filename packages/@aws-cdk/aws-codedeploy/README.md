@@ -295,7 +295,21 @@ const deploymentGroup = codedeploy.LambdaDeploymentGroup.fromLambdaDeploymentGro
 
 ## Lambda Deployment Configurations
 
-CodeDeploy for Lambda comes with built-in configurations for traffic shifting.
+CodeDeploy for Lambda comes with predefined configurations for traffic shifting.
+The predefined configurations are available as LambdaDeploymentConfig constants.
+
+```ts
+const config = codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_30MINUTES;
+
+declare const application: codedeploy.LambdaApplication;
+declare const alias: lambda.Alias;
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDeployment', {
+  application,
+  alias,
+  deploymentConfig: config,
+});
+```
+
 If you want to specify your own strategy,
 you can do so with the LambdaDeploymentConfig construct,
 letting you specify precisely how fast a new function version is deployed.
@@ -361,7 +375,13 @@ const application = codedeploy.EcsApplication.fromEcsApplicationName(
 
 ## ECS Deployment Configurations
 
-CodeDeploy for ECS comes with built-in configurations for traffic shifting.
+CodeDeploy for ECS comes with predefined configurations for traffic shifting.
+The predefined configurations are available as LambdaDeploymentConfig constants.
+
+```ts
+const config = codedeploy.EcsDeploymentConfig.CANARY_10PERCENT_5MINUTES;
+```
+
 If you want to specify your own strategy,
 you can do so with the EcsDeploymentConfig construct,
 letting you specify precisely how fast an ECS service is deployed.

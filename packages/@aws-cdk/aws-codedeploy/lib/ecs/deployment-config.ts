@@ -18,10 +18,16 @@ import { arnForDeploymentConfig, validateName } from '../utils';
  * (for example, `EcsDeploymentConfig.AllAtOnce`).
  */
 export interface IEcsDeploymentConfig {
-  /** @attribute */
+  /**
+   * The physical, human-readable name of the Deployment Configuration.
+   * @attribute
+   */
   readonly deploymentConfigName: string;
 
-  /** @attribute */
+  /**
+   * The ARN of the Deployment Configuration.
+   * @attribute
+   */
   readonly deploymentConfigArn: string;
 }
 
@@ -49,10 +55,15 @@ export interface EcsDeploymentConfigProps {
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
 export class EcsDeploymentConfig extends Resource implements IEcsDeploymentConfig {
+  /** CodeDeploy predefined deployment configuration that shifts all traffic to the updated ECS task set at once. */
   public static readonly ALL_AT_ONCE = deploymentConfig('CodeDeployDefault.ECSAllAtOnce');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every minute until all traffic is shifted. */
   public static readonly LINEAR_10PERCENT_EVERY_1MINUTES = deploymentConfig('CodeDeployDefault.ECSLinear10PercentEvery1Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every three minutes until all traffic is shifted. */
   public static readonly LINEAR_10PERCENT_EVERY_3MINUTES = deploymentConfig('CodeDeployDefault.ECSLinear10PercentEvery3Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed five minutes later. */
   public static readonly CANARY_10PERCENT_5MINUTES = deploymentConfig('CodeDeployDefault.ECSCanary10Percent5Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed 15 minutes later. */
   public static readonly CANARY_10PERCENT_15MINUTES = deploymentConfig('CodeDeployDefault.ECSCanary10Percent15Minutes');
 
   /**
