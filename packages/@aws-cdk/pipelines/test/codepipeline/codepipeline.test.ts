@@ -8,7 +8,7 @@ import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, MultiStackApp } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp } from '../testhelpers';
 
 let app: TestApp;
 
@@ -274,7 +274,7 @@ describe('deployment of stack', () => {
     const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       crossAccountKeys: true,
-      prepareStep: false,
+      useChangeSets: false,
     });
     pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
 
@@ -290,99 +290,6 @@ describe('deployment of stack', () => {
               ActionMode: 'CREATE_UPDATE',
             }),
             Name: 'Deploy',
-          }),
-        ]),
-        Name: 'App',
-      }]),
-    });
-  });
-
-  test('can be done with single step on single Stage', () => {
-    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      crossAccountKeys: true,
-    });
-    pipeline.addStage(new FileAssetApp(pipelineStack, 'App1', {}), {
-      prepareStep: false,
-    });
-    pipeline.addStage(new FileAssetApp(pipelineStack, 'App2', {}));
-
-    // THEN
-    const template = Template.fromStack(pipelineStack);
-
-    // There should be Prepare step in piepline
-    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Actions: Match.arrayWith([
-          Match.objectLike({
-            Configuration: Match.objectLike({
-              ActionMode: 'CREATE_UPDATE',
-            }),
-            Name: 'Deploy',
-          }),
-        ]),
-        Name: 'App1',
-      },
-      {
-        Actions: Match.arrayWith([
-          Match.objectLike({
-            Configuration: Match.objectLike({
-              ActionMode: 'CHANGE_SET_REPLACE',
-            }),
-            Name: 'Prepare',
-          }),
-          Match.objectLike({
-            Configuration: Match.objectLike({
-              ActionMode: 'CHANGE_SET_EXECUTE',
-            }),
-            Name: 'Deploy',
-          }),
-        ]),
-        Name: 'App2',
-      }]),
-    });
-  });
-
-  test('can be done with single step on single Stack in Stage', () => {
-    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      crossAccountKeys: true,
-    });
-
-
-    pipeline.addStage(new MultiStackApp(pipelineStack, 'App', {}), {
-      prepareStepForStacks: [
-        {
-          stackName: 'App-Stack1',
-          prepareStep: false,
-        },
-      ],
-    });
-
-    // THEN
-    const template = Template.fromStack(pipelineStack);
-
-    // There should be Prepare step in piepline
-    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Actions: Match.arrayWith([
-          Match.objectLike({
-            Configuration: Match.objectLike({
-              ActionMode: 'CREATE_UPDATE',
-            }),
-            Name: 'Stack1.Deploy',
-          }),
-          Match.objectLike({
-            Configuration: Match.objectLike({
-              ActionMode: 'CHANGE_SET_REPLACE',
-            }),
-            Name: 'Stack2.Prepare',
-          }),
-          Match.objectLike({
-            Configuration: Match.objectLike({
-              ActionMode: 'CHANGE_SET_EXECUTE',
-            }),
-            Name: 'Stack2.Deploy',
           }),
         ]),
         Name: 'App',

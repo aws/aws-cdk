@@ -1,4 +1,4 @@
-import { AssetType, FileSet, ShellStep, StackAsset, StackDeployment, StageDeployment, Step, Wave, StackDeploymentPrepareProps } from '../blueprint';
+import { AssetType, FileSet, ShellStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
 import { PipelineBase } from '../main/pipeline-base';
 import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 import { PipelineQueries } from './pipeline-queries';
@@ -88,7 +88,7 @@ export class PipelineGraph {
     if (props.selfMutation) {
       const stage: AGraph = Graph.of('UpdatePipeline', { type: 'group' });
       this.graph.add(stage);
-      this.selfMutateNode = GraphNode.of('SelfMutate', { type: 'self-update' });
+      this.selfMutateNode = aGraphNode('SelfMutate', { type: 'self-update' });
       stage.add(this.selfMutateNode);
 
       this.selfMutateNode.dependOn(this.synthNode);
@@ -134,12 +134,12 @@ export class PipelineGraph {
 
     for (const stack of stage.stacks) {
       const stackGraph: AGraph = Graph.of(this.simpleStackName(stack.stackName, stage.stageName), { type: 'stack-group', stack });
-      const prepareNode: AGraphNode | undefined = this.shouldPrepareStepBeAdded(stage, stack) ? GraphNode.of('Prepare', { type: 'prepare', stack }) : undefined;
-      const deployNode: AGraphNode = GraphNode.of('Deploy', {
+      const prepareNode: AGraphNode | undefined = this.prepareStep ? aGraphNode('Prepare', { type: 'prepare', stack }) : undefined;
+      const deployNode: AGraphNode = aGraphNode('Deploy', {
         type: 'execute',
         stack,
         captureOutputs: this.queries.stackOutputsReferenced(stack).length > 0,
-        withoutChangeset: !this.shouldPrepareStepBeAdded(stage, stack),
+        withoutChangeSet: prepareNode === undefined,
       });
 
       retGraph.add(stackGraph);
@@ -256,7 +256,7 @@ export class PipelineGraph {
     const previous = this.added.get(step);
     if (previous) { return previous; }
 
-    const node: AGraphNode = GraphNode.of(step.id, { type: 'step', step });
+    const node: AGraphNode = aGraphNode(step.id, { type: 'step', step });
 
     // If the step is a source step, change the parent to a special "Source" stage
     // (CodePipeline wants it that way)
@@ -300,7 +300,7 @@ export class PipelineGraph {
         ? (this.singlePublisher ? 'FileAsset' : `FileAsset${++this._fileAssetCtr}`)
         : (this.singlePublisher ? 'DockerAsset' : `DockerAsset${++this._dockerAssetCtr}`);
 
-      assetNode = GraphNode.of(id, { type: 'publish-assets', assets: [] });
+      assetNode = aGraphNode(id, { type: 'publish-assets', assets: [] });
       assetsGraph.add(assetNode);
       assetNode.dependOn(this.lastPreparationNode);
 
@@ -312,6 +312,7 @@ export class PipelineGraph {
     if (data?.type !== 'publish-assets') {
       throw new Error(`${assetNode} has the wrong data.type: ${data?.type}`);
     }
+
     if (!data.assets.some(a => a.assetSelector === stackAsset.assetSelector)) {
       data.assets.push(stackAsset);
     }
@@ -325,34 +326,50 @@ export class PipelineGraph {
   private simpleStackName(stackName: string, stageName: string) {
     return stripPrefix(stackName, `${stageName}-`);
   }
-
-  private shouldPrepareStepBeAdded(stage: StageDeployment, stack: StackDeployment): boolean {
-    const stackSpecificPrepare = stage.prepareStepForStacks?.
-      find((stackPrepare: StackDeploymentPrepareProps) => stackPrepare.stackName === stack.stackName);
-    if (stackSpecificPrepare !== undefined) {
-      return stackSpecificPrepare.prepareStep;
-    } else if (stage.prepareStep !== undefined) {
-      return stage.prepareStep;
-    } else {
-      return this.prepareStep;
-    }
-  }
 }
 
 type GraphAnnotation =
-  { readonly type: 'group' }
+  | { readonly type: 'group' }
   | { readonly type: 'stack-group'; readonly stack: StackDeployment }
   | { readonly type: 'publish-assets'; readonly assets: StackAsset[] }
   | { readonly type: 'step'; readonly step: Step; isBuildStep?: boolean }
   | { readonly type: 'self-update' }
   | { readonly type: 'prepare'; readonly stack: StackDeployment }
-  | { readonly type: 'execute'; readonly stack: StackDeployment; readonly captureOutputs: boolean; readonly withoutChangeset?: boolean }
+  | ExecuteAnnotation
+  // Explicitly disable exhaustiveness checking on GraphAnnotation.  This forces all consumers to adding
+  // a 'default' clause which allows us to extend this list in the future.
+  // The code below looks weird, 'type' must be a non-enumerable type that is not assignable to 'string'.
+  | { readonly type: { error: 'you must add a default case to your switch' } }
   ;
+
+interface ExecuteAnnotation {
+  readonly type: 'execute';
+  /**
+   * The stack to deploy
+   */
+  readonly stack: StackDeployment;
+
+  /**
+   * Whether or not outputs should be captured
+   */
+  readonly captureOutputs: boolean;
+
+  /**
+   * If this is executing a change set, or should do a direct deployment
+   *
+   * @default false
+   */
+  readonly withoutChangeSet?: boolean;
+}
 
 // Type aliases for the graph nodes tagged with our specific annotation type
 // (to save on generics in the code above).
 export type AGraphNode = GraphNode<GraphAnnotation>;
 export type AGraph = Graph<GraphAnnotation>;
+
+function aGraphNode(id: string, x: GraphAnnotation): AGraphNode {
+  return GraphNode.of(id, x);
+}
 
 function stripPrefix(s: string, prefix: string) {
   return s.startsWith(prefix) ? s.slice(prefix.length) : s;

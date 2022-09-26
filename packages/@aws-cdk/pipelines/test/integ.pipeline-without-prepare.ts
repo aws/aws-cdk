@@ -37,7 +37,7 @@ class PipelineStack extends Stack {
         commands: ['mkdir cdk.out', 'touch cdk.out/dummy'],
       }),
       selfMutation: false,
-      prepareStep: false,
+      useChangeSets: false,
     });
 
     pipeline.addStage(new MyStage(this, 'MyStage', {}));

@@ -216,12 +216,14 @@ export interface CodePipelineProps {
   readonly role?: iam.IRole;
 
   /**
-   * Add a "prepare" step for each stack which can be used to create the change
-   * set. If this is disabled, only the "execute" step will be included.
+   * Deploy every stack by creating a change set and executing it
+   *
+   * When enabled, creates a "Prepare" and "Execute" action for each stack. Disable
+   * to deploy the stack in one pipeline action.
    *
    * @default true
    */
-  readonly prepareStep?: boolean;
+  readonly useChangeSets?: boolean;
 }
 
 /**
@@ -307,7 +309,7 @@ export class CodePipeline extends PipelineBase {
   private artifacts = new ArtifactMap();
   private _synthProject?: cb.IProject;
   private readonly selfMutation: boolean;
-  private readonly prepareStep: boolean;
+  private readonly useChangeSets: boolean;
   private _myCxAsmRoot?: string;
   private readonly dockerCredentials: DockerCredential[];
   private readonly cachedFnSub = new CachedFnSub();
@@ -334,7 +336,7 @@ export class CodePipeline extends PipelineBase {
     this.dockerCredentials = props.dockerCredentials ?? [];
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
     this.cliVersion = props.cliVersion ?? preferredCliVersion();
-    this.prepareStep = props.prepareStep ?? true;
+    this.useChangeSets = props.useChangeSets ?? true;
   }
 
   /**
@@ -399,7 +401,7 @@ export class CodePipeline extends PipelineBase {
     const graphFromBp = new PipelineGraph(this, {
       selfMutation: this.selfMutation,
       singlePublisherPerAssetType: this.singlePublisherPerAssetType,
-      prepareStep: this.prepareStep,
+      prepareStep: this.useChangeSets,
     });
     this._cloudAssemblyFileSet = graphFromBp.cloudAssemblyFileSet;
 
@@ -530,12 +532,15 @@ export class CodePipeline extends PipelineBase {
         return this.createChangeSetAction(node.data.stack);
 
       case 'execute':
-        return node.data.withoutChangeset ?
-          this.executeDeploymentAction(node.data.stack, node.data.captureOutputs):
-          this.executeChangeSetAction(node.data.stack, node.data.captureOutputs);
+        return node.data.withoutChangeSet
+          ? this.executeDeploymentAction(node.data.stack, node.data.captureOutputs)
+          : this.executeChangeSetAction(node.data.stack, node.data.captureOutputs);
 
       case 'step':
         return this.actionFromStep(node, node.data.step);
+
+      default:
+        throw new Error(`CodePipeline does not support graph nodes of type '${node.data?.type}'. You are probably using a feature this CDK Pipelines implementation does not support.`);
     }
   }
 

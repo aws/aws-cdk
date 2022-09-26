@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { StageDeployment, StackDeploymentPrepareProps } from './stage-deployment';
+import { StageDeployment } from './stage-deployment';
 import { StackSteps, Step } from './step';
 
 /**
@@ -98,22 +98,6 @@ export interface AddStageOpts {
    * @default - No additional instructions
    */
   readonly stackSteps?: StackSteps[];
-
-  /**
-   * Add a "prepare" step for each stack which can be used to create the change
-   * set. If this is disabled, only the "execute" step will be included.
-   *
-   * @default - use value from pipeline
-   */
-  readonly prepareStep?: boolean;
-
-  /**
-   * Define need to have prepare step in stacks inside stage. If no special
-   * handling added, uses one from stage.
-   *
-   * @default - use value from stage
-   */
-  readonly prepareStepForStacks?: StackDeploymentPrepareProps[];
 }
 
 /**
