@@ -170,6 +170,30 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
   });
 
+  test('Job Driver', () => {
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      ...defaultProps,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('entrypoint'),
+          entryPointArguments: sfn.TaskInput.fromJsonPathAt('$.entrypointArguments'),
+        },
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        JobDriver: {
+          SparkSubmitJobDriver: {
+            'EntryPoint': 'entrypoint',
+            'EntryPointArguments.$': '$.entrypointArguments',
+          },
+        },
+      },
+    });
+  });
 
   test('Job Execution Role', () => {
     // WHEN
@@ -589,7 +613,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
       }).toThrow('Entry point must be between 1 and 256 characters in length. Received 0.');
     });
 
-    test('Entry Point Arguments is not an string array that is between 1 and 10280 entries in length', () => {
+    test('throws when not a string array that is between 1 and 10280 entries in length', () => {
       // WHEN
       const entryPointArgs = sfn.TaskInput.fromObject(new Array(10281).fill('x', 10281));
       const entryPointArgsNone = sfn.TaskInput.fromObject([]);
@@ -607,7 +631,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow('Entry point arguments must be a string array or encoded JSON path but received object');
+      }).toThrow('Entry point arguments must be a string array or an encoded JSON path but received object');
 
       // THEN
       expect(() => {
@@ -620,7 +644,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow('Entry point arguments must be a string array or encoded JSON path, but received a non JSON path string');
+      }).toThrow('Entry point arguments must be a string array or an encoded JSON path, but received a non JSON path string');
 
       // THEN
       expect(() => {

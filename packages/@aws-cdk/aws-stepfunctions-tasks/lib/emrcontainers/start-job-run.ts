@@ -210,12 +210,12 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
   }
 
   private validateEntryPointArguments (entryPointArguments:sfn.TaskInput) {
-    if (typeof entryPointArguments.value === 'string' && !sfn.JsonPath.isEncodedJsonPath(entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be a string array or encoded JSON path, but received a non JSON path string');
-      .`);
-    }
-    if (!this.isArrayOfStrings(entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be a string array or encoded JSON path but received ${typeof entryPointArguments.value}.`);
+    if (typeof entryPointArguments.value === 'string') {
+      if (!sfn.JsonPath.isEncodedJsonPath(entryPointArguments.value)) {
+        throw new Error('Entry point arguments must be a string array or an encoded JSON path, but received a non JSON path string');
+      }
+    } else if (!this.isArrayOfStrings(entryPointArguments.value)) {
+      throw new Error(`Entry point arguments must be a string array or an encoded JSON path but received ${typeof entryPointArguments.value}.`);
     }
   }
 
