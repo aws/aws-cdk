@@ -5,6 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
 import * as constructs from 'constructs';
@@ -335,5 +336,8 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 }
 
+new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
+  testCases: [stack],
+});
 
 app.synth();

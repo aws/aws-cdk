@@ -535,7 +535,7 @@ From the docs:
 > * It satisfies Kubernetes Service resources by provisioning Network Load Balancers.
 
 To deploy the controller on your EKS cluster, configure the `albController` property:
- 
+
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
@@ -580,7 +580,7 @@ declare const vpc: ec2.Vpc;
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   vpc,
-  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }],
+  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
 });
 ```
 
@@ -1157,6 +1157,23 @@ const chartAsset = new s3Assets.Asset(this, 'ChartAsset', {
 
 cluster.addHelmChart('test-chart', {
   chartAsset: chartAsset,
+});
+```
+
+Nested values passed to the `values` parameter should be provided as a nested dictionary:
+
+```ts
+cluster.addHelmChart('ExternalSecretsOperator', {
+  chart: 'external-secrets',
+  release: 'external-secrets',
+  repository: 'https://charts.external-secrets.io',
+  namespace: 'external-secrets',
+  values: {
+    installCRDs: true,
+    webhook: {
+      port: 9443
+    }
+  },
 });
 ```
 
