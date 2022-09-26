@@ -103,6 +103,10 @@ describe('cli notices', () => {
 
 	Affected versions: cli: <=1.126.0
 
+	What should you do: Seeing this notice is not an error and does not necessarily mean you are affected by the underlying issue.
+	                    The CDK team does its best to display notices only to affected customers, but sometimes that is not possible.
+	                    Please review the issue and determine if you are indeed affected and if any action should be taken on your part.
+
 	More information at: https://github.com/aws/aws-cdk/issues/16603
 `);
     });
@@ -116,6 +120,10 @@ describe('cli notices', () => {
 	          lambda-layer-node-proxy-agent/layer/package.json.
 
 	Affected versions: cli: <1.130.0 >=1.126.0
+
+	What should you do: Seeing this notice is not an error and does not necessarily mean you are affected by the underlying issue.
+	                    The CDK team does its best to display notices only to affected customers, but sometimes that is not possible.
+	                    Please review the issue and determine if you are indeed affected and if any action should be taken on your part.
 
 	More information at: https://github.com/aws/aws-cdk/issues/17061
 `);
@@ -400,6 +408,10 @@ NOTICES
 	          will be deleted.
 
 	Affected versions: cli: <=1.126.0
+
+	What should you do: Seeing this notice is not an error and does not necessarily mean you are affected by the underlying issue.
+	                    The CDK team does its best to display notices only to affected customers, but sometimes that is not possible.
+	                    Please review the issue and determine if you are indeed affected and if any action should be taken on your part.
 
 	More information at: https://github.com/aws/aws-cdk/issues/16603
 

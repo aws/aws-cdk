@@ -294,6 +294,9 @@ function formatNotice(notice: Notice): string {
     `${notice.issueNumber}\t${notice.title}`,
     formatOverview(notice.overview),
     `\tAffected versions: ${componentsValue}`,
+    '\tWhat should you do: Seeing this notice is not an error and does not necessarily mean you are affected by the underlying issue.' + '\n\t'
+    + '                    The CDK team does its best to display notices only to affected customers, but sometimes that is not possible.' + '\n\t'
+    + '                    Please review the issue and determine if you are indeed affected and if any action should be taken on your part.',
     `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
   ].join('\n\n') + '\n';
 }
