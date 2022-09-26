@@ -220,7 +220,7 @@ describe('cross environment', () => {
         'DeletionPolicy': 'Delete',
         'Properties': {
           'Exports': {
-            '/cdk/exports/Stack1/MyResourceRefMyResource6073B41F992B761C': {
+            '/cdk/exports/Stack1-MyResourceRefMyResource6073B41F992B761C': {
               'Ref': 'MyResource6073B41F',
             },
           },
@@ -239,7 +239,7 @@ describe('cross environment', () => {
     });
     expect(template2?.Outputs).toEqual({
       'Output': {
-        'Value': '{{resolve:ssm:/cdk/exports/Stack1/MyResourceRefMyResource6073B41F992B761C}}',
+        'Value': '{{resolve:ssm:/cdk/exports/Stack1-MyResourceRefMyResource6073B41F992B761C}}',
       },
     });
   });

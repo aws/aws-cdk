@@ -2,7 +2,7 @@ import { handler } from '../../lib/custom-resource-provider/cross-region-ssm-wri
 import { SSM_EXPORT_PATH_PREFIX } from '../../lib/custom-resource-provider/export-writer-provider';
 
 let mockPutParameter: jest.Mock ;
-let mockGetParametersByPath: jest.Mock;
+let mockGetParameters: jest.Mock;
 let mockDeleteParameters: jest.Mock;
 jest.mock('aws-sdk', () => {
   return {
@@ -18,9 +18,9 @@ jest.mock('aws-sdk', () => {
             promise: () => mockDeleteParameters(params),
           };
         }),
-        getParametersByPath: jest.fn((params) => {
+        getParameters: jest.fn((params) => {
           return {
-            promise: () => mockGetParametersByPath(params),
+            promise: () => mockGetParameters(params),
           };
         }),
       };
@@ -31,15 +31,83 @@ beforeEach(() => {
   jest.spyOn(console, 'info').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
   mockPutParameter = jest.fn();
-  mockGetParametersByPath = jest.fn();
+  mockGetParameters = jest.fn();
   mockDeleteParameters = jest.fn();
   mockPutParameter.mockImplementation(() => {
     return {};
   });
+  mockGetParameters.mockImplementation(() => {
+    return {};
+  })
 });
 afterEach(() => {
   jest.restoreAllMocks();
 });
+
+describe('cross-region-ssm-writer throws', () => {
+  test('create throws if params already exist', async () => {
+    // GIVEN
+    const event = makeEvent({
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: '<ServiceToken>',
+        Region: 'us-east-1',
+        StackName: 'MyStack',
+        Exports: {
+          '/cdk/exports/MyStack/MyExport': 'Value',
+        },
+      },
+    });
+
+    // WHEN
+    mockGetParameters.mockImplementation(() => {
+      return {
+        Parameters: [{
+          Name: '/cdk/exports/MyStack/MyExport',
+        }],
+      };
+    });
+
+    // THEN
+    await expect(handler(event)).rejects.toThrow(/Exports already exist/);
+  });
+
+  test('update throws if params already exist', async () => {
+    // GIVEN
+    const event = makeEvent({
+      RequestType: 'Update',
+      OldResourceProperties: {
+        ServiceToken: '<ServiceToken>',
+        Region: 'us-east-1',
+        StackName: 'MyStack',
+        Exports: {
+          '/cdk/exports/MyStack/MyExport': 'Value',
+        },
+      },
+      ResourceProperties: {
+        ServiceToken: '<ServiceToken>',
+        Region: 'us-east-1',
+        StackName: 'MyStack',
+        Exports: {
+          '/cdk/exports/MyStack/MyExport': 'Value',
+          '/cdk/exports/MyStack/AlreadyExists': 'Value',
+        },
+      },
+    });
+
+    // WHEN
+    mockGetParameters.mockImplementation(() => {
+      return {
+        Parameters: [{
+          Name: '/cdk/exports/MyStack/AlreadyExists',
+        }],
+      };
+    });
+
+    // THEN
+    await expect(handler(event)).rejects.toThrow(/Exports already exist/);
+  });
+})
 
 describe('cross-region-ssm-writer entrypoint', () => {
   test('Create event', async () => {
@@ -67,32 +135,32 @@ describe('cross-region-ssm-writer entrypoint', () => {
     });
     expect(mockPutParameter).toHaveBeenCalledTimes(1);
     expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
-    expect(mockGetParametersByPath).toHaveBeenCalledTimes(0);
+    expect(mockGetParameters).toHaveBeenCalledTimes(1);
   });
 
   test('Update event', async () => {
     // GIVEN
     const event = makeEvent({
       RequestType: 'Update',
+      OldResourceProperties: {
+        ServiceToken: '<ServiceToken>',
+        StackName: 'MyStack',
+        Exports: {
+          '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
+        },
+      },
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
         Region: 'us-east-1',
         StackName: 'MyStack',
         Exports: {
+          '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
           '/cdk/exports/MyStack/MyExport': 'Value',
         },
       },
     });
 
     // WHEN
-    mockGetParametersByPath.mockImplementation(() => {
-      return {
-        Parameters: [{
-          Name: '/cdk/exports/MyStack/MyExport',
-          Value: 'Value',
-        }],
-      };
-    });
     await handler(event);
 
     // THEN
@@ -103,58 +171,20 @@ describe('cross-region-ssm-writer entrypoint', () => {
     });
     expect(mockPutParameter).toHaveBeenCalledTimes(1);
     expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
-    expect(mockGetParametersByPath).toHaveBeenCalledTimes(1);
-  });
-
-  test('Update event with nexttoken', async () => {
-    // GIVEN
-    const event = makeEvent({
-      RequestType: 'Update',
-      ResourceProperties: {
-        ServiceToken: '<ServiceToken>',
-        Region: 'us-east-1',
-        StackName: 'MyStack',
-        Exports: {
-          '/cdk/exports/MyStack/MyExport': 'Value',
-          '/cdk/exports/MyStack/MyOtherExport': 'MyOtherValue',
-        },
-      },
-    });
-
-    // WHEN
-    mockGetParametersByPath.mockImplementationOnce(() => {
-      return {
-        NextToken: 'abc',
-        Parameters: [{
-          Name: '/cdk/exports/MyStack/MyExport',
-          Value: 'Value',
-        }],
-      };
-    }).mockImplementation(() => {
-      return {
-        Parameters: [{
-          Name: '/cdk/exports/MyStack/MyOtherExport',
-          Value: 'MyOtherValue',
-        }],
-      };
-    });
-    await handler(event);
-
-    // THEN
-    expect(mockPutParameter).toHaveBeenCalledWith({
-      Name: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
-      Value: 'Value',
-      Type: 'String',
-    });
-    expect(mockPutParameter).toHaveBeenCalledTimes(2);
-    expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
-    expect(mockGetParametersByPath).toHaveBeenCalledTimes(2);
+    expect(mockGetParameters).toHaveBeenCalledTimes(1);
   });
 
   test('Update event with delete', async () => {
     // GIVEN
     const event = makeEvent({
       RequestType: 'Update',
+      OldResourceProperties: {
+        ServiceToken: '<ServiceToken>',
+        StackName: 'MyStack',
+        Exports: {
+          '/cdk/exports/MyStack/RemovedExport': 'MyRemovedValue',
+        },
+      },
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
         Region: 'us-east-1',
@@ -167,14 +197,6 @@ describe('cross-region-ssm-writer entrypoint', () => {
     });
 
     // WHEN
-    mockGetParametersByPath.mockImplementation(() => {
-      return {
-        Parameters: [{
-          Name: 'RemovedExport',
-          Value: 'RemovedValue',
-        }],
-      };
-    });
     await handler(event);
 
     // THEN
@@ -189,11 +211,11 @@ describe('cross-region-ssm-writer entrypoint', () => {
       Type: 'String',
     });
     expect(mockDeleteParameters).toHaveBeenCalledWith({
-      Names: ['RemovedExport'],
+      Names: ['/cdk/exports/MyStack/RemovedExport'],
     });
     expect(mockPutParameter).toHaveBeenCalledTimes(2);
     expect(mockDeleteParameters).toHaveBeenCalledTimes(1);
-    expect(mockGetParametersByPath).toHaveBeenCalledTimes(1);
+    expect(mockGetParameters).toHaveBeenCalledTimes(1);
   });
   test('Delete event', async () => {
     // GIVEN
@@ -204,30 +226,21 @@ describe('cross-region-ssm-writer entrypoint', () => {
         Region: 'us-east-1',
         StackName: 'MyStack',
         Exports: {
-          '/cdk/exports/MyStack/MyExport': 'Value',
-          '/cdk/exports/MyStack/MyOtherExport': 'MyOtherValue',
+          '/cdk/exports/MyStack/RemovedExport': 'RemovedValue',
         },
       },
     });
 
     // WHEN
-    mockGetParametersByPath.mockImplementation(() => {
-      return {
-        Parameters: [{
-          Name: 'RemovedExport',
-          Value: 'RemovedValue',
-        }],
-      };
-    });
     await handler(event);
 
     // THEN
     expect(mockDeleteParameters).toHaveBeenCalledWith({
-      Names: ['RemovedExport'],
+      Names: ['/cdk/exports/MyStack/RemovedExport'],
     });
     expect(mockPutParameter).toHaveBeenCalledTimes(0);
     expect(mockDeleteParameters).toHaveBeenCalledTimes(1);
-    expect(mockGetParametersByPath).toHaveBeenCalledTimes(1);
+    expect(mockGetParameters).toHaveBeenCalledTimes(0);
   });
 });
 

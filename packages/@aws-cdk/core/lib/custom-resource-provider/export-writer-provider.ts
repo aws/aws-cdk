@@ -60,10 +60,10 @@ export class ExportWriter extends Construct {
           service: 'ssm',
           resource: 'parameter',
           region,
-          resourceName: `${SSM_EXPORT_PATH_PREFIX}${Stack.of(this).stackName}/*`,
+          resourceName: `${SSM_EXPORT_PATH_PREFIX}*`,
         }),
         Action: [
-          'ssm:GetParametersByPath',
+          'ssm:GetParameters',
           'ssm:PutParameter',
           'ssm:DeleteParameters',
         ],
@@ -75,7 +75,6 @@ export class ExportWriter extends Construct {
       serviceToken,
       properties: {
         Region: region,
-        StackName: stack.stackName,
         Exports: Lazy.any({ produce: () => this._references }),
       },
     });
@@ -94,7 +93,7 @@ export class ExportWriter extends Construct {
    */
   public exportValue(exportName: string, reference: Reference): Intrinsic {
     const stack = Stack.of(this);
-    const parameterName = `/${SSM_EXPORT_PATH_PREFIX}${stack.stackName}/${exportName}`;
+    const parameterName = `/${SSM_EXPORT_PATH_PREFIX}${exportName}`;
     this._references[parameterName] = stack.resolve(reference.toString());
     return new CfnDynamicReference(CfnDynamicReferenceService.SSM, parameterName);
   }

@@ -5,7 +5,6 @@ type CrossRegionExports = { [exportName: string]: string };
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const props = event.ResourceProperties;
-const ssmPathPrefix = `/cdk/exports/${props.StackName}/`;
   const exports: CrossRegionExports = props.Exports;
 
   const ssm = new SSM({ region: props.Region });
@@ -13,27 +12,28 @@ const ssmPathPrefix = `/cdk/exports/${props.StackName}/`;
     switch (event.RequestType) {
       case 'Create':
         console.info(`Creating new SSM Parameter exports in region ${props.Region}`);
+        await throwIfAnyExistingParameters(ssm, exports);
         await putParameters(ssm, exports);
         return;
       case 'Update':
-        console.info(`Reading existing SSM Parameter exports in region ${props.Region}`);
-        const existing = await getExistingParameters(ssm, ssmPathPrefix);
-        const paramsToDelete = returnMissing(existing, exports);
+        const oldProps = event.OldResourceProperties;
+        const oldExports: CrossRegionExports = oldProps.Exports;
+        const newExports = filter(exports, oldExports);
+        await throwIfAnyExistingParameters(ssm, newExports);
+        const paramsToDelete = filter(oldExports, exports);
         console.info(`Deleting unused SSM Parameter exports in region ${props.Region}`);
-        if (paramsToDelete.length > 0) {
+        if (Object.keys(paramsToDelete).length > 0) {
           await ssm.deleteParameters({
-            Names: paramsToDelete,
+            Names: Object.keys(paramsToDelete),
           }).promise();
         }
         console.info(`Creating new SSM Parameter exports in region ${props.Region}`);
-        await putParameters(ssm, exports);
+        await putParameters(ssm, newExports);
         return;
       case 'Delete':
-        console.info(`Reading existing SSM Parameter exports in region ${props.Region}`);
-        const existingParams = await getExistingParameters(ssm, ssmPathPrefix);
         console.info(`Deleting all SSM Parameter exports in region ${props.Region}`);
         await ssm.deleteParameters({
-          Names: Array.from(Object.keys(existingParams)),
+          Names: Array.from(Object.keys(exports)),
         }).promise();
         return;
       default:
@@ -58,41 +58,30 @@ async function putParameters(ssm: SSM, parameters: CrossRegionExports): Promise<
   }));
 }
 
-function returnMissing(a: CrossRegionExports, b: CrossRegionExports): string[] {
-  const missing: string[] = [];
-  for (const name of Object.keys(a)) {
-    if (!b.hasOwnProperty(name)) {
-      missing.push(name);
-    }
+/**
+ * Query for existing parameters
+ */
+async function throwIfAnyExistingParameters(ssm: SSM, parameters: CrossRegionExports): Promise<void> {
+  const result = await ssm.getParameters({
+    Names: Object.keys(parameters),
+  }).promise();
+  if ((result.Parameters ?? []).length > 0) {
+    const existing = result.Parameters!.map(param => param.Name);
+    throw new Error(`Exports already exist: \n${existing.join('\n')}`);
   }
-  return missing;
 }
 
 /**
- * Get existing exports from SSM parameters
+ * Return only the items from source that do not exist in the filter
+ * 
+ * @param source the source object to perform the filter on
+ * @param filter filter out items that exist in this object
  */
-async function getExistingParameters(ssm: SSM, ssmPathPrefix: string): Promise<CrossRegionExports> {
-  const existingExports: CrossRegionExports = {};
-  function recordParameters(parameters: SSM.ParameterList) {
-    parameters.forEach(param => {
-      if (param.Name && param.Value) {
-        existingExports[param.Name] = param.Value;
-      }
-    });
-  }
-  const res = await ssm.getParametersByPath({
-    Path: ssmPathPrefix,
-  }).promise();
-  recordParameters(res.Parameters ?? []);
-
-  while (res.NextToken) {
-    const nextRes = await ssm.getParametersByPath({
-      Path: ssmPathPrefix,
-      NextToken: res.NextToken,
-    }).promise();
-    recordParameters(nextRes.Parameters ?? []);
-    res.NextToken = nextRes.NextToken;
-  }
-  return existingExports;
+function filter(source: CrossRegionExports, filter: CrossRegionExports): CrossRegionExports {
+  return Object.keys(source)
+    .filter(key => !filter.hasOwnProperty(key))
+    .reduce((acc: CrossRegionExports, curr: string) => {
+      acc[curr] = source[curr];
+      return acc;
+    }, {});
 }
-
