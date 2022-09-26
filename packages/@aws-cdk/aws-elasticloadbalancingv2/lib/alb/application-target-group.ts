@@ -391,20 +391,19 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
     }
 
-    if (this.healthCheck && this.healthCheck.protocol) {
-
-      if (ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
-        if (this.healthCheck.interval && this.healthCheck.timeout &&
-          this.healthCheck.interval.toMilliseconds() <= this.healthCheck.timeout.toMilliseconds()) {
-          ret.push(`Healthcheck interval ${this.healthCheck.interval.toHumanString()} must be greater than the timeout ${this.healthCheck.timeout.toHumanString()}`);
-        }
+    if (this.healthCheck) {
+      if (this.healthCheck.interval && this.healthCheck.timeout &&
+        this.healthCheck.interval.toMilliseconds() <= this.healthCheck.timeout.toMilliseconds()) {
+        ret.push(`Healthcheck interval ${this.healthCheck.interval.toHumanString()} must be greater than the timeout ${this.healthCheck.timeout.toHumanString()}`);
       }
 
-      if (!ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
-        ret.push([
-          `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
-          `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
-        ].join(''));
+      if (this.healthCheck.protocol) {
+        if (!ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
+          ret.push([
+            `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
+            `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
+          ].join(''));
+        }
       }
     }
 
