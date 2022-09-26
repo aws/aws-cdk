@@ -237,6 +237,67 @@ test('CodePipeline supports use of existing role', () => {
   });
 });
 
+describe('deployment of stack', () => {
+  test('is done with Prepare and Deploy step by default', () => {
+    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      crossAccountKeys: true,
+    });
+    pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
+
+    // THEN
+    const template = Template.fromStack(pipelineStack);
+
+    // There should be Prepare step in piepline
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Configuration: Match.objectLike({
+              ActionMode: 'CHANGE_SET_REPLACE',
+            }),
+            Name: 'Prepare',
+          }),
+          Match.objectLike({
+            Configuration: Match.objectLike({
+              ActionMode: 'CHANGE_SET_EXECUTE',
+            }),
+            Name: 'Deploy',
+          }),
+        ]),
+        Name: 'App',
+      }]),
+    });
+  });
+
+  test('can be done with single step', () => {
+    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      crossAccountKeys: true,
+      useChangeSets: false,
+    });
+    pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
+
+    // THEN
+    const template = Template.fromStack(pipelineStack);
+
+    // There should be Prepare step in piepline
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Configuration: Match.objectLike({
+              ActionMode: 'CREATE_UPDATE',
+            }),
+            Name: 'Deploy',
+          }),
+        ]),
+        Name: 'App',
+      }]),
+    });
+  });
+});
+
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
   reuseCrossRegionSupportStacks?: boolean;
 }
