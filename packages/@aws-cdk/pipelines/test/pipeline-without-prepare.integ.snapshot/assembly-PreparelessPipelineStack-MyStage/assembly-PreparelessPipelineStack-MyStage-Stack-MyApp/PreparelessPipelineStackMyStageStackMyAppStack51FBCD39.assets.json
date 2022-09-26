@@ -1,15 +1,15 @@
 {
   "version": "21.0.0",
   "files": {
-    "339869b7efdb6a771fce40473ae99ce3e3174959597875b90007c83a87221f57": {
+    "1fd92c49dfa8050744f5e5169a7c3739923777fad154ba6b7275118191534ffc": {
       "source": {
-        "path": "PipelineStack.template.json",
+        "path": "PreparelessPipelineStackMyStageStackMyAppStack51FBCD39.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "339869b7efdb6a771fce40473ae99ce3e3174959597875b90007c83a87221f57.json",
+          "objectKey": "1fd92c49dfa8050744f5e5169a7c3739923777fad154ba6b7275118191534ffc.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
