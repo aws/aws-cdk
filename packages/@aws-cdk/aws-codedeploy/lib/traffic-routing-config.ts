@@ -1,14 +1,46 @@
 import { Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDeploymentConfig } from './codedeploy.generated';
 
 /**
- * Interface for traffic routing configs.
+ * Represents the structure to pass into the underlying CfnDeploymentConfig class.
  */
-export interface ITrafficRoutingConfig {
+export interface TrafficRoutingConfig {
   /**
-   * Abstract method on interface for subclasses to implement to render themselves as a TrafficRoutingConfigProperty.
+   * represents the underlying traffic routing config structure
    */
-  renderTrafficRoutingConfig(): CfnDeploymentConfig.TrafficRoutingConfigProperty
+  readonly config: CfnDeploymentConfig.TrafficRoutingConfigProperty;
+}
+
+/**
+ * Represents how traffic is shifted during a CodeDeploy deployment.
+ */
+export abstract class TrafficRouting {
+  /**
+   * Shifts 100% of traffic in a single shift.
+   */
+  public static allAtOnce(): AllAtOnceTrafficRouting {
+    return new AllAtOnceTrafficRouting();
+  }
+
+  /**
+   * Shifts a specified percentage of traffic, waits for a specified amount of time, then shifts the rest of traffic.
+   */
+  public static timeBasedCanary(props: TimeBasedCanaryTrafficRoutingProps): TrafficRouting {
+    return new TimeBasedCanaryTrafficRouting(props);
+  }
+
+  /**
+   * Keeps shifting a specified percentage of traffic until reaching 100%, waiting for a specified amount of time in between each traffic shift.
+   */
+  public static timeBasedLinear(props: TimeBasedLinearTrafficRoutingProps): TrafficRouting {
+    return new TimeBasedLinearTrafficRouting(props);
+  }
+
+  /**
+   * Returns the traffic routing configuration.
+   */
+  public abstract bind(scope: Construct): TrafficRoutingConfig;
 }
 
 /**
@@ -29,65 +61,32 @@ export interface BaseTrafficShiftingConfigProps {
 /**
  * Define a traffic routing config of type 'AllAtOnce'.
  */
-export class AllAtOnceTrafficRoutingConfig implements ITrafficRoutingConfig {
-  constructor() {}
-
-  /**
-   * Render a TrafficRoutingConfigProperty of type `AllAtOnce`.
-   */
-  renderTrafficRoutingConfig(): CfnDeploymentConfig.TrafficRoutingConfigProperty {
-    return {
-      type: 'AllAtOnce',
-    };
-  }
-}
-
-/**
- * Construction properties for {@link TimeBasedCanaryTrafficRoutingConfig}.
- */
-export interface TimeBasedCanaryTrafficRoutingConfigProps extends BaseTrafficShiftingConfigProps {}
-
-/**
- * Define a traffic routing config of type 'TimeBasedCanary'.
- */
-export class TimeBasedCanaryTrafficRoutingConfig implements ITrafficRoutingConfig {
-  /**
-   * The amount of time between additional traffic shifts.
-   */
-  readonly interval: Duration;
-  /**
-   * The percentage to increase traffic on each traffic shift.
-   */
-  readonly percentage: number;
-
-  constructor(props: TimeBasedCanaryTrafficRoutingConfigProps) {
-    this.interval = props.interval;
-    this.percentage = props.percentage;
+export class AllAtOnceTrafficRouting extends TrafficRouting {
+  constructor() {
+    super();
   }
 
   /**
-   * Render a TrafficRoutingConfigProperty of type `TimeBasedCanary`.
+   * Return a TrafficRoutingConfig of type `AllAtOnce`.
    */
-  renderTrafficRoutingConfig(): CfnDeploymentConfig.TrafficRoutingConfigProperty {
+  bind(_scope: Construct): TrafficRoutingConfig {
     return {
-      type: 'TimeBasedCanary',
-      timeBasedCanary: {
-        canaryInterval: this.interval.toMinutes(),
-        canaryPercentage: this.percentage,
+      config: {
+        type: 'AllAtOnce',
       },
     };
   }
 }
 
 /**
- * Construction properties for {@link TimeBasedLinearTrafficRoutingConfig}.
+ * Construction properties for {@link TimeBasedCanaryTrafficRouting}.
  */
-export interface TimeBasedLinearTrafficRoutingConfigProps extends BaseTrafficShiftingConfigProps {}
+export interface TimeBasedCanaryTrafficRoutingProps extends BaseTrafficShiftingConfigProps {}
 
 /**
- * Define a traffic routing config of type 'TimeBasedLinear'.
+ * Define a traffic routing config of type 'TimeBasedCanary'.
  */
-export class TimeBasedLinearTrafficRoutingConfig implements ITrafficRoutingConfig {
+export class TimeBasedCanaryTrafficRouting extends TrafficRouting {
   /**
    * The amount of time between additional traffic shifts.
    */
@@ -97,20 +96,63 @@ export class TimeBasedLinearTrafficRoutingConfig implements ITrafficRoutingConfi
    */
   readonly percentage: number;
 
-  constructor(props: TimeBasedLinearTrafficRoutingConfigProps) {
+  constructor(props: TimeBasedCanaryTrafficRoutingProps) {
+    super();
     this.interval = props.interval;
     this.percentage = props.percentage;
   }
 
   /**
-   * Render a TrafficRoutingConfigProperty of type `TimeBasedLinear`.
+   * Return a TrafficRoutingConfig of type `TimeBasedCanary`.
    */
-  renderTrafficRoutingConfig(): CfnDeploymentConfig.TrafficRoutingConfigProperty {
+  bind(_scope: Construct): TrafficRoutingConfig {
     return {
-      type: 'TimeBasedLinear',
-      timeBasedLinear: {
-        linearInterval: this.interval.toMinutes(),
-        linearPercentage: this.percentage,
+      config: {
+        type: 'TimeBasedCanary',
+        timeBasedCanary: {
+          canaryInterval: this.interval.toMinutes(),
+          canaryPercentage: this.percentage,
+        },
+      },
+    };
+  }
+}
+
+/**
+ * Construction properties for {@link TimeBasedLinearTrafficRouting}.
+ */
+export interface TimeBasedLinearTrafficRoutingProps extends BaseTrafficShiftingConfigProps {}
+
+/**
+ * Define a traffic routing config of type 'TimeBasedLinear'.
+ */
+export class TimeBasedLinearTrafficRouting extends TrafficRouting {
+  /**
+   * The amount of time between additional traffic shifts.
+   */
+  readonly interval: Duration;
+  /**
+   * The percentage to increase traffic on each traffic shift.
+   */
+  readonly percentage: number;
+
+  constructor(props: TimeBasedLinearTrafficRoutingProps) {
+    super();
+    this.interval = props.interval;
+    this.percentage = props.percentage;
+  }
+
+  /**
+   * Return a TrafficRoutingConfig of type `TimeBasedLinear`.
+   */
+  bind(_scope: Construct): TrafficRoutingConfig {
+    return {
+      config: {
+        type: 'TimeBasedLinear',
+        timeBasedLinear: {
+          linearInterval: this.interval.toMinutes(),
+          linearPercentage: this.percentage,
+        },
       },
     };
   }

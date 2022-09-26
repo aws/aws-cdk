@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as codedeploy from '../../lib';
+import { TrafficRouting } from '../../lib';
 
 function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
@@ -636,7 +637,7 @@ test('dependency on the config exists to ensure ordering', () => {
   const application = new codedeploy.LambdaApplication(stack, 'MyApp');
   const alias = mockAlias(stack);
   const config = new codedeploy.LambdaDeploymentConfig(stack, 'MyConfig', {
-    trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
+    trafficRouting: TrafficRouting.timeBasedCanary({
       interval: cdk.Duration.minutes(1),
       percentage: 5,
     }),

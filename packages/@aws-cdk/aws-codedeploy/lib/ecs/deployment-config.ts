@@ -1,7 +1,7 @@
 import { ArnFormat, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentConfig } from '../codedeploy.generated';
-import { AllAtOnceTrafficRoutingConfig, ITrafficRoutingConfig } from '../traffic-routing-config';
+import { TrafficRouting } from '../traffic-routing-config';
 import { arnForDeploymentConfig, validateName } from '../utils';
 
 /**
@@ -40,7 +40,7 @@ export interface EcsDeploymentConfigProps {
    * target group to the 'green' target group during a deployment.
    * @default AllAtOnce
    */
-  readonly trafficRoutingConfig?: ITrafficRoutingConfig;
+  readonly trafficRouting?: TrafficRouting;
 }
 
 /**
@@ -87,12 +87,12 @@ export class EcsDeploymentConfig extends Resource implements IEcsDeploymentConfi
     });
 
     // Construct the traffic routing configuration for the deployment group
-    const routingConfig = props && props.trafficRoutingConfig ? props.trafficRoutingConfig : new AllAtOnceTrafficRoutingConfig();
+    const routingConfig = props?.trafficRouting ?? TrafficRouting.allAtOnce();
 
     const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: this.physicalName,
       computePlatform: 'ECS',
-      trafficRoutingConfig: routingConfig.renderTrafficRoutingConfig(),
+      trafficRoutingConfig: routingConfig.bind(this).config,
     });
 
     this.deploymentConfigName = this.getResourceNameAttribute(resource.ref);

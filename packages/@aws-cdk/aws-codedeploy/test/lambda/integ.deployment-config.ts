@@ -6,7 +6,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-lambda-config');
 
 new codedeploy.LambdaDeploymentConfig(stack, 'LinearConfig', {
-  trafficRoutingConfig: new codedeploy.TimeBasedLinearTrafficRoutingConfig({
+  trafficRouting: codedeploy.TrafficRouting.timeBasedLinear({
     interval: cdk.Duration.minutes(1),
     percentage: 5,
   }),

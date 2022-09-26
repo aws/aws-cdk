@@ -1,6 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as codedeploy from '../../lib';
+import { TrafficRouting } from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -26,7 +27,7 @@ test('can create default config', () => {
 test('can create all-at-once config', () => {
   // WHEN
   new codedeploy.EcsDeploymentConfig(stack, 'MyConfig', {
-    trafficRoutingConfig: new codedeploy.AllAtOnceTrafficRoutingConfig(),
+    trafficRouting: TrafficRouting.allAtOnce(),
   });
 
   // THEN
@@ -41,7 +42,7 @@ test('can create all-at-once config', () => {
 test('can create linear config', () => {
   // WHEN
   new codedeploy.EcsDeploymentConfig(stack, 'MyConfig', {
-    trafficRoutingConfig: new codedeploy.TimeBasedLinearTrafficRoutingConfig({
+    trafficRouting: TrafficRouting.timeBasedLinear({
       interval: cdk.Duration.minutes(1),
       percentage: 5,
     }),
@@ -63,7 +64,7 @@ test('can create linear config', () => {
 test('can create canary config', () => {
   // WHEN
   new codedeploy.EcsDeploymentConfig(stack, 'MyConfig', {
-    trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
+    trafficRouting: TrafficRouting.timeBasedCanary({
       interval: cdk.Duration.minutes(1),
       percentage: 5,
     }),
@@ -86,7 +87,7 @@ test('can create a config with a specific name', () => {
   // WHEN
   new codedeploy.EcsDeploymentConfig(stack, 'MyConfig', {
     deploymentConfigName: 'MyCanaryConfig',
-    trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
+    trafficRouting: TrafficRouting.timeBasedCanary({
       interval: cdk.Duration.minutes(1),
       percentage: 5,
     }),
@@ -116,7 +117,7 @@ test('fail with more than 100 characters in name', () => {
   const app = new cdk.App();
   const stackWithApp = new cdk.Stack(app);
   new codedeploy.EcsDeploymentConfig(stackWithApp, 'MyConfig', {
-    trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
+    trafficRouting: TrafficRouting.timeBasedCanary({
       interval: cdk.Duration.minutes(1),
       percentage: 5,
     }),
@@ -130,7 +131,7 @@ test('fail with unallowed characters in name', () => {
   const app = new cdk.App();
   const stackWithApp = new cdk.Stack(app);
   new codedeploy.EcsDeploymentConfig(stackWithApp, 'MyConfig', {
-    trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
+    trafficRouting: TrafficRouting.timeBasedCanary({
       interval: cdk.Duration.minutes(1),
       percentage: 5,
     }),
