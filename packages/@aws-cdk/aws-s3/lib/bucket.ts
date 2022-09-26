@@ -1874,8 +1874,10 @@ export class Bucket extends BucketBase {
     }
 
     rule.transitions?.forEach((transition) => {
-      if ((transition.transitionAfter && transition.transitionDate) || (!transition.transitionAfter && !transition.transitionDate)) {
-        throw new Error('Exactly one of transitionDate and transitionAfter must be specified');
+      if (transition.transitionAfter && transition.transitionDate) {
+        throw new Error('one of transitionDate and transitionAfter must be specified');
+      } else if (!transition.transitionAfter && !transition.transitionDate) {
+        throw new Error('only one of transitionDate and transitionAfter can be specified');
       }
     });
 
