@@ -353,6 +353,17 @@ export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disab
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 
 /**
+ * Enable this feature flag to change the default behavior for aws-smm.StringParameter.from* methods to
+ * always use a dynamic reference.
+ *
+ * Previously a dynamic reference was used for secure string parameters and when a parameter version was
+ * passed into `StringParameter.fromStringParameterAttributes.`. Otherwise a `CfnParameter` was created.
+ * This behavior was inconsistent and erroneously created a changeable CloudFormation Parameter for built-in
+ * SSM Parameters like Machine Image AMIs.
+ */
+export const SSM_PARAMETER_IMPORT_AS_DYNAMIC_REFERENCE = '@aws-cdk/aws-ssm:importParameterAsDynamicReference';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -387,6 +398,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
   [APIGATEWAY_DISABLE_CLOUDWATCH_ROLE]: true,
   [ENABLE_PARTITION_LITERALS]: true,
+  [SSM_PARAMETER_IMPORT_AS_DYNAMIC_REFERENCE]: true,
 };
 
 /**

@@ -3,9 +3,10 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  ContextProvider, Fn, IResource, Resource, Stack, Token,
+  ContextProvider, FeatureFlags, Fn, IResource, Resource, Stack, Token,
   Tokenization,
 } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as ssm from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
@@ -473,9 +474,14 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     const type = attrs.type ?? attrs.valueType ?? ParameterValueType.STRING;
 
-    const stringValue = attrs.version
-      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString()
-      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
+    let stringValue: string;
+    if (FeatureFlags.of(scope).isEnabled(cxapi.SSM_PARAMETER_IMPORT_AS_DYNAMIC_REFERENCE) ) {
+      stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, referencePatternFromAttributes(attrs)).toString();
+    } else {
+      stringValue = attrs.version
+        ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, referencePatternFromAttributes(attrs)).toString()
+        : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
+    }
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
@@ -664,9 +670,14 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     const type = attrs.elementType ?? ParameterValueType.STRING;
     const valueType = `List<${type}>`;
 
-    const stringValue = attrs.version
-      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toStringList()
-      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${valueType}>`, default: attrs.parameterName }).valueAsList;
+    let stringValue: string[];
+    if (FeatureFlags.of(scope).isEnabled(cxapi.SSM_PARAMETER_IMPORT_AS_DYNAMIC_REFERENCE) ) {
+      stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, referencePatternFromAttributes(attrs)).toStringList();
+    } else {
+      stringValue = attrs.version
+        ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, referencePatternFromAttributes(attrs)).toStringList()
+        : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${valueType}>`, default: attrs.parameterName }).valueAsList;
+    }
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
@@ -770,4 +781,12 @@ function validateParameterName(parameterName: string) {
   if (!parameterName.match(/^[\/\w.-]+$/)) {
     throw new Error(`name must only contain letters, numbers, and the following 4 symbols .-_/; got ${parameterName}`);
   }
+}
+
+function referencePatternFromAttributes(attrs: StringParameterAttributes): string {
+  if (attrs.version) {
+    return `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`;
+  }
+
+  return attrs.parameterName;
 }

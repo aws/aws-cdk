@@ -104,3 +104,27 @@ becomes:
  Principal:
    AWS: "arn:aws:iam::123456789876:root"
 ```
+
+* @aws-cdk/aws-ssm:importParameterAsDynamicReference
+
+Enable this feature flag to change the default behavior for `aws-ssm.StringParameter.from*` methods to always use a dynamic reference.
+
+Previously a dynamic reference was used for secure string parameters and when a parameter version was passed into `StringParameter.fromStringParameterAttributes.`. Otherwise a `CfnParameter` was created. This behavior was inconsistent and erroneously created a changeable CloudFormation Parameter for built-in SSM Parameters like Machine Image AMIs.
+
+Users can still manually create SSM Parameters as template parameters if needed:
+
+```ts
+declare ssmParameterName: string;
+
+const ssmParameterValue = new CfnParameter(scope, id { type: `AWS::SSM::Parameter::Value<String>`, default: ssmParameterName }).valueAsString;
+```
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ssm:importParameterAsDynamicReference": true
+  }
+}
+```
