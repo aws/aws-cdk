@@ -7,6 +7,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   console.log(`Event: ${JSON.stringify({ ...event, ResponseURL: '...' })}`);
   const provider = createResourceHandler(event, context);
   try {
+    // if we are deleting the custom resource, just respond
+    // with 'SUCCESS' since there is nothing to do.
     if (event.RequestType === 'Delete') {
       await provider.respond({
         status: 'SUCCESS',
@@ -16,6 +18,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     }
     const result = await provider.handle();
     const actualPath = event.ResourceProperties.actualPath;
+    // if we are providing a path to make the assertion at, that means that we have
+    // flattened the response, otherwise the path to assert against in the entire response
     const actual = actualPath ? (result as { [key: string]: string })[`apiCallResponse.${actualPath}`] : (result as types.AwsApiCallResult).apiCallResponse;
     if ('expected' in event.ResourceProperties) {
       const assertion = new AssertionHandler({
@@ -31,6 +35,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         await provider.respond({
           status: 'SUCCESS',
           reason: 'OK',
+          // return both the result of the API call _and_ the assertion results
           data: {
             ...assertionResult,
             ...result,

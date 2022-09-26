@@ -16,6 +16,8 @@ export function flatten(object: object): { [key: string]: any } {
       return [].concat(...Object.keys(child)
         .map(key => {
           let childKey = Buffer.isBuffer(child[key]) ? child[key].toString('utf8') : child[key];
+          // if the value is a json string then treat it as an object
+          // and keep recursing. This allows for easier assertions against complex json strings
           if (typeof childKey === 'string') {
             childKey = isJsonString(childKey);
           }

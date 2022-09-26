@@ -66,6 +66,8 @@ export class AwsApiCall extends ApiCallBase {
     // Needed so that all the policies set up by the provider should be available before the custom resource is provisioned.
     this.apiCallResource.node.addDependency(this.provider);
 
+    // if expectedResult has been configured then that means
+    // we are making assertions and we should output the results
     Aspects.of(this).add({
       visit(node: IConstruct) {
         if (node instanceof AwsApiCall) {
