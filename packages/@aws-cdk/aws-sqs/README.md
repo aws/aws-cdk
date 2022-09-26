@@ -39,6 +39,7 @@ new sqs.Queue(this, 'Queue');
 
 If you want to encrypt the queue contents, set the `encryption` property.
 The following encryption modes are supported:
+
 * KMS key that SQS manages for you
 * KMS key that you can managed yourself
 * Server-side encryption managed by SQS (SSE-SQS)
