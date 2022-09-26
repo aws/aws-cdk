@@ -22,7 +22,7 @@ export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
  * @param encoding the encoding to use for Buffer values
  * @returns a flat object with path as keys
  */
-export function flatten(object: object, encoding: string): { [key: string]: any } {
+export function flatten(object: object, encoding?: BufferEncoding): { [key: string]: any } {
   return Object.assign(
     {},
     ...function _flatten(child: any, path: string[] = []): any {
@@ -190,7 +190,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         flatData = {
           apiVersion: awsService.config.apiVersion, // For test purposes: check if apiVersion was correctly passed.
           region: awsService.config.region, // For test purposes: check if region was correctly passed.
-          ...flatten(response, call.encoding ?? 'utf8'),
+          ...flatten(response, call.encoding),
         };
 
         let outputPaths: string[] | undefined;

@@ -157,10 +157,10 @@ export interface AwsSdkCall {
    * The encoding to use when converting values to strings that were returned
    * as Buffer objects by the API call.
    *
-   * @see https://nodejs.org/docs/latest-v14.x/api/buffer.html#buffer_buffers_and_character_encodings
+   * @see https://nodejs.org/api/buffer.html#buffers-and-character-encodings
    * @default utf8
    */
-  readonly encoding?: string;
+  readonly encoding?: BufferEncoding;
 }
 
 /**
