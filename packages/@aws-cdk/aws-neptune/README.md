@@ -70,10 +70,12 @@ The following example shows enabling IAM authentication for a database cluster a
 const cluster = new neptune.DatabaseCluster(this, 'Cluster', {
   vpc,
   instanceType: neptune.InstanceType.R5_LARGE,
-  iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
+  iamAuthentication: true, // Optional - will be automatically set if you call grantConnect() or grant().
 });
 const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
-cluster.grantConnect(role); // Grant the role connection access to the DB.
+// Use one of the following statements to grant the role the necessary permissions
+cluster.grantConnect(role); // Grant the role neptune-db:* access to the DB
+cluster.grant(role, 'neptune-db:ReadDataViaQuery', 'neptune-db:WriteDataViaQuery'); // Grant the role the specified actions to the DB
 ```
 
 ## Customizing parameters
@@ -104,6 +106,8 @@ const cluster = new neptune.DatabaseCluster(this, 'Database', {
 });
 ```
 
+Note: if you want to use Neptune engine `1.2.0.0` or later, you need to specify the corresponding `engineVersion` prop to `neptune.DatabaseCluster` and `family` prop of `ParameterGroupFamily.NEPTUNE_1_2` to `neptune.ClusterParameterGroup` and `neptune.ParameterGroup`.
+
 ## Adding replicas
 
 `DatabaseCluster` allows launching replicas along with the writer instance. This can be specified using the `instanceCount`
@@ -117,7 +121,7 @@ const cluster = new neptune.DatabaseCluster(this, 'Database', {
 });
 ```
 
-Additionally it is also possible to add replicas using `DatabaseInstance` for an existing cluster.
+Additionally, it is also possible to add replicas using `DatabaseInstance` for an existing cluster.
 
 ```ts fixture=with-cluster
 const replica1 = new neptune.DatabaseInstance(this, 'Instance', {
@@ -139,3 +143,17 @@ new neptune.DatabaseCluster(this, 'Cluster', {
   autoMinorVersionUpgrade: true,
 });
 ```
+
+## Metrics
+
+Both `DatabaseCluster` and `DatabaseInstance` provide a `metric()` method to help with cluster-level and instance-level monitoring.
+
+```ts
+declare const cluster: neptune.DatabaseCluster;
+declare const instance: neptune.DatabaseInstance;
+
+cluster.metric('SparqlRequestsPerSec'); // cluster-level SparqlErrors metric
+instance.metric('SparqlRequestsPerSec') // instance-level SparqlErrors metric
+```
+
+For more details on the available metrics, refer to https://docs.aws.amazon.com/neptune/latest/userguide/cw-metrics.html

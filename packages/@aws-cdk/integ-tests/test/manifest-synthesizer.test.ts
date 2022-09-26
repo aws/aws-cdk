@@ -45,10 +45,12 @@ describe(IntegManifestSynthesizer, () => {
       testCases: {
         ['stack/case1']: {
           assertionStack: 'stack/case1/DeployAssert',
+          assertionStackName: 'stackcase1DeployAssert491B3C7C',
           stacks: ['stack-under-test-1'],
         },
         ['stack/case2']: {
           assertionStack: 'stack/case2/DeployAssert',
+          assertionStackName: 'stackcase2DeployAssert3B5E6392',
           stacks: ['stack-under-test-2'],
         },
       },
@@ -73,7 +75,61 @@ describe(IntegManifestSynthesizer, () => {
       testCases: {
         ['Integ/DefaultTest']: {
           assertionStack: 'Integ/DefaultTest/DeployAssert',
+          assertionStackName: 'IntegDefaultTestDeployAssert4E6713E1',
           stacks: ['stack'],
+        },
+      },
+    });
+  });
+
+  test('with options', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    // WHEN
+    new IntegTest(app, 'Integ', {
+      testCases: [stack],
+      enableLookups: true,
+      hooks: {
+        preDeploy: ['echo "preDeploy"'],
+      },
+      diffAssets: true,
+      allowDestroy: ['AWS::IAM::Role'],
+      stackUpdateWorkflow: false,
+      cdkCommandOptions: {
+        deploy: {
+          args: {
+            profile: 'profile',
+          },
+        },
+      },
+    });
+    const integAssembly = app.synth();
+    const integManifest = Manifest.loadIntegManifest(path.join(integAssembly.directory, 'integ.json'));
+
+    // THEN
+    expect(integManifest).toEqual({
+      version: Manifest.version(),
+      enableLookups: true,
+      testCases: {
+        ['Integ/DefaultTest']: {
+          assertionStack: 'Integ/DefaultTest/DeployAssert',
+          assertionStackName: 'IntegDefaultTestDeployAssert4E6713E1',
+          stacks: ['stack'],
+          hooks: {
+            preDeploy: ['echo "preDeploy"'],
+          },
+          diffAssets: true,
+          allowDestroy: ['AWS::IAM::Role'],
+          stackUpdateWorkflow: false,
+          cdkCommandOptions: {
+            deploy: {
+              args: {
+                profile: 'profile',
+              },
+            },
+          },
         },
       },
     });
@@ -100,10 +156,12 @@ describe(IntegManifestSynthesizer, () => {
       testCases: {
         ['Integ/DefaultTest']: {
           assertionStack: 'Integ/DefaultTest/DeployAssert',
+          assertionStackName: 'IntegDefaultTestDeployAssert4E6713E1',
           stacks: ['stack'],
         },
         ['Case/CaseTestCase']: {
           assertionStack: 'Case/CaseTestCase/DeployAssert',
+          assertionStackName: 'CaseCaseTestCaseDeployAssertF0B5763D',
           diffAssets: true,
           stacks: ['Case'],
         },

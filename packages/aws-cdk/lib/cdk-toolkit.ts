@@ -6,6 +6,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
@@ -247,6 +248,7 @@ export class CdkToolkit {
           tags,
           execute: options.execute,
           changeSetName: options.changeSetName,
+          deploymentMethod: options.deploymentMethod,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
@@ -462,8 +464,11 @@ export class CdkToolkit {
       roleArn: options.roleArn,
       toolkitStackName: options.toolkitStackName,
       tags,
-      execute: options.execute,
-      changeSetName: options.changeSetName,
+      deploymentMethod: {
+        method: 'change-set',
+        changeSetName: options.changeSetName,
+        execute: options.execute,
+      },
       usePreviousParameters: true,
       progress: options.progress,
       rollback: options.rollback,
@@ -860,15 +865,24 @@ interface CfnDeployOptions {
   /**
    * Optional name to use for the CloudFormation change set.
    * If not provided, a name will be generated automatically.
+   *
+   * @deprecated Use 'deploymentMethod' instead
    */
   changeSetName?: string;
 
   /**
    * Whether to execute the ChangeSet
    * Not providing `execute` parameter will result in execution of ChangeSet
+   *
    * @default true
+   * @deprecated Use 'deploymentMethod' instead
    */
   execute?: boolean;
+
+  /**
+   * Deployment method
+   */
+  readonly deploymentMethod?: DeploymentMethod;
 
   /**
    * Display mode for stack deployment progress.
@@ -930,7 +944,7 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
   readonly traceLogs?: boolean;
 
   /**
-   * Maximum number of simulatenous deployments (dependency permitting) to execute.
+   * Maximum number of simultaneous deployments (dependency permitting) to execute.
    * The default is '1', which executes all deployments serially.
    *
    * @default 1
@@ -1009,7 +1023,7 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
   readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
 
   /**
-   * Maximum number of simulatenous deployments (dependency permitting) to execute.
+   * Maximum number of simultaneous deployments (dependency permitting) to execute.
    * The default is '1', which executes all deployments serially.
    *
    * @default 1

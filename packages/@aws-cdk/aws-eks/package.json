@@ -83,14 +83,15 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.102",
+    "@types/aws-lambda": "^8.10.104",
     "@types/jest": "^27.5.2",
     "@types/sinon": "^9.0.11",
     "@types/yaml": "1.9.6",
     "aws-sdk": "^2.848.0",
-    "cdk8s": "^2.4.9",
+    "cdk8s": "^2.4.33",
     "cdk8s-plus-21": "^2.0.0-beta.12",
     "jest": "^27.5.1",
     "sinon": "^9.2.4"
@@ -139,7 +140,9 @@
       "props-physical-name:@aws-cdk/aws-eks.OpenIdConnectProviderProps",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterKubernetesNetworkConfigServiceIpv6Cidr",
       "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterKubernetesNetworkConfigServiceIpv6Cidr",
-      "resource-attribute:@aws-cdk/aws-eks.Nodegroup.nodegroupId"
+      "resource-attribute:@aws-cdk/aws-eks.Nodegroup.nodegroupId",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterId",
+      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterId"
     ]
   },
   "stability": "stable",

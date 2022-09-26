@@ -58,6 +58,8 @@ beforeEach(() => {
       })),
     createChangeSet: jest.fn((_o) => ({})),
     deleteChangeSet: jest.fn((_o) => ({})),
+    updateStack: jest.fn((_o) => ({})),
+    createStack: jest.fn((_o) => ({})),
     describeChangeSet: jest.fn((_o) => ({
       Status: 'CREATE_COMPLETE',
       Changes: [],
@@ -95,6 +97,31 @@ test("calls tryHotswapDeployment() if 'hotswap' is true", async () => {
   expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('extra-user-agent');
   // check that the fallback has been called if hotswapping failed
   expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('cdk-hotswap/fallback');
+});
+
+test('call CreateStack when method=direct and the stack doesnt exist yet', async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    deploymentMethod: { method: 'direct' },
+  });
+
+  // THEN
+  expect(cfnMocks.createStack).toHaveBeenCalled();
+});
+
+test('call UpdateStack when method=direct and the stack exists already', async () => {
+  // WHEN
+  givenStackExists();
+
+  await deployStack({
+    ...standardDeployStackArguments(),
+    deploymentMethod: { method: 'direct' },
+    force: true,
+  });
+
+  // THEN
+  expect(cfnMocks.updateStack).toHaveBeenCalled();
 });
 
 test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {
@@ -539,7 +566,7 @@ test('not executed and no error if --no-execute is given', async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    execute: false,
+    deploymentMethod: { method: 'change-set', execute: false },
   });
 
   // THEN
@@ -558,7 +585,7 @@ test('empty change set is deleted if --execute is given', async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    execute: true,
+    deploymentMethod: { method: 'change-set', execute: true },
     force: true, // Necessary to bypass "skip deploy"
   });
 
@@ -582,7 +609,7 @@ test('empty change set is not deleted if --no-execute is given', async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    execute: false,
+    deploymentMethod: { method: 'change-set', execute: false },
   });
 
   // THEN
@@ -644,7 +671,7 @@ test('changeset is created when stack exists in REVIEW_IN_PROGRESS status', asyn
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    execute: false,
+    deploymentMethod: { method: 'change-set', execute: false },
   });
 
   // THEN
@@ -669,7 +696,7 @@ test('changeset is updated when stack exists in CREATE_COMPLETE status', async (
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    execute: false,
+    deploymentMethod: { method: 'change-set', execute: false },
   });
 
   // THEN

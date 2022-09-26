@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "files": {
-    "d5b5bdc4c449461b12cbb69687af56cd65b463116d1f8f5a4012947d066ac631": {
+    "69d4b966c56ecebfa2378a3bf4ad6e2abe3ca2a900162197f7658ec8a258f509": {
       "source": {
         "path": "aws-cdk-rds-s3-mysql-8-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d5b5bdc4c449461b12cbb69687af56cd65b463116d1f8f5a4012947d066ac631.json",
+          "objectKey": "69d4b966c56ecebfa2378a3bf4ad6e2abe3ca2a900162197f7658ec8a258f509.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
