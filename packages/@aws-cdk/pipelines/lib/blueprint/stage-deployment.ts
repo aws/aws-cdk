@@ -117,6 +117,12 @@ export class StageDeployment {
    */
   public readonly stackSteps: StackSteps[];
 
+  /**
+   * Determine if all stacks in stage should be deployed with prepare
+   * step or not.
+   */
+  public readonly prepareStep?: boolean;
+
   private constructor(
     /** The stacks deployed in this stage */
     public readonly stacks: StackDeployment[], props: StageDeploymentProps = {}) {
