@@ -546,72 +546,25 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 
 #### Deploying without change sets
 
-Deployment is done by default with `CodePipeline` engine using change sets, 
-i.e. to first create a change set and then execute it. This allows you to:
+Deployment is done by default with `CodePipeline` engine using change sets,
+i.e. to first create a change set and then execute it. This allows you to inject
+steps that inspect the change set and approve or reject it, but failed deployments
+are not retryable and creation of the change set costs time.
 
-- have approval before actual deployment happens
-- include [dynamic references](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html) 
-to external values 
-
-On the other hand, this 2-step approach prevents retrying the 
-deployment, as the change set can't be re-generated if the execution of it fails for
-any reason. This might happen especially if using custom resources.
-
-Deployment can be done as a single step by setting 
-`CodePipelineProps.prepareStep` to false (for whole pipeline). It's also 
-possible to change default functionality per stage (with 
-`StageOptions.prepareStep`) or per stack in stage (with
-`StageOptions.prepareStepForStacks`). The way of deployment can be set following
-way:
+The creation of change sets can be switched off by setting `useChangeSets: false`:
 
 ```ts
-class MyStage extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
-    super(scope, id, props);
-
-    const stack1 = new Stack(this, 'Stack1', {
-      ...props,
-      synthesizer: new DefaultStackSynthesizer(),
-    });
-
-    const stack2 = new Stack(this, 'Stack2', {
-      ...props,
-      synthesizer: new DefaultStackSynthesizer(),
-    });
-
-    new PlainStackApp(stack1, 'MyApp1');
-    new PlainStackApp(stack2, 'MyApp2');
-  }
-}
+declare const synth: pipelines.ShellStep;
 
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
-      removalPolicy: RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
-      synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.s3(sourceBucket, 'key'),
-        commands: ['mkdir cdk.out', 'touch cdk.out/dummy'],
-      }),
-      selfMutation: false,
-      // Disable change set cretion and make deployments in pipeline as single step
-      prepareStep: false,
-    });
+      synth,
 
-    pipeline.addStage(new MyStage(this, 'MyStage', {}), {
-      // Enable deployment with change set at this stage. Overrides pipeline level setting.
-      prepareStep: true,
-      prepareStepForStacks: [
-        {
-          // Disable change set creation at specific stack. Overrides pipeline and stage level setting.
-          prepareStep: false,
-          stackName: 'MyStage-Stack1',
-        },
-      ],
+      // Disable change set creation and make deployments in pipeline as single step
+      useChangeSets: false,
     });
   }
 }

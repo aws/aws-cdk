@@ -158,9 +158,9 @@ export class PipelineGraph {
       // add changeset steps at the stack level
       if (stack.changeSet.length > 0) {
         if (prepareNode) {
-          this.addChangeSet(stack.changeSet, prepareNode, deployNode, stackGraph);
+          this.addChangeSetNode(stack.changeSet, prepareNode, deployNode, stackGraph);
         } else {
-          throw new Error('Your pipeline engine does not support changeSet steps');
+          throw new Error(`Cannot use \'changeSet\' steps for stack \'${stack.stackName}\': the pipeline does not support them or they have been disabled`);
         }
       }
 
@@ -218,7 +218,7 @@ export class PipelineGraph {
     return retGraph;
   }
 
-  private addChangeSet(changeSet: Step[], prepareNode: AGraphNode, deployNode: AGraphNode, graph: AGraph) {
+  private addChangeSetNode(changeSet: Step[], prepareNode: AGraphNode, deployNode: AGraphNode, graph: AGraph) {
     for (const c of changeSet) {
       const changeSetNode = this.addAndRecurse(c, graph);
       changeSetNode?.dependOn(prepareNode);
