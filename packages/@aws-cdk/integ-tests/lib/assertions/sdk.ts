@@ -1,8 +1,7 @@
-import { ArnFormat, CfnResource, CustomResource, Lazy, Reference, Stack } from '@aws-cdk/core';
-import { Construct } from 'constructs';
-import { ApiCallBase } from './api-call-base';
-import { EqualsAssertion } from './assertions';
-import { ActualResult, ExpectedResult } from './common';
+import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
+import { ApiCallBase, IApiCall } from './api-call-base';
+import { ExpectedResult } from './common';
 import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
 
 /**
@@ -41,6 +40,7 @@ export class AwsApiCall extends ApiCallBase {
   private readonly name: string;
 
   public readonly provider: AssertionsProvider;
+  private _assertAtPath?: string;
 
   constructor(scope: Construct, id: string, props: AwsApiCallProps) {
     super(scope, id);
@@ -54,6 +54,8 @@ export class AwsApiCall extends ApiCallBase {
       properties: {
         service: props.service,
         api: props.api,
+        expected: Lazy.any({ produce: () => this.expectedResult }),
+        actualPath: Lazy.string({ produce: () => this._assertAtPath }),
         parameters: this.provider.encode(props.parameters),
         flattenResponse: Lazy.string({ produce: () => this.flattenResponse }),
         salt: Date.now().toString(),
@@ -63,30 +65,27 @@ export class AwsApiCall extends ApiCallBase {
 
     // Needed so that all the policies set up by the provider should be available before the custom resource is provisioned.
     this.apiCallResource.node.addDependency(this.provider);
-  }
 
-  public getAtt(attributeName: string): Reference {
-    this.flattenResponse = 'true';
-    return this.apiCallResource.getAtt(`apiCallResponse.${attributeName}`);
-  }
+    Aspects.of(this).add({
+      visit(node: IConstruct) {
+        if (node instanceof AwsApiCall) {
+          if (node.expectedResult) {
+            const result = node.apiCallResource.getAttString('assertion');
 
-  public getAttString(attributeName: string): string {
-    this.flattenResponse = 'true';
-    return this.apiCallResource.getAttString(`apiCallResponse.${attributeName}`);
-  }
-
-  public expect(expected: ExpectedResult): void {
-    new EqualsAssertion(this, `AssertEquals${this.name}`, {
-      expected,
-      actual: ActualResult.fromCustomResource(this.apiCallResource, 'apiCallResponse'),
+            new CfnOutput(node, 'AssertionResults', {
+              value: result,
+            }).overrideLogicalId(`AssertionResults${id}`);
+          }
+        }
+      },
     });
   }
 
-  public assertAtPath(path: string, expected: ExpectedResult): void {
-    new EqualsAssertion(this, `AssertEquals${this.name}`, {
-      expected,
-      actual: ActualResult.fromAwsApiCall(this, path),
-    });
+  public assertAtPath(path: string, expected: ExpectedResult): IApiCall {
+    this._assertAtPath = path;
+    this.expectedResult = expected.result;
+    this.flattenResponse = 'true';
+    return this;
   }
 }
 
