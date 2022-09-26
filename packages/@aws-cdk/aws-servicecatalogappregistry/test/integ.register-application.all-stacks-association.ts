@@ -7,11 +7,11 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-servicecatalogappregistry-application');
 
 
-new appreg.AutomaticApplication(app, 'AutoApplication', {
-  applicationName: 'AppRegistryAutomaticApplication',
-  description: 'Testing AppRegistry AutomaticApplication',
+new appreg.RegisterApplication(app, 'RegisterCdkApplication', {
+  applicationName: 'AppRegistryRegisterApplication',
+  description: 'Testing AppRegistry RegisterApplication',
   stackProps: {
-    stackName: 'AppRegistryAutoApplicationStack',
+    stackName: 'AppRegistryRegisterApplicationStack',
   },
 });
 

@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { StageStackAssociator } from './aspects/stack-associator';
 import { IAttributeGroup } from './attribute-group';
 import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
+import { isAccountUnresolved } from './private/utils';
 import { InputValidator } from './private/validation';
 import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from './servicecatalogappregistry.generated';
 
@@ -43,7 +44,7 @@ export interface IApplication extends cdk.IResource {
   /**
    * Associate this application with a CloudFormation stack.
    *
-   * @deprecated Use `associateApplicationWithResource` instead.
+   * @deprecated Use `associateApplicationWithStack` instead.
    * @param stack a CFN stack
    */
   associateStack(stack: cdk.Stack): void;
@@ -53,7 +54,7 @@ export interface IApplication extends cdk.IResource {
    *
    * @param stack a CFN stack
    */
-  associateApplicationWithResource(stack: cdk.Stack): void;
+  associateApplicationWithStack(stack: cdk.Stack): void;
 
   /**
    * Share this application with other IAM entities, accounts, or OUs.
@@ -116,7 +117,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
    * If the resource is already associated, it will ignore duplicate request.
    * A stack can only be associated with one application.
    *
-   * @deprecated Use `associateApplicationWithResource` instead.
+   * @deprecated Use `associateApplicationWithStack` instead.
    */
   public associateStack(stack: cdk.Stack): void {
     if (!this.associatedResources.has(stack.node.addr)) {
@@ -136,7 +137,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
    * If the stack is already associated, it will ignore duplicate request.
    * A stack can only be associated with one application.
    */
-  public associateApplicationWithResource(stack: cdk.Stack): void {
+  public associateApplicationWithStack(stack: cdk.Stack): void {
     if (!this.associatedResources.has(stack.node.addr)) {
       new CfnResourceAssociation(stack, 'AppRegistryAssociation', {
         application: stack === cdk.Stack.of(this) ? this.applicationId : this.applicationName ?? this.applicationId,
@@ -145,7 +146,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
       });
 
       this.associatedResources.add(stack.node.addr);
-      if (stack !== cdk.Stack.of(this) && this.env.account === stack.account && !this.isStageScope(stack)) {
+      if (stack !== cdk.Stack.of(this) && this.isSameAccount(stack) && !this.isStageScope(stack)) {
         stack.addDependency(cdk.Stack.of(this));
       }
     }
@@ -200,9 +201,20 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
     }
   }
 
+  /**
+  *  Checks whether a stack is defined in a Stage or not.
+  */
   private isStageScope(stack : cdk.Stack): boolean {
     return !(stack.node.scope instanceof cdk.App) && (stack.node.scope instanceof cdk.Stage);
   }
+
+  /**
+   * Verifies if application and the visited node is deployed in different account.
+   */
+  private isSameAccount(stack: cdk.Stack): boolean {
+    return isAccountUnresolved(this.env.account, stack.account) || this.env.account === stack.account;
+  }
+
 }
 
 /**

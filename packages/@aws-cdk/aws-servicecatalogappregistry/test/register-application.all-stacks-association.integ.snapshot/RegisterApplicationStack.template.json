@@ -3,8 +3,8 @@
   "DefaultCdkApplication4573D5A3": {
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
-    "Name": "AppRegistryAutomaticApplication",
-    "Description": "Testing AppRegistry AutomaticApplication"
+    "Name": "AppRegistryRegisterApplication",
+    "Description": "Testing AppRegistry RegisterApplication"
    }
   },
   "AppRegistryAssociation": {

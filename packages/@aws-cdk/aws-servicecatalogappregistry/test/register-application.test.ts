@@ -15,16 +15,16 @@ describe('Scope based Associations with Application within Same Account', () => 
     });
   });
   test('Automatic application will associate allStacks created inside cdkApp', () => {
-    new appreg.AutomaticApplication(app, 'MyApplication', {
-      applicationName: 'MyAutomaticApplication',
+    new appreg.RegisterApplication(app, 'MyApplication', {
+      applicationName: 'MyRegisterApplication',
       stackProps: {
-        stackName: 'MyAutomaticApplicationStack',
+        stackName: 'MyRegisterApplicationStack',
       },
     });
     const anotherStack = new AppRegistrySampleStack(app, 'SampleStack');
     Template.fromStack(anotherStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     Template.fromStack(anotherStack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
-      Application: 'MyAutomaticApplication',
+      Application: 'MyRegisterApplication',
       Resource: { Ref: 'AWS::StackId' },
     });
   });
@@ -39,10 +39,10 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     });
   });
   test('Automatic Application in cross-account associates all stacks created inside cdk app', () => {
-    new appreg.AutomaticApplication(app, 'MyApplication', {
-      applicationName: 'MyAutomaticApplication',
+    new appreg.RegisterApplication(app, 'MyApplication', {
+      applicationName: 'MyRegisterApplication',
       stackProps: {
-        stackName: 'MyAutomaticApplicationStack',
+        stackName: 'MyRegisterApplicationStack',
       },
     });
     const firstStack = new cdk.Stack(app, 'testStack', {
@@ -55,27 +55,23 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     Template.fromStack(nestedStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
   });
 
-  test('Automatic Application created in scope other than app throws error', () => {
-    const firstStack = new cdk.Stack(app, 'testStack', {
-      env: { account: 'account2', region: 'region' },
-    });
+  test('Automatic Application creation failed when neither Application name nor ARN is provided', () => {
     expect(() => {
-      new appreg.AutomaticApplication(firstStack, 'MyApplication', {
-        applicationName: 'MyAutomaticApplication',
+      new appreg.RegisterApplication(app, 'MyApplication', {
         stackProps: {
-          stackName: 'MyAutomaticApplicationStack',
+          stackName: 'MyRegisterApplicationStack',
         },
       });
-    }).toThrow(/Scope must be a cdk App/);
+    }).toThrow(/Please provide either ARN or application name./);
   });
 
   test('associate resource on imported application', () => {
     const resource = new cdk.Stack(app, 'MyStack');
 
-    new appreg.AutomaticApplication(app, 'MyApplication', {
+    new appreg.RegisterApplication(app, 'MyApplication', {
       applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
       stackProps: {
-        stackName: 'MyAutomaticApplicationStack',
+        stackName: 'MyRegisterApplicationStack',
       },
     });
 
@@ -86,10 +82,10 @@ describe('Scope based Associations with Application with Cross Region/Account', 
   }),
 
   test('Automatic Application with cross region stacks inside cdkApp throws error', () => {
-    new appreg.AutomaticApplication(app, 'MyApplication', {
-      applicationName: 'MyAutomaticApplication',
+    new appreg.RegisterApplication(app, 'MyApplication', {
+      applicationName: 'MyRegisterApplication',
       stackProps: {
-        stackName: 'MyAutomaticApplicationStack',
+        stackName: 'MyRegisterApplicationStack',
         env: { account: 'account2', region: 'region2' },
       },
     });
@@ -101,10 +97,10 @@ describe('Scope based Associations with Application with Cross Region/Account', 
   });
 
   test('Environment Agnostic Automatic Application with cross region stacks inside cdkApp gives warning', () => {
-    new appreg.AutomaticApplication(app, 'MyApplication', {
-      applicationName: 'MyAutomaticApplication',
+    new appreg.RegisterApplication(app, 'MyApplication', {
+      applicationName: 'MyRegisterApplication',
       stackProps: {
-        stackName: 'MyAutomaticApplicationStack',
+        stackName: 'MyRegisterApplicationStack',
       },
     });
 
@@ -115,10 +111,10 @@ describe('Scope based Associations with Application with Cross Region/Account', 
   });
 
   test('Cdk App Containing Pipeline with stage but stage not associated throws error', () => {
-    const application = new appreg.AutomaticApplication(app, 'MyApplication', {
-      applicationName: 'MyAutomaticApplication',
+    const application = new appreg.RegisterApplication(app, 'MyApplication', {
+      applicationName: 'MyRegisterApplication',
       stackProps: {
-        stackName: 'MyAutomaticApplicationStack',
+        stackName: 'MyRegisterApplicationStack',
       },
     });
     const pipelineStack = new AppRegistrySampleCodePipelineStack(app, 'PipelineStackA', {
@@ -127,14 +123,14 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     });
     app.synth();
     Annotations.fromStack(pipelineStack).hasError('*',
-      'Associate Stage: SampleStage to ensure all stacks in your cdk app are associated with AppRegistry. You can use AutomaticApplication.associateStage to associate any stage.');
+      'Associate Stage: SampleStage to ensure all stacks in your cdk app are associated with AppRegistry. You can use RegisterApplication.associateStage to associate any stage.');
   });
 
   test('Cdk App Containing Pipeline with stage and stage associated successfully gets synthesized', () => {
-    const application = new appreg.AutomaticApplication(app, 'MyApplication', {
+    const application = new appreg.RegisterApplication(app, 'MyApplication', {
       applicationName: 'MyApplication',
       stackProps: {
-        stackName: 'MyAutomaticApplicationStack',
+        stackName: 'MyRegisterApplicationStack',
       },
     });
     const pipelineStack = new AppRegistrySampleCodePipelineStack(app, 'PipelineStackA', {
@@ -147,7 +143,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
 });
 
 interface AppRegistrySampleCodePipelineStackProps extends cdk.StackProps {
-  application: appreg.AutomaticApplication;
+  application: appreg.RegisterApplication;
   associateStage: boolean;
 }
 
@@ -180,7 +176,7 @@ class AppRegistrySampleCodePipelineStack extends cdk.Stack {
     );
 
     if (props.associateStage) {
-      props.application.associateStage(stage, this.stackName);
+      props.application.associateStage(stage);
     }
     pipeline.addStage(stage);
   }

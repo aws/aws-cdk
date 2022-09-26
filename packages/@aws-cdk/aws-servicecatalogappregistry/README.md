@@ -27,7 +27,7 @@ enables organizations to create and manage repositores of applications and assoc
 ## Table Of Contents
 
 - [Application](#application)
-- [Automatic-Application](#automatic-application)
+- [Register-Application](#register-application)
 - [Attribute-Group](#attribute-group)
 - [Associations](#associations)
   - [Associating application with an attribute group](#attribute-group-association)
@@ -65,33 +65,39 @@ const importedApplication = appreg.Application.fromApplicationArn(
 );
 ```
 
-## Automatic-Application
+## Register-Application
 
-An AppRegistry L2 construct to automatically create an application with the given name and description.
-The application name must be unique at the account level and it's immutable.
-`AutomaticApplication` L2 construct will automatically associate all stacks in the given scope, however
-in case of a `Pipeline` stack, stage underneath the pipeline will not automatically be associated and
-needs to be associated separately.
-If cross account stack is detected, then this construct will automatically share the application to consumer accounts.
-Cross account feature will only work for non environment agnostic stacks.
-
-Following will create an Application named `MyAutoApplication` in account `123456789012` and region `us-east-1`
-and will associate all stacks in the `App` scope to `MyAutoApplication`.
+If you want to create an Application named `MyRegisteredApplication` in account `123456789012` and region `us-east-1`
+and want to associate all stacks in the `App` scope to `MyRegisteredApplication`, then use as shown in the example below:
 
 ```ts
 const app = new App();
-const autoApp = new appreg.AutomaticApplication(app, 'AutoApplication', {
-    applicationName: 'MyAutoApplication',
-    description: 'Testing auto application',
+const registeredApp = new appreg.RegisterApplication(app, 'RegisterApplication', {
+    applicationName: 'MyRegisteredApplication',
+    description: 'Testing registered application',
     stackProps: {
-        stackName: 'MyAutoApplicationStack',
+        stackName: 'MyRegisteredApplicationStack',
         env: {account: '123456789012', region: 'us-east-1'},
     },
 });
 ```
 
-In case of a Pipeline stack, you need to pass the reference of `AutomaticApplication` to pipeline stack and associate
-each stage as shown below:
+If you want to re-use an existing Application with ARN: `arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId`
+and want to associate all stacks in the `App` scope to your imported application, then use as shown in the example below:
+
+```ts
+const app = new App();
+const registeredApp = new appreg.RegisterApplication(app, 'RegisterApplication', {
+    applicationArnValue: 'arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId',
+    stackProps: {
+        stackName: 'MyRegisteredApplicationStack',
+    },
+});
+```
+
+If you are using CDK Pipelines to deploy your application, the application stacks will be inside Stages, and 
+RegisterApplication will not be able to find them. Call `associateStage` on each Stage object before adding it to the 
+Pipeline, as shown in the example below:
 
 ```ts
 import * as cdk from "@aws-cdk/core";
@@ -104,28 +110,28 @@ class ApplicationPipelineStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: ApplicationPipelineStackProps) {
     super(scope, id, props);
     
-   //associate the stage to automatic application.
-   props.application.associateStage(beta, this.stackName);
+   //associate the stage to register application.
+   props.application.associateStage(beta);
    pipeline.addStage(beta);
   }
 };
 
 interface ApplicationPipelineStackProps extends cdk.StackProps {
-  application: appreg.AutomaticApplication;
+  application: appreg.RegisterApplication;
 };
 
 const app = new App();
-const autoApp = new appreg.AutomaticApplication(app, 'AutoApplication', {
-    applicationName: 'MyPipelineAutoApplication',
-    description: 'Testing pipeline auto app',
+const registeredApp = new appreg.RegisterApplication(app, 'RegisterApplication', {
+    applicationName: 'MyPipelineRegisteredApplication',
+    description: 'Testing pipeline registered app',
     stackProps: {
-        stackName: 'MyPipelineAutoApplicationStack',
+        stackName: 'MyPipelineRegisteredApplicationStack',
         env: {account: '123456789012', region: 'us-east-1'},
     },
 });
 
 const cdkPipeline = new ApplicationPipelineStack(app, 'CDKApplicationPipelineStack', {
-    application: autoApp,
+    application: registeredApp,
     env: {account: '123456789012', region: 'us-east-1'},
 });
 ```

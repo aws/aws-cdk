@@ -118,5 +118,10 @@
   "publishConfig": {
     "tag": "latest"
   },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/aws-servicecatalogappregistry.RegisterApplication.<initializer>.params[0]"
+    ]
+  },
   "private": true
 }

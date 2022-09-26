@@ -3,7 +3,7 @@
   "AppRegistryAssociation": {
    "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
    "Properties": {
-    "Application": "AppRegistryAutomaticApplication",
+    "Application": "AppRegistryRegisterApplication",
     "Resource": {
      "Ref": "AWS::StackId"
     },

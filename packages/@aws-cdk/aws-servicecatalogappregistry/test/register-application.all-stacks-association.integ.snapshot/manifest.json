@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b729ffc4cee0d203853a65cb9f8c3955e56df8ba367d04a2c1fbdb00fd947b9c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9e04f80022c72b360d422a8775b90407d2e2092478c00e65e1db6eed7d941e5e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -36,7 +36,7 @@
         }
       },
       "dependencies": [
-        "AutomaticApplicationStack",
+        "RegisterApplicationStack",
         "integservicecatalogappregistryapplicationresourcesStack4399A149.assets"
       ],
       "metadata": {
@@ -87,7 +87,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b729ffc4cee0d203853a65cb9f8c3955e56df8ba367d04a2c1fbdb00fd947b9c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9e04f80022c72b360d422a8775b90407d2e2092478c00e65e1db6eed7d941e5e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -100,7 +100,7 @@
         }
       },
       "dependencies": [
-        "AutomaticApplicationStack",
+        "RegisterApplicationStack",
         "integ-servicecatalogappregistry-application.assets"
       ],
       "metadata": {
@@ -135,40 +135,40 @@
       },
       "displayName": "integ-servicecatalogappregistry-application"
     },
-    "AutomaticApplicationStack.assets": {
+    "RegisterApplicationStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AutomaticApplicationStack.assets.json",
+        "file": "RegisterApplicationStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AutomaticApplicationStack": {
+    "RegisterApplicationStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AutomaticApplicationStack.template.json",
+        "templateFile": "RegisterApplicationStack.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fcea1428896d3e6a887556f0e982b200afff3885810d0fbb95aaa6538399e7c1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8d75667ef63668a1d27f4755a9904f4d54c37343864dc9a2401254605081ec7e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AutomaticApplicationStack.assets"
+          "RegisterApplicationStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         },
-        "stackName": "AppRegistryAutoApplicationStack"
+        "stackName": "AppRegistryRegisterApplicationStack"
       },
       "dependencies": [
-        "AutomaticApplicationStack.assets"
+        "RegisterApplicationStack.assets"
       ],
       "metadata": {
-        "/AutomaticApplicationStack": [
+        "/RegisterApplicationStack": [
           {
             "type": "aws:cdk:warning",
             "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack."
@@ -178,32 +178,32 @@
             "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack."
           }
         ],
-        "/AutomaticApplicationStack/DefaultCdkApplication/Resource": [
+        "/RegisterApplicationStack/DefaultCdkApplication/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DefaultCdkApplication4573D5A3"
           }
         ],
-        "/AutomaticApplicationStack/AppRegistryAssociation": [
+        "/RegisterApplicationStack/AppRegistryAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AppRegistryAssociation"
           }
         ],
-        "/AutomaticApplicationStack/BootstrapVersion": [
+        "/RegisterApplicationStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AutomaticApplicationStack/CheckBootstrapVersion": [
+        "/RegisterApplicationStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AutomaticApplicationStack"
+      "displayName": "RegisterApplicationStack"
     }
   }
 }

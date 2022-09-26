@@ -1,10 +1,9 @@
-import { Pipeline } from '@aws-cdk/aws-codepipeline';
-import { IAspect, Stack, Token, Annotations } from '@aws-cdk/core';
-import { CodePipeline } from '@aws-cdk/pipelines';
+import { IAspect, Stack, Stage, Annotations } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 import { IApplication } from '../application';
-import { AutomaticApplication } from '../automatic-application';
 import { SharePermission } from '../common';
+import { isRegionUnresolved, isAccountUnresolved } from '../private/utils';
+import { RegisterApplication } from '../register-application';
 
 /**
  * Aspect class, this will visit each node from the provided construct once.
@@ -14,26 +13,21 @@ import { SharePermission } from '../common';
  */
 abstract class StackAssociatorBase implements IAspect {
   protected abstract readonly application: IApplication;
-  protected abstract readonly automaticApplication?: AutomaticApplication;
+  protected abstract readonly registerApplication?: RegisterApplication;
 
   protected readonly sharedAccounts: Set<string> = new Set();
-  protected pipelineStages: Set<string> = new Set();
 
   public visit(node: IConstruct): void {
-    if (node instanceof CodePipeline) {
-      this.pipelineStages = this.getPipelineStages(node);
-    }
-
     // verify if a stage in a particular stack is associated to Application.
-    if (this.automaticApplication != undefined && node instanceof Pipeline) {
-      this.pipelineStages.forEach(( customStage ) => {
-        var stageAssociated = this.automaticApplication?.isStageAssociated(customStage, node.stack.stackName);
-        if (!stageAssociated) {
-          this.error(node, 'Associate Stage: ' + customStage + ' to ensure all stacks in your cdk app are associated with AppRegistry. '
-                + 'You can use AutomaticApplication.associateStage to associate any stage.');
+    node.node.children.forEach((childNode) => {
+      if (Stage.isStage(childNode)) {
+        var stageAssociated = this.registerApplication?.isStageAssociated(childNode);
+        if (stageAssociated === false) {
+          this.error(childNode, 'Associate Stage: ' + childNode.stageName + ' to ensure all stacks in your cdk app are associated with AppRegistry. '
+                        + 'You can use RegisterApplication.associateStage to associate any stage.');
         }
-      });
-    }
+      }
+    });
 
     if (Stack.isStack(node)) {
       this.handleCrossRegionStack(node);
@@ -48,7 +42,7 @@ abstract class StackAssociatorBase implements IAspect {
    * @param node A Stage stack.
    */
   private associate(node: Stack): void {
-    this.application.associateApplicationWithResource(node);
+    this.application.associateApplicationWithStack(node);
   }
 
   /**
@@ -80,7 +74,7 @@ abstract class StackAssociatorBase implements IAspect {
    * @param node Cfn stack.
    */
   private handleCrossRegionStack(node: Stack): void {
-    if (this.isRegionUnresolved(this.application.env.region, node.region)) {
+    if (isRegionUnresolved(this.application.env.region, node.region)) {
       this.warning(node, 'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.');
       return;
     }
@@ -99,7 +93,7 @@ abstract class StackAssociatorBase implements IAspect {
    * @param node Cfn stack.
    */
   private handleCrossAccountStack(node: Stack): void {
-    if (this.isAccountUnresolved(this.application.env.account!, node.account)) {
+    if (isAccountUnresolved(this.application.env.account!, node.account)) {
       this.warning(node, 'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.');
       return;
     }
@@ -113,58 +107,22 @@ abstract class StackAssociatorBase implements IAspect {
       this.sharedAccounts.add(node.account);
     }
   }
-
-  /**
-   * Verifies if application or the visited node is region agnostic.
-   *
-   * @param applicationRegion Region of the application.
-   * @param nodeRegion Region of the visited node.
-   */
-  private isRegionUnresolved(applicationRegion: string, nodeRegion: string): boolean {
-    return Token.isUnresolved(applicationRegion) || Token.isUnresolved(nodeRegion);
-  }
-
-  /**
-   * Verifies if application or the visited node is account agnostic.
-   *
-   * @param applicationAccount Account of the application.
-   * @param nodeAccount Account of the visited node.
-   */
-  private isAccountUnresolved(applicationAccount: string, nodeAccount: string): boolean {
-    return Token.isUnresolved(applicationAccount) || Token.isUnresolved(nodeAccount);
-  }
-
-  /**
-   * Get custom defined stage names for the given pipeline.
-   *
-   * @param pipeline Code Pipeline.
-   */
-  private getPipelineStages(pipeline: CodePipeline): Set<string> {
-    const stageNames = new Set<string>();
-    pipeline.waves.forEach( ( wave ) => {
-      wave.stages.forEach( ( stage ) => {
-        stageNames.add(stage.stageName);
-      });
-    });
-
-    return stageNames;
-  }
 }
 
-export class AutomaticApplicationStageStackAssociator extends StackAssociatorBase {
+export class RegisterApplicationStageStackAssociator extends StackAssociatorBase {
   protected readonly application: IApplication;
-  protected readonly automaticApplication?: AutomaticApplication;
+  protected readonly registerApplication?: RegisterApplication;
 
-  constructor(app: AutomaticApplication) {
+  constructor(app: RegisterApplication) {
     super();
     this.application = app.appRegistryApplication;
-    this.automaticApplication = app;
+    this.registerApplication = app;
   }
 }
 
 export class StageStackAssociator extends StackAssociatorBase {
   protected readonly application: IApplication;
-  protected readonly automaticApplication?: AutomaticApplication;
+  protected readonly registerApplication?: RegisterApplication;
 
   constructor(app: IApplication) {
     super();

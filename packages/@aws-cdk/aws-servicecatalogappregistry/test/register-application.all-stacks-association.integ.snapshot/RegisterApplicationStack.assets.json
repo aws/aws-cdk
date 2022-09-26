@@ -1,15 +1,15 @@
 {
   "version": "21.0.0",
   "files": {
-    "b729ffc4cee0d203853a65cb9f8c3955e56df8ba367d04a2c1fbdb00fd947b9c": {
+    "8d75667ef63668a1d27f4755a9904f4d54c37343864dc9a2401254605081ec7e": {
       "source": {
-        "path": "integservicecatalogappregistryapplicationresourcesStack4399A149.template.json",
+        "path": "RegisterApplicationStack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b729ffc4cee0d203853a65cb9f8c3955e56df8ba367d04a2c1fbdb00fd947b9c.json",
+          "objectKey": "8d75667ef63668a1d27f4755a9904f4d54c37343864dc9a2401254605081ec7e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
