@@ -1,6 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
@@ -8,7 +9,7 @@ import { TestFunction } from './test-function';
 /* eslint-disable quote-props */
 
 describe('KinesisEventSource', () => {
-  test('sufficiently complex example', () => {
+  testDeprecated('sufficiently complex example', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -77,7 +78,7 @@ describe('KinesisEventSource', () => {
 
   });
 
-  test('specific tumblingWindowInSeconds', () => {
+  testDeprecated('specific tumblingWindowInSeconds', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -109,7 +110,7 @@ describe('KinesisEventSource', () => {
 
   });
 
-  test('specific batch size', () => {
+  testDeprecated('specific batch size', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -169,7 +170,7 @@ describe('KinesisEventSource', () => {
 
   });
 
-  test('accepts if batch size is a token', () => {
+  testDeprecated('accepts if batch size is a token', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -184,7 +185,7 @@ describe('KinesisEventSource', () => {
 
   });
 
-  test('specific maxBatchingWindow', () => {
+  testDeprecated('specific maxBatchingWindow', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -214,7 +215,7 @@ describe('KinesisEventSource', () => {
 
   });
 
-  test('contains eventSourceMappingId after lambda binding', () => {
+  testDeprecated('contains eventSourceMappingId after lambda binding', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -244,7 +245,7 @@ describe('KinesisEventSource', () => {
 
   });
 
-  test('event source disabled', () => {
+  testDeprecated('event source disabled', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -264,7 +265,7 @@ describe('KinesisEventSource', () => {
 
   });
 
-  test('AT_TIMESTAMP starting position', () => {
+  testDeprecated('AT_TIMESTAMP starting position', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');

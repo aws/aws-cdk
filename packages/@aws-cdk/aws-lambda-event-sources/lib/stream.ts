@@ -149,6 +149,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       onFailure: this.props.onFailure,
       tumblingWindow: this.props.tumblingWindow,
       enabled: this.props.enabled,
+      filters: this.props.filters,
       filterCriteria: this.props.filterCriteria,
     };
   }

@@ -88,6 +88,7 @@ export class SqsEventSource implements lambda.IEventSource {
       reportBatchItemFailures: this.props.reportBatchItemFailures,
       enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,
+      filters: this.props.filters,
       filterCriteria: this.props.filterCriteria,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;

@@ -1,4 +1,5 @@
 import { Match, Template } from '@aws-cdk/assertions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
 
@@ -209,6 +210,37 @@ describe('event source mapping', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       EventSourceArn: eventSourceArn,
+    });
+  });
+
+  testDeprecated('deprecated filters with one pattern', () => {
+    const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
+      type: 'String',
+    });
+
+    let eventSourceArn = 'some-arn';
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: eventSourceArn,
+      kafkaTopic: topicNameParam.valueAsString,
+      filters: [
+        {
+          pattern: JSON.stringify({
+            numericEquals: FilterRule.isEqual(1),
+          }),
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FilterCriteria: {
+        Filters: [
+          {
+            Pattern: '{"numericEquals":[{"numeric":["=",1]}]}',
+          },
+        ],
+      },
     });
   });
 

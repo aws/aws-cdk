@@ -366,7 +366,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
     let consumerGroupConfig = props.kafkaConsumerGroupId ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined;
 
-    let filters: Array<{[key: string]: string}> = [];
+    const filters: Array<{[key: string]: string}> = props.filters ?? [];
     if (props.filterCriteria) {
       for (let filter of props.filterCriteria) {
         filters.push(filter.toPattern());
@@ -391,7 +391,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
-      filterCriteria: props.filterCriteria ? { filters: filters }: undefined,
+      filterCriteria: filters.length > 0 ? { filters: filters }: undefined,
       selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
     });

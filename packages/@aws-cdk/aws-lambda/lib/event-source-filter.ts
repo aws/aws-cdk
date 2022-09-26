@@ -84,7 +84,7 @@ export class FilterCriteria {
     this.filterCriteria = filter;
   }
   /**
-   * Returns a patter to filter criteria
+   * Returns a pattern to filter criteria
    *
    * @returns pattern object
    */
