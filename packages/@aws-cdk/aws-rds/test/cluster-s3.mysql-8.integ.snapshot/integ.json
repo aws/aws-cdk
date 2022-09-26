@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
     "integ.cluster-s3.mysql-8": {
       "stacks": [
