@@ -1,4 +1,4 @@
-import { ArnFormat, Resource } from '@aws-cdk/core';
+import { ArnFormat, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentConfig } from '../codedeploy.generated';
 import { TrafficRouting } from '../traffic-routing-config';
@@ -95,9 +95,17 @@ export class LambdaDeploymentConfig extends Resource implements ILambdaDeploymen
    * @returns a Construct representing a reference to an existing Lambda Deployment Configuration
    */
   public static fromLambdaDeploymentConfigName(scope: Construct, id: string, lambdaDeploymentConfigName: string): ILambdaDeploymentConfig {
-    ignore(scope);
     ignore(id);
-    return deploymentConfig(lambdaDeploymentConfigName);
+    const arn = Stack.of(scope).formatArn({
+      service: 'codedeploy',
+      resource: 'deploymentconfig',
+      resourceName: lambdaDeploymentConfigName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+    return {
+      deploymentConfigName: lambdaDeploymentConfigName,
+      deploymentConfigArn: arn,
+    };
   }
 
   /**
@@ -136,7 +144,7 @@ export class LambdaDeploymentConfig extends Resource implements ILambdaDeploymen
     const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: this.physicalName,
       computePlatform: 'Lambda',
-      trafficRoutingConfig: routingConfig.bind(this).config,
+      trafficRoutingConfig: routingConfig.bind(this),
     });
 
     this.deploymentConfigName = this.getResourceNameAttribute(resource.ref);

@@ -1,4 +1,4 @@
-import { ArnFormat, Resource } from '@aws-cdk/core';
+import { ArnFormat, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentConfig } from '../codedeploy.generated';
 import { TrafficRouting } from '../traffic-routing-config';
@@ -75,9 +75,17 @@ export class EcsDeploymentConfig extends Resource implements IEcsDeploymentConfi
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
   public static fromEcsDeploymentConfigName(scope: Construct, id: string, ecsDeploymentConfigName: string): IEcsDeploymentConfig {
-    ignore(scope);
     ignore(id);
-    return deploymentConfig(ecsDeploymentConfigName);
+    const arn = Stack.of(scope).formatArn({
+      service: 'codedeploy',
+      resource: 'deploymentconfig',
+      resourceName: ecsDeploymentConfigName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+    return {
+      deploymentConfigName: ecsDeploymentConfigName,
+      deploymentConfigArn: arn,
+    };
   }
 
   /**
@@ -103,7 +111,7 @@ export class EcsDeploymentConfig extends Resource implements IEcsDeploymentConfi
     const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: this.physicalName,
       computePlatform: 'ECS',
-      trafficRoutingConfig: routingConfig.bind(this).config,
+      trafficRoutingConfig: routingConfig.bind(this),
     });
 
     this.deploymentConfigName = this.getResourceNameAttribute(resource.ref);

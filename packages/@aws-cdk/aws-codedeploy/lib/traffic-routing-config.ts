@@ -1,15 +1,56 @@
 import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnDeploymentConfig } from './codedeploy.generated';
 
 /**
  * Represents the structure to pass into the underlying CfnDeploymentConfig class.
  */
 export interface TrafficRoutingConfig {
   /**
-   * represents the underlying traffic routing config structure
+   * The type of traffic shifting ( `TimeBasedCanary` or `TimeBasedLinear` ) used by a deployment configuration.
    */
-  readonly config: CfnDeploymentConfig.TrafficRoutingConfigProperty;
+  readonly type: string;
+
+  /**
+   * A configuration that shifts traffic from one version of a Lambda function or ECS task set to another in two increments.
+   * @default none
+   */
+  readonly timeBasedCanary?: CanaryTrafficRoutingConfig;
+
+  /**
+   * A configuration that shifts traffic from one version of a Lambda function or Amazon ECS task set to another in equal increments, with an equal number of minutes between each increment.
+   * @default none
+   */
+  readonly timeBasedLinear?: LinearTrafficRoutingConfig;
+}
+
+/**
+ * Represents the configuration specific to canary traffic shifting.
+ */
+export interface CanaryTrafficRoutingConfig {
+  /**
+   * The number of minutes between the first and second traffic shifts of a `TimeBasedCanary` deployment.
+   */
+  readonly canaryInterval: number;
+
+  /**
+   * The percentage of traffic to shift in the first increment of a `TimeBasedCanary` deployment.
+   */
+  readonly canaryPercentage: number;
+}
+
+/**
+ * Represents the configuration specific to linear traffic shifting.
+ */
+export interface LinearTrafficRoutingConfig {
+  /**
+   * The number of minutes between each incremental traffic shift of a `TimeBasedLinear` deployment.
+   */
+  readonly linearInterval: number;
+
+  /**
+   * The percentage of traffic that is shifted at the start of each increment of a `TimeBasedLinear` deployment.
+   */
+  readonly linearPercentage: number;
 }
 
 /**
@@ -19,7 +60,7 @@ export abstract class TrafficRouting {
   /**
    * Shifts 100% of traffic in a single shift.
    */
-  public static allAtOnce(): AllAtOnceTrafficRouting {
+  public static allAtOnce(): TrafficRouting {
     return new AllAtOnceTrafficRouting();
   }
 
@@ -71,9 +112,7 @@ export class AllAtOnceTrafficRouting extends TrafficRouting {
    */
   bind(_scope: Construct): TrafficRoutingConfig {
     return {
-      config: {
-        type: 'AllAtOnce',
-      },
+      type: 'AllAtOnce',
     };
   }
 }
@@ -107,12 +146,10 @@ export class TimeBasedCanaryTrafficRouting extends TrafficRouting {
    */
   bind(_scope: Construct): TrafficRoutingConfig {
     return {
-      config: {
-        type: 'TimeBasedCanary',
-        timeBasedCanary: {
-          canaryInterval: this.interval.toMinutes(),
-          canaryPercentage: this.percentage,
-        },
+      type: 'TimeBasedCanary',
+      timeBasedCanary: {
+        canaryInterval: this.interval.toMinutes(),
+        canaryPercentage: this.percentage,
       },
     };
   }
@@ -147,12 +184,10 @@ export class TimeBasedLinearTrafficRouting extends TrafficRouting {
    */
   bind(_scope: Construct): TrafficRoutingConfig {
     return {
-      config: {
-        type: 'TimeBasedLinear',
-        timeBasedLinear: {
-          linearInterval: this.interval.toMinutes(),
-          linearPercentage: this.percentage,
-        },
+      type: 'TimeBasedLinear',
+      timeBasedLinear: {
+        linearInterval: this.interval.toMinutes(),
+        linearPercentage: this.percentage,
       },
     };
   }
