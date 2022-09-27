@@ -42,6 +42,7 @@ def helm_handler(event, context):
     chart_asset_url  = props.get('ChartAssetURL', None)
     version          = props.get('Version', None)
     wait             = props.get('Wait', False)
+    atomic           = props.get('Atomic', False)
     timeout          = props.get('Timeout', None)
     namespace        = props.get('Namespace', None)
     create_namespace = props.get('CreateNamespace', None)
@@ -146,7 +147,7 @@ def get_chart_from_oci(tmpdir, release, repository = None, version = None):
     raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
 
 
-def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None):
+def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, atomic = False, timeout = None, create_namespace = None):
     import subprocess
 
     cmnd = ['helm', verb, release]
@@ -166,6 +167,8 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
         cmnd.extend(['--namespace', namespace])
     if wait:
         cmnd.append('--wait')
+    if atomic:
+        cmnd.append("--atomic")
     if not timeout is None:
         cmnd.extend(['--timeout', timeout])
     cmnd.extend(['--kubeconfig', kubeconfig])

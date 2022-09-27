@@ -74,6 +74,13 @@ export interface HelmChartOptions {
   readonly timeout?: Duration;
 
   /**
+   * Whether or not Helm should treat this operation as atomic; if set, upgrade process rolls back changes
+   * made in case of failed upgrade. The --wait flag will be set automatically if --atomic is used.
+   * @default false
+   */
+  readonly atomic?: boolean;
+
+  /**
    * create namespace if not exist
    * @default true
    */
@@ -129,6 +136,8 @@ export class HelmChart extends Construct {
     const wait = props.wait ?? false;
     // default to create new namespace
     const createNamespace = props.createNamespace ?? true;
+    // default to not use atomic operations
+    const atomic = props.atomic ?? false;
 
     props.chartAsset?.grantRead(provider.handlerRole);
 
@@ -143,6 +152,7 @@ export class HelmChart extends Construct {
         ChartAssetURL: props.chartAsset?.s3ObjectUrl,
         Version: props.version,
         Wait: wait || undefined, // props are stringified so we encode “false” as undefined
+        Atomic: atomic || undefined, // props are stringified so we encode “false” as undefined
         Timeout: timeout ? `${timeout.toString()}s` : undefined, // Helm v3 expects duration instead of integer
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
         Namespace: props.namespace ?? 'default',

@@ -187,6 +187,29 @@ describe('helm chart', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Wait: true });
     });
+
+    test('should disable atomic operations by default', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
+
+      // THEN
+      const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
+      expect(Object.keys(charts).length).toEqual(0);
+    });
+    test('should enable atomic operations when specified', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyAtomicChart', { cluster, chart: 'chart', atomic: true });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
+    });
+
     test('should disable waiting when specified as false', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
