@@ -2,8 +2,8 @@ import * as events from '@aws-cdk/aws-events';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import * as targets from '../../lib';
-import { IntegTest, ExpectedResult, AssertionsProvider } from '@aws-cdk/integ-tests';
 import { LogGroupTargetInput } from '../../lib';
 
 const app = new cdk.App();
@@ -71,8 +71,7 @@ const putEvent = integ.assertions.awsApiCall('EventBridge', 'putEvents', {
     },
   ],
 });
-const assertionProvider = putEvent.node.tryFindChild('SdkProvider') as AssertionsProvider;
-assertionProvider.addPolicyStatementFromSdkCall('events', 'PutEvents');
+putEvent.provider.addPolicyStatementFromSdkCall('events', 'PutEvents');
 
 const logEvents = integ.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents', {
   logGroupName: logGroup2.logGroupName,
@@ -80,7 +79,7 @@ const logEvents = integ.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents
   limit: 1,
 });
 
-logEvents.node.addDependency(putEvent);
+putEvent.next(logEvents);
 
 logEvents.assertAtPath('events.0.message', ExpectedResult.stringLikeRegexp(expectedValue));
 
