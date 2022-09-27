@@ -74,8 +74,6 @@ export class FilterRule {
  */
 export class FilterCriteria {
 
-  private constructor(private filterCriteria: {[key:string]: any}) {}
-  
   /**
    * Filter for event source
    * @deprecated use `addFilter`
@@ -89,6 +87,9 @@ export class FilterCriteria {
   public static addFilter(filter: {[key:string]: any}): FilterCriteria {
     return new FilterCriteria(filter);
   }
+
+  private constructor(private filterCriteria: {[key:string]: any}) {}
+
   /**
    * Returns a pattern to filter criteria
    *
