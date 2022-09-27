@@ -39,6 +39,17 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "SecondaryVault67665B5E": {
+   "Type": "AWS::Backup::BackupVault",
+   "Properties": {
+    "BackupVaultName": "cdkbackupSecondaryVaultA01C2A0E",
+    "LockConfiguration": {
+     "MinRetentionDays": 5
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "PlanDAF4E53A": {
    "Type": "AWS::Backup::BackupPlan",
    "Properties": {
@@ -78,6 +89,29 @@
        },
        "RuleName": "Monthly5Year",
        "ScheduleExpression": "cron(0 5 1 * ? *)",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "Vault23237E5B",
+         "BackupVaultName"
+        ]
+       }
+      },
+      {
+       "CopyActions": [
+        {
+         "DestinationBackupVaultArn": {
+          "Fn::GetAtt": [
+           "SecondaryVault67665B5E",
+           "BackupVaultArn"
+          ]
+         },
+         "Lifecycle": {
+          "DeleteAfterDays": 120,
+          "MoveToColdStorageAfterDays": 30
+         }
+        }
+       ],
+       "RuleName": "PlanRule3",
        "TargetBackupVault": {
         "Fn::GetAtt": [
          "Vault23237E5B",

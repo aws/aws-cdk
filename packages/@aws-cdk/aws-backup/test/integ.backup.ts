@@ -25,6 +25,12 @@ class TestStack extends Stack {
         minRetention: Duration.days(5),
       },
     });
+    const secondaryVault = new backup.BackupVault(this, 'SecondaryVault', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      lockConfiguration: {
+        minRetention: Duration.days(5),
+      },
+    });
     const plan = backup.BackupPlan.dailyWeeklyMonthly5YearRetention(this, 'Plan', vault);
 
     plan.addSelection('Selection', {
@@ -33,6 +39,14 @@ class TestStack extends Stack {
         backup.BackupResource.fromTag('stage', 'prod'), // Resources that are tagged stage=prod
       ],
     });
+
+    plan.addRule(new backup.BackupPlanRule({
+      copyActions: [{
+        destinationBackupVault: secondaryVault,
+        moveToColdStorageAfter: Duration.days(30),
+        deleteAfter: Duration.days(120),
+      }],
+    }));
   }
 }
 
