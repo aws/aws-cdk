@@ -99,6 +99,21 @@ plan.addRule(new backup.BackupPlanRule({
 }));
 ```
 
+Rules can also specify to copy recovery points to another Backup Vault using `copyActions`. Copied recovery points can
+optionally have `moveToColdStorage` and `deleteAfter` configured.
+
+```ts
+declare const plan: backup.BackupPlan;
+declare const secondaryVault: backup.BackupVault
+plan.addRule(new backup.BackupPlanRule({
+  copyActions: [{
+    destinationBackupVault: secondaryVault,
+    moveToColdStorageAfter: Duration.days(30),
+    deleteAfter: Duration.days(45),
+  }]
+}));
+```
+
 Ready-made rules are also available:
 
 ```ts

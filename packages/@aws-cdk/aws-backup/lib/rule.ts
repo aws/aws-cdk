@@ -70,6 +70,37 @@ export interface BackupPlanRuleProps {
    * @default false
    */
   readonly enableContinuousBackup?: boolean;
+
+  /**
+   * Copy operations to perform on recovery points created by this rule
+   *
+   * @default - no copy actions
+   */
+  readonly copyActions?: BackupPlanCopyActionProps[];
+}
+
+/**
+ * Properties for a BackupPlanCopyAction
+ */
+export interface BackupPlanCopyActionProps {
+  /**
+   * Destination Vault for recovery points to be copied into
+   */
+  readonly destinationBackupVault: IBackupVault;
+
+  /**
+   * Specifies the duration after creation that a copied recovery point is deleted from the destination vault.
+   * Must be greater than `moveToColdStorageAfter`.
+   *
+   * @default - recovery point is never deleted
+   */
+  readonly deleteAfter?: Duration;
+  /**
+   * Specifies the duration after creation that a copied recovery point is moved to cold storage.
+   *
+   * @default - recovery point is never moved to cold storage
+   */
+  readonly moveToColdStorageAfter?: Duration;
 }
 
 /**
@@ -183,6 +214,15 @@ export class BackupPlanRule {
     if (props.enableContinuousBackup && props.deleteAfter &&
       (props.deleteAfter?.toDays() < 1 || props.deleteAfter?.toDays() > 35)) {
       throw new Error(`'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
+    }
+
+    if (Array.isArray(props.copyActions) && props.copyActions.length > 0) {
+      props.copyActions.forEach(copyAction => {
+        if (copyAction.deleteAfter && copyAction.moveToColdStorageAfter &&
+          copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays()) {
+          throw new Error('`deleteAfter` in copyActions must be greater than corresponding `moveToColdStorageAfter`');
+        }
+      });
     }
 
     this.props = {

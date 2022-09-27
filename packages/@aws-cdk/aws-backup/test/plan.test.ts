@@ -286,6 +286,56 @@ test('automatically creates a new vault', () => {
   });
 });
 
+test('create a plan and add rule to copy to a different vault', () => {
+  // GIVEN
+  const primaryVault = new BackupVault(stack, 'PrimaryVault');
+  const secondaryVault = new BackupVault(stack, 'SecondaryVault');
+
+  // WHEN
+  new BackupPlan(stack, 'Plan', {
+    backupVault: primaryVault,
+    backupPlanRules: [
+      new BackupPlanRule({
+        copyActions: [{
+          destinationBackupVault: secondaryVault,
+          deleteAfter: Duration.days(45),
+          moveToColdStorageAfter: Duration.days(30),
+        }],
+      }),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      BackupPlanName: 'Plan',
+      BackupPlanRule: [
+        {
+          RuleName: 'PlanRule0',
+          TargetBackupVault: {
+            'Fn::GetAtt': [
+              'PrimaryVault9BBEBB0D',
+              'BackupVaultName',
+            ],
+          },
+          CopyActions: [{
+            DestinationBackupVaultArn: {
+              'Fn::GetAtt': [
+                'SecondaryVault67665B5E',
+                'BackupVaultArn',
+              ],
+            },
+            Lifecycle: {
+              DeleteAfterDays: 45,
+              MoveToColdStorageAfterDays: 30,
+            },
+          }],
+        },
+      ],
+    },
+  });
+});
+
 test('throws when deleteAfter is not greater than moveToColdStorageAfter', () => {
   expect(() => new BackupPlanRule({
     deleteAfter: Duration.days(5),
@@ -330,4 +380,14 @@ test('throws when deleteAfter is greater than 35 in combination with enableConti
     enableContinuousBackup: true,
     deleteAfter: Duration.days(36),
   })).toThrow(/'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got 36 days/);
+});
+
+test('throws when deleteAfter is not greater than moveToColdStorageAfter in a copy action', () => {
+  expect(() => new BackupPlanRule({
+    copyActions: [{
+      destinationBackupVault: new BackupVault(stack, 'Vault'),
+      deleteAfter: Duration.days(5),
+      moveToColdStorageAfter: Duration.days(6),
+    }],
+  })).toThrow(/`deleteAfter` in copyActions must be greater than corresponding `moveToColdStorageAfter`/);
 });
