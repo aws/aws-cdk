@@ -38,7 +38,7 @@ beforeEach(() => {
   });
   mockGetParameters.mockImplementation(() => {
     return {};
-  })
+  });
 });
 afterEach(() => {
   jest.restoreAllMocks();
@@ -107,7 +107,7 @@ describe('cross-region-ssm-writer throws', () => {
     // THEN
     await expect(handler(event)).rejects.toThrow(/Exports already exist/);
   });
-})
+});
 
 describe('cross-region-ssm-writer entrypoint', () => {
   test('Create event', async () => {
