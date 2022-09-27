@@ -185,7 +185,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 });
 ```
 
-You can now reference assets in a Product Stack. For example, we can add a handler to a Lambda function or a S3 Asset directly from a local asset file.
+You can reference assets in a Product Stack. For example, we can add a handler to a Lambda function or a S3 Asset directly from a local asset file.
 In this case, a S3 Bucket will automatically be generated for each ProductStack to store your assets based on your environment accountId and region. 
 
 ```ts

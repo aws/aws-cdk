@@ -1,8 +1,8 @@
+import * as iam from '@aws-cdk/aws-iam';
+import { IBucket } from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
-import * as iam from '../../aws-iam';
-import { IBucket } from '../../aws-s3';
-import * as sns from '../../aws-sns';
-import * as cdk from '../../core';
 import { MessageLanguage } from './common';
 import {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions,
@@ -157,7 +157,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   public abstract readonly portfolioId: string;
   private readonly associatedPrincipals: Set<string> = new Set();
   private readonly assetBuckets: Set<IBucket> = new Set<IBucket>();
-  private readonly sharedAccounts: String[] = [];
+  private readonly sharedAccounts: string[] = [];
 
   public giveAccessToRole(role: iam.IRole): void {
     this.associatePrincipal(role.roleArn, role.node.addr);
@@ -246,9 +246,8 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   /**
    * Gives access to Asset Buckets to Shared Accounts.
    *
-   * @internal
    */
-  protected _addBucketPermissionsToSharedAccounts() {
+  protected addBucketPermissionsToSharedAccounts() {
     if (this.sharedAccounts.length > 0) {
       for (const bucket of this.assetBuckets) {
         bucket.grantRead(new iam.CompositePrincipal(...this.sharedAccounts.map(account => new iam.AccountPrincipal(account))),
@@ -361,7 +360,7 @@ export class Portfolio extends PortfolioBase {
     cdk.Aspects.of(this).add({
       visit(c: IConstruct) {
         if (c instanceof Portfolio) {
-          c._addBucketPermissionsToSharedAccounts();
+          c.addBucketPermissionsToSharedAccounts();
         };
       },
     });

@@ -10,7 +10,7 @@ export interface ProductStackAssetBucketProps {
   /**
    * Name of s3 asset bucket deployed
    *
-   * @default - None
+   * @default - generated
    */
   readonly assetBucketName?: string;
 }
@@ -46,7 +46,7 @@ export class ProductStackAssetBucket extends Construct {
     cdk.Aspects.of(this).add({
       visit(c: IConstruct) {
         if (c instanceof ProductStackAssetBucket) {
-          c._deployAssets();
+          c.deployAssets();
         };
       },
     });
@@ -63,8 +63,6 @@ export class ProductStackAssetBucket extends Construct {
 
   /**
    * Generate unique name for S3 bucket.
-   *
-   * @internal
    */
   private generateBucketName(id: string): string {
     const accountId = cdk.Stack.of(this).account;
@@ -80,6 +78,7 @@ export class ProductStackAssetBucket extends Construct {
 
   /**
    * Fetch the expected S3 location of an asset.
+   * Assets are also prepared for bulk deployment to S3.
    *
    * @internal
    */
@@ -98,10 +97,8 @@ export class ProductStackAssetBucket extends Construct {
 
   /**
    * Deploy all assets to S3.
-   *
-   * @internal
    */
-  private _deployAssets() {
+  private deployAssets() {
     if (this.assets.length > 0) {
       new BucketDeployment(this, 'AssetsBucketDeployment', {
         sources: this.assets,

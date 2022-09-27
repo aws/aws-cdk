@@ -182,7 +182,6 @@ export class CloudFormationProduct extends Product {
 
   /**
    * The asset bucket of a product created via product stack.
-   * @param
    * @default - None
    */
   public assetBucket?: IBucket;

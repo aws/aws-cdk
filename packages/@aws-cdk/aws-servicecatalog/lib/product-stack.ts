@@ -15,7 +15,7 @@ export interface ProductStackProps {
   /**
    * Product stack asset bucket.
    *
-   * @default - None
+   * @default - None only generated if needed
    */
   readonly assetBucket?: ProductStackAssetBucket;
 }
