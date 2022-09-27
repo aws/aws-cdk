@@ -1,5 +1,5 @@
 import * as events from '@aws-cdk/aws-events';
-import { Duration } from '@aws-cdk/core';
+import { Duration, Token } from '@aws-cdk/core';
 import { IBackupVault } from './vault';
 
 /**
@@ -95,6 +95,7 @@ export interface BackupPlanCopyActionProps {
    * @default - recovery point is never deleted
    */
   readonly deleteAfter?: Duration;
+
   /**
    * Specifies the duration after creation that a copied recovery point is moved to cold storage.
    *
@@ -216,16 +217,15 @@ export class BackupPlanRule {
       throw new Error(`'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
     }
 
-    if (Array.isArray(props.copyActions) && props.copyActions.length > 0) {
+    if (props.copyActions && props.copyActions.length > 0) {
       props.copyActions.forEach(copyAction => {
-        if (copyAction.deleteAfter && copyAction.moveToColdStorageAfter &&
-          copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays()) {
-          throw new Error('`deleteAfter` in copyActions must be greater than corresponding `moveToColdStorageAfter`');
-        }
-
-        if (copyAction.deleteAfter && copyAction.moveToColdStorageAfter &&
+        if (copyAction.deleteAfter && !Token.isUnresolved(copyAction.deleteAfter) &&
+          copyAction.moveToColdStorageAfter && !Token.isUnresolved(copyAction.moveToColdStorageAfter) &&
           copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays() + 90) {
-          throw new Error('`deleteAfter` in copyActions must at least 90 days later than corresponding `moveToColdStorageAfter`');
+          throw new Error([
+            '\'deleteAfter\' must at least 90 days later than corresponding \'moveToColdStorageAfter\'',
+            `received 'deleteAfter: ${copyAction.deleteAfter.toDays()}' and 'moveToColdStorageAfter: ${copyAction.moveToColdStorageAfter.toDays()}'`,
+          ].join('\n'));
         }
       });
     }

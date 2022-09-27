@@ -104,7 +104,7 @@ optionally have `moveToColdStorage` and `deleteAfter` configured.
 
 ```ts
 declare const plan: backup.BackupPlan;
-declare const secondaryVault: backup.BackupVault
+declare const secondaryVault: backup.BackupVault;
 plan.addRule(new backup.BackupPlanRule({
   copyActions: [{
     destinationBackupVault: secondaryVault,

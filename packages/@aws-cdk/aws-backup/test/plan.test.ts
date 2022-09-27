@@ -389,7 +389,7 @@ test('throws when deleteAfter is not greater than moveToColdStorageAfter in a co
       deleteAfter: Duration.days(5),
       moveToColdStorageAfter: Duration.days(6),
     }],
-  })).toThrow(/`deleteAfter` in copyActions must be greater than corresponding `moveToColdStorageAfter`/);
+  })).toThrow(/deleteAfter' must at least 90 days later than corresponding 'moveToColdStorageAfter'\nreceived 'deleteAfter: 5' and 'moveToColdStorageAfter: 6'/);
 });
 
 test('throws when deleteAfter is not greater than 90 days past moveToColdStorageAfter parameter in a copy action', () => {
@@ -399,5 +399,5 @@ test('throws when deleteAfter is not greater than 90 days past moveToColdStorage
       deleteAfter: Duration.days(45),
       moveToColdStorageAfter: Duration.days(30),
     }],
-  })).toThrow(/`deleteAfter` in copyActions must at least 90 days later than corresponding `moveToColdStorageAfter`/);
+  })).toThrow(/'deleteAfter' must at least 90 days later than corresponding 'moveToColdStorageAfter'\nreceived 'deleteAfter: 45' and 'moveToColdStorageAfter: 30'/);
 });
