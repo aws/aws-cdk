@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc0190b17e2248f645e6fb64b3fcc344774325a53c839f3e3d06cf7c1ba8b516.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/33c56e02291eaea4afa147afc5d42ce6d80c4f482906b78fa47ddbe2582f19bc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,24 +39,6 @@
         "aws-cdk-lambda-runtime-inlinecode.assets"
       ],
       "metadata": {
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS12XServiceRole59E71436"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS12X8B8075A4"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS12XfunctionName"
-          }
-        ],
         "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_7/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -157,6 +139,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "NODEJS12XServiceRole59E71436": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS12XServiceRole59E71436",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "NODEJS12X8B8075A4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS12X8B8075A4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
