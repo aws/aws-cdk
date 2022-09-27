@@ -61,18 +61,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.5.2",
-    "@types/node": "^14.18.26",
+    "@types/node": "^14.18.29",
+    "aws-sdk": "^2.1093.0",
+    "aws-sdk-mock": "5.6.0",
     "jest": "^27.5.1",
     "nock": "^13.2.9",
-    "aws-sdk-mock": "5.6.0",
-    "sinon": "^9.2.4",
-    "aws-sdk": "^2.1093.0"
+    "sinon": "^9.2.4"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",

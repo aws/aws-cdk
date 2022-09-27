@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.71"
+          "version": "10.1.92"
         }
       },
       "aws-cdk-neptune-integ": {
@@ -659,35 +659,6 @@
               "version": "0.0.0"
             }
           },
-          "Params": {
-            "id": "Params",
-            "path": "aws-cdk-neptune-integ/Params",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-neptune-integ/Params/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Neptune::DBClusterParameterGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "description": "A nice parameter group",
-                    "family": "neptune1",
-                    "parameters": {
-                      "neptune_enable_audit_log": "1",
-                      "neptune_query_timeout": "100000"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-neptune.CfnDBClusterParameterGroup",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-neptune.ClusterParameterGroup",
-              "version": "0.0.0"
-            }
-          },
           "DbSecurity": {
             "id": "DbSecurity",
             "path": "aws-cdk-neptune-integ/DbSecurity",
@@ -736,6 +707,35 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "Params": {
+            "id": "Params",
+            "path": "aws-cdk-neptune-integ/Params",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-neptune-integ/Params/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Neptune::DBClusterParameterGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "A nice parameter group",
+                    "family": "neptune1",
+                    "parameters": {
+                      "neptune_enable_audit_log": "1",
+                      "neptune_query_timeout": "100000"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-neptune.CfnDBClusterParameterGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-neptune.ClusterParameterGroup",
               "version": "0.0.0"
             }
           },
@@ -900,10 +900,84 @@
               "fqn": "@aws-cdk/aws-neptune.DatabaseCluster",
               "version": "0.0.0"
             }
+          },
+          "Alarm": {
+            "id": "Alarm",
+            "path": "aws-cdk-neptune-integ/Alarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-neptune-integ/Alarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanThreshold",
+                    "evaluationPeriods": 1,
+                    "dimensions": [
+                      {
+                        "name": "DBClusterIdentifier",
+                        "value": {
+                          "Ref": "DatabaseB269D8BB"
+                        }
+                      }
+                    ],
+                    "metricName": "SparqlErrors",
+                    "namespace": "AWS/Neptune",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ClusterTest": {
+        "id": "ClusterTest",
+        "path": "ClusterTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ClusterTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ClusterTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.92"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ClusterTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

@@ -5,7 +5,7 @@
       "stacks": [
         "TokenAuthorizerIAMRoleInteg"
       ],
-      "assertionStack": "iamtokenauthorizerDefaultTestDeployAssert87D47FBB"
+      "assertionStack": "iam-token-authorizer/DefaultTest/DeployAssert"
     }
   }
 }

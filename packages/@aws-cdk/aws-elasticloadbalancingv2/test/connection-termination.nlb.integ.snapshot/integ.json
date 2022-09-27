@@ -5,7 +5,7 @@
       "stacks": [
         "aws-cdk-elbv2-integ"
       ],
-      "assertionStack": "targetGroupTestDefaultTestDeployAssert29FB5AEF"
+      "assertionStack": "targetGroupTest/DefaultTest/DeployAssert"
     }
   }
 }

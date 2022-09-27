@@ -391,17 +391,6 @@
     }
    }
   },
-  "ParamsA8366201": {
-   "Type": "AWS::Neptune::DBClusterParameterGroup",
-   "Properties": {
-    "Description": "A nice parameter group",
-    "Family": "neptune1",
-    "Parameters": {
-     "neptune_enable_audit_log": "1",
-     "neptune_query_timeout": "100000"
-    }
-   }
-  },
   "DbSecurity381C2C15": {
    "Type": "AWS::KMS::Key",
    "Properties": {
@@ -436,6 +425,17 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "ParamsA8366201": {
+   "Type": "AWS::Neptune::DBClusterParameterGroup",
+   "Properties": {
+    "Description": "A nice parameter group",
+    "Family": "neptune1",
+    "Parameters": {
+     "neptune_enable_audit_log": "1",
+     "neptune_query_timeout": "100000"
+    }
+   }
   },
   "DatabaseSubnets3C9252C9": {
    "Type": "AWS::Neptune::DBSubnetGroup",
@@ -538,6 +538,60 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "Alarm7103F465": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanThreshold",
+    "EvaluationPeriods": 1,
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": {
+       "Ref": "DatabaseB269D8BB"
+      }
+     }
+    ],
+    "MetricName": "SparqlRequestsPerSec",
+    "Namespace": "AWS/Neptune",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

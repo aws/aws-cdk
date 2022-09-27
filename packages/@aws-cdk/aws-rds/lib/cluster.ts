@@ -738,7 +738,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       Annotations.of(this).addWarning('Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');
     }
     if (!props.credentials && !props.snapshotCredentials) {
-      Annotations.of(this).addWarning('Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on tbis cluster.');
+      Annotations.of(this).addWarning('Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on this cluster.');
     }
     const deprecatedCredentials = renderCredentials(this, props.engine, props.credentials);
 
@@ -890,7 +890,6 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
     const instance = new CfnDBInstance(cluster, `Instance${instanceIndex}`, {
       // Link to cluster
       engine: props.engine.engineType,
-      engineVersion: props.engine.engineVersion?.fullVersion,
       dbClusterIdentifier: cluster.clusterIdentifier,
       dbInstanceIdentifier: instanceIdentifier,
       // Instance properties

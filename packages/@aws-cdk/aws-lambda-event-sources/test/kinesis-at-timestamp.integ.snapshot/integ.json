@@ -5,7 +5,7 @@
       "stacks": [
         "lambda-event-source-kinesis-at-timestamp"
       ],
-      "assertionStack": "AtTimestampDefaultTestDeployAssert8000E9DC"
+      "assertionStack": "AtTimestamp/DefaultTest/DeployAssert"
     }
   }
 }

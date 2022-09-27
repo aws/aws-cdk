@@ -5,7 +5,7 @@
       "stacks": [
         "restapi-multiuse-example"
       ],
-      "assertionStack": "restapimultiuseDefaultTestDeployAssert47DF66CC"
+      "assertionStack": "restapi-multiuse/DefaultTest/DeployAssert"
     }
   }
 }

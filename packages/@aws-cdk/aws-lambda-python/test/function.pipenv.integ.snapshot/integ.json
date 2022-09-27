@@ -1,14 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "integ.function.pipenv": {
+    "pipenv/DefaultTest": {
       "stacks": [
-        "cdk-integ-lambda-python"
+        "integ-lambda-python-pipenv"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "stackUpdateWorkflow": false,
+      "assertionStack": "pipenv/DefaultTest/DeployAssert",
+      "assertionStackName": "pipenvDefaultTestDeployAssertF8231517"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

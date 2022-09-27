@@ -1,5 +1,5 @@
 {
-  "$version": "85.0.0",
+  "$version": "89.0.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::KMS::Alias": {

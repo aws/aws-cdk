@@ -1,6 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Duration, Names, Token } from '@aws-cdk/core';
+import { Duration, Names, Token, Annotations } from '@aws-cdk/core';
 
 export interface SqsEventSourceProps {
   /**
@@ -39,6 +39,13 @@ export interface SqsEventSourceProps {
    * @default true
    */
   readonly enabled?: boolean;
+
+  /**
+   * Add filter criteria option
+   *
+   * @default - None
+   */
+  readonly filters?: Array<{[key: string]: any}>;
 }
 
 /**
@@ -73,10 +80,18 @@ export class SqsEventSource implements lambda.IEventSource {
       reportBatchItemFailures: this.props.reportBatchItemFailures,
       enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,
+      filters: this.props.filters,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 
-    this.queue.grantConsumeMessages(target);
+    // only grant access if the lambda function has an IAM role
+    // otherwise the IAM module will throw an error
+    if (target.role) {
+      this.queue.grantConsumeMessages(target);
+    } else {
+      Annotations.of(target).addWarning(`Function '${target.node.path}' was imported without an IAM role `+
+        `so it was not granted access to consume messages from '${this.queue.node.path}'`);
+    }
   }
 
   /**

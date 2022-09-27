@@ -23,6 +23,7 @@ import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
+import { DeploymentMethod } from './api';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -112,8 +113,15 @@ async function parseCommandLineArguments() {
       .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
       // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
-      .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
-      .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
+      .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet) (deprecated)', deprecated: true })
+      .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create (only if method is not direct)' })
+      .options('method', {
+        alias: 'm',
+        type: 'string',
+        choices: ['direct', 'change-set', 'prepare-change-set'],
+        requiresArg: true,
+        desc: 'How to perform the deployment. Direct is a bit faster but lacks progress information',
+      })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
@@ -431,7 +439,7 @@ async function initCommandLine() {
         const bootstrapper = new Bootstrapper(source);
 
         if (args.showTemplate) {
-          return bootstrapper.showTemplate();
+          return bootstrapper.showTemplate(args.json);
         }
 
         return cli.bootstrap(args.ENVIRONMENTS, bootstrapper, {
@@ -461,6 +469,30 @@ async function initCommandLine() {
             parameterMap[keyValue[0]] = keyValue.slice(1).join('=');
           }
         }
+
+        if (args.execute !== undefined && args.method !== undefined) {
+          throw new Error('Can not supply both --[no-]execute and --method at the same time');
+        }
+
+        let deploymentMethod: DeploymentMethod | undefined;
+        switch (args.method) {
+          case 'direct':
+            if (args.changeSetName) {
+              throw new Error('--change-set-name cannot be used with method=direct');
+            }
+            deploymentMethod = { method: 'direct' };
+            break;
+          case 'change-set':
+            deploymentMethod = { method: 'change-set', execute: true, changeSetName: args.changeSetName };
+            break;
+          case 'prepare-change-set':
+            deploymentMethod = { method: 'change-set', execute: false, changeSetName: args.changeSetName };
+            break;
+          case undefined:
+            deploymentMethod = { method: 'change-set', execute: args.execute ?? true, changeSetName: args.changeSetName };
+            break;
+        }
+
         return cli.deploy({
           selector,
           exclusively: args.exclusively,
@@ -470,8 +502,7 @@ async function initCommandLine() {
           requireApproval: configuration.settings.get(['requireApproval']),
           reuseAssets: args['build-exclude'],
           tags: configuration.settings.get(['tags']),
-          execute: args.execute,
-          changeSetName: args.changeSetName,
+          deploymentMethod,
           force: args.force,
           parameters: parameterMap,
           usePreviousParameters: args['previous-parameters'],

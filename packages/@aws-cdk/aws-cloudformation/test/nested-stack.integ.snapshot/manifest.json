@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,40 +7,38 @@
         "file": "tree.json"
       }
     },
+    "nested-stacks-test.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "nested-stacks-test.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "nested-stacks-test": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "nested-stacks-test.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/nested-stacks-test": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "nestedstackstestNestedStack1C289F6D5.nested.template.json",
-              "id": "f5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbc",
-              "packaging": "file",
-              "sourceHash": "f5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbc",
-              "s3BucketParameter": "AssetParametersf5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbcS3BucketCD285144",
-              "s3KeyParameter": "AssetParametersf5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbcS3VersionKey678C5A99",
-              "artifactHashParameter": "AssetParametersf5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbcArtifactHash5F083B4E"
-            }
-          },
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "nestedstackstestNestedStack209C5218A.nested.template.json",
-              "id": "0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22df",
-              "packaging": "file",
-              "sourceHash": "0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22df",
-              "s3BucketParameter": "AssetParameters0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22dfS3BucketB322F951",
-              "s3KeyParameter": "AssetParameters0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22dfS3VersionKeyAA9C5AF4",
-              "artifactHashParameter": "AssetParameters0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22dfArtifactHash5D335705"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/38449864882aa5448c3a724d55cacefde8604434977d9a66a7617428220e9785.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "nested-stacks-test.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "nested-stacks-test.assets"
+      ],
+      "metadata": {
         "/nested-stacks-test/SubscriberQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -161,40 +159,16 @@
             "data": "NestedStack2NestedStackNestedStack2NestedStackResourceFDF82E43"
           }
         ],
-        "/nested-stacks-test/AssetParameters/f5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbc/S3Bucket": [
+        "/nested-stacks-test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersf5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbcS3BucketCD285144"
+            "data": "BootstrapVersion"
           }
         ],
-        "/nested-stacks-test/AssetParameters/f5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbc/S3VersionKey": [
+        "/nested-stacks-test/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersf5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbcS3VersionKey678C5A99"
-          }
-        ],
-        "/nested-stacks-test/AssetParameters/f5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbc/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersf5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbcArtifactHash5F083B4E"
-          }
-        ],
-        "/nested-stacks-test/AssetParameters/0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22df/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22dfS3BucketB322F951"
-          }
-        ],
-        "/nested-stacks-test/AssetParameters/0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22df/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22dfS3VersionKeyAA9C5AF4"
-          }
-        ],
-        "/nested-stacks-test/AssetParameters/0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22df/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters0d0404717d8867c09534f2cf382e8e24531ff64a968afa2efd7f071ad65a22dfArtifactHash5D335705"
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

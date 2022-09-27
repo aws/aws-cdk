@@ -575,6 +575,8 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_27 = MysqlEngineVersion.of('8.0.27', '8.0');
   /** Version "8.0.28". */
   public static readonly VER_8_0_28 = MysqlEngineVersion.of('8.0.28', '8.0');
+  /** Version "8.0.30". */
+  public static readonly VER_8_0_30 = MysqlEngineVersion.of('8.0.30', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -932,6 +934,8 @@ export class PostgresEngineVersion {
   public static readonly VER_11_14 = PostgresEngineVersion.of('11.14', '11', { s3Import: true, s3Export: true });
   /** Version "11.15". */
   public static readonly VER_11_15 = PostgresEngineVersion.of('11.15', '11', { s3Import: true, s3Export: true });
+  /** Version "11.16". */
+  public static readonly VER_11_16 = PostgresEngineVersion.of('11.16', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });

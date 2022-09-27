@@ -9,24 +9,24 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.95"
         }
       },
-      "oidc-provider-integ-test": {
-        "id": "oidc-provider-integ-test",
-        "path": "oidc-provider-integ-test",
+      "aws-eks-oidc-provider-test": {
+        "id": "aws-eks-oidc-provider-test",
+        "path": "aws-eks-oidc-provider-test",
         "children": {
           "NoClientsNoThumbprint": {
             "id": "NoClientsNoThumbprint",
-            "path": "oidc-provider-integ-test/NoClientsNoThumbprint",
+            "path": "aws-eks-oidc-provider-test/NoClientsNoThumbprint",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "oidc-provider-integ-test/NoClientsNoThumbprint/Resource",
+                "path": "aws-eks-oidc-provider-test/NoClientsNoThumbprint/Resource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "oidc-provider-integ-test/NoClientsNoThumbprint/Resource/Default",
+                    "path": "aws-eks-oidc-provider-test/NoClientsNoThumbprint/Resource/Default",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnResource",
                       "version": "0.0.0"
@@ -46,11 +46,11 @@
           },
           "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": {
             "id": "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider",
-            "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider",
+            "path": "aws-eks-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Staging",
+                "path": "aws-eks-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.AssetStaging",
                   "version": "0.0.0"
@@ -58,7 +58,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role",
+                "path": "aws-eks-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
@@ -66,7 +66,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler",
+                "path": "aws-eks-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
@@ -77,54 +77,46 @@
               "fqn": "@aws-cdk/core.CustomResourceProvider",
               "version": "0.0.0"
             }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "oidc-provider-integ-test/AssetParameters",
-            "children": {
-              "5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2": {
-                "id": "5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2",
-                "path": "oidc-provider-integ-test/AssetParameters/5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "oidc-provider-integ-test/AssetParameters/5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "oidc-provider-integ-test/AssetParameters/5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "oidc-provider-integ-test/AssetParameters/5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.9"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.0.9"
-            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "aws-cdk-eks-oidc-provider": {
+        "id": "aws-cdk-eks-oidc-provider",
+        "path": "aws-cdk-eks-oidc-provider",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "aws-cdk-eks-oidc-provider/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "aws-cdk-eks-oidc-provider/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.95"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "aws-cdk-eks-oidc-provider/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

@@ -5,7 +5,7 @@
       "stacks": [
         "cloud9-imageid-integ"
       ],
-      "assertionStack": "ImageIdIntegDefaultTestDeployAssert7D293EEE"
+      "assertionStack": "ImageIdInteg/DefaultTest/DeployAssert"
     }
   }
 }
