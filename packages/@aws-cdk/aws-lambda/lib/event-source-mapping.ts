@@ -360,7 +360,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     const filterCriteria: Array<{[key: string]: string}> = [];
     if (props.filters) {
       for (const filter of props.filters) {
-        filterCriteria.push(FilterCriteria.filter(filter).toPattern());
+        filterCriteria.push(FilterCriteria.addFilter(filter).toPattern());
       }
     }
 

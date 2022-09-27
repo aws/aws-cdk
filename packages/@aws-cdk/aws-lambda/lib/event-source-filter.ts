@@ -73,15 +73,21 @@ export class FilterRule {
  * Filter criteria for Lambda event filtering
  */
 export class FilterCriteria {
+
+  private constructor(private filterCriteria: {[key:string]: any}) {}
+  
+  /**
+   * Filter for event source
+   * @deprecated use `addFilter`
+   */
+  public static filter(filter: {[key:string]: any}): {[key:string]: any} {
+    return { pattern: JSON.stringify(filter) };
+  }
   /**
    * Filter for event source
    */
-  public static filter(filter: {[key:string]: any}): FilterCriteria {
+  public static addFilter(filter: {[key:string]: any}): FilterCriteria {
     return new FilterCriteria(filter);
-  }
-  private filterCriteria: {[key: string]: any};
-  private constructor(filter: {[key:string]: any}) {
-    this.filterCriteria = filter;
   }
   /**
    * Returns a pattern to filter criteria
