@@ -380,6 +380,10 @@ export class Queue extends QueueBase {
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
       let encryption = props.encryption || QueueEncryption.UNENCRYPTED;
 
+      if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
+        throw new Error("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used");
+      }
+
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
         encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
       }

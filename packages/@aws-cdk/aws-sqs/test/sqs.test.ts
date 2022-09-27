@@ -447,6 +447,18 @@ describe('queue encryption', () => {
       },
     });
   });
+
+  test('encryptionMasterKey is not supported if encryption type SQS_MANAGED is used', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'CustomKey');
+
+    // THEN
+    expect(() => new sqs.Queue(stack, 'Queue', {
+      encryption: sqs.QueueEncryption.SQS_MANAGED,
+      encryptionMasterKey: key,
+    })).toThrow(/'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used/);
+  });
 });
 
 test('test ".fifo" suffixed queues register as fifo', () => {
