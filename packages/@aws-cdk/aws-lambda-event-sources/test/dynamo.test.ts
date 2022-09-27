@@ -2,7 +2,6 @@ import { Template } from '@aws-cdk/assertions';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
@@ -10,7 +9,7 @@ import { TestFunction } from './test-function';
 /* eslint-disable quote-props */
 
 describe('DynamoEventSource', () => {
-  testDeprecated('sufficiently complex example', () => {
+  test('sufficiently complex example', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -76,7 +75,7 @@ describe('DynamoEventSource', () => {
 
   });
 
-  testDeprecated('specific tumblingWindow', () => {
+  test('specific tumblingWindow', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -103,7 +102,7 @@ describe('DynamoEventSource', () => {
 
   });
 
-  testDeprecated('specific batch size', () => {
+  test('specific batch size', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -139,7 +138,7 @@ describe('DynamoEventSource', () => {
 
   });
 
-  testDeprecated('pass validation if batchsize is token', () => {
+  test('pass validation if batchsize is token', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -223,7 +222,7 @@ describe('DynamoEventSource', () => {
 
   });
 
-  testDeprecated('fails if batch size > 10000', () => {
+  test('fails if batch size > 10000', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -244,63 +243,7 @@ describe('DynamoEventSource', () => {
 
   });
 
-  testDeprecated('adding filter criteria', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new TestFunction(stack, 'Fn');
-    const table = new dynamodb.Table(stack, 'T', {
-      partitionKey: {
-        name: 'id',
-        type: dynamodb.AttributeType.STRING,
-      },
-      stream: dynamodb.StreamViewType.NEW_IMAGE,
-    });
-
-    const filters: Array<lambda.FilterCriteria> = [
-      lambda.FilterCriteria.filter({
-        eventName: lambda.FilterRule.isEqual('INSERT'),
-        dynamodb: {
-          Keys: {
-            id: {
-              S: lambda.FilterRule.exists(),
-            },
-          },
-        },
-      }),
-    ];
-
-    expect(Array.isArray(filters)).toBe(true);
-    expect(filters[0]).toBeInstanceOf(lambda.FilterCriteria);
-
-    // WHEN
-    fn.addEventSource(new sources.DynamoEventSource(table, {
-      startingPosition: lambda.StartingPosition.LATEST,
-      filterCriteria: filters,
-    }));
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
-      'EventSourceArn': {
-        'Fn::GetAtt': [
-          'TD925BC7E',
-          'StreamArn',
-        ],
-      },
-      'FunctionName': {
-        'Ref': 'Fn9270CBC0',
-      },
-      'FilterCriteria': {
-        'Filters': [
-          {
-            'Pattern': '{"eventName":["INSERT"],"dynamodb":{"Keys":{"id":{"S":[{"exists":true}]}}}}',
-          },
-        ],
-      },
-      'StartingPosition': 'LATEST',
-    });
-  });
-
-  testDeprecated('adding deprecated filters', () => {
+  test('adding filter criteria', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -314,16 +257,14 @@ describe('DynamoEventSource', () => {
 
     const filters = [
       {
-        pattern: JSON.stringify({
-          eventName: lambda.FilterRule.isEqual('INSERT'),
-          dynamodb: {
-            Keys: {
-              id: {
-                S: lambda.FilterRule.exists(),
-              },
+        eventName: lambda.FilterRule.isEqual('INSERT'),
+        dynamodb: {
+          Keys: {
+            id: {
+              S: lambda.FilterRule.exists(),
             },
           },
-        }),
+        },
       },
     ];
 
@@ -357,7 +298,62 @@ describe('DynamoEventSource', () => {
     });
   });
 
-  testDeprecated('specific maxBatchingWindow', () => {
+  test('adding filters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    const filters = [
+      {
+        eventName: lambda.FilterRule.isEqual('INSERT'),
+        dynamodb: {
+          Keys: {
+            id: {
+              S: lambda.FilterRule.exists(),
+            },
+          },
+        },
+      },
+    ];
+
+    expect(Array.isArray(filters)).toBe(true);
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      filters: filters,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'FilterCriteria': {
+        'Filters': [
+          {
+            'Pattern': '{"eventName":["INSERT"],"dynamodb":{"Keys":{"id":{"S":[{"exists":true}]}}}}',
+          },
+        ],
+      },
+      'StartingPosition': 'LATEST',
+    });
+  });
+
+  test('specific maxBatchingWindow', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -393,7 +389,7 @@ describe('DynamoEventSource', () => {
 
   });
 
-  testDeprecated('throws if maxBatchingWindow > 300 seconds', () => {
+  test('throws if maxBatchingWindow > 300 seconds', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -413,7 +409,7 @@ describe('DynamoEventSource', () => {
       }))).toThrow(/maxBatchingWindow cannot be over 300 seconds/);
   });
 
-  testDeprecated('contains eventSourceMappingId after lambda binding', () => {
+  test('contains eventSourceMappingId after lambda binding', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -454,7 +450,7 @@ describe('DynamoEventSource', () => {
 
   });
 
-  testDeprecated('specific retryAttempts', () => {
+  test('specific retryAttempts', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -488,7 +484,7 @@ describe('DynamoEventSource', () => {
     });
   });
 
-  testDeprecated('fails if retryAttempts < 0', () => {
+  test('fails if retryAttempts < 0', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -508,7 +504,7 @@ describe('DynamoEventSource', () => {
       }))).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got -1/);
   });
 
-  testDeprecated('fails if retryAttempts > 10000', () => {
+  test('fails if retryAttempts > 10000', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -530,7 +526,7 @@ describe('DynamoEventSource', () => {
 
   });
 
-  testDeprecated('specific bisectBatchOnFunctionError', () => {
+  test('specific bisectBatchOnFunctionError', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -566,7 +562,7 @@ describe('DynamoEventSource', () => {
 
   });
 
-  testDeprecated('specific parallelizationFactor', () => {
+  test('specific parallelizationFactor', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -600,7 +596,7 @@ describe('DynamoEventSource', () => {
     });
   });
 
-  testDeprecated('fails if parallelizationFactor < 1', () => {
+  test('fails if parallelizationFactor < 1', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -620,7 +616,7 @@ describe('DynamoEventSource', () => {
       }))).toThrow(/parallelizationFactor must be between 1 and 10 inclusive, got 0/);
   });
 
-  testDeprecated('fails if parallelizationFactor > 10', () => {
+  test('fails if parallelizationFactor > 10', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -640,7 +636,7 @@ describe('DynamoEventSource', () => {
       }))).toThrow(/parallelizationFactor must be between 1 and 10 inclusive, got 11/);
   });
 
-  testDeprecated('specific maxRecordAge', () => {
+  test('specific maxRecordAge', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -674,7 +670,7 @@ describe('DynamoEventSource', () => {
     });
   });
 
-  testDeprecated('fails if maxRecordAge < 60 seconds', () => {
+  test('fails if maxRecordAge < 60 seconds', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -696,7 +692,7 @@ describe('DynamoEventSource', () => {
 
   });
 
-  testDeprecated('fails if maxRecordAge > 7 days', () => {
+  test('fails if maxRecordAge > 7 days', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -716,7 +712,7 @@ describe('DynamoEventSource', () => {
       }))).toThrow(/maxRecordAge must be between 60 seconds and 7 days inclusive/);
   });
 
-  testDeprecated('specific destinationConfig', () => {
+  test('specific destinationConfig', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -761,7 +757,7 @@ describe('DynamoEventSource', () => {
     });
   });
 
-  testDeprecated('specific functionResponseTypes', () => {
+  test('specific functionResponseTypes', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -797,7 +793,7 @@ describe('DynamoEventSource', () => {
 
   });
 
-  testDeprecated('event source disabled', () => {
+  test('event source disabled', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');

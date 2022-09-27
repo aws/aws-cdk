@@ -1,7 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
+import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule } from '../lib';
 
 let stack: cdk.Stack;
 let fn: Function;
@@ -213,7 +212,7 @@ describe('event source mapping', () => {
     });
   });
 
-  testDeprecated('deprecated filters with one pattern', () => {
+  test('filters with one pattern', () => {
     const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
       type: 'String',
     });
@@ -226,39 +225,8 @@ describe('event source mapping', () => {
       kafkaTopic: topicNameParam.valueAsString,
       filters: [
         {
-          pattern: JSON.stringify({
-            numericEquals: FilterRule.isEqual(1),
-          }),
-        },
-      ],
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
-      FilterCriteria: {
-        Filters: [
-          {
-            Pattern: '{"numericEquals":[{"numeric":["=",1]}]}',
-          },
-        ],
-      },
-    });
-  });
-
-  test('filter with one pattern', () => {
-    const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
-      type: 'String',
-    });
-
-    let eventSourceArn = 'some-arn';
-
-    new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: eventSourceArn,
-      kafkaTopic: topicNameParam.valueAsString,
-      filterCriteria: [
-        FilterCriteria.filter({
           numericEquals: FilterRule.isEqual(1),
-        }),
+        },
       ],
     });
 
@@ -284,14 +252,14 @@ describe('event source mapping', () => {
       target: fn,
       eventSourceArn: eventSourceArn,
       kafkaTopic: topicNameParam.valueAsString,
-      filterCriteria: [
-        FilterCriteria.filter({
+      filters: [
+        {
           orFilter: FilterRule.or('one', 'two'),
           stringEquals: FilterRule.isEqual('test'),
-        }),
-        FilterCriteria.filter({
+        },
+        {
           numericEquals: FilterRule.isEqual(1),
-        }),
+        },
       ],
     });
 

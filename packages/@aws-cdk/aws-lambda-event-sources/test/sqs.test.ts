@@ -2,7 +2,6 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import * as sources from '../lib';
@@ -11,7 +10,7 @@ import { TestFunction } from './test-function';
 /* eslint-disable quote-props */
 
 describe('SQSEventSource', () => {
-  testDeprecated('defaults', () => {
+  test('defaults', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -60,7 +59,7 @@ describe('SQSEventSource', () => {
 
   });
 
-  testDeprecated('specific batch size', () => {
+  test('specific batch size', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -88,7 +87,7 @@ describe('SQSEventSource', () => {
 
   });
 
-  testDeprecated('unresolved batch size', () => {
+  test('unresolved batch size', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -140,7 +139,7 @@ describe('SQSEventSource', () => {
 
   });
 
-  testDeprecated('batch size is > 10 and batch window is defined', () => {
+  test('batch size is > 10 and batch window is defined', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -176,7 +175,7 @@ describe('SQSEventSource', () => {
 
   });
 
-  testDeprecated('specific batch window', () => {
+  test('specific batch window', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -225,7 +224,7 @@ describe('SQSEventSource', () => {
 
   });
 
-  testDeprecated('contains eventSourceMappingId after lambda binding', () => {
+  test('contains eventSourceMappingId after lambda binding', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -251,7 +250,7 @@ describe('SQSEventSource', () => {
 
   });
 
-  testDeprecated('event source disabled', () => {
+  test('event source disabled', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -270,7 +269,7 @@ describe('SQSEventSource', () => {
 
   });
 
-  testDeprecated('reportBatchItemFailures', () => {
+  test('reportBatchItemFailures', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -287,7 +286,7 @@ describe('SQSEventSource', () => {
     });
   });
 
-  testDeprecated('warning added if lambda function imported without role', () => {
+  test('warning added if lambda function imported without role', () => {
     const app = new App();
     const stack = new cdk.Stack(app);
     const fn = lambda.Function.fromFunctionName(stack, 'Handler', 'testFunction');
@@ -314,7 +313,7 @@ describe('SQSEventSource', () => {
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
   });
 
-  testDeprecated('policy added to imported function role', () => {
+  test('policy added to imported function role', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = lambda.Function.fromFunctionAttributes(stack, 'Handler', {
@@ -396,7 +395,7 @@ describe('SQSEventSource', () => {
     });
   });
 
-  testDeprecated('adding filter criteria', () => {
+  test('adding filter criteria', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -404,12 +403,12 @@ describe('SQSEventSource', () => {
 
     // WHEN
     fn.addEventSource(new sources.SqsEventSource(q, {
-      filterCriteria: [
-        lambda.FilterCriteria.filter({
+      filters: [
+        {
           body: {
             id: lambda.FilterRule.exists(),
           },
-        }),
+        },
       ],
     }));
 

@@ -2,14 +2,13 @@ import { Template, Match } from '@aws-cdk/assertions';
 import { SecurityGroup, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
 describe('KafkaEventSource', () => {
   describe('msk', () => {
-    testDeprecated('default', () => {
+    test('default', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -63,7 +62,7 @@ describe('KafkaEventSource', () => {
 
     });
 
-    testDeprecated('with secret', () => {
+    test('with secret', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -139,7 +138,7 @@ describe('KafkaEventSource', () => {
   });
 
   describe('self-managed kafka', () => {
-    testDeprecated('default', () => {
+    test('default', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -225,7 +224,7 @@ describe('KafkaEventSource', () => {
     });
 
     describe('vpc', () => {
-      testDeprecated('correctly rendered in the stack', () => {
+      test('correctly rendered in the stack', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const fn = new TestFunction(stack, 'Fn');
@@ -283,7 +282,7 @@ describe('KafkaEventSource', () => {
 
 
       });
-      testDeprecated('with secret', () => {
+      test('with secret', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const fn = new TestFunction(stack, 'Fn');
@@ -420,7 +419,7 @@ describe('KafkaEventSource', () => {
       });
     });
 
-    testDeprecated('using SCRAM-SHA-256', () => {
+    test('using SCRAM-SHA-256', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -455,7 +454,7 @@ describe('KafkaEventSource', () => {
       });
     });
 
-    testDeprecated('using BASIC_AUTH', () => {
+    test('using BASIC_AUTH', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -490,7 +489,7 @@ describe('KafkaEventSource', () => {
       });
     });
 
-    testDeprecated('using CLIENT_CERTIFICATE_TLS_AUTH', () => {
+    test('using CLIENT_CERTIFICATE_TLS_AUTH', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -525,7 +524,7 @@ describe('KafkaEventSource', () => {
       });
     });
 
-    testDeprecated('using CLIENT_CERTIFICATE_TLS_AUTH with rootCA', () => {
+    test('using CLIENT_CERTIFICATE_TLS_AUTH with rootCA', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -568,7 +567,7 @@ describe('KafkaEventSource', () => {
       });
     });
 
-    testDeprecated('with rootCA', () => {
+    test('with rootCA', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -602,7 +601,7 @@ describe('KafkaEventSource', () => {
       });
     });
 
-    testDeprecated('rootCACertificate can be ISecret', () => {
+    test('rootCACertificate can be ISecret', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -635,7 +634,7 @@ describe('KafkaEventSource', () => {
       });
     });
 
-    testDeprecated('consumerGroupId can be set for SelfManagedKafkaEventSource', () => {
+    test('consumerGroupId can be set for SelfManagedKafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -662,7 +661,7 @@ describe('KafkaEventSource', () => {
 
     });
 
-    testDeprecated('consumerGroupId can be set for ManagedKafkaEventSource', () => {
+    test('consumerGroupId can be set for ManagedKafkaEventSource', () => {
 
       // GIVEN
       const stack = new cdk.Stack();
@@ -691,7 +690,7 @@ describe('KafkaEventSource', () => {
 
     });
 
-    testDeprecated('ManagedKafkaEventSource name conforms to construct id rules', () => {
+    test('ManagedKafkaEventSource name conforms to construct id rules', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
