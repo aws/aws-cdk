@@ -86,6 +86,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -93,6 +94,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -104,6 +106,9 @@
     "announce": false
   },
   "cdk-build": {
+    "pre": [
+      "./download-fallback.sh"
+    ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
