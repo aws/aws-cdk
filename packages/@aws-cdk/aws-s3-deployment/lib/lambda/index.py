@@ -49,6 +49,7 @@ def handler(event, context):
             source_markers      = props.get('SourceMarkers', None)
             dest_bucket_name    = props['DestinationBucketName']
             dest_bucket_prefix  = props.get('DestinationBucketKeyPrefix', '')
+            extract             = props.get('Extract', 'true') == 'true'
             retain_on_delete    = props.get('RetainOnDelete', "true") == "true"
             distribution_id     = props.get('DistributionId', '')
             user_metadata       = props.get('UserMetadata', {})
@@ -113,14 +114,15 @@ def handler(event, context):
             aws_command("s3", "rm", old_s3_dest, "--recursive")
 
         if request_type == "Update" or request_type == "Create":
-            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers)
+            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract)
 
         if distribution_id:
             cloudfront_invalidate(distribution_id, distribution_paths)
 
         cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id, responseData={
             # Passing through the ARN sequences dependencees on the deployment
-            'DestinationBucketArn': props.get('DestinationBucketArn')
+            'DestinationBucketArn': props.get('DestinationBucketArn'),
+            'SourceObjectKeys': props.get('SourceObjectKeys'),
         })
     except KeyError as e:
         cfn_error("invalid request. Missing key %s" % str(e))
@@ -130,7 +132,7 @@ def handler(event, context):
 
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
-def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers):
+def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract):
     # list lengths are equal
     if len(s3_source_zips) != len(source_markers):
         raise Exception("'source_markers' and 's3_source_zips' must be the same length")
@@ -154,12 +156,16 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
             s3_source_zip = s3_source_zips[i]
             markers       = source_markers[i]
 
-            archive=os.path.join(workdir, str(uuid4()))
-            logger.info("archive: %s" % archive)
-            aws_command("s3", "cp", s3_source_zip, archive)
-            logger.info("| extracting archive to: %s\n" % contents_dir)
-            logger.info("| markers: %s" % markers)
-            extract_and_replace_markers(archive, contents_dir, markers)
+            if extract:
+                archive=os.path.join(workdir, str(uuid4()))
+                logger.info("archive: %s" % archive)
+                aws_command("s3", "cp", s3_source_zip, archive)
+                logger.info("| extracting archive to: %s\n" % contents_dir)
+                logger.info("| markers: %s" % markers)
+                extract_and_replace_markers(archive, contents_dir, markers)
+            else:
+                logger.info("| copying archive to: %s\n" % contents_dir)
+                aws_command("s3", "cp", s3_source_zip, contents_dir)
 
         # sync from "contents" to destination
 
@@ -285,7 +291,7 @@ def extract_and_replace_markers(archive, contents_dir, markers):
         for file in zip.namelist():
             file_path = os.path.join(contents_dir, file)
             if os.path.isdir(file_path): continue
-            replace_markers(file_path, markers)    
+            replace_markers(file_path, markers)
 
 def replace_markers(filename, markers):
     # convert the dict of string markers to binary markers
