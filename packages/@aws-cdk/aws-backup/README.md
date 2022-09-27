@@ -100,7 +100,7 @@ plan.addRule(new backup.BackupPlanRule({
 ```
 
 Rules can also specify to copy recovery points to another Backup Vault using `copyActions`. Copied recovery points can
-optionally have `moveToColdStorage` and `deleteAfter` configured.
+optionally have `moveToColdStorageAfter` and `deleteAfter` configured.
 
 ```ts
 declare const plan: backup.BackupPlan;
