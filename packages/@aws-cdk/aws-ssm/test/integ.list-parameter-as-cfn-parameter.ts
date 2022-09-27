@@ -22,9 +22,9 @@ const app = new cdk.App({
   treeMetadata: false,
 });
 /**
- * This test case is to verify the current behavior of the @aws-cdk/aws-ssm:importParameterAsDynamicReference Feature Flag
+ * This test case is to verify the previous behavior of the @aws-cdk/aws-ssm:importParameterAsDynamicReference Feature Flag
  */
-app.node.setContext('@aws-cdk/aws-ssm:importParameterAsDynamicReference', true);
+app.node.setContext('@aws-cdk/aws-ssm:importParameterAsDynamicReference', false);
 app.node.setContext('@aws-cdk/core:newStyleStackSynthesis', true);
 const base = new TestCaseBase(app, 'base');
 const testCase = new cdk.Stack(app, 'list-param');
