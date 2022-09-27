@@ -225,7 +225,6 @@ describe('cross environment', () => {
             },
           },
           'Region': 'bermuda-triangle-42',
-          'StackName': 'Stack1',
           'ServiceToken': {
             'Fn::GetAtt': [
               'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',

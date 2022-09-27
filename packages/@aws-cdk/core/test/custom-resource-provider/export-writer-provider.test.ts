@@ -23,7 +23,7 @@ describe('export writer provider', () => {
     const staging = stack.node.tryFindChild('Custom::CrossRegionExportWriterCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
     const assetHash = staging.assetHash;
 
-    expect(stack.resolve(exportValue)).toEqual('{{resolve:ssm:/cdk/exports/Stack1-MyResourceName}}');
+    expect(stack.resolve(exportValue)).toEqual('{{resolve:ssm:/cdk/exports/MyResourceName}}');
     expect(cfn).toEqual({
       Resources: {
         MyResource: {
@@ -50,7 +50,7 @@ describe('export writer provider', () => {
                   Statement: [
                     {
                       Action: [
-                        'ssm:GetParametersByPath',
+                        'ssm:GetParameters',
                         'ssm:PutParameter',
                         'ssm:DeleteParameters',
                       ],
@@ -96,7 +96,7 @@ describe('export writer provider', () => {
               ],
             },
             Exports: {
-              '/cdk/exports/Stack1-MyResourceName': {
+              '/cdk/exports/MyResourceName': {
                 'Fn::GetAtt': [
                   'MyResource',
                   'arn',

@@ -94,7 +94,6 @@ describe('nested-stack', () => {
               ],
             },
           },
-          StackName: 'Stack1',
           Region: 'bermuda-triangle-42',
           ServiceToken: {
             'Fn::GetAtt': [

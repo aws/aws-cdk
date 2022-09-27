@@ -502,7 +502,6 @@ describe('stack', () => {
                 ],
               },
             },
-            StackName: 'Stack1',
             Region: 'us-east-2',
             ServiceToken: {
               'Fn::GetAtt': [
@@ -610,7 +609,6 @@ describe('stack', () => {
               },
             },
             Region: 'us-east-2',
-            StackName: 'Stack3',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -645,7 +643,6 @@ describe('stack', () => {
               },
             },
             Region: 'us-east-2',
-            StackName: 'Stack1',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -725,7 +722,6 @@ describe('stack', () => {
               },
             },
             Region: 'us-east-2',
-            StackName: 'Stack3',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -760,7 +756,6 @@ describe('stack', () => {
               },
             },
             Region: 'us-east-2',
-            StackName: 'Stack1',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
