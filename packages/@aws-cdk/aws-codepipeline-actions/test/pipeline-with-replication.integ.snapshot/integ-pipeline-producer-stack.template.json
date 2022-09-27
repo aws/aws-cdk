@@ -198,10 +198,10 @@
     },
     "Region": "us-east-2",
     "Exports": {
-     "integ-pipeline-producer-stack-ReplicationBucketRefReplicationBucket70D6873707044AE1": {
+     "/cdk/exports/integ-pipeline-producer-stack-ReplicationBucketRefReplicationBucket70D6873707044AE1": {
       "Ref": "ReplicationBucket70D68737"
      },
-     "integ-pipeline-producer-stack-ReplicationKeyFnGetAttReplicationKeyFCE40BF4ArnFBFE312D": {
+     "/cdk/exports/integ-pipeline-producer-stack-ReplicationKeyFnGetAttReplicationKeyFCE40BF4ArnFBFE312D": {
       "Fn::GetAtt": [
        "ReplicationKeyFCE40BF4",
        "Arn"
@@ -253,7 +253,7 @@
           ]
          },
          "Action": [
-          "ssm:GetParametersByPath",
+          "ssm:GetParameters",
           "ssm:PutParameter",
           "ssm:DeleteParameters"
          ]
@@ -271,7 +271,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "81ce50203f1ecfd42920cc23099e4751011d8596f9eb0671f9b703f703b1c989.zip"
+     "S3Key": "45a896e4815eddbd9cf3bcc74e93517fbdcbd9275ee272d5d84a2b09f32aa6d4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

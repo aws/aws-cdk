@@ -39,13 +39,13 @@
     },
     "Region": "us-east-2",
     "Exports": {
-     "cross-region-producer-IntegQueueFnGetAttIntegQueue3A18718AQueueName6E52E429": {
+     "/cdk/exports/cross-region-producer-IntegQueueFnGetAttIntegQueue3A18718AQueueName6E52E429": {
       "Fn::GetAtt": [
        "IntegQueue3A18718A",
        "QueueName"
       ]
      },
-     "cross-region-producer-IntegNestedNestedStackIntegNestedNestedStackResourceFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC3296698": {
+     "/cdk/exports/cross-region-producer-IntegNestedNestedStackIntegNestedNestedStackResourceFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC3296698": {
       "Fn::GetAtt": [
        "IntegNestedNestedStackIntegNestedNestedStackResource168C5881",
        "Outputs.crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName"
@@ -97,7 +97,7 @@
           ]
          },
          "Action": [
-          "ssm:GetParametersByPath",
+          "ssm:GetParameters",
           "ssm:PutParameter",
           "ssm:DeleteParameters"
          ]
@@ -115,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "81ce50203f1ecfd42920cc23099e4751011d8596f9eb0671f9b703f703b1c989.zip"
+     "S3Key": "45a896e4815eddbd9cf3bcc74e93517fbdcbd9275ee272d5d84a2b09f32aa6d4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

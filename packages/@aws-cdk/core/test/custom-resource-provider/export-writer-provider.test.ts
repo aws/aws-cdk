@@ -96,7 +96,7 @@ describe('export writer provider', () => {
               ],
             },
             Exports: {
-              '/cdk/exports/Default-MyResourceName': {
+              '/cdk/exports/Stack1-MyResourceName': {
                 'Fn::GetAtt': [
                   'MyResource',
                   'arn',
