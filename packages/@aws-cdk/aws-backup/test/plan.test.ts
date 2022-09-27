@@ -298,7 +298,7 @@ test('create a plan and add rule to copy to a different vault', () => {
       new BackupPlanRule({
         copyActions: [{
           destinationBackupVault: secondaryVault,
-          deleteAfter: Duration.days(45),
+          deleteAfter: Duration.days(120),
           moveToColdStorageAfter: Duration.days(30),
         }],
       }),
@@ -326,7 +326,7 @@ test('create a plan and add rule to copy to a different vault', () => {
               ],
             },
             Lifecycle: {
-              DeleteAfterDays: 45,
+              DeleteAfterDays: 120,
               MoveToColdStorageAfterDays: 30,
             },
           }],
@@ -390,4 +390,14 @@ test('throws when deleteAfter is not greater than moveToColdStorageAfter in a co
       moveToColdStorageAfter: Duration.days(6),
     }],
   })).toThrow(/`deleteAfter` in copyActions must be greater than corresponding `moveToColdStorageAfter`/);
+});
+
+test('throws when deleteAfter is not greater than 90 days past moveToColdStorageAfter parameter in a copy action', () => {
+  expect(() => new BackupPlanRule({
+    copyActions: [{
+      destinationBackupVault: new BackupVault(stack, 'Vault'),
+      deleteAfter: Duration.days(45),
+      moveToColdStorageAfter: Duration.days(30),
+    }],
+  })).toThrow(/`deleteAfter` in copyActions must at least 90 days later than corresponding `moveToColdStorageAfter`/);
 });

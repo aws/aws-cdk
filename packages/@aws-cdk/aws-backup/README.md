@@ -109,7 +109,7 @@ plan.addRule(new backup.BackupPlanRule({
   copyActions: [{
     destinationBackupVault: secondaryVault,
     moveToColdStorageAfter: Duration.days(30),
-    deleteAfter: Duration.days(45),
+    deleteAfter: Duration.days(120),
   }]
 }));
 ```

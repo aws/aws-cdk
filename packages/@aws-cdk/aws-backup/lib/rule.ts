@@ -90,7 +90,7 @@ export interface BackupPlanCopyActionProps {
 
   /**
    * Specifies the duration after creation that a copied recovery point is deleted from the destination vault.
-   * Must be greater than `moveToColdStorageAfter`.
+   * Must be at least 90 days greater than `moveToColdStorageAfter`, if specified.
    *
    * @default - recovery point is never deleted
    */
@@ -221,6 +221,11 @@ export class BackupPlanRule {
         if (copyAction.deleteAfter && copyAction.moveToColdStorageAfter &&
           copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays()) {
           throw new Error('`deleteAfter` in copyActions must be greater than corresponding `moveToColdStorageAfter`');
+        }
+
+        if (copyAction.deleteAfter && copyAction.moveToColdStorageAfter &&
+          copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays() + 90) {
+          throw new Error('`deleteAfter` in copyActions must at least 90 days later than corresponding `moveToColdStorageAfter`');
         }
       });
     }
