@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "fbae493d10d1cf974dda665d5d00077b8ac81e2d8edeec024da94102b7db2cc8": {
+      "source": {
+        "path": "alarm-metrics.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fbae493d10d1cf974dda665d5d00077b8ac81e2d8edeec024da94102b7db2cc8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
