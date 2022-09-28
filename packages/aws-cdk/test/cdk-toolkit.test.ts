@@ -59,7 +59,7 @@ import { Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
+import { CdkToolkit, Tag, extractRetainedResources } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { flatten } from '../lib/util';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
@@ -570,6 +570,46 @@ describe('destroy', () => {
         fromDeploy: true,
       });
     }).resolves;
+  });
+
+  test('extract retained resources from template', async () => {
+    const template: any = {
+      Resources: {
+        table8235A42E: {
+          Type: 'AWS::DynamoDB::Table',
+          UpdateReplacePolicy: 'Retain',
+          DeletionPolicy: 'Retain',
+        },
+        bucket12312ASD: {
+          Type: 'AWS::S3::Bucket',
+          UpdateReplacePolicy: 'Retain',
+          DeletionPolicy: 'Destroy',
+        },
+        bucket1212DA: {
+          Type: 'AWS::S3::Bucket',
+          UpdateReplacePolicy: 'Retain',
+          DeletionPolicy: 'Retain',
+        },
+      },
+    };
+
+    expect(extractRetainedResources(template)).toEqual(
+      [[
+        'Resource ID',
+        'Type',
+        'Deletion Policy',
+      ],
+      [
+        'table8235A42E',
+        'AWS::DynamoDB::Table',
+        'Retain',
+      ],
+      [
+        'bucket1212DA',
+        'AWS::S3::Bucket',
+        'Retain',
+      ]],
+    );
   });
 });
 
