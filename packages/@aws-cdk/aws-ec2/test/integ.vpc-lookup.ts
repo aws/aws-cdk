@@ -28,7 +28,7 @@ const vpcFromVpcAttributes = ec2.Vpc.fromVpcAttributes(stackLookup, 'VpcFromVpcA
   vpcId: testVpc.vpcId,
 });
 
-const vpcFromLookup = ec2.Vpc.fromLookup(stack, 'VpcFromLookup', {
+const vpcFromLookup = ec2.Vpc.fromLookup(stackLookup, 'VpcFromLookup', {
   region: 'eu-west-1',
   vpcName: 'my-vpc-name',
 });

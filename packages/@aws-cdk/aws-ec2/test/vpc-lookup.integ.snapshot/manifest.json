@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::123456:role/cdk-hnb659fds-deploy-role-123456-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456:role/cdk-hnb659fds-cfn-exec-role-123456-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456-us-east-2/cfac1423efb7c99cadc3f40367c753fe5b1527d9a6950c096ba326fabac4c89f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456-us-east-2/b9f39e4781f5182e769e7d7ced09d5d29a55a7f91e851e21ba9190d101d1b730.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -113,5 +113,20 @@
       },
       "displayName": "ArchiveTest/DefaultTest/DeployAssert"
     }
-  }
+  },
+  "missing": [
+    {
+      "key": "vpc-provider:account=123456:filter.tag:Name=my-vpc-name:region=eu-west-1:returnAsymmetricSubnets=true",
+      "provider": "vpc-provider",
+      "props": {
+        "account": "123456",
+        "region": "eu-west-1",
+        "filter": {
+          "tag:Name": "my-vpc-name"
+        },
+        "returnAsymmetricSubnets": true,
+        "lookupRoleArn": "arn:${AWS::Partition}:iam::123456:role/cdk-hnb659fds-lookup-role-123456-us-east-2"
+      }
+    }
+  ]
 }

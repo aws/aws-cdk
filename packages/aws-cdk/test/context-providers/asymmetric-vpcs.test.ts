@@ -85,6 +85,7 @@ test('looks up the requested (symmetric) VPC', async () => {
     publicSubnetIds: undefined,
     publicSubnetNames: undefined,
     publicSubnetRouteTableIds: undefined,
+    region: 'us-east-1',
     subnetGroups: [
       {
         name: 'Public',
@@ -212,6 +213,7 @@ test('uses the VPC main route table when a subnet has no specific association', 
     publicSubnetIds: undefined,
     publicSubnetNames: undefined,
     publicSubnetRouteTableIds: undefined,
+    region: 'us-east-1',
     subnetGroups: [
       {
         name: 'Public',
@@ -298,6 +300,7 @@ test('Recognize public subnet by route table', async () => {
     publicSubnetIds: undefined,
     publicSubnetNames: undefined,
     publicSubnetRouteTableIds: undefined,
+    region: 'us-east-1',
     subnetGroups: [
       {
         name: 'Public',
@@ -360,6 +363,7 @@ test('Recognize isolated subnet by route table', async () => {
     publicSubnetIds: undefined,
     publicSubnetNames: undefined,
     publicSubnetRouteTableIds: undefined,
+    region: 'us-east-1',
     subnetGroups: [
       {
         name: 'Isolated',
@@ -434,6 +438,7 @@ test('Recognize private subnet by route table', async () => {
     publicSubnetIds: undefined,
     publicSubnetNames: undefined,
     publicSubnetRouteTableIds: undefined,
+    region: 'us-east-1',
     subnetGroups: [
       {
         name: 'Private',
@@ -511,6 +516,7 @@ test('works for asymmetric subnets (not spanning the same Availability Zones)', 
     publicSubnetIds: undefined,
     publicSubnetNames: undefined,
     publicSubnetRouteTableIds: undefined,
+    region: 'us-east-1',
     subnetGroups: [
       {
         name: 'Private',
@@ -639,6 +645,7 @@ test('allows specifying the subnet group name tag', async () => {
     publicSubnetIds: undefined,
     publicSubnetNames: undefined,
     publicSubnetRouteTableIds: undefined,
+    region: 'us-east-1',
     subnetGroups: [
       {
         name: 'restricted',

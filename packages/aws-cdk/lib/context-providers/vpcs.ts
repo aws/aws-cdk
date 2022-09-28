@@ -99,6 +99,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
         name,
         subnetId: subnet.SubnetId!,
         routeTableId,
+        region: args.region,
       };
     });
 
@@ -148,6 +149,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       publicSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.subnets.map(s => s.routeTableId))),
       vpnGatewayId,
       subnetGroups: assymetricSubnetGroups,
+      region: args.region,
     };
   }
 }

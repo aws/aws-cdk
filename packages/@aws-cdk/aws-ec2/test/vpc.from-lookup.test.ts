@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
+import { App, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { GenericLinuxImage, Instance, InstanceType, SubnetType, Vpc } from '../lib';
@@ -278,7 +278,12 @@ describe('vpc from lookup', () => {
         expect(options.region).toEqual('region-1234');
       });
 
-      const stack = new Stack();
+      const stack = new Stack(new App(), 'Stack', {
+        env: {
+          account: '1234',
+          region: 'us-east-1',
+        },
+      });
       const vpc = Vpc.fromLookup(stack, 'Vpc', {
         vpcId: 'vpc-1234',
         region: 'region-1234',

@@ -88,6 +88,7 @@ test('looks up the requested VPC', async () => {
     publicSubnetNames: ['Public'],
     publicSubnetRouteTableIds: ['rtb-123456'],
     vpnGatewayId: 'gw-abcdef',
+    region: 'us-east-1',
     subnetGroups: undefined,
   });
 });
@@ -244,6 +245,7 @@ test('does not throw when subnet with subnetGroupNameTag is found', async () => 
     publicSubnetNames: ['SubnetName1'],
     publicSubnetRouteTableIds: ['rtb-123456'],
     vpnGatewayId: 'gw-abcdef',
+    region: 'us-east-1',
     subnetGroups: undefined,
   });
 });
@@ -339,6 +341,7 @@ test('uses the VPC main route table when a subnet has no specific association', 
     publicSubnetNames: ['Public'],
     publicSubnetRouteTableIds: ['rtb-123456'],
     vpnGatewayId: 'gw-abcdef',
+    region: 'us-east-1',
     subnetGroups: undefined,
   });
 });
@@ -402,6 +405,7 @@ test('Recognize public subnet by route table', async () => {
     publicSubnetNames: ['Public'],
     publicSubnetRouteTableIds: ['rtb-123456'],
     vpnGatewayId: undefined,
+    region: 'us-east-1',
     subnetGroups: undefined,
   });
 });
@@ -465,6 +469,7 @@ test('Recognize private subnet by route table', async () => {
     publicSubnetNames: undefined,
     publicSubnetRouteTableIds: undefined,
     vpnGatewayId: undefined,
+    region: 'us-east-1',
     subnetGroups: undefined,
   });
 });
@@ -516,6 +521,7 @@ test('Recognize isolated subnet by route table', async () => {
     publicSubnetNames: undefined,
     publicSubnetRouteTableIds: undefined,
     vpnGatewayId: undefined,
+    region: 'us-east-1',
     subnetGroups: undefined,
   });
 });
