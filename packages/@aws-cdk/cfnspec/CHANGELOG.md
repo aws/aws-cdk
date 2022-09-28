@@ -1,3 +1,233 @@
+# CloudFormation Resource Specification v90.0.0
+
+## New Resource Types
+
+* AWS::ConnectCampaigns::Campaign
+* AWS::IoTFleetWise::Campaign
+* AWS::IoTFleetWise::DecoderManifest
+* AWS::IoTFleetWise::Fleet
+* AWS::IoTFleetWise::ModelManifest
+* AWS::IoTFleetWise::SignalCatalog
+* AWS::IoTFleetWise::Vehicle
+* AWS::RolesAnywhere::CRL
+* AWS::RolesAnywhere::Profile
+* AWS::RolesAnywhere::TrustAnchor
+* AWS::SageMaker::ModelPackage
+
+## Attribute Changes
+
+* AWS::ElastiCache::SubnetGroup Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-subnetgroup.html
+
+## Property Changes
+
+* AWS::DynamoDB::Table ImportSourceSpecification (__added__)
+* AWS::DynamoDB::Table AttributeDefinitions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-attributedef
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-attributedefinitions
+* AWS::DynamoDB::Table AttributeDefinitions.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::DynamoDB::Table AttributeDefinitions.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::DynamoDB::Table ContributorInsightsSpecification.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-contributorinsightsspecification-enabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-contributorinsightsspecification
+* AWS::DynamoDB::Table GlobalSecondaryIndexes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-gsi
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-globalsecondaryindexes
+* AWS::DynamoDB::Table LocalSecondaryIndexes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-lsi
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-localsecondaryindexes
+* AWS::DynamoDB::Table LocalSecondaryIndexes.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ElastiCache::SubnetGroup CacheSubnetGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-cachesubnetgroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-cachesubnetgroupname
+* AWS::ElastiCache::SubnetGroup Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-description
+* AWS::ElastiCache::SubnetGroup SubnetIds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-subnetids
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-subnetids
+* AWS::ElastiCache::SubnetGroup Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-tags
+* AWS::SageMaker::DataQualityJobDefinition EndpointName (__added__)
+* AWS::SageMaker::Device DeviceFleetName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::ModelBiasJobDefinition EndpointName (__added__)
+* AWS::SageMaker::ModelExplainabilityJobDefinition EndpointName (__added__)
+* AWS::SageMaker::ModelQualityJobDefinition EndpointName (__added__)
+* AWS::SageMaker::NotebookInstance InstanceMetadataServiceConfiguration (__added__)
+* AWS::SageMaker::Workteam WorkforceName (__added__)
+
+## Property Type Changes
+
+* AWS::DLM::LifecyclePolicy.ArchiveRetainRule (__added__)
+* AWS::DLM::LifecyclePolicy.ArchiveRule (__added__)
+* AWS::DLM::LifecyclePolicy.RetentionArchiveTier (__added__)
+* AWS::DynamoDB::Table.Csv (__added__)
+* AWS::DynamoDB::Table.ImportSourceSpecification (__added__)
+* AWS::DynamoDB::Table.InputFormatOptions (__added__)
+* AWS::DynamoDB::Table.S3BucketSource (__added__)
+* AWS::M2::Environment.EfsStorageConfiguration (__added__)
+* AWS::M2::Environment.FsxStorageConfiguration (__added__)
+* AWS::Macie::AllowList.S3WordsList (__added__)
+* AWS::Redshift::ScheduledAction.PauseClusterMessage (__added__)
+* AWS::Redshift::ScheduledAction.ResizeClusterMessage (__added__)
+* AWS::Redshift::ScheduledAction.ResumeClusterMessage (__added__)
+* AWS::S3::StorageLens.SSEKMS (__added__)
+* AWS::SageMaker::Domain.RSessionAppSettings (__added__)
+* AWS::SageMaker::EndpointConfig.ClarifyExplainerConfig (__added__)
+* AWS::SageMaker::EndpointConfig.ClarifyFeatureType (__added__)
+* AWS::SageMaker::EndpointConfig.ClarifyHeader (__added__)
+* AWS::SageMaker::EndpointConfig.ClarifyInferenceConfig (__added__)
+* AWS::SageMaker::EndpointConfig.ClarifyShapBaselineConfig (__added__)
+* AWS::SageMaker::EndpointConfig.ClarifyShapConfig (__added__)
+* AWS::SageMaker::EndpointConfig.ClarifyTextConfig (__added__)
+* AWS::SageMaker::NotebookInstance.InstanceMetadataServiceConfiguration (__added__)
+* AWS::SageMaker::Workteam.OidcMemberDefinition (__added__)
+* AWS::CodeDeploy::DeploymentConfig.MinimumHealthyHosts Type.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodeDeploy::DeploymentConfig.MinimumHealthyHosts Value.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedCanary CanaryInterval.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-timebasedcanary.html#cfn-properties-codedeploy-deploymentconfig-trafficroutingconfig-timebasedcanary-canaryinterval
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-timebasedcanary.html#cfn-codedeploy-deploymentconfig-timebasedcanary-canaryinterval
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedCanary CanaryInterval.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedCanary CanaryPercentage.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-timebasedcanary.html#cfn-properties-codedeploy-deploymentconfig-trafficroutingconfig-timebasedcanary-canarypercentage
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-timebasedcanary.html#cfn-codedeploy-deploymentconfig-timebasedcanary-canarypercentage
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedCanary CanaryPercentage.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedLinear LinearInterval.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-timebasedlinear.html#cfn-properties-codedeploy-deploymentconfig-trafficroutingconfig-timebasedlinear-linearinterval
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-timebasedlinear.html#cfn-codedeploy-deploymentconfig-timebasedlinear-linearinterval
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedLinear LinearInterval.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedLinear LinearPercentage.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-timebasedlinear.html#cfn-properties-codedeploy-deploymentconfig-trafficroutingconfig-timebasedlinear-linearpercentage
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-timebasedlinear.html#cfn-codedeploy-deploymentconfig-timebasedlinear-linearpercentage
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedLinear LinearPercentage.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodeDeploy::DeploymentConfig.TrafficRoutingConfig TimeBasedCanary.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-trafficroutingconfig.html#cfn-properties-codedeploy-deploymentconfig-trafficroutingconfig-timebasedcanary
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-trafficroutingconfig.html#cfn-codedeploy-deploymentconfig-trafficroutingconfig-timebasedcanary
+* AWS::CodeDeploy::DeploymentConfig.TrafficRoutingConfig TimeBasedCanary.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodeDeploy::DeploymentConfig.TrafficRoutingConfig TimeBasedLinear.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-trafficroutingconfig.html#cfn-properties-codedeploy-deploymentconfig-trafficroutingconfig-timebasedlinear
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-trafficroutingconfig.html#cfn-codedeploy-deploymentconfig-trafficroutingconfig-timebasedlinear
+* AWS::CodeDeploy::DeploymentConfig.TrafficRoutingConfig TimeBasedLinear.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodeDeploy::DeploymentConfig.TrafficRoutingConfig Type.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-trafficroutingconfig.html#cfn-properties-codedeploy-deploymentconfig-trafficroutingconfig-type
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentconfig-trafficroutingconfig.html#cfn-codedeploy-deploymentconfig-trafficroutingconfig-type
+* AWS::CodeDeploy::DeploymentConfig.TrafficRoutingConfig Type.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::DLM::LifecyclePolicy.Schedule ArchiveRule (__added__)
+* AWS::DynamoDB::Table.AttributeDefinition AttributeName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-attributedef.html#cfn-dynamodb-attributedef-attributename
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-attributedefinition.html#cfn-dynamodb-table-attributedefinition-attributename
+* AWS::DynamoDB::Table.AttributeDefinition AttributeType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-attributedef.html#cfn-dynamodb-attributedef-attributename-attributetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-attributedefinition.html#cfn-dynamodb-table-attributedefinition-attributetype
+* AWS::DynamoDB::Table.ContributorInsightsSpecification Enabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-contributorinsightsspecification.html#cfn-dynamodb-contributorinsightsspecification-enabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-contributorinsightsspecification.html#cfn-dynamodb-table-contributorinsightsspecification-enabled
+* AWS::DynamoDB::Table.GlobalSecondaryIndex ContributorInsightsSpecification.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-contributorinsightsspecification-enabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-globalsecondaryindex.html#cfn-dynamodb-table-globalsecondaryindex-contributorinsightsspecification
+* AWS::DynamoDB::Table.GlobalSecondaryIndex IndexName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-indexname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-globalsecondaryindex.html#cfn-dynamodb-table-globalsecondaryindex-indexname
+* AWS::DynamoDB::Table.GlobalSecondaryIndex KeySchema.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-keyschema
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-globalsecondaryindex.html#cfn-dynamodb-table-globalsecondaryindex-keyschema
+* AWS::DynamoDB::Table.GlobalSecondaryIndex Projection.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-projection
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-globalsecondaryindex.html#cfn-dynamodb-table-globalsecondaryindex-projection
+* AWS::DynamoDB::Table.GlobalSecondaryIndex ProvisionedThroughput.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-provisionedthroughput
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-globalsecondaryindex.html#cfn-dynamodb-table-globalsecondaryindex-provisionedthroughput
+* AWS::DynamoDB::Table.KeySchema AttributeName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-keyschema.html#aws-properties-dynamodb-keyschema-attributename
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-keyschema.html#cfn-dynamodb-table-keyschema-attributename
+* AWS::DynamoDB::Table.KeySchema KeyType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-keyschema.html#aws-properties-dynamodb-keyschema-keytype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-keyschema.html#cfn-dynamodb-table-keyschema-keytype
+* AWS::DynamoDB::Table.KinesisStreamSpecification StreamArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-kinesisstreamspecification.html#cfn-dynamodb-kinesisstreamspecification-streamarn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-kinesisstreamspecification.html#cfn-dynamodb-table-kinesisstreamspecification-streamarn
+* AWS::DynamoDB::Table.LocalSecondaryIndex IndexName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-lsi.html#cfn-dynamodb-lsi-indexname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-localsecondaryindex.html#cfn-dynamodb-table-localsecondaryindex-indexname
+* AWS::DynamoDB::Table.LocalSecondaryIndex KeySchema.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-lsi.html#cfn-dynamodb-lsi-keyschema
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-localsecondaryindex.html#cfn-dynamodb-table-localsecondaryindex-keyschema
+* AWS::DynamoDB::Table.LocalSecondaryIndex Projection.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-lsi.html#cfn-dynamodb-lsi-projection
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-localsecondaryindex.html#cfn-dynamodb-table-localsecondaryindex-projection
+* AWS::DynamoDB::Table.Projection NonKeyAttributes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html#cfn-dynamodb-projectionobj-nonkeyatt
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-projection.html#cfn-dynamodb-table-projection-nonkeyattributes
+* AWS::DynamoDB::Table.Projection ProjectionType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html#cfn-dynamodb-projectionobj-projtype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-projection.html#cfn-dynamodb-table-projection-projectiontype
+* AWS::DynamoDB::Table.ProvisionedThroughput ReadCapacityUnits.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html#cfn-dynamodb-provisionedthroughput-readcapacityunits
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-provisionedthroughput.html#cfn-dynamodb-table-provisionedthroughput-readcapacityunits
+* AWS::DynamoDB::Table.ProvisionedThroughput ReadCapacityUnits.PrimitiveType (__changed__)
+  * Old: Long
+  * New: Integer
+* AWS::DynamoDB::Table.ProvisionedThroughput WriteCapacityUnits.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html#cfn-dynamodb-provisionedthroughput-writecapacityunits
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-provisionedthroughput.html#cfn-dynamodb-table-provisionedthroughput-writecapacityunits
+* AWS::DynamoDB::Table.ProvisionedThroughput WriteCapacityUnits.PrimitiveType (__changed__)
+  * Old: Long
+  * New: Integer
+* AWS::DynamoDB::Table.StreamSpecification StreamViewType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-streamspecification.html#cfn-dynamodb-streamspecification-streamviewtype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-streamspecification.html#cfn-dynamodb-table-streamspecification-streamviewtype
+* AWS::DynamoDB::Table.TimeToLiveSpecification AttributeName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-timetolivespecification.html#cfn-dynamodb-timetolivespecification-attributename
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-timetolivespecification.html#cfn-dynamodb-table-timetolivespecification-attributename
+* AWS::DynamoDB::Table.TimeToLiveSpecification Enabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-timetolivespecification.html#cfn-dynamodb-timetolivespecification-enabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-timetolivespecification.html#cfn-dynamodb-table-timetolivespecification-enabled
+* AWS::SageMaker::Device.Device DeviceName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SageMaker::Domain.ResourceSpec LifecycleConfigArn (__added__)
+* AWS::SageMaker::Domain.UserSettings RSessionAppSettings (__added__)
+* AWS::SageMaker::EndpointConfig.ProductionVariant ContainerStartupHealthCheckTimeoutInSeconds (__added__)
+* AWS::SageMaker::EndpointConfig.ProductionVariant ModelDataDownloadTimeoutInSeconds (__added__)
+* AWS::SageMaker::EndpointConfig.ProductionVariant VolumeSizeInGB (__added__)
+* AWS::SageMaker::Workteam.MemberDefinition OidcMemberDefinition (__added__)
+* AWS::SageMaker::Workteam.MemberDefinition CognitoMemberDefinition.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Unapplied changes
+
+* AWS::IdentityStore is at 0.0.0
+* AWS::Rekognition is at 68.0.0
+
 # CloudFormation Resource Specification v89.0.0
 
 ## New Resource Types
