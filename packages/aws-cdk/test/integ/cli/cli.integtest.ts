@@ -75,6 +75,43 @@ integTest('Two ways of showing the version', withDefaultFixture(async (fixture) 
   expect(version1).toEqual(version2);
 }));
 
+integTest('Report undeleted resources during cdk destroy', withDefaultFixture(async (fixture) => {
+  const stackName = 'deletion-report';
+  await fixture.cdkDeploy(stackName);
+
+  // Roughly check for a table like this:
+  //  The following resources will not be deleted in stack
+  //   dynamoDBStack
+  //  ┌────────────────────────────┬──────────────────────┬─────────────────┐
+  //  │ Resource Logical ID        │ Type                 │ Deletion Policy │
+  //  ├────────────────────────────┼──────────────────────┼─────────────────┤
+  //  │ deletionReportTable123423  │ AWS::DynamoDB::Tabl  │ Retain          │
+  //  └────────────────────────────┴──────────────────────┴─────────────────┘
+  // Destroy stack and check for details in deletion report
+  const deletionOutput = await fixture.cdkDestroy(stackName, { force: false });
+  expect(deletionOutput).toContain('The following resources will not be deleted in stack');
+  expect(deletionOutput).toContain('AWS::DynamoDB::Table');
+  expect(deletionOutput).toContain('deletionReportTable');
+  expect(deletionOutput).toContain('Deletion Policy');
+  expect(deletionOutput).toContain('Retain');
+
+  // POST-TEST CLEANUP OF TABLE
+
+  // We fetch the logical Id of the table by matching with the table ID
+  const tableLogicalId = deletionOutput.match(/\b\w*deletionReportTable\w*\b/g);
+
+  const allDynamoTables = await fixture.aws.DynamoDB('listTables', {});
+  const regexMatchesLogicalId = new RegExp('/\b\w*' + tableLogicalId + '\w*\b/g');
+
+  await Promise.all(
+    allDynamoTables.TableNames!.map( async tableName => {
+      if ( regexMatchesLogicalId.test(tableName) ) {
+        await fixture.aws.DynamoDB('deleteTable', { TableName: tableName });
+      }
+    }),
+  );
+}));
+
 integTest('Termination protection', withDefaultFixture(async (fixture) => {
   const stackName = 'termination-protection';
   await fixture.cdkDeploy(stackName);
@@ -679,6 +716,7 @@ integTest('cdk ls', withDefaultFixture(async (fixture) => {
     'with-nested-stack',
     'with-nested-stack-using-parameters',
     'order-consuming',
+    'removal-policy',
   ];
 
   for (const stack of expectedStacks) {
