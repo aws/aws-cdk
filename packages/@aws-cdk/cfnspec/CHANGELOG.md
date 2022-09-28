@@ -5,6 +5,32 @@
 
 ## Attribute Changes
 
+* AWS::Redshift::ClusterSubnetGroup ClusterSubnetGroupName (__added__)
+
+## Property Changes
+
+* AWS::Glue::Job ExecutionClass (__added__)
+* AWS::Glue::Job NonOverridableArguments (__added__)
+* AWS::Glue::Trigger EventBatchingCondition (__added__)
+* AWS::Glue::Trigger Type.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Glue::Workflow MaxConcurrentRuns (__added__)
+* AWS::Redshift::ClusterSubnetGroup SubnetIds.DuplicatesAllowed (__deleted__)
+* AWS::Redshift::ClusterSubnetGroup Tags.DuplicatesAllowed (__deleted__)
+
+## Property Type Changes
+
+* AWS::Glue::Trigger.EventBatchingCondition (__added__)
+
+
+# CloudFormation Resource Specification v89.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
 * AWS::EC2::VPNConnection Documentation (__changed__)
   * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection.html
   * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnection.html
