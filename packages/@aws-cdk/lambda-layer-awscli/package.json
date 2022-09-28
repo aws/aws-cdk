@@ -107,7 +107,7 @@
   },
   "cdk-build": {
     "pre": [
-      "./download-fallback.sh"
+      "layer/build.sh"
     ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
