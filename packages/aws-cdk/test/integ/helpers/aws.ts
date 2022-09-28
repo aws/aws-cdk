@@ -19,6 +19,7 @@ export class AwsClients {
   public readonly iam: AwsCaller<AWS.IAM>;
   public readonly lambda: AwsCaller<AWS.Lambda>;
   public readonly sts: AwsCaller<AWS.STS>;
+  public readonly DynamoDB: AwsCaller<AWS.DynamoDB>;
 
   constructor(public readonly region: string, private readonly output: NodeJS.WritableStream) {
     this.config = {
@@ -35,6 +36,7 @@ export class AwsClients {
     this.iam = makeAwsCaller(AWS.IAM, this.config);
     this.lambda = makeAwsCaller(AWS.Lambda, this.config);
     this.sts = makeAwsCaller(AWS.STS, this.config);
+    this.DynamoDB = makeAwsCaller(AWS.DynamoDB, this.config);
   }
 
   public async account(): Promise<string> {
