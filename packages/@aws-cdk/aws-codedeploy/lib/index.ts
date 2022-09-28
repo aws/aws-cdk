@@ -1,3 +1,4 @@
+export * from './base-deployment-config';
 export * from './rollback-config';
 export * from './traffic-routing-config';
 export * from './ecs';

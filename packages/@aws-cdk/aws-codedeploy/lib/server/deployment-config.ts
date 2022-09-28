@@ -1,7 +1,6 @@
-import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { BaseDeploymentConfig, BaseDeploymentConfigOptions, IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentConfig } from '../codedeploy.generated';
-import { arnForDeploymentConfig, validateName } from '../utils';
 
 /**
  * The Deployment Configuration of an EC2/on-premise Deployment Group.
@@ -10,16 +9,7 @@ import { arnForDeploymentConfig, validateName } from '../utils';
  * To create a custom Deployment Configuration,
  * instantiate the {@link ServerDeploymentConfig} Construct.
  */
-export interface IServerDeploymentConfig {
-  /**
-   * @attribute
-   */
-  readonly deploymentConfigName: string;
-
-  /**
-   * @attribute
-   */
-  readonly deploymentConfigArn: string;
+export interface IServerDeploymentConfig extends IBaseDeploymentConfig {
 }
 
 /**
@@ -60,14 +50,7 @@ export class MinimumHealthyHosts {
 /**
  * Construction properties of {@link ServerDeploymentConfig}.
  */
-export interface ServerDeploymentConfigProps {
-  /**
-   * The physical, human-readable name of the Deployment Configuration.
-   *
-   * @default a name will be auto-generated
-   */
-  readonly deploymentConfigName?: string;
-
+export interface ServerDeploymentConfigProps extends BaseDeploymentConfigOptions {
   /**
    * Minimum number of healthy hosts.
    */
@@ -79,10 +62,25 @@ export interface ServerDeploymentConfigProps {
  *
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
-export class ServerDeploymentConfig extends cdk.Resource implements IServerDeploymentConfig {
-  public static readonly ONE_AT_A_TIME = deploymentConfig('CodeDeployDefault.OneAtATime');
-  public static readonly HALF_AT_A_TIME = deploymentConfig('CodeDeployDefault.HalfAtATime');
-  public static readonly ALL_AT_ONCE = deploymentConfig('CodeDeployDefault.AllAtOnce');
+export class ServerDeploymentConfig extends BaseDeploymentConfig implements IServerDeploymentConfig {
+  /**
+   * The CodeDeployDefault.OneAtATime predefined deployment configuration for EC2/on-premises compute platform
+   *
+   * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html#deployment-configuration-server
+   */
+  public static readonly ONE_AT_A_TIME = ServerDeploymentConfig.deploymentConfig('CodeDeployDefault.OneAtATime');
+  /**
+   * The CodeDeployDefault.HalfAtATime predefined deployment configuration for EC2/on-premises compute platform
+   *
+   * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html#deployment-configuration-server
+   */
+  public static readonly HALF_AT_A_TIME = ServerDeploymentConfig.deploymentConfig('CodeDeployDefault.HalfAtATime');
+  /**
+   * The CodeDeployDefault.AllAtOnce predefined deployment configuration for EC2/on-premises compute platform
+   *
+   * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html#deployment-configuration-server
+   */
+  public static readonly ALL_AT_ONCE = ServerDeploymentConfig.deploymentConfig('CodeDeployDefault.AllAtOnce');
 
   /**
    * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK app,
@@ -97,37 +95,16 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
     scope: Construct,
     id: string,
     serverDeploymentConfigName: string): IServerDeploymentConfig {
-
-    ignore(scope);
-    ignore(id);
-    return deploymentConfig(serverDeploymentConfigName);
+    return this.fromDeploymentConfigName(scope, id, serverDeploymentConfigName);
   }
-
-  public readonly deploymentConfigName: string;
-  public readonly deploymentConfigArn: string;
 
   constructor(scope: Construct, id: string, props: ServerDeploymentConfigProps) {
-    super(scope, id, {
-      physicalName: props.deploymentConfigName,
-    });
-
-    const resource = new CfnDeploymentConfig(this, 'Resource', {
-      deploymentConfigName: this.physicalName,
-      minimumHealthyHosts: props.minimumHealthyHosts._json,
-    });
-
-    this.deploymentConfigName = resource.ref;
-    this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);
-
-    this.node.addValidation({ validate: () => validateName('Deployment config', this.physicalName) });
+    super(
+      scope,
+      id,
+      props,
+      {
+        minimumHealthyHosts: props.minimumHealthyHosts._json,
+      });
   }
 }
-
-function deploymentConfig(name: string): IServerDeploymentConfig {
-  return {
-    deploymentConfigName: name,
-    deploymentConfigArn: arnForDeploymentConfig(name),
-  };
-}
-
-function ignore(_x: any) { return; }
