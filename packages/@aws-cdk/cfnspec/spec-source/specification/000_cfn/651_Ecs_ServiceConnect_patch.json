@@ -1,0 +1,41 @@
+{
+    "PropertyTypes": {
+        "patch": {
+            "description": "Add AWS::ECS::Cluster.ServiceConnectDefaults",
+            "operations": [
+                {
+                    "op": "add",
+                    "path": "/AWS::ECS::Cluster.ServiceConnectDefaults",
+                    "value": {
+                        "Documentation": "",
+                        "Properties": {
+                            "Namespace": {
+                                "Documentation": "",
+                                "PrimitiveType": "String",
+                                "Required": true,
+                                "UpdateType": "Mutable"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "AWS::ECS::Cluster": {
+            "patch": {
+                "description": "Add ServiceConnectDefaults to cluster.",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/Properties/ServiceConnectDefaults",
+                        "value": {
+                            "Documentation": "",
+                            "Type": "ServiceConnectDefaults",
+                            "Required": false,
+                            "UpdateType": "Immutable"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
