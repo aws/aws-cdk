@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.44.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.43.1-alpha.0...v2.44.0-alpha.0) (2022-09-28)
+
+
+### Features
+
+* **integ-tests:** chain assertion api calls ([#22196](https://github.com/aws/aws-cdk/issues/22196)) ([530e07b](https://github.com/aws/aws-cdk/commit/530e07bdc87ab94bbd5ed28debac98400a8152cc))
+* **neptune:** introduce metric method to cluster and instance ([#21995](https://github.com/aws/aws-cdk/issues/21995)) ([02ed837](https://github.com/aws/aws-cdk/commit/02ed8371276d504ba9fe09687d45409ad7cca288)), closes [#20248](https://github.com/aws/aws-cdk/issues/20248)
+
 ## [2.43.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.43.0-alpha.0...v2.43.1-alpha.0) (2022-09-23)
 
 ## [2.43.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.42.1-alpha.0...v2.43.0-alpha.0) (2022-09-21)

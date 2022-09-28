@@ -288,7 +288,7 @@ describe('options for other engines', () => {
     // THEN
     expect(() => new PipelineGraph(blueprint, {
       prepareStep: false,
-    })).toThrow('Your pipeline engine does not support changeSet steps');
+    })).toThrow(/Cannot use 'changeSet' steps/);
   });
 });
 

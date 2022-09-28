@@ -3,7 +3,8 @@
 
 name: PR Linter
 on:
-  pull_request:
+  # Necessary to have sufficient permissions to write to the PR
+  pull_request_target:
     types:
       - labeled
       - unlabeled
@@ -29,5 +30,5 @@ jobs:
       - name: Validate
         uses: ./tools/@aws-cdk/prlint
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           REPO_ROOT: ${{ github.workspace }}

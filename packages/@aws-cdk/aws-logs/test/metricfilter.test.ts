@@ -30,6 +30,62 @@ describe('metric filter', () => {
     });
   });
 
+  test('with dimensions', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    new MetricFilter(stack, 'Subscription', {
+      logGroup,
+      metricNamespace: 'AWS/Test',
+      metricName: 'Latency',
+      metricValue: '$.latency',
+      filterPattern: FilterPattern.exists('$.latency'),
+      dimensions: {
+        Foo: 'Bar',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
+      MetricTransformations: [{
+        MetricNamespace: 'AWS/Test',
+        MetricName: 'Latency',
+        MetricValue: '$.latency',
+        Dimensions: [
+          {
+            Key: 'Foo',
+            Value: 'Bar',
+          },
+        ],
+      }],
+      FilterPattern: '{ $.latency = "*" }',
+      LogGroupName: { Ref: 'LogGroupF5B46931' },
+    });
+  });
+
+  test('should throw with more than 3 dimensions', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    expect(() => new MetricFilter(stack, 'Subscription', {
+      logGroup,
+      metricNamespace: 'AWS/Test',
+      metricName: 'Latency',
+      metricValue: '$.latency',
+      filterPattern: FilterPattern.exists('$.latency'),
+      dimensions: {
+        Foo: 'Bar',
+        Bar: 'Baz',
+        Baz: 'Qux',
+        Qux: 'Quux',
+      },
+    })).toThrow(/MetricFilter only supports a maximum of 3 Dimensions/);
+  });
+
   test('metric filter exposes metric', () => {
     // GIVEN
     const stack = new Stack();

@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "PreparelessPipelineTest/DefaultTest": {
+      "stacks": [
+        "PreparelessPipelineStack"
+      ],
+      "assertionStack": "PreparelessPipelineTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PreparelessPipelineTestDefaultTestDeployAssert7B7DD2C6"
+    }
+  }
+}

@@ -478,8 +478,7 @@
     "DBSubnetGroupName": {
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
-    "Engine": "aurora-mysql",
-    "EngineVersion": "5.7.mysql_aurora.2.10.2"
+    "Engine": "aurora-mysql"
    },
    "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
@@ -500,8 +499,7 @@
     "DBSubnetGroupName": {
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
-    "Engine": "aurora-mysql",
-    "EngineVersion": "5.7.mysql_aurora.2.10.2"
+    "Engine": "aurora-mysql"
    },
    "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
@@ -1542,8 +1540,7 @@
     "DBSubnetGroupName": {
      "Ref": "FromSnapshotSubnets9ED4B8EE"
     },
-    "Engine": "aurora-mysql",
-    "EngineVersion": "5.7.mysql_aurora.2.10.2"
+    "Engine": "aurora-mysql"
    },
    "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
@@ -1564,8 +1561,7 @@
     "DBSubnetGroupName": {
      "Ref": "FromSnapshotSubnets9ED4B8EE"
     },
-    "Engine": "aurora-mysql",
-    "EngineVersion": "5.7.mysql_aurora.2.10.2"
+    "Engine": "aurora-mysql"
    },
    "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",

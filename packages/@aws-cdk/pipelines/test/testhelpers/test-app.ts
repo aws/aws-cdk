@@ -223,4 +223,10 @@ export class PlainStackApp extends Stage {
   }
 }
 
-
+export class MultiStackApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    new BucketStack(this, 'Stack1');
+    new BucketStack(this, 'Stack2');
+  }
+}
