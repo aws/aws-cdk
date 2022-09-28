@@ -1,6 +1,7 @@
 import { ArnFormat, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentConfig } from './codedeploy.generated';
+import { MinimumHealthyHosts } from './host-health-config';
 import { TrafficRouting } from './traffic-routing-config';
 import { arnForDeploymentConfig, validateName } from './utils';
 
@@ -71,6 +72,12 @@ export interface BaseDeploymentConfigProps extends BaseDeploymentConfigOptions {
    * @default None
    */
   readonly trafficRouting?: TrafficRouting;
+
+  /**
+   * Minimum number of healthy hosts.
+   * @default None
+   */
+  readonly minimumHealthyHosts?: MinimumHealthyHosts;
 }
 
 /**
@@ -127,21 +134,26 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
    */
   public readonly deploymentConfigArn: string;
 
-  public constructor(scope: Construct, id: string, props?: BaseDeploymentConfigProps, additionalProps?: any) {
+  public constructor(scope: Construct, id: string, props?: BaseDeploymentConfigProps) {
     super(scope, id, {
       physicalName: props?.deploymentConfigName,
     });
 
     // Traffic routing is not applicable to Server-based deployment configs
-    if (props?.trafficRouting && (props?.computePlatform === undefined || props?.computePlatform == ComputePlatform.SERVER)) {
+    if (props?.trafficRouting && (props?.computePlatform === undefined || props?.computePlatform === ComputePlatform.SERVER)) {
       throw new Error('Traffic routing config must not be specified for a Server-base deployment configuration');
+    }
+
+    // Minimum healthy hosts is only applicable to Server-based deployment configs
+    if (props?.minimumHealthyHosts && props?.computePlatform && props?.computePlatform != ComputePlatform.SERVER) {
+      throw new Error('Minimum healthy hosts config must only be specified for a Server-base deployment configuration');
     }
 
     const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: this.physicalName,
       computePlatform: props?.computePlatform,
       trafficRoutingConfig: props?.trafficRouting?.bind(this),
-      ...additionalProps,
+      minimumHealthyHosts: props?.minimumHealthyHosts?._json,
     });
 
     this.deploymentConfigName = this.getResourceNameAttribute(resource.ref);
