@@ -21,7 +21,8 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     aws_sns: sns,
     aws_sqs: sqs,
     aws_lambda: lambda,
-    aws_ecr_assets: docker
+    aws_ecr_assets: docker,
+    aws_dynamodb: dynamodb
   } = require('aws-cdk-lib');
 }
 
@@ -369,6 +370,16 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
+class DeletionReportStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    const table = new dynamodb.Table(this, 'deletionReportTable', {
+      partitionKey: {name: 'id', type: dynamodb.AttributeType.STRING },
+    });
+  }
+}
+
 const app = new cdk.App();
 
 const defaultEnv = {
@@ -433,6 +444,8 @@ switch (stackSet) {
     new ImportableStack(app, `${stackPrefix}-importable-stack`);
 
     new BundlingStage(app, `${stackPrefix}-bundling-stage`);
+
+    new DeletionReportStack(app, `${stackPrefix}-deletion-report`);
     break;
 
   case 'stage-using-context':
