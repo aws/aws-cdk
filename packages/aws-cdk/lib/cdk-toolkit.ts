@@ -22,8 +22,8 @@ import { data, debug, error, highlight, print, success, warning } from './loggin
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
+import { renderTable } from './util/tables';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
-
 export interface CdkToolkitProps {
 
   /**
@@ -490,6 +490,12 @@ export class CdkToolkit {
     stacks = stacks.reversed();
 
     if (!options.force) {
+
+      for (const stack of stacks.stackArtifacts) {
+        const retainedResources = extractRetainedResources(stack.template);
+        warning(`The following resources will not be deleted in stack: \n${stack.stackName} \n${renderTable(retainedResources)}`);
+      }
+
       // eslint-disable-next-line max-len
       const confirmed = await promptly.confirm(`Are you sure you want to delete: ${chalk.blue(stacks.stackArtifacts.map(s => s.hierarchicalId).join(', '))} (y/n)?`);
       if (!confirmed) {
@@ -1094,6 +1100,35 @@ export interface Tag {
  */
 function formatTime(num: number): number {
   return roundPercentage(millisecondsToSeconds(num));
+}
+
+export interface resource {
+  Id: any;
+  Type: string;
+  DeletionPolicy: string;
+}
+
+/**
+ * Extracts all resources from a CloudFormation template
+ * that have the DeletionPolicy: "Retain". The format of
+ * returned matrix is chosen to comply with the renderTable function
+ */
+export function extractRetainedResources(template: any): string[][] {
+  let ret: string[][] = [['Resource ID', 'Type', 'Deletion Policy']];
+
+  const stackResources: {DeletionPolicy: string, Type: string}[] = template.Resources;
+
+  for (const [key, value] of Object.entries(stackResources) ) {
+    if (value.DeletionPolicy === 'Retain') {
+      ret.push([
+        key,
+        value.Type,
+        value.DeletionPolicy,
+      ]);
+    }
+  }
+
+  return ret;
 }
 
 /**
