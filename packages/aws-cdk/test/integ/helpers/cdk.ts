@@ -236,6 +236,7 @@ export interface ShellOptions extends child_process.SpawnOptions {
 export interface CdkCliOptions extends ShellOptions {
   options?: string[];
   neverRequireApproval?: boolean;
+  force?: boolean;
   verbose?: boolean;
 }
 
@@ -349,8 +350,10 @@ export class TestFixture {
   public async cdkDestroy(stackNames: string | string[], options: CdkCliOptions = {}) {
     stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
 
+    const force = options.force ?? true;
+
     return this.cdk(['destroy',
-      '-f', // We never want a prompt in an unattended test
+      ...(force ? ['-f'] : []), // By default, we never want a prompt in an unattended test
       ...(options.options ?? []),
       ...this.fullStackName(stackNames)], options);
   }
