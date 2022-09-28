@@ -108,16 +108,22 @@ new ecr.Repository(this, 'Repo', {
 ### Pull through cache
 
 Amazon ECR supports caching repositories from remote public registries in your private Amazon ECR registry. 
-Once a pull through cache is created for an external public registry, simply pull an image from that external public registry using your Amazon ECR private registry URI and then Amazon ECR creates a repository and caches that image. 
+Once a pull through cache is created for an external public registry, simply pull an image from that external public registry using your Amazon ECR private registry URI and then Amazon ECR creates a repository and caches that image.
 When a cached image is pulled using the Amazon ECR private registry URI, Amazon ECR checks the remote registry to see if there is a new version of the image and will update your private registry up to one time every 24 hours.
 
 > Note that there are some things to consider when creating pull through cache rules. See here: [https://docs.aws.amazon.com/AmazonECR/latest/userguide/pull-through-cache.html](https://docs.aws.amazon.com/AmazonECR/latest/userguide/pull-through-cache.html)
 
 ```ts
 new ecr.PullTroughCacheRule(this, 'PullTroughCache', {
-  ecrRepositoryPrefix: 'my-ecr',
+  ecrRepositoryPrefix: 'ecr-public',
   upstreamRegistryUrl: 'public.ecr.aws',
-})
+});
+```
+
+If an image is to be pulled from the repository, the image can be pulled via the ECR private registry URL with the defined pull through cache prefix.
+
+```bash
+docker pull $account_id.dkr.$account_region.amazonaws.com/public-ecr/amazonlinux/amazonlinux:latest
 ```
 
 ## Automatically clean up repositories
