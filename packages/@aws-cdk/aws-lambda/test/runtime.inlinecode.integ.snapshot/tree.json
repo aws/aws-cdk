@@ -8,13 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-<<<<<<< HEAD
           "fqn": "@aws-cdk/core.Construct",
           "version": "0.0.0"
-=======
-          "fqn": "constructs.Construct",
-          "version": "10.1.108"
->>>>>>> 40ddfdd681 (chore: remove usage of Node12 runtime in tests (#22256))
         }
       },
       "aws-cdk-lambda-runtime-inlinecode": {
