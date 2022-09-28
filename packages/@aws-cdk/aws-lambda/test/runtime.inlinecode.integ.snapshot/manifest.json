@@ -15,24 +15,6 @@
         "validateOnSynth": false
       },
       "metadata": {
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS12XServiceRole59E71436"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS12X8B8075A4"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS12XfunctionName"
-          }
-        ],
         "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_7/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -121,24 +103,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NODEJS16XfunctionName"
-          }
-        ],
-        "PYTHON36ServiceRole814B3AD9": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON36ServiceRole814B3AD9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PYTHON364935EF15": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON364935EF15",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
