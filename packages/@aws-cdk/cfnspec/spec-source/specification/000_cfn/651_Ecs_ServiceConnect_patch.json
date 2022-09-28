@@ -36,6 +36,33 @@
                     }
                 ]
             }
+        },
+        "AWS::ECS::TaskDefinition.PortMapping": {
+            "patch": {
+                "description": "Add new items to task definition Port Mapping object",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/Properties/Name",
+                        "value": {
+                            "Documentation": "",
+                            "Required": false,
+                            "PrimitiveType": "String",
+                            "UpdateType": "Immutable"
+                        }
+                    },
+                    {
+                        "op": "add",
+                        "path": "/Properties/AppProtocol",
+                        "value": {
+                            "Documentation": "",
+                            "Required": false,
+                            "PrimitiveType": "String",
+                            "UpdateType": "Immutable"
+                        }
+                    }
+                ]
+            }
         }
     }
 }
