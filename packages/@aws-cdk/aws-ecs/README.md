@@ -699,8 +699,8 @@ declare const vpc: ec2.Vpc;
 const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition });
 
 const lb = new elb.LoadBalancer(this, 'LB', { vpc });
-lb.addListener({ externalPort: 80 });
-lb.addTarget(service);
+const listener = lb.addListener({ externalPort: 80 });
+listener.addTargets(service);
 ```
 
 Similarly, if you want to have more control over load balancer targeting:
@@ -712,8 +712,8 @@ declare const vpc: ec2.Vpc;
 const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition });
 
 const lb = new elb.LoadBalancer(this, 'LB', { vpc });
-lb.addListener({ externalPort: 80 });
-lb.addTarget(service.loadBalancerTarget({
+const listener = lb.addListener({ externalPort: 80 });
+listener.addTargets(service.loadBalancerTarget({
   containerName: 'MyContainer',
   containerPort: 80,
 }));
