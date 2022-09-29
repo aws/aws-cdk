@@ -370,7 +370,7 @@ export class Rule extends Resource implements IRule {
         });
         new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
           action: 'events:PutEvents',
-          statementId: `Allow-account-${sourceAccount}-${this.node.addr}`,
+          statementId: `Allow-account-${sourceAccount}-${this.node.addr}`.substring(0, 64),
           principal: sourceAccount,
         });
       }
