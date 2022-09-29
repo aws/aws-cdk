@@ -145,7 +145,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
     }
 
     // Minimum healthy hosts is only applicable to Server-based deployment configs
-    if (props?.minimumHealthyHosts && props?.computePlatform && props?.computePlatform != ComputePlatform.SERVER) {
+    if (props?.minimumHealthyHosts && props?.computePlatform && props?.computePlatform !== ComputePlatform.SERVER) {
       throw new Error('Minimum healthy hosts config must only be specified for a Server-base deployment configuration');
     }
 
