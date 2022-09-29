@@ -1,12 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { AwsCliLayer } from '../lib';
-
-const PACKAGE_NAME = '@aws-cdk/asset-awscli-v1';
-const PACKAGE_TARBALL_PREFIX = 'aws-cdk-asset-awscli-v1-';
 
 describe('create a layer version', () => {
 
@@ -15,7 +9,7 @@ describe('create a layer version', () => {
   });
 
   test('using already installed package', () => {
-    //GIVEN
+    // GIVEN
     const stack = new Stack();
 
     // WHEN
@@ -28,9 +22,10 @@ describe('create a layer version', () => {
   });
 
   test('downloading and installing package', () => {
-    //GIVEN
-    // Makes require('asset-awscli-v1') fail
-    jest.mock(PACKAGE_NAME, () => undefined);
+    // GIVEN
+    // Makes AwsCliLayer._tryLoadPackage return undefined
+    jest.spyOn(AwsCliLayer, '_tryLoadPackage').mockReturnValue(undefined);
+
     const stack = new Stack();
 
     // WHEN
@@ -43,17 +38,10 @@ describe('create a layer version', () => {
   });
 
   test('using the fallback', () => {
-    //GIVEN
-    // Makes require('asset-awscli-v1') fail
-    jest.mock(PACKAGE_NAME, () => undefined);
-    // Make the downloaded location not exist, so logic has to fallback
-    const cdkHomeDir = cxapi.cdkHomeDir();
-    const downloadDir = path.join(cdkHomeDir, 'npm-cache');
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const targetVersion = require(path.join(__dirname, '../package.json')).devDependencies[PACKAGE_NAME];
-    const downloadPath = path.join(downloadDir, `${PACKAGE_TARBALL_PREFIX}${targetVersion}.tgz`);
-    const spy = jest.spyOn(fs, 'existsSync');
-    spy.mockImplementation((p) => p !== downloadPath);
+    // GIVEN
+    // Makes AwsCliLayer._tryLoadPackage and AwsCliLayer._downloadPackge return undefined
+    jest.spyOn(AwsCliLayer, '_tryLoadPackage').mockReturnValue(undefined);
+    jest.spyOn(AwsCliLayer, '_downloadPackage').mockReturnValue(undefined);
 
     const stack = new Stack();
 

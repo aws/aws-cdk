@@ -11,11 +11,10 @@ import { Construct } from 'constructs';
  * An AWS Lambda layer that includes the AWS CLI.
  */
 export class AwsCliLayer extends lambda.LayerVersion {
-
-  private static readonly assetPackageName: string = '@aws-cdk/asset-awscli-v1';
-  private static readonly assetPackageNpmTarPrefix: string = 'aws-cdk-asset-awscli-v1-';
-
-  private static tryLoadPackage(targetVersion: string): any {
+  /**
+   * @internal
+   */
+  public static _tryLoadPackage(targetVersion: string): any {
     let availableVersion;
     try {
       const assetPackagePath = require.resolve(`${AwsCliLayer.assetPackageName}`);
@@ -29,20 +28,10 @@ export class AwsCliLayer extends lambda.LayerVersion {
     }
   }
 
-  private static requireWrapper(id: string): any {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      return require(id);
-    } catch (err) {
-      console.log(`require('${id}') failed`);
-      console.log(err);
-      if (err instanceof Error) {
-        console.error(err.name, err.message.split('\n')[0]);
-      }
-    }
-  }
-
-  private static downloadPackage(targetVersion: string): string | undefined {
+  /**
+   * @internal
+   */
+  public static _downloadPackage(targetVersion: string): string | undefined {
     const cdkHomeDir = cxapi.cdkHomeDir();
     const downloadDir = path.join(cdkHomeDir, 'npm-cache');
     const downloadPath = path.join(downloadDir, `${AwsCliLayer.assetPackageNpmTarPrefix}${targetVersion}.tgz`);
@@ -57,6 +46,22 @@ export class AwsCliLayer extends lambda.LayerVersion {
     }
 
     return undefined;
+  }
+
+  private static readonly assetPackageName: string = '@aws-cdk/asset-awscli-v1';
+  private static readonly assetPackageNpmTarPrefix: string = 'aws-cdk-asset-awscli-v1-';
+
+  private static requireWrapper(id: string): any {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      return require(id);
+    } catch (err) {
+      console.log(`require('${id}') failed`);
+      console.log(err);
+      if (err instanceof Error) {
+        console.error(err.name, err.message.split('\n')[0]);
+      }
+    }
   }
 
   private static installAndLoadPackage(from: string): any {
@@ -89,12 +94,12 @@ export class AwsCliLayer extends lambda.LayerVersion {
 
     let assetPackage;
 
-    console.log('trying reqular require');
-    assetPackage = AwsCliLayer.tryLoadPackage(targetVersion);
+    console.log('trying regular require');
+    assetPackage = AwsCliLayer._tryLoadPackage(targetVersion);
 
     if (!assetPackage) {
       console.log('trying to download package');
-      const downloadPath = AwsCliLayer.downloadPackage(targetVersion);
+      const downloadPath = AwsCliLayer._downloadPackage(targetVersion);
       if (downloadPath) {
         console.log('trying to load from install location');
         assetPackage = AwsCliLayer.installAndLoadPackage(downloadPath);
