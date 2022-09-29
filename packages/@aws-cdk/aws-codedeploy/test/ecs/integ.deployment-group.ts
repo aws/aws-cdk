@@ -6,6 +6,69 @@ import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as codedeploy from '../../lib';
 
+/**
+ * Follow these instructions to manually test running a CodeDeploy deployment with the resources provisioned in this stack:
+ *
+ * 1. Deploy the stack:
+```
+$ cdk deploy --app 'node integ.deployment-group.js' aws-cdk-codedeploy-ecs-dg
+```
+ *
+ * 2. Create a file called `appspec.json` with the following contents, replacing the placeholders with output values from the deployed stack:
+```
+{
+  "version": 0.0,
+  "Resources": [
+    {
+      "TargetService": {
+        "Type": "AWS::ECS::Service",
+        "Properties": {
+          "TaskDefinition": "<PLACEHOLDER - NEW TASK DEFINITION>",
+          "LoadBalancerInfo": {
+            "ContainerName": "Container",
+            "ContainerPort": 80
+          },
+          "PlatformVersion": "LATEST",
+          "NetworkConfiguration": {
+            "awsvpcConfiguration": {
+              "subnets": [
+                "<PLACEHOLDER - SUBNET 1 ID>",
+                "<PLACEHOLDER - SUBNET 2 ID>",
+              ],
+              "securityGroups": [
+                "<PLACEHOLDER - SECURITY GROUP ID>"
+              ],
+              "assignPublicIp": "DISABLED"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+```
+ *
+ * 3. Start the deployment:
+```
+$ appspec=$(jq -R -s '.' < appspec.json | sed 's/\\n//g')
+$ aws deploy create-deployment \
+   --application-name <PLACEHOLDER - CODEDEPLOY APPLICATION NAME> \
+   --deployment-group-name <PLACEHOLDER - CODEDEPLOY DEPLOYMENT GROUP NAME> \
+   --description "AWS CDK integ test" \
+   --revision revisionType=AppSpecContent,appSpecContent={content="$appspec"}
+```
+ *
+ * 4. Wait for the deployment to complete successfully, providing the deployment ID from the previous step:
+```
+$ aws deploy wait deployment-successful --deployment-id <PLACEHOLDER - DEPLOYMENT ID>
+```
+ *
+ * 5. Destroy the stack:
+```
+$ cdk destroy --app 'node integ.deployment-group.js' aws-cdk-codedeploy-ecs-dg
+```
+ */
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-ecs-dg');
 
@@ -137,7 +200,7 @@ const deploymentConfig = new codedeploy.EcsDeploymentConfig(stack, 'CanaryConfig
   }),
 });
 
-new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+const dg = new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
   alarms: [
     blueUnhealthyHosts,
     blueApiFailure,
@@ -157,6 +220,14 @@ new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
     stoppedDeployment: true,
   },
 });
+
+// Outputs to use for manual testing
+new cdk.CfnOutput(stack, 'NewTaskDefinition', { value: taskDefinition2.taskDefinitionArn });
+new cdk.CfnOutput(stack, 'Subnet1Id', { value: vpc.privateSubnets[0].subnetId });
+new cdk.CfnOutput(stack, 'Subnet2Id', { value: vpc.privateSubnets[1].subnetId });
+new cdk.CfnOutput(stack, 'SecurityGroupId', { value: service.connections.securityGroups[0].securityGroupId });
+new cdk.CfnOutput(stack, 'CodeDeployApplicationName', { value: dg.application.applicationName });
+new cdk.CfnOutput(stack, 'CodeDeployDeploymentGroupName', { value: dg.deploymentGroupName });
 
 new integ.IntegTest(app, 'EcsDeploymentGroupTest', {
   testCases: [stack],

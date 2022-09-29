@@ -1,0 +1,30 @@
+{
+  "version": 0.0,
+  "Resources": [
+    {
+      "TargetService": {
+        "Type": "AWS::ECS::Service",
+        "Properties": {
+          "TaskDefinition": "arn:aws:ecs:us-west-2:131296546870:task-definition/awscdkcodedeployecsdgTaskDef22B5CE8FC:1",
+          "LoadBalancerInfo": {
+            "ContainerName": "Container",
+            "ContainerPort": 80
+          },
+          "PlatformVersion": "LATEST",
+          "NetworkConfiguration": {
+            "awsvpcConfiguration": {
+              "subnets": [
+                "subnet-08d31f7f022ec65d3",
+                "subnet-04e8f37191b1c403f",
+              ],
+              "securityGroups": [
+                "sg-03dd2e4fd5c871577"
+              ],
+              "assignPublicIp": "DISABLED"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
