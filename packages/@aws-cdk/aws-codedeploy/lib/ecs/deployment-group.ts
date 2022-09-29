@@ -284,7 +284,7 @@ export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGr
 
     // If the deployment config is a construct, add a dependency to ensure the deployment config
     // is created before the deployment group is.
-    if (this.deploymentConfig instanceof Construct) {
+    if (Construct.isConstruct(this.deploymentConfig)) {
       this.node.addDependency(this.deploymentConfig);
     }
 
