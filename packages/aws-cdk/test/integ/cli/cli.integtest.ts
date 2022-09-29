@@ -80,36 +80,29 @@ integTest('Report undeleted resources during cdk destroy', withDefaultFixture(as
   await fixture.cdkDeploy(stackName);
 
   // Roughly check for a table like this:
-  //  The following resources will not be deleted in stack
-  //   dynamoDBStack
-  //  ┌────────────────────────────┬──────────────────────┬─────────────────┐
-  //  │ Resource Logical ID        │ Type                 │ Deletion Policy │
-  //  ├────────────────────────────┼──────────────────────┼─────────────────┤
-  //  │ deletionReportTable123423  │ AWS::DynamoDB::Tabl  │ Retain          │
-  //  └────────────────────────────┴──────────────────────┴─────────────────┘
+  //  Some resources will be retained and will have to be deleted manually
+  //   Stack Name: dynamoDBStack
+  //  ┌──────────────────────────────────────────────────┬───────────────────────────────┐
+  //  │ Resource Name                                    │ Type                          │
+  //  ├──────────────────────────────────────────────────┼───────────────────────────────┤
+  //  │ stackname-deletionReportTable123423-1ASD3124ASD  │ AWS::DynamoDB::Table          │
+  //  └──────────────────────────────────────────────────┴───────────────────────────────┘
   // Destroy stack and check for details in deletion report
   const deletionOutput = await fixture.cdkDestroy(stackName, { force: false });
-  expect(deletionOutput).toContain('The following resources will not be deleted in stack');
+
+  // CLEANUP OF TABLE
+  // We get the table name (physical ID) by matching with the known deletionReportTable name
+  // The RegExp matches a full word containing '-deletionReportTable' including dashes separated by space or comma
+  const tablePhysicalId = deletionOutput.match(/\b[^ ,]*-deletionReportTable[^ ,]*\b/g);
+  // eslint-disable-next-line no-console
+  console.log('test1 ' + deletionOutput);
+  await fixture.aws.DynamoDB('deleteTable', { TableName: tablePhysicalId![0] });
+
+  // We run the test after deleting the table in case a test fails, we don't want an orphaned table
+  expect(deletionOutput).toContain('Some resources will be retained and will have to be deleted manually');
   expect(deletionOutput).toContain('AWS::DynamoDB::Table');
   expect(deletionOutput).toContain('deletionReportTable');
-  expect(deletionOutput).toContain('Deletion Policy');
-  expect(deletionOutput).toContain('Retain');
-
-  // POST-TEST CLEANUP OF TABLE
-
-  // We fetch the logical Id of the table by matching with the table ID
-  const tableLogicalId = deletionOutput.match(/\b\w*deletionReportTable\w*\b/g);
-
-  const allDynamoTables = await fixture.aws.DynamoDB('listTables', {});
-  const regexMatchesLogicalId = new RegExp('/\b\w*' + tableLogicalId + '\w*\b/g');
-
-  await Promise.all(
-    allDynamoTables.TableNames!.map( async tableName => {
-      if ( regexMatchesLogicalId.test(tableName) ) {
-        await fixture.aws.DynamoDB('deleteTable', { TableName: tableName });
-      }
-    }),
-  );
+  expect(deletionOutput).toContain('Resource Name');
 }));
 
 integTest('Termination protection', withDefaultFixture(async (fixture) => {
