@@ -1,12 +1,12 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IApplication, Application } from './application';
-import { RegisterApplicationStageStackAssociator } from './aspects/stack-associator';
+import { CheckedStageStackAssociator } from './aspects/stack-associator';
 
 /**
  * Properties for a Service Catalog AppRegistry AutoApplication
  */
-export interface RegisterApplicationProps {
+export interface ApplicationAssociatorProps {
   /**
    * Enforces a particular physical application name.
    *
@@ -46,17 +46,17 @@ export interface RegisterApplicationProps {
  * If cross account stack is detected, then this construct will automatically share the application to consumer accounts.
  * Cross account feature will only work for non environment agnostic stacks.
  */
-export class RegisterApplication extends Construct {
+export class ApplicationAssociator extends Construct {
   /**
    * Created or imported application.
    */
   private readonly application: IApplication;
   private readonly associatedStages: Set<cdk.Stage> = new Set();
 
-  constructor(scope: cdk.App, id: string, props: RegisterApplicationProps) {
+  constructor(scope: cdk.App, id: string, props: ApplicationAssociatorProps) {
     super(scope, id);
 
-    const applicationStack = new cdk.Stack(scope, 'RegisterApplicationStack', props.stackProps);
+    const applicationStack = new cdk.Stack(scope, 'ApplicationAssociatorStack', props.stackProps);
 
     if (!!props.applicationArnValue) {
       this.application = Application.fromApplicationArn(applicationStack, 'ImportedApplication', props.applicationArnValue);
@@ -69,7 +69,7 @@ export class RegisterApplication extends Construct {
       throw new Error('Please provide either ARN or application name.');
     }
 
-    cdk.Aspects.of(scope).add(new RegisterApplicationStageStackAssociator(this));
+    cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this));
   }
 
   /**
@@ -78,7 +78,7 @@ export class RegisterApplication extends Construct {
    */
   public associateStage(stage: cdk.Stage): cdk.Stage {
     this.associatedStages.add(stage);
-    cdk.Aspects.of(stage).add(new RegisterApplicationStageStackAssociator(this));
+    cdk.Aspects.of(stage).add(new CheckedStageStackAssociator(this));
     return stage;
   }
 

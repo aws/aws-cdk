@@ -26,7 +26,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
                   "aws:cdk:cloudformation:props": {
-                    "application": "AppRegistryRegisterApplication",
+                    "application": "AppRegistryAssociatedApplication",
                     "resource": {
                       "Ref": "AWS::StackId"
                     },
@@ -50,7 +50,7 @@
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
               "aws:cdk:cloudformation:props": {
-                "application": "AppRegistryRegisterApplication",
+                "application": "AppRegistryAssociatedApplication",
                 "resource": {
                   "Ref": "AWS::StackId"
                 },
@@ -72,26 +72,26 @@
         "id": "RegisterCdkApplication",
         "path": "RegisterCdkApplication",
         "constructInfo": {
-          "fqn": "@aws-cdk/aws-servicecatalogappregistry.RegisterApplication",
+          "fqn": "@aws-cdk/aws-servicecatalogappregistry.ApplicationAssociator",
           "version": "0.0.0"
         }
       },
-      "RegisterApplicationStack": {
-        "id": "RegisterApplicationStack",
-        "path": "RegisterApplicationStack",
+      "ApplicationAssociatorStack": {
+        "id": "ApplicationAssociatorStack",
+        "path": "ApplicationAssociatorStack",
         "children": {
           "DefaultCdkApplication": {
             "id": "DefaultCdkApplication",
-            "path": "RegisterApplicationStack/DefaultCdkApplication",
+            "path": "ApplicationAssociatorStack/DefaultCdkApplication",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "RegisterApplicationStack/DefaultCdkApplication/Resource",
+                "path": "ApplicationAssociatorStack/DefaultCdkApplication/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
                   "aws:cdk:cloudformation:props": {
-                    "name": "AppRegistryRegisterApplication",
-                    "description": "Testing AppRegistry RegisterApplication"
+                    "name": "AppRegistryAssociatedApplication",
+                    "description": "Testing AppRegistry ApplicationAssociator"
                   }
                 },
                 "constructInfo": {
@@ -107,7 +107,7 @@
           },
           "AppRegistryAssociation": {
             "id": "AppRegistryAssociation",
-            "path": "RegisterApplicationStack/AppRegistryAssociation",
+            "path": "ApplicationAssociatorStack/AppRegistryAssociation",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
               "aws:cdk:cloudformation:props": {

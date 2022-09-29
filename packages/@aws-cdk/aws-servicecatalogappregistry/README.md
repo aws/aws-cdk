@@ -27,7 +27,7 @@ enables organizations to create and manage repositores of applications and assoc
 ## Table Of Contents
 
 - [Application](#application)
-- [Register-Application](#register-application)
+- [Application-Associator](#application-associator)
 - [Attribute-Group](#attribute-group)
 - [Associations](#associations)
   - [Associating application with an attribute group](#attribute-group-association)
@@ -65,18 +65,18 @@ const importedApplication = appreg.Application.fromApplicationArn(
 );
 ```
 
-## Register-Application
+## Application-Associator
 
-If you want to create an Application named `MyRegisteredApplication` in account `123456789012` and region `us-east-1`
-and want to associate all stacks in the `App` scope to `MyRegisteredApplication`, then use as shown in the example below:
+If you want to create an Application named `MyAssociatedApplication` in account `123456789012` and region `us-east-1`
+and want to associate all stacks in the `App` scope to `MyAssociatedApplication`, then use as shown in the example below:
 
 ```ts
 const app = new App();
-const registeredApp = new appreg.RegisterApplication(app, 'RegisterApplication', {
-    applicationName: 'MyRegisteredApplication',
-    description: 'Testing registered application',
+const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+    applicationName: 'MyAssociatedApplication',
+    description: 'Testing associated application',
     stackProps: {
-        stackName: 'MyRegisteredApplicationStack',
+        stackName: 'MyAssociatedApplicationStack',
         env: {account: '123456789012', region: 'us-east-1'},
     },
 });
@@ -87,16 +87,16 @@ and want to associate all stacks in the `App` scope to your imported application
 
 ```ts
 const app = new App();
-const registeredApp = new appreg.RegisterApplication(app, 'RegisterApplication', {
+const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
     applicationArnValue: 'arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId',
     stackProps: {
-        stackName: 'MyRegisteredApplicationStack',
+        stackName: 'MyAssociatedApplicationStack',
     },
 });
 ```
 
 If you are using CDK Pipelines to deploy your application, the application stacks will be inside Stages, and 
-RegisterApplication will not be able to find them. Call `associateStage` on each Stage object before adding it to the 
+ApplicationAssociator will not be able to find them. Call `associateStage` on each Stage object before adding it to the 
 Pipeline, as shown in the example below:
 
 ```ts
@@ -110,28 +110,28 @@ class ApplicationPipelineStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: ApplicationPipelineStackProps) {
     super(scope, id, props);
     
-   //associate the stage to register application.
+   //associate the stage to application associator.
    props.application.associateStage(beta);
    pipeline.addStage(beta);
   }
 };
 
 interface ApplicationPipelineStackProps extends cdk.StackProps {
-  application: appreg.RegisterApplication;
+  application: appreg.ApplicationAssociator;
 };
 
 const app = new App();
-const registeredApp = new appreg.RegisterApplication(app, 'RegisterApplication', {
-    applicationName: 'MyPipelineRegisteredApplication',
-    description: 'Testing pipeline registered app',
+const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+    applicationName: 'MyPipelineAssociatedApplication',
+    description: 'Testing pipeline associated app',
     stackProps: {
-        stackName: 'MyPipelineRegisteredApplicationStack',
+        stackName: 'MyPipelineAssociatedApplicationStack',
         env: {account: '123456789012', region: 'us-east-1'},
     },
 });
 
 const cdkPipeline = new ApplicationPipelineStack(app, 'CDKApplicationPipelineStack', {
-    application: registeredApp,
+    application: associatedApp,
     env: {account: '123456789012', region: 'us-east-1'},
 });
 ```

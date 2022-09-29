@@ -120,7 +120,7 @@
   },
   "awslint": {
     "exclude": [
-      "construct-ctor:@aws-cdk/aws-servicecatalogappregistry.RegisterApplication.<initializer>.params[0]"
+      "construct-ctor:@aws-cdk/aws-servicecatalogappregistry.ApplicationAssociator.<initializer>.params[0]"
     ]
   },
   "private": true

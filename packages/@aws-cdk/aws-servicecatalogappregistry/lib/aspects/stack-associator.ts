@@ -1,9 +1,9 @@
 import { IAspect, Stack, Stage, Annotations } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 import { IApplication } from '../application';
+import { ApplicationAssociator } from '../application-associator';
 import { SharePermission } from '../common';
 import { isRegionUnresolved, isAccountUnresolved } from '../private/utils';
-import { RegisterApplication } from '../register-application';
 
 /**
  * Aspect class, this will visit each node from the provided construct once.
@@ -13,7 +13,7 @@ import { RegisterApplication } from '../register-application';
  */
 abstract class StackAssociatorBase implements IAspect {
   protected abstract readonly application: IApplication;
-  protected abstract readonly registerApplication?: RegisterApplication;
+  protected abstract readonly applicationAssociator?: ApplicationAssociator;
 
   protected readonly sharedAccounts: Set<string> = new Set();
 
@@ -21,10 +21,10 @@ abstract class StackAssociatorBase implements IAspect {
     // verify if a stage in a particular stack is associated to Application.
     node.node.children.forEach((childNode) => {
       if (Stage.isStage(childNode)) {
-        var stageAssociated = this.registerApplication?.isStageAssociated(childNode);
+        var stageAssociated = this.applicationAssociator?.isStageAssociated(childNode);
         if (stageAssociated === false) {
           this.error(childNode, 'Associate Stage: ' + childNode.stageName + ' to ensure all stacks in your cdk app are associated with AppRegistry. '
-                        + 'You can use RegisterApplication.associateStage to associate any stage.');
+                        + 'You can use ApplicationAssociator.associateStage to associate any stage.');
         }
       }
     });
@@ -109,20 +109,20 @@ abstract class StackAssociatorBase implements IAspect {
   }
 }
 
-export class RegisterApplicationStageStackAssociator extends StackAssociatorBase {
+export class CheckedStageStackAssociator extends StackAssociatorBase {
   protected readonly application: IApplication;
-  protected readonly registerApplication?: RegisterApplication;
+  protected readonly applicationAssociator?: ApplicationAssociator;
 
-  constructor(app: RegisterApplication) {
+  constructor(app: ApplicationAssociator) {
     super();
     this.application = app.appRegistryApplication;
-    this.registerApplication = app;
+    this.applicationAssociator = app;
   }
 }
 
 export class StageStackAssociator extends StackAssociatorBase {
   protected readonly application: IApplication;
-  protected readonly registerApplication?: RegisterApplication;
+  protected readonly applicationAssociator?: ApplicationAssociator;
 
   constructor(app: IApplication) {
     super();

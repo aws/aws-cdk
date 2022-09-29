@@ -1,7 +1,7 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "integ.register-application.all-stacks-association": {
+    "integ.application-associator.all-stacks-association": {
       "stacks": [
         "integ-servicecatalogappregistry-application"
       ],
