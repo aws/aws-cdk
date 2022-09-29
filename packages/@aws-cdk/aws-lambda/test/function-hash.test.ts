@@ -91,7 +91,7 @@ describe('function hash', () => {
 
     const stack2 = new Stack();
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
@@ -113,7 +113,7 @@ describe('function hash', () => {
 
     const stack2 = new Stack();
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo bar'),
       handler: 'index.handler',
     });

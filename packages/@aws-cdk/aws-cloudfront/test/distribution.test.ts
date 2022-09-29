@@ -698,7 +698,7 @@ describe('with Lambda@Edge functions', () => {
 
   beforeEach(() => {
     lambdaFunction = new lambda.Function(stack, 'Function', {
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('whatever'),
       handler: 'index.handler',
     });
@@ -826,7 +826,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with removable env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
     });
