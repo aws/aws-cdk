@@ -21,6 +21,7 @@ describe('Lambda Mapping Templates', () => {
   let func: lambda.Function;
   const invokeMT = '{"version": "2017-02-28", "operation": "Invoke", "payload": $util.toJson($ctx)}';
   const batchMT = '{"version": "2017-02-28", "operation": "BatchInvoke", "payload": $util.toJson($ctx)}';
+  const invokeMTResponse = '\n## Raise a GraphQL field error in case of a datasource invocation error\n#if($ctx.error)\n  $util.error($ctx.error.message, $ctx.error.type)\n#end\n\n$util.toJson($context.result)\n';
 
   beforeEach(() => {
     func = new lambda.Function(stack, 'func', {
@@ -45,6 +46,7 @@ describe('Lambda Mapping Templates', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
       FieldName: 'allPosts',
       RequestMappingTemplate: invokeMT,
+      ResponseMappingTemplate: invokeMTResponse,
     });
   });
 
@@ -64,6 +66,7 @@ describe('Lambda Mapping Templates', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
       FieldName: 'relatedPosts',
       RequestMappingTemplate: batchMT,
+      ResponseMappingTemplate: invokeMTResponse,
       MaxBatchSize: 10,
     });
   });
