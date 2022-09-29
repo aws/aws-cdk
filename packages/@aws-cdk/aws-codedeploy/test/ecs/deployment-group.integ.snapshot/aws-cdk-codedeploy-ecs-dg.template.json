@@ -1261,6 +1261,41 @@
    ]
   }
  },
+ "Outputs": {
+  "NewTaskDefinition": {
+   "Value": {
+    "Ref": "TaskDef2C6A35A16"
+   }
+  },
+  "Subnet1Id": {
+   "Value": {
+    "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+   }
+  },
+  "Subnet2Id": {
+   "Value": {
+    "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+   }
+  },
+  "SecurityGroupId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FargateServiceSecurityGroup0A0E79CB",
+     "GroupId"
+    ]
+   }
+  },
+  "CodeDeployApplicationName": {
+   "Value": {
+    "Ref": "BlueGreenDGApplication3649479D"
+   }
+  },
+  "CodeDeployDeploymentGroupName": {
+   "Value": {
+    "Ref": "BlueGreenDG373AB9B0"
+   }
+  }
+ },
  "Mappings": {
   "ServiceprincipalMap": {
    "af-south-1": {
