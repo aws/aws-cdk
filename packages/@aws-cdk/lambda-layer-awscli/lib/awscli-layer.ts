@@ -14,7 +14,6 @@ export class AwsCliLayer extends lambda.LayerVersion {
 
   private static readonly assetPackageName: string = '@aws-cdk/asset-awscli-v1';
   private static readonly assetPackageNpmTarPrefix: string = 'aws-cdk-asset-awscli-v1-';
-  private static code: lambda.Code;
 
   private static tryLoadPackage(targetVersion: string): any {
     let availableVersion;
@@ -86,38 +85,37 @@ export class AwsCliLayer extends lambda.LayerVersion {
   constructor(scope: Construct, id: string) {
     let usedFallback = false;
 
-    if (!AwsCliLayer.code) {
-      const targetVersion = AwsCliLayer.requireWrapper(path.join(__dirname, '../package.json')).devDependencies[AwsCliLayer.assetPackageName];
+    const targetVersion = AwsCliLayer.requireWrapper(path.join(__dirname, '../package.json')).devDependencies[AwsCliLayer.assetPackageName];
 
-      let assetPackage;
+    let assetPackage;
 
-      console.log('trying reqular require');
-      assetPackage = AwsCliLayer.tryLoadPackage(targetVersion);
+    console.log('trying reqular require');
+    assetPackage = AwsCliLayer.tryLoadPackage(targetVersion);
 
-      if (!assetPackage) {
-        console.log('trying to download package');
-        const downloadPath = AwsCliLayer.downloadPackage(targetVersion);
-        if (downloadPath) {
-          console.log('trying to load from install location');
-          assetPackage = AwsCliLayer.installAndLoadPackage(downloadPath);
-        }
-      }
-
-      if (assetPackage) {
-        const asset = new assetPackage.AwsCliAsset(scope, `${id}-asset`);
-        AwsCliLayer.code = lambda.Code.fromBucket(asset.bucket, asset.s3ObjectKey);
-      } else {
-        usedFallback = true;
-        console.log('using fallback to original version');
-        AwsCliLayer.code = lambda.Code.fromAsset(path.join(__dirname, 'layer.zip'), {
-          // we hash the layer directory (it contains the tools versions and Dockerfile) because hashing the zip is non-deterministic
-          assetHash: FileSystem.fingerprint(path.join(__dirname, '../layer')),
-        });
+    if (!assetPackage) {
+      console.log('trying to download package');
+      const downloadPath = AwsCliLayer.downloadPackage(targetVersion);
+      if (downloadPath) {
+        console.log('trying to load from install location');
+        assetPackage = AwsCliLayer.installAndLoadPackage(downloadPath);
       }
     }
 
+    let code;
+    if (assetPackage) {
+      const asset = new assetPackage.AwsCliAsset(scope, `${id}-asset`);
+      code = lambda.Code.fromBucket(asset.bucket, asset.s3ObjectKey);
+    } else {
+      usedFallback = true;
+      console.log('using fallback to original version');
+      code = lambda.Code.fromAsset(path.join(__dirname, 'layer.zip'), {
+        // we hash the layer directory (it contains the tools versions and Dockerfile) because hashing the zip is non-deterministic
+        assetHash: FileSystem.fingerprint(path.join(__dirname, '../layer')),
+      });
+    }
+
     super(scope, id, {
-      code: AwsCliLayer.code,
+      code: code,
       description: '/opt/awscli/aws',
     });
     if (usedFallback) {
