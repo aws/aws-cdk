@@ -571,46 +571,6 @@ describe('destroy', () => {
       });
     }).resolves;
   });
-
-  test('extract retained resources from template', async () => {
-    const template: any = {
-      Resources: {
-        table8235A42E: {
-          Type: 'AWS::DynamoDB::Table',
-          UpdateReplacePolicy: 'Retain',
-          DeletionPolicy: 'Retain',
-        },
-        bucket12312ASD: {
-          Type: 'AWS::S3::Bucket',
-          UpdateReplacePolicy: 'Retain',
-          DeletionPolicy: 'Destroy',
-        },
-        bucket1212DA: {
-          Type: 'AWS::S3::Bucket',
-          UpdateReplacePolicy: 'Retain',
-          DeletionPolicy: 'Retain',
-        },
-      },
-    };
-
-    expect(extractRetainedResources(template)).toEqual(
-      [[
-        'Resource ID',
-        'Type',
-        'Deletion Policy',
-      ],
-      [
-        'table8235A42E',
-        'AWS::DynamoDB::Table',
-        'Retain',
-      ],
-      [
-        'bucket1212DA',
-        'AWS::S3::Bucket',
-        'Retain',
-      ]],
-    );
-  });
 });
 
 describe('watch', () => {

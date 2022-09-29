@@ -1122,8 +1122,7 @@ function formatTime(num: number): number {
 
 /**
  * Extracts all resources from a CloudFormation template
- * that have the DeletionPolicy: "Retain". The format of
- * returned matrix is chosen to comply with the renderTable function
+ * that have the DeletionPolicy: "Retain".
  */
 export function extractRetainedResources(stackResources: ResourceDefinition[]): string[] {
   let ret = [];
