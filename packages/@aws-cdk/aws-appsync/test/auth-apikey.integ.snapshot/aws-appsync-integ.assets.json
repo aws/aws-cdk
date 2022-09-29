@@ -1,7 +1,7 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "files": {
-    "b0462850439179659920597f4327262b24073af4f4969622163b0a295fce1dda": {
+    "9c8148f550f06a0d47f2f0e9cc0b50f651e002ec9f1ff1a9ac34a5161006ce2c": {
       "source": {
         "path": "aws-appsync-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b0462850439179659920597f4327262b24073af4f4969622163b0a295fce1dda.json",
+          "objectKey": "9c8148f550f06a0d47f2f0e9cc0b50f651e002ec9f1ff1a9ac34a5161006ce2c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

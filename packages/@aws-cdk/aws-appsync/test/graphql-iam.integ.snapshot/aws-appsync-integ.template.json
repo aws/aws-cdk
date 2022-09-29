@@ -167,7 +167,7 @@
     "DataSourceName": "testDataSource",
     "Kind": "UNIT",
     "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-    "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+    "ResponseMappingTemplate": "\n## Raise a GraphQL field error in case of a datasource invocation error\n#if($ctx.error)\n    $util.error($ctx.error.message, $ctx.error.type)\n#end\n## Pass back the result from DynamoDB. **\n$util.toJson($ctx.result)    \n"
    },
    "DependsOn": [
     "Apids0DB53FEA",
@@ -188,7 +188,7 @@
     "DataSourceName": "testDataSource",
     "Kind": "UNIT",
     "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
-    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+    "ResponseMappingTemplate": "\n## Raise a GraphQL field error in case of a datasource invocation error\n#if($ctx.error)\n  $util.error($ctx.error.message, $ctx.error.type)\n#end\n#**\n    Return a flat list of results from a Query or Scan operation.\n*#\n$util.toJson($ctx.result.items)\n"
    },
    "DependsOn": [
     "Apids0DB53FEA",
@@ -209,7 +209,7 @@
     "DataSourceName": "testDataSource",
     "Kind": "UNIT",
     "RequestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-    "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+    "ResponseMappingTemplate": "\n## Raise a GraphQL field error in case of a datasource invocation error\n#if($ctx.error)\n    $util.error($ctx.error.message, $ctx.error.type)\n#end\n## Pass back the result from DynamoDB. **\n$util.toJson($ctx.result)    \n"
    },
    "DependsOn": [
     "Apids0DB53FEA",

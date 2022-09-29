@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.108"
         }
       },
       "aws-appsync-integ": {
@@ -78,8 +78,8 @@
                 "id": "LogGroup",
                 "path": "aws-appsync-integ/Api/LogGroup",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               },
               "testDataSource": {
@@ -239,7 +239,7 @@
                             "dataSourceName": "testDataSource",
                             "kind": "UNIT",
                             "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
-                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                            "responseMappingTemplate": "\n## Raise a GraphQL field error in case of a datasource invocation error\n#if($ctx.error)\n  $util.error($ctx.error.message, $ctx.error.type)\n#end\n#**\n    Return a flat list of results from a Query or Scan operation.\n*#\n$util.toJson($ctx.result.items)\n"
                           }
                         },
                         "constructInfo": {
@@ -274,7 +274,7 @@
                             "dataSourceName": "testDataSource",
                             "kind": "UNIT",
                             "requestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                            "responseMappingTemplate": "\n## Raise a GraphQL field error in case of a datasource invocation error\n#if($ctx.error)\n    $util.error($ctx.error.message, $ctx.error.type)\n#end\n## Pass back the result from DynamoDB. **\n$util.toJson($ctx.result)    \n"
                           }
                         },
                         "constructInfo": {
@@ -334,8 +334,8 @@
                 "id": "ScalingRole",
                 "path": "aws-appsync-integ/TestTable/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -346,14 +346,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

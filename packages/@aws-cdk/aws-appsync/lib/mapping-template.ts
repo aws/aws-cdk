@@ -23,14 +23,30 @@ export abstract class MappingTemplate {
    * Mapping template for a result list from DynamoDB
    */
   public static dynamoDbResultList(): MappingTemplate {
-    return this.fromString('$util.toJson($ctx.result.items)');
+    return this.fromString(`
+## Raise a GraphQL field error in case of a datasource invocation error
+#if($ctx.error)
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#**
+    Return a flat list of results from a Query or Scan operation.
+*#
+$util.toJson($ctx.result.items)
+`);
   }
 
   /**
    * Mapping template for a single result item from DynamoDB
    */
   public static dynamoDbResultItem(): MappingTemplate {
-    return this.fromString('$util.toJson($ctx.result)');
+    return this.fromString(`
+## Raise a GraphQL field error in case of a datasource invocation error
+#if($ctx.error)
+    $util.error($ctx.error.message, $ctx.error.type)
+#end
+## Pass back the result from DynamoDB. **
+$util.toJson($ctx.result)    
+`);
   }
 
   /**
@@ -101,7 +117,14 @@ export abstract class MappingTemplate {
    * Mapping template to return the Lambda result to the caller
    */
   public static lambdaResult(): MappingTemplate {
-    return this.fromString('$util.toJson($ctx.result)');
+    return this.fromString(`
+## Raise a GraphQL field error in case of a datasource invocation error
+#if($ctx.error)
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+
+$util.toJson($context.result)
+`);
   }
 
   /**
