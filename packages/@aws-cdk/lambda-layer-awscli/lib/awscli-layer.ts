@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { FileSystem } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
@@ -16,6 +17,7 @@ export class AwsCliLayer extends lambda.LayerVersion {
   private static readonly assetPackageNpmTarPrefix: string = 'aws-cdk-asset-awscli-v1-';
   private static assetPackage: any;
   private static asset: s3_assets.Asset;
+  private static code: lambda.Code;
 
   private static tryLoadPackage(targetVersion: string) {
     let availableVersion;
@@ -101,20 +103,22 @@ export class AwsCliLayer extends lambda.LayerVersion {
           AwsCliLayer.installAndLoadPackage(downloadPath);
         }
       }
-      if (!AwsCliLayer.assetPackage) {
-        usedFallback = true;
-        console.log('using fallback');
-        AwsCliLayer.installAndLoadPackage(path.join(__dirname, `../${AwsCliLayer.assetPackageNpmTarPrefix}${targetVersion}.tgz`));
-      }
-      if (!AwsCliLayer.assetPackage) {
-        throw new Error('This should never happen');
-      }
 
-      AwsCliLayer.asset = new AwsCliLayer.assetPackage.AwsCliAsset(scope, `${id}-asset`);
+      if (AwsCliLayer.assetPackage) {
+        const asset = new AwsCliLayer.assetPackage.AwsCliAsset(scope, `${id}-asset`);
+        AwsCliLayer.code = lambda.Code.fromBucket(asset.bucket, asset.s3ObjectKey);
+      } else {
+        usedFallback = true;
+        console.log('using fallback to original version');
+        AwsCliLayer.code = lambda.Code.fromAsset(path.join(__dirname, 'layer.zip'), {
+          // we hash the layer directory (it contains the tools versions and Dockerfile) because hashing the zip is non-deterministic
+          assetHash: FileSystem.fingerprint(path.join(__dirname, '../layer')),
+        });
+      }
     }
 
     super(scope, id, {
-      code: lambda.Code.fromBucket(AwsCliLayer.asset.bucket, AwsCliLayer.asset.s3ObjectKey),
+      code: AwsCliLayer.code,
       description: '/opt/awscli/aws',
     });
     if (usedFallback) {
