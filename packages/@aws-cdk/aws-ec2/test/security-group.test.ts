@@ -24,7 +24,59 @@ describe('security group', () => {
         },
       ],
     });
+  });
 
+  test('security group can allows all ipv6 outbound traffic by default', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    new SecurityGroup(stack, 'SG1', { vpc, allowAllIpv6Outbound: true });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow all outbound traffic by default',
+          IpProtocol: '-1',
+        },
+        {
+          CidrIp: '::/0',
+          Description: 'Allow all outbound ipv6 traffic by default',
+          IpProtocol: '-1',
+        },
+      ],
+    });
+  });
+
+  test('can add ipv6 rules even if allowAllOutbound=true', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    const sg = new SecurityGroup(stack, 'SG1', { vpc });
+    sg.addEgressRule(Peer.ipv6('2001:db8::/128'), Port.tcp(80));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow all outbound traffic by default',
+          IpProtocol: '-1',
+        },
+        {
+          CidrIpv6: '2001:db8::/128',
+          Description: 'from 2001:db8::/128:80',
+          FromPort: 80,
+          ToPort: 80,
+          IpProtocol: 'tcp',
+        },
+      ],
+    });
 
   });
 
@@ -96,8 +148,6 @@ describe('security group', () => {
         },
       ],
     });
-
-
   });
 
   test('all outbound rule cannot be added after creation', () => {
@@ -110,8 +160,18 @@ describe('security group', () => {
     expect(() => {
       sg.addEgressRule(Peer.anyIpv4(), Port.allTraffic(), 'All traffic');
     }).toThrow(/Cannot add/);
+  });
 
+  test('all ipv6 outbound rule cannot be added after creation', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
 
+    // WHEN
+    const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
+    expect(() => {
+      sg.addEgressRule(Peer.anyIpv6(), Port.allTraffic(), 'All traffic');
+    }).toThrow(/Cannot add/);
   });
 
   test('immutable imports do not add rules', () => {
@@ -171,7 +231,7 @@ describe('security group', () => {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' } });
     const vpc = new Vpc(stack, 'VPC');
-    const sg = new SecurityGroup(stack, 'SG', { vpc });
+    const sg = new SecurityGroup(stack, 'SG', { vpc, allowAllIpv6Outbound: true });
 
     const peers = [
       new SecurityGroup(stack, 'PeerGroup', { vpc }),
