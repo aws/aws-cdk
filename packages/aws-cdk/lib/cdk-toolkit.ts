@@ -8,9 +8,10 @@ import * as promptly from 'promptly';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
-import { CloudFormationDeployments } from './api/cloudformation-deployments';
+import { CloudFormationDeployments, prepareSdkWithLookupRoleFor } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { LazyListStackResources, ResourceDefinition } from './api/evaluate-cloudformation-template';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
@@ -492,8 +493,25 @@ export class CdkToolkit {
     if (!options.force) {
 
       for (const stack of stacks.stackArtifacts) {
-        const retainedResources = extractRetainedResources(stack.template);
-        warning(`The following resources will not be deleted in stack: \n${stack.stackName} \n${renderTable(retainedResources)}`);
+
+        // The physical ID of resources only exists in the deployed stack, so we use the sdk to fetch them
+        const sdk = (await prepareSdkWithLookupRoleFor(this.props.sdkProvider, stack)).sdk;
+        const listStackResources = new LazyListStackResources(sdk, stack.stackName);
+        const stackResources = await listStackResources.listStackResources();
+
+        // We get the resources with DeletionPolicy=Retain from the deployed CloudFormation template
+        const retainedResources = extractRetainedResources(stack.template.Resources);
+
+        let resourceTable: string[][] = [['Resource Name', 'Type']];
+        stackResources.map( resource => {
+          if ( retainedResources.includes(resource.LogicalResourceId) ) {
+            resourceTable.push([
+              resource.PhysicalResourceId!,
+              resource.ResourceType,
+            ]);
+          }
+        });
+        warning(`Some resources will be retained and will have to be deleted manually: \n Stack name: ${stack.stackName} \n${renderTable(resourceTable)}`);
       }
 
       // eslint-disable-next-line max-len
@@ -1102,29 +1120,17 @@ function formatTime(num: number): number {
   return roundPercentage(millisecondsToSeconds(num));
 }
 
-export interface resource {
-  Id: any;
-  Type: string;
-  DeletionPolicy: string;
-}
-
 /**
  * Extracts all resources from a CloudFormation template
  * that have the DeletionPolicy: "Retain". The format of
  * returned matrix is chosen to comply with the renderTable function
  */
-export function extractRetainedResources(template: any): string[][] {
-  let ret: string[][] = [['Resource ID', 'Type', 'Deletion Policy']];
-
-  const stackResources: {DeletionPolicy: string, Type: string}[] = template.Resources;
+export function extractRetainedResources(stackResources: ResourceDefinition[]): string[] {
+  let ret = [];
 
   for (const [key, value] of Object.entries(stackResources) ) {
     if (value.DeletionPolicy === 'Retain') {
-      ret.push([
-        key,
-        value.Type,
-        value.DeletionPolicy,
-      ]);
+      ret.push(key);
     }
   }
 
