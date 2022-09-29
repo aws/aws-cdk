@@ -63,6 +63,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
 
   public abstract readonly securityGroupId: string;
   public abstract readonly allowAllOutbound: boolean;
+  public abstract readonly allowAllIpv6Outbound: boolean;
 
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
@@ -237,9 +238,24 @@ export interface SecurityGroupProps {
    * outbound traffic. If this is set to false, no outbound traffic will be allowed by
    * default and all egress traffic must be explicitly authorized.
    *
+   * To allow all ipv6 traffic use allowAllIpv6Outbound
+   *
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * Whether to allow all outbound ipv6 traffic by default.
+   *
+   * If this is set to true, there will only be a single egress rule which allows all
+   * outbound ipv6 traffic. If this is set to false, no outbound traffic will be allowed by
+   * default and all egress ipv6 traffic must be explicitly authorized.
+   *
+   * To allow all ipv4 traffic use allowAllOutbound
+   *
+   * @default false
+   */
+  readonly allowAllIpv6Outbound?: boolean;
 
   /**
    * Whether to disable inline ingress and egress rule optimization.
@@ -273,6 +289,17 @@ export interface SecurityGroupImportOptions {
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * Mark the SecurityGroup as having been created allowing all outbound ipv6 traffic
+   *
+   * Only if this is set to false will egress rules for ipv6 be added to this security
+   * group. Be aware, this would undo any potential "all outbound traffic"
+   * default.
+   *
+   * @default false
+   */
+  readonly allowAllIpv6Outbound?: boolean;
 
   /**
    * If a SecurityGroup is mutable CDK can add rules to existing groups
@@ -360,6 +387,7 @@ export class SecurityGroup extends SecurityGroupBase {
     class MutableImport extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
       public allowAllOutbound = options.allowAllOutbound ?? true;
+      public allowAllIpv6Outbound = options.allowAllIpv6Outbound ?? false;
 
       public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
         // Only if allowAllOutbound has been disabled
@@ -372,6 +400,7 @@ export class SecurityGroup extends SecurityGroupBase {
     class ImmutableImport extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
       public allowAllOutbound = options.allowAllOutbound ?? true;
+      public allowAllIpv6Outbound = options.allowAllIpv6Outbound ?? false;
 
       public addEgressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
         // do nothing
@@ -441,6 +470,11 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   public readonly allowAllOutbound: boolean;
 
+  /**
+   * Whether the SecurityGroup has been configured to allow all outbound ipv6 traffic
+   */
+  public readonly allowAllIpv6Outbound: boolean;
+
   private readonly securityGroup: CfnSecurityGroup;
   private readonly directIngressRules: CfnSecurityGroup.IngressProperty[] = [];
   private readonly directEgressRules: CfnSecurityGroup.EgressProperty[] = [];
@@ -458,6 +492,7 @@ export class SecurityGroup extends SecurityGroupBase {
     const groupDescription = props.description || this.node.path;
 
     this.allowAllOutbound = props.allowAllOutbound !== false;
+    this.allowAllIpv6Outbound = props.allowAllIpv6Outbound ?? false;
 
     this.disableInlineRules = props.disableInlineRules !== undefined ?
       !!props.disableInlineRules :
@@ -476,6 +511,7 @@ export class SecurityGroup extends SecurityGroupBase {
     this.securityGroupName = this.securityGroup.ref;
 
     this.addDefaultEgressRule();
+    this.addDefaultIpv6EgressRule();
   }
 
   public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
@@ -496,7 +532,9 @@ export class SecurityGroup extends SecurityGroupBase {
   }
 
   public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
-    if (this.allowAllOutbound) {
+    const isIpv6 = peer.toEgressRuleConfig().hasOwnProperty('cidrIpv6');
+
+    if (!isIpv6 && this.allowAllOutbound) {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
@@ -504,11 +542,21 @@ export class SecurityGroup extends SecurityGroupBase {
         Annotations.of(this).addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup');
       }
       return;
-    } else {
+    } else if (!isIpv6 && !this.allowAllOutbound) {
       // Otherwise, if the bogus rule exists we can now remove it because the
       // presence of any other rule will get rid of EC2's implicit "all
       // outbound" rule anyway.
       this.removeNoTrafficRule();
+    }
+
+    if (isIpv6 && this.allowAllIpv6Outbound) {
+      // In the case of "allowAllIpv6Outbound", we don't add any more rules. There
+      // is only one rule which allows all traffic and that subsumes any other
+      // rule.
+      if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
+        Annotations.of(this).addWarning('Ignoring Egress rule since \'allowAllIpv6Outbound\' is set to true; To add customized rules, set allowAllIpv6Outbound=false on the SecurityGroup');
+      }
+      return;
     }
 
     if (!peer.canInlineRule || !connection.canInlineRule || this.disableInlineRules) {
@@ -532,7 +580,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // to "allOutbound=true" mode, because we might have already emitted
       // EgressRule objects (which count as rules added later) and there's no way
       // to recall those. Better to prevent this for now.
-      throw new Error('Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true on the SecurityGroup instead.');
+      throw new Error('Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv6) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.');
     }
 
     this.addDirectEgressRule(rule);
@@ -593,6 +641,31 @@ export class SecurityGroup extends SecurityGroupBase {
     } else {
       const rule = this.allowAllOutbound? ALLOW_ALL_RULE : MATCH_NO_TRAFFIC;
       this.directEgressRules.push(rule);
+    }
+  }
+
+  /**
+   * Add a allow all ipv6 egress rule to the securityGroup
+   *
+   * This depends on allowAllIpv6Outbound:
+   *
+   * - If allowAllIpv6Outbound is true, we will add an allow all rule.
+   * - If allowAllOutbound is false, we don't do anything since EC2 does not add
+   *   a default allow all ipv6 rule.
+   */
+  private addDefaultIpv6EgressRule() {
+    const description = 'Allow all outbound ipv6 traffic by default';
+    const peer = Peer.anyIpv6();
+    if (this.allowAllIpv6Outbound) {
+      if (this.disableInlineRules) {
+        super.addEgressRule(peer, Port.allTraffic(), description, false);
+      } else {
+        this.directEgressRules.push({
+          ipProtocol: '-1',
+          cidrIp: peer.uniqueId,
+          description,
+        });
+      }
     }
   }
 
@@ -721,7 +794,7 @@ function egressRulesEqual(a: CfnSecurityGroup.EgressProperty, b: CfnSecurityGrou
  * Whether this rule refers to all traffic
  */
 function isAllTrafficRule(rule: any) {
-  return rule.cidrIp === '0.0.0.0/0' && rule.ipProtocol === '-1';
+  return (rule.cidrIp === '0.0.0.0/0' || rule.cidrIpv6 === '::/0') && rule.ipProtocol === '-1';
 }
 
 /**
