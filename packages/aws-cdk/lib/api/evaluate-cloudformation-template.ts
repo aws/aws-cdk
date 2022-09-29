@@ -38,6 +38,7 @@ export class CfnEvaluationException extends Error {}
 export interface ResourceDefinition {
   readonly LogicalId: string;
   readonly Type: string;
+  readonly DeletionPolicy: string;
   readonly Properties: { [p: string]: any };
 }
 
