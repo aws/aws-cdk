@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/446ca80dfab2994c36ce13a2838692a7d08bad798b902800353e48f702628f91.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b77c382808de52abe7ba0a539e4252f21e8051e818093107fececca32558b03c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,6 +39,30 @@
         "integ-servicecatalog-product.assets"
       ],
       "metadata": {
+        "/integ-servicecatalog-product/TestAssetBucket": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "We detected an Aspect was added via another Aspect, and will not be applied"
+          }
+        ],
+        "/integ-servicecatalog-product/TestAssetBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucket9434EFAE"
+          }
+        ],
+        "/integ-servicecatalog-product/TestAssetBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketPolicy62167ACB"
+          }
+        ],
+        "/integ-servicecatalog-product/TestAssetBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketAutoDeleteObjectsCustomResource5A0F8F22"
+          }
+        ],
         "/integ-servicecatalog-product/TestAssetBucket/AssetsBucketDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -49,30 +73,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TestAssetBucketAssetsBucketDeploymentCustomResource258ED7DF"
-          }
-        ],
-        "/integ-servicecatalog-product/TestAssetBucketS3Bucket/Key/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestAssetBucketS3BucketKey38BEC382"
-          }
-        ],
-        "/integ-servicecatalog-product/TestAssetBucketS3Bucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestAssetBucketS3Bucket4A5DDF18"
-          }
-        ],
-        "/integ-servicecatalog-product/TestAssetBucketS3Bucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestAssetBucketS3BucketPolicy08D19836"
-          }
-        ],
-        "/integ-servicecatalog-product/TestAssetBucketS3Bucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestAssetBucketS3BucketAutoDeleteObjectsCustomResourceD24444DA"
           }
         ],
         "/integ-servicecatalog-product/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [

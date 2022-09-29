@@ -53,7 +53,7 @@ export interface CloudFormationTemplateConfig {
 
   /**
    * The S3 bucket containing product stack assets.
-   * @default - None
+   * @default - None - no assets are used in this product
    */
   readonly assetBucket?: IBucket;
 

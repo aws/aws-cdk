@@ -25,11 +25,11 @@ export interface IProduct extends IResource {
   readonly productId: string;
 
   /**
-   * The asset bucket of a product created via product stack.
-   * @atrribute
-   * @default - None
+   * The asset buckets of a product created via product stack.
+   * @attribute
+   * @default - Empty - no assets are used in this product
    */
-  readonly assetBucket?: IBucket;
+  readonly assetBuckets?: IBucket[];
 
   /**
    * Associate Tag Options.
@@ -179,12 +179,11 @@ export abstract class Product extends ProductBase {
 export class CloudFormationProduct extends Product {
   public readonly productArn: string;
   public readonly productId: string;
-
   /**
    * The asset bucket of a product created via product stack.
-   * @default - None
+   * @default - Empty - no assets are used in this product
    */
-  public assetBucket?: IBucket;
+  public readonly assetBuckets: IBucket[] = [];
 
   constructor(scope: Construct, id: string, props: CloudFormationProductProps) {
     super(scope, id);
@@ -220,7 +219,9 @@ export class CloudFormationProduct extends Product {
     props: CloudFormationProductProps): CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] {
     return props.productVersions.map(productVersion => {
       const template = productVersion.cloudFormationTemplate.bind(this);
-      this.assetBucket = template.assetBucket;
+      if (template.assetBucket) {
+        this.assetBuckets.push(template.assetBucket);
+      }
       InputValidator.validateUrl(this.node.path, 'provisioning template url', template.httpUrl);
       return {
         name: productVersion.productVersionName,

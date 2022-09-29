@@ -60,6 +60,113 @@
             "id": "TestAssetBucket",
             "path": "integ-servicecatalog-product/TestAssetBucket",
             "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalog-product/TestAssetBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketName": "product-stack-asset-bucket-12345678-test-region",
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "integ-servicecatalog-product/TestAssetBucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-servicecatalog-product/TestAssetBucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "TestAssetBucket9434EFAE"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:DeleteObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "TestAssetBucket9434EFAE",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "TestAssetBucket9434EFAE",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "integ-servicecatalog-product/TestAssetBucket/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-servicecatalog-product/TestAssetBucket/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              },
               "AssetsBucketDeployment": {
                 "id": "AssetsBucketDeployment",
                 "path": "integ-servicecatalog-product/TestAssetBucket/AssetsBucketDeployment",
@@ -104,7 +211,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip"
+                              "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
                             },
                             "description": "/opt/awscli/aws"
                           }
@@ -181,206 +288,6 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-servicecatalog.ProductStackAssetBucket",
-              "version": "0.0.0"
-            }
-          },
-          "TestAssetBucketS3Bucket": {
-            "id": "TestAssetBucketS3Bucket",
-            "path": "integ-servicecatalog-product/TestAssetBucketS3Bucket",
-            "children": {
-              "Key": {
-                "id": "Key",
-                "path": "integ-servicecatalog-product/TestAssetBucketS3Bucket/Key",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-servicecatalog-product/TestAssetBucketS3Bucket/Key/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::KMS::Key",
-                      "aws:cdk:cloudformation:props": {
-                        "keyPolicy": {
-                          "Statement": [
-                            {
-                              "Action": "kms:*",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::",
-                                      {
-                                        "Ref": "AWS::AccountId"
-                                      },
-                                      ":root"
-                                    ]
-                                  ]
-                                }
-                              },
-                              "Resource": "*"
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "description": "Created by integ-servicecatalog-product/TestAssetBucketS3Bucket",
-                        "tags": [
-                          {
-                            "key": "aws-cdk:cr-owned:9bef0bf6",
-                            "value": "true"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-kms.CfnKey",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kms.Key",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-servicecatalog-product/TestAssetBucketS3Bucket/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                  "aws:cdk:cloudformation:props": {
-                    "bucketEncryption": {
-                      "serverSideEncryptionConfiguration": [
-                        {
-                          "serverSideEncryptionByDefault": {
-                            "sseAlgorithm": "aws:kms",
-                            "kmsMasterKeyId": {
-                              "Fn::GetAtt": [
-                                "TestAssetBucketS3BucketKey38BEC382",
-                                "Arn"
-                              ]
-                            }
-                          }
-                        }
-                      ]
-                    },
-                    "bucketName": "product-stack-asset-bucket-12345678-test-region",
-                    "publicAccessBlockConfiguration": {
-                      "blockPublicAcls": true,
-                      "blockPublicPolicy": true,
-                      "ignorePublicAcls": true,
-                      "restrictPublicBuckets": true
-                    },
-                    "tags": [
-                      {
-                        "key": "aws-cdk:auto-delete-objects",
-                        "value": "true"
-                      },
-                      {
-                        "key": "aws-cdk:cr-owned:9bef0bf6",
-                        "value": "true"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
-                  "version": "0.0.0"
-                }
-              },
-              "Policy": {
-                "id": "Policy",
-                "path": "integ-servicecatalog-product/TestAssetBucketS3Bucket/Policy",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-servicecatalog-product/TestAssetBucketS3Bucket/Policy/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
-                      "aws:cdk:cloudformation:props": {
-                        "bucket": {
-                          "Ref": "TestAssetBucketS3Bucket4A5DDF18"
-                        },
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": [
-                                "s3:DeleteObject*",
-                                "s3:GetBucket*",
-                                "s3:List*"
-                              ],
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::GetAtt": [
-                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                                    "Arn"
-                                  ]
-                                }
-                              },
-                              "Resource": [
-                                {
-                                  "Fn::GetAtt": [
-                                    "TestAssetBucketS3Bucket4A5DDF18",
-                                    "Arn"
-                                  ]
-                                },
-                                {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      {
-                                        "Fn::GetAtt": [
-                                          "TestAssetBucketS3Bucket4A5DDF18",
-                                          "Arn"
-                                        ]
-                                      },
-                                      "/*"
-                                    ]
-                                  ]
-                                }
-                              ]
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.BucketPolicy",
-                  "version": "0.0.0"
-                }
-              },
-              "AutoDeleteObjectsCustomResource": {
-                "id": "AutoDeleteObjectsCustomResource",
-                "path": "integ-servicecatalog-product/TestAssetBucketS3Bucket/AutoDeleteObjectsCustomResource",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "integ-servicecatalog-product/TestAssetBucketS3Bucket/AutoDeleteObjectsCustomResource/Default",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-s3.Bucket",
               "version": "0.0.0"
             }
           },
@@ -868,7 +775,7 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
-                                        "TestAssetBucketS3Bucket4A5DDF18",
+                                        "TestAssetBucket9434EFAE",
                                         "Arn"
                                       ]
                                     },
@@ -878,7 +785,7 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "TestAssetBucketS3Bucket4A5DDF18",
+                                              "TestAssetBucket9434EFAE",
                                               "Arn"
                                             ]
                                           },
@@ -887,22 +794,6 @@
                                       ]
                                     }
                                   ]
-                                },
-                                {
-                                  "Action": [
-                                    "kms:Decrypt",
-                                    "kms:DescribeKey",
-                                    "kms:Encrypt",
-                                    "kms:GenerateDataKey*",
-                                    "kms:ReEncrypt*"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "TestAssetBucketS3BucketKey38BEC382",
-                                      "Arn"
-                                    ]
-                                  }
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -968,7 +859,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "644013c43fe76afb7d5307ed4419e99e788312b6cbbc9ec6bd5d05ea6e590435.zip"
+                      "s3Key": "6ddcf10002539818a9256eff3fb2b22aa09298d8f946e26ba121c175a600c44e.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [

@@ -43,7 +43,7 @@ describe('ProductStack', () => {
     const app = new cdk.App();
     const mainStack = new cdk.Stack(app, 'MyStack');
     const testAssetBucket = new ProductStackAssetBucket(mainStack, 'TestAssetBucket', {
-      assetBucketName: 'test-asset-bucket',
+      bucketName: 'test-asset-bucket',
     });
     const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
       assetBucket: testAssetBucket,

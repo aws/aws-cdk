@@ -33,7 +33,9 @@ const productStackHistory = new ProductStackHistory(stack, 'ProductStackHistory'
 });
 
 const testAssetBucket = new ProductStackAssetBucket(stack, 'TestAssetBucket', {
-  assetBucketName: 'product-stack-asset-bucket-12345678-test-region',
+  bucketName: 'product-stack-asset-bucket-12345678-test-region',
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
 });
 
 const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {

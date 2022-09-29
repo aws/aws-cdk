@@ -172,8 +172,10 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   }
 
   public addProduct(product: IProduct): void {
-    if (product.assetBucket) {
-      this.assetBuckets.add(product.assetBucket);
+    if (product.assetBuckets) {
+      for (const bucket of product.assetBuckets) {
+        this.assetBuckets.add(bucket);
+      }
     }
     AssociationManager.associateProductWithPortfolio(this, product, undefined);
   }

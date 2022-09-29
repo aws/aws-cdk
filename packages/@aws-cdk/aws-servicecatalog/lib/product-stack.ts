@@ -5,7 +5,7 @@ import { IBucket } from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
-import { ProductStackAssetBucket } from './product-stack-asset-bucket';
+import { hashValues } from './private/util';
 import { ProductStackHistory } from './product-stack-history';
 
 /**
@@ -13,11 +13,13 @@ import { ProductStackHistory } from './product-stack-history';
  */
 export interface ProductStackProps {
   /**
-   * Product stack asset bucket.
+   * A ProductStackAssetBucket will be generated per Product Stack to store assets.
+   * A ProductStackAssetBucket can be passed to store assets, enabling a single ProductStackAssetBucket
+   * to store assets for multiple Product Stacks if needed.
    *
    * @default - None only generated if needed
    */
-  readonly assetBucket?: ProductStackAssetBucket;
+  readonly assetBucket?: IBucket;
 }
 
 /**
@@ -63,6 +65,23 @@ export class ProductStack extends cdk.Stack {
    */
   public _getTemplateUrl(): string {
     return cdk.Lazy.uncachedString({ produce: () => this._templateUrl });
+  }
+
+  /**
+   * Generate unique name for S3 bucket.
+   *
+   * @internal
+   */
+  public _generateBucketName(): string {
+    const accountId = this._parentStack.account;
+    const region = this._parentStack.region;
+    if (cdk.Token.isUnresolved(accountId)) {
+      throw new Error('CDK Account ID must be defined in the application environment');
+    }
+    if (cdk.Token.isUnresolved(region)) {
+      throw new Error('CDK Region must be defined in the application environment');
+    }
+    return `product-stack-asset-bucket-${accountId}-${region}-${hashValues(this._parentStack.stackId)}`;
   }
 
   /**

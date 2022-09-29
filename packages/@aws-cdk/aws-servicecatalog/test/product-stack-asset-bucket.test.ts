@@ -2,7 +2,6 @@ import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { FileAssetSource } from '@aws-cdk/core';
 import { ProductStackAssetBucket } from '../lib';
-import { hashValues } from '../lib/private/util';
 
 describe('ProductStackAssetBucket', () => {
   let app: cdk.App;
@@ -17,23 +16,31 @@ describe('ProductStackAssetBucket', () => {
 
   test('default ProductStackAssetBucket creation', () => {
     // WHEN
-    new ProductStackAssetBucket(stack, 'MyProductStackAssetBucket');
+    new ProductStackAssetBucket(stack, 'MyProductStackAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      BucketName: `product-stack-asset-bucket-${stack.account}-${stack.region}-${hashValues('MyProductStackAssetBucket')}`,
-      PublicAccessBlockConfiguration: {
-        BlockPublicAcls: true,
-        BlockPublicPolicy: true,
-        IgnorePublicAcls: true,
-        RestrictPublicBuckets: true,
-      },
+      BucketName: 'test-asset-bucket',
     });
+  }),
+
+  test('default ProductStackAssetBucket creation missing bucketname', () => {
+    // WHEN
+    expect(() => {
+      new ProductStackAssetBucket(stack, 'MyProductStackAssetBucket');
+    }).toThrow('BucketName must be defined for assetBucket');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {});
   }),
 
   test('ProductStackAssetBucket without assets avoids bucket deployment', () => {
     // WHEN
-    new ProductStackAssetBucket(stack, 'MyProductStackAssetBucket');
+    new ProductStackAssetBucket(stack, 'MyProductStackAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
 
     // THEN
     Template.fromStack(stack).resourceCountIs('Custom::CDKBucketDeployment', 0);
@@ -41,7 +48,9 @@ describe('ProductStackAssetBucket', () => {
 
   test('ProductStackAssetBucket with assets creates bucket deployment', () => {
     // GIVEN
-    const assetBucket = new ProductStackAssetBucket(stack, 'MyProductStackAssetBucket');
+    const assetBucket = new ProductStackAssetBucket(stack, 'MyProductStackAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
 
     const asset = {
       packaging: 'zip',
