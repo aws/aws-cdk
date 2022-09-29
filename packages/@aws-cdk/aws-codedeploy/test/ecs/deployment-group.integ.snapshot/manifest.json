@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cb953019881f048318168478ff610f1d0c79d74d9e309487bb4c8b7df50e2d0c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b345fcd928aa6573be6176063244174d3eba0846591860ef06360cba511c70f4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -313,6 +313,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "BlueGreenDG373AB9B0"
+          }
+        ],
+        "/aws-cdk-codedeploy-ecs-dg/NewTaskDefinition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NewTaskDefinition"
+          }
+        ],
+        "/aws-cdk-codedeploy-ecs-dg/Subnet1Id": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Subnet1Id"
+          }
+        ],
+        "/aws-cdk-codedeploy-ecs-dg/Subnet2Id": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Subnet2Id"
+          }
+        ],
+        "/aws-cdk-codedeploy-ecs-dg/SecurityGroupId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupId"
+          }
+        ],
+        "/aws-cdk-codedeploy-ecs-dg/CodeDeployApplicationName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodeDeployApplicationName"
+          }
+        ],
+        "/aws-cdk-codedeploy-ecs-dg/CodeDeployDeploymentGroupName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodeDeployDeploymentGroupName"
           }
         ],
         "/aws-cdk-codedeploy-ecs-dg/Service-principalMap": [

@@ -1895,6 +1895,54 @@
               "version": "0.0.0"
             }
           },
+          "NewTaskDefinition": {
+            "id": "NewTaskDefinition",
+            "path": "aws-cdk-codedeploy-ecs-dg/NewTaskDefinition",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "Subnet1Id": {
+            "id": "Subnet1Id",
+            "path": "aws-cdk-codedeploy-ecs-dg/Subnet1Id",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "Subnet2Id": {
+            "id": "Subnet2Id",
+            "path": "aws-cdk-codedeploy-ecs-dg/Subnet2Id",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "SecurityGroupId": {
+            "id": "SecurityGroupId",
+            "path": "aws-cdk-codedeploy-ecs-dg/SecurityGroupId",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "CodeDeployApplicationName": {
+            "id": "CodeDeployApplicationName",
+            "path": "aws-cdk-codedeploy-ecs-dg/CodeDeployApplicationName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "CodeDeployDeploymentGroupName": {
+            "id": "CodeDeployDeploymentGroupName",
+            "path": "aws-cdk-codedeploy-ecs-dg/CodeDeployDeploymentGroupName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
           "Service-principalMap": {
             "id": "Service-principalMap",
             "path": "aws-cdk-codedeploy-ecs-dg/Service-principalMap",
