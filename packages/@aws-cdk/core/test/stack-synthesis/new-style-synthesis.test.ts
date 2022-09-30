@@ -142,14 +142,14 @@ describe('new style synthesis', () => {
         if (!this.stack) {
           throw new Error('You must call bind() with a stack instance first');
         }
-        this.synthesizeStackTemplate(this.stack, session);
+        this.synthesizeTemplate(session);
         session.assembly.addArtifact('FAKE_ARTIFACT_ID', {
           type: ArtifactType.ASSET_MANIFEST,
           properties: {
             file: 'FAKE_ARTIFACT_ID.json',
           },
         });
-        this.emitStackArtifact(this.stack, session, {
+        this.emitArtifact(session, {
           additionalDependencies: ['FAKE_ARTIFACT_ID'],
         });
       }

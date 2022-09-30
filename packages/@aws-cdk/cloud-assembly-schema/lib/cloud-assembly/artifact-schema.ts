@@ -134,14 +134,9 @@ export interface AwsCloudFormationStackProperties {
 }
 
 /**
- * Artifact properties for the Asset Manifest
+ * Configuration options for the Asset Manifest
  */
-export interface AssetManifestProperties {
-  /**
-   * Filename of the asset manifest
-   */
-  readonly file: string;
-
+export interface AssetManifestOptions {
   /**
    * Version of bootstrap stack required to deploy this stack
    *
@@ -161,6 +156,16 @@ export interface AssetManifestProperties {
    * @default - Bootstrap stack version number looked up
    */
   readonly bootstrapStackVersionSsmParameter?: string;
+}
+
+/**
+ * Artifact properties for the Asset Manifest
+ */
+export interface AssetManifestProperties extends AssetManifestOptions {
+  /**
+   * Filename of the asset manifest
+   */
+  readonly file: string;
 }
 
 /**
