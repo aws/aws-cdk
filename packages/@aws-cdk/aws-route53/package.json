@@ -87,7 +87,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/aws-lambda": "^8.10.104",
     "@types/jest": "^27.5.2",
-    "aws-sdk": "^2.848.0",
+    "aws-sdk": "^2.1211.0",
     "jest": "^27.5.1"
   },
   "dependencies": {
