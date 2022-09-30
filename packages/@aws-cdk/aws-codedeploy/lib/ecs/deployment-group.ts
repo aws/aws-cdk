@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ecs from '@aws-cdk/aws-ecs';
+import { BaseService } from '@aws-cdk/aws-ecs';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -238,7 +239,7 @@ export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGr
     this.deploymentConfig = props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE;
 
     for (const service of props.services) {
-      if (service instanceof ecs.BaseService) {
+      if (cdk.Resource.isOwnedResource(service)) {
         // Ensure the service's deployment controller is CodeDeploy
         const cfnService = service.node.defaultChild as ecs.CfnService;
         cfnService.deploymentController = { type: ecs.DeploymentControllerType.CODE_DEPLOY };
@@ -246,8 +247,9 @@ export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGr
         // Strip the revision ID from the service's task definition property to
         // prevent new task def revisions in the stack from triggering updates
         // to the stack's ECS service resource
-        cfnService.taskDefinition = service.taskDefinition.family;
-        service.node.addDependency(service.taskDefinition);
+        const taskDef = (service as BaseService).taskDefinition;
+        cfnService.taskDefinition = taskDef.family;
+        service.node.addDependency(taskDef);
       }
     }
 
