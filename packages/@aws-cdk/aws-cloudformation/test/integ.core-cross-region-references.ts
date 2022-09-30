@@ -8,8 +8,10 @@ import { Construct } from 'constructs';
 // GIVEN
 const app = new App({
   treeMetadata: false,
+  postCliContext: {
+    [ENABLE_CROSS_REGION_REFERENCES]: true,
+  },
 });
-app.node.setContext(ENABLE_CROSS_REGION_REFERENCES, true);
 
 class ProducerStack extends Stack {
   public readonly queue: IQueue;

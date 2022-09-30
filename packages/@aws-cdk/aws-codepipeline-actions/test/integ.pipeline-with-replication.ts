@@ -10,8 +10,10 @@ import { S3SourceAction, CodeBuildAction } from '../lib';
 
 const app = new App({
   treeMetadata: false,
+  postCliContext: {
+    [ENABLE_CROSS_REGION_REFERENCES]: true,
+  },
 });
-app.node.setContext(ENABLE_CROSS_REGION_REFERENCES, true);
 const stack1 = new Stack(app, 'integ-pipeline-producer-stack', {
   env: {
     region: 'us-east-1',
