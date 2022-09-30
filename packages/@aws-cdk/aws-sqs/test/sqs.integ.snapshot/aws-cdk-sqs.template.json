@@ -81,6 +81,14 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "SqsManagedEncryptedQueue587679B3": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "Role1ABCC5F0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -149,6 +157,12 @@
         {
          "Fn::GetAtt": [
           "Queue4A7E3555",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "SqsManagedEncryptedQueue587679B3",
           "Arn"
          ]
         }

@@ -69,6 +69,12 @@
             "data": "HighThroughputFifoQueue40A0EEE4"
           }
         ],
+        "/aws-cdk-sqs/SqsManagedEncryptedQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqsManagedEncryptedQueue587679B3"
+          }
+        ],
         "/aws-cdk-sqs/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
