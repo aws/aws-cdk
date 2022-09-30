@@ -281,7 +281,26 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             {
               Action: 'logs:DescribeLogGroups',
               Effect: 'Allow',
-              Resource: 'arn:aws:logs:*:*:*',
+              Resource: {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":logs:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":*"
+                  ]
+                ]
+              }
             },
           ],
           Version: '2012-10-17',
@@ -439,7 +458,26 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             {
               Action: 'logs:DescribeLogGroups',
               Effect: 'Allow',
-              Resource: 'arn:aws:logs:*:*:*',
+              Resource: {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":logs:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":*"
+                  ]
+                ]
+              }
             },
           ],
           Version: '2012-10-17',

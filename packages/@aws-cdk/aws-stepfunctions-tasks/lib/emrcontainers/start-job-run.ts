@@ -280,7 +280,10 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     jobExecutionRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
         resources: [
-          'arn:aws:logs:*:*:*',
+          cdk.Stack.of(this).formatArn({
+            service: 'logs',
+            resource: '*'
+          })
         ],
         actions: [
           'logs:DescribeLogGroups',
@@ -301,7 +304,10 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     this.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
         resources: [
-          'arn:aws:logs:*:*:*',
+          cdk.Stack.of(this).formatArn({
+            service: 'logs',
+            resource: '*'
+          })
         ],
         actions: [
           'logs:DescribeLogGroups',
