@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-apigateway/test/integ.usage-plan.multikey": {
+    "integ.usage-plan.multikey": {
       "stacks": [
         "test-apigateway-usageplan-multikey"
       ],

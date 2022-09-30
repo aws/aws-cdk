@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-iot-actions/test/lambda/integ.lambda-function-action": {
+    "integ.lambda-function-action": {
       "stacks": [
         "test-stack"
       ],

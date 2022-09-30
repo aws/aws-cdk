@@ -1,5 +1,6 @@
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import { LambdaRestApi, PassthroughBehavior } from '../lib';
 
@@ -14,6 +15,7 @@ class LambdaApiIntegrationOptionsNonProxyIntegrationStack extends Stack {
     });
 
     new LambdaRestApi(this, 'lambdarestapi', {
+      cloudWatchRole: true,
       handler: fn,
       integrationOptions: {
         proxy: false,
@@ -32,4 +34,7 @@ class LambdaApiIntegrationOptionsNonProxyIntegrationStack extends Stack {
 }
 
 const app = new App();
-new LambdaApiIntegrationOptionsNonProxyIntegrationStack(app);
+const testCase = new LambdaApiIntegrationOptionsNonProxyIntegrationStack(app);
+new IntegTest(app, 'lambda-non-proxy-integration', {
+  testCases: [testCase],
+});

@@ -1,5 +1,5 @@
 import { Duration, Stack } from '@aws-cdk/core';
-import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget, GaugeWidget } from '../lib';
 
 describe('Graphs', () => {
   test('add stacked property to graphs', () => {
@@ -621,6 +621,53 @@ describe('Graphs', () => {
 
   });
 
+  test('add sparkline to singleValueWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new SingleValueWidget({
+      metrics: [metric],
+      sparkline: true,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 3,
+      properties: {
+        view: 'singleValue',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        sparkline: true,
+      },
+    }]);
+
+
+  });
+
+  test('throws if setPeriodToTimeRange and sparkline is set on singleValueWidget', () => {
+    // GIVEN
+    new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const toThrow = () => {
+      new SingleValueWidget({
+        metrics: [metric],
+        setPeriodToTimeRange: true,
+        sparkline: true,
+      });
+    };
+
+    // THEN
+    expect(() => toThrow()).toThrow(/You cannot use setPeriodToTimeRange with sparkline/);
+  });
+
   test('add singleValueFullPrecision to singleValueWidget', () => {
     // GIVEN
     const stack = new Stack();
@@ -744,6 +791,34 @@ describe('Graphs', () => {
         ],
         yAxis: {},
         setPeriodToTimeRange: true,
+      },
+    }]);
+  });
+
+  test('add GaugeWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GaugeWidget({
+      metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'gauge',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {
+          left: {
+            min: 0,
+            max: 100,
+          },
+        },
       },
     }]);
   });

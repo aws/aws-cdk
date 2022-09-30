@@ -349,9 +349,9 @@ export enum RetentionDays {
  */
 export interface LogGroupProps {
   /**
-   * The KMS Key to encrypt the log group with.
+   * The KMS customer managed key to encrypt the log group with.
    *
-   * @default - log group is encrypted with the default master key
+   * @default Server-side encrpytion managed by the CloudWatch Logs service
    */
   readonly encryptionKey?: kms.IKey;
 
@@ -537,4 +537,12 @@ export interface MetricFilterOptions {
    * @default No metric emitted.
    */
   readonly defaultValue?: number;
+
+  /**
+   * The fields to use as dimensions for the metric. One metric filter can include as many as three dimensions.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-dimensions
+   * @default - No dimensions attached to metrics.
+   */
+  readonly dimensions?: Record<string, string>;
 }

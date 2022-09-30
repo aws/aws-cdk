@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-iot-actions/test/kinesis-firehose/integ.firehose-put-record-action": {
+    "integ.firehose-put-record-action": {
       "stacks": [
         "test-stack"
       ],

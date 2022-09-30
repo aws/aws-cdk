@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-codebuild/test/integ.ecr.lit": {
+    "integ.ecr.lit": {
       "stacks": [
         "test-codebuild-docker-asset"
       ],

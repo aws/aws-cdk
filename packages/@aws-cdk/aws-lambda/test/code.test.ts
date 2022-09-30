@@ -1,7 +1,6 @@
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
@@ -302,35 +301,6 @@ describe('code', () => {
   });
 
   describe('lambda.Code.fromImageAsset', () => {
-    testLegacyBehavior('repository uri is correctly identified', cdk.App, (app) => {
-      // given
-      const stack = new cdk.Stack(app);
-
-      // when
-      new lambda.Function(stack, 'Fn', {
-        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-      });
-
-      // then
-      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-        Code: {
-          ImageUri: {
-            'Fn::Join': ['', [
-              { Ref: 'AWS::AccountId' },
-              '.dkr.ecr.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/aws-cdk/assets:768d7b6c1d41b85135f498fe0cca69fea410be3c3322c69cf08690aaad29a610',
-            ]],
-          },
-        },
-        ImageConfig: Match.absent(),
-      });
-    });
-
     test('props are correctly resolved', () => {
       // given
       const stack = new cdk.Stack();

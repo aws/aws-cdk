@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-codebuild/test/integ.aws-deep-learning-container-build-image": {
+    "integ.aws-deep-learning-container-build-image": {
       "stacks": [
         "aws-deep-learning-container-build-image"
       ],

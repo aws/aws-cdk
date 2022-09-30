@@ -24,9 +24,6 @@
      "InstanceType": "r5.large.search",
      "ZoneAwarenessEnabled": false
     },
-    "CognitoOptions": {
-     "Enabled": false
-    },
     "DomainEndpointOptions": {
      "EnforceHTTPS": true,
      "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
@@ -39,7 +36,7 @@
     "EncryptionAtRestOptions": {
      "Enabled": true
     },
-    "EngineVersion": "OpenSearch_1.2",
+    "EngineVersion": "OpenSearch_1.3",
     "LogPublishingOptions": {},
     "NodeToNodeEncryptionOptions": {
      "Enabled": true
@@ -204,6 +201,40 @@
    "DependsOn": [
     "apids4328272F",
     "apiSchema0EA92056"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
    ]
   }
  }

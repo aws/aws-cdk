@@ -1,6 +1,7 @@
 import { CustomResource, CfnOutput } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ExpectedResult, ActualResult } from './common';
+import { md5hash } from './private/hash';
 import { AssertionRequest, AssertionsProvider, ASSERT_RESOURCE_TYPE } from './providers';
 
 /**
@@ -60,6 +61,6 @@ export class EqualsAssertion extends Construct {
 
     new CfnOutput(this, 'AssertionResults', {
       value: this.result,
-    }).overrideLogicalId(`AssertionResults${id}`);
+    }).overrideLogicalId(`AssertionResults${id}${md5hash({ actual: props.actual.result, expected: props.expected.result })}`);
   }
 }

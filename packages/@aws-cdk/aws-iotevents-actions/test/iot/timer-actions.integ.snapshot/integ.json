@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "TimerActions/DefaultTest": {
+      "stacks": [
+        "iotevents-timer-actions-test-stack"
+      ],
+      "assertionStack": "TimerActions/DefaultTest/DeployAssert"
+    }
+  }
+}

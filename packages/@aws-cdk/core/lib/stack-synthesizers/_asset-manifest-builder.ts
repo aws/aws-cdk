@@ -82,7 +82,7 @@ export class AssetManifestBuilder {
     role?: RoleOptions,
   ): DockerImageAssetLocation {
     validateDockerImageAssetSource(asset);
-    const imageTag = dockerTagPrefix + asset.sourceHash;
+    const imageTag = `${dockerTagPrefix}${asset.sourceHash}`;
 
     // Add to manifest
     this.dockerImages[asset.sourceHash] = {
@@ -114,6 +114,7 @@ export class AssetManifestBuilder {
       imageUri: cfnify(
         `${account}.dkr.ecr.${region}.${urlSuffix}/${repositoryName}:${imageTag}`,
       ),
+      imageTag: cfnify(imageTag),
     };
   }
 

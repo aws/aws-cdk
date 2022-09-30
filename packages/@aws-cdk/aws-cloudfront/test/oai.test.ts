@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
-import * as cdk from '@aws-cdk/core';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import * as cdk from '@aws-cdk/core';
 import { OriginAccessIdentity } from '../lib';
 
 describe('Origin Access Identity', () => {

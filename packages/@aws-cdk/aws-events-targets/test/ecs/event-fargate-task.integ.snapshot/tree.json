@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.85"
         }
       },
       "aws-ecs-integ-fargate": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "aws-ecs-integ-fargate/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "aws-ecs-integ-fargate/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -395,6 +395,85 @@
               "version": "0.0.0"
             }
           },
+          "MyDeadLetterQueue": {
+            "id": "MyDeadLetterQueue",
+            "path": "aws-ecs-integ-fargate/MyDeadLetterQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ-fargate/MyDeadLetterQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-ecs-integ-fargate/MyDeadLetterQueue/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-fargate/MyDeadLetterQueue/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "Rule4C995B7F",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "MyDeadLetterQueueD997968A",
+                                  "Arn"
+                                ]
+                              },
+                              "Sid": "AllowEventRuleawsecsintegfargateRule16FD584B"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "MyDeadLetterQueueD997968A"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
           "TaskDef": {
             "id": "TaskDef",
             "path": "aws-ecs-integ-fargate/TaskDef",
@@ -444,23 +523,7 @@
                       {
                         "essential": true,
                         "image": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              {
-                                "Ref": "AWS::AccountId"
-                              },
-                              ".dkr.ecr.",
-                              {
-                                "Ref": "AWS::Region"
-                              },
-                              ".",
-                              {
-                                "Ref": "AWS::URLSuffix"
-                              },
-                              "/aws-cdk/assets:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
-                            ]
-                          ]
+                          "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
                         },
                         "name": "TheContainer",
                         "logConfiguration": {
@@ -515,8 +578,8 @@
                         "id": "Staging",
                         "path": "aws-ecs-integ-fargate/TaskDef/TheContainer/AssetImage/Staging",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.85"
                         }
                       },
                       "Repository": {
@@ -625,7 +688,10 @@
                                         {
                                           "Ref": "AWS::AccountId"
                                         },
-                                        ":repository/aws-cdk/assets"
+                                        ":repository/",
+                                        {
+                                          "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                                        }
                                       ]
                                     ]
                                   }
@@ -872,6 +938,14 @@
                             }
                           }
                         },
+                        "deadLetterConfig": {
+                          "arn": {
+                            "Fn::GetAtt": [
+                              "MyDeadLetterQueueD997968A",
+                              "Arn"
+                            ]
+                          }
+                        },
                         "input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}"
                       }
                     ]
@@ -890,14 +964,50 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "EcsFargateTest": {
+        "id": "EcsFargateTest",
+        "path": "EcsFargateTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "EcsFargateTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "EcsFargateTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "EcsFargateTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

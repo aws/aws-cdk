@@ -33,7 +33,8 @@ export interface CustomResourceProps {
    * });
    * ```
    *
-   * AWS Lambda function:
+   * AWS Lambda function (not recommended to use AWS Lambda Functions directly,
+   * see the module README):
    *
    * ```ts
    * // invoke an AWS Lambda function when a lifecycle event occurs:
@@ -42,7 +43,8 @@ export interface CustomResourceProps {
    * });
    * ```
    *
-   * SNS topic:
+   * SNS topic (not recommended to use AWS Lambda Functions directly, see the
+   * module README):
    *
    * ```ts
    * // publish lifecycle events to an SNS topic:

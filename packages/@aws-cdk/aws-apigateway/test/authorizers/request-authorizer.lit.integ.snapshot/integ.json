@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-apigateway/test/authorizers/integ.request-authorizer.lit": {
+    "integ.request-authorizer.lit": {
       "stacks": [
         "RequestAuthorizerInteg"
       ],

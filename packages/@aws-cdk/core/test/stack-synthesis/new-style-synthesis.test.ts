@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { ISynthesisSession } from '../../lib/stack-synthesizers/types';
 import { evaluateCFN } from '../evaluate-cfn';
 
 const CFN_CONTEXT = {
@@ -60,14 +62,18 @@ describe('new style synthesis', () => {
 
   });
 
-  test('version check is added to template', () => {
+  test('version check is added to both template and manifest artifact', () => {
     // GIVEN
     new CfnResource(stack, 'Resource', {
       type: 'Some::Resource',
     });
 
     // THEN
-    const template = app.synth().getStackByName('Stack').template;
+    const asm = app.synth();
+    const manifestArtifact = getAssetManifest(asm);
+    expect(manifestArtifact.requiresBootstrapStackVersion).toEqual(6);
+
+    const template = asm.getStackByName('Stack').template;
     expect(template?.Parameters?.BootstrapVersion?.Type).toEqual('AWS::SSM::Parameter::Value<String>');
     expect(template?.Parameters?.BootstrapVersion?.Default).toEqual('/cdk-bootstrap/hnb659fds/version');
     expect(template?.Parameters?.BootstrapVersion?.Description).toContain(cxapi.SSMPARAM_NO_INVALIDATE);
@@ -79,8 +85,6 @@ describe('new style synthesis', () => {
         { 'Fn::Contains': [['1', '2', '3', '4', '5'], { Ref: 'BootstrapVersion' }] },
       ],
     });
-
-
   });
 
   test('version check is not added to template if disabled', () => {
@@ -124,8 +128,46 @@ describe('new style synthesis', () => {
 
     // THEN - the asset manifest has an SSM parameter entry
     expect(manifestArtifact.bootstrapStackVersionSsmParameter).toEqual('stack-version-parameter');
+  });
+
+  test('contains asset but not requiring a specific version parameter', () => {
+    // GIVEN
+    class BootstraplessStackSynthesizer extends DefaultStackSynthesizer {
 
 
+      /**
+       * Synthesize the associated bootstrap stack to the session.
+       */
+      public synthesize(session: ISynthesisSession): void {
+        if (!this.stack) {
+          throw new Error('You must call bind() with a stack instance first');
+        }
+        this.synthesizeStackTemplate(this.stack, session);
+        session.assembly.addArtifact('FAKE_ARTIFACT_ID', {
+          type: ArtifactType.ASSET_MANIFEST,
+          properties: {
+            file: 'FAKE_ARTIFACT_ID.json',
+          },
+        });
+        this.emitStackArtifact(this.stack, session, {
+          additionalDependencies: ['FAKE_ARTIFACT_ID'],
+        });
+      }
+    }
+
+    const myapp = new App();
+
+    // WHEN
+    new Stack(myapp, 'mystack', {
+      synthesizer: new BootstraplessStackSynthesizer(),
+    });
+
+    // THEN
+    const asm = myapp.synth();
+    const manifestArtifact = getAssetManifest(asm);
+
+    // THEN - the asset manifest should not define a required bootstrap stack version
+    expect(manifestArtifact.requiresBootstrapStackVersion).toEqual(undefined);
   });
 
   test('generates missing context with the lookup role ARN as one of the missing context properties', () => {

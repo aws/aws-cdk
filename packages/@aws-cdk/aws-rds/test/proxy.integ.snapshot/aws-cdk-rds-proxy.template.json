@@ -117,7 +117,11 @@
       "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+   ]
   },
   "vpcPublicSubnet2Subnet009B674F": {
    "Type": "AWS::EC2::Subnet",
@@ -221,7 +225,11 @@
       "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59"
+   ]
   },
   "vpcPrivateSubnet1Subnet934893E8": {
    "Type": "AWS::EC2::Subnet",
@@ -483,9 +491,9 @@
   "dbInstance4076B1EC": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "DBInstanceClass": "db.t3.medium",
     "AllocatedStorage": "100",
     "CopyTagsToSnapshot": true,
+    "DBInstanceClass": "db.t3.medium",
     "DBSubnetGroupName": {
      "Ref": "dbInstanceSubnetGroupD062EC9E"
     },
@@ -643,6 +651,40 @@
      }
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

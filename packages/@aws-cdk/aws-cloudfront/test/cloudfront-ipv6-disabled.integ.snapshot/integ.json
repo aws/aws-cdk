@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cloudfront/test/integ.cloudfront-ipv6-disabled": {
+    "integ.cloudfront-ipv6-disabled": {
       "stacks": [
         "aws-cdk-cloudfront"
       ],

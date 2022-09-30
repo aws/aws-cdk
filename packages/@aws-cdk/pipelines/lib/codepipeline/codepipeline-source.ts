@@ -34,6 +34,9 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Authentication will be done by a secret called `github-token` in AWS
    * Secrets Manager (unless specified otherwise).
    *
+   * If you rotate the value in the Secret, you must also change at least one property
+   * on the Pipeline, to force CloudFormation to re-read the secret.
+   *
    * The token should have these permissions:
    *
    * * **repo** - to read the repository

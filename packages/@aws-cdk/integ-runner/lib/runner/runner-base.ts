@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS, FUTURE_FLAGS_EXPIRED, NEW_STYLE_STACK_SYNTHESIS_CONTEXT } from '@aws-cdk/cx-api';
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS, FUTURE_FLAGS_EXPIRED } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { flatten } from '../utils';
@@ -48,6 +48,13 @@ export interface IntegRunnerOptions {
    * @default - CdkCliWrapper
    */
   readonly cdk?: ICdk;
+
+  /**
+   * Show output from running integration tests
+   *
+   * @default false
+   */
+  readonly showOutput?: boolean;
 }
 
 /**
@@ -137,6 +144,7 @@ export abstract class IntegRunner {
 
     this.cdk = options.cdk ?? new CdkCliWrapper({
       directory: this.directory,
+      showOutput: options.showOutput,
       env: {
         ...options.env,
       },
@@ -204,7 +212,7 @@ export abstract class IntegRunner {
     } catch (e) {
       const testCases = LegacyIntegTestSuite.fromLegacy({
         cdk: this.cdk,
-        testName: this.testName,
+        testName: this.test.normalizedTestName,
         integSourceFilePath: this.test.fileName,
         listOptions: {
           ...this.defaultArgs,
@@ -260,7 +268,7 @@ export abstract class IntegRunner {
     const stacks = this.actualTestSuite.getStacksWithoutUpdateWorkflow() ?? [];
     const manifest = AssemblyManifestReader.fromPath(this.snapshotDir);
     const assets = flatten(stacks.map(stack => {
-      return manifest.getAssetsForStack(stack) ?? [];
+      return manifest.getAssetLocationsForStack(stack) ?? [];
     }));
 
     assets.forEach(asset => {
@@ -313,7 +321,7 @@ export abstract class IntegRunner {
         execCmd: this.cdkApp.split(' '),
         env: {
           ...DEFAULT_SYNTH_OPTIONS.env,
-          CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+          CDK_CONTEXT_JSON: JSON.stringify(this.getContext(DEFAULT_SYNTH_OPTIONS.context)),
         },
         output: path.relative(this.directory, this.snapshotDir),
       });
@@ -353,14 +361,7 @@ export abstract class IntegRunner {
       .filter(([k, _]) => !FUTURE_FLAGS_EXPIRED.includes(k))
       .forEach(([k, v]) => futureFlags[k] = v);
 
-    const enableLookups = (this.actualTestSuite ?? this.expectedTestSuite)?.enableLookups;
     return {
-      // if lookups are enabled then we need to synth
-      // with the "dummy" context
-      ...enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
-      // This is needed so that there are no differences between
-      // running on v1 vs v2
-      [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: '',
       ...futureFlags,
       ...this.legacyContext,
       ...additionalContext,

@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "aws-custom-resource/integ.aws-custom-resource": {
+    "integ.aws-custom-resource": {
       "stacks": [
         "aws-cdk-sdk-js"
       ],

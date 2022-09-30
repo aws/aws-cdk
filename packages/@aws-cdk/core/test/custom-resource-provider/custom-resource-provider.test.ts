@@ -19,17 +19,19 @@ describe('custom resource provider', () => {
     });
 
     // THEN
-    expect(fs.existsSync(path.join(TEST_HANDLER, '__entrypoint__.js'))).toEqual(true);
     const cfn = toCloudFormation(stack);
 
     // The asset hash constantly changes, so in order to not have to chase it, just look
     // it up from the output.
     const staging = stack.node.tryFindChild('Custom:MyResourceTypeCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
     const assetHash = staging.assetHash;
+    const sourcePath = staging.sourcePath;
     const paramNames = Object.keys(cfn.Parameters);
     const bucketParam = paramNames[0];
     const keyParam = paramNames[1];
     const hashParam = paramNames[2];
+
+    expect(fs.existsSync(path.join(sourcePath, '__entrypoint__.js'))).toEqual(true);
 
     expect(cfn).toEqual({
       Resources: {
@@ -139,9 +141,12 @@ describe('custom resource provider', () => {
     // Then
     const lambda = toCloudFormation(stack).Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
     expect(lambda).toHaveProperty('Metadata');
-    expect(lambda.Metadata).toEqual({
-      'aws:asset:path': `${__dirname}/mock-provider`,
+
+    expect(lambda.Metadata).toMatchObject({
       'aws:asset:property': 'Code',
+
+      // The asset path should be a temporary folder prefixed with 'cdk-custom-resource'
+      'aws:asset:path': expect.stringMatching(/^.*\/cdk-custom-resource\w{6}\/?$/),
     });
 
   });

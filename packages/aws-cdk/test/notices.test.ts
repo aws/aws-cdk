@@ -325,6 +325,10 @@ describe('cli notices', () => {
       expect(debugSpy).not.toHaveBeenCalled();
 
       debugSpy.mockRestore();
+
+      if (fs.existsSync('does-not-exist.json')) {
+        fs.unlinkSync('does-not-exist.json');
+      }
     });
 
     test('retrieved data from the delegate when it is configured to ignore the cache', async () => {

@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "integ-identitypool": {
@@ -57,13 +57,13 @@
                   "version": "0.0.0"
                 }
               },
-              "UserPoolAuthenticationProviderClient": {
-                "id": "UserPoolAuthenticationProviderClient",
-                "path": "integ-identitypool/Pool/UserPoolAuthenticationProviderClient",
+              "testClient": {
+                "id": "testClient",
+                "path": "integ-identitypool/Pool/testClient",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-identitypool/Pool/UserPoolAuthenticationProviderClient/Resource",
+                    "path": "integ-identitypool/Pool/testClient/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
                       "aws:cdk:cloudformation:props": {
@@ -297,7 +297,7 @@
                     "cognitoIdentityProviders": [
                       {
                         "clientId": {
-                          "Ref": "PoolUserPoolAuthenticationProviderClient20F2FFC4"
+                          "Ref": "PooltestClientFE8D4935"
                         },
                         "providerName": {
                           "Fn::Join": [
@@ -567,6 +567,29 @@
                         "identityPoolId": {
                           "Ref": "identitypoolE2A6D099"
                         },
+                        "roleMappings": {
+                          "theKey": {
+                            "ambiguousRoleResolution": "Deny",
+                            "type": "Token",
+                            "identityProvider": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  {
+                                    "Fn::GetAtt": [
+                                      "PoolD3F588B8",
+                                      "ProviderName"
+                                    ]
+                                  },
+                                  ":",
+                                  {
+                                    "Ref": "PooltestClientFE8D4935"
+                                  }
+                                ]
+                              ]
+                            }
+                          }
+                        },
                         "roles": {
                           "authenticated": {
                             "Fn::GetAtt": [
@@ -602,14 +625,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-events-targets/test/batch/integ.job-definition-events": {
+    "integ.job-definition-events": {
       "stacks": [
         "batch-events"
       ],

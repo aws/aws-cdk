@@ -7,6 +7,7 @@ import {
 import {
   Resource,
   IResource,
+  Token,
 } from '@aws-cdk/core';
 import {
   Construct,
@@ -64,6 +65,12 @@ export interface IdentityPoolRoleMapping {
    * The url of the provider of for which the role is mapped
    */
   readonly providerUrl: IdentityPoolProviderUrl;
+
+  /**
+   * The key used for the role mapping in the role mapping hash. Required if the providerUrl is a token.
+   * @default - the provided providerUrl
+   */
+  readonly mappingKey?: string;
 
   /**
    *  If true then mapped roles must be passed through the cognito:roles or cognito:preferred_role claims from identity provider.
@@ -176,6 +183,17 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
   ): { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty } | undefined {
     if (!props || !props.length) return undefined;
     return props.reduce((acc, prop) => {
+      let mappingKey;
+      if (prop.mappingKey) {
+        mappingKey = prop.mappingKey;
+      } else {
+        const providerUrl = prop.providerUrl.value;
+        if (Token.isUnresolved(providerUrl)) {
+          throw new Error('mappingKey must be provided when providerUrl.value is a token');
+        }
+        mappingKey = providerUrl;
+      }
+
       let roleMapping: any = {
         ambiguousRoleResolution: prop.resolveAmbiguousRoles ? 'AuthenticatedRole' : 'Deny',
         type: prop.useToken ? 'Token' : 'Rules',
@@ -196,7 +214,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
           }),
         };
       };
-      acc[prop.providerUrl.value] = roleMapping;
+      acc[mappingKey] = roleMapping;
       return acc;
     }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });
   }

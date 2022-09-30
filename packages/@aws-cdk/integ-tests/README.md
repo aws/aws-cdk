@@ -143,7 +143,7 @@ const testCase = new IntegTest(app, 'CustomizedDeploymentWorkflow', {
         requireApproval: RequireApproval.NEVER,
         json: true,
       },
-	  },
+    },
     destroy: {
       args: {
         force: true,
@@ -182,7 +182,7 @@ There are two main scenarios in which assertions are created.
 - Part of an integration test using `integ-runner`
 
 In this case you would create an integration test using the `IntegTest` construct and then make assertions using the `assert` property.
-You should **not** utilize the assertion constructs directly, but should instead use the `methods` on `IntegTest.assert`.
+You should **not** utilize the assertion constructs directly, but should instead use the `methods` on `IntegTest.assertions`.
 
 ```ts
 declare const app: App;
@@ -263,6 +263,34 @@ integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: 'url',
 });
 ```
+
+By default, the `AwsApiCall` construct will automatically add the correct IAM policies
+to allow the Lambda function to make the API call. It does this based on the `service`
+and `api` that is provided. In the above example the service is `SQS` and the api is
+`receiveMessage` so it will create a policy with `Action: 'sqs:ReceiveMessage`.
+
+There are some cases where the permissions do not exactly match the service/api call, for
+example the S3 `listObjectsV2` api. In these cases it is possible to add the correct policy
+by accessing the `provider` object.
+
+```ts
+declare const app: App;
+declare const stack: Stack;
+declare const integ: IntegTest;
+
+const apiCall = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
+  Bucket: 'mybucket',
+});
+
+apiCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['s3:GetObject', 's3:ListBucket'],
+  Resource: ['*'],
+});
+```
+
+Note that addToRolePolicy() uses direct IAM JSON policy blobs, not a iam.PolicyStatement
+object like you will see in the rest of the CDK.
 
 ### EqualsAssertion
 
@@ -379,6 +407,24 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 // assert the results
 describe.expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
+}));
+```
+
+#### Chain ApiCalls
+
+Sometimes it may be necessary to chain API Calls. Since each API call is its own resource, all you
+need to do is add a dependency between the calls. There is an helper method `next` that can be used.
+
+```ts
+declare const integ: IntegTest;
+
+integ.assertions.awsApiCall('S3', 'putObject', {
+  Bucket: 'my-bucket',
+  Key: 'my-key',
+  Body: 'helloWorld',
+}).next(integ.assertions.awsApiCall('S3', 'getObject', {
+  Bucket: 'my-bucket',
+  Key: 'my-key',
 }));
 ```
 

@@ -71,10 +71,6 @@ radio buttons on the bottom pane.
 This will add all resources from `my-template.json` / `my-template.yaml` into the CDK application,
 preserving their original logical IDs from the template file.
 
-Note that this including process will _not_ execute any
-[CloudFormation transforms](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-macros.html) -
-including the [Serverless transform](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-aws-serverless.html).
-
 Any resource from the included template can be retrieved by referring to it by its logical ID from the template.
 If you know the class of the CDK object that corresponds to that resource,
 you can cast the returned object to the correct type:
@@ -118,7 +114,39 @@ role.addToPolicy(new iam.PolicyStatement({
 }));
 ```
 
-### Converting L1 resources to L2
+## Migrating templates that use Transforms
+
+You can use this module to migrate templates that use
+[CloudFormation transforms](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-macros.html) -
+including the [Serverless transform](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-aws-serverless.html).
+
+The CDK including process does not execute Transforms,
+and the `cdk diff` command by default compares against the original
+(meaning, unprocessed) template.
+So, if you're downloading the template to include from the CloudFormation AWS Console,
+make sure to download the unprocessed template
+(the "View processed template" checkbox is left **unchecked**, which is the default):
+
+![unprocessed template in the CloudFormation AWS Console](doc-images/unprocessed-template.png)
+
+However, certain unprocessed templates can fail when used with the `CfnInclude` class.
+The most common reason for the failure is that the unprocessed template can contain cycles between resources,
+which get removed after the Transform is processed,
+but is not allowed when being included (as pure CloudFormation does not permit cycles).
+
+When that happens, you should instead download the processed template from the CloudFormation AWS Console
+(make sure the "View processed template" checkbox is **checked** in that case):
+
+![processed template in the CloudFormation AWS Console](doc-images/processed-template.png)
+
+When you include that processed template in your CDK application,
+running `cdk diff` will now show a lot of differences with the deployed Stack,
+because `cdk diff` uses the unprocessed template by default.
+To alleviate that problem, you can pass the `--processed` switch to `cdk diff`,
+which will make the diff command compare against the processed template of the deployed Stack,
+which will give more precise results in this case.
+
+## Converting L1 resources to L2
 
 The resources the `getResource` method returns are what the CDK calls
 [Layer 1 resources](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html#cfn_layer_cfn)
@@ -127,7 +155,7 @@ However, in many places in the Construct Library,
 the CDK requires so-called Layer 2 resources, like `IBucket`.
 There are two ways of going from an L1 to an L2 resource.
 
-#### Using`fromCfn*()` methods
+### Using`fromCfn*()` methods
 
 This is the preferred method of converting an L1 resource to an L2.
 It works by invoking a static method of the class of the L2 resource
@@ -191,7 +219,7 @@ and would throw an exception.
 
 In those cases, you need the use the second method of converting an L1 to an L2.
 
-#### Using `from*Name/Arn/Attributes()` methods
+### Using `from*Name/Arn/Attributes()` methods
 
 If the resource you need does not have a `fromCfn*()` method,
 or if it does, but it throws an exception for your particular L1,

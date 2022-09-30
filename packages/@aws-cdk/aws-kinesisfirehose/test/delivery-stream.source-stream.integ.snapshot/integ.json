@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-kinesisfirehose/test/integ.delivery-stream.source-stream": {
+    "integ.delivery-stream.source-stream": {
       "stacks": [
         "aws-cdk-firehose-delivery-stream-source-stream"
       ],

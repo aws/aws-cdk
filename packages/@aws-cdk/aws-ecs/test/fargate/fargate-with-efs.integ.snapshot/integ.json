@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-ecs/test/fargate/integ.fargate-with-efs": {
+    "integ.fargate-with-efs": {
       "stacks": [
         "aws-ecs-fargate-efs"
       ],

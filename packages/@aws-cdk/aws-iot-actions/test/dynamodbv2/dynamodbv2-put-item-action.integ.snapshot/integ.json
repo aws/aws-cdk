@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "dynamodbv2-integtest/DefaultTest": {
+      "stacks": [
+        "test-dynamodbv2-put-item-action-stack"
+      ],
+      "assertionStack": "dynamodbv2-integtest/DefaultTest/DeployAssert"
+    }
+  }
+}

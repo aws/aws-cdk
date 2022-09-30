@@ -1,14 +1,12 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "aws-ecs/test/fargate/integ.secret": {
+    "aws-ecs-fargate-integ-secret/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-secret"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-ecs-fargate-integ-secret/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsfargateintegsecretDefaultTestDeployAssert3A9C52E8"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

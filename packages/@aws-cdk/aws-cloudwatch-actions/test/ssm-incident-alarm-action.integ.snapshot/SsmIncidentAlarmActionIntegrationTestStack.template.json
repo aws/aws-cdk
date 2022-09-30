@@ -1,0 +1,152 @@
+{
+ "Resources": {
+  "Key961B73FD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PendingWindowInDays": 7
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ReplicationSet": {
+   "Type": "AWS::SSMIncidents::ReplicationSet",
+   "Properties": {
+    "Regions": [
+     {
+      "RegionConfiguration": {
+       "SseKmsKeyId": {
+        "Fn::GetAtt": [
+         "Key961B73FD",
+         "Arn"
+        ]
+       }
+      },
+      "RegionName": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ],
+    "DeletionProtected": false
+   }
+  },
+  "ResponsePlan": {
+   "Type": "AWS::SSMIncidents::ResponsePlan",
+   "Properties": {
+    "IncidentTemplate": {
+     "Impact": 1,
+     "Title": "Incident Title"
+    },
+    "Name": "test-response-plan"
+   },
+   "DependsOn": [
+    "ReplicationSet"
+   ]
+  },
+  "Alarm1F9009D71": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "AlarmActions": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":ssm-incidents::",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":response-plan/test-response-plan"
+       ]
+      ]
+     }
+    ],
+    "Metrics": [
+     {
+      "Id": "m1",
+      "Label": "Metric [AVG: ${AVG}]",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "Threshold": 100
+   },
+   "DependsOn": [
+    "ResponsePlan"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

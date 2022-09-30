@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-stepfunctions-integ": {
@@ -95,8 +95,8 @@
                     "id": "Stage",
                     "path": "aws-stepfunctions-integ/Evalda2d1181604e4a4586941a6abd7fe42d/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -121,41 +121,9 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameterse54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98S3Bucket5D9A017D"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameterse54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98S3VersionKey03C77D7E"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameterse54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98S3VersionKey03C77D7E"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "4a61519d8f4df8206cfaff4e519462aa81beab9213c3642a1353cd679c697638.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -175,50 +143,6 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-lambda.Function",
-              "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "aws-stepfunctions-integ/AssetParameters",
-            "children": {
-              "e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98": {
-                "id": "e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98",
-                "path": "aws-stepfunctions-integ/AssetParameters/e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "aws-stepfunctions-integ/AssetParameters/e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "aws-stepfunctions-integ/AssetParameters/e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "aws-stepfunctions-integ/AssetParameters/e54525b69c9eca5c38ae11cca4e73250873fe56f33ff8837aa19da61259e5a98/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
               "version": "0.0.0"
             }
           },
@@ -431,28 +355,28 @@
             "id": "StateMachineARN",
             "path": "aws-stepfunctions-integ/StateMachineARN",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "Service-principalMap": {
             "id": "Service-principalMap",
             "path": "aws-stepfunctions-integ/Service-principalMap",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnMapping",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

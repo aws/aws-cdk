@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-sqs/test/integ.sqs": {
+    "integ.sqs": {
       "stacks": [
         "aws-cdk-sqs"
       ],

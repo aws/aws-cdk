@@ -1725,6 +1725,143 @@ describe('cluster', () => {
 
   });
 
+  testDeprecated('updatePolicy set when passed without updateType', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImage: new ecs.BottleRocketImage(),
+      updatePolicy: autoscaling.UpdatePolicy.replacingUpdate(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+      UpdatePolicy: {
+        AutoScalingReplacingUpdate: {
+          WillReplace: true,
+        },
+      },
+    });
+  });
+
+  testDeprecated('undefined updateType & updatePolicy replaced by default updatePolicy', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImage: new ecs.BottleRocketImage(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+      UpdatePolicy: {
+        AutoScalingReplacingUpdate: {
+          WillReplace: true,
+        },
+      },
+    });
+  });
+
+  testDeprecated('updateType.NONE replaced by updatePolicy equivalent', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImage: new ecs.BottleRocketImage(),
+      updateType: autoscaling.UpdateType.NONE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+      UpdatePolicy: {
+        AutoScalingScheduledAction: {
+          IgnoreUnmodifiedGroupSizeProperties: true,
+        },
+      },
+    });
+  });
+
+  testDeprecated('updateType.REPLACING_UPDATE replaced by updatePolicy equivalent', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImage: new ecs.BottleRocketImage(),
+      updateType: autoscaling.UpdateType.REPLACING_UPDATE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+      UpdatePolicy: {
+        AutoScalingReplacingUpdate: {
+          WillReplace: true,
+        },
+      },
+    });
+  });
+
+  testDeprecated('updateType.ROLLING_UPDATE replaced by updatePolicy equivalent', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImage: new ecs.BottleRocketImage(),
+      updateType: autoscaling.UpdateType.ROLLING_UPDATE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+      UpdatePolicy: {
+        AutoScalingRollingUpdate: {
+          WaitOnResourceSignals: false,
+          PauseTime: 'PT0S',
+          SuspendProcesses: [
+            'HealthCheck',
+            'ReplaceUnhealthy',
+            'AZRebalance',
+            'AlarmNotification',
+            'ScheduledActions',
+          ],
+        },
+        AutoScalingScheduledAction: {
+          IgnoreUnmodifiedGroupSizeProperties: true,
+        },
+      },
+    });
+  });
+
+  testDeprecated('throws when updatePolicy and updateType both specified', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    expect(() => {
+      cluster.addCapacity('bottlerocket-asg', {
+        instanceType: new ec2.InstanceType('c5.large'),
+        machineImage: new ecs.BottleRocketImage(),
+        updatePolicy: autoscaling.UpdatePolicy.replacingUpdate(),
+        updateType: autoscaling.UpdateType.REPLACING_UPDATE,
+      });
+    }).toThrow("Cannot set 'signals'/'updatePolicy' and 'updateType' together. Prefer 'signals'/'updatePolicy'");
+  });
+
   testDeprecated('allows specifying capacityProviders (deprecated)', () => {
     // GIVEN
     const app = new cdk.App();

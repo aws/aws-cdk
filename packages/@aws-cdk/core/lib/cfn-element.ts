@@ -1,6 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
+import { debugModeEnabled } from './debug';
 import { Lazy } from './lazy';
 
 const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/core.CfnElement');
@@ -71,6 +72,7 @@ export abstract class CfnElement extends Construct {
 
     if (!this.node.tryGetContext(cxapi.DISABLE_LOGICAL_ID_METADATA)) {
       Node.of(this).addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, {
+        stackTrace: debugModeEnabled(),
         traceFromFunction: this.constructor,
       });
     }
@@ -204,3 +206,4 @@ function notTooLong(x: string) {
 import { CfnReference } from './private/cfn-reference';
 import { Stack } from './stack';
 import { Token } from './token';
+

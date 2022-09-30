@@ -118,6 +118,7 @@ export class S3SourceAction extends Action {
       this.props.bucket.onCloudTrailWriteObject(id, {
         target: new targets.CodePipeline(stage.pipeline),
         paths: [this.props.bucketKey],
+        crossStackScope: stage.pipeline as unknown as Construct,
       });
     }
 

@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-route53-targets/test/integ.globalaccelerator-alias-target": {
+    "integ.globalaccelerator-alias-target": {
       "stacks": [
         "aws-cdk-globalaccelerator-integ"
       ],

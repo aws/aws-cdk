@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.85"
         }
       },
       "aws-cdk-rds-instance": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-instance/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-instance/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +425,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-instance/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +544,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-instance/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -742,6 +742,7 @@
                   "aws:cdk:cloudformation:props": {
                     "engineName": "oracle-se2",
                     "majorEngineVersion": "19",
+                    "optionGroupDescription": "Option group for oracle-se2 19",
                     "optionConfigurations": [
                       {
                         "optionName": "LOCATOR"
@@ -758,8 +759,7 @@
                           }
                         ]
                       }
-                    ],
-                    "optionGroupDescription": "Option group for oracle-se2 19"
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1130,11 +1130,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
-                    "dbInstanceClass": "db.t3.medium",
                     "allocatedStorage": "100",
                     "autoMinorVersionUpgrade": true,
                     "backupRetentionPeriod": 7,
                     "copyTagsToSnapshot": true,
+                    "dbInstanceClass": "db.t3.medium",
                     "dbName": "ORCL",
                     "dbParameterGroupName": {
                       "Ref": "ParameterGroup5E32DECB"
@@ -1214,8 +1214,8 @@
                     "id": "Resource",
                     "path": "aws-cdk-rds-instance/Instance/LogRetentiontrace/Resource",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   }
                 },
@@ -1232,8 +1232,8 @@
                     "id": "Resource",
                     "path": "aws-cdk-rds-instance/Instance/LogRetentionaudit/Resource",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   }
                 },
@@ -1250,8 +1250,8 @@
                     "id": "Resource",
                     "path": "aws-cdk-rds-instance/Instance/LogRetentionalert/Resource",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   }
                 },
@@ -1268,8 +1268,8 @@
                     "id": "Resource",
                     "path": "aws-cdk-rds-instance/Instance/LogRetentionlistener/Resource",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   }
                 },
@@ -1320,8 +1320,8 @@
                     "id": "SARMapping",
                     "path": "aws-cdk-rds-instance/Instance/RotationSingleUser/SARMapping",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnMapping",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "Resource": {
@@ -1525,8 +1525,8 @@
                     "id": "Stage",
                     "path": "aws-cdk-rds-instance/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -1638,58 +1638,14 @@
                 "id": "Resource",
                 "path": "aws-cdk-rds-instance/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.33"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "aws-cdk-rds-instance/AssetParameters",
-            "children": {
-              "af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b": {
-                "id": "af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b",
-                "path": "aws-cdk-rds-instance/AssetParameters/af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "aws-cdk-rds-instance/AssetParameters/af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "aws-cdk-rds-instance/AssetParameters/af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "aws-cdk-rds-instance/AssetParameters/af4ed033ae57b4313cf2e73fe9eb52500f1319be4e9212747877583220481c8b/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.33"
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.33"
+              "version": "10.1.85"
             }
           },
           "HighCPU": {
@@ -1815,14 +1771,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

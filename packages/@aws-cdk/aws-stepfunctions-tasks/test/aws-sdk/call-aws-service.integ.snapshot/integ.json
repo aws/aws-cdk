@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-stepfunctions-tasks/test/aws-sdk/integ.call-aws-service": {
+    "integ.call-aws-service": {
       "stacks": [
         "aws-stepfunctions-aws-sdk-integ"
       ],

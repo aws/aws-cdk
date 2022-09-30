@@ -948,7 +948,7 @@ class CustomizableResource extends CfnResource {
   }
 
   public renderProperties(): { [key: string]: any } {
-    const props = this.updatedProperites;
+    const props = this.updatedProperties;
     const render: { [key: string]: any } = {};
     for (const key of Object.keys(props)) {
       render[key.toUpperCase()] = props[key];
@@ -956,7 +956,7 @@ class CustomizableResource extends CfnResource {
     return render;
   }
 
-  protected get updatedProperites(): { [key: string]: any } {
+  protected get updatedProperties(): { [key: string]: any } {
     const props: { [key: string]: any } = {
       prop1: this.prop1,
       prop2: this.prop2,

@@ -49,6 +49,13 @@ export class IntegTest {
   public readonly absoluteFileName: string;
 
   /**
+   * The normalized name of the test. This name
+   * will be the same regardless of what directory the tool
+   * is run from.
+   */
+  public readonly normalizedTestName: string;
+
+  /**
    * Directory the test is in
    */
   public readonly directory: string;
@@ -91,6 +98,7 @@ export class IntegTest {
       : path.join(path.relative(this.info.discoveryRoot, parsed.dir), parsed.name);
 
     const nakedTestName = parsed.name.slice(6); // Leave name without 'integ.' and '.ts'
+    this.normalizedTestName = parsed.name;
     this.snapshotDir = path.join(this.directory, `${nakedTestName}.integ.snapshot`);
     this.temporaryOutputDir = path.join(this.directory, `${CDK_OUTDIR_PREFIX}.${nakedTestName}`);
   }

@@ -1,7 +1,7 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "sns/integ.publish": {
+    "integ.publish": {
       "stacks": [
         "aws-stepfunctions-tasks-sns-publish-integ"
       ],

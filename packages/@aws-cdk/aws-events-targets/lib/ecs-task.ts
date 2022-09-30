@@ -5,12 +5,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ContainerOverride } from './ecs-task-properties';
-import { singletonEventRole } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
  * Properties to define an ECS Event Task
  */
-export interface EcsTaskProps {
+export interface EcsTaskProps extends TargetBaseProps {
   /**
    * Cluster where service will be deployed
    */
@@ -160,7 +160,7 @@ export class EcsTask implements events.IRuleTarget {
     const taskCount = this.taskCount;
     const taskDefinitionArn = this.taskDefinition.taskDefinitionArn;
 
-    const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT };
+    const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
     const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
 
     const baseEcsParameters = { taskCount, taskDefinitionArn };
@@ -180,7 +180,12 @@ export class EcsTask implements events.IRuleTarget {
       }
       : baseEcsParameters;
 
+    if (this.props.deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
+    }
+
     return {
+      ...bindBaseTargetConfig(this.props),
       arn,
       role,
       ecsParameters,

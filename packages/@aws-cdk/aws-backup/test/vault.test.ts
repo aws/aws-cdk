@@ -2,7 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sns from '@aws-cdk/aws-sns';
-import { ArnFormat, Stack } from '@aws-cdk/core';
+import { ArnFormat, Duration, Stack } from '@aws-cdk/core';
 import { BackupVault, BackupVaultEvents } from '../lib';
 
 let stack: Stack;
@@ -366,4 +366,59 @@ test('throws with too short name', () => {
   expect(() => new BackupVault(stack, 'Vault', {
     backupVaultName: 'x',
   })).toThrow(/Expected vault name to match pattern/);
+});
+
+test('with lock configuration', () => {
+  // WHEN
+  new BackupVault(stack, 'Vault', {
+    lockConfiguration: {
+      minRetention: Duration.days(30),
+      maxRetention: Duration.days(365),
+      changeableFor: Duration.days(7),
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    LockConfiguration: {
+      ChangeableForDays: 7,
+      MaxRetentionDays: 365,
+      MinRetentionDays: 30,
+    },
+  });
+});
+
+test('throws with incorrect lock configuration - min retention', () => {
+  expect(() => new BackupVault(stack, 'Vault', {
+    lockConfiguration: {
+      minRetention: Duration.hours(12),
+    },
+  })).toThrow(/The shortest minimum retention period you can specify is 1 day/);
+});
+
+test('throws with incorrect lock configuration - max retention', () => {
+  expect(() => new BackupVault(stack, 'Vault', {
+    lockConfiguration: {
+      minRetention: Duration.days(7),
+      maxRetention: Duration.days(40000),
+    },
+  })).toThrow(/The longest maximum retention period you can specify is 36500 days/);
+});
+
+test('throws with incorrect lock configuration - max and min retention', () => {
+  expect(() => new BackupVault(stack, 'Vault', {
+    lockConfiguration: {
+      minRetention: Duration.days(7),
+      maxRetention: Duration.days(4),
+    },
+  })).toThrow(/The maximum retention period \(4 days\) must be greater than the minimum retention period \(7 days\)/);
+});
+
+test('throws with incorrect lock configuration - changeable for', () => {
+  expect(() => new BackupVault(stack, 'Vault', {
+    lockConfiguration: {
+      minRetention: Duration.days(7),
+      changeableFor: Duration.days(1),
+    },
+  })).toThrow(/AWS Backup enforces a 72-hour cooling-off period before Vault Lock takes effect and becomes immutable/);
 });

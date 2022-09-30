@@ -14,6 +14,8 @@ import { IntegTestBatchRequest } from '../integ-test-worker';
  */
 export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorkerConfig[] {
   const failures: IntegTestInfo[] = [];
+  const verbosity = request.verbosity ?? 0;
+
   for (const testInfo of request.tests) {
     const test = new IntegTest(testInfo); // Hydrate from data
     const start = Date.now();
@@ -25,6 +27,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
         env: {
           AWS_REGION: request.region,
         },
+        showOutput: verbosity >= 2,
       }, testInfo.destructiveChanges);
 
       const tests = runner.actualTests();
@@ -39,8 +42,9 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
             clean: request.clean,
             dryRun: request.dryRun,
             updateWorkflow: request.updateWorkflow,
+            verbosity,
           });
-          if (results) {
+          if (results && Object.values(results).some(result => result.status === 'fail')) {
             failures.push(testInfo);
             workerpool.workerEmit({
               reason: DiagnosticReason.ASSERTION_FAILED,
@@ -52,7 +56,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
             workerpool.workerEmit({
               reason: DiagnosticReason.TEST_SUCCESS,
               testName: `${runner.testName}-${testCaseName}`,
-              message: 'Success',
+              message: results ? formatAssertionResults(results) : 'NO ASSERTIONS',
               duration: (Date.now() - start) / 1000,
             });
           }

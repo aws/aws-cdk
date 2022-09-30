@@ -42,9 +42,21 @@ export class BackupableResourcesCollector implements IAspect {
     }
 
     if (node instanceof rds.CfnDBInstance) {
+      const dbInstance = node as rds.CfnDBInstance;
+      if (!dbInstance.dbClusterIdentifier) {
+        this.resources.push(Stack.of(node).formatArn({
+          service: 'rds',
+          resource: 'db',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          resourceName: node.ref,
+        }));
+      }
+    }
+
+    if (node instanceof rds.CfnDBCluster) {
       this.resources.push(Stack.of(node).formatArn({
         service: 'rds',
-        resource: 'db',
+        resource: 'cluster',
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         resourceName: node.ref,
       }));
