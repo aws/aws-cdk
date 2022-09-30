@@ -194,6 +194,23 @@ export interface LaunchTemplateSpotOptions {
 };
 
 /**
+ * The state of token usage for your instance metadata requests.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
+ */
+export enum LaunchTemplateHttpTokens {
+  /**
+   * If the state is optional, you can choose to retrieve instance metadata with or without a signed token header on your request.
+   */
+  OPTIONAL = 'optional',
+  /**
+   * If the state is required, you must send a signed token header with any instance metadata retrieval requests. In this state,
+   * retrieving the IAM role credentials always returns the version 2.0 credentials; the version 1.0 credentials are not available.
+   */
+  REQUIRED = 'required',
+}
+
+/**
  * Properties of a LaunchTemplate.
  */
 export interface LaunchTemplateProps {
@@ -341,6 +358,51 @@ export interface LaunchTemplateProps {
    * @default - false
    */
   readonly requireImdsv2?: boolean;
+
+  /**
+   * Enables or disables the HTTP metadata endpoint on your instances.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpendpoint
+   *
+   * @default - true
+   */
+  readonly httpEndpoint?: boolean;
+
+  /**
+   * Enables or disables the IPv6 endpoint for the instance metadata service.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpprotocolipv6
+   *
+   * @default - true
+   */
+  readonly httpProtocolIpv6?: boolean;
+
+  /**
+   * The desired HTTP PUT response hop limit for instance metadata requests. The larger the number, the further instance metadata requests can travel.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
+   *
+   * @defualt - 1
+   */
+  readonly httpPutResponseHopLimit?: number;
+
+  /**
+   * The state of token usage for your instance metadata requests.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
+   *
+   * @default LaunchTemplateHttpTokens.OPTIONAL
+   */
+  readonly httpTokens?: LaunchTemplateHttpTokens;
+
+  /**
+   * Set to enabled to allow access to instance tags from the instance metadata. Set to disabled to turn off access to instance tags from the instance metadata.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-instancemetadatatags
+   *
+   * @default false
+   */
+  readonly instanceMetadataTags?: boolean;
 }
 
 /**
@@ -639,6 +701,19 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         securityGroupIds: securityGroupsToken,
         tagSpecifications: tagsToken,
         userData: userDataToken,
+        metadataOptions: {
+          httpEndpoint: props.httpEndpoint == true ? 'enabled' :
+            props.httpEndpoint == false ? 'disabled' : undefined,
+          httpProtocolIpv6: props.httpProtocolIpv6 == true ? 'enabled' :
+            props.httpProtocolIpv6 == false ? 'disabled' : undefined,
+          httpPutResponseHopLimit: props.httpPutResponseHopLimit,
+          httpTokens: props.httpTokens,
+          instanceMetadataTags: props.instanceMetadataTags == true ? 'enabled' :
+            props.instanceMetadataTags == false ? 'disabled' : undefined,
+        },
+
+        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions
+        // metadataOptions: undefined,
 
         // Fields not yet implemented:
         // ==========================
@@ -662,9 +737,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-licensespecifications
         // Also not implemented in Instance L2
         // licenseSpecifications: undefined,
-
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions
-        // metadataOptions: undefined,
 
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-tagspecifications
         // Should be implemented via the Tagging aspect in CDK core. Complication will be that this tagging interface is very unique to LaunchTemplates.
