@@ -100,12 +100,13 @@ export class AssetManifestBuilder {
    * sourceHash should be unique for every source.
    */
   public addDockerImageAsset(stack: Stack, sourceHash: string, source: cxschema.DockerImageSource, dest: cxschema.DockerImageDestination) {
-    this.dockerImages[sourceHash] = {
-      source,
-      destinations: {
-        [this.manifestEnvName(stack)]: dest,
-      },
-    };
+    if (!this.dockerImages[sourceHash]) {
+      this.dockerImages[sourceHash] = {
+        source,
+        destinations: {},
+      };
+    }
+    this.dockerImages[sourceHash].destinations[this.manifestEnvName(stack)] = dest;
     return dest;
   }
 
