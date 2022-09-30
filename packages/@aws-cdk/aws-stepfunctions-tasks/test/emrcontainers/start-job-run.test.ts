@@ -282,25 +282,25 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               Action: 'logs:DescribeLogGroups',
               Effect: 'Allow',
               Resource: {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
+                    'arn:',
                     {
-                      "Ref": "AWS::Partition"
+                      Ref: 'AWS::Partition',
                     },
-                    ":logs:",
+                    ':logs:',
                     {
-                      "Ref": "AWS::Region"
+                      Ref: 'AWS::Region',
                     },
-                    ":",
+                    ':',
                     {
-                      "Ref": "AWS::AccountId"
+                      Ref: 'AWS::AccountId',
                     },
-                    ":*"
-                  ]
-                ]
-              }
+                    ':*',
+                  ],
+                ],
+              },
             },
           ],
           Version: '2012-10-17',
@@ -459,25 +459,25 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               Action: 'logs:DescribeLogGroups',
               Effect: 'Allow',
               Resource: {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
+                    'arn:',
                     {
-                      "Ref": "AWS::Partition"
+                      Ref: 'AWS::Partition',
                     },
-                    ":logs:",
+                    ':logs:',
                     {
-                      "Ref": "AWS::Region"
+                      Ref: 'AWS::Region',
                     },
-                    ":",
+                    ':',
                     {
-                      "Ref": "AWS::AccountId"
+                      Ref: 'AWS::AccountId',
                     },
-                    ":*"
-                  ]
-                ]
-              }
+                    ':*',
+                  ],
+                ],
+              },
             },
           ],
           Version: '2012-10-17',

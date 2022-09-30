@@ -282,8 +282,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
         resources: [
           cdk.Stack.of(this).formatArn({
             service: 'logs',
-            resource: '*'
-          })
+            resource: '*',
+          }),
         ],
         actions: [
           'logs:DescribeLogGroups',
@@ -306,8 +306,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
         resources: [
           cdk.Stack.of(this).formatArn({
             service: 'logs',
-            resource: '*'
-          })
+            resource: '*',
+          }),
         ],
         actions: [
           'logs:DescribeLogGroups',
