@@ -270,6 +270,11 @@ export interface SynthesizeStackArtifactOptions {
 
 function stackTemplateFileAsset(stack: Stack, session: ISynthesisSession): FileAssetSource {
   const templatePath = path.join(session.assembly.outdir, stack.templateFile);
+
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(`Stack template ${stack.stackName} not written yet: ${templatePath}`);
+  }
+
   const template = fs.readFileSync(templatePath, { encoding: 'utf-8' });
 
   const sourceHash = contentHash(template);
