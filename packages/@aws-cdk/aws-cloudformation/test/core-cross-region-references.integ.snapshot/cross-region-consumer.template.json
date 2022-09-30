@@ -15,7 +15,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
        },
-       "/61c5467a13581c441143dacb7d8878bb691678bb777668c0d4bbf28d05538404.json"
+       "/8951083c42b14c02bc23ef787fdc9dd81379182eba5b19431fb87aae9824399c.json"
       ]
      ]
     }
@@ -27,7 +27,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Value": "{{resolve:ssm:/cdk/exports/cross-region-producer-IntegQueueFnGetAttIntegQueue3A18718AQueueName6E52E429}}",
+    "Value": "{{resolve:ssm:/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B}}",
     "Name": "integ-parameter0"
    }
   },
@@ -35,9 +35,111 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Value": "{{resolve:ssm:/cdk/exports/cross-region-producer-IntegNestedNestedStackIntegNestedNestedStackResourceFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC3296698}}",
+    "Value": "{{resolve:ssm:/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E}}",
     "Name": "integ-parameter1"
    }
+  },
+  "ExportsReader8B249524": {
+   "Type": "Custom::CrossRegionExportReader",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68",
+      "Arn"
+     ]
+    },
+    "Region": "us-east-2",
+    "StackName": "cross-region-consumer",
+    "Imports": [
+     "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B",
+     "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E",
+     "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B",
+     "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
+    ]
+   },
+   "DependsOn": [
+    "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:ssm:us-east-2:",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":parameter/cdk/exports/cross-region-consumer/*"
+           ]
+          ]
+         },
+         "Action": [
+          "ssm:DeleteParameters",
+          "ssm:AddTagsToResource",
+          "ssm:RemoveTagsFromResource",
+          "ssm:GetParametersByPath",
+          "ssm:GetParameters"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
+     },
+     "S3Key": "abb99ab2b779b809c120ce2531aa4570108d2c73e461b9e97966d6804c58d915.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+   ]
   }
  },
  "Parameters": {

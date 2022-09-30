@@ -28,7 +28,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ExportsWriteruseast2828FA26B": {
+  "ExportsWriteruseast2828FA26B86FBEFA7": {
    "Type": "Custom::CrossRegionExportWriter",
    "Properties": {
     "ServiceToken": {
@@ -39,13 +39,13 @@
     },
     "Region": "us-east-2",
     "Exports": {
-     "/cdk/exports/cross-region-producer-IntegQueueFnGetAttIntegQueue3A18718AQueueName6E52E429": {
+     "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": {
       "Fn::GetAtt": [
        "IntegQueue3A18718A",
        "QueueName"
       ]
      },
-     "/cdk/exports/cross-region-producer-IntegNestedNestedStackIntegNestedNestedStackResourceFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC3296698": {
+     "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": {
       "Fn::GetAtt": [
        "IntegNestedNestedStackIntegNestedNestedStackResource168C5881",
        "Outputs.crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName"
@@ -97,9 +97,9 @@
           ]
          },
          "Action": [
+          "ssm:ListTagsForResource",
           "ssm:GetParameters",
-          "ssm:PutParameter",
-          "ssm:DeleteParameters"
+          "ssm:PutParameter"
          ]
         }
        ]
@@ -115,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "45a896e4815eddbd9cf3bcc74e93517fbdcbd9275ee272d5d84a2b09f32aa6d4.zip"
+     "S3Key": "a44438f0402397af9022e6f4259fb57bbb4bd859db72879f14f40981be45fadc.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

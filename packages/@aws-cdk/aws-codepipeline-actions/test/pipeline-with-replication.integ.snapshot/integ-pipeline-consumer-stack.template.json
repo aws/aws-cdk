@@ -302,10 +302,10 @@
      {
       "ArtifactStore": {
        "EncryptionKey": {
-        "Id": "{{resolve:ssm:/cdk/exports/integ-pipeline-producer-stack-ReplicationKeyFnGetAttReplicationKeyFCE40BF4ArnFBFE312D}}",
+        "Id": "{{resolve:ssm:/cdk/exports/integ-pipeline-consumer-stack/integpipelineproducerstackuseast1FnGetAttReplicationKeyFCE40BF4ArnFA0E5A73}}",
         "Type": "KMS"
        },
-       "Location": "{{resolve:ssm:/cdk/exports/integ-pipeline-producer-stack-ReplicationBucketRefReplicationBucket70D6873707044AE1}}",
+       "Location": "{{resolve:ssm:/cdk/exports/integ-pipeline-consumer-stack/integpipelineproducerstackuseast1RefReplicationBucket70D68737DB32483D}}",
        "Type": "S3"
       },
       "Region": "us-east-1"
@@ -835,6 +835,103 @@
      ]
     }
    }
+  },
+  "ExportsReader8B249524": {
+   "Type": "Custom::CrossRegionExportReader",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68",
+      "Arn"
+     ]
+    },
+    "Region": "us-east-2",
+    "StackName": "integ-pipeline-consumer-stack",
+    "Imports": [
+     "/cdk/exports/integ-pipeline-consumer-stack/integpipelineproducerstackuseast1RefReplicationBucket70D68737DB32483D",
+     "/cdk/exports/integ-pipeline-consumer-stack/integpipelineproducerstackuseast1FnGetAttReplicationKeyFCE40BF4ArnFA0E5A73"
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:ssm:us-east-2:",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":parameter/cdk/exports/integ-pipeline-consumer-stack/*"
+           ]
+          ]
+         },
+         "Action": [
+          "ssm:DeleteParameters",
+          "ssm:AddTagsToResource",
+          "ssm:RemoveTagsFromResource",
+          "ssm:GetParametersByPath",
+          "ssm:GetParameters"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
+     },
+     "S3Key": "abb99ab2b779b809c120ce2531aa4570108d2c73e461b9e97966d6804c58d915.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+   ]
   }
  },
  "Parameters": {

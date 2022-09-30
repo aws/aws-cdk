@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/7a3fc43a5189fb6d6a3bfc72db7aa7ac212db1e56232e932ed0fef91147422ba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/390176c29eb237a2593e7747bd0a888561316b8ef0e3f6bc79cab1169443e61d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,10 +57,10 @@
             "data": "IntegQueue3A18718A"
           }
         ],
-        "/cross-region-producer/ExportsWriteruseast2828FA26B/Default/Default": [
+        "/cross-region-producer/ExportsWriteruseast2828FA26B/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsWriteruseast2828FA26B"
+            "data": "ExportsWriteruseast2828FA26B86FBEFA7"
           }
         ],
         "/cross-region-producer/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
@@ -106,7 +106,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/073479a1920f44222959fc9231ad62d389ab3fe14dc0a6cdc14a3f1f54fb8dfc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/f81d7674cf434dae5287040174f1f3f91843c4d8385d3b6b322b6ffbe47ae1f7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -151,6 +151,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegParameter1EDBEF1C6"
+          }
+        ],
+        "/cross-region-consumer/ExportsReader/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsReader8B249524"
+          }
+        ],
+        "/cross-region-consumer/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+          }
+        ],
+        "/cross-region-consumer/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
           }
         ],
         "/cross-region-consumer/BootstrapVersion": [

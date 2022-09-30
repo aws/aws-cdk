@@ -12,29 +12,19 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     switch (event.RequestType) {
       case 'Create':
         console.info(`Creating new SSM Parameter exports in region ${props.Region}`);
-        await throwIfAnyExistingParameters(ssm, exports);
+        await throwIfAnyInUse(ssm, exports);
         await putParameters(ssm, exports);
         return;
       case 'Update':
         const oldProps = event.OldResourceProperties;
         const oldExports: CrossRegionExports = oldProps.Exports;
         const newExports = filterExports(exports, oldExports);
-        await throwIfAnyExistingParameters(ssm, newExports);
-        const paramsToDelete = filterExports(oldExports, exports);
-        console.info(`Deleting unused SSM Parameter exports in region ${props.Region}`);
-        if (Object.keys(paramsToDelete).length > 0) {
-          await ssm.deleteParameters({
-            Names: Object.keys(paramsToDelete),
-          }).promise();
-        }
+        await throwIfAnyInUse(ssm, newExports);
         console.info(`Creating new SSM Parameter exports in region ${props.Region}`);
         await putParameters(ssm, newExports);
         return;
       case 'Delete':
-        console.info(`Deleting all SSM Parameter exports in region ${props.Region}`);
-        await ssm.deleteParameters({
-          Names: Array.from(Object.keys(exports)),
-        }).promise();
+        // consuming stack will delete parameters
         return;
       default:
         return;
@@ -59,15 +49,41 @@ async function putParameters(ssm: SSM, parameters: CrossRegionExports): Promise<
 }
 
 /**
- * Query for existing parameters
+ * Query for existing parameters that are in use
  */
-async function throwIfAnyExistingParameters(ssm: SSM, parameters: CrossRegionExports): Promise<void> {
-  const result = await ssm.getParameters({
-    Names: Object.keys(parameters),
-  }).promise();
-  if ((result.Parameters ?? []).length > 0) {
-    const existing = result.Parameters!.map(param => param.Name);
-    throw new Error(`Exports already exist: \n${existing.join('\n')}`);
+async function throwIfAnyInUse(ssm: SSM, parameters: CrossRegionExports): Promise<void> {
+  const tagResults: Map<string, Set<string>> = new Map();
+  await Promise.all(Object.keys(parameters).map(async (name: string) => {
+    try {
+      const result = await ssm.listTagsForResource({
+        ResourceId: name,
+        ResourceType: 'Parameter',
+      }).promise();
+      result.TagList?.forEach(tag => {
+        const tagParts = tag.Key.split(':');
+        if (tagParts[0] === 'cdk-strong-ref') {
+          tagResults.has(name)
+            ? tagResults.get(name)!.add(tagParts[1])
+            : tagResults.set(name, new Set([tagParts[1]]));
+        }
+      });
+
+    } catch (e) {
+      // an InvalidResourceId means that the parameter doesn't exist
+      // which we should ignore since that means it's not in use
+      if (e.code === 'InvalidResourceId') {
+        return;
+      }
+      throw e;
+    }
+
+  }));
+
+  if (tagResults.size > 0) {
+    const message: string = Object.entries(tagResults)
+      .map((result: [string, string[]]) => `${result[0]} is in use by stack(s) ${result[1].join(' ')}`)
+      .join('\n');
+    throw new Error(`Exports cannot be updated: \n${message}`);
   }
 }
 
@@ -79,7 +95,7 @@ async function throwIfAnyExistingParameters(ssm: SSM, parameters: CrossRegionExp
  */
 function filterExports(source: CrossRegionExports, filter: CrossRegionExports): CrossRegionExports {
   return Object.keys(source)
-    .filter(key => !filter.hasOwnProperty(key))
+    .filter(key => (!filter.hasOwnProperty(key) || source[key] !== filter[key]))
     .reduce((acc: CrossRegionExports, curr: string) => {
       acc[curr] = source[curr];
       return acc;

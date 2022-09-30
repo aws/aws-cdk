@@ -4,7 +4,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Value": "{{resolve:ssm:/cdk/exports/cross-region-producer-IntegQueueFnGetAttIntegQueue3A18718AQueueName6E52E429}}",
+    "Value": "{{resolve:ssm:/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B}}",
     "Name": "integ-nested-parameter0"
    }
   },
@@ -12,7 +12,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Value": "{{resolve:ssm:/cdk/exports/cross-region-producer-IntegNestedNestedStackIntegNestedNestedStackResourceFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC3296698}}",
+    "Value": "{{resolve:ssm:/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E}}",
     "Name": "integ-nested-parameter1"
    }
   }

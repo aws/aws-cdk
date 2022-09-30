@@ -187,7 +187,7 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "ExportsWriteruseast2828FA26B": {
+  "ExportsWriteruseast2828FA26B86FBEFA7": {
    "Type": "Custom::CrossRegionExportWriter",
    "Properties": {
     "ServiceToken": {
@@ -198,10 +198,10 @@
     },
     "Region": "us-east-2",
     "Exports": {
-     "/cdk/exports/integ-pipeline-producer-stack-ReplicationBucketRefReplicationBucket70D6873707044AE1": {
+     "/cdk/exports/integ-pipeline-consumer-stack/integpipelineproducerstackuseast1RefReplicationBucket70D68737DB32483D": {
       "Ref": "ReplicationBucket70D68737"
      },
-     "/cdk/exports/integ-pipeline-producer-stack-ReplicationKeyFnGetAttReplicationKeyFCE40BF4ArnFBFE312D": {
+     "/cdk/exports/integ-pipeline-consumer-stack/integpipelineproducerstackuseast1FnGetAttReplicationKeyFCE40BF4ArnFA0E5A73": {
       "Fn::GetAtt": [
        "ReplicationKeyFCE40BF4",
        "Arn"
@@ -253,9 +253,9 @@
           ]
          },
          "Action": [
+          "ssm:ListTagsForResource",
           "ssm:GetParameters",
-          "ssm:PutParameter",
-          "ssm:DeleteParameters"
+          "ssm:PutParameter"
          ]
         }
        ]
@@ -271,7 +271,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "45a896e4815eddbd9cf3bcc74e93517fbdcbd9275ee272d5d84a2b09f32aa6d4.zip"
+     "S3Key": "a44438f0402397af9022e6f4259fb57bbb4bd859db72879f14f40981be45fadc.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
