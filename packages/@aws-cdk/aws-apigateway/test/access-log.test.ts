@@ -31,12 +31,13 @@ describe('access log', () => {
       requestId: apigateway.AccessLogField.contextRequestId(),
       sourceIp: apigateway.AccessLogField.contextIdentitySourceIp(),
       method: apigateway.AccessLogField.contextHttpMethod(),
-      accountId: apigateway.AccessLogField.contextAccountId(),
+      callerAccountId: apigateway.AccessLogField.contextCallerAccountId(),
+      ownerAccountId: apigateway.AccessLogField.contextOwnerAccountId(),
       userContext: {
         sub: apigateway.AccessLogField.contextAuthorizerClaims('sub'),
         email: apigateway.AccessLogField.contextAuthorizerClaims('email'),
       },
     }));
-    expect(testFormat.toString()).toEqual('{"requestId":"$context.requestId","sourceIp":"$context.identity.sourceIp","method":"$context.httpMethod","accountId":"$context.identity.accountId","userContext":{"sub":"$context.authorizer.claims.sub","email":"$context.authorizer.claims.email"}}');
+    expect(testFormat.toString()).toEqual('{"requestId":"$context.requestId","sourceIp":"$context.identity.sourceIp","method":"$context.httpMethod","callerAccountId":"$context.identity.accountId","ownerAccountId":"$context.accountId","userContext":{"sub":"$context.authorizer.claims.sub","email":"$context.authorizer.claims.email"}}');
   });
 });
