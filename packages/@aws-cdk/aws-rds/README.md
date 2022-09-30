@@ -668,7 +668,7 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
 
 declare const code: lambda.Code;
 const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code,
   environment: {
@@ -685,8 +685,8 @@ To learn more about using the Data API, see the [documentation](https://docs.aws
 
 ### Default VPC
 
-The `vpc` parameter is optional. 
+The `vpc` parameter is optional.
 
 If not provided, the cluster will be created in the default VPC of the account and region.
-As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster. 
+As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster.
 If you want to provide one of `vpcSubnets`, `subnetGroup` or `securityGroups` parameter, please provide a `vpc`.

@@ -287,7 +287,7 @@ threshold (the "buffer interval"), whichever happens first. You can configure th
 thresholds based on the capabilities of the destination and your use-case. By default, the
 buffer size is 5 MiB and the buffer interval is 5 minutes.
 
-```ts 
+```ts
 // Increase the buffer interval and size to 10 minutes and 8 MiB, respectively
 declare const bucket: s3.Bucket;
 const destination = new destinations.S3Bucket(bucket, {
@@ -402,7 +402,7 @@ times by default, but can be configured using `retries` in the processor configu
 // Provide a Lambda function that will transform records before delivery, with custom
 // buffering and retry configuration
 const lambdaFunction = new lambda.Function(this, 'Processor', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'process-records')),
 });

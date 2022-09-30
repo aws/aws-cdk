@@ -51,7 +51,7 @@ triggered for every events from `aws.ec2` source. You can optionally attach a
 import * as lambda from '@aws-cdk/aws-lambda';
 
 const fn = new lambda.Function(this, 'MyFunc', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = handler.toString()`),
 });
@@ -243,7 +243,7 @@ const rule = new events.Rule(this, 'Rule', {
 
 const fn = new lambda.Function( this, 'MyFunc', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   code: lambda.Code.fromInline( 'exports.handler = e => {}' ),
 } );
 
