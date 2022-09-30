@@ -38,8 +38,10 @@ class UsingStack extends cdk.Stack {
     }).stringValue;
 
     // Retrieve a specific version of the secret (SecureString) parameter.
-    // 'version' is always required.
     const secretValue = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'MySecureValue', {
+      parameterName: '/My/Secret/Parameter',
+    });
+    const secretValueVersion = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'MySecureValueVersion', {
       parameterName: '/My/Secret/Parameter',
       version: 5,
     });
@@ -57,6 +59,7 @@ class UsingStack extends cdk.Stack {
 
     // Cannot be provisioned so cannot be actually used
     Array.isArray(secretValue);
+    Array.isArray(secretValueVersion);
     Array.isArray(secretValueVersionFromToken);
   }
 }
