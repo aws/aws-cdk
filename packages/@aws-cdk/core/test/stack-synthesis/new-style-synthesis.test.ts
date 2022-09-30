@@ -139,9 +139,6 @@ describe('new style synthesis', () => {
        * Synthesize the associated bootstrap stack to the session.
        */
       public synthesize(session: ISynthesisSession): void {
-        if (!this.stack) {
-          throw new Error('You must call bind() with a stack instance first');
-        }
         this.synthesizeTemplate(session);
         session.assembly.addArtifact('FAKE_ARTIFACT_ID', {
           type: ArtifactType.ASSET_MANIFEST,
