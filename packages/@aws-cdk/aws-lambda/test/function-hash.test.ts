@@ -100,7 +100,7 @@ describe('function hash', () => {
     });
 
     expect(calculateFunctionHash(fn1)).toEqual('528dd04e66817b3b439b5e9a17d239c9');
-    expect(calculateFunctionHash(fn2)).toEqual('0f168f0772463e8e547bb3800937e54d');
+    expect(calculateFunctionHash(fn2)).toEqual('d2387f9fda6c27296931cf4c57be82d9');
   });
 
   test('inline code change impacts the hash', () => {
@@ -119,7 +119,7 @@ describe('function hash', () => {
     });
 
     expect(calculateFunctionHash(fn1)).toEqual('71fe99b1b2c3eae062ccc42144608827');
-    expect(calculateFunctionHash(fn2)).toEqual('ffedf6424a18a594a513129dc97bf53c');
+    expect(calculateFunctionHash(fn2)).toEqual('df536bcbc0a214971aa22d9d3cf259d4');
   });
 
   describe('lambda layers', () => {

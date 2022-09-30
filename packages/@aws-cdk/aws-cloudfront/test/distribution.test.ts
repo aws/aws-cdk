@@ -728,7 +728,7 @@ describe('with Lambda@Edge functions', () => {
               EventType: 'origin-request',
               IncludeBody: true,
               LambdaFunctionARN: {
-                Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
+                Ref: 'FunctionCurrentVersion4E2B2261c8c3cb9534b15b1bd7452e3a82ec90e1',
               },
             },
           ],
@@ -798,7 +798,7 @@ describe('with Lambda@Edge functions', () => {
               {
                 EventType: 'viewer-request',
                 LambdaFunctionARN: {
-                  Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
+                  Ref: 'FunctionCurrentVersion4E2B2261c8c3cb9534b15b1bd7452e3a82ec90e1',
                 },
               },
             ],

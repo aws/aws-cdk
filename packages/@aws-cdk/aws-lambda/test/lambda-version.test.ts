@@ -124,7 +124,7 @@ describe('lambda version', () => {
       },
       FunctionVersion: {
         'Fn::GetAtt': [
-          'FnCurrentVersion17A89ABBab5c765f3c55e4e61583b51b00a95742',
+          'FnCurrentVersion17A89ABB7527c444753eb2d3d507176640bb9882',
           'Version',
         ],
       },
@@ -143,7 +143,7 @@ describe('lambda version', () => {
     const version = fn.currentVersion;
 
     // THEN
-    expect(stack.resolve(version.edgeArn)).toEqual({ Ref: 'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005' });
+    expect(stack.resolve(version.edgeArn)).toEqual({ Ref: 'FnCurrentVersion17A89ABBf64bbf789fffad4a1acead2dead411ba' });
   });
 
   test('edgeArn throws with $LATEST', () => {
