@@ -57,6 +57,17 @@ export class Intrinsic implements IResolvable {
   }
 
   /**
+   * Convert an instance of this Token to a string list
+   *
+   * This method will be called implicitly by language runtimes if the object
+   * is embedded into a list. We treat it the same as an explicit
+   * stringification.
+   */
+  public toStringList(): string[] {
+    return Token.asList(this);
+  }
+
+  /**
    * Turn this Token into JSON
    *
    * Called automatically when JSON.stringify() is called on a Token.

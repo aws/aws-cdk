@@ -43,10 +43,25 @@ export class LogGroupLogDestination implements IAccessLogDestination {
  */
 export class AccessLogField {
   /**
-   * The API owner's AWS account ID.
+   * The API callers AWS account ID.
+   * @deprecated Use `contextCallerAccountId` or `contextOwnerAccountId` instead
    */
   public static contextAccountId() {
     return '$context.identity.accountId';
+  }
+
+  /**
+   * The API callers AWS account ID.
+   */
+  public static contextCallerAccountId() {
+    return '$context.identity.accountId';
+  }
+
+  /**
+   * The API owner's AWS account ID.
+   */
+  public static contextOwnerAccountId() {
+    return '$context.accountId';
   }
 
   /**
