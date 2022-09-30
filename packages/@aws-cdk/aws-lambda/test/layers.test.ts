@@ -15,7 +15,7 @@ describe('layers', () => {
     // WHEN
     new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
     });
 
     // THEN
@@ -24,7 +24,7 @@ describe('layers', () => {
         S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
       },
-      CompatibleRuntimes: ['nodejs10.x'],
+      CompatibleRuntimes: ['nodejs14.x'],
     });
   });
 
@@ -35,7 +35,7 @@ describe('layers', () => {
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
     });
 
     // WHEN

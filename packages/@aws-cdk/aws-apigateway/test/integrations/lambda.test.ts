@@ -54,7 +54,7 @@ describe('lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
     });
@@ -102,7 +102,7 @@ describe('lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
     });
@@ -138,7 +138,7 @@ describe('lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
     });
@@ -162,7 +162,7 @@ describe('lambda', () => {
     const api = new apigateway.RestApi(stack, 'test-api');
 
     const handler = new lambda.Function(stack, 'MyFunc', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('loo'),
     });
@@ -228,7 +228,7 @@ describe('lambda', () => {
     });
 
     const handler = new lambda.Function(stack, 'MyFunc', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('loo'),
     });
@@ -249,7 +249,7 @@ describe('lambda', () => {
     const method = restapi.root.addMethod('ANY');
     const handler = new lambda.Function(stack, 'MyFunc', {
       functionName: 'ThisFunction',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('loo'),
     });
@@ -269,7 +269,7 @@ describe('lambda', () => {
     const restapi = new apigateway.RestApi(stack, 'RestApi');
     const method = restapi.root.addMethod('ANY');
     const handler = new lambda.Function(stack, 'MyFunc', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('loo'),
     });

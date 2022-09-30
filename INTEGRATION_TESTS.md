@@ -93,7 +93,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-lambda-1');
 const fn = new lambda.Function(stack, 'MyLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
 });
 
 app.synth();
@@ -214,7 +214,7 @@ touch any CloudFormation property, but instead change the way that code is bundl
 a change to an integration test, you need to make sure that the integration tests and assertions are rerun.
 
 An example of this would be making a change to the way `aws-lambda-nodejs` bundles Lambda code. A couple of things could go wrong that would
-only be caught by rerunning the integration tests. 
+only be caught by rerunning the integration tests.
 
 1. The bundling commands are only running when performing a real synth (not part of unit tests). Running the integration test confirms
 that the actual bundling was not broken.

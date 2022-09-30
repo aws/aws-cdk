@@ -33,7 +33,7 @@ we would need to create a file to contain our integration test application.
 const app = new App();
 const stack = new Stack();
 new lambda.Function(stack, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -73,9 +73,9 @@ interface StackUnderTestProps extends StackProps {
 class StackUnderTest extends Stack {
   constructor(scope: Construct, id: string, props: StackUnderTestProps) {
     super(scope, id, props);
-	
+
     new lambda.Function(this, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
       architecture: props.architecture,
@@ -97,9 +97,9 @@ interface StackUnderTestProps extends StackProps {
 class StackUnderTest extends Stack {
   constructor(scope: Construct, id: string, props: StackUnderTestProps) {
     super(scope, id, props);
-	
+
     new lambda.Function(this, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
       architecture: props.architecture,
@@ -269,7 +269,7 @@ integ.assertions.awsApiCall('SQS', 'receiveMessage', {
 This library currently provides the ability to assert that two values are equal
 to one another by utilizing the `EqualsAssertion` class. This utilizes a Lambda
 backed `CustomResource` which in tern uses the [Match](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Match.html) utility from the
-[@aws-cdk/assertions](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions-readme.html) library. 
+[@aws-cdk/assertions](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions-readme.html) library.
 
 
 ```ts
