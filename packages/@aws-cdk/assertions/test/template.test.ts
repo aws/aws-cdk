@@ -1210,7 +1210,9 @@ describe('Template', () => {
             DependsOn: ['Res1'],
           },
         },
-      }, false);
+      }, {
+        skipCyclicalDependenciesCheck: true,
+      });
     }).not.toThrow(/dependency cycle/);
   });
 });

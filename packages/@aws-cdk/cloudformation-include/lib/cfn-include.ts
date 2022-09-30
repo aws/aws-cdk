@@ -109,14 +109,14 @@ export class CfnInclude extends core.CfnElement {
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
   private readonly allowCyclicalReferences: boolean;
-  private logicalIdToPlaceholderMap: Map<string, Set<string>>;
+  private logicalIdToPlaceholderMap: Map<string, string>;
 
   constructor(scope: Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
 
     this.allowCyclicalReferences = props.allowCyclicalReferences ?? false;
 
-    this.logicalIdToPlaceholderMap = new Map<string, Set<string>>();
+    this.logicalIdToPlaceholderMap = new Map<string, string>();
 
     this.parametersToReplace = props.parameters || {};
 
@@ -600,19 +600,7 @@ export class CfnInclude extends core.CfnElement {
   }
 
   private getPlaceholderID(): string {
-    let id = 'Placeholder';
-    for (let i = 0; i < 26; i++) {
-      id = id + randomAlphaNumeric();
-    }
-    return id;
-
-    function randomAlphaNumeric(): string {
-      if (Math.random() < 0.5) {
-        return String.fromCharCode('a'.charCodeAt(0) + Math.floor(Math.random() * 26));
-      } else {
-        return Math.floor(Math.random() * 10).toString();
-      }
-    }
+    return `Placeholder${this.logicalIdToPlaceholderMap.size}`;
   }
 
   private getOrCreateResource(logicalId: string, cycleChain: string[] = []): core.CfnResource {
@@ -621,14 +609,13 @@ export class CfnInclude extends core.CfnElement {
       if (!this.allowCyclicalReferences) {
         throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
       }
+      //only allow one placeholder per logical id
+      if (this.logicalIdToPlaceholderMap.get(logicalId)) {
+        return this.resources[this.logicalIdToPlaceholderMap.get(logicalId)!];
+      }
       let placeholderResourceAttributes: any = this.template.Resources[logicalId];
       let placeholderId: string = this.getPlaceholderID();
-      //handle multiple cycles
-      if (this.logicalIdToPlaceholderMap.get(logicalId)) {
-        this.logicalIdToPlaceholderMap.get(logicalId)!.add(placeholderId);
-      } else {
-        this.logicalIdToPlaceholderMap.set(logicalId, new Set<string>([placeholderId]));
-      }
+      this.logicalIdToPlaceholderMap.set(logicalId, placeholderId);
       let placeholderInstance = new core.CfnResource(this, placeholderId, {
         type: placeholderResourceAttributes.Type,
         properties: {},
@@ -702,15 +689,14 @@ export class CfnInclude extends core.CfnElement {
     }
 
     /*
-    1. remove each placeholder version of object created for cycle breaking
-    2. override each logical id before deletion so references to the placeholder instead reference the original
+    1. remove placeholder version of object created for cycle breaking
+    2. override logical id before deletion so references to the placeholder instead reference the original
      */
     if (this.logicalIdToPlaceholderMap.get(logicalId)) {
-      this.logicalIdToPlaceholderMap.get(logicalId)!.forEach(placeholderId => {
-        this.resources[placeholderId].overrideLogicalId(logicalId);
-        this.node.tryRemoveChild(placeholderId);
-        delete this.resources[placeholderId];
-      });
+      let placeholderId: string = this.logicalIdToPlaceholderMap.get(logicalId)!;
+      this.resources[placeholderId].overrideLogicalId(logicalId);
+      this.node.tryRemoveChild(placeholderId);
+      delete this.resources[placeholderId];
     }
 
     this.overrideLogicalIdIfNeeded(l1Instance, logicalId);

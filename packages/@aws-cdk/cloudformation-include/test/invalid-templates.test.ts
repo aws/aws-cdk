@@ -186,7 +186,7 @@ describe('CDK Include', () => {
    */
   test('accepts a cycle between resources in the template if allowed', () => {
     includeTestTemplate(stack, 'cycle-in-resources.json', { allowCyclicalReferences: true });
-    Template.fromStack(stack, false).templateMatches(
+    Template.fromStack(stack, { skipCyclicalDependenciesCheck: true }).templateMatches(
       {
         Resources: {
           Bucket2: { Type: 'AWS::S3::Bucket', DependsOn: ['Bucket1'] },
@@ -208,7 +208,7 @@ describe('CDK Include', () => {
    */
   test('accepts multiple cycles between resources in the template if allowed', () => {
     includeTestTemplate(stack, 'multi-cycle-in-resources.json', { allowCyclicalReferences: true });
-    Template.fromStack(stack, false).templateMatches(
+    Template.fromStack(stack, { skipCyclicalDependenciesCheck: true }).templateMatches(
       {
         Resources: {
           Bucket2: { Type: 'AWS::S3::Bucket', DependsOn: ['Bucket3'] },
@@ -232,7 +232,7 @@ describe('CDK Include', () => {
    */
   test('accepts multiple cycles and multiple destinations between resources in the template if allowed', () => {
     includeTestTemplate(stack, 'multi-cycle-multi-dest-in-resources.json', { allowCyclicalReferences: true });
-    Template.fromStack(stack, false).templateMatches(
+    Template.fromStack(stack, { skipCyclicalDependenciesCheck: true }).templateMatches(
       {
         Resources: {
           Bucket2: { Type: 'AWS::S3::Bucket', DependsOn: ['Bucket3', 'Bucket1'] },
