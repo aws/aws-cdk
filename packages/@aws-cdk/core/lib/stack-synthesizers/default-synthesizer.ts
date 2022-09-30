@@ -375,9 +375,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   }
 
   /**
-   * Synthesize the stack template to the given session
-   *
-   * @deprecated Use `synthesizeStack` instead.
+   * Synthesize the stack template to the given session, passing the configured lookup role ARN
    */
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession) {
     stack._synthesizeTemplate(session, this.lookupRoleArn);

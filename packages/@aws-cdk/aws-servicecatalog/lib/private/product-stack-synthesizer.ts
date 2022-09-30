@@ -29,6 +29,6 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     }
     // Synthesize the template, but don't emit as a cloud assembly artifact.
     // It will be registered as an S3 asset of its parent instead.
-    this.synthesizeStackTemplate(this.stack, session);
+    this.synthesizeTemplate(this.stack, session);
   }
 }
