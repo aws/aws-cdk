@@ -557,8 +557,7 @@
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
-    "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.01.0"
+    "Engine": "aurora-mysql"
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
