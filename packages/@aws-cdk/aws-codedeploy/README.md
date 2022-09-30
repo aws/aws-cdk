@@ -427,7 +427,7 @@ new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
 });
 ```
 
-In order to deploy a new task definition version of the ECS service,
+In order to deploy a new task definition version to the ECS service,
 deploy the changes directly through CodeDeploy using the CodeDeploy APIs or console.
 When the `CODE_DEPLOY` deployment controller is used, the ECS service cannot be
 deployed with a new task definition version through CloudFormation.
@@ -435,6 +435,13 @@ deployed with a new task definition version through CloudFormation.
 For more information on the behavior of CodeDeploy blue-green deployments for ECS, see
 [What happens during an Amazon ECS deployment](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-steps-ecs.html#deployment-steps-what-happens)
 in the CodeDeploy user guide.
+
+Note: If you wish to deploy updates to your ECS service through CDK and CloudFormation instead of directly through CodeDeploy,
+using the [`CfnCodeDeployBlueGreenHook`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.CfnCodeDeployBlueGreenHook.html)
+construct is the recommended approach instead of using the `EcsDeploymentGroup` construct.  For a comparison
+of ECS blue-green deployments through CodeDeploy (using `EcsDeploymentGroup`) and through CloudFormation (using `CfnCodeDeployBlueGreenHook`),
+see [Create an Amazon ECS blue/green deployment through AWS CloudFormation](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-create-ecs-cfn.html#differences-ecs-bg-cfn)
+in the CloudFormation user guide.
 
 ### ECS Deployment Rollbacks and Alarms
 
