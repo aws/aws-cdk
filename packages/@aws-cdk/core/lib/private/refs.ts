@@ -111,6 +111,11 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // Stacks are in the same account, but different regions
   if (producerRegion !== consumerRegion && FeatureFlags.of(consumer).isEnabled(cxapi.ENABLE_CROSS_REGION_REFERENCES)) {
+    if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
+      throw new Error(
+        `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
+        'Cross stack/region references are only supported for stacks with an explicit region defined. ');
+    }
     consumer.addDependency(producer,
       `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
     return createCrossRegionImportValue(reference, consumer);
@@ -202,39 +207,38 @@ function createImportValue(reference: Reference): Intrinsic {
  * Returns a reference to the ExportsReader attribute which contains the exported value
  */
 function createCrossRegionImportValue(reference: Reference, importStack: Stack): Intrinsic {
-  const exportingStack = Stack.of(reference.target);
+  const referenceStack = Stack.of(reference.target);
+  const exportingStack = referenceStack.nestedStackParent ?? referenceStack;
 
   // generate an export name
   const exportable = getExportable(exportingStack, reference);
   const id = JSON.stringify(exportingStack.resolve(exportable));
-  const exportName = generateExportName(exportingStack, reference, id);
+  const exportName = generateExportName(importStack, reference, id);
   if (Token.isUnresolved(exportName)) {
     throw new Error(`unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
   }
 
   // get or create the export writer
-  const constructName = makeUniqueId(['ExportsWriter', importStack.region]);
-  const existing = exportingStack.node.tryFindChild(constructName);
-  const exportReader = existing
-    ? existing as ExportWriter
-    : new ExportWriter(exportingStack, constructName, {
-      region: importStack.region,
-    });
+  const writerConstructName = makeUniqueId(['ExportsWriter', importStack.region]);
+  const exportReader = ExportWriter.getOrCreate(exportingStack, writerConstructName, {
+    region: importStack.region,
+  });
 
-  return exportReader.exportValue(exportName, reference);
+  return exportReader.exportValue(exportName, reference, importStack);
 }
 
 /**
  * Generate a unique physical name for the export
  */
-function generateExportName(stack: Stack, reference: Reference, id: string): string {
+function generateExportName(importStack: Stack, reference: Reference, id: string): string {
+  const referenceStack = Stack.of(reference.target);
+
   const components = [
-    ...reference.target.node.scopes
-      .slice(stack.node.scopes.length)
-      .map(c => c.node.id),
+    referenceStack.stackName ?? '',
+    referenceStack.region,
     id,
   ];
-  const prefix = stack.stackName + '-';
+  const prefix = `${importStack.nestedStackParent?.stackName ?? importStack.stackName}/`;
   const localPart = makeUniqueId(components);
   // max name length for a system manager parameter is 1011 characters
   // including the arn, i.e.
