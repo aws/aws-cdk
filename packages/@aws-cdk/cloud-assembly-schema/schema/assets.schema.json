@@ -71,8 +71,94 @@
                         "zip"
                     ],
                     "type": "string"
+                },
+                "bundling": {
+                    "description": "Bundling instructions if asset is not in bundled form in assembly",
+                    "$ref": "#/definitions/BundlingOptions"
                 }
             }
+        },
+        "BundlingOptions": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "description": "Image used for bundling unless local bundling is possible",
+                    "type": "string"
+                },
+                "entrypoint": {
+                    "description": "The entrypoint to run in the container. (Default - run the entrypoint defined in the image)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "command": {
+                    "description": "The command to run in the container. (Default - run the command defined in the image)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "volumes": {
+                    "description": "Docker volumes to mount. (Default - no volumes are mounted)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DockerVolume"
+                    }
+                },
+                "environment": {
+                    "description": "The environment variables to pass to the container. (Default - no environment variables.)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "workingDirectory": {
+                    "description": "Working directory inside the container. (Default - image default)",
+                    "type": "string"
+                },
+                "user": {
+                    "description": "The user to use when running the container. (Default - root or image default)",
+                    "type": "string"
+                },
+                "securityOpt": {
+                    "description": "[Security configuration](https://docs.docker.com/engine/reference/run/#security-configuration)\nwhen running the docker container. (Default - no security options)",
+                    "type": "string"
+                },
+                "network": {
+                    "description": "Docker [Networking options](https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network) (Default - no networking options)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "image"
+            ]
+        },
+        "DockerVolume": {
+            "type": "object",
+            "properties": {
+                "hostPath": {
+                    "description": "The path to the file or directory on the host machine",
+                    "type": "string"
+                },
+                "containerPath": {
+                    "description": "The path where the file or directory is mounted in the container",
+                    "type": "string"
+                },
+                "consistency": {
+                    "description": "Mount consistency. Only applicable for macOS (Default DockerConsistency.DELEGATED)",
+                    "enum": [
+                        "cached",
+                        "consistent",
+                        "delegated"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "containerPath",
+                "hostPath"
+            ]
         },
         "FileDestination": {
             "description": "Where in S3 a file asset needs to be published",

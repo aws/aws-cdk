@@ -23,7 +23,7 @@ needed in order to deploy the assembly directory.
 > For example, when `cdk deploy` is executed, the CLI reads this file and performs its instructions:
 >
 > - Build container images.
-> - Upload assets.
+> - Bundle (if needed) and upload assets.
 > - Deploy CloudFormation templates.
 
 Therefore, the assembly is how the CDK class library and CDK CLI (or any other consumer) communicate. To ensure compatibility

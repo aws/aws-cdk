@@ -119,6 +119,31 @@ describe('File asset', () => {
         }).not.toThrow();
       });
     }
+
+    test('with bundling', () => {
+      expect(() => {
+        validate({
+          version: Manifest.version(),
+          files: {
+            asset: {
+              source: {
+                path: 'a/b/c',
+                bundling: {
+                  image: 'node:14',
+                },
+              },
+              destinations: {
+                dest: {
+                  region: 'us-north-20',
+                  bucketName: 'Bouquet',
+                  objectKey: 'key',
+                },
+              },
+            },
+          },
+        });
+      }).not.toThrow();
+    });
   });
 
   describe('invalid input', () => {
@@ -177,6 +202,34 @@ describe('File asset', () => {
           },
         });
       }).toThrow(/instance\.files\.asset\.source\.packaging is not one of enum values: file,zip/);
+    });
+
+    test('missing bundling image', () => {
+      expect(() => {
+        validate({
+          version: Manifest.version(),
+          files: {
+            asset: {
+              source: {
+                path: 'a/b/c',
+                bundling: {
+                  command: [
+                    'echo',
+                    'hello',
+                  ],
+                },
+              },
+              destinations: {
+                dest: {
+                  region: 'us-north-20',
+                  bucketName: 'Bouquet',
+                  objectKey: 'key',
+                },
+              },
+            },
+          },
+        });
+      }).toThrow(/instance\.files\.asset\.source\.bundling requires property \"image\"/);
     });
   });
 });
