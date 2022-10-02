@@ -15,7 +15,21 @@ export interface PullThroughCacheRuleProps {
   /**
    * The upstream registry URL associated with the pull through cache rule.
    */
-  readonly upstreamRegistryUrl: string;
+  readonly upstreamRegistry: UpstreamRegistry;
+}
+
+/**
+ * Available upstream URLs of the source registry.
+ */
+export enum UpstreamRegistry {
+  /**
+     * Upstream URL of ECR public.
+     */
+  ECR_PUBLIC = 'public.ecr.aws',
+  /**
+     * Upstream URL of Quay.
+     */
+  QUAY = 'quay.io',
 }
 
 /**
@@ -33,7 +47,7 @@ export class PullThroughCacheRule extends Resource {
     this.ecrRepositoryPrefix = props.ecrRepositoryPrefix;
     new CfnPullThroughCacheRule(this, 'Resource', {
       ecrRepositoryPrefix: this.ecrRepositoryPrefix,
-      upstreamRegistryUrl: props.upstreamRegistryUrl,
+      upstreamRegistryUrl: props.upstreamRegistry,
     });
 
     this.policyDocument = new PolicyDocument({

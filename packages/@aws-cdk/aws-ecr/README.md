@@ -116,7 +116,7 @@ When a cached image is pulled using the Amazon ECR private registry URI, Amazon 
 ```ts
 new ecr.PullTroughCacheRule(this, 'PullTroughCache', {
   ecrRepositoryPrefix: 'ecr-public',
-  upstreamRegistryUrl: 'public.ecr.aws',
+  upstreamRegistry: ecr.UpstreamRegistry.ECR_PUBLIC,
 });
 ```
 
@@ -131,7 +131,7 @@ To restrict access to certain repositories from some users, there is the possibi
 ```ts
 const rule = new ecr.PullTroughCacheRule(this, 'PullTroughCache', {
   ecrRepositoryPrefix: 'ecr-public',
-  upstreamRegistryUrl: 'public.ecr.aws',
+  upstreamRegistry: ecr.UpstreamRegistry.ECR_PUBLIC,
 });
 
 rule.restrictAccess([new iam.AccountRootPrincipal()], ['docker/library/nginx', 'amazonlinux/amazonlinux']);

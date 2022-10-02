@@ -1,13 +1,13 @@
 import { Template } from '@aws-cdk/assertions';
 import { AccountRootPrincipal } from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
-import { PullThroughCacheRule } from '../lib';
+import { PullThroughCacheRule, UpstreamRegistry } from '../lib';
 
 describe('pull-through-cache-rule', function () {
   it('should generate the correct resource', function () {
     const stack = new Stack();
     new PullThroughCacheRule(stack, 'PullThroughCacheRule', {
-      upstreamRegistryUrl: 'public.ecr.aws',
+      upstreamRegistry: UpstreamRegistry.ECR_PUBLIC,
       ecrRepositoryPrefix: 'my-ecr',
     });
 
@@ -26,7 +26,7 @@ describe('pull-through-cache-rule', function () {
       },
     });
     new PullThroughCacheRule(stack, 'PullThroughCacheRule', {
-      upstreamRegistryUrl: 'public.ecr.aws',
+      upstreamRegistry: UpstreamRegistry.ECR_PUBLIC,
       ecrRepositoryPrefix: 'my-ecr',
     });
 
@@ -89,7 +89,7 @@ describe('pull-through-cache-rule', function () {
       },
     });
     const rule = new PullThroughCacheRule(stack, 'PullThroughCacheRule', {
-      upstreamRegistryUrl: 'public.ecr.aws',
+      upstreamRegistry: UpstreamRegistry.ECR_PUBLIC,
       ecrRepositoryPrefix: 'my-ecr',
     });
     rule.restrictAccess([new AccountRootPrincipal()], ['docker/library/nginx', 'amazonlinux/amazonlinux']);
