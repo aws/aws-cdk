@@ -355,10 +355,16 @@ function configureMock(pr: linter.GitHubPr, prFiles?: linter.GitHubFile[]): lint
     },
 
     listReviews(_props: { _owner: string, _repo: string, _pull_number: number }) {
-      return { data:  [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }] };
+      return { data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }] };
     },
 
     dismissReview() {},
+
+    listCommentsForReview(_props: { _owner: string, _repo: string, _pull_number: number }) {
+      return { data: [{ id: 1212121212  }] };
+    },
+
+    deleteReviewComment() {},
 
   }
   return new linter.PullRequestLinter({

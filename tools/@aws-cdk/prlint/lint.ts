@@ -168,14 +168,24 @@ export class PullRequestLinter {
   /**
    * Dismisses previous reviews by aws-cdk-automation when changes have been made to the pull request.
    */
-  private async dismissPreviousPRLinterReviews(): Promise<void> {
+  private async cleanupPreviousPRLinterReviews(): Promise<void> {
     const reviews = await this.client.pulls.listReviews(this.prParams);
-    reviews.data.forEach(async (review: any) => {
+    reviews.data.forEach(async (review) => {
       if (review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') {
         await this.client.pulls.dismissReview({
           ...this.prParams,
           review_id: review.id,
           message: 'Pull Request updated. Dissmissing previous PRLinter Review.',
+        })
+
+        const comments = await this.client.pulls.listCommentsForReview({
+          ...this.prParams,
+          review_id: review.id,
+        })
+
+        await this.client.pulls.deleteReviewComment({
+          ...this.prParams,
+          comment_id: comments.data[0].id,
         })
       }
     })
@@ -245,7 +255,7 @@ export class PullRequestLinter {
       testRuleSet: [ { test: noCliChanges } ],
     });
 
-    await this.dismissPreviousPRLinterReviews();
+    await this.cleanupPreviousPRLinterReviews();
     validationCollector.isValid() ? console.log("✅  Success") : await this.communicateResult(validationCollector.errors);
   }
 
