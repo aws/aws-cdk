@@ -31,6 +31,8 @@ Currently supported are:
 - Put records to Kinesis Data Firehose stream
 - Send messages to SQS queues
 - Publish messages on SNS topics
+- Write messages into columns of DynamoDB
+- Put messages IoT Events input
 
 ## Republish a message to another MQTT topic
 
@@ -72,7 +74,7 @@ new iot.TopicRule(this, 'TopicRule', {
 
 ## Put objects to a S3 bucket
 
-The code snippet below creates an AWS IoT Rule that put objects to a S3 bucket
+The code snippet below creates an AWS IoT Rule that puts objects to a S3 bucket
 when it is triggered.
 
 ```ts
@@ -125,7 +127,7 @@ new iot.TopicRule(this, 'TopicRule', {
 
 ## Put logs to CloudWatch Logs
 
-The code snippet below creates an AWS IoT Rule that put logs to CloudWatch Logs
+The code snippet below creates an AWS IoT Rule that puts logs to CloudWatch Logs
 when it is triggered.
 
 ```ts
@@ -193,7 +195,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 
 ## Put records to Kinesis Data stream
 
-The code snippet below creates an AWS IoT Rule that put records to Kinesis Data
+The code snippet below creates an AWS IoT Rule that puts records to Kinesis Data
 stream when it is triggered.
 
 ```ts
@@ -213,7 +215,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 
 ## Put records to Kinesis Data Firehose stream
 
-The code snippet below creates an AWS IoT Rule that put records to Put records
+The code snippet below creates an AWS IoT Rule that puts records to Put records
 to Kinesis Data Firehose stream when it is triggered.
 
 ```ts
@@ -274,6 +276,54 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
   actions: [
     new actions.SnsTopicAction(topic, {
       messageFormat: actions.SnsActionMessageFormat.JSON, // optional property, default is SnsActionMessageFormat.RAW
+    }),
+  ],
+});
+```
+
+## Write attributes of a message to DynamoDB
+
+The code snippet below creates an AWS IoT rule that writes all or part of an 
+MQTT message to DynamoDB using the DynamoDBv2 action.
+
+```ts
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+
+declare const table: dynamodb.Table;
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT * FROM 'device/+/data'",
+  ),
+  actions: [
+    new actions.DynamoDBv2PutItemAction(table)
+  ],
+});
+```
+
+## Put messages IoT Events input
+
+The code snippet below creates an AWS IoT Rule that puts messages
+to an IoT Events input when it is triggered:
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+import * as iam from '@aws-cdk/aws-iam';
+
+declare const role: iam.IRole;
+
+const input = new iotevents.Input(this, 'MyInput', {
+  attributeJsonPaths: ['payload.temperature', 'payload.transactionId'],
+});
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT * FROM 'device/+/data'",
+  ),
+  actions: [
+    new actions.IotEventsPutMessageAction(input, {
+      batchMode: true, // optional property, default is 'false'
+      messageId: '${payload.transactionId}', // optional property, default is a new UUID
+      role: role, // optional property, default is a new UUID
     }),
   ],
 });

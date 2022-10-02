@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-cdk-lambda-chain": {
@@ -246,8 +246,8 @@
                     "id": "DefaultEventBus",
                     "path": "aws-cdk-lambda-chain/First/EventInvokeConfig/DefaultEventBus",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "Success": {
@@ -643,8 +643,8 @@
                     "id": "DefaultEventBus",
                     "path": "aws-cdk-lambda-chain/Second/EventInvokeConfig/DefaultEventBus",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "Resource": {
@@ -870,36 +870,36 @@
             "id": "FirstFunctionName",
             "path": "aws-cdk-lambda-chain/FirstFunctionName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "ThirdFunctionName": {
             "id": "ThirdFunctionName",
             "path": "aws-cdk-lambda-chain/ThirdFunctionName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "ErrorFunctionName": {
             "id": "ErrorFunctionName",
             "path": "aws-cdk-lambda-chain/ErrorFunctionName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

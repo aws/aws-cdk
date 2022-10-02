@@ -563,6 +563,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     }
 
     this.tags = new TagManager(TagType.KEY_VALUE, 'AWS::EC2::LaunchTemplate');
+
     const tagsToken = Lazy.any({
       produce: () => {
         if (this.tags.hasTags()) {
@@ -580,6 +581,27 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
             },
             {
               resourceType: 'volume',
+              tags: lowerCaseRenderedTags,
+            },
+          ];
+        }
+        return undefined;
+      },
+    });
+
+    const ltTagsToken = Lazy.any({
+      produce: () => {
+        if (this.tags.hasTags()) {
+          const renderedTags = this.tags.renderTags();
+          const lowerCaseRenderedTags = renderedTags.map( (tag: { [key: string]: string}) => {
+            return {
+              key: tag.Key,
+              value: tag.Value,
+            };
+          });
+          return [
+            {
+              resourceType: 'launch-template',
               tags: lowerCaseRenderedTags,
             },
           ];
@@ -655,6 +677,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // placement: undefined,
 
       },
+      tagSpecifications: ltTagsToken,
     });
 
     Tags.of(this).add(NAME_TAG, this.node.path);

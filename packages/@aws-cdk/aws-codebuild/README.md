@@ -20,24 +20,6 @@ started quickly by using prepackaged build environments, or you can create
 custom build environments that use your own build tools. With CodeBuild, you are
 charged by the minute for the compute resources you use.
 
-## Installation
-
-Install the module:
-
-```console
-$ npm i @aws-cdk/aws-codebuild
-```
-
-Import it into your code:
-
-```ts nofixture
-import * as codebuild from '@aws-cdk/aws-codebuild';
-```
-
-The `codebuild.Project` construct represents a build project resource. See the
-reference documentation for a comprehensive list of initialization properties,
-methods and attributes.
-
 ## Source
 
 Build projects are usually associated with a _source_, which is specified via
@@ -526,6 +508,8 @@ declare const reportGroup: codebuild.ReportGroup;
 
 reportGroup.grantWrite(project);
 ```
+
+The created policy will adjust to the report group type. If no type is specified when creating the report group the created policy will contain the action for the test report group type.
 
 For more information on the test reports feature,
 see the [AWS CodeBuild documentation](https://docs.aws.amazon.com/codebuild/latest/userguide/test-reporting.html).

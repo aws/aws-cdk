@@ -7,15 +7,27 @@ const { stdout, stderr } = process;
 
 type WritableFactory = () => Writable;
 
-const logger = (stream: Writable | WritableFactory, styles?: StyleFn[]) => (fmt: string, ...args: any[]) => {
-  let str = util.format(fmt, ...args);
+const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestamp?: boolean) => (fmt: string, ...args: any[]) => {
+  const ts = timestamp ? `[${formatTime(new Date())}] ` : '';
+
+  let str = ts + util.format(fmt, ...args);
   if (styles && styles.length) {
     str = styles.reduce((a, style) => style(a), str);
   }
 
+
   const realStream = typeof stream === 'function' ? stream() : stream;
   realStream.write(str + '\n');
 };
+
+function formatTime(d: Date) {
+  return `${lpad(d.getHours(), 2)}:${lpad(d.getMinutes(), 2)}:${lpad(d.getSeconds(), 2)}`;
+
+  function lpad(x: any, w: number) {
+    const s = `${x}`;
+    return '0'.repeat(Math.max(w - s.length, 0)) + s;
+  }
+}
 
 export enum LogLevel {
   /** Not verbose at all */
@@ -43,7 +55,7 @@ export function increaseVerbosity() {
 }
 
 const stream = () => CI ? stdout : stderr;
-const _debug = logger(stream, [chalk.gray]);
+const _debug = logger(stream, [chalk.gray], true);
 
 export const trace = (fmt: string, ...args: any) => logLevel >= LogLevel.TRACE && _debug(fmt, ...args);
 export const debug = (fmt: string, ...args: any[]) => logLevel >= LogLevel.DEBUG && _debug(fmt, ...args);

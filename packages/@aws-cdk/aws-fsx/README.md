@@ -128,7 +128,7 @@ inst.userData.addCommands(
 );
 ```
 
-### Importing
+### Importing an existing Lustre filesystem
 
 An FSx for Lustre file system can be imported with `fromLustreFileSystemAttributes(stack, id, attributes)`. The
 following example lays out how you could import the SecurityGroup a file system belongs to, use that to import the file
@@ -162,6 +162,47 @@ const inst = new ec2.Instance(this, 'inst', {
 
 fs.connections.allowDefaultPortFrom(inst);
 ```
+
+### Lustre Data Repository Association support
+
+The LustreFilesystem Construct supports one [Data Repository Association](https://docs.aws.amazon.com/fsx/latest/LustreGuide/fsx-data-repositories.html) (DRA) to an S3 bucket.  This allows Lustre hierarchical storage management to S3 buckets, which in turn makes it possible to use S3 as a permanent backing store, and use FSx for Lustre as a temporary high performance cache.
+
+Note: CloudFormation does not currently support for `PERSISTENT_2` filesystems, and so neither does CDK.
+
+The following example illustrates setting up a DRA to an S3 bucket, including automated metadata import whenever a file is changed, created or deleted in the S3 bucket:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const bucket: s3.Bucket;
+
+const lustreConfiguration = {
+  deploymentType: fsx.LustreDeploymentType.SCRATCH_2,
+  exportPath: bucket.s3UrlForObject(),
+  importPath: bucket.s3UrlForObject(),
+  autoImportPolicy: fsx.LustreAutoImportPolicy.NEW_CHANGED_DELETED,
+};
+
+const fs = new fsx.LustreFileSystem(this, "FsxLustreFileSystem", {
+  vpc: vpc,
+  vpcSubnet: vpc.privateSubnets[0],
+  storageCapacityGiB: 1200,
+  lustreConfiguration,
+});
+```
+
+### Compression
+
+By default, transparent compression of data within FSx for Lustre is switched off.  To enable it, add the following to your `lustreConfiguration`:
+
+```ts
+const lustreConfiguration = {
+  // ...
+  dataCompressionType: fsx.LustreDataCompressionType.LZ4,
+  // ...
+}
+```
+
+When you turn data compression on for an existing file system, only newly written files are compressed.  Existing files are not compressed. For more information, see [Compressing previously written files](https://docs.aws.amazon.com/fsx/latest/LustreGuide/data-compression.html#migrate-compression).```
 
 ## FSx for Windows File Server
 

@@ -29,6 +29,8 @@ func New%name.PascalCased%Stack(scope constructs.Construct, id string, props *%n
 }
 
 func main() {
+	defer jsii.Close()
+
 	app := awscdk.NewApp(nil)
 
 	New%name.PascalCased%Stack(app, "%name.PascalCased%Stack", &%name.PascalCased%StackProps{

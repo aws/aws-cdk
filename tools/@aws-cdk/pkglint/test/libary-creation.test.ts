@@ -59,8 +59,21 @@ describe('createModuleDefinitionFromCfnNamespace', () => {
 });
 
 describe('createLibraryReadme', () => {
+  let tempDir: string | undefined;
+
+  beforeEach(() => {
+    tempDir = undefined;
+  });
+
+  afterEach(async () => {
+    if (tempDir) {
+      await fs.emptyDir(tempDir);
+      await fs.rmdir(tempDir);
+    }
+  });
+
   test('library name is valid', async () => {
-    const tempDir = fs.mkdtempSync(path.join(__dirname, 'temp'));
+    tempDir = fs.mkdtempSync(path.join(__dirname, 'temp'));
     const readmePath = path.join(tempDir, 'README.md');
     await createLibraryReadme('Alexa::ASK', readmePath);
 

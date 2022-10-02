@@ -6,21 +6,37 @@
     "Name": "cdk.dev."
    }
   },
-  "HostedZoneDkimDnsToken2A07BC1AD": {
+  "EmailIdentityDkimDnsToken1BA32ACB3": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
     "Name": {
-     "Fn::Join": [
-      "",
-      [
-       {
-        "Fn::GetAtt": [
-         "EmailIdentity7187767D",
-         "DkimDNSTokenName2"
-        ]
-       },
-       ".cdk.dev."
+     "Fn::GetAtt": [
+      "EmailIdentity7187767D",
+      "DkimDNSTokenName1"
+     ]
+    },
+    "Type": "CNAME",
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "ResourceRecords": [
+     {
+      "Fn::GetAtt": [
+       "EmailIdentity7187767D",
+       "DkimDNSTokenValue1"
       ]
+     }
+    ],
+    "TTL": "1800"
+   }
+  },
+  "EmailIdentityDkimDnsToken2BBEBB8EC": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": {
+     "Fn::GetAtt": [
+      "EmailIdentity7187767D",
+      "DkimDNSTokenName2"
      ]
     },
     "Type": "CNAME",
@@ -38,21 +54,13 @@
     "TTL": "1800"
    }
   },
-  "HostedZoneDkimDnsToken34DA6A373": {
+  "EmailIdentityDkimDnsToken3BB5E8A49": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
     "Name": {
-     "Fn::Join": [
-      "",
-      [
-       {
-        "Fn::GetAtt": [
-         "EmailIdentity7187767D",
-         "DkimDNSTokenName3"
-        ]
-       },
-       ".cdk.dev."
-      ]
+     "Fn::GetAtt": [
+      "EmailIdentity7187767D",
+      "DkimDNSTokenName3"
      ]
     },
     "Type": "CNAME",
@@ -64,38 +72,6 @@
       "Fn::GetAtt": [
        "EmailIdentity7187767D",
        "DkimDNSTokenValue3"
-      ]
-     }
-    ],
-    "TTL": "1800"
-   }
-  },
-  "EmailIdentityDkimDnsToken15F8EC787": {
-   "Type": "AWS::Route53::RecordSet",
-   "Properties": {
-    "Name": {
-     "Fn::Join": [
-      "",
-      [
-       {
-        "Fn::GetAtt": [
-         "EmailIdentity7187767D",
-         "DkimDNSTokenName1"
-        ]
-       },
-       ".cdk.dev."
-      ]
-     ]
-    },
-    "Type": "CNAME",
-    "HostedZoneId": {
-     "Ref": "HostedZoneDB99F866"
-    },
-    "ResourceRecords": [
-     {
-      "Fn::GetAtt": [
-       "EmailIdentity7187767D",
-       "DkimDNSTokenValue1"
       ]
      }
     ],
@@ -149,6 +125,40 @@
     ],
     "TTL": "1800"
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

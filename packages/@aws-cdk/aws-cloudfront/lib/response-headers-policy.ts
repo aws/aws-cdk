@@ -94,7 +94,9 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       physicalName: props.responseHeadersPolicyName,
     });
 
-    const responseHeadersPolicyName = props.responseHeadersPolicyName ?? Names.uniqueId(this);
+    const responseHeadersPolicyName = props.responseHeadersPolicyName ?? Names.uniqueResourceName(this, {
+      maxLength: 128,
+    });
 
     const resource = new CfnResponseHeadersPolicy(this, 'Resource', {
       responseHeadersPolicyConfig: {

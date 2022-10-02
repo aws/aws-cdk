@@ -155,6 +155,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       enableExecuteCommand: props.enableExecuteCommand,
       placementConstraints: props.placementConstraints,
       placementStrategies: props.placementStrategies,
+      capacityProviderStrategies: props.capacityProviderStrategies,
     });
     this.addServiceAsTarget(this.service);
   }

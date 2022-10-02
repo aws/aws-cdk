@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "cdk-integ-opensearch-advancedsecurity": {
@@ -66,9 +66,6 @@
                       "instanceType": "r5.large.search",
                       "zoneAwarenessEnabled": false
                     },
-                    "cognitoOptions": {
-                      "enabled": false
-                    },
                     "domainEndpointOptions": {
                       "enforceHttps": true,
                       "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
@@ -101,14 +98,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

@@ -91,6 +91,18 @@ describe('Batch Job Definition', () => {
             Name: 'foo',
             Value: 'bar',
           },
+          {
+            Name: 'AWS_REGION',
+            Value: {
+              Ref: 'AWS::Region',
+            },
+          },
+          {
+            Name: 'AWS_ACCOUNT',
+            Value: {
+              Ref: 'AWS::AccountId',
+            },
+          },
         ],
         Secrets: [
           {
@@ -184,6 +196,18 @@ describe('Batch Job Definition', () => {
             Name: 'foo',
             Value: 'bar',
           },
+          {
+            Name: 'AWS_REGION',
+            Value: {
+              Ref: 'AWS::Region',
+            },
+          },
+          {
+            Name: 'AWS_ACCOUNT',
+            Value: {
+              Ref: 'AWS::AccountId',
+            },
+          },
         ],
         Secrets: [
           {
@@ -257,6 +281,21 @@ describe('Batch Job Definition', () => {
       },
       Type: 'container',
       PlatformCapabilities: ['FARGATE'],
+    });
+  });
+
+  test('Can propagate tags', () => {
+    // WHEN
+    new batch.JobDefinition(stack, 'job-def', {
+      container: {
+        image: ecs.ContainerImage.fromRegistry('docker/whalesay'),
+      },
+      propagateTags: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      PropagateTags: true,
     });
   });
 

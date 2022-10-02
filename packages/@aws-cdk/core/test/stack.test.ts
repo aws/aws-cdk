@@ -1,6 +1,6 @@
-import { testDeprecated, testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Fact } from '@aws-cdk/region-info';
+import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { Construct, Node } from 'constructs';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
@@ -867,6 +867,43 @@ describe('stack', () => {
     expect(stack.resolve(stack.region)).toEqual('es-norst-1');
   });
 
+  describe('stack partition literal feature flag', () => {
+    // GIVEN
+    const featureFlag = { [cxapi.ENABLE_PARTITION_LITERALS]: true };
+    const envForRegion = (region: string) => { return { env: { account: '123456789012', region: region } }; };
+
+    // THEN
+    describe('does not change missing or unknown region behaviors', () => {
+      test('stacks with no region defined', () => {
+        const noRegionStack = new Stack(new App(), 'MissingRegion');
+        expect(noRegionStack.partition).toEqual(Aws.PARTITION);
+      });
+
+      test('stacks with an unknown region', () => {
+        const imaginaryRegionStack = new Stack(new App(), 'ImaginaryRegion', envForRegion('us-area51'));
+        expect(imaginaryRegionStack.partition).toEqual(Aws.PARTITION);
+      });
+    });
+
+    describe('changes known region behaviors only when enabled', () => {
+      test('(disabled)', () => {
+        const app = new App();
+        RegionInfo.regions.forEach(function(region) {
+          const regionStack = new Stack(app, `Region-${region.name}`, envForRegion(region.name));
+          expect(regionStack.partition).toEqual(Aws.PARTITION);
+        });
+      });
+
+      test('(enabled)', () => {
+        const app = new App({ context: featureFlag });
+        RegionInfo.regions.forEach(function(region) {
+          const regionStack = new Stack(app, `Region-${region.name}`, envForRegion(region.name));
+          expect(regionStack.partition).toEqual(RegionInfo.get(region.name).partition);
+        });
+      });
+    });
+  });
+
   test('overrideLogicalId(id) can be used to override the logical ID of a resource', () => {
     // GIVEN
     const stack = new Stack();
@@ -1002,69 +1039,42 @@ describe('stack', () => {
     ]);
   });
 
-  describe('@aws-cdk/core:enableStackNameDuplicates', () => {
 
-    describe('disabled (default)', () => {
+  test('allows using the same stack name for two stacks (i.e. in different regions)', () => {
+    // WHEN
+    const app = new App();
+    const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
+    const stack2 = new Stack(app, 'MyStack2', { stackName: 'thestack' });
+    const assembly = app.synth();
 
-      testLegacyBehavior('stack.templateFile is the name of the template file emitted to the cloud assembly (default is to use the stack name)', App, (app) => {
-        // WHEN
-        const stack1 = new Stack(app, 'MyStack1');
-        const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
+    // THEN
+    expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('MyStack1.template.json');
+    expect(assembly.getStackArtifact(stack2.artifactId).templateFile).toEqual('MyStack2.template.json');
+    expect(stack1.templateFile).toEqual('MyStack1.template.json');
+    expect(stack2.templateFile).toEqual('MyStack2.template.json');
+  });
 
-        // THEN
-        expect(stack1.templateFile).toEqual('MyStack1.template.json');
-        expect(stack2.templateFile).toEqual('MyRealStack2.template.json');
+  test('artifactId and templateFile use the unique id and not the stack name', () => {
+    // WHEN
+    const app = new App();
+    const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
+    const assembly = app.synth();
 
-      });
+    // THEN
+    expect(stack1.artifactId).toEqual('MyStack1');
+    expect(stack1.templateFile).toEqual('MyStack1.template.json');
+    expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('MyStack1.template.json');
+  });
 
-      testLegacyBehavior('artifactId and templateFile use the stack name', App, (app) => {
-        // WHEN
-        const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
-        const assembly = app.synth();
+  test('use the artifact id as the template name', () => {
+    // WHEN
+    const app = new App();
+    const stack1 = new Stack(app, 'MyStack1');
+    const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
 
-        // THEN
-        expect(stack1.artifactId).toEqual('thestack');
-        expect(stack1.templateFile).toEqual('thestack.template.json');
-        expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('thestack.template.json');
-      });
-    });
-
-    describe('enabled', () => {
-      const flags = { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' };
-      testFutureBehavior('allows using the same stack name for two stacks (i.e. in different regions)', flags, App, (app) => {
-        // WHEN
-        const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
-        const stack2 = new Stack(app, 'MyStack2', { stackName: 'thestack' });
-        const assembly = app.synth();
-
-        // THEN
-        expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('MyStack1.template.json');
-        expect(assembly.getStackArtifact(stack2.artifactId).templateFile).toEqual('MyStack2.template.json');
-        expect(stack1.templateFile).toEqual('MyStack1.template.json');
-        expect(stack2.templateFile).toEqual('MyStack2.template.json');
-      });
-
-      testFutureBehavior('artifactId and templateFile use the unique id and not the stack name', flags, App, (app) => {
-        // WHEN
-        const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
-        const assembly = app.synth();
-
-        // THEN
-        expect(stack1.artifactId).toEqual('MyStack1');
-        expect(stack1.templateFile).toEqual('MyStack1.template.json');
-        expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('MyStack1.template.json');
-      });
-
-      testFutureBehavior('when feature flag is enabled we will use the artifact id as the template name', flags, App, (app) => {
-        // WHEN
-        const stack1 = new Stack(app, 'MyStack1');
-        const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
-
-        // THEN
-        expect(stack1.templateFile).toEqual('MyStack1.template.json');
-        expect(stack2.templateFile).toEqual('MyStack2.template.json');
-      });
-    });
+    // THEN
+    expect(stack1.templateFile).toEqual('MyStack1.template.json');
+    expect(stack2.templateFile).toEqual('MyStack2.template.json');
   });
 
   test('metadata is collected at the stack boundary', () => {

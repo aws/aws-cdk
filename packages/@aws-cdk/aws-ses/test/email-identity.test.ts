@@ -41,17 +41,9 @@ test('email identity from a hosted zone with easy dkim', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: {
-      'Fn::Join': [
-        '',
-        [
-          {
-            'Fn::GetAtt': [
-              'Identity2D60E2CC',
-              'DkimDNSTokenName1',
-            ],
-          },
-          '.cdk.dev.',
-        ],
+      'Fn::GetAtt': [
+        'Identity2D60E2CC',
+        'DkimDNSTokenName1',
       ],
     },
     Type: 'CNAME',
@@ -70,17 +62,9 @@ test('email identity from a hosted zone with easy dkim', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: {
-      'Fn::Join': [
-        '',
-        [
-          {
-            'Fn::GetAtt': [
-              'Identity2D60E2CC',
-              'DkimDNSTokenName2',
-            ],
-          },
-          '.cdk.dev.',
-        ],
+      'Fn::GetAtt': [
+        'Identity2D60E2CC',
+        'DkimDNSTokenName2',
       ],
     },
     Type: 'CNAME',
@@ -99,17 +83,9 @@ test('email identity from a hosted zone with easy dkim', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: {
-      'Fn::Join': [
-        '',
-        [
-          {
-            'Fn::GetAtt': [
-              'Identity2D60E2CC',
-              'DkimDNSTokenName3',
-            ],
-          },
-          '.cdk.dev.',
-        ],
+      'Fn::GetAtt': [
+        'Identity2D60E2CC',
+        'DkimDNSTokenName3',
       ],
     },
     Type: 'CNAME',

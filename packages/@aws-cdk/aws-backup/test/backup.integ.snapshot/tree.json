@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.102"
         }
       },
       "cdk-backup": {
@@ -102,6 +102,33 @@
               "version": "0.0.0"
             }
           },
+          "SecondaryVault": {
+            "id": "SecondaryVault",
+            "path": "cdk-backup/SecondaryVault",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-backup/SecondaryVault/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Backup::BackupVault",
+                  "aws:cdk:cloudformation:props": {
+                    "backupVaultName": "cdkbackupSecondaryVaultA01C2A0E",
+                    "lockConfiguration": {
+                      "minRetentionDays": 5
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-backup.CfnBackupVault",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-backup.BackupVault",
+              "version": "0.0.0"
+            }
+          },
           "Plan": {
             "id": "Plan",
             "path": "cdk-backup/Plan",
@@ -154,6 +181,29 @@
                               "BackupVaultName"
                             ]
                           }
+                        },
+                        {
+                          "ruleName": "PlanRule3",
+                          "targetBackupVault": {
+                            "Fn::GetAtt": [
+                              "Vault23237E5B",
+                              "BackupVaultName"
+                            ]
+                          },
+                          "copyActions": [
+                            {
+                              "destinationBackupVaultArn": {
+                                "Fn::GetAtt": [
+                                  "SecondaryVault67665B5E",
+                                  "BackupVaultArn"
+                                ]
+                              },
+                              "lifecycle": {
+                                "deleteAfterDays": 120,
+                                "moveToColdStorageAfterDays": 30
+                              }
+                            }
+                          ]
                         }
                       ]
                     }

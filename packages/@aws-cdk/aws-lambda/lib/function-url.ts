@@ -185,11 +185,23 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
       throw new Error('FunctionUrl cannot be used with a Version');
     }
 
+    // If the target function is an alias, then it must be configured using the underlying function
+    // ARN, and the alias name as a qualifier.
+    const { targetFunction, alias } = this.instanceOfAlias(props.function)
+      ? { targetFunction: props.function.version.lambda, alias: props.function }
+      : { targetFunction: props.function, alias: undefined };
+
     const resource: CfnUrl = new CfnUrl(this, 'Resource', {
       authType: props.authType ?? FunctionUrlAuthType.AWS_IAM,
-      targetFunctionArn: props.function.functionArn,
       cors: props.cors ? this.renderCors(props.cors) : undefined,
+      targetFunctionArn: targetFunction.functionArn,
+      qualifier: alias?.aliasName,
     });
+    // The aliasName is a required physical name, so using it does not imply a dependency, so we
+    // must "manually" register the dependency, or else CFN may attempt to use before it exists.
+    if (alias?.node.defaultChild != null) {
+      resource.node.addDependency(alias.node.defaultChild);
+    }
 
     this.url = resource.attrFunctionUrl;
     this.functionArn = resource.attrFunctionArn;

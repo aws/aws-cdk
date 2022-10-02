@@ -11,11 +11,10 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@actions/core": "^1.8.2",
-    "@actions/github": "^2.2.0",
+    "@actions/core": "^1.9.1",
+    "@actions/github": "^5.0.3",
     "conventional-commits-parser": "^3.2.4",
     "fs-extra": "^9.1.0",
-    "github-api": "^3.4.0",
     "glob": "^7.2.3"
   },
   "devDependencies": {

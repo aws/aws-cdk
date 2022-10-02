@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.l3-vpconly": {
+    "vpcOnlyFargateTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-l3-vpconly"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "vpcOnlyFargateTest/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

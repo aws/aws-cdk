@@ -4,7 +4,7 @@
     "enableLookups": true,
     "xxxxx.test-with-snapshot-assets-diff": {
       "stacks": ["test-stack"],
-      "diffAssets": true,
+      "diffAssets": false,
       "allowDestroy": [
         "AWS::IAM::Role"
       ]

@@ -203,8 +203,6 @@ Resources:
     Type: AWS::ECR::Repository
     Properties:
       ImageTagMutability: IMMUTABLE
-      ImageScanningConfiguration:
-        ScanOnPush: true
       RepositoryName:
         Fn::If:
           - HasCustomContainerAssetsRepositoryName
@@ -510,7 +508,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '13'
+      Value: '14'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

@@ -7,6 +7,7 @@ import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
 import { BundlingOptions, BundlingOutput } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
+import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
 import { Cache } from './private/cache';
 import { Stack } from './stack';
@@ -83,6 +84,7 @@ export class AssetStaging extends Construct {
    */
   public static clearAssetHashCache() {
     this.assetCache.clear();
+    clearLargeFileFingerprintCache();
   }
 
   /**

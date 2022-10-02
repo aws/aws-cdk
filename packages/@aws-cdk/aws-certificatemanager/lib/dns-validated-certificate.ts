@@ -84,17 +84,24 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     super(scope, id);
 
     this.region = props.region;
-
     this.domainName = props.domainName;
+    // check if domain name is 64 characters or less
+    if (this.domainName.length > 64) {
+      throw new Error('Domain name must be 64 characters or less');
+    }
     this.normalizedZoneName = props.hostedZone.zoneName;
     // Remove trailing `.` from zone name
     if (this.normalizedZoneName.endsWith('.')) {
       this.normalizedZoneName = this.normalizedZoneName.substring(0, this.normalizedZoneName.length - 1);
     }
-
     // Remove any `/hostedzone/` prefix from the Hosted Zone ID
     this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
     this.tags = new cdk.TagManager(cdk.TagType.MAP, 'AWS::CertificateManager::Certificate');
+
+    let certificateTransparencyLoggingPreference: string | undefined;
+    if (props.transparencyLoggingEnabled !== undefined) {
+      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
+    }
 
     const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
@@ -121,6 +128,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
       properties: {
         DomainName: props.domainName,
         SubjectAlternativeNames: cdk.Lazy.list({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
+        CertificateTransparencyLoggingPreference: certificateTransparencyLoggingPreference,
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,

@@ -480,7 +480,7 @@ export enum TagType {
 export interface ICfnResourceOptions {
   /**
    * A condition to associate with this resource. This means that only if the condition evaluates to 'true' when the stack
-   * is deployed, the resource will be included. This is provided to allow CDK projects to produce legacy templates, but noramlly
+   * is deployed, the resource will be included. This is provided to allow CDK projects to produce legacy templates, but normally
    * there is no need to use it in CDK projects.
    */
   condition?: CfnCondition;
@@ -605,6 +605,35 @@ function deepMerge(target: any, ...sources: any[]) {
            */
         } else if (Object.keys(target[key]).length === 1) {
           if (MERGE_EXCLUDE_KEYS.includes(Object.keys(target[key])[0])) {
+            target[key] = {};
+          }
+        }
+
+        /**
+         * There might also be the case where the source is an intrinsic
+         *
+         *    target: {
+         *      Type: 'MyResourceType',
+         *      Properties: {
+         *        prop1: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
+         *      }
+         *    }
+         *    sources: [ {
+         *      Properties: {
+         *        prop1: { subprop: { 'Fn::If': ['SomeCondition', {...}, {...}] }}
+         *      }
+         *    } ]
+         *
+         * We end up in a place that is the reverse of the above check, the source
+         * becomes an intrinsic before the target
+         *
+         *   target: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
+         *   sources: [{
+         *     'Fn::If': [ 'MyCondition', {...}, {...} ]
+         *   }]
+         */
+        if (Object.keys(value).length === 1) {
+          if (MERGE_EXCLUDE_KEYS.includes(Object.keys(value)[0])) {
             target[key] = {};
           }
         }

@@ -2,9 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '@aws-cdk/cx-api';
 import {
   CfnDistribution,
   Distribution,
@@ -289,7 +287,6 @@ ellipsis so a user would know there was more to ...`,
 });
 
 describe('multiple behaviors', () => {
-
   test('a second behavior can\'t be specified with the catch-all path pattern', () => {
     const origin = defaultOrigin();
 
@@ -443,7 +440,6 @@ describe('multiple behaviors', () => {
 });
 
 describe('certificates', () => {
-
   test('should fail if using an imported certificate from outside of us-east-1', () => {
     const origin = defaultOrigin();
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:eu-west-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
@@ -475,61 +471,25 @@ describe('certificates', () => {
     }).toThrow(/Must specify at least one domain name/);
   });
 
-  describe('adding a certificate and domain renders the correct ViewerCertificate and Aliases property', () => {
-    testFutureBehavior(
-      'when @aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021 is enabled, use the TLSv1.2_2021 security policy by default',
-      { [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true },
-      App,
-      (customApp) => {
-        const customStack = new Stack(customApp);
+  test('use the TLSv1.2_2021 security policy by default', () => {
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
-        const certificate = acm.Certificate.fromCertificateArn(customStack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      domainNames: ['example.com', 'www.example.com'],
+      certificate,
+    });
 
-        new Distribution(customStack, 'Dist', {
-          defaultBehavior: { origin: defaultOrigin() },
-          domainNames: ['example.com', 'www.example.com'],
-          certificate,
-        });
-
-        Template.fromStack(customStack).hasResourceProperties('AWS::CloudFront::Distribution', {
-          DistributionConfig: {
-            Aliases: ['example.com', 'www.example.com'],
-            ViewerCertificate: {
-              AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
-              SslSupportMethod: 'sni-only',
-              MinimumProtocolVersion: 'TLSv1.2_2021',
-            },
-          },
-        });
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Aliases: ['example.com', 'www.example.com'],
+        ViewerCertificate: {
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          SslSupportMethod: 'sni-only',
+          MinimumProtocolVersion: 'TLSv1.2_2021',
+        },
       },
-    );
-
-    testLegacyBehavior(
-      'when @aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021 is disabled, use the TLSv1.2_2019 security policy by default',
-      App,
-      (customApp) => {
-        const customStack = new Stack(customApp);
-
-        const certificate = acm.Certificate.fromCertificateArn(customStack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
-
-        new Distribution(customStack, 'Dist', {
-          defaultBehavior: { origin: defaultOrigin() },
-          domainNames: ['example.com', 'www.example.com'],
-          certificate,
-        });
-
-        Template.fromStack(customStack).hasResourceProperties('AWS::CloudFront::Distribution', {
-          DistributionConfig: {
-            Aliases: ['example.com', 'www.example.com'],
-            ViewerCertificate: {
-              AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
-              SslSupportMethod: 'sni-only',
-              MinimumProtocolVersion: 'TLSv1.2_2019',
-            },
-          },
-        });
-      },
-    );
+    });
   });
 
   test('adding a certificate with non default security policy protocol', () => {
@@ -552,11 +512,9 @@ describe('certificates', () => {
       },
     });
   });
-
 });
 
 describe('custom error responses', () => {
-
   test('should fail if only the error code is provided', () => {
     const origin = defaultOrigin();
 
@@ -611,7 +569,6 @@ describe('custom error responses', () => {
       },
     });
   });
-
 });
 
 describe('logging', () => {
@@ -915,7 +872,6 @@ describe('with Lambda@Edge functions', () => {
 });
 
 describe('with CloudFront functions', () => {
-
   test('can add a CloudFront function to the default behavior', () => {
     new Distribution(stack, 'MyDist', {
       defaultBehavior: {
@@ -949,7 +905,6 @@ describe('with CloudFront functions', () => {
       },
     });
   });
-
 });
 
 test('price class is included if provided', () => {
@@ -1015,6 +970,57 @@ describe('origin IDs', () => {
             Id: 'hanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOriginGroup1B5CE3FE6',
           })],
         },
+      },
+    });
+  });
+});
+
+describe('supported HTTP versions', () => {
+  test('setting HTTP/1.1 renders HttpVersion correctly', () => {
+    new Distribution(stack, 'Http1Distribution', {
+      httpVersion: HttpVersion.HTTP1_1,
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        HttpVersion: 'http1.1',
+      },
+    });
+  });
+  test('setting HTTP/2 renders HttpVersion correctly', () => {
+    new Distribution(stack, 'Http1Distribution', {
+      httpVersion: HttpVersion.HTTP2,
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        HttpVersion: 'http2',
+      },
+    });
+  });
+  test('setting HTTP/3 renders HttpVersion correctly', () => {
+    new Distribution(stack, 'Http1Distribution', {
+      httpVersion: HttpVersion.HTTP3,
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        HttpVersion: 'http3',
+      },
+    });
+  });
+  test('setting HTTP/2 and HTTP/3 renders HttpVersion correctly', () => {
+    new Distribution(stack, 'Http1Distribution', {
+      httpVersion: HttpVersion.HTTP2_AND_3,
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        HttpVersion: 'http2and3',
       },
     });
   });

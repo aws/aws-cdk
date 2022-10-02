@@ -146,7 +146,6 @@ env:
            {"area":"@aws-cdk/aws-ecs-patterns","keywords":["aws-ecs-patterns","ecs-patterns"],"labels":["@aws-cdk/aws-ecs-patterns"],"assignees":["madeline-k"]},
            {"area":"@aws-cdk/aws-efs","keywords":["aws-efs","efs","accesspoint"],"labels":["@aws-cdk/aws-efs"],"assignees":["corymhall"]},
            {"area":"@aws-cdk/aws-eks","keywords":["aws-eks","eks","fargateprofile","fargatecluster"],"labels":["@aws-cdk/aws-eks"],"assignees":["otaviomacedo"]},
-           {"area":"@aws-cdk/aws-eks-legacy","keywords":["aws-eks-legacy","eks-legacy"],"labels":["@aws-cdk/aws-eks-legacy"],"assignees":["otaviomacedo"]},
            {"area":"@aws-cdk/aws-elasticache","keywords":["aws-elasticache","elastic-cache"],"labels":["@aws-cdk/aws-elasticache"],"assignees":["otaviomacedo"]},
            {"area":"@aws-cdk/aws-elasticbeanstalk","keywords":["aws-elasticbeanstalk","elastic-beanstalk"],"labels":["@aws-cdk/aws-elasticbeanstalk"],"assignees":["Naumel"]},
            {"area":"@aws-cdk/aws-elasticloadbalancing","keywords":["aws-elasticloadbalancing","elastic-loadbalancing","elb"],"labels":["@aws-cdk/aws-elasticloadbalancing"],"assignees":["corymhall"]},

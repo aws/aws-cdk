@@ -37,6 +37,11 @@ export interface SystemErrorsForOperationsMetricOptions extends cloudwatch.Metri
 }
 
 /**
+ * Options for configuring metrics that considers multiple operations.
+ */
+export interface OperationsMetricOptions extends SystemErrorsForOperationsMetricOptions {}
+
+/**
  * Supported DynamoDB table operations.
  */
 export enum Operation {
@@ -188,7 +193,7 @@ export interface TableOptions extends SchemaOptions {
    *
    * This property cannot be set if `encryption` and/or `encryptionKey` is set.
    *
-   * @default - server-side encryption is enabled with an AWS owned customer master key
+   * @default - The table is encrypted with an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    *
    * @deprecated This property is deprecated. In order to obtain the same behavior as
    * enabling this, set the `encryption` property to `TableEncryption.AWS_MANAGED` instead.
@@ -213,7 +218,7 @@ export interface TableOptions extends SchemaOptions {
    * > using CDKv1, make sure the feature flag
    * > `@aws-cdk/aws-kms:defaultKeyPolicies` is set to `true` in your `cdk.json`.
    *
-   * @default - server-side encryption is enabled with an AWS owned customer master key
+   * @default - The table is encrypted with an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    */
   readonly encryption?: TableEncryption;
 
@@ -224,6 +229,8 @@ export interface TableOptions extends SchemaOptions {
    *
    * @default - If `encryption` is set to `TableEncryption.CUSTOMER_MANAGED` and this
    * property is undefined, a new KMS key will be created and associated with this table.
+   * If `encryption` and this property are both undefined, then the table is encrypted with
+   * an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    */
   readonly encryptionKey?: kms.IKey;
 
@@ -532,8 +539,17 @@ export interface ITable extends IResource {
    *
    * @param props properties of a metric
    *
+   * @deprecated use `metricThrottledRequestsForOperations`
    */
   metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for throttled requests
+   *
+   * @param props properties of a metric
+   *
+   */
+  metricThrottledRequestsForOperations(props?: OperationsMetricOptions): cloudwatch.IMetric;
 
   /**
    * Metric for the successful request latency
@@ -868,18 +884,6 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * How many requests are throttled on this table, for the given operation
-   *
-   * Default: sum over 5 minutes
-   */
-  public metricThrottledRequestsForOperation(operation: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
-      ...props,
-    }).attachTo(this);
-  }
-
-  /**
    * Metric for the successful request latency this table.
    *
    * By default, the metric will be calculated as an average over a period of 5 minutes.
@@ -903,6 +907,29 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
+   * How many requests are throttled on this table, for the given operation
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricThrottledRequestsForOperation(operation: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
+      ...props,
+    }).attachTo(this);
+  }
+
+  /**
+   * How many requests are throttled on this table.
+   *
+   * This will sum errors across all possible operations.
+   * Note that by default, each individual metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
+   */
+  public metricThrottledRequestsForOperations(props?: OperationsMetricOptions): cloudwatch.IMetric {
+    return this.sumMetricsForOperations('ThrottledRequests', 'Sum of throttled requests across all operations', props);
+  }
+
+  /**
    * Metric for the system errors this table.
    *
    * This will sum errors across all possible operations.
@@ -910,20 +937,30 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric {
+    return this.sumMetricsForOperations('SystemErrors', 'Sum of errors across all operations', props);
+  }
 
+  /**
+   * Create a math expression for operations.
+   *
+   * @param metricName The metric name.
+   * @param expressionLabel Label for expression
+   * @param props operation list
+   */
+  private sumMetricsForOperations(metricName: string, expressionLabel: string, props?: OperationsMetricOptions): cloudwatch.IMetric {
     if (props?.dimensions?.Operation) {
       throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
     }
 
     const operations = props?.operations ?? Object.values(Operation);
 
-    const values = this.createMetricsForOperations('SystemErrors', operations, { statistic: 'sum', ...props });
+    const values = this.createMetricsForOperations(metricName, operations, { statistic: 'sum', ...props });
 
     const sum = new cloudwatch.MathExpression({
       expression: `${Object.keys(values).join(' + ')}`,
       usingMetrics: { ...values },
       color: props?.color,
-      label: 'Sum of errors across all operations',
+      label: expressionLabel,
       period: props?.period,
     });
 

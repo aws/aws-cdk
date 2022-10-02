@@ -14,14 +14,14 @@
     "parameters": {
      "Entries": [
       {
-       "Detail": "{\"date\":\"abc1655234384146\"}",
+       "Detail": "{\"date\":\"abc1661947671805\"}",
        "DetailType": "cdk-integ-custom-rule",
        "Source": "cdk-integ"
       }
      ]
     },
     "flattenResponse": "false",
-    "salt": "1655234384148"
+    "salt": "1661947671807"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -91,41 +91,9 @@
     "Runtime": "nodejs14.x",
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3BucketA9F12763"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3VersionKey589F30A2"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3VersionKey589F30A2"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -152,11 +120,11 @@
      "logGroupName": {
       "Fn::ImportValue": "log-group-events:ExportsOutputRefloggroup2F19C5C9B4F4C6918"
      },
-     "startTime": "1655234384146",
+     "startTime": "1661947671805",
      "limit": 1
     },
     "flattenResponse": "true",
-    "salt": "1655234384149"
+    "salt": "1661947671807"
    },
    "DependsOn": [
     "AwsApiCallEventBridgeputEvents"
@@ -179,28 +147,14 @@
       "apiCallResponse.events.0.message"
      ]
     },
-    "expected": "{\"$StringLike\":\"abc1655234384146\"}",
-    "salt": "1655234384149"
+    "expected": "{\"$StringLike\":\"abc1661947671805\"}",
+    "salt": "1661947671808"
    },
    "DependsOn": [
     "AwsApiCallEventBridgeputEvents"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Parameters": {
-  "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3BucketA9F12763": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736\""
-  },
-  "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3VersionKey589F30A2": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736\""
-  },
-  "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736ArtifactHash2CC614EA": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736\""
   }
  },
  "Outputs": {
@@ -211,6 +165,40 @@
      "data"
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

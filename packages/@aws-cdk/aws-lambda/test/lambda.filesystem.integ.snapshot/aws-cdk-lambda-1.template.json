@@ -117,7 +117,11 @@
       "Value": "aws-cdk-lambda-1/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -510,7 +514,11 @@
    },
    "DependsOn": [
     "EfsEfsMountTarget195B2DD2E",
-    "EfsEfsMountTarget2315C927F"
+    "EfsEfsMountTarget2315C927F",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ]
   },
   "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
@@ -589,7 +597,11 @@
    },
    "DependsOn": [
     "EfsEfsMountTarget195B2DD2E",
-    "EfsEfsMountTarget2315C927F"
+    "EfsEfsMountTarget2315C927F",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ]
   },
   "MyLambdaSecurityGroup1E71A818": {
@@ -609,7 +621,11 @@
    },
    "DependsOn": [
     "EfsEfsMountTarget195B2DD2E",
-    "EfsEfsMountTarget2315C927F"
+    "EfsEfsMountTarget2315C927F",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ]
   },
   "MyLambdaCCE802FB": {
@@ -678,7 +694,11 @@
     "EfsEfsMountTarget2315C927F",
     "EfsEfsSecurityGroupfromawscdklambda1MyLambdaSecurityGroup86B085EE20490D9864A8",
     "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-    "MyLambdaServiceRole4539ECB6"
+    "MyLambdaServiceRole4539ECB6",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ]
   },
   "securityGroupfromawscdklambda1MyLambda2SecurityGroup7492F70D20498301D9D2": {
@@ -748,7 +768,11 @@
     "MyLambdaCCE802FB",
     "MyLambdaSecurityGroup1E71A818",
     "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-    "MyLambdaServiceRole4539ECB6"
+    "MyLambdaServiceRole4539ECB6",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ]
   },
   "MyLambda2ServiceRoleDefaultPolicy2BECE79D": {
@@ -829,7 +853,11 @@
     "MyLambdaCCE802FB",
     "MyLambdaSecurityGroup1E71A818",
     "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-    "MyLambdaServiceRole4539ECB6"
+    "MyLambdaServiceRole4539ECB6",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ]
   },
   "MyLambda2SecurityGroup3C507954": {
@@ -851,7 +879,11 @@
     "MyLambdaCCE802FB",
     "MyLambdaSecurityGroup1E71A818",
     "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-    "MyLambdaServiceRole4539ECB6"
+    "MyLambdaServiceRole4539ECB6",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ]
   },
   "MyLambda2254B54D5": {
@@ -922,7 +954,45 @@
     "MyLambdaServiceRole4539ECB6",
     "MyLambda2ServiceRoleDefaultPolicy2BECE79D",
     "MyLambda2ServiceRoleD09B370C",
-    "securityGroupfromawscdklambda1MyLambda2SecurityGroup7492F70D20498301D9D2"
+    "securityGroupfromawscdklambda1MyLambda2SecurityGroup7492F70D20498301D9D2",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
    ]
   }
  }
