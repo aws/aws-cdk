@@ -58,6 +58,14 @@ CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
     }
   }
 
+  if (autoRollbackConfig.failedDeployment === false
+    && autoRollbackConfig.stoppedDeployment !== true
+    && autoRollbackConfig.deploymentInAlarm === false) {
+    return {
+      enabled: false,
+    };
+  }
+
   return events.length > 0
     ? {
       enabled: true,

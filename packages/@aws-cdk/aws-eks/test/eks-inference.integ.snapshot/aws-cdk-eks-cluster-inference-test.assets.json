@@ -53,15 +53,15 @@
         }
       }
     },
-    "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c": {
+    "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc": {
       "source": {
-        "path": "asset.731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip",
+        "path": "asset.c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "731f24951dbe4e08bfc519dd7c23a4f7158528bd5557e38437b08292ab2a873c.zip",
+          "objectKey": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -118,7 +118,7 @@
         }
       }
     },
-    "31c430155c95625b36488ce0fe0f03c3828e7aafd7480c8119275b497f551c94": {
+    "cb422636d998286c1d01349241821548fc2974190911563807d090710463d76e": {
       "source": {
         "path": "awscdkeksclusterinferencetestawscdkawseksKubectlProviderB4348345.nested.template.json",
         "packaging": "file"
@@ -126,12 +126,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "31c430155c95625b36488ce0fe0f03c3828e7aafd7480c8119275b497f551c94.json",
+          "objectKey": "cb422636d998286c1d01349241821548fc2974190911563807d090710463d76e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "9b046f8f6ae1f9c4ec62db1d0748a96187a4901713a81387845556f6a5e55c9b": {
+    "644d25caaee0e46a0609dab2798aff916ac5a4baec4e38f854cb589362144d73": {
       "source": {
         "path": "aws-cdk-eks-cluster-inference-test.template.json",
         "packaging": "file"
@@ -139,7 +139,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9b046f8f6ae1f9c4ec62db1d0748a96187a4901713a81387845556f6a5e55c9b.json",
+          "objectKey": "644d25caaee0e46a0609dab2798aff916ac5a4baec4e38f854cb589362144d73.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

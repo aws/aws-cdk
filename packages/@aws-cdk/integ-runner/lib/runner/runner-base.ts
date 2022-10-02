@@ -321,7 +321,7 @@ export abstract class IntegRunner {
         execCmd: this.cdkApp.split(' '),
         env: {
           ...DEFAULT_SYNTH_OPTIONS.env,
-          CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+          CDK_CONTEXT_JSON: JSON.stringify(this.getContext(DEFAULT_SYNTH_OPTIONS.context)),
         },
         output: path.relative(this.directory, this.snapshotDir),
       });
@@ -361,11 +361,7 @@ export abstract class IntegRunner {
       .filter(([k, _]) => !FUTURE_FLAGS_EXPIRED.includes(k))
       .forEach(([k, v]) => futureFlags[k] = v);
 
-    const enableLookups = (this.actualTestSuite ?? this.expectedTestSuite)?.enableLookups;
     return {
-      // if lookups are enabled then we need to synth
-      // with the "dummy" context
-      ...enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
       ...futureFlags,
       ...this.legacyContext,
       ...additionalContext,

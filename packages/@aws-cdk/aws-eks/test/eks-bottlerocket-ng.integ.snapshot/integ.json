@@ -1,14 +1,12 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "integ.eks-bottlerocket-ng": {
+    "aws-cdk-eks-cluster-bottlerocket-ng/DefaultTest": {
       "stacks": [
-        "aws-cdk-eks-cluster-test"
+        "aws-cdk-eks-cluster-bottlerocket-ng-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "assertionStack": "aws-cdk-eks-cluster-bottlerocket-ng/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterbottlerocketngDefaultTestDeployAssert6C42FFE7"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
