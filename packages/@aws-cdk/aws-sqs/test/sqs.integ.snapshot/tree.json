@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.108"
         }
       },
       "aws-cdk-sqs": {
@@ -25,7 +25,9 @@
                 "path": "aws-cdk-sqs/DeadLetterQueue/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
-                  "aws:cdk:cloudformation:props": {}
+                  "aws:cdk:cloudformation:props": {
+                    "sqsManagedSseEnabled": false
+                  }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-sqs.CfnQueue",
@@ -164,7 +166,8 @@
                   "aws:cdk:cloudformation:props": {
                     "deduplicationScope": "messageGroup",
                     "fifoQueue": true,
-                    "fifoThroughputLimit": "perMessageGroupId"
+                    "fifoThroughputLimit": "perMessageGroupId",
+                    "sqsManagedSseEnabled": false
                   }
                 },
                 "constructInfo": {
@@ -342,20 +345,56 @@
             "id": "QueueUrl",
             "path": "aws-cdk-sqs/QueueUrl",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "SqsTest": {
+        "id": "SqsTest",
+        "path": "SqsTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "SqsTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "SqsTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.108"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "SqsTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

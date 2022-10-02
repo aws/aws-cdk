@@ -44,7 +44,6 @@ The following encryption modes are supported:
 * KMS key that you can managed yourself
 * Server-side encryption managed by SQS (SSE-SQS)
 
-Support for SSE-SQS is available in all AWS Commercial and GovCloud Regions except the China Regions.
 To learn more about SSE-SQS on Amazon SQS, please visit the
 [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
 

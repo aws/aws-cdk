@@ -2,6 +2,9 @@
  "Resources": {
   "DeadLetterQueue9F481546": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": false
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -76,7 +79,8 @@
    "Properties": {
     "DeduplicationScope": "messageGroup",
     "FifoQueue": true,
-    "FifoThroughputLimit": "perMessageGroupId"
+    "FifoThroughputLimit": "perMessageGroupId",
+    "SqsManagedSseEnabled": false
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
