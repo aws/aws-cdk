@@ -27,6 +27,7 @@ the manifest.
 Currently the following asset types are supported:
 
 * Files and archives, uploaded to S3
+    * Can be either pre-bundled or bundled when `cdk-assets` is called
 * Docker Images, uploaded to ECR
 * Files, archives, and Docker images built by external utilities
 
@@ -87,6 +88,28 @@ An asset manifest looks like this:
           "assumeRoleArn": "arn:aws:iam::12345789012:role/my-account",
           "bucketName": "MyBucket",
           "objectKey": "7aac5b80b050e7e4e168f84feffa5893.zip"
+        }
+      }
+    },
+    "7aac5b80b050e7e4e168f84feffa5894": {
+      "source": {
+        "path": "some_directory",
+        "packaging": "zip",
+        "bundling": {
+            "image": "public.ecr.aws/sam/build-nodejs16.x",
+            "command": [
+              "bash", "-c",
+              "npm i -g esbuild && esbuild --bundle \"/asset-input/app.ts\" --target=node16 --platform=node --outfile=\"/asset-output/index.js\" --external:aws-sdk --loader:.png=dataurl"
+            ],
+            "workingDirectory": "/"
+          }
+      },
+      "destinations": {
+        "us-east-1": {
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:aws:iam::12345789012:role/my-account",
+          "bucketName": "MyBucket",
+          "objectKey": "7aac5b80b050e7e4e168f84feffa5894.zip"
         }
       }
     },

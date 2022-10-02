@@ -21,9 +21,9 @@ export class FileAssetHandler implements IAssetHandler {
   private readonly fileCacheRoot: string;
 
   constructor(
-    private readonly workDir: string,
-    private readonly asset: FileManifestEntry,
-    private readonly host: IHandlerHost) {
+    protected readonly workDir: string,
+    protected readonly asset: FileManifestEntry,
+    protected readonly host: IHandlerHost) {
     this.fileCacheRoot = path.join(workDir, '.cache');
   }
 
@@ -80,6 +80,7 @@ export class FileAssetHandler implements IAssetHandler {
     }
 
     if (this.host.aborted) { return; }
+
     const publishFile = this.asset.source.executable ?
       await this.externalPackageFile(this.asset.source.executable) : await this.packageFile(this.asset.source);
 
@@ -130,7 +131,6 @@ export class FileAssetHandler implements IAssetHandler {
     }
 
     const fullPath = path.resolve(this.workDir, source.path);
-
     if (source.packaging === FileAssetPackaging.ZIP_DIRECTORY) {
       const contentType = 'application/zip';
 

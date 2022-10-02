@@ -1,6 +1,8 @@
+import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { BundlingOptions, DockerVolumeConsistency } from '@aws-cdk/cloud-assembly-schema';
 import { cdkCredentialsConfig, obtainEcrCredentials } from './docker-credentials';
 import { Logger, shell, ShellOptions } from './shell';
 import { createCriticalSection } from './util';
@@ -214,4 +216,156 @@ function getDockerCmd(): string {
 
 function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
+}
+
+export class ContainerBunder {
+
+  /**
+   * The directory inside the bundling container into which the asset sources will be mounted.
+   */
+  public static readonly BUNDLING_INPUT_DIR = '/asset-input';
+
+  /**
+   * The directory inside the bundling container into which the bundled output should be written.
+   */
+  public static readonly BUNDLING_OUTPUT_DIR = '/asset-output';
+
+  constructor(
+    private readonly bundlingOption: BundlingOptions,
+    private readonly sourceDir: string,
+  ) {}
+  /**
+   * Bundle asset using a container
+   */
+  public bundle() {
+    // Always mount input and output dir
+    const bundleDir = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'cdk-docker-bundle-'));
+    const volumes = [
+      {
+        hostPath: this.sourceDir,
+        containerPath: ContainerBunder.BUNDLING_INPUT_DIR,
+      },
+      {
+        hostPath: bundleDir,
+        containerPath: ContainerBunder.BUNDLING_OUTPUT_DIR,
+      },
+      ...this.bundlingOption.volumes ?? [],
+    ];
+    const environment = this.bundlingOption.environment || {};
+    const entrypoint = this.bundlingOption.entrypoint?.[0] || null;
+    const command = [
+      ...this.bundlingOption.entrypoint?.[1]
+        ? [...this.bundlingOption.entrypoint.slice(1)]
+        : [],
+      ...this.bundlingOption.command
+        ? [...this.bundlingOption.command]
+        : [],
+    ];
+
+    const dockerArgs: string[] = [
+      'run', '--rm',
+      ...this.bundlingOption.securityOpt
+        ? ['--security-opt', this.bundlingOption.securityOpt]
+        : [],
+      ...this.bundlingOption.network
+        ? ['--network', this.bundlingOption.network]
+        : [],
+      ...this.bundlingOption.user
+        ? ['-u', this.bundlingOption.user]
+        : [],
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${isSeLinux() ? 'z,' : ''}${DockerVolumeConsistency.DELEGATED}`])),
+      ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
+      ...this.bundlingOption.workingDirectory
+        ? ['-w', this.bundlingOption.workingDirectory]
+        : [],
+      ...entrypoint
+        ? ['--entrypoint', entrypoint]
+        : [],
+      this.bundlingOption.image,
+      ...command,
+    ];
+
+    dockerExec(dockerArgs);
+    return bundleDir;
+  }
+
+  /**
+     * Copies a file or directory out of the Docker image to the local filesystem.
+     *
+     * If `outputPath` is omitted the destination path is a temporary directory.
+     *
+     * @param imagePath the path in the Docker image
+     * @param outputPath the destination path for the copy operation
+     * @returns the destination path
+     */
+  public cp(imagePath: string, outputPath?: string): string {
+    const { stdout } = dockerExec(['create', this.bundlingOption.image], {}); // Empty options to avoid stdout redirect here
+
+    const match = stdout.toString().match(/([0-9a-f]{16,})/);
+    if (!match) {
+      throw new Error('Failed to extract container ID from Docker create output');
+    }
+
+    const containerId = match[1];
+    const containerPath = `${containerId}:${imagePath}`;
+    const destPath = outputPath ?? fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'cdk-docker-cp-'));
+    try {
+      dockerExec(['cp', containerPath, destPath]);
+      return destPath;
+    } catch (err) {
+      throw new Error(`Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
+    } finally {
+      dockerExec(['rm', '-v', containerId]);
+    }
+  }
+}
+
+function dockerExec(args: string[], options?: SpawnSyncOptions) {
+  const prog = process.env.CDK_DOCKER ?? 'docker';
+  const proc = spawnSync(prog, args, options ?? {
+    stdio: [ // show Docker output
+      'ignore', // ignore stdio
+      process.stderr, // redirect stdout to stderr
+      'inherit', // inherit stderr
+    ],
+  });
+
+  if (proc.error) {
+    throw proc.error;
+  }
+
+  if (proc.status !== 0) {
+    if (proc.stdout || proc.stderr) {
+      throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+    }
+    throw new Error(`${prog} exited with status ${proc.status}`);
+  }
+
+  return proc;
+}
+
+function isSeLinux() : boolean {
+  if (process.platform != 'linux') {
+    return false;
+  }
+  const prog = 'selinuxenabled';
+  const proc = spawnSync(prog, [], {
+    stdio: [ // show selinux status output
+      'pipe', // get value of stdio
+      process.stderr, // redirect stdout to stderr
+      'inherit', // inherit stderr
+    ],
+  });
+
+  if (proc.error) {
+    // selinuxenabled not a valid command, therefore not enabled
+    return false;
+  }
+  if (proc.status == 0) {
+    // selinux enabled
+    return true;
+  } else {
+    // selinux not enabled
+    return false;
+  }
 }
