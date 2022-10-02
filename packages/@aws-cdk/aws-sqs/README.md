@@ -37,9 +37,16 @@ new sqs.Queue(this, 'Queue');
 
 ## Encryption
 
-If you want to encrypt the queue contents, set the `encryption` property. You can have
-the messages encrypted with a key that SQS manages for you, or a key that you
-can manage yourself.
+If you want to encrypt the queue contents, set the `encryption` property.
+The following encryption modes are supported:
+
+* KMS key that SQS manages for you
+* KMS key that you can managed yourself
+* Server-side encryption managed by SQS (SSE-SQS)
+
+Support for SSE-SQS is available in all AWS Commercial and GovCloud Regions except the China Regions.
+To learn more about SSE-SQS on Amazon SQS, please visit the
+[Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
 
 ```ts
 // Use managed key
@@ -53,6 +60,11 @@ const myKey = new kms.Key(this, 'Key');
 new sqs.Queue(this, 'Queue', {
   encryption: sqs.QueueEncryption.KMS,
   encryptionMasterKey: myKey,
+});
+
+// Use SQS managed server side encryption (SSE-SQS)
+new sqs.Queue(this, 'Queue', {
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
 });
 ```
 

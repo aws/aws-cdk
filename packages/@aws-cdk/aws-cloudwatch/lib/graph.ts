@@ -140,6 +140,135 @@ export enum GraphWidgetView {
 }
 
 /**
+ * Properties for a GaugeWidget
+ */
+export interface GaugeWidgetProps extends MetricWidgetProps {
+  /**
+   * Metrics to display on left Y axis
+   *
+   * @default - No metrics
+   */
+  readonly metrics?: IMetric[];
+
+  /**
+   * Annotations for the left Y axis
+   *
+   * @default - No annotations
+   */
+  readonly annotations?: HorizontalAnnotation[];
+
+  /**
+   * Left Y axis
+   *
+   * @default - None
+   */
+  readonly leftYAxis?: YAxisProps;
+
+  /**
+   * Position of the legend
+   *
+   * @default - bottom
+   */
+  readonly legendPosition?: LegendPosition;
+
+  /**
+   * Whether the graph should show live data
+   *
+   * @default false
+   */
+  readonly liveData?: boolean;
+
+  /**
+   * Whether to show the value from the entire time range. Only applicable for Bar and Pie charts.
+   *
+   * If false, values will be from the most recent period of your chosen time range;
+   * if true, shows the value from the entire time range.
+   *
+   * @default false
+   */
+  readonly setPeriodToTimeRange?: boolean;
+
+  /**
+   * The default period for all metrics in this widget.
+   * The period is the length of time represented by one data point on the graph.
+   * This default can be overridden within each metric definition.
+   *
+   * @default cdk.Duration.seconds(300)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
+   * The default statistic to be displayed for each metric.
+   * This default can be overridden within the definition of each individual metric
+   *
+   * @default - The statistic for each metric is used
+   */
+  readonly statistic?: string;
+}
+
+/**
+ * A dashboard gauge widget that displays metrics
+ */
+export class GaugeWidget extends ConcreteWidget {
+
+  private readonly props: GaugeWidgetProps;
+
+  private readonly metrics: IMetric[];
+
+  constructor(props: GaugeWidgetProps) {
+    super(props.width || 6, props.height || 6);
+    this.props = props;
+    this.metrics = props.metrics ?? [];
+    this.copyMetricWarnings(...this.metrics);
+  }
+
+  /**
+   * Add another metric to the left Y axis of the GaugeWidget
+   *
+   * @param metric the metric to add
+   */
+  public addMetric(metric: IMetric) {
+    this.metrics.push(metric);
+    this.copyMetricWarnings(metric);
+  }
+
+  public toJson(): any[] {
+    const horizontalAnnotations = [
+      ...(this.props.annotations || []).map(mapAnnotation('annotations')),
+    ];
+
+    const metrics = allMetricsGraphJson(this.metrics, []);
+    const leftYAxis = {
+      ...this.props.leftYAxis,
+      min: this.props.leftYAxis?.min ?? 0,
+      max: this.props.leftYAxis?.max ?? 100,
+    };
+    return [{
+      type: 'metric',
+      width: this.width,
+      height: this.height,
+      x: this.x,
+      y: this.y,
+      properties: {
+        view: 'gauge',
+        title: this.props.title,
+        region: this.props.region || cdk.Aws.REGION,
+        metrics: metrics.length > 0 ? metrics : undefined,
+        annotations: horizontalAnnotations.length > 0 ? { horizontal: horizontalAnnotations } : undefined,
+        yAxis: {
+          left: leftYAxis ?? undefined,
+        },
+        legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
+        liveData: this.props.liveData,
+        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+        period: this.props.period?.toSeconds(),
+        stat: this.props.statistic,
+      },
+    }];
+  }
+}
+
+/**
  * Properties for a GraphWidget
  */
 export interface GraphWidgetProps extends MetricWidgetProps {
