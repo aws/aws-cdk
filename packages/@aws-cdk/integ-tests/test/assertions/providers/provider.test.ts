@@ -2,11 +2,13 @@ import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { AssertionsProvider } from '../../../lib/assertions';
 
+let stack: Stack;
+beforeEach(() => {
+  stack = new Stack();
+});
+
 describe('AssertionProvider', () => {
   test('default', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const provider = new AssertionsProvider(stack, 'AssertionProvider');
 
@@ -20,9 +22,6 @@ describe('AssertionProvider', () => {
 
   describe('addPolicyStatementForSdkCall', () => {
     test('default', () => {
-      // GIVEN
-      const stack = new Stack();
-
       // WHEN
       const provider = new AssertionsProvider(stack, 'AssertionsProvider');
       provider.addPolicyStatementFromSdkCall('MyService', 'myApi');
@@ -47,9 +46,6 @@ describe('AssertionProvider', () => {
     });
 
     test('multiple calls', () => {
-      // GIVEN
-      const stack = new Stack();
-
       // WHEN
       const provider = new AssertionsProvider(stack, 'AssertionsProvider');
       provider.addPolicyStatementFromSdkCall('MyService', 'myApi');
@@ -80,8 +76,6 @@ describe('AssertionProvider', () => {
     });
 
     test('multiple providers, 1 resource', () => {
-      // GIVEN
-      const stack = new Stack();
 
       // WHEN
       const provider = new AssertionsProvider(stack, 'AssertionsProvider');
@@ -114,9 +108,6 @@ describe('AssertionProvider', () => {
     });
 
     test('prefix different from service name', () => {
-      // GIVEN
-      const stack = new Stack();
-
       // WHEN
       const provider = new AssertionsProvider(stack, 'AssertionsProvider');
       provider.addPolicyStatementFromSdkCall('applicationautoscaling', 'myApi');
@@ -143,9 +134,6 @@ describe('AssertionProvider', () => {
 
   describe('encode', () => {
     test('booleans', () => {
-      // GIVEN
-      const stack = new Stack();
-
       // WHEN
       const provider = new AssertionsProvider(stack, 'AssertionsProvider');
       const encoded = provider.encode({
@@ -161,9 +149,6 @@ describe('AssertionProvider', () => {
     });
 
     test('all other values return as usual', () => {
-      // GIVEN
-      const stack = new Stack();
-
       // WHEN
       const provider = new AssertionsProvider(stack, 'AssertionsProvider');
       const encoded = provider.encode({
@@ -181,9 +166,6 @@ describe('AssertionProvider', () => {
     });
 
     test('nullish', () => {
-      // GIVEN
-      const stack = new Stack();
-
       // WHEN
       const provider = new AssertionsProvider(stack, 'AssertionsProvider');
 

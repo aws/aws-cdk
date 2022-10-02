@@ -1,4 +1,8 @@
+import * as SDK from 'aws-sdk';
+import * as AWS from 'aws-sdk-mock';
 import * as nock from 'nock';
+import * as sinon from 'sinon';
+import { handler as lambda_handler } from '../../../../lib/assertions/providers/lambda-handler';
 import { CustomResourceHandler } from '../../../../lib/assertions/providers/lambda-handler/base';
 
 interface MyHandlerRequest {
@@ -6,71 +10,102 @@ interface MyHandlerRequest {
 }
 
 interface MyHandlerResponse {
-  readonly output: string;
+  readonly apiCallResponse: any;
 }
 
 interface CloudFormationResponse extends Omit<AWSLambda.CloudFormationCustomResourceResponse, 'Data'> {
-  readonly Data: MyHandlerResponse;
+  readonly Data: any;
 }
 
+
+let mockMyApi: sinon.SinonSpy;
+let mockStartExecution: sinon.SinonSpy;
 describe('CustomResourceHandler', () => {
   beforeEach(() => {
+    AWS.setSDK(require.resolve('aws-sdk'));
+    mockMyApi = sinon.fake.resolves({
+      Buckets: [{
+        Name: 'somebucket',
+      }],
+    } as SDK.S3.ListBucketsOutput);
+    mockStartExecution = sinon.fake.resolves({});
+    AWS.mock('S3', 'listBuckets', mockMyApi);
+    AWS.mock('StepFunctions', 'startExecution', mockStartExecution);
     jest.spyOn(console, 'log').mockImplementation(() => { return true; });
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+    jest.resetAllMocks();
     nock.cleanAll();
+    AWS.restore();
   });
 
-  test('default', async () => {
-    // GIVEN
-    class MyHandler extends CustomResourceHandler<MyHandlerRequest, MyHandlerResponse> {
-      protected async processEvent(request: MyHandlerRequest): Promise<MyHandlerResponse | undefined> {
-        return { output: `MyResponseTo${request.input}` };
-      }
-    }
+  describe('lambda handler', () => {
+    test('create sync request', async () => {
+      const nocked = nockUp((body) => {
+        return body.Status === 'SUCCESS'
+        && body.Reason === 'OK'
+        && body.Data.apiCallResponse.Buckets[0].Name === 'somebucket'
+        && body.StackId === 'MyStackId'
+        && body.RequestId === 'MyRequestId'
+        && body.NoEcho === false;
+      });
+      const event = createEvent({
+        service: 'S3',
+        api: 'listBuckets',
+      }, 'Custom::DeployAssert@SdkCall');
+      await lambda_handler(event, standardContext);
 
-    const nocked = nockUp((body) => {
-      return body.Status === 'SUCCESS'
-      && body.Reason === 'OK'
-      && body.Data.output === 'MyResponseToYourRequest'
-      && body.StackId === 'MyStackId'
-      && body.RequestId === 'MyRequestId'
-      && body.NoEcho === false;
+      sinon.assert.calledOnce(mockMyApi);
+      sinon.assert.notCalled(mockStartExecution);
+
+      // THEN
+      expect(nocked.isDone()).toEqual(true);
     });
 
+    test('create request with assertions', async () => {
+      const nocked = nockUp((body) => {
+        return body.Status === 'SUCCESS'
+        && body.Reason === 'OK'
+        && body.Data.assertion === '{"status":"success"}'
+        && body.Data.apiCallResponse.Buckets[0].Name === 'somebucket'
+        && body.StackId === 'MyStackId'
+        && body.RequestId === 'MyRequestId'
+        && body.NoEcho === false;
+      });
+      const event = createEvent({
+        service: 'S3',
+        api: 'listBuckets',
+        expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'somebucket' }] } }),
+      }, 'Custom::DeployAssert@SdkCall');
+      await lambda_handler(event, standardContext);
 
-    // WHEN
-    const handler = new MyHandler(createEvent({ input: 'YourRequest' }), standardContext);
+      sinon.assert.calledOnce(mockMyApi);
+      sinon.assert.notCalled(mockStartExecution);
 
-    await handler.handle();
-
-    // THEN
-    expect(nocked.isDone()).toEqual(true);
-  });
-
-  test('processEvent fails', async () => {
-    // GIVEN
-    class MyHandler extends CustomResourceHandler<MyHandlerRequest, MyHandlerResponse> {
-      protected async processEvent(_: MyHandlerRequest): Promise<MyHandlerResponse | undefined> {
-        throw new Error('FooFAIL');
-      }
-    }
-
-    const nocked = nockUp((body) => {
-      return body.Status === 'FAILED'
-      && body.Reason === 'FooFAIL';
+      // THEN
+      expect(nocked.isDone()).toEqual(true);
     });
 
+    test('create request with assertions fails', async () => {
+      const nocked = nockUp((body) => {
+        return body.Status === 'FAILED'
+        && (body.Reason?.match(/Expected someotherbucket/) ?? []).length === 1;
+      });
+      const event = createEvent({
+        service: 'S3',
+        api: 'listBuckets',
+        expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'someotherbucket' }] } }),
+      }, 'Custom::DeployAssert@SdkCall');
+      await lambda_handler(event, standardContext);
 
-    // WHEN
-    const handler = new MyHandler(createEvent({ input: 'YourRequest' }), standardContext);
+      sinon.assert.calledOnce(mockMyApi);
+      sinon.assert.notCalled(mockStartExecution);
 
-    await handler.handle();
-
-    // THEN
-    expect(nocked.isDone()).toEqual(true);
+      // THEN
+      expect(nocked.isDone()).toEqual(true);
+    });
   });
 
   test('timeout kicks in', async () => {
@@ -95,59 +130,11 @@ describe('CustomResourceHandler', () => {
       getRemainingTimeInMillis: () => 1300,
     });
 
-
     // WHEN
     await handler.handle();
 
-
     // THEN
     expect(nocked.isDone()).toEqual(true);
-  });
-
-  describe('physicalResourceId', () => {
-    test('create event', async () => {
-      // GIVEN
-      class MyHandler extends CustomResourceHandler<MyHandlerRequest, MyHandlerResponse> {
-        protected async processEvent(request: MyHandlerRequest): Promise<MyHandlerResponse | undefined> {
-          return { output: `MyResponseTo${request.input}` };
-        }
-      }
-
-      const nocked = nockUp((body) => {
-        return body.PhysicalResourceId === 'MyLogicalResourceId';
-      });
-
-
-      // WHEN
-      const handler = new MyHandler(createEvent({ input: 'YourRequest' }), standardContext);
-
-      await handler.handle();
-
-      // THEN
-      expect(nocked.isDone()).toEqual(true);
-    });
-
-    test('update event', async () => {
-      // GIVEN
-      class MyHandler extends CustomResourceHandler<MyHandlerRequest, MyHandlerResponse> {
-        protected async processEvent(request: MyHandlerRequest): Promise<MyHandlerResponse | undefined> {
-          return { output: `MyResponseTo${request.input}` };
-        }
-      }
-
-      const nocked = nockUp((body) => {
-        return body.PhysicalResourceId === 'MyPhysicalResourceId';
-      });
-
-
-      // WHEN
-      const handler = new MyHandler(updateEvent({ input: 'YourRequest' }), standardContext);
-
-      await handler.handle();
-
-      // THEN
-      expect(nocked.isDone()).toEqual(true);
-    });
   });
 });
 
@@ -161,33 +148,12 @@ const standardContext: any = { // keeping this as any so as to not have to fill 
   getRemainingTimeInMillis: () => 5000,
 };
 
-function createEvent(data?: MyHandlerRequest): AWSLambda.CloudFormationCustomResourceCreateEvent {
+function createEvent(data?: any, resourceType: string = 'MyResourceType'): AWSLambda.CloudFormationCustomResourceCreateEvent {
   return {
     LogicalResourceId: 'MyLogicalResourceId',
     RequestId: 'MyRequestId',
     RequestType: 'Create',
-    ResourceType: 'MyResourceType',
-    ResourceProperties: {
-      ...data,
-      ServiceToken: 'MyServiceToken',
-    },
-    ResponseURL: 'https://someurl.com',
-    ServiceToken: 'MyServiceToken',
-    StackId: 'MyStackId',
-  };
-}
-
-function updateEvent(data?: MyHandlerRequest): AWSLambda.CloudFormationCustomResourceUpdateEvent {
-  return {
-    LogicalResourceId: 'MyLogicalResourceId',
-    OldResourceProperties: {
-      ...data,
-      ServiceToken: 'MyServiceToken',
-    },
-    PhysicalResourceId: 'MyPhysicalResourceId',
-    RequestId: 'MyRequestId',
-    RequestType: 'Update',
-    ResourceType: 'MyResourceType',
+    ResourceType: resourceType,
     ResourceProperties: {
       ...data,
       ServiceToken: 'MyServiceToken',

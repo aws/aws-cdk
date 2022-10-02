@@ -178,7 +178,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ff1de129c8ab3914f9a0758b9422b50fdbd43f6a61767dc5391e7b08231cdc6f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3fdd4225944766d24a4a35fa88db2febd8e7f28bd8ea992c8972583ca24d0b9a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -201,16 +201,10 @@
             "data": "AwsApiCallSSMgetParameters"
           }
         ],
-        "/ssm-string-param/DefaultTest/DeployAssert/AwsApiCallSSMgetParameters/AssertEqualsSSMgetParameters/Default/Default": [
+        "/ssm-string-param/DefaultTest/DeployAssert/AwsApiCallSSMgetParameters/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParametersAssertEqualsSSMgetParametersE460052D"
-          }
-        ],
-        "/ssm-string-param/DefaultTest/DeployAssert/AwsApiCallSSMgetParameters/AssertEqualsSSMgetParameters/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAssertEqualsSSMgetParameters"
+            "data": "AssertionResultsAwsApiCallSSMgetParameters"
           }
         ],
         "/ssm-string-param/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

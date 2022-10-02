@@ -11,6 +11,7 @@
     },
     "service": "SSM",
     "api": "getParameters",
+    "expected": "{\"$ObjectLike\":{\"Parameters\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Value\":\"value1,value2\"}},{\"$ObjectLike\":{\"Value\":\"value1,value2\"}},{\"$ObjectLike\":{\"Value\":\"value1,value2\"}}]}}}",
     "parameters": {
      "Names": [
       {
@@ -25,28 +26,7 @@
      ]
     },
     "flattenResponse": "false",
-    "salt": "1661970076677"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallSSMgetParametersAssertEqualsSSMgetParametersE460052D": {
-   "Type": "Custom::DeployAssert@AssertEquals",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "actual": {
-     "Fn::GetAtt": [
-      "AwsApiCallSSMgetParameters",
-      "apiCallResponse"
-     ]
-    },
-    "expected": "{\"$ObjectLike\":{\"Parameters\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Value\":\"value1,value2\"}},{\"$ObjectLike\":{\"Value\":\"value1,value2\"}},{\"$ObjectLike\":{\"Value\":\"value1,value2\"}}]}}}",
-    "salt": "1661970076678"
+    "salt": "1663960575818"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -100,7 +80,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2a53dc40a7dae81c8850e125ab49e5f55d80b7b8ceac86976f2a4119393cab72.zip"
+     "S3Key": "d47f7e6772bfdf47ecbc070ffe204baf53bacbfbf7814eb407bd8ea108c1c1bb.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -114,11 +94,11 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAssertEqualsSSMgetParameters": {
+  "AssertionResultsAwsApiCallSSMgetParameters": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSSMgetParametersAssertEqualsSSMgetParametersE460052D",
-     "data"
+     "AwsApiCallSSMgetParameters",
+     "assertion"
     ]
    }
   }

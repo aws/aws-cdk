@@ -111,7 +111,7 @@ export interface AssertionResult {
 /**
  * The result of an assertion
  */
-  readonly data: string;
+  readonly assertion: string;
 
   /**
    * Whether or not the assertion failed

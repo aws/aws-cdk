@@ -16,7 +16,8 @@ export class AssertionHandler extends CustomResourceHandler<AssertionRequest, As
     matchResult.finished();
     if (matchResult.hasFailed()) {
       result = {
-        data: JSON.stringify({
+        failed: true,
+        assertion: JSON.stringify({
           status: 'fail',
           message: [
             ...matchResult.toHumanStrings(),
@@ -25,11 +26,11 @@ export class AssertionHandler extends CustomResourceHandler<AssertionRequest, As
         }),
       };
       if (request.failDeployment) {
-        throw new Error(result.data);
+        throw new Error(result.assertion);
       }
     } else {
       result = {
-        data: JSON.stringify({
+        assertion: JSON.stringify({
           status: 'success',
         }),
       };
