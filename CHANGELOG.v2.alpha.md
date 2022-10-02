@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.44.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.43.1-alpha.0...v2.44.0-alpha.0) (2022-09-28)
+
+
+### Features
+
+* **integ-tests:** chain assertion api calls ([#22196](https://github.com/aws/aws-cdk/issues/22196)) ([530e07b](https://github.com/aws/aws-cdk/commit/530e07bdc87ab94bbd5ed28debac98400a8152cc))
+* **neptune:** introduce metric method to cluster and instance ([#21995](https://github.com/aws/aws-cdk/issues/21995)) ([02ed837](https://github.com/aws/aws-cdk/commit/02ed8371276d504ba9fe09687d45409ad7cca288)), closes [#20248](https://github.com/aws/aws-cdk/issues/20248)
+
+## [2.43.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.43.0-alpha.0...v2.43.1-alpha.0) (2022-09-23)
+
+## [2.43.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.42.1-alpha.0...v2.43.0-alpha.0) (2022-09-21)
+
+
+### Bug Fixes
+
+* **integ-tests:** AwsApiCall Custom Resource length could be greater than 60 characters ([#22119](https://github.com/aws/aws-cdk/issues/22119)) ([35b2806](https://github.com/aws/aws-cdk/commit/35b280616a420987b6553f73bc91a736b06d4e1a))
+* **integ-tests:** can't enable lookups when creating an IntegTest ([#22075](https://github.com/aws/aws-cdk/issues/22075)) ([d0e0ab9](https://github.com/aws/aws-cdk/commit/d0e0ab9d3744372edd56aa984daac4de26272673))
+
+## [2.42.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.42.0-alpha.0...v2.42.1-alpha.0) (2022-09-19)
+
+## [2.42.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.41.0-alpha.0...v2.42.0-alpha.0) (2022-09-15)
+
+
+### Features
+
+* **neptune:** add engine version 1.2.0.0 ([#21908](https://github.com/aws/aws-cdk/issues/21908)) ([be65da6](https://github.com/aws/aws-cdk/commit/be65da6ec1ab9c82d04f662a69bd1ae1147dff25)), closes [#21877](https://github.com/aws/aws-cdk/issues/21877)
+* **neptune:** introduce cluster grant method for granular actions ([#21926](https://github.com/aws/aws-cdk/issues/21926)) ([42e559d](https://github.com/aws/aws-cdk/commit/42e559d49e9fdb43f37a0b53ef5a85cb6bc5f36d)), closes [#21877](https://github.com/aws/aws-cdk/issues/21877)
+
+
+### Bug Fixes
+
+* **lambda-python:** bundling artifacts are written to the entry path ([#21967](https://github.com/aws/aws-cdk/issues/21967)) ([bc4427c](https://github.com/aws/aws-cdk/commit/bc4427cc874e7eea7cfba5f88d536a805d771bc6)), closes [#19231](https://github.com/aws/aws-cdk/issues/19231)
+
 ## [2.41.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.40.0-alpha.0...v2.41.0-alpha.0) (2022-09-07)
 
 
