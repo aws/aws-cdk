@@ -82,6 +82,59 @@ describe(IntegManifestSynthesizer, () => {
     });
   });
 
+  test('with options', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    // WHEN
+    new IntegTest(app, 'Integ', {
+      testCases: [stack],
+      enableLookups: true,
+      hooks: {
+        preDeploy: ['echo "preDeploy"'],
+      },
+      diffAssets: true,
+      allowDestroy: ['AWS::IAM::Role'],
+      stackUpdateWorkflow: false,
+      cdkCommandOptions: {
+        deploy: {
+          args: {
+            profile: 'profile',
+          },
+        },
+      },
+    });
+    const integAssembly = app.synth();
+    const integManifest = Manifest.loadIntegManifest(path.join(integAssembly.directory, 'integ.json'));
+
+    // THEN
+    expect(integManifest).toEqual({
+      version: Manifest.version(),
+      enableLookups: true,
+      testCases: {
+        ['Integ/DefaultTest']: {
+          assertionStack: 'Integ/DefaultTest/DeployAssert',
+          assertionStackName: 'IntegDefaultTestDeployAssert4E6713E1',
+          stacks: ['stack'],
+          hooks: {
+            preDeploy: ['echo "preDeploy"'],
+          },
+          diffAssets: true,
+          allowDestroy: ['AWS::IAM::Role'],
+          stackUpdateWorkflow: false,
+          cdkCommandOptions: {
+            deploy: {
+              args: {
+                profile: 'profile',
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('with IntegTestCaseStack', () => {
     // GIVEN
     const app = new App();
