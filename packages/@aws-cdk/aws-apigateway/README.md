@@ -1055,7 +1055,8 @@ new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
     accessLogFormat: apigateway.AccessLogFormat.custom(
-      `${apigateway.AccessLogField.contextRequestId()} ${apigateway.AccessLogField.contextErrorMessage()} ${apigateway.AccessLogField.contextErrorMessageString()}`
+      `${apigateway.AccessLogField.contextRequestId()} ${apigateway.AccessLogField.contextErrorMessage()} ${apigateway.AccessLogField.contextErrorMessageString()}
+      ${apigateway.AccessLogField.contextAuthorizerError()} ${apigateway.AccessLogField.contextAuthorizerIntegrationStatus()}`
     )
   }
 });
