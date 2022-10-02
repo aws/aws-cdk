@@ -34,6 +34,69 @@
                   "fqn": "@aws-cdk/aws-ecr.CfnPullThroughCacheRule",
                   "version": "0.0.0"
                 }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-ecr-pull-through-cache-rule/PullThroughCacheRule/Policy",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECR::RegistryPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyText": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "ecr:BatchImportUpstreamImage",
+                            "ecr:CreateRepository"
+                          ],
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":ecr:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":",
+                                {
+                                  "Ref": "AWS::AccountId"
+                                },
+                                ":repository/my-ecr/*"
+                              ]
+                            ]
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecr.CfnRegistryPolicy",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {

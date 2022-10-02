@@ -126,6 +126,17 @@ If an image is to be pulled from the repository, the image can be pulled via the
 docker pull $account_id.dkr.$account_region.amazonaws.com/public-ecr/amazonlinux/amazonlinux:latest
 ```
 
+To restrict access to certain repositories from some users, there is the possibility to use the function 'restrictAccess'. It generates a registry policy from the combination of principal list and repository list.
+
+```ts
+const rule = new ecr.PullTroughCacheRule(this, 'PullTroughCache', {
+  ecrRepositoryPrefix: 'ecr-public',
+  upstreamRegistryUrl: 'public.ecr.aws',
+});
+
+rule.restrictAccess([new iam.AccountRootPrincipal()], ['docker/library/nginx', 'amazonlinux/amazonlinux']);
+```
+
 ## Automatically clean up repositories
 
 You can set life cycle rules to automatically clean up old images from your

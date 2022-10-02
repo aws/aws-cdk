@@ -6,6 +6,61 @@
     "EcrRepositoryPrefix": "my-ecr",
     "UpstreamRegistryUrl": "public.ecr.aws"
    }
+  },
+  "PullThroughCacheRulePolicy13B7DFB6": {
+   "Type": "AWS::ECR::RegistryPolicy",
+   "Properties": {
+    "PolicyText": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchImportUpstreamImage",
+        "ecr:CreateRepository"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/my-ecr/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
   }
  },
  "Parameters": {

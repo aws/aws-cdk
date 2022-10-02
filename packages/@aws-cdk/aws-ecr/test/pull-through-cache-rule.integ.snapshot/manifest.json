@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3c258ec62814186039928d8f18b67e73a23b174f21fb90b6533bcd8c3d463aba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/22a39a355503f2b7fabf04bb8f088a6b5b1a7cb8668f5c2e442d4dfd72e32756.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,6 +43,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PullThroughCacheRuleD19F8684"
+          }
+        ],
+        "/aws-ecr-pull-through-cache-rule/PullThroughCacheRule/Policy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PullThroughCacheRulePolicy13B7DFB6"
           }
         ],
         "/aws-ecr-pull-through-cache-rule/BootstrapVersion": [
