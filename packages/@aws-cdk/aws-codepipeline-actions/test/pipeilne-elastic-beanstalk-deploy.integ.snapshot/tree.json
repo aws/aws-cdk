@@ -26,6 +26,16 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      },
+                      {
+                        "key": "aws-cdk:cr-owned:46838d62",
+                        "value": "true"
+                      }
+                    ],
                     "versioningConfiguration": {
                       "status": "Enabled"
                     }
@@ -35,10 +45,647 @@
                   "fqn": "@aws-cdk/aws-s3.CfnBucket",
                   "version": "0.0.0"
                 }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/PipelineBucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/PipelineBucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "PipelineBucketB967BD35"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:DeleteObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "PipelineBucketB967BD35",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "PipelineBucketB967BD35",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/PipelineBucket/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/PipelineBucket/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
+            "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "DeployApp": {
+            "id": "DeployApp",
+            "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp",
+            "children": {
+              "AwsCliLayer": {
+                "id": "AwsCliLayer",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/AwsCliLayer",
+                "children": {
+                  "Code": {
+                    "id": "Code",
+                    "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/AwsCliLayer/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/AwsCliLayer/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/AwsCliLayer/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/AwsCliLayer/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
+                      "aws:cdk:cloudformation:props": {
+                        "content": {
+                          "s3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
+                        },
+                        "description": "/opt/awscli/aws"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.CfnLayerVersion",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/lambda-layer-awscli.AwsCliLayer",
+                  "version": "0.0.0"
+                }
+              },
+              "CustomResourceHandler": {
+                "id": "CustomResourceHandler",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/CustomResourceHandler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "Asset1": {
+                "id": "Asset1",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/Asset1",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/Asset1/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/Asset1/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "CustomResource": {
+                "id": "CustomResource",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/CustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/CustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3-deployment.BucketDeployment",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": {
+            "id": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
+            "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "s3:Abort*",
+                                    "s3:DeleteObject*",
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "PipelineBucketB967BD35",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "PipelineBucketB967BD35",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+                            "roles": [
+                              {
+                                "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "6ddcf10002539818a9256eff3fb2b22aa09298d8f946e26ba121c175a600c44e.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "layers": [
+                      {
+                        "Ref": "DeployAppAwsCliLayerAEF99B2F"
+                      }
+                    ],
+                    "runtime": "python3.9",
+                    "timeout": 900
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "service-role": {
+            "id": "service-role",
+            "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/service-role",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/service-role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "elasticbeanstalk.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth",
+                      "arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
+                    ],
+                    "roleName": "codepipeline-elasticbeanstalk-action-test-serivce-role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "instance-profile-role": {
+            "id": "instance-profile-role",
+            "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/instance-profile-role",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/instance-profile-role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "ec2.",
+                                  {
+                                    "Ref": "AWS::URLSuffix"
+                                  }
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier",
+                      "arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker",
+                      "arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier"
+                    ],
+                    "roleName": "codepipeline-elasticbeanstalk-action-test-instance-profile-role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "instance-profile": {
+            "id": "instance-profile",
+            "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/instance-profile",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+              "aws:cdk:cloudformation:props": {
+                "roles": [
+                  {
+                    "Ref": "instanceprofilerole786BCBC7"
+                  }
+                ],
+                "instanceProfileName": {
+                  "Ref": "instanceprofilerole786BCBC7"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.CfnInstanceProfile",
+              "version": "0.0.0"
+            }
+          },
+          "beastalk-app": {
+            "id": "beastalk-app",
+            "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/beastalk-app",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::ElasticBeanstalk::Application",
+              "aws:cdk:cloudformation:props": {
+                "applicationName": "codepipeline-test-app"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-elasticbeanstalk.CfnApplication",
+              "version": "0.0.0"
+            }
+          },
+          "beanstlk-env": {
+            "id": "beanstlk-env",
+            "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/beanstlk-env",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::ElasticBeanstalk::Environment",
+              "aws:cdk:cloudformation:props": {
+                "applicationName": "codepipeline-test-app",
+                "environmentName": "codepipeline-test-env",
+                "optionSettings": [
+                  {
+                    "namespace": "aws:autoscaling:launchconfiguration",
+                    "optionName": "IamInstanceProfile",
+                    "value": {
+                      "Ref": "instanceprofilerole786BCBC7"
+                    }
+                  },
+                  {
+                    "namespace": "aws:elasticbeanstalk:environment",
+                    "optionName": "ServiceRole",
+                    "value": {
+                      "Ref": "servicerole2C3CD20E"
+                    }
+                  },
+                  {
+                    "namespace": "aws:elasticbeanstalk:environment",
+                    "optionName": "LoadBalancerType",
+                    "value": "application"
+                  },
+                  {
+                    "namespace": "aws:elasticbeanstalk:managedactions",
+                    "optionName": "ServiceRoleForManagedUpdates",
+                    "value": "AWSServiceRoleForElasticBeanstalkManagedUpdates"
+                  }
+                ],
+                "solutionStackName": "64bit Amazon Linux 2 v5.5.6 running Node.js 16"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-elasticbeanstalk.CfnEnvironment",
               "version": "0.0.0"
             }
           },
@@ -203,7 +850,17 @@
                               "S3Bucket": {
                                 "Ref": "PipelineBucketB967BD35"
                               },
-                              "S3ObjectKey": "key"
+                              "S3ObjectKey": {
+                                "Fn::Select": [
+                                  0,
+                                  {
+                                    "Fn::GetAtt": [
+                                      "DeployAppCustomResourceDEE6DDD6",
+                                      "SourceObjectKeys"
+                                    ]
+                                  }
+                                ]
+                              }
                             },
                             "runOrder": 1,
                             "roleArn": {
@@ -232,8 +889,8 @@
                               "provider": "ElasticBeanstalk"
                             },
                             "configuration": {
-                              "ApplicationName": "appName",
-                              "EnvironmentName": "envName"
+                              "ApplicationName": "codepipeline-test-app",
+                              "EnvironmentName": "codepipeline-test-env"
                             },
                             "runOrder": 1,
                             "roleArn": {
@@ -347,7 +1004,18 @@
                                                       "Arn"
                                                     ]
                                                   },
-                                                  "/key"
+                                                  "/",
+                                                  {
+                                                    "Fn::Select": [
+                                                      0,
+                                                      {
+                                                        "Fn::GetAtt": [
+                                                          "DeployAppCustomResourceDEE6DDD6",
+                                                          "SourceObjectKeys"
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
                                                 ]
                                               ]
                                             }
@@ -471,7 +1139,10 @@
                                     }
                                   ],
                                   "Version": "2012-10-17"
-                                }
+                                },
+                                "managedPolicyArns": [
+                                  "arn:aws:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk"
+                                ]
                               }
                             },
                             "constructInfo": {
@@ -491,118 +1162,6 @@
                                   "aws:cdk:cloudformation:props": {
                                     "policyDocument": {
                                       "Statement": [
-                                        {
-                                          "Action": [
-                                            "elasticbeanstalk:CreateApplicationVersion",
-                                            "elasticbeanstalk:DescribeEvents"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::Join": [
-                                              "",
-                                              [
-                                                "arn:",
-                                                {
-                                                  "Ref": "AWS::Partition"
-                                                },
-                                                ":elasticbeanstalk:",
-                                                {
-                                                  "Ref": "AWS::Region"
-                                                },
-                                                ":",
-                                                {
-                                                  "Ref": "AWS::AccountId"
-                                                },
-                                                ":application/appname"
-                                              ]
-                                            ]
-                                          }
-                                        },
-                                        {
-                                          "Action": [
-                                            "elasticbeanstalk:CreateApplicationVersion",
-                                            "elasticbeanstalk:DescribeApplicationVersions",
-                                            "elasticbeanstalk:DescribeEnvironments",
-                                            "elasticbeanstalk:DescribeEvents",
-                                            "elasticbeanstalk:UpdateEnvironment"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::Join": [
-                                              "",
-                                              [
-                                                "arn:",
-                                                {
-                                                  "Ref": "AWS::Partition"
-                                                },
-                                                ":elasticbeanstalk:",
-                                                {
-                                                  "Ref": "AWS::Region"
-                                                },
-                                                ":",
-                                                {
-                                                  "Ref": "AWS::AccountId"
-                                                },
-                                                ":applicationversion/appname/code-pipeline-*"
-                                              ]
-                                            ]
-                                          }
-                                        },
-                                        {
-                                          "Action": [
-                                            "elasticbeanstalk:DescribeEvents",
-                                            "elasticbeanstalk:UpdateEnvironment"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::Join": [
-                                              "",
-                                              [
-                                                "arn:",
-                                                {
-                                                  "Ref": "AWS::Partition"
-                                                },
-                                                ":elasticbeanstalk:",
-                                                {
-                                                  "Ref": "AWS::Region"
-                                                },
-                                                ":",
-                                                {
-                                                  "Ref": "AWS::AccountId"
-                                                },
-                                                ":configurationtemplate/appname/*"
-                                              ]
-                                            ]
-                                          }
-                                        },
-                                        {
-                                          "Action": [
-                                            "elasticbeanstalk:DescribeEnvironments",
-                                            "elasticbeanstalk:DescribeEvents",
-                                            "elasticbeanstalk:UpdateEnvironment"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::Join": [
-                                              "",
-                                              [
-                                                "arn:",
-                                                {
-                                                  "Ref": "AWS::Partition"
-                                                },
-                                                ":elasticbeanstalk:",
-                                                {
-                                                  "Ref": "AWS::Region"
-                                                },
-                                                ":",
-                                                {
-                                                  "Ref": "AWS::AccountId"
-                                                },
-                                                ":environment/appname/envname"
-                                              ]
-                                            ]
-                                          }
-                                        },
                                         {
                                           "Action": [
                                             "s3:GetBucket*",

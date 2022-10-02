@@ -1,6 +1,4 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { PolicyStatement } from '@aws-cdk/aws-iam';
-import { Arn, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
@@ -46,54 +44,14 @@ export class ElasticBeanstalkDeployAction extends Action {
   }
 
   protected bound(
-    scope: Construct,
+    _scope: Construct,
     _stage: codepipeline.IStage,
     options: codepipeline.ActionBindOptions,
   ): codepipeline.ActionConfig {
-    const getArn = (resource: string, resourceName?: string): string => {
-      const fullResourceName = resourceName ? `${this.applicationName.toLowerCase()}/${resourceName}` : `${this.applicationName.toLowerCase()}`;
-      return Arn.format({
-        service: 'elasticbeanstalk',
-        resource,
-        resourceName: fullResourceName,
-      }, Stack.of(scope));
-    };
 
-    options.role.addToPrincipalPolicy(new PolicyStatement({
-      resources: [getArn('application')],
-      actions: [
-        'elasticbeanstalk:CreateApplicationVersion',
-        'elasticbeanstalk:DescribeEvents',
-      ],
-    }));
-
-    options.role.addToPrincipalPolicy(new PolicyStatement({
-      resources: [getArn('applicationversion', 'code-pipeline-*')],
-      actions: [
-        'elasticbeanstalk:CreateApplicationVersion',
-        'elasticbeanstalk:DescribeApplicationVersions',
-        'elasticbeanstalk:DescribeEnvironments',
-        'elasticbeanstalk:DescribeEvents',
-        'elasticbeanstalk:UpdateEnvironment',
-      ],
-    }));
-
-    options.role.addToPrincipalPolicy(new PolicyStatement({
-      resources: [getArn('configurationtemplate', '*')],
-      actions: [
-        'elasticbeanstalk:DescribeEvents',
-        'elasticbeanstalk:UpdateEnvironment',
-      ],
-    }));
-
-    options.role.addToPrincipalPolicy(new PolicyStatement({
-      resources: [getArn('environment', this.environmentName.toLowerCase())],
-      actions: [
-        'elasticbeanstalk:DescribeEnvironments',
-        'elasticbeanstalk:DescribeEvents',
-        'elasticbeanstalk:UpdateEnvironment',
-      ],
-    }));
+    // Per https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.iam.managed-policies.html
+    // it doesn't seem we can scope this down further for the codepipeline action.
+    options.role.addManagedPolicy({ managedPolicyArn: 'arn:aws:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk' });
 
     // the Action's Role needs to read from the Bucket to get artifacts
     options.bucket.grantRead(options.role);
