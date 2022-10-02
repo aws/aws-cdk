@@ -177,15 +177,20 @@ export class PullRequestLinter {
           review_id: review.id,
           message: 'Pull Request updated. Dissmissing previous PRLinter Review.',
         })
+      }
+    })
+  }
 
-        const comments = await this.client.pulls.listCommentsForReview({
-          ...this.prParams,
-          review_id: review.id,
-        })
+  private async deletePreviousPRLinterReviewComments(): Promise<void> {
+    const comments = await this.client.pulls.listReviewComments({
+      ...this.prParams,
+    });
 
+    comments.data.forEach(async (comment) => {
+      if (comment.user.login === 'aws-cdk-automation') {
         await this.client.pulls.deleteReviewComment({
           ...this.prParams,
-          comment_id: comments.data[0].id,
+          comment_id: comment.id,
         })
       }
     })
@@ -256,6 +261,7 @@ export class PullRequestLinter {
     });
 
     await this.cleanupPreviousPRLinterReviews();
+    await this.deletePreviousPRLinterReviewComments();
     validationCollector.isValid() ? console.log("✅  Success") : await this.communicateResult(validationCollector.errors);
   }
 

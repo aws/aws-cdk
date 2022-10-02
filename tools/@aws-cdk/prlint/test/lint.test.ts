@@ -360,8 +360,8 @@ function configureMock(pr: linter.GitHubPr, prFiles?: linter.GitHubFile[]): lint
 
     dismissReview() {},
 
-    listCommentsForReview(_props: { _owner: string, _repo: string, _pull_number: number }) {
-      return { data: [{ id: 1212121212  }] };
+    listReviewComments(_props: { _owner: string, _repo: string, _pull_number: number }) {
+      return { data: [{ id: 1212121212, user: { login: 'aws-cdk-automation' } }] };
     },
 
     deleteReviewComment() {},
