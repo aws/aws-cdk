@@ -384,6 +384,24 @@ class CloudWatchLogsDestination extends FlowLogDestination {
 }
 
 /**
+ * The maximum interval of time during which a flow of packets
+ * is captured and aggregated into a flow log record.
+ *
+ */
+export enum FlowLogMaxAggregationInterval {
+  /**
+   * 1 minute (60 seconds)
+   */
+  ONE_MINUTE = 60,
+
+  /**
+   * 10 minutes (600 seconds)
+   */
+  TEN_MINUTES = 600,
+
+}
+
+/**
  * Options to add a flow log to a VPC
  */
 export interface FlowLogOptions {
@@ -401,6 +419,14 @@ export interface FlowLogOptions {
    * @default FlowLogDestinationType.toCloudWatchLogs()
    */
   readonly destination?: FlowLogDestination;
+
+  /**
+   * The maximum interval of time during which a flow of packets is captured
+   * and aggregated into a flow log record.
+   *
+   * @default FlowLogMaxAggregationInterval.TEN_MINUTES
+   */
+  readonly maxAggregationInterval?: FlowLogMaxAggregationInterval;
 }
 
 /**
@@ -501,6 +527,7 @@ export class FlowLog extends FlowLogBase {
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
       logDestinationType: destinationConfig.logDestinationType,
       logGroupName: this.logGroup ? this.logGroup.logGroupName : undefined,
+      maxAggregationInterval: props.maxAggregationInterval,
       resourceId: props.resourceType.resourceId,
       resourceType: props.resourceType.resourceType,
       trafficType: props.trafficType

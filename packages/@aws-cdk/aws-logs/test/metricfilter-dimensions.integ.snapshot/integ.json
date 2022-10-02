@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "metricfilter-dimensions/DefaultTest": {
+      "stacks": [
+        "aws-cdk-metricfilter-dimensions-integ"
+      ],
+      "assertionStack": "metricfilter-dimensions/DefaultTest/DeployAssert",
+      "assertionStackName": "metricfilterdimensionsDefaultTestDeployAssertF7E39B09"
+    }
+  }
+}
