@@ -91,6 +91,7 @@
   },
   "SubscriberQueuenestedstackstestNestedStack1topic089C5EB1396F65087": {
    "Type": "AWS::SNS::Subscription",
+   "DependsOn": "SubscriberQueuePolicy25A0799E",
    "Properties": {
     "Protocol": "sqs",
     "TopicArn": {
@@ -109,6 +110,7 @@
   },
   "SubscriberQueuenestedstackstestNestedStack1topic1150E1A929A2C267E": {
    "Type": "AWS::SNS::Subscription",
+   "DependsOn": "SubscriberQueuePolicy25A0799E",
    "Properties": {
     "Protocol": "sqs",
     "TopicArn": {
@@ -127,6 +129,7 @@
   },
   "SubscriberQueuenestedstackstestNestedStack1topic209B8719858511914": {
    "Type": "AWS::SNS::Subscription",
+   "DependsOn": "SubscriberQueuePolicy25A0799E",
    "Properties": {
     "Protocol": "sqs",
     "TopicArn": {
