@@ -92,6 +92,17 @@ describe('stage', () => {
     expect(stack.stackName).toEqual('MyStage-MyStack');
   });
 
+  test('can override the stage name', () => {
+    // WHEN
+    const app = new App();
+    const stage = new Stage(app, 'NotMyStageName', { stageName: 'MyStage' });
+    const stack = new BogusStack(stage, 'MyStack');
+
+    // THEN
+    expect(stage.stageName).toEqual('MyStage');
+    expect(stack.stackName).toEqual('MyStage-MyStack');
+  });
+
   test('Can not have dependencies to stacks outside the nested asm', () => {
     // GIVEN
     const app = new App();

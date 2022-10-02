@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.102"
         }
       },
       "cdk-integ-cluster-snapshot": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "cdk-integ-cluster-snapshot/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -377,8 +377,8 @@
                     "id": "Acl",
                     "path": "cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -496,8 +496,8 @@
                     "id": "Acl",
                     "path": "cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -685,8 +685,8 @@
                 "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
                 "path": "cdk-integ-cluster-snapshot/Cluster/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               },
               "Secret": {
@@ -824,8 +824,7 @@
                     "dbSubnetGroupName": {
                       "Ref": "ClusterSubnetsDCFA5CB7"
                     },
-                    "engine": "aurora-mysql",
-                    "engineVersion": "5.7.mysql_aurora.2.10.2"
+                    "engine": "aurora-mysql"
                   }
                 },
                 "constructInfo": {
@@ -846,8 +845,7 @@
                     "dbSubnetGroupName": {
                       "Ref": "ClusterSubnetsDCFA5CB7"
                     },
-                    "engine": "aurora-mysql",
-                    "engineVersion": "5.7.mysql_aurora.2.10.2"
+                    "engine": "aurora-mysql"
                   }
                 },
                 "constructInfo": {
@@ -1012,8 +1010,8 @@
                         "id": "Stage",
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -1384,8 +1382,8 @@
                             "id": "Stage",
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -1597,8 +1595,8 @@
                             "id": "Stage",
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -1807,8 +1805,8 @@
                             "id": "Stage",
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/Code/Stage",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "AssetBucket": {
@@ -2007,14 +2005,14 @@
                         "id": "Resource",
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Resource",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.1.102"
                     }
                   }
                 },
@@ -2031,20 +2029,20 @@
                     "id": "Default",
                     "path": "cdk-integ-cluster-snapshot/Snapshoter/Snapshot/Default",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.102"
             }
           },
           "FromSnapshot": {
@@ -2160,8 +2158,8 @@
                 "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
                 "path": "cdk-integ-cluster-snapshot/FromSnapshot/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               },
               "Secret": {
@@ -2452,8 +2450,7 @@
                     "dbSubnetGroupName": {
                       "Ref": "FromSnapshotSubnets9ED4B8EE"
                     },
-                    "engine": "aurora-mysql",
-                    "engineVersion": "5.7.mysql_aurora.2.10.2"
+                    "engine": "aurora-mysql"
                   }
                 },
                 "constructInfo": {
@@ -2474,8 +2471,7 @@
                     "dbSubnetGroupName": {
                       "Ref": "FromSnapshotSubnets9ED4B8EE"
                     },
-                    "engine": "aurora-mysql",
-                    "engineVersion": "5.7.mysql_aurora.2.10.2"
+                    "engine": "aurora-mysql"
                   }
                 },
                 "constructInfo": {
@@ -2525,8 +2521,8 @@
                     "id": "SARMapping",
                     "path": "cdk-integ-cluster-snapshot/FromSnapshot/RotationSingleUser/SARMapping",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -2625,20 +2621,20 @@
             "id": "Service-principalMap",
             "path": "cdk-integ-cluster-snapshot/Service-principalMap",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnMapping",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }
