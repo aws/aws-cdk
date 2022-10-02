@@ -168,7 +168,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validate()).rejects.toThrow(
-      'The Pull Request Linter fails with the following errors:' +
+      'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
       '\n\nPRs must pass status checks before we can provide a meaningful review.'
       );
@@ -198,7 +198,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validate()).rejects.toThrow(
-      'The Pull Request Linter fails with the following errors:' +
+      'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
       '\n\nPRs must pass status checks before we can provide a meaningful review.'
       );
@@ -228,7 +228,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validate()).rejects.toThrow(
-      'The Pull Request Linter fails with the following errors:' +
+      'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
       '\n\nPRs must pass status checks before we can provide a meaningful review.'
       );
@@ -258,7 +258,7 @@ describe('integration tests required on features', () => {
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validate()).rejects.toThrow(
-      'The Pull Request Linter fails with the following errors:' +
+      'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
       '\n\nPRs must pass status checks before we can provide a meaningful review.'
       );
@@ -355,12 +355,19 @@ function configureMock(pr: linter.GitHubPr, prFiles?: linter.GitHubFile[]): lint
     },
 
     listReviews(_props: { _owner: string, _repo: string, _pull_number: number }) {
-      return { data:  [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }] };
+      return { data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }] };
     },
 
     dismissReview() {},
+  };
 
-  }
+  const issuesClient = {
+    createComment() {},
+
+    listComments() {
+      return { data: [{ id: 1212121212, user: { login: 'aws-cdk-automation' }, body: 'The pull request linter fails with the following errors:' }] }
+    }
+  };
   return new linter.PullRequestLinter({
     owner: 'aws',
     repo: 'aws-cdk',
@@ -369,6 +376,7 @@ function configureMock(pr: linter.GitHubPr, prFiles?: linter.GitHubFile[]): lint
     // hax hax
     client: {
       pulls: pullsClient as any,
+      issues: issuesClient as any,
     } as any,
   })
 }

@@ -29,6 +29,19 @@ export interface GitHubFile {
   readonly filename: string;
 }
 
+export interface Review {
+  id: number;
+  user: {
+    login: string
+  };
+  body: string;
+  state: string;
+}
+
+export interface Comment {
+  id: number;
+}
+
 class LinterError extends Error {
   constructor(message: string) {
     super(message);
@@ -158,37 +171,72 @@ export interface PullRequestLinterProps {
 export class PullRequestLinter {
   private readonly client: Octokit;
   private readonly prParams: { owner: string, repo: string, pull_number: number };
+  private readonly issueParams: { owner: string, repo: string, issue_number: number };
 
 
   constructor(private readonly props: PullRequestLinterProps) {
     this.client = props.client;
     this.prParams = { owner: props.owner, repo: props.repo, pull_number: props.number };
+    this.issueParams = { owner: props.owner, repo: props.repo, issue_number: props.number };
   }
 
   /**
    * Dismisses previous reviews by aws-cdk-automation when changes have been made to the pull request.
    */
-  private async dismissPreviousPRLinterReviews(): Promise<void> {
-    const reviews = await this.client.pulls.listReviews(this.prParams);
-    reviews.data.forEach(async (review: any) => {
-      if (review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') {
-        await this.client.pulls.dismissReview({
-          ...this.prParams,
-          review_id: review.id,
-          message: 'Pull Request updated. Dissmissing previous PRLinter Review.',
-        })
-      }
+  private async dismissPRLinterReview(existingReview: Review): Promise<void> {
+    await this.client.pulls.dismissReview({
+      ...this.prParams,
+      review_id: existingReview.id,
+      message: '✅ Updated pull request passes all PRLinter validations. Dissmissing previous PRLinter review.'
     })
+  }
+
+  private async createOrUpdatePRLinterReview(failureMessages: string[], existingReview?: Review): Promise<void> {
+    const body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}PRs must pass status checks before we can provide a meaningful review.`;
+    existingReview ?
+    (await this.client.pulls.createReview({
+      ...this.prParams,
+      body: 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.' +
+        ' If you believe this pull request should receive an exemption, please comment and provide a justification.',
+      event: 'REQUEST_CHANGES',
+    }),
+    // Since previous versions of this pr linter didn't add comments, we need to do this check first.
+    await this.findExistingComment() ? await this.client.issues.deleteComment({
+      ...this.issueParams,
+      comment_id: (await this.findExistingComment())!.id,
+    }) : {}) :
+    await this.client.issues.createComment({
+      ...this.issueParams,
+      body,
+    });
+
+
+
+    throw new LinterError(body);
+  }
+
+  private async findExistingReview(): Promise<Review | undefined> {
+    const reviews = await this.client.pulls.listReviews(this.prParams);
+    return reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
+  }
+
+  private async findExistingComment(): Promise<Comment | undefined> {
+    const comments = await this.client.issues.listComments();
+    return comments.data.find((comment) => comment.user?.login === 'aws-cdk-automation' && comment.body?.startsWith('The pull request linter fails with the following errors:')) as Comment;
   }
 
   /**
    * Creates a new review, requesting changes, with the reasons that the linter did not pass.
-   * @param failureReasons The list of reasons why the linter failed
+   * @param result The result of the PR Linter run.
    */
-  private async communicateResult(failureReasons: string[]): Promise<void> {
-    const body = `The Pull Request Linter fails with the following errors:${this.formatErrors(failureReasons)}PRs must pass status checks before we can provide a meaningful review.`;
-      await this.client.pulls.createReview({ ...this.prParams, body, event: 'REQUEST_CHANGES', });
-      throw new LinterError(body);
+  private async communicateResult(result: ValidationCollector): Promise<void> {
+    const existingReview = await this.findExistingReview();
+    if (result.isValid()) {
+      console.log("✅  Success");
+      existingReview ? await this.dismissPRLinterReview(existingReview) : {};
+    } else {
+      await this.createOrUpdatePRLinterReview(result.errors);
+    }
   }
 
   /**
@@ -244,9 +292,7 @@ export class PullRequestLinter {
       exemption: (pr) => hasLabel(pr, Exemption.CLI_INTEG_TESTED),
       testRuleSet: [ { test: noCliChanges } ],
     });
-
-    await this.dismissPreviousPRLinterReviews();
-    validationCollector.isValid() ? console.log("✅  Success") : await this.communicateResult(validationCollector.errors);
+    await this.communicateResult(validationCollector);
   }
 
   private formatErrors(errors: string[]) {
