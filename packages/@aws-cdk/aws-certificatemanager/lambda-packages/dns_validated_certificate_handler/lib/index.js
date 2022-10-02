@@ -66,6 +66,23 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
 };
 
 /**
+ * Adds tags to an existing certificate
+ *
+ * @param {string} certificateArn the ARN of the certificate to add tags to
+ * @param {string} region the region the certificate exists in
+ * @param {map} tags Tags to add to the requested certificate
+ */
+const addTags = async function(certificateArn, region, tags) {
+  const result = Array.from(Object.entries(tags)).map(([Key, Value]) => ({ Key, Value }))
+  const acm = new aws.ACM({ region });
+
+  await acm.addTagsToCertificate({
+    CertificateArn: certificateArn,
+    Tags: result,
+  }).promise();
+}
+
+/**
  * Requests a public certificate from AWS Certificate Manager, using DNS validation.
  * The hosted zone ID must refer to a **public** Route53-managed DNS zone that is authoritative
  * for the suffix of the certificate's Common Name (CN).  For example, if the CN is
@@ -75,10 +92,9 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
  * @param {string} requestId the CloudFormation request ID
  * @param {string} domainName the Common Name (CN) field for the requested certificate
  * @param {string} hostedZoneId the Route53 Hosted Zone ID
- * @param {map} tags Tags to add to the requested certificate
  * @returns {string} Validated certificate ARN
  */
-const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, certificateTransparencyLoggingPreference, hostedZoneId, region, route53Endpoint, tags) {
+const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, certificateTransparencyLoggingPreference, hostedZoneId, region, route53Endpoint) {
   const crypto = require('crypto');
   const acm = new aws.ACM({ region });
   const route53 = route53Endpoint ? new aws.Route53({ endpoint: route53Endpoint }) : new aws.Route53();
@@ -100,16 +116,6 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
   }).promise();
 
   console.log(`Certificate ARN: ${reqCertResponse.CertificateArn}`);
-
-
-  if (!!tags) {
-    const result = Array.from(Object.entries(tags)).map(([Key, Value]) => ({ Key, Value }))
-
-    await acm.addTagsToCertificate({
-      CertificateArn: reqCertResponse.CertificateArn,
-      Tags: result,
-    }).promise();
-  }
 
   console.log('Waiting for ACM to provide DNS records for validation...');
 
@@ -276,34 +282,68 @@ async function commitRoute53Records(route53, records, hostedZoneId, action = 'UP
 }
 
 /**
+ * Determines whether an update request should request a new certificate
+ *
+ * @param {map} oldParams the previously process request parameters
+ * @param {map} newParams the current process request parameters
+ * @param {string} physicalResourceId the physicalResourceId
+ * @returns {boolean} whether or not to request a new certificate
+ */
+function shouldUpdate(oldParams, newParams, physicalResourceId) {
+  if (!oldParams) return true;
+  if (oldParams.DomainName !== newParams.DomainName) return true;
+  if (oldParams.SubjectAlternativeNames !== newParams.SubjectAlternativeNames) return true;
+  if (oldParams.CertificateTransparencyLoggingPreference !== newParams.CertificateTransparencyLoggingPreference) return true;
+  if (oldParams.HostedZoneId !== newParams.HostedZoneId) return true;
+  if (oldParams.Region !== newParams.Region) return true;
+  if (!physicalResourceId || !physicalResourceId.startsWith('arn:')) return true;
+  return false;
+}
+
+/**
  * Main handler, invoked by Lambda
  */
 exports.certificateRequestHandler = async function (event, context) {
   var responseData = {};
   var physicalResourceId;
   var certificateArn;
+  async function processRequest() {
+    certificateArn = await requestCertificate(
+      event.RequestId,
+      event.ResourceProperties.DomainName,
+      event.ResourceProperties.SubjectAlternativeNames,
+      event.ResourceProperties.CertificateTransparencyLoggingPreference,
+      event.ResourceProperties.HostedZoneId,
+      event.ResourceProperties.Region,
+      event.ResourceProperties.Route53Endpoint,
+    );
+    responseData.Arn = physicalResourceId = certificateArn;
+  }
 
   try {
     switch (event.RequestType) {
       case 'Create':
+        await processRequest();
+        if (event.ResourceProperties.Tags && physicalResourceId.startsWith('arn:')) {
+          await addTags(physicalResourceId, event.ResourceProperties.Region, event.ResourceProperties.Tags);
+        }
+        break;
       case 'Update':
-        certificateArn = await requestCertificate(
-          event.RequestId,
-          event.ResourceProperties.DomainName,
-          event.ResourceProperties.SubjectAlternativeNames,
-          event.ResourceProperties.CertificateTransparencyLoggingPreference,
-          event.ResourceProperties.HostedZoneId,
-          event.ResourceProperties.Region,
-          event.ResourceProperties.Route53Endpoint,
-          event.ResourceProperties.Tags,
-        );
-        responseData.Arn = physicalResourceId = certificateArn;
+        if (shouldUpdate(event.OldResourceProperties, event.ResourceProperties, event.PhysicalResourceId)) {
+          await processRequest();
+        } else {
+          responseData.Arn = physicalResourceId = event.PhysicalResourceId;
+        }
+        if (event.ResourceProperties.Tags && physicalResourceId.startsWith('arn:')) {
+          await addTags(physicalResourceId, event.ResourceProperties.Region, event.ResourceProperties.Tags);
+        }
         break;
       case 'Delete':
         physicalResourceId = event.PhysicalResourceId;
+        const removalPolicy = event.ResourceProperties.RemovalPolicy ?? 'destroy';
         // If the resource didn't create correctly, the physical resource ID won't be the
         // certificate ARN, so don't try to delete it in that case.
-        if (physicalResourceId.startsWith('arn:')) {
+        if (physicalResourceId.startsWith('arn:') && removalPolicy === 'destroy') {
           await deleteCertificate(
             physicalResourceId,
             event.ResourceProperties.Region,
