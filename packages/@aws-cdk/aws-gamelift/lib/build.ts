@@ -88,7 +88,20 @@ export interface BuildProps {
 
   /**
     * The IAM role assumed by GameLift to access server build in S3.
-    * If providing a custom role, it needs to trust the GameLift service principal (gamelift.amazonaws.com) and be granted sufficient permissions.
+    * If providing a custom role, it needs to trust the GameLift service principal (gamelift.amazonaws.com) and be granted sufficient permissions
+    * to have Read access to a specific key content into a specific S3 bucket.
+    * Below an example of required permission:
+    * {
+    *  "Version": "2012-10-17",
+    *  "Statement": [{
+    *        "Effect": "Allow",
+    *        "Action": [
+    *            "s3:GetObject",
+    *            "s3:GetObjectVersion"
+    *        ],
+    *        "Resource": "arn:aws:s3:::bucket-name/object-name"
+    *  }]
+    *}
     *
     * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-access-storage-loc
     *
@@ -98,7 +111,11 @@ export interface BuildProps {
 }
 
 /**
- * Create a GameLift server build
+ * Create a GameLift build ressource
+ * The AWS::GameLift::Build resource creates a game server build that is installed and run on instances in an Amazon GameLift fleet.
+ * This resource points to an Amazon S3 location that contains a zip file with all of the components of the game server build.
+ *
+ * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-build-cli-uploading.html
  *
  * @resource AWS::GameLift::Build
  */
@@ -161,7 +178,7 @@ export class Build extends BuildBase {
       physicalName: props.buildName,
     });
 
-    if (props.buildName) {
+    if (props.buildName && !cdk.Token.isUnresolved(props.buildName)) {
       if (props.buildName.length > 1024) {
         throw new Error(`Build name can not be longer than 1024 characters but has ${props.buildName.length} characters.`);
       }

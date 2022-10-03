@@ -5,7 +5,8 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 /**
- * Represents a server content.
+ * Before deploying your GameLift-enabled multiplayer game servers for hosting with the GameLift service, you need to upload your game server files.
+ * The class helps you on preparing and uploading custom game server build files or Realtime Servers server script files.
  */
 export abstract class Content {
   /**

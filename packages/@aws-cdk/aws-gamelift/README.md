@@ -59,12 +59,29 @@ session-based multiplayer games. It helps you regulate the resources needed to
 host your games, finds available game servers to host new game sessions, and
 puts players into games.
 
-### Creating a custom server build
+### Uploading builds and scripts to GameLift
 
-Your uploaded game servers are hosted on GameLift virtual computing resources,
-called instances. You set up your hosting resources by creating a fleet of
-instances and deploying them to run your game servers. You can design a fleet
-to fit your game's needs.
+Before deploying your GameLift-enabled multiplayer game servers for hosting with the GameLift service, you need to upload
+your game server files. This section provide guidance on preparing and uploading custom game server build
+files or Realtime Servers server script files. When you upload files, you create a GameLift build or script resource, which
+you then deploy on fleets of hosting resources.
+
+### Upload a custom server build to GameLift
+
+Before uploading your configured game server to GameLift for hosting, package the game build files into a build directory.
+This directory must include all components required to run your game servers and host game sessions, including the following:
+
+* Game server binaries – The binary files required to run the game server. A build can include binaries for multiple game
+servers built to run on the same platform. For a list of supported platforms, see Download Amazon GameLift SDKs.
+
+* Dependencies – Any dependent files that your game server executables require to run. Examples include assets, configuration
+files, and dependent libraries.
+
+* Install script – A script file to handle tasks that are required to fully install your game build on GameLift hosting
+servers. Place this file at the root of the build directory. GameLift runs the install script as part of fleet creation.
+
+You can set up any application in your build, including your install script, to access your resources securely on other AWS
+services.
 
 ```ts
 import * as gamelift from 'aws-cdk-lib/aws-gamelift';
