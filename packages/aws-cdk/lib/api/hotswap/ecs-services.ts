@@ -126,7 +126,7 @@ class EcsServiceHotswapOperation implements HotswapOperation {
         clusterPromises = [];
         servicePerClusterUpdates[clusterName] = clusterPromises;
       }
-      // Forcing New Deployment and setting Minimum Healthy Percent to 0. 
+      // Forcing New Deployment and setting Minimum Healthy Percent to 0.
       // As CDK HotSwap is development only, this seems the most efficient way to ensure all tasks are replaced immediately, regardless of original amount.
       clusterPromises.push({
         promise: sdk.ecs().updateService({
