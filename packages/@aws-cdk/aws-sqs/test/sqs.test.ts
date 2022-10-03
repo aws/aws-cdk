@@ -448,6 +448,24 @@ describe('queue encryption', () => {
     });
   });
 
+  test('it is possible to disable encryption (unencrypted)', () => {
+    const stack = new Stack();
+
+    new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.UNENCRYPTED });
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'SqsManagedSseEnabled': false,
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
+  });
+
   test('encryptionMasterKey is not supported if encryption type SQS_MANAGED is used', () => {
     // GIVEN
     const stack = new Stack();

@@ -87,7 +87,7 @@ export interface QueueProps {
    * Be aware that encryption is not available in all regions, please see the docs
    * for current availability details.
    *
-   * @default Unencrypted
+   * @default SQS_MANAGED (SSE-SQS) for newly created queues
    */
   readonly encryption?: QueueEncryption;
 
@@ -210,7 +210,6 @@ export enum QueueEncryption {
   /**
    * Server-side encryption key managed by SQS (SSE-SQS).
    *
-   * Support for SSE-SQS is available in all AWS Commercial and GovCloud Regions except the China Regions.
    * To learn more about SSE-SQS on Amazon SQS, please visit the
    * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
    */
@@ -378,7 +377,7 @@ export class Queue extends QueueBase {
     this.deadLetterQueue = props.deadLetterQueue;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
-      let encryption = props.encryption || QueueEncryption.UNENCRYPTED;
+      let encryption = props.encryption;
 
       if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
         throw new Error("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used");
@@ -388,8 +387,16 @@ export class Queue extends QueueBase {
         encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
       }
 
-      if (encryption === QueueEncryption.UNENCRYPTED) {
+      if (!encryption) {
         return { encryptionProps: {} };
+      }
+
+      if (encryption === QueueEncryption.UNENCRYPTED) {
+        return {
+          encryptionProps: {
+            sqsManagedSseEnabled: false,
+          },
+        };
       }
 
       if (encryption === QueueEncryption.KMS_MANAGED) {
