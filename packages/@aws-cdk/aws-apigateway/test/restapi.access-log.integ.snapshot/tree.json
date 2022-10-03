@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.95"
+          "version": "10.1.108"
         }
       },
       "test-apigateway-access-logs": {
@@ -173,7 +173,7 @@
                               "Arn"
                             ]
                           },
-                          "format": "{\"requestId\":\"$context.requestId\",\"sourceIp\":\"$context.identity.sourceIp\",\"method\":\"$context.httpMethod\",\"callerAccountId\":\"$context.identity.accountId\",\"ownerAccountId\":\"$context.accountId\",\"userContext\":{\"sub\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\"}}"
+                          "format": "{\"requestId\":\"$context.requestId\",\"sourceIp\":\"$context.identity.sourceIp\",\"method\":\"$context.httpMethod\",\"callerAccountId\":\"$context.identity.accountId\",\"ownerAccountId\":\"$context.accountId\",\"userContext\":{\"sub\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\"},\"clientCertPem\":\"$context.identity.clientCert.clientCertPem\",\"subjectDN\":\"$context.identity.clientCert.subjectDN\",\"issunerDN\":\"$context.identity.clientCert.issuerDN\",\"serialNumber\":\"$context.identity.clientCert.serialNumber\",\"validityNotBefore\":\"$context.identity.clientCert.validity.notBefore\",\"validityNotAfter\":\"$context.identity.clientCert.validity.notAfter\"}"
                         },
                         "deploymentId": {
                           "Ref": "MyApiDeploymentECB0D05E81594d6748b4b291f993111a5070d710"
@@ -272,7 +272,7 @@
                 "path": "apigateway-access-logs/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.95"
+                  "version": "10.1.108"
                 }
               },
               "DeployAssert": {
