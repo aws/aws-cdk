@@ -19,6 +19,11 @@ test('Renders minimal example with just a domain name', () => {
   expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: 'www.example.com',
+    originCustomHeaders: undefined,
+    originPath: undefined,
+    originShield: {
+      enabled: false,
+    },
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
       originSslProtocols: [
@@ -45,6 +50,9 @@ test('renders an example with all available props', () => {
 
   expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
+    originShield: {
+      enabled: false,
+    },
     domainName: 'www.example.com',
     originPath: '/app',
     connectionTimeout: 5,

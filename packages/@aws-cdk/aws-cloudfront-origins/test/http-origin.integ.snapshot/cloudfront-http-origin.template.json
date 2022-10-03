@@ -22,7 +22,10 @@
         ]
        },
        "DomainName": "www.example.com",
-       "Id": "cloudfronthttporiginDistributionOrigin162B02709"
+       "Id": "cloudfronthttporiginDistributionOrigin162B02709",
+       "OriginShield": {
+        "Enabled": false
+       }
       }
      ]
     }

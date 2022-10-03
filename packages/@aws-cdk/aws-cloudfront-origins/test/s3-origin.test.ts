@@ -21,6 +21,9 @@ describe('With bucket', () => {
 
     expect(stack.resolve(originBindConfig.originProperty)).toEqual({
       id: 'StackOrigin029E19582',
+      originShield: {
+        enabled: false,
+      },
       domainName: { 'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'] },
       s3OriginConfig: {
         originAccessIdentity: {
@@ -47,6 +50,9 @@ describe('With bucket', () => {
 
     expect(stack.resolve(originBindConfig.originProperty)).toEqual({
       id: 'StackOrigin029E19582',
+      originShield: {
+        enabled: false,
+      },
       domainName: { 'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'] },
       originPath: '/assets',
       connectionTimeout: 5,
@@ -166,6 +172,9 @@ describe('With website-configured bucket', () => {
     expect(originBindConfig.originProperty).toEqual({
       id: 'StackOrigin029E19582',
       domainName: bucket.bucketWebsiteDomainName,
+      originShield: {
+        enabled: false,
+      },
       customOriginConfig: {
         originProtocolPolicy: 'http-only',
         originSslProtocols: [
@@ -186,6 +195,9 @@ describe('With website-configured bucket', () => {
     expect(originBindConfig.originProperty).toEqual({
       id: 'StackOrigin029E19582',
       domainName: bucket.bucketWebsiteDomainName,
+      originShield: {
+        enabled: false,
+      },
       originPath: '/assets',
       customOriginConfig: {
         originProtocolPolicy: 'http-only',

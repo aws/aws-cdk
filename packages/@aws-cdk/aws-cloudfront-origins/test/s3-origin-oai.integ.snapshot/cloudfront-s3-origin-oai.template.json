@@ -74,6 +74,9 @@
         ]
        },
        "Id": "cloudfronts3originoaiDistributionOrigin1516C5A91",
+       "OriginShield": {
+        "Enabled": false
+       },
        "S3OriginConfig": {
         "OriginAccessIdentity": {
          "Fn::Join": [
