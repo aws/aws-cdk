@@ -1,10 +1,11 @@
+import * as crypto from 'crypto';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as assets from '@aws-cdk/aws-s3-assets';
 import { Construct } from 'constructs';
 import { IModel } from './model';
 
 // The only supported extension for local asset model data
-const ARTIFACT_EXTENSION = '.gz';
+const ARTIFACT_EXTENSION = '.tar.gz';
 
 /**
  * The configuration needed to reference model artifacts.
@@ -33,10 +34,11 @@ export abstract class ModelData {
 
   /**
    * Constructs model data that will be uploaded to S3 as part of the CDK app deployment.
-   * @param asset An S3 asset as a gzipped tar file
+   * @param path The local path to a model artifact file as a gzipped tar file
+   * @param options The options to further configure the selected asset
    */
-  public static fromAsset(asset: assets.Asset): ModelData {
-    return new AssetModelData(asset);
+  public static fromAsset(path: string, options: assets.AssetOptions = {}): ModelData {
+    return new AssetModelData(path, options);
   }
 
   /**
@@ -63,18 +65,40 @@ class S3ModelData extends ModelData {
 }
 
 class AssetModelData extends ModelData {
-  constructor(private readonly asset: assets.Asset) {
+  private asset?: assets.Asset;
+
+  constructor(private readonly path: string, private readonly options: assets.AssetOptions) {
     super();
-    if (this.asset.isZipArchive && !this.asset.assetPath.toLowerCase().endsWith(ARTIFACT_EXTENSION)) {
-      throw new Error(`Asset must be a gzipped tar file with extension ${ARTIFACT_EXTENSION} (${this.asset.assetPath}), ${this.asset.isZipArchive} ${!this.asset.assetPath.toLowerCase().endsWith(ARTIFACT_EXTENSION)}`);
+    if (!path.toLowerCase().endsWith(ARTIFACT_EXTENSION)) {
+      throw new Error(`Asset must be a gzipped tar file with extension ${ARTIFACT_EXTENSION} (${this.path})`);
     }
   }
 
-  public bind(_scope: Construct, model: IModel): ModelDataConfig {
+  public bind(scope: Construct, model: IModel): ModelDataConfig {
+    // Retain the first instantiation of this asset
+    if (!this.asset) {
+      this.asset = new assets.Asset(scope, `ModelData${this.hashcode(this.path)}`, {
+        path: this.path,
+        ...this.options,
+      });
+    }
+
     this.asset.grantRead(model);
 
     return {
-      uri: this.asset.s3Url,
+      uri: this.asset.httpUrl,
     };
+  }
+
+  /**
+   * Generates a hash from the provided string for the purposes of avoiding construct ID collision
+   * for models with multiple distinct sets of model data.
+   * @param s A string for which to generate a hash
+   * @returns A hex string representing the hash of the provided string
+   */
+  private hashcode(s: string): string {
+    const hash = crypto.createHash('md5');
+    hash.update(s);
+    return hash.digest('hex');
   }
 }

@@ -94,10 +94,7 @@ const s3ModelData = sagemaker.ModelData.fromBucket(
   artifactAsset.s3ObjectKey,
 );
 
-const localModelDataAsset = new s3_assets.Asset(stack, 'LocalModelData', {
-  path: artifactFilePath,
-});
-const localModelData = sagemaker.ModelData.fromAsset(localModelDataAsset);
+const localModelData = sagemaker.ModelData.fromAsset(artifactFilePath);
 
 /*
  * Use the above images and model data instances to create SageMaker models, including:
