@@ -87,7 +87,7 @@ export interface QueueProps {
    * Be aware that encryption is not available in all regions, please see the docs
    * for current availability details.
    *
-   * @default SQS_MANAGED (SSE-SQS) for newly created queues, otherwise unencrypted
+   * @default SQS_MANAGED (SSE-SQS) for newly created queues
    */
   readonly encryption?: QueueEncryption;
 
