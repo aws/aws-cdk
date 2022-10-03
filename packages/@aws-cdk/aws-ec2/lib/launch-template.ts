@@ -707,16 +707,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         securityGroupIds: securityGroupsToken,
         tagSpecifications: tagsToken,
         userData: userDataToken,
-        metadataOptions: {
-          httpEndpoint: props.httpEndpoint == true ? 'enabled' :
-            props.httpEndpoint == false ? 'disabled' : undefined,
-          httpProtocolIpv6: props.httpProtocolIpv6 == true ? 'enabled' :
-            props.httpProtocolIpv6 == false ? 'disabled' : undefined,
-          httpPutResponseHopLimit: props.httpPutResponseHopLimit,
-          httpTokens: props.httpTokens,
-          instanceMetadataTags: props.instanceMetadataTags == true ? 'enabled' :
-            props.instanceMetadataTags == false ? 'disabled' : undefined,
-        },
+        metadataOptions: this.renderMetadataOptions(props),
 
         // Fields not yet implemented:
         // ==========================
@@ -764,6 +755,28 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
     if (props.requireImdsv2) {
       Aspects.of(this).add(new LaunchTemplateRequireImdsv2Aspect());
+    }
+  }
+
+  private renderMetadataOptions(props: LaunchTemplateProps) {
+    if (props.httpEndpoint == undefined &&
+      props.httpProtocolIpv6 == undefined &&
+      props.httpPutResponseHopLimit == undefined &&
+      props.httpTokens == undefined &&
+      props.instanceMetadataTags == undefined
+    ) {
+      return undefined;
+    } else {
+      return {
+        httpEndpoint: props.httpEndpoint == true ? 'enabled' :
+          props.httpEndpoint == false ? 'disabled' : undefined,
+        httpProtocolIpv6: props.httpProtocolIpv6 == true ? 'enabled' :
+          props.httpProtocolIpv6 == false ? 'disabled' : undefined,
+        httpPutResponseHopLimit: props.httpPutResponseHopLimit,
+        httpTokens: props.httpTokens,
+        instanceMetadataTags: props.instanceMetadataTags == true ? 'enabled' :
+          props.instanceMetadataTags == false ? 'disabled' : undefined,
+      };
     }
   }
 
