@@ -5,7 +5,7 @@ import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
-import { LaunchType } from '../../lib/base/base-service';
+import { DeploymentControllerType, LaunchType } from '../../lib/base/base-service';
 import { addDefaultCapacityProvider } from '../util';
 
 describe('external service', () => {
@@ -520,7 +520,34 @@ describe('external service', () => {
       containerPort: 8000,
     })).toThrow('Cloud map service association is not supported for an external service');
 
+
+  });
+
+  test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const service = new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: DeploymentControllerType.EXTERNAL,
+      },
+      circuitBreaker: { rollback: true },
+    });
+
     // THEN
+    expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+    expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
 
   });
 });
