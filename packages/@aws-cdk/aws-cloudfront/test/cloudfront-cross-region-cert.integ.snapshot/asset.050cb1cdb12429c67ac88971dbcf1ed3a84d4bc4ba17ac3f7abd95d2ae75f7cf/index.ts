@@ -45,7 +45,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 async function addTags(ssm: SSM, parameters: string[], keyName: string): Promise<void> {
   await Promise.all(parameters.map(async name => {
     try {
-      return ssm.addTagsToResource({
+      return await ssm.addTagsToResource({
         ResourceId: name,
         ResourceType: 'Parameter',
         Tags: [{
@@ -65,7 +65,7 @@ async function addTags(ssm: SSM, parameters: string[], keyName: string): Promise
 async function removeTags(ssm: SSM, parameters: string[], keyName: string): Promise<void> {
   await Promise.all(parameters.map(async name => {
     try {
-      return ssm.removeTagsFromResource({
+      return await ssm.removeTagsFromResource({
         TagKeys: [keyName],
         ResourceType: 'Parameter',
         ResourceId: name,
@@ -99,7 +99,7 @@ async function getParametersByPath(ssm: SSM, path: string, nextToken?: string): 
     if (getParametersByPathResult.NextToken) {
       parameters.push(...await getParametersByPath(ssm, path, getParametersByPathResult.NextToken));
     }
-      return parameters;
+    return parameters;
   });
 }
 
