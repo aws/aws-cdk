@@ -382,7 +382,7 @@ export interface LaunchTemplateProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
    *
-   * @defualt - 1
+   * @default - 1
    */
   readonly httpPutResponseHopLimit?: number;
 
