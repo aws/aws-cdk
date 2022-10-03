@@ -1,12 +1,14 @@
 {
-  "version": "21.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "SqsTest/DefaultTest": {
+    "integ.sqs": {
       "stacks": [
         "aws-cdk-sqs"
       ],
-      "assertionStack": "SqsTest/DefaultTest/DeployAssert",
-      "assertionStackName": "SqsTestDefaultTestDeployAssert659366A6"
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
     }
-  }
+  },
+  "synthContext": {},
+  "enableLookups": false
 }

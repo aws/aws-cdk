@@ -210,6 +210,7 @@ export enum QueueEncryption {
   /**
    * Server-side encryption key managed by SQS (SSE-SQS).
    *
+   * Support for SSE-SQS is available in all AWS Commercial and GovCloud Regions except the China Regions.
    * To learn more about SSE-SQS on Amazon SQS, please visit the
    * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
    */
@@ -388,11 +389,7 @@ export class Queue extends QueueBase {
       }
 
       if (encryption === QueueEncryption.UNENCRYPTED) {
-        return {
-          encryptionProps: {
-            sqsManagedSseEnabled: false,
-          },
-        };
+        return { encryptionProps: {} };
       }
 
       if (encryption === QueueEncryption.KMS_MANAGED) {

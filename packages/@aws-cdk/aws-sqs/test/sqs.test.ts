@@ -18,9 +18,6 @@ test('default properties', () => {
         'Type': 'AWS::SQS::Queue',
         'UpdateReplacePolicy': 'Delete',
         'DeletionPolicy': 'Delete',
-        'Properties': {
-          'SqsManagedSseEnabled': false,
-        },
       },
     },
   });
@@ -443,24 +440,6 @@ describe('queue encryption', () => {
           'Type': 'AWS::SQS::Queue',
           'Properties': {
             'SqsManagedSseEnabled': true,
-          },
-          'UpdateReplacePolicy': 'Delete',
-          'DeletionPolicy': 'Delete',
-        },
-      },
-    });
-  });
-
-  test('it is possible to disable encryption (unencrypted)', () => {
-    const stack = new Stack();
-
-    new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.UNENCRYPTED });
-    Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'Queue4A7E3555': {
-          'Type': 'AWS::SQS::Queue',
-          'Properties': {
-            'SqsManagedSseEnabled': false,
           },
           'UpdateReplacePolicy': 'Delete',
           'DeletionPolicy': 'Delete',
