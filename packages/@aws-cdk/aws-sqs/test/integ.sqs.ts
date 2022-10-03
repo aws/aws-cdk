@@ -25,9 +25,6 @@ const highThroughputFifo = new Queue(stack, 'HighThroughputFifoQueue', {
 const sqsManagedEncryptedQueue = new Queue(stack, 'SqsManagedEncryptedQueue', {
   encryption: QueueEncryption.SQS_MANAGED,
 });
-const unencryptedQueue = new Queue(stack, 'UnencryptedQueue', {
-  encryption: QueueEncryption.UNENCRYPTED,
-});
 
 const role = new Role(stack, 'Role', {
   assumedBy: new AccountRootPrincipal(),
@@ -38,7 +35,6 @@ queue.grantConsumeMessages(role);
 fifo.grantConsumeMessages(role);
 highThroughputFifo.grantConsumeMessages(role);
 sqsManagedEncryptedQueue.grantConsumeMessages(role);
-unencryptedQueue.grantConsumeMessages(role);
 
 new CfnOutput(stack, 'QueueUrl', { value: queue.queueUrl });
 
