@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as assets from '@aws-cdk/aws-ecr-assets';
 import { Construct } from 'constructs';
@@ -30,11 +31,11 @@ export abstract class ContainerImage {
 
   /**
    * Reference an image that's constructed directly from sources on disk
-   *
-   * @param asset A Docker image asset
+   * @param directory The directory where the Dockerfile is stored
+   * @param options The options to further configure the selected image
    */
-  public static fromAsset(asset: assets.DockerImageAsset): ContainerImage {
-    return new AssetImage(asset);
+  public static fromAsset(directory: string, options: assets.DockerImageAssetOptions = {}): ContainerImage {
+    return new AssetImage(directory, options);
   }
 
   /**
@@ -58,15 +59,37 @@ class EcrImage extends ContainerImage {
 }
 
 class AssetImage extends ContainerImage {
-  constructor(private readonly asset: assets.DockerImageAsset) {
+  private asset?: assets.DockerImageAsset;
+
+  constructor(private readonly directory: string, private readonly options: assets.DockerImageAssetOptions = {}) {
     super();
   }
 
-  public bind(_scope: Construct, model: Model): ContainerImageConfig {
+  public bind(scope: Construct, model: Model): ContainerImageConfig {
+    // Retain the first instantiation of this asset
+    if (!this.asset) {
+      this.asset = new assets.DockerImageAsset(scope, `ModelImage${this.hashcode(this.directory)}`, {
+        directory: this.directory,
+        ...this.options,
+      });
+    }
+
     this.asset.repository.grantPull(model);
 
     return {
       imageName: this.asset.imageUri,
     };
+  }
+
+  /**
+   * Generates a hash from the provided string for the purposes of avoiding construct ID collision
+   * for models with multiple distinct images.
+   * @param s A string for which to generate a hash
+   * @returns A hex string representing the hash of the provided string
+   */
+  private hashcode(s: string): string {
+    const hash = crypto.createHash('md5');
+    hash.update(s);
+    return hash.digest('hex');
   }
 }

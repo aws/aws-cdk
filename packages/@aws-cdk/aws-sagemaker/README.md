@@ -61,15 +61,11 @@ In the event that a single container is sufficient for your inference use-case, 
 single-container model:
 
 ```typescript
-import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 import * as path from 'path';
 
-const imageAsset = new ecr_assets.DockerImageAsset(this, 'Image', {
-  directory: path.join('path', 'to', 'Dockerfile', 'directory')
-});
-const image = sagemaker.ContainerImage.fromAsset(imageAsset);
+const image = sagemaker.ContainerImage.fromAsset(path.join('path', 'to', 'Dockerfile', 'directory'));
 const modelDataAsset = new s3_assets.Asset(this, 'ModelData', {
   path: path.join('path', 'to', 'artifact', 'file.tar.gz')
 });
@@ -124,14 +120,10 @@ abstract base class.
 Reference a local directory containing a Dockerfile:
 
 ```typescript
-import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 import * as path from 'path';
 
-const imageAsset = new ecr_assets.DockerImageAsset(this, 'Image', {
-  directory: path.join('path', 'to', 'Dockerfile', 'directory')
-});
-const image = sagemaker.ContainerImage.fromAsset(imageAsset);
+const image = sagemaker.ContainerImage.fromAsset(path.join('path', 'to', 'Dockerfile', 'directory'));
 ```
 
 #### ECR Image

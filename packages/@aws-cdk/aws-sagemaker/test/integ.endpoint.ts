@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
@@ -41,10 +40,7 @@ import * as sagemaker from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-sagemaker-endpoint');
 
-const imageAsset = new ecr_assets.DockerImageAsset(stack, 'ModelImage', {
-  directory: path.join(__dirname, 'test-image'),
-});
-const image = sagemaker.ContainerImage.fromAsset(imageAsset);
+const image = sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image'));
 const modelDataAsset = new s3_assets.Asset(stack, 'ModelData', {
   path: path.join(__dirname, 'test-artifacts', 'valid-artifact.tar.gz'),
 });
