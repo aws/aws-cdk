@@ -146,7 +146,7 @@ describe('export writer provider', () => {
               S3Bucket: {
                 'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
               },
-              S3Key: 'abb99ab2b779b809c120ce2531aa4570108d2c73e461b9e97966d6804c58d915.zip',
+              S3Key: expect.any(String),
             },
             Handler: '__entrypoint__.handler',
             MemorySize: 128,
@@ -390,7 +390,7 @@ describe('export writer provider', () => {
               S3Bucket: {
                 'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
               },
-              S3Key: 'abb99ab2b779b809c120ce2531aa4570108d2c73e461b9e97966d6804c58d915.zip',
+              S3Key: expect.any(String),
             },
             Handler: '__entrypoint__.handler',
             MemorySize: 128,
