@@ -194,7 +194,7 @@ export abstract class OriginBase implements IOrigin {
   private renderOriginShield(originShieldRegion?: string): CfnDistribution.OriginShieldProperty | undefined {
     return originShieldRegion
       ? { enabled: true, originShieldRegion }
-      : undefined;
+      : { enabled: false };
   }
 }
 

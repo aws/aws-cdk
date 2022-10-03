@@ -42,7 +42,10 @@
         "OriginProtocolPolicy": "https-only"
        },
        "DomainName": "www.example.com",
-       "Id": "integdistributionfunctionDistOrigin1D1E9DF17"
+       "Id": "integdistributionfunctionDistOrigin1D1E9DF17",
+       "OriginShield": {
+        "Enabled": false
+       }
       }
      ]
     }
