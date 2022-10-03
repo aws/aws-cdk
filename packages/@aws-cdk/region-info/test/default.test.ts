@@ -5,7 +5,7 @@ const urlSuffix = '.nowhere.null';
 
 describe('servicePrincipal', () => {
   for (const suffix of ['', '.amazonaws.com', '.amazonaws.com.cn']) {
-    for (const service of ['codedeploy', 'states', 'ssm']) {
+    for (const service of ['codedeploy', 'states']) {
       test(`${service}${suffix}`, () => {
         expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${region}.amazonaws.com`);
       });
