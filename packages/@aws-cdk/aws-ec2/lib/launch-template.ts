@@ -568,6 +568,12 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       Annotations.of(this).addError('Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
     }
 
+    // Basic validation of the provided httpPutResponseHopLimit
+    if (props.httpPutResponseHopLimit !== undefined && (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)) {
+      // See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
+      Annotations.of(this).addError('HttpPutResponseHopLimit must between 1 and 64');
+    }
+
     this.role = props.role;
     this._grantPrincipal = this.role;
     const iamProfile: iam.CfnInstanceProfile | undefined = this.role ? new iam.CfnInstanceProfile(this, 'Profile', {
@@ -711,9 +717,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
           instanceMetadataTags: props.instanceMetadataTags == true ? 'enabled' :
             props.instanceMetadataTags == false ? 'disabled' : undefined,
         },
-
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions
-        // metadataOptions: undefined,
 
         // Fields not yet implemented:
         // ==========================

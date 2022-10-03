@@ -21,6 +21,7 @@ import {
   InstanceInitiatedShutdownBehavior,
   InstanceType,
   LaunchTemplate,
+  LaunchTemplateHttpTokens,
   OperatingSystemType,
   SecurityGroup,
   SpotInstanceInterruption,
@@ -758,5 +759,121 @@ describe('LaunchTemplate marketOptions', () => {
         },
       },
     });
+  });
+});
+
+describe('LaunchTemplate metadataOptions', () => {
+  let app: App;
+  let stack: Stack;
+
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app);
+  });
+
+  test.each([
+    [true, 'enabled'],
+    [false, 'disabled'],
+  ])('given httpEndpoint %p', (given: boolean, expected: string) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      httpEndpoint: given,
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpEndpoint: expected,
+        },
+      },
+    });
+  });
+
+  test.each([
+    [true, 'enabled'],
+    [false, 'disabled'],
+  ])('given httpProtocolIpv6 %p', (given: boolean, expected: string) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      httpProtocolIpv6: given,
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpProtocolIpv6: expected,
+        },
+      },
+    });
+  });
+
+  test.each([
+    [1, 1],
+    [2, 2],
+  ])('given httpPutResponseHopLimit %p', (given: number, expected: number) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      httpPutResponseHopLimit: given,
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpPutResponseHopLimit: expected,
+        },
+      },
+    });
+  });
+
+  test.each([
+    [LaunchTemplateHttpTokens.OPTIONAL, 'optional'],
+    [LaunchTemplateHttpTokens.REQUIRED, 'required'],
+  ])('given httpTokens %p', (given: LaunchTemplateHttpTokens, expected: string) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      httpTokens: given,
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpTokens: expected,
+        },
+      },
+    });
+  });
+
+  test.each([
+    [true, 'enabled'],
+    [false, 'disabled'],
+  ])('given instanceMetadataTags %p', (given: boolean, expected: string) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      instanceMetadataTags: given,
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          InstanceMetadataTags: expected,
+        },
+      },
+    });
+  });
+
+  test.each([
+    [0, 1],
+    [-1, 1],
+    [1, 0],
+    [64, 0],
+    [65, 1],
+  ])('given instanceMetadataTags %p', (given: number, expected: number) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      httpPutResponseHopLimit: given,
+    });
+    // THEN
+    const errors = Annotations.fromStack(stack).findError('/Default/Template', Match.anyValue());
+    expect(errors).toHaveLength(expected);
   });
 });
