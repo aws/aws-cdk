@@ -31,7 +31,7 @@ import {
 describe('vpc', () => {
   describe('When creating a VPC', () => {
 
-    test('SubnetType.PRIVATE_WITH_NAT is equivalent to SubnetType.PRIVATE_WITH_EGRESS', () => {
+    testDeprecated('SubnetType.PRIVATE_WITH_NAT is equivalent to SubnetType.PRIVATE_WITH_EGRESS', () => {
 
       const stack1 = getTestStack();
       const stack2 = getTestStack();
@@ -68,7 +68,7 @@ describe('vpc', () => {
 
     });
 
-    test('SubnetType.PRIVATE is equivalent to SubnetType.PRIVATE_WITH_NAT', () => {
+    testDeprecated('SubnetType.PRIVATE is equivalent to SubnetType.PRIVATE_WITH_NAT', () => {
 
       const stack1 = getTestStack();
       const stack2 = getTestStack();
@@ -373,7 +373,7 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'reserved',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
             reserved: true,
           },
           {
@@ -400,13 +400,13 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'reserved',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
             reserved: true,
           },
           {
             cidrMask: 24,
             name: 'rds',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
         ],
         maxAzs: 3,
@@ -443,7 +443,7 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'application',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
           {
             cidrMask: 28,
@@ -482,7 +482,7 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'application',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
           {
             cidrMask: 28,
@@ -585,7 +585,7 @@ describe('vpc', () => {
             },
             {
               name: 'private',
-              subnetType: SubnetType.PRIVATE_WITH_NAT,
+              subnetType: SubnetType.PRIVATE_WITH_EGRESS,
               mapPublicIpOnLaunch: true,
             },
           ],
@@ -624,7 +624,7 @@ describe('vpc', () => {
           },
           {
             name: 'private',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
         ],
       });
@@ -648,7 +648,7 @@ describe('vpc', () => {
           },
           {
             name: 'private',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
         ],
         vpcName: 'CustomVPCName',
@@ -755,7 +755,7 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'private',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
         ],
         natGatewaySubnets: {
@@ -775,7 +775,7 @@ describe('vpc', () => {
 
     });
 
-    test('natGateways = 0 throws if PRIVATE_WITH_NAT subnets configured', () => {
+    test('natGateways = 0 throws if PRIVATE_WITH_EGRESS subnets configured', () => {
       const stack = getTestStack();
       expect(() => {
         new Vpc(stack, 'VPC', {
@@ -787,7 +787,7 @@ describe('vpc', () => {
             },
             {
               name: 'private',
-              subnetType: SubnetType.PRIVATE_WITH_NAT,
+              subnetType: SubnetType.PRIVATE_WITH_EGRESS,
             },
           ],
         });
