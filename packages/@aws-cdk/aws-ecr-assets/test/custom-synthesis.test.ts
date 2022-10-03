@@ -10,8 +10,6 @@ import { StackSynthesizer, FileAssetSource, FileAssetLocation, DockerImageAssetS
 import { AssetManifestArtifact } from '@aws-cdk/cx-api';
 import { DockerImageAsset } from '../lib';
 
-// const DEMO_IMAGE_ASSET_HASH = '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14';
-
 test('use custom synthesizer', () => {
   // GIVEN
   const app = new App();
