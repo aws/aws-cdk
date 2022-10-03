@@ -37,7 +37,13 @@ describe('access log', () => {
         sub: apigateway.AccessLogField.contextAuthorizerClaims('sub'),
         email: apigateway.AccessLogField.contextAuthorizerClaims('email'),
       },
+      clientCertPem: apigateway.AccessLogField.contextIdentityClientCertPem(),
+      subjectDN: apigateway.AccessLogField.contextIdentityClientCertSubjectDN(),
+      issunerDN: apigateway.AccessLogField.contextIdentityClientCertIssunerDN(),
+      serialNumber: apigateway.AccessLogField.contextIdentityClientCertSerialNumber(),
+      validityNotBefore: apigateway.AccessLogField.contextIdentityClientCertValidityNotBefore(),
+      validityNotAfter: apigateway.AccessLogField.contextIdentityClientCertValidityNotAfter(),
     }));
-    expect(testFormat.toString()).toEqual('{"requestId":"$context.requestId","sourceIp":"$context.identity.sourceIp","method":"$context.httpMethod","callerAccountId":"$context.identity.accountId","ownerAccountId":"$context.accountId","userContext":{"sub":"$context.authorizer.claims.sub","email":"$context.authorizer.claims.email"}}');
+    expect(testFormat.toString()).toEqual('{"requestId":"$context.requestId","sourceIp":"$context.identity.sourceIp","method":"$context.httpMethod","callerAccountId":"$context.identity.accountId","ownerAccountId":"$context.accountId","userContext":{"sub":"$context.authorizer.claims.sub","email":"$context.authorizer.claims.email"},"clientCertPem":"$context.identity.clientCert.clientCertPem","subjectDN":"$context.identity.clientCert.subjectDN","issunerDN":"$context.identity.clientCert.issuerDN","serialNumber":"$context.identity.clientCert.serialNumber","validityNotBefore":"$context.identity.clientCert.validity.notBefore","validityNotAfter":"$context.identity.clientCert.validity.notAfter"}');
   });
 });
