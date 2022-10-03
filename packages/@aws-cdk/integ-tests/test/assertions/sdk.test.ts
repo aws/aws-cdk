@@ -95,6 +95,77 @@ describe('AwsApiCall', () => {
     });
   });
 
+  test('waitFor', () => {
+    // GIVEN
+    const app = new App();
+    const deplossert = new DeployAssert(app);
+
+    // WHEN
+    const apiCall = deplossert.awsApiCall('MyService', 'MyApi', {
+      param1: 'val1',
+      param2: 2,
+    }).expect(ExpectedResult.objectLike({
+      Key: 'Value',
+    })).wait();
+    apiCall.provider.addToRolePolicy({
+      Effect: 'Allow',
+      Action: ['s3:GetObject'],
+      Resource: ['*'],
+    });
+
+    // THEN
+    Template.fromStack(deplossert.scope).hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
+      service: 'MyService',
+      api: 'MyApi',
+      parameters: {
+        param1: 'val1',
+        param2: 2,
+      },
+      expected: JSON.stringify({ $ObjectLike: { Key: 'Value' } }),
+    });
+    Template.fromStack(deplossert.scope).findResources('AWS::IAM::Role', {
+      SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73: {
+        Properties: {
+          Policies: [
+            {
+              PolicyName: 'Inline',
+              PolicyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                  {
+                    Action: [
+                      'myservice:MyApi',
+                    ],
+                    Effect: 'Allow',
+                    Resource: [
+                      '*',
+                    ],
+                  },
+                  {
+                    Action: [
+                      's3:GetObject',
+                    ],
+                    Effect: 'Allow',
+                    Resource: [
+                      '*',
+                    ],
+                  },
+                  {
+                    Action: [
+                      'states:StartExecution',
+                    ],
+                    Effect: 'Allow',
+                    Resource: ['*'],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    });
+  });
+
   describe('get attribute', () => {
     test('getAttString', () => {
       // GIVEN

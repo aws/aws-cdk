@@ -2,6 +2,7 @@ import { CustomResource, Reference } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { ExpectedResult } from './common';
 import { AssertionsProvider } from './providers';
+import { WaiterStateMachineOptions } from './waiter-state-machine';
 
 /**
  * Represents an ApiCall
@@ -53,7 +54,7 @@ export interface IApiCall extends IConstruct {
    * });
    * invoke.expect(ExpectedResult.objectLike({ Payload: 'OK' }));
    */
-  expect(expected: ExpectedResult): void;
+  expect(expected: ExpectedResult): IApiCall;
 
   /**
    * Assert that the ExpectedResult is equal
@@ -98,6 +99,20 @@ export interface IApiCall extends IConstruct {
    * first.next(second);
    */
   next(next: IApiCall): IApiCall;
+
+  /**
+   * Wait for the IApiCall to return the expected response.
+   * If no expected response is specified then it will wait for
+   * the IApiCall to return a success
+   *
+   * @example
+   * declare const integ: IntegTest;
+   * declare const executionArn: string;
+   * integ.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+   *    executionArn,
+   * }).wait();
+   */
+  wait(options?: WaiterStateMachineOptions): IApiCall;
 }
 
 /**
@@ -107,6 +122,7 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
   protected abstract readonly apiCallResource: CustomResource;
   protected expectedResult?: string;
   protected flattenResponse: string = 'false';
+  protected stateMachineArn?: string;
 
   public abstract readonly provider: AssertionsProvider;
 
@@ -125,8 +141,9 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
     return this.apiCallResource.getAttString(`apiCallResponse.${attributeName}`);
   }
 
-  public expect(expected: ExpectedResult): void {
+  public expect(expected: ExpectedResult): IApiCall {
     this.expectedResult = expected.result;
+    return this;
   }
 
   public abstract assertAtPath(path: string, expected: ExpectedResult): IApiCall;
@@ -135,4 +152,6 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
     next.node.addDependency(this);
     return next;
   }
+
+  public abstract wait(options?: WaiterStateMachineOptions): IApiCall
 }
