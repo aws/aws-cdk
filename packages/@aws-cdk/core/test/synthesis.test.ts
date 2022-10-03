@@ -229,8 +229,10 @@ describe('synthesis', () => {
     const calls = new Array<string>();
 
     class SynthesizeMe extends cdk.Stack {
+      public readonly templateFile = 'hey.json';
+
       constructor() {
-        super(undefined as any, 'id', {
+        super(undefined as any, 'hey', {
           synthesizer: new cdk.LegacyStackSynthesizer(),
         });
         this.node.addValidation({
