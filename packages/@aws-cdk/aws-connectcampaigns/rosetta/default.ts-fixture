@@ -1,0 +1,8 @@
+import { Construct } from 'constructs';
+import { Stack } from '@aws-cdk/core';
+
+class MyStack extends Stack {
+  constructor(scope: Construct, id: string) {
+    /// here
+  }
+}
