@@ -84,13 +84,8 @@ You can set up any application in your build, including your install script, to 
 services.
 
 ```ts
-import * as gamelift from 'aws-cdk-lib/aws-gamelift';
-
-// Build can be declared using either declarative version in the constructor
-const build = new gamelift.Build(this, 'Build', {
-  content: new gamelift.Content.fromAsset(path.join(__dirname, "sample-asset-directory"))
+declare const bucket: s3.Bucket;
+new gamelift.Build(this, 'Build', {
+  content: gamelift.Content.fromBucket(bucket, "sample-asset-key")
 });
-
-// Either using dedicated factory static method
-const build = gamelift.Build.fromBuildAsset(path.join(__dirname, 'CustomerGameServer/');
 ```
