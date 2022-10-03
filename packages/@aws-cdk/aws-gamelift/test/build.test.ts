@@ -5,6 +5,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as gamelift from '../lib';
+import { OperatingSystem } from '../lib';
 
 describe('build', () => {
   const buildId = 'test-identifier';
@@ -199,6 +200,21 @@ describe('build', () => {
 
         Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
           Name: buildName,
+        });
+      });
+
+      test('with all optional attributes should set it in CloudFormation', () => {
+        build = new gamelift.Build(stack, 'BuildWithName', {
+          ...defaultProps,
+          buildName: buildName,
+          operatingSystem: OperatingSystem.AMAZON_LINUX_2,
+          buildVersion: '1.0',
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
+          Name: buildName,
+          OperatingSystem: OperatingSystem.AMAZON_LINUX_2,
+          Version: '1.0',
         });
       });
 
