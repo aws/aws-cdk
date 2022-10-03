@@ -410,6 +410,8 @@ For this reason, only use it for development purposes.
 **⚠ Note #2**: This command is considered experimental,
 and might have breaking changes in the future.
 
+**⚠ Note #3**: Expected defaults for certain parameters may be different with the hotswap parameter. For example, an ECS service's minimum healthy percentage will currently be set to 0. Please review the source accordingly if this occurs. 
+
 ### `cdk watch`
 
 The `watch` command is similar to `deploy`,
