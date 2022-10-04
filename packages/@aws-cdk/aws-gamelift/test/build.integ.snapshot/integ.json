@@ -1,9 +1,9 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "integ.composite-alarm": {
+    "integ.build": {
       "stacks": [
-        "CompositeAlarmIntegrationTest"
+        "aws-gamelift-build"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true
