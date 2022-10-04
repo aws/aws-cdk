@@ -43,17 +43,11 @@ import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
 ## Model
 
-In machine learning, a model is used to make predictions, or inferences. A deployable model in
-SageMaker consists of inference code and model artifacts. Model artifacts are the results of model
-training by using a machine learning algorithm. The inference code must be packaged in a Docker
-container and stored in Amazon ECR. You can either package the model artifacts in the same container
-as the inference code, or store them in Amazon S3. As model artifacts may change each time a new
-model is trained (while the inference code may remain static), artifact separation in S3 may act as
-a natural decoupling point for your application.
-
-When instantiating the `Model` construct, you tell Amazon SageMaker where it can find these model
-components. The `ContainerDefinition` interface encapsulates both the specification of model
-inference code as a `ContainerImage` and an optional set of separate artifacts as `ModelData`.
+To create a machine learning model with Amazon Sagemaker, use the `Model` construct. This construct
+includes properties that can be configured to define model components, including the model inference
+code as a Docker image and an optional set of separate model data artifacts. See the [AWS
+documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-marketplace-develop.html)
+to learn more about SageMaker models.
 
 ### Single Container Model
 
@@ -80,11 +74,10 @@ const model = new sagemaker.Model(this, 'PrimaryContainerModel', {
 ### Inference Pipeline Model
 
 An inference pipeline is an Amazon SageMaker model that is composed of a linear sequence of multiple
-containers that process requests for inferences on data. You use an inference pipeline to
-define and deploy any combination of pretrained Amazon SageMaker built-in algorithms and your own
-custom algorithms packaged in Docker containers. You can use an inference pipeline to combine
-preprocessing, predictions, and post-processing data science tasks. Inference pipelines are fully
-managed. To define an inference pipeline, you can provide additional containers for your model:
+containers that process requests for inferences on data. See the [AWS
+documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/inference-pipelines.html) to learn
+more about SageMaker inference pipelines. To define an inference pipeline, you can provide
+additional containers for your model:
 
 ```typescript
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
@@ -136,7 +129,8 @@ const image = sagemaker.ContainerImage.fromEcrRepository(repository, 'tag');
 
 ### Model Artifacts
 
-If you choose to decouple your model artifacts from your inference code, the artifacts can be
+If you choose to decouple your model artifacts from your inference code (as is natural given
+different rates of change between inference code and model artifacts), the artifacts can be
 specified via the `modelData` property which accepts a class that extends the `ModelData` abstract
 base class. The default is to have no model artifacts associated with a model.
 
