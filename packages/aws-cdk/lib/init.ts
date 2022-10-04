@@ -346,7 +346,6 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
     warning('Unable to package compiled code as JAR');
     warning(mvnPackageWarning);
   }
-
 }
 
 async function postInstallPython(cwd: string) {

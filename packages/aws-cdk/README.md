@@ -67,8 +67,19 @@ Available templates:
 * sample-app: Example CDK Application with some constructs
    └─ cdk init sample-app --language=[csharp|fsharp|java|javascript|python|typescript]
 
-$ # Create a new library application in typescript
-$ cdk init lib --language=typescript
+$ # Create a new CDK application in typescript
+$ cdk init app --language=typescript
+```
+
+You can supply a local template directory to `cdk init`. Suppose you have a local folder,
+`path/to/local/templates`, that has a single template, `my-local-template`:
+
+```console
+$ cdk init --list --from path/to/local/templates
+Avaliable templates:
+* my-local-template: Local Template for CDK Application
+
+$ cdk init my-local-template --from path/to/local/templates --language=typescript
 ```
 
 ### `cdk list`
