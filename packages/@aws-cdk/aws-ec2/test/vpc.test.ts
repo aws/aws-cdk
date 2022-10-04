@@ -105,7 +105,7 @@ describe('vpc', () => {
 
     });
 
-    test('SubnetType.ISOLATED is equivalent to SubnetType.PRIVATE_ISOLATED', () => {
+    testDeprecated('SubnetType.ISOLATED is equivalent to SubnetType.PRIVATE_ISOLATED', () => {
 
       const stack1 = getTestStack();
       const stack2 = getTestStack();
@@ -126,7 +126,6 @@ describe('vpc', () => {
           },
         ],
       });
-
       const t1 = Template.fromStack(stack1);
       const t2 = Template.fromStack(stack2);
 
@@ -775,7 +774,7 @@ describe('vpc', () => {
 
     });
 
-    test('natGateways = 0 throws if PRIVATE_WITH_EGRESS subnets configured', () => {
+    testDeprecated('natGateways = 0 throws if PRIVATE_WITH_NAT subnets configured', () => {
       const stack = getTestStack();
       expect(() => {
         new Vpc(stack, 'VPC', {
@@ -787,7 +786,7 @@ describe('vpc', () => {
             },
             {
               name: 'private',
-              subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+              subnetType: SubnetType.PRIVATE_WITH_NAT,
             },
           ],
         });
