@@ -261,7 +261,7 @@ export interface TemplateParsingOptions {
    * templates that are valid despite containing cycles, such as unprocessed transform stacks.
    * default: false if TemplateParsingOptions is not provided.
    */
-  readonly skipCyclicalDependenciesCheck?: boolean
+  readonly skipCyclicalDependenciesCheck?: boolean;
 }
 
 function toTemplate(stack: Stack): any {
