@@ -4,8 +4,7 @@
 name: PR Linter
 on:
   # Necessary to have sufficient permissions to write to the PR
-  # Temp update to display behavior in pr. Will revert before merge.
-  pull_request:
+  pull_request_target:
     types:
       - labeled
       - unlabeled
