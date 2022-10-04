@@ -1,5 +1,3 @@
-import { before, RULE_SSM_PRINCIPALS_ARE_REGIONAL } from './aws-entities';
-
 /**
  * Provides default values for certain regional information points.
  */
@@ -81,12 +79,6 @@ export class Default {
       }
 
       switch (service) {
-        // SSM turned from global to regional at some point
-        case 'ssm':
-          return before(region, RULE_SSM_PRINCIPALS_ARE_REGIONAL)
-            ? universal
-            : regional;
-
         // CodeDeploy is regional+partitional in CN, only regional everywhere else
         case 'codedeploy':
           return region.startsWith('cn-')
