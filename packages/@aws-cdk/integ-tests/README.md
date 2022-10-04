@@ -456,7 +456,7 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
   executionArn: start.getAttString('executionArn'),
 }).expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
-})).wait();
+})).waitForAssertions();
 ```
 
 When you call `wait()` the assertion provider will continuously make the `awsApiCall` until the
