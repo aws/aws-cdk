@@ -15,20 +15,33 @@ const camelCase = require('camelcase');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
 
+export interface cliInitOptions {
+  readonly type?: string;
+  readonly language?: string;
+  readonly canUseNetwork?: boolean;
+  readonly generateOnly?: boolean;
+  readonly workDir?: string;
+  readonly templatesDir?: string;
+}
+
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type?: string, language?: string, canUseNetwork = true, generateOnly = false, workDir = process.cwd()) {
-  if (!type && !language) {
-    await printAvailableTemplates();
+export async function cliInit(options: cliInitOptions) {
+  if (!options.type && !options.language) {
+    await printAvailableTemplates(undefined, options.templatesDir);
     return;
   }
 
-  type = type || 'default'; // "default" is the default type (and maps to "app")
+  const type = options.type || 'default'; // "default" is the default type (and maps to "app")
+  let language = options.language;
+  const canUseNetwork = options.canUseNetwork ?? true;
+  const generateOnly = options.generateOnly ?? false;
+  const workDir = options.workDir ?? process.cwd();
 
-  const template = (await availableInitTemplates()).find(t => t.hasName(type!));
+  const template = (await availableInitTemplates(options.templatesDir)).find(t => t.hasName(type));
   if (!template) {
-    await printAvailableTemplates(language);
+    await printAvailableTemplates(language, options.templatesDir);
     throw new Error(`Unknown init template: ${type}`);
   }
   if (!language && template.languages.length === 1) {
@@ -66,7 +79,7 @@ export class InitTemplate {
   public readonly description: string;
   public readonly aliases = new Set<string>();
 
-  constructor(
+  public constructor(
     private readonly basePath: string,
     public readonly name: string,
     public readonly languages: string[],
@@ -201,9 +214,9 @@ interface ProjectInfo {
   readonly name: string;
 }
 
-export async function availableInitTemplates(): Promise<InitTemplate[]> {
+export async function availableInitTemplates(dir?: string): Promise<InitTemplate[]> {
   return new Promise(async resolve => {
-    const templatesDir = path.join(rootDir(), 'lib', 'init-templates');
+    const templatesDir = dir ?? path.join(rootDir(), 'lib', 'init-templates');
     const templateNames = await listDirectory(templatesDir);
     const templates = new Array<InitTemplate>();
     for (const templateName of templateNames) {
@@ -212,9 +225,10 @@ export async function availableInitTemplates(): Promise<InitTemplate[]> {
     resolve(templates);
   });
 }
-export async function availableInitLanguages(): Promise<string[]> {
+
+export async function availableInitLanguages(dir?: string): Promise<string[]> {
   return new Promise(async resolve => {
-    const templates = await availableInitTemplates();
+    const templates = await availableInitTemplates(dir);
     const result = new Set<string>();
     for (const template of templates) {
       for (const language of template.languages) {
@@ -238,9 +252,9 @@ async function listDirectory(dirPath: string) {
     .sort();
 }
 
-export async function printAvailableTemplates(language?: string) {
+export async function printAvailableTemplates(language?: string, templatesDir?: string) {
   print('Available templates:');
-  for (const template of await availableInitTemplates()) {
+  for (const template of await availableInitTemplates(templatesDir)) {
     if (language && template.languages.indexOf(language) === -1) { continue; }
     print(`* ${chalk.green(template.name)}: ${template.description}`);
     const languageArg = language ? chalk.bold(language)
