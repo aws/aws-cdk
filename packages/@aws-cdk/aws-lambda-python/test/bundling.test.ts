@@ -176,7 +176,7 @@ test('Bundling a function with poetry dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --without-hashes --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
