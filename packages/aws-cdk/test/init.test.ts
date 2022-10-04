@@ -171,7 +171,7 @@ describe('constructs version', () => {
   cliTest('--generate-only should skip git init', async (workDir) => {
     await cliInit({
       type: 'app',
-      language: 'javascript',
+      language: 'typescript',
       canUseNetwork: false,
       generateOnly: true,
       workDir,
@@ -192,6 +192,10 @@ describe('constructs version', () => {
       workDir,
       templatesDir: path.join(__dirname, '..', 'lib', 'init-templates'),
     });
+
+    // Check that package.json and bin/ got created in the current directory
+    expect(await fs.pathExists(path.join(workDir, 'package.json'))).toBeTruthy();
+    expect(await fs.pathExists(path.join(workDir, 'bin'))).toBeTruthy();
   });
 
   cliTest('git directory does not throw off the initer!', async (workDir) => {
