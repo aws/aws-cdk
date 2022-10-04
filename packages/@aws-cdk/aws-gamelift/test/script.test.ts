@@ -6,44 +6,50 @@ import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as gamelift from '../lib';
 
-describe('build', () => {
-  const buildId = 'test-identifier';
-  const buildName = 'test-build';
+describe('script', () => {
+  const scriptId = 'script-test-identifier';
+  const scriptArn = `arn:aws:gamelift:script-region:123456789012:script/${scriptId}`;
+  const scriptName = 'test-script';
   let stack: cdk.Stack;
 
   beforeEach(() => {
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-    stack = new cdk.Stack(app);
-  });
-
-  describe('.fromBuildId()', () => {
-    test('with required fields', () => {
-      const build = gamelift.Build.fromBuildId(stack, 'ImportedBuild', buildId);
-
-      expect(build.buildId).toEqual(buildId);
-      expect(build.grantPrincipal).toEqual(new iam.UnknownPrincipal({ resource: build }));
+    stack = new cdk.Stack(app, 'Base', {
+      env: { account: '111111111111', region: 'stack-region' },
     });
   });
 
-  describe('.fromBuildAttributes()', () => {
-    test('with required attrs only', () => {
-      const build = gamelift.Build.fromBuildAttributes(stack, 'ImportedBuild', { buildId });
+  describe('.fromScriptArn()', () => {
+    test('with required fields', () => {
+      const script = gamelift.Script.fromScriptArn(stack, 'ImportedScript', scriptArn);
 
-      expect(build.buildId).toEqual(buildId);
-      expect(build.grantPrincipal).toEqual(new iam.UnknownPrincipal({ resource: build }));
+      expect(script.scriptArn).toEqual(scriptArn);
+      expect(script.grantPrincipal).toEqual(new iam.UnknownPrincipal({ resource: script }));
+    });
+  });
+
+  describe('.fromScriptAttributes()', () => {
+    test('with required attrs only', () => {
+      const script = gamelift.Script.fromScriptAttributes(stack, 'ImportedScript', { scriptArn });
+
+      expect(script.scriptId).toEqual(scriptId);
+      expect(script.scriptArn).toEqual(scriptArn);
+      expect(script.env.account).toEqual('123456789012');
+      expect(script.env.region).toEqual('script-region');
+      expect(script.grantPrincipal).toEqual(new iam.UnknownPrincipal({ resource: script }));
     });
 
     test('with all attrs', () => {
       const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
-      const build = gamelift.Build.fromBuildAttributes(stack, 'ImportedBuild', { buildId, role });
+      const script = gamelift.Script.fromScriptAttributes(stack, 'ImportedScript', { scriptArn, role });
 
-      expect(buildId).toEqual(buildId);
-      expect(build.grantPrincipal).toEqual(role);
+      expect(scriptId).toEqual(scriptId);
+      expect(script.grantPrincipal).toEqual(role);
     });
   });
 
   describe('new', () => {
-    const localAsset = path.join(__dirname, 'my-game-build');
+    const localAsset = path.join(__dirname, 'my-game-script');
     const contentBucketName = 'bucketname';
     const contentBucketAccessStatement = {
       Action: [
@@ -81,8 +87,8 @@ describe('build', () => {
     };
     let contentBucket: s3.IBucket;
     let content: gamelift.Content;
-    let build: gamelift.Build;
-    let defaultProps: gamelift.BuildProps;
+    let script: gamelift.Script;
+    let defaultProps: gamelift.ScriptProps;
 
     beforeEach(() => {
       contentBucket = s3.Bucket.fromBucketName(stack, 'ContentBucket', contentBucketName);
@@ -93,11 +99,11 @@ describe('build', () => {
     });
 
     describe('.fromAsset()', () => {
-      test('should create a new build from asset', () => {
-        build = gamelift.Build.fromAsset(stack, 'ImportedBuild', localAsset);
+      test('should create a new script from asset', () => {
+        script = gamelift.Script.fromAsset(stack, 'ImportedScript', localAsset);
 
         expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
-        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
+        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Script', {
           StorageLocation: {
             Bucket: {
               Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3Bucket72AA8348',
@@ -109,10 +115,10 @@ describe('build', () => {
     });
 
     describe('.fromBucket()', () => {
-      test('should create a new build from bucket', () => {
-        build = gamelift.Build.fromBucket(stack, 'ImportedBuild', contentBucket, 'content');
+      test('should create a new script from bucket', () => {
+        script = gamelift.Script.fromBucket(stack, 'ImportedScript', contentBucket, 'content');
 
-        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
+        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Script', {
           StorageLocation: {
             Bucket: 'bucketname',
             Key: 'content',
@@ -124,10 +130,10 @@ describe('build', () => {
 
     describe('with necessary props only', () => {
       beforeEach(() => {
-        build = new gamelift.Build(stack, 'Build', defaultProps);
+        script = new gamelift.Script(stack, 'Script', defaultProps);
       });
 
-      test('should create a role and use it with the build', () => {
+      test('should create a role and use it with the script', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
             Statement: [
@@ -152,19 +158,19 @@ describe('build', () => {
           },
           Roles: [
             {
-              Ref: 'BuildServiceRole1F57E904',
+              Ref: 'ScriptServiceRole23DD8079',
             },
           ],
         });
 
-        // check the build using the role
-        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
+        // check the script using the role
+        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Script', {
           StorageLocation: {
             Bucket: 'bucketname',
             Key: 'content',
             RoleArn: {
               'Fn::GetAtt': [
-                'BuildServiceRole1F57E904',
+                'ScriptServiceRole23DD8079',
                 'Arn',
               ],
             },
@@ -172,61 +178,65 @@ describe('build', () => {
         });
       });
 
-      test('should return correct buildId from CloudFormation', () => {
-        expect(stack.resolve(build.buildId)).toEqual({ Ref: 'Build45A36621' });
+      test('should return correct script attributes from CloudFormation', () => {
+        expect(stack.resolve(script.scriptId)).toEqual({ Ref: 'Script09016516' });
+        expect(stack.resolve(script.scriptArn)).toEqual({
+          'Fn::GetAtt': [
+            'Script09016516',
+            'Arn',
+          ],
+        });
       });
 
       test('with a custom role should use it and set it in CloudFormation', () => {
         const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
-        build = new gamelift.Build(stack, 'BuildWithRole', {
+        script = new gamelift.Script(stack, 'ScriptWithRole', {
           ...defaultProps,
           role,
         });
 
-        expect(build.grantPrincipal).toEqual(role);
-        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
+        expect(script.grantPrincipal).toEqual(role);
+        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Script', {
           StorageLocation: {
             RoleArn: role.roleArn,
           },
         });
       });
 
-      test('with a custom buildName should set it in CloudFormation', () => {
-        build = new gamelift.Build(stack, 'BuildWithName', {
+      test('with a custom scriptName should set it in CloudFormation', () => {
+        script = new gamelift.Script(stack, 'ScriptWithName', {
           ...defaultProps,
-          buildName: buildName,
+          scriptName: scriptName,
         });
 
-        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
-          Name: buildName,
+        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Script', {
+          Name: scriptName,
         });
       });
 
       test('with all optional attributes should set it in CloudFormation', () => {
-        build = new gamelift.Build(stack, 'BuildWithName', {
+        script = new gamelift.Script(stack, 'ScriptWithName', {
           ...defaultProps,
-          buildName: buildName,
-          operatingSystem: gamelift.OperatingSystem.AMAZON_LINUX_2,
-          buildVersion: '1.0',
+          scriptName: scriptName,
+          scriptVersion: '1.0',
         });
 
-        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
-          Name: buildName,
-          OperatingSystem: gamelift.OperatingSystem.AMAZON_LINUX_2,
+        Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Script', {
+          Name: scriptName,
           Version: '1.0',
         });
       });
 
-      test('with an incorrect buildName (>1024)', () => {
-        let incorrectBuildName = '';
+      test('with an incorrect scriptName (>1024)', () => {
+        let incorrectScriptName = '';
         for (let i = 0; i < 1025; i++) {
-          incorrectBuildName += 'A';
+          incorrectScriptName += 'A';
         }
 
-        expect(() => new gamelift.Build(stack, 'BuildWithWrongName', {
+        expect(() => new gamelift.Script(stack, 'ScriptWithWrongName', {
           content,
-          buildName: incorrectBuildName,
-        })).toThrow(/Build name can not be longer than 1024 characters but has 1025 characters./);
+          scriptName: incorrectScriptName,
+        })).toThrow(/Script name can not be longer than 1024 characters but has 1025 characters./);
       });
     });
   });
