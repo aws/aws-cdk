@@ -306,25 +306,19 @@ describe('bucket', () => {
     });
   });
 
-  test('bucketKeyEnabled can be enabled', () => {
+  test.each([s3.BucketEncryption.KMS, s3.BucketEncryption.KMS_MANAGED])('bucketKeyEnabled can be enabled with %p encryption', (encryption) => {
     const stack = new cdk.Stack();
 
-    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.KMS });
+    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption });
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       'BucketEncryption': {
         'ServerSideEncryptionConfiguration': [
           {
             'BucketKeyEnabled': true,
-            'ServerSideEncryptionByDefault': {
-              'KMSMasterKeyID': {
-                'Fn::GetAtt': [
-                  'MyBucketKeyC17130CF',
-                  'Arn',
-                ],
-              },
+            'ServerSideEncryptionByDefault': Match.objectLike({
               'SSEAlgorithm': 'aws:kms',
-            },
+            }),
           },
         ],
       },
@@ -336,10 +330,10 @@ describe('bucket', () => {
 
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3MANAGED)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3_MANAGED)");
     expect(() => {
       new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: NONE)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: UNENCRYPTED)");
 
   });
 
