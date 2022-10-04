@@ -246,7 +246,7 @@ export class PullRequestLinter {
    * @returns Existing comment, if present
    */
   private async findExistingComment(): Promise<Comment | undefined> {
-    const comments = await this.client.issues.listComments();
+    const comments = await this.client.issues.listComments(this.issueParams);
     return comments.data.find((comment) => comment.user?.login === 'aws-cdk-automation' && comment.body?.startsWith('The pull request linter fails with the following errors:')) as Comment;
   }
 
