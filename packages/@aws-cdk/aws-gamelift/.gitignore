@@ -21,3 +21,6 @@ junit.xml
 !**/*.integ.snapshot/**/asset.*/*.d.ts
 
 !**/*.integ.snapshot/**/asset.*/**
+
+#include game build js file
+!test/my-game-build/*.js  
