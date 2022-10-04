@@ -75,11 +75,11 @@ You can supply a local template directory to `cdk init`. Suppose you have a loca
 `path/to/local/templates`, that has a single template, `my-local-template`:
 
 ```console
-$ cdk init --list --from path/to/local/templates
+$ cdk init --list --from=path/to/local/templates
 Avaliable templates:
 * my-local-template: Local Template for CDK Application
 
-$ cdk init my-local-template --from path/to/local/templates --language=typescript
+$ cdk init my-local-template --from=path/to/local/templates --language=typescript
 ```
 
 ### `cdk list`

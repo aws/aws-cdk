@@ -246,7 +246,7 @@ async function parseCommandLineArguments() {
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' })
-      .option('from', { type: 'string', desc: 'Specify template from local directory' })
+      .option('from', { type: 'string', desc: 'Specify local template directory' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
@@ -582,7 +582,7 @@ async function initCommandLine() {
 
       case 'init':
         const language = configuration.settings.get(['language']);
-        const templatesDir = configuration.settings.get(['from']);
+        const templatesDir = args.from;
         if (args.list) {
           return printAvailableTemplates(language, templatesDir);
         } else {
