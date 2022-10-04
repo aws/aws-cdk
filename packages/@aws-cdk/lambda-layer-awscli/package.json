@@ -125,5 +125,10 @@
   "publishConfig": {
     "tag": "latest"
   },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/lambda-layer-awscli.AwsCliLayerProps"
+    ]
+  },
   "private": true
 }

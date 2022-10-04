@@ -13,7 +13,7 @@ describe('create a layer version', () => {
     const stack = new Stack();
 
     // WHEN
-    new AwsCliLayer(stack, 'MyLayer');
+    new AwsCliLayer(stack, 'MyLayer', { quiet: false });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
@@ -29,7 +29,7 @@ describe('create a layer version', () => {
     const stack = new Stack();
 
     // WHEN
-    new AwsCliLayer(stack, 'MyLayer');
+    new AwsCliLayer(stack, 'MyLayer', { quiet: false });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
@@ -46,7 +46,7 @@ describe('create a layer version', () => {
     const stack = new Stack();
 
     // WHEN
-    new AwsCliLayer(stack, 'MyLayer');
+    new AwsCliLayer(stack, 'MyLayer', { quiet: false });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
