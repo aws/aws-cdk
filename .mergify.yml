@@ -95,6 +95,7 @@ pull_request_rules:
       - base=main
       - -merged
       - -closed
+      - changes-requested-reviews-by!=aws-cdk-automation
   - name: if fails conventional commits
     actions:
       comment:
