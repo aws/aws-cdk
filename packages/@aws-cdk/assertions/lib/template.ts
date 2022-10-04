@@ -52,7 +52,7 @@ export class Template {
 
   private readonly template: TemplateType;
 
-  private constructor(template: { [key: string]: any }, templateParsingOptions?: TemplateParsingOptions) {
+  private constructor(template: { [key: string]: any }, templateParsingOptions: TemplateParsingOptions = {}) {
     this.template = template as TemplateType;
     if (!templateParsingOptions?.skipCyclicalDependenciesCheck ?? true) {
       checkTemplateForCyclicDependencies(this.template);
@@ -259,9 +259,10 @@ export interface TemplateParsingOptions {
   /**
    * If set to true, will skip checking for cyclical / circular dependencies. Should be set to false other than for
    * templates that are valid despite containing cycles, such as unprocessed transform stacks.
-   * default: false if TemplateParsingOptions is not provided.
+   *
+   * @default false
    */
-  readonly skipCyclicalDependenciesCheck: boolean
+  readonly skipCyclicalDependenciesCheck?: boolean;
 }
 
 function toTemplate(stack: Stack): any {
