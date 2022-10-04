@@ -1,5 +1,5 @@
 import { Vpc } from '@aws-cdk/aws-ec2';
-import {Cluster, ContainerImage, DeploymentCircuitBreaker} from '@aws-cdk/aws-ecs';
+import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
 import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as route53 from '@aws-cdk/aws-route53';
 import { App, Stack } from '@aws-cdk/core';
@@ -27,7 +27,7 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
     zoneName: 'example.com.',
   }),
   redirectHTTP: true,
-  circuitBreaker: { rollback: true }
+  circuitBreaker: { rollback: true },
 });
 
 new integ.IntegTest(app, 'albFargateServiceTest', {
