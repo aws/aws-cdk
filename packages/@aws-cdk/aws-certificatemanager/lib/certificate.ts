@@ -93,13 +93,12 @@ export interface CertificateProps {
    */
   readonly transparencyLoggingEnabled?: boolean;
 
-
   /**
    * The Certifcate name.
    *
    * Since the Certifcate resource doesn't support providing a physical name, the value provided here will be recorded in the `Name` tag
    *
-   * @default this.node.path
+   * @default the full, absolute path of this construct
    */
   readonly certificateName?: string
 }
