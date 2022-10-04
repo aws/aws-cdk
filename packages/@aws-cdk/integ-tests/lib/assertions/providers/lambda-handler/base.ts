@@ -27,22 +27,13 @@ export abstract class CustomResourceHandler<Request extends object, Response ext
     this.physicalResourceId = extractPhysicalResourceId(event);
   }
 
-  public async handle(): Promise<void> {
+  public async handle(): Promise<Response | undefined> {
     try {
-      console.log(`Event: ${JSON.stringify({ ...this.event, ResponseURL: '...' })}`);
       const response = await this.processEvent(this.event.ResourceProperties as unknown as Request);
-      console.log(`Event output : ${JSON.stringify(response)}`);
-      await this.respond({
-        status: 'SUCCESS',
-        reason: 'OK',
-        data: response,
-      });
+      return response;
     } catch (e) {
       console.log(e);
-      await this.respond({
-        status: 'FAILED',
-        reason: e.message ?? 'Internal Error',
-      });
+      throw e;
     } finally {
       clearTimeout(this.timeout);
     }
@@ -50,7 +41,7 @@ export abstract class CustomResourceHandler<Request extends object, Response ext
 
   protected abstract processEvent(request: Request): Promise<Response | undefined>;
 
-  private respond(response: HandlerResponse) {
+  public respond(response: HandlerResponse) {
     if (this.timedOut) {
       return;
     }

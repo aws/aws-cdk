@@ -28,6 +28,10 @@ export class MetricFilter extends Resource {
     this.metricName = props.metricName;
     this.metricNamespace = props.metricNamespace;
 
+    if (Object.keys(props.dimensions ?? {}).length > 3) {
+      throw new Error('MetricFilter only supports a maximum of 3 Dimensions');
+    }
+
     // It looks odd to map this object to a singleton list, but that's how
     // we're supposed to do it according to the docs.
     //
@@ -44,6 +48,7 @@ export class MetricFilter extends Resource {
         metricName: props.metricName,
         metricValue: props.metricValue ?? '1',
         defaultValue: props.defaultValue,
+        dimensions: props.dimensions ? Object.entries(props.dimensions).map(([key, value]) => ({ key, value })) : undefined,
       }],
     });
   }

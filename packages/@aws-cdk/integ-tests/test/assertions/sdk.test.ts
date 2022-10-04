@@ -169,14 +169,8 @@ describe('AwsApiCall', () => {
 
       // THEN
       const template = Template.fromStack(deplossert.scope);
-      template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
+      template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
         expected: JSON.stringify({ $Exact: { foo: 'bar' } }),
-        actual: {
-          'Fn::GetAtt': [
-            'AwsApiCallMyServiceMyApi',
-            'apiCallResponse',
-          ],
-        },
       });
     });
 
@@ -191,14 +185,8 @@ describe('AwsApiCall', () => {
 
       // THEN
       const template = Template.fromStack(deplossert.scope);
-      template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
+      template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
         expected: JSON.stringify({ $ObjectLike: { foo: 'bar' } }),
-        actual: {
-          'Fn::GetAtt': [
-            'AwsApiCallMyServiceMyApi',
-            'apiCallResponse',
-          ],
-        },
       });
     });
 
@@ -213,14 +201,8 @@ describe('AwsApiCall', () => {
 
       // THEN
       const template = Template.fromStack(deplossert.scope);
-      template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
+      template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
         expected: JSON.stringify({ $Exact: 'bar' }),
-        actual: {
-          'Fn::GetAtt': [
-            'AwsApiCallMyServiceMyApi',
-            'apiCallResponse',
-          ],
-        },
       });
     });
   });
