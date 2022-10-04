@@ -470,7 +470,7 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
   executionArn: start.getAttString('executionArn'),
 }).expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
-})).wait({
+})).waitForAssertions({
   totalTimeout: Duration.minutes(5),
   interval: Duration.seconds(15),
   backoffRate: 3,

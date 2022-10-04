@@ -112,7 +112,7 @@ export class AwsApiCall extends ApiCallBase {
     return this;
   }
 
-  public wait(options?: WaiterStateMachineOptions): IApiCall {
+  public waitForAssertions(options?: WaiterStateMachineOptions): IApiCall {
     const waiter = new WaiterStateMachine(this, 'WaitFor', {
       ...options,
     });

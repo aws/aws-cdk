@@ -110,9 +110,9 @@ export interface IApiCall extends IConstruct {
    * declare const executionArn: string;
    * integ.assertions.awsApiCall('StepFunctions', 'describeExecution', {
    *    executionArn,
-   * }).wait();
+   * }).waitForAssertions();
    */
-  wait(options?: WaiterStateMachineOptions): IApiCall;
+  waitForAssertions(options?: WaiterStateMachineOptions): IApiCall;
 }
 
 /**
@@ -153,5 +153,5 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
     return next;
   }
 
-  public abstract wait(options?: WaiterStateMachineOptions): IApiCall
+  public abstract waitForAssertions(options?: WaiterStateMachineOptions): IApiCall
 }

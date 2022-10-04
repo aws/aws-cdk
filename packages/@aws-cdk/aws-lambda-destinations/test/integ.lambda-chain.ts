@@ -77,6 +77,6 @@ integ.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents', {
       message: Match.stringLikeRegexp('success'),
     }),
   ]),
-})).wait();
+})).waitForAssertions();
 
 app.synth();

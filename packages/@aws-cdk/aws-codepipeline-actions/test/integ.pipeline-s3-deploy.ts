@@ -90,7 +90,7 @@ integ.assertions.awsApiCall('S3', 'putObject', {
         }),
       }),
     ]),
-  })).wait({
+  })).waitForAssertions({
     totalTimeout: Duration.minutes(5),
   }).next(
     integ.assertions.awsApiCall('S3', 'getObject', {

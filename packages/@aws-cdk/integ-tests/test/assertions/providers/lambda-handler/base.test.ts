@@ -31,7 +31,8 @@ describe('CustomResourceHandler', () => {
     mockStartExecution = sinon.fake.resolves({});
     AWS.mock('S3', 'listBuckets', mockMyApi);
     AWS.mock('StepFunctions', 'startExecution', mockStartExecution);
-    // jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+    jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+    jest.spyOn(console, 'info').mockImplementation(() => { return true; });
   });
 
   afterEach(() => {

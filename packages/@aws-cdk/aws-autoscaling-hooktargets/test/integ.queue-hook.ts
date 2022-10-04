@@ -60,7 +60,7 @@ const message = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
 message.assertAtPath(
   'Messages.0.Body.LifecycleTransition',
   ExpectedResult.stringLikeRegexp('autoscaling:EC2_INSTANCE_LAUNCHING'),
-).wait();
+).waitForAssertions();
 
 const token = message.getAttString('Messages.0.Body.LifecycleActionToken');
 

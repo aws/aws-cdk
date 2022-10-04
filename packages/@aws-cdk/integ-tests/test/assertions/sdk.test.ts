@@ -106,7 +106,7 @@ describe('AwsApiCall', () => {
       param2: 2,
     }).expect(ExpectedResult.objectLike({
       Key: 'Value',
-    })).wait();
+    })).waitForAssertions();
     apiCall.provider.addToRolePolicy({
       Effect: 'Allow',
       Action: ['s3:GetObject'],
