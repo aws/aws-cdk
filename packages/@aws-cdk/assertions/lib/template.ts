@@ -259,7 +259,8 @@ export interface TemplateParsingOptions {
   /**
    * If set to true, will skip checking for cyclical / circular dependencies. Should be set to false other than for
    * templates that are valid despite containing cycles, such as unprocessed transform stacks.
-   * default: false if TemplateParsingOptions is not provided.
+   *
+   * @default false
    */
   readonly skipCyclicalDependenciesCheck?: boolean;
 }
