@@ -396,6 +396,7 @@
   },
   "MyQueueawscdkcodebuildeventsMyTopic550011DCF72DE3ED": {
    "Type": "AWS::SNS::Subscription",
+   "DependsOn": "MyQueuePolicy6BBEDDAC",
    "Properties": {
     "Protocol": "sqs",
     "TopicArn": {
