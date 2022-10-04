@@ -111,9 +111,8 @@ export interface BuildProps {
 }
 
 /**
- * Create a GameLift build ressource
- * The AWS::GameLift::Build resource creates a game server build that is installed and run on instances in an Amazon GameLift fleet.
- * This resource points to an Amazon S3 location that contains a zip file with all of the components of the game server build.
+ * A GameLift build, that is installed and runs on instances in an Amazon GameLift fleet. It consists of
+ * a zip file with all of the components of the game server build.
  *
  * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-build-cli-uploading.html
  *
