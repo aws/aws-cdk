@@ -1,5 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import { Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Alarm, AlarmRule, AlarmState, CompositeAlarm, Metric } from '../lib';
 
 describe('CompositeAlarm', () => {
@@ -107,6 +107,92 @@ describe('CompositeAlarm', () => {
     });
 
 
+  });
+
+  test('test action suppressor translates to a correct CFN properties', () => {
+    const stack = new Stack();
+
+    const testMetric = new Metric({
+      namespace: 'CDK/Test',
+      metricName: 'Metric',
+    });
+
+    const actionsSuppressor = new Alarm(stack, 'Alarm1', {
+      metric: testMetric,
+      threshold: 100,
+      evaluationPeriods: 3,
+    });
+
+
+    const alarmRule = AlarmRule.fromBoolean(true);
+
+    new CompositeAlarm(stack, 'CompositeAlarm', {
+      alarmRule,
+      actionsSuppressor,
+      actionsSuppressorExtensionPeriod: Duration.minutes(2),
+      actionsSuppressorWaitPeriod: Duration.minutes(5),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
+      AlarmName: 'CompositeAlarm',
+      ActionsSuppressor: {
+        'Fn::GetAtt': [
+          'Alarm1F9009D71',
+          'Arn',
+        ],
+      },
+      ActionsSuppressorExtensionPeriod: 120,
+      ActionsSuppressorWaitPeriod: 300,
+    });
+  });
+
+  test('test wait and extension periods set without action suppressor', () => {
+    const stack = new Stack();
+
+    const alarmRule = AlarmRule.fromBoolean(true);
+
+    var createAlarm = () => new CompositeAlarm(stack, 'CompositeAlarm', {
+      alarmRule,
+      actionsSuppressorExtensionPeriod: Duration.minutes(2),
+      actionsSuppressorWaitPeriod: Duration.minutes(5),
+    });
+
+    expect(createAlarm).toThrow('ActionsSuppressor Extension/Wait Periods require an ActionsSuppressor to be set.');
+  });
+
+  test('test action suppressor has correct defaults set', () => {
+    const stack = new Stack();
+
+    const testMetric = new Metric({
+      namespace: 'CDK/Test',
+      metricName: 'Metric',
+    });
+
+    const actionsSuppressor = new Alarm(stack, 'Alarm1', {
+      metric: testMetric,
+      threshold: 100,
+      evaluationPeriods: 3,
+    });
+
+
+    const alarmRule = AlarmRule.fromBoolean(true);
+
+    new CompositeAlarm(stack, 'CompositeAlarm', {
+      alarmRule,
+      actionsSuppressor,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
+      AlarmName: 'CompositeAlarm',
+      ActionsSuppressor: {
+        'Fn::GetAtt': [
+          'Alarm1F9009D71',
+          'Arn',
+        ],
+      },
+      ActionsSuppressorExtensionPeriod: 60,
+      ActionsSuppressorWaitPeriod: 60,
+    });
   });
 
 });

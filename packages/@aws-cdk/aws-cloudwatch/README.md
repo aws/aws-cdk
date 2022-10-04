@@ -288,6 +288,30 @@ new cloudwatch.CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
 });
 ```
 
+#### Actions Suppressor
+
+If you want to disable actions of a Composite Alarm based on a certain condition, you can use [Actions Suppression](https://www.amazonaws.cn/en/new/2022/amazon-cloudwatch-supports-composite-alarm-actions-suppression/).
+
+```ts
+declare const childAlarm1: cloudwatch.Alarm;
+declare const childAlarm2: cloudwatch.Alarm;
+declare const onAlarmAction: cloudwatch.IAlarmAction;
+declare const onOkAction: cloudwatch.IAlarmAction;
+declare const actionsSuppressor: cloudwatch.Alarm;
+
+const alarmRule = cloudwatch.AlarmRule.anyOf(alarm1, alarm2);
+
+const myCompositeAlarm = new cloudwatch.CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
+  alarmRule,
+  actionsSuppressor,
+});
+myCompositeAlarm.addAlarmActions(onAlarmAction);
+myComposireAlarm.addOkAction(onOkAction);
+```
+
+In the provided example, if `actionsSuppressor` is in `ALARM` state, `onAlarmAction` won't be triggered even if `myCompositeAlarm` goes into `ALARM` state.
+Similar, if `actionsSuppressor` is in `ALARM` state and `myCompositeAlarm` goes from `ALARM` into `OK` state, `onOkAction` won't be triggered.
+
 ### A note on units
 
 In CloudWatch, Metrics datums are emitted with units, such as `seconds` or
