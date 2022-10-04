@@ -62,7 +62,7 @@ puts players into games.
 ### Uploading builds and scripts to GameLift
 
 Before deploying your GameLift-enabled multiplayer game servers for hosting with the GameLift service, you need to upload
-your game server files. This section provide guidance on preparing and uploading custom game server build
+your game server files. This section provides guidance on preparing and uploading custom game server build
 files or Realtime Servers server script files. When you upload files, you create a GameLift build or script resource, which
 you then deploy on fleets of hosting resources.
 
@@ -72,7 +72,7 @@ Before uploading your configured game server to GameLift for hosting, package th
 This directory must include all components required to run your game servers and host game sessions, including the following:
 
 * Game server binaries – The binary files required to run the game server. A build can include binaries for multiple game
-servers built to run on the same platform. For a list of supported platforms, see Download Amazon GameLift SDKs.
+servers built to run on the same platform. For a list of supported platforms, see [Download Amazon GameLift SDKs](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-supported.html).
 
 * Dependencies – Any dependent files that your game server executables require to run. Examples include assets, configuration
 files, and dependent libraries.
