@@ -46,7 +46,7 @@ export class Packaging {
   public static readonly POETRY = new Packaging({
     dependenciesFile: DependenciesFile.POETRY,
     // Export dependencies with credentials avaiable in the bundling image.
-    exportCommand: `poetry export --with-credentials --format ${DependenciesFile.PIP} --output ${DependenciesFile.PIP}`,
+    exportCommand: `poetry export --without-hashes --with-credentials --format ${DependenciesFile.PIP} --output ${DependenciesFile.PIP}`,
   });
 
   /**
