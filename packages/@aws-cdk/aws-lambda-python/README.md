@@ -150,7 +150,7 @@ You can also pass additional options to configure Docker for situations where th
  ```ts
 const entry = '/path/to/function';
 
-new lambda.PythonFunction(this, 'function', {
+new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: { volumesFrom: process.env.HOSTNAME },
