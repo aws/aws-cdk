@@ -420,12 +420,6 @@ test('Multiple CfnEvaluationException', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
     Resources: {
-      SomethingElse: {
-        Type: 'AWS::CloudFormation::SomethingElse',
-        Properties: {
-          Prop: 'value',
-        },
-      },
       Func1: {
         Type: 'AWS::Lambda::Function',
         Properties: {
@@ -434,8 +428,7 @@ test('Multiple CfnEvaluationException', async () => {
             S3Key: 'current-key',
           },
           Environment: {
-            literal: 'old',
-            token: { Ref: 'SomethingElse' },
+            key: 'old',
           },
           FunctionName: 'my-function',
         },
@@ -451,8 +444,7 @@ test('Multiple CfnEvaluationException', async () => {
             S3Key: 'current-key',
           },
           Environment: {
-            literal: 'old',
-            token: { Ref: 'SomethingElse' },
+            key: 'old',
           },
           FunctionName: 'my-function',
         },
@@ -465,12 +457,6 @@ test('Multiple CfnEvaluationException', async () => {
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
-        SomethingElse: {
-          Type: 'AWS::CloudFormation::SomethingElse',
-          Properties: {
-            Prop: 'value',
-          },
-        },
         Func1: {
           Type: 'AWS::Lambda::Function',
           Properties: {
@@ -479,8 +465,7 @@ test('Multiple CfnEvaluationException', async () => {
               S3Key: 'current-key',
             },
             Environment: {
-              literal: 'new',
-              token: { Ref: 'SomethingElse' },
+              key: { Ref: 'ErrorResource' },
             },
             FunctionName: 'my-function',
           },
@@ -496,8 +481,7 @@ test('Multiple CfnEvaluationException', async () => {
               S3Key: 'current-key',
             },
             Environment: {
-              literal: 'new',
-              token: { Ref: 'SomethingElse' },
+              key: { Ref: 'ErrorResource' },
             },
             FunctionName: 'my-function',
           },
