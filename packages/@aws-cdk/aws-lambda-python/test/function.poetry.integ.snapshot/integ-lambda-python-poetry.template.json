@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9e6b794c2a232add13573f23a515a9a3d05ef1dba07083c34fe424063bc0d5d3.zip"
+     "S3Key": "21e30b22c7168c8dec59d20a9f06d44d9e17a2c36d03709a0af9a2328400f306.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -51,6 +51,59 @@
    },
    "DependsOn": [
     "myhandlerinlineServiceRole10C681F6"
+   ]
+  },
+  "myhandlerinlinenohashesServiceRole792CBFEE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerinlinenohashes9F4AC298": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "5d8aec29e1a55133e2497923f2cc45b503fbf1db121bdeded08e5e855fef7df2.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerinlinenohashesServiceRole792CBFEE",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "myhandlerinlinenohashesServiceRole792CBFEE"
    ]
   },
   "myhandlerpython38ServiceRole2049AFF7": {
@@ -91,7 +144,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f92929a7c4f10c8811fc7b81ba33d765b587d0adf0bf7c9ae3c463eac0c1a92d.zip"
+     "S3Key": "26306a158d3fd4f738a430c4db1add105eb5b89fe9434560566d5476f16a93a3.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -104,6 +157,59 @@
    },
    "DependsOn": [
     "myhandlerpython38ServiceRole2049AFF7"
+   ]
+  },
+  "myhandlerpython38nohashesServiceRole95183D41": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerpython38nohashesAC448740": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "5451c865a017738b75f52d105dbb15407b9e7441f4ebcf636e3770ef6551578e.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerpython38nohashesServiceRole95183D41",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "myhandlerpython38nohashesServiceRole95183D41"
    ]
   },
   "myhandlerpython37ServiceRole45CBD18D": {
@@ -144,7 +250,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e6b44d16c900a2b58812725066bbf393e311e43c9f2255854afafcff1aa624ec.zip"
+     "S3Key": "a4cab839dbe6bd7204b2b731036c4c4538acc47d0b6fb8576fbebe97f8f38d98.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -158,6 +264,59 @@
    "DependsOn": [
     "myhandlerpython37ServiceRole45CBD18D"
    ]
+  },
+  "myhandlerpython37nohashesServiceRoleCB0A268B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerpython37nohashes751F0455": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "65c6cb219fd3f30358284256483c54826d81439db866744fee59706d158b3090.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerpython37nohashesServiceRoleCB0A268B",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.7"
+   },
+   "DependsOn": [
+    "myhandlerpython37nohashesServiceRoleCB0A268B"
+   ]
   }
  },
  "Outputs": {
@@ -169,6 +328,14 @@
     "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinline53D120C7B0898676"
    }
   },
+  "ExportsOutputRefmyhandlerinlinenohashes9F4AC298FEB39785": {
+   "Value": {
+    "Ref": "myhandlerinlinenohashes9F4AC298"
+   },
+   "Export": {
+    "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinenohashes9F4AC298FEB39785"
+   }
+  },
   "ExportsOutputRefmyhandlerpython384D62BBB58AA8B940": {
    "Value": {
     "Ref": "myhandlerpython384D62BBB5"
@@ -177,12 +344,28 @@
     "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython384D62BBB58AA8B940"
    }
   },
+  "ExportsOutputRefmyhandlerpython38nohashesAC4487400C75D056": {
+   "Value": {
+    "Ref": "myhandlerpython38nohashesAC448740"
+   },
+   "Export": {
+    "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython38nohashesAC4487400C75D056"
+   }
+  },
   "ExportsOutputRefmyhandlerpython37C34039A7BB71D94D": {
    "Value": {
     "Ref": "myhandlerpython37C34039A7"
    },
    "Export": {
     "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37C34039A7BB71D94D"
+   }
+  },
+  "ExportsOutputRefmyhandlerpython37nohashes751F0455248FFA78": {
+   "Value": {
+    "Ref": "myhandlerpython37nohashes751F0455"
+   },
+   "Export": {
+    "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37nohashes751F0455248FFA78"
    }
   }
  },
