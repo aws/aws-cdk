@@ -6,6 +6,8 @@ import { ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } fro
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
+import { CfnCondition } from '@aws-cdk/core';
+import { Fn } from '@aws-cdk/core';
 
 /**
  * Represents an ECR repository.
@@ -181,6 +183,18 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * @param tagOrDigest Optional image tag or digest (digests must start with `sha256:`)
    */
   public repositoryUriForTagOrDigest(tagOrDigest?: string): string {
+    if(Token.isUnresolved(tagOrDigest)) {
+      const condition = new CfnCondition(this, `tagOrDigest`, {
+        expression: Fn.conditionAnd(
+          Fn.conditionNot(Fn.conditionEquals(tagOrDigest, '')),
+          Fn.conditionEquals(Fn.select(0, Fn.split('sha256:', tagOrDigest!)), '')
+        ),
+      });
+      return Fn.conditionIf(
+        condition.logicalId,
+        this.repositoryUriForDigest(tagOrDigest),
+        this.repositoryUriForTag(tagOrDigest)).toString();
+    }
     if (tagOrDigest?.startsWith('sha256:')) {
       return this.repositoryUriForDigest(tagOrDigest);
     } else {
