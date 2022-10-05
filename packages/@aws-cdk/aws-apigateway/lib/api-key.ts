@@ -4,8 +4,8 @@ import { Construct } from 'constructs';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { IRestApi } from './restapi';
-import { QuotaSettings, ThrottleSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
 import { IStage } from './stage';
+import { QuotaSettings, ThrottleSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
 
 /**
  * API keys are alphanumeric string values that you distribute to
@@ -212,8 +212,8 @@ export class ApiKey extends ApiKeyBase {
         return { restApiId, stageName };
       })
       : stages ? stages.map((stage => {
-          return { restApiId: stage.restApi.restApiId, stageName: stage.stageName };
-        })) : undefined
+        return { restApiId: stage.restApi.restApiId, stageName: stage.stageName };
+      })) : undefined;
   }
 }
 
