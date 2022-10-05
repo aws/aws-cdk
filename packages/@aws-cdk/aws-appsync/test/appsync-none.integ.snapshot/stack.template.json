@@ -16,7 +16,7 @@
       "ApiId"
      ]
     },
-    "Definition": ""
+    "Definition": "type test {\n  version: String!\n}\ntype Query {\n  getTests: [test]!\n}\ntype Mutation {\n  addTest(version: String!): test\n}\n"
    }
   },
   "NoneAPIDefaultApiKey67B964CA": {
