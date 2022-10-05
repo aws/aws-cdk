@@ -7,7 +7,13 @@ import { Content } from './content';
 import { CfnScript } from './gamelift.generated';
 
 /**
- * Represents a GameLift realtime server script.
+  * Your configuration and custom game logic for use with Realtime Servers.
+ * Realtime Servers are provided by GameLift to use instead of a custom-built game server.
+ * You configure Realtime Servers for your game clients by creating a script using JavaScript,
+ * and add custom game logic as appropriate to host game sessions for your players.
+ * You upload the Realtime script to the GameLift service in the Regions where you plan to set up fleets.
+ *
+ * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-build-intro.html
  */
 export interface IScript extends cdk.IResource, iam.IGrantable {
 
