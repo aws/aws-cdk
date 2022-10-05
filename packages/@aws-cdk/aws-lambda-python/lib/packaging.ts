@@ -45,7 +45,17 @@ export class Packaging {
    */
   public static readonly POETRY = new Packaging({
     dependenciesFile: DependenciesFile.POETRY,
-    // Export dependencies with credentials avaiable in the bundling image.
+    // Export dependencies with credentials available in the bundling image.
+    exportCommand: `poetry export --with-credentials --format ${DependenciesFile.PIP} --output ${DependenciesFile.PIP}`,
+  });
+
+  /**
+   * Packaging with `poetry`.
+   */
+  public static readonly POETRY_EXCLUDE_HASHES = new Packaging({
+    dependenciesFile: DependenciesFile.POETRY,
+    // Export dependencies with credentials available in the bundling image, without dependency hashes
+    // This prevents pip failures when not all dependencies come with a hash
     exportCommand: `poetry export --without-hashes --with-credentials --format ${DependenciesFile.PIP} --output ${DependenciesFile.PIP}`,
   });
 
@@ -54,11 +64,11 @@ export class Packaging {
    */
   public static readonly NONE = new Packaging({ dependenciesFile: DependenciesFile.NONE });
 
-  public static fromEntry(entry: string): Packaging {
+  public static fromEntry(entry: string, poetryExcludeHashes?: boolean): Packaging {
     if (fs.existsSync(path.join(entry, DependenciesFile.PIPENV))) {
       return Packaging.PIPENV;
     } if (fs.existsSync(path.join(entry, DependenciesFile.POETRY))) {
-      return Packaging.POETRY;
+      return poetryExcludeHashes ? Packaging.POETRY_EXCLUDE_HASHES : Packaging.POETRY;
     } else if (fs.existsSync(path.join(entry, DependenciesFile.PIP))) {
       return Packaging.PIP;
     } else {
