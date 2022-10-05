@@ -440,7 +440,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 Auto Scaling uses [termination policies](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html)
 to determine which instances it terminates first during scale-in events. You
 can specify one or more termination policies with the `terminationPolicies`
-property:
+property. Any number of these can be LAMBDA\_FUNCTION. For each of those, you must supply an ARN in `terminationPolicyLambdaFunctionArns`:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -457,6 +457,10 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
   terminationPolicies: [
     autoscaling.TerminationPolicy.OLDEST_INSTANCE,
     autoscaling.TerminationPolicy.DEFAULT,
+    autoscaling.TerminationPolicy.LAMBDA_FUNCTION,
+  ],
+  terminationPolicyLambdaFunctionArns: [
+    'arn:aws:...',
   ],
 });
 ```
