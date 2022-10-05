@@ -5,6 +5,11 @@ export const OUTDIR_ENV = 'CDK_OUTDIR';
 export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 
 /**
+ * The name of the temporary file where the context is stored.
+ */
+export const CONTEXT_OVERFLOW_LOCATION_ENV = 'CONTEXT_OVERFLOW_LOCATION_ENV';
+
+/**
  * Environment variable set by the CDK CLI with the default AWS account ID.
  */
 export const DEFAULT_ACCOUNT_ENV = 'CDK_DEFAULT_ACCOUNT';

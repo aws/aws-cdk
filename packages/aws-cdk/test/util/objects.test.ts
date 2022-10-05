@@ -1,4 +1,5 @@
-import { deepClone, deepGet, deepMerge, deepSet } from '../../lib/util';
+import * as fc from 'fast-check';
+import { deepClone, deepGet, deepMerge, deepSet, splitBySize } from '../../lib/util';
 
 test('deepSet can set deeply', () => {
   const obj = {};
@@ -43,4 +44,21 @@ test('deepMerge does not overwrite if rightmost is "undefined"', () => {
   deepMerge(original, { a: undefined });
 
   expect(original).toEqual({ a: 1 });
+});
+
+describe('splitBySize', () => {
+  test('objects are split at the right place', () => {
+    fc.assert(
+      fc.property(fc.object(), fc.integer({ min: 2 }), (data, size) => {
+        const [first, second] = splitBySize(data, size);
+
+        expect(Buffer.from(JSON.stringify(first)).length).toBeLessThanOrEqual(size);
+        expect(merge(first, second)).toEqual(data);
+      }),
+    );
+
+    function merge(fst: any, snd: any) {
+      return { ...(fst ?? {}), ...(snd ?? {}) };
+    }
+  });
 });
