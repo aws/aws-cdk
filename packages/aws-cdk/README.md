@@ -336,19 +336,19 @@ The `progress` key can also be specified as a user setting (`~/.cdk.json`)
 
 #### CloudFormation Change Sets vs direct stack updates
 
-By default CDK will create a CloudFormation change with the changes that will
-be deployed, and then executes it. This behavior can be controlled with the
+By default, CDK will create a CloudFormation change with the changes that will
+be deployed and then executes it. This behavior can be controlled with the
 `--method` parameter:
 
 - `--method=change-set` (default): create and execute the change set.
-- `--method=prepare-change-set`: create teh change set but don't execute it.
+- `--method=prepare-change-set`: create the change set but don't execute it.
   This is useful if you have external tools that will inspect the change set or
   you have an approval process for change sets.
 - `--method=direct`: do not create a change set but apply the change immediately.
   This is typically a bit faster than creating a change set, but it loses
   the progress information.
 
-To have deploy faster without using change sets:
+To deploy faster without using change sets:
 
 ```console
 $ cdk deploy --method=direct
