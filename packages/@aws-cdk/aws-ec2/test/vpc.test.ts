@@ -790,7 +790,7 @@ describe('vpc', () => {
             },
           ],
         });
-      }).toThrow(/make sure you don't configure any PRIVATE subnets/);
+      }).toThrow(/make sure you don't configure any PRIVATE/);
 
 
     });
