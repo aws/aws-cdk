@@ -336,6 +336,14 @@ export interface CommonAutoScalingGroupProps {
    * @default - `TerminationPolicy.DEFAULT`
    */
   readonly terminationPolicies?: TerminationPolicy[];
+
+  /**
+   * For each termination policy value of LAMBDA_FUNCTION in terminationPolicies, supply
+   * the ARN of the lambda function.
+   *
+   * @default - Not supplied
+   */
+  readonly terminationPolicyLambdaFunctionArns?: string[];
 }
 
 /**
@@ -1321,6 +1329,22 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
+    const terminationPolicies:string[] = [];
+    if (props.terminationPolicies) {
+      for (const policy of props.terminationPolicies) {
+        if (policy === TerminationPolicy.LAMBDA_FUNCTION) {
+          if (!props.terminationPolicyLambdaFunctionArns ||
+              props.terminationPolicyLambdaFunctionArns.length === 0) {
+            throw new Error('terminationPolicyLambdaFunctionArns should have values to ' +
+                            'match entries of LAMBDA_FUNCTION in terminationPolicies');
+          }
+          const lambdaFunctionArn: string = props.terminationPolicyLambdaFunctionArns.shift() as string;
+          terminationPolicies.push(lambdaFunctionArn);
+        } else {
+          terminationPolicies.push(policy);
+        }
+      }
+    }
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
       cooldown: props.cooldown?.toSeconds().toString(),
@@ -1336,7 +1360,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
       newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
-      terminationPolicies: props.terminationPolicies,
+      terminationPolicies: terminationPolicies.length === 0 ? undefined : terminationPolicies,
       ...this.getLaunchSettings(launchConfig, props.launchTemplate, props.mixedInstancesPolicy),
     };
 

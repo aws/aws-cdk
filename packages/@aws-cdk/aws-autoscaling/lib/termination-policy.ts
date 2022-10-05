@@ -39,4 +39,10 @@ export enum TerminationPolicy {
    * Terminate instances that have the oldest launch template.
    */
   OLDEST_LAUNCH_TEMPLATE = 'OldestLaunchTemplate',
+
+  /**
+   * Set a lambda function arn to be invoked as a custom termination policy.
+   * If this is specified, you must also supply a value for TerminationPolicyLambdaFunctionArns.
+   */
+  LAMBDA_FUNCTION = 'LambdaFunction',
 }

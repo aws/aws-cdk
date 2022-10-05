@@ -1332,6 +1332,68 @@ describe('auto scaling group', () => {
     });
   });
 
+  test('supports termination policy lambda function arns', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const arn = 'arn:aws:::test';
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux(),
+      terminationPolicies: [
+        autoscaling.TerminationPolicy.OLDEST_INSTANCE,
+        autoscaling.TerminationPolicy.DEFAULT,
+        autoscaling.TerminationPolicy.LAMBDA_FUNCTION,
+      ],
+      terminationPolicyLambdaFunctionArns: [
+        arn,
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      TerminationPolicies: [
+        'OldestInstance',
+        'Default',
+        arn,
+      ],
+    });
+  });
+
+  test('supports multiple termination policy lambda function arns', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const arn1 = 'arn:aws:::test1';
+    const arn2 = 'arn:aws:::test2';
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux(),
+      terminationPolicies: [
+        autoscaling.TerminationPolicy.LAMBDA_FUNCTION,
+        autoscaling.TerminationPolicy.LAMBDA_FUNCTION,
+      ],
+      terminationPolicyLambdaFunctionArns: [
+        arn1,
+        arn2,
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      TerminationPolicies: [
+        arn1,
+        arn2,
+      ],
+    });
+  });
+
   test('Can use imported Launch Template with ID', () => {
     // GIVEN
     const stack = new cdk.Stack();
