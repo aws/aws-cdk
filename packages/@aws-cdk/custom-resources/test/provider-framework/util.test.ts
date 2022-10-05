@@ -10,7 +10,7 @@ test('withRetries() will invoke a throwing function multiple times', async () =>
   await expect(() => withRetries(retryOptions, async () => {
     invocations += 1;
     throw new Error('Oh no');
-  })).rejects.toThrow(/Oh no/);
+  })()).rejects.toThrow(/Oh no/);
 
   expect(invocations).toBeGreaterThan(1);
 });
