@@ -1,8 +1,10 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import { DatabaseCluster, InstanceType } from '../lib';
+import { DatabaseCluster, InstanceType, LogType } from '../lib';
 import { ClusterParameterGroup } from '../lib/parameter-group';
 
 /*
@@ -39,9 +41,19 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   kmsKey,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoMinorVersionUpgrade: true,
+  cloudwatchLogsExports: [LogType.AUDIT],
+  cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+
+const metric = cluster.metric('SparqlRequestsPerSec');
+new cloudwatch.Alarm(stack, 'Alarm', {
+  evaluationPeriods: 1,
+  threshold: 1,
+  comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
+  metric: metric,
+});
 
 new integ.IntegTest(app, 'ClusterTest', {
   testCases: [stack],
