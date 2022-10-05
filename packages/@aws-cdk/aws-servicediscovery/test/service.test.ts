@@ -2,7 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as servicediscovery from '../lib';
-import { DiscoveryType } from '../lib';
+import { DiscoveryType, RoutingPolicy } from '../lib';
 
 describe('service', () => {
   test('Service for HTTP namespace with custom health check', () => {
@@ -250,6 +250,60 @@ describe('service', () => {
                 {
                   TTL: 60,
                   Type: 'CNAME',
+                },
+              ],
+              NamespaceId: {
+                'Fn::GetAtt': [
+                  'MyNamespaceD0BB8558',
+                  'Id',
+                ],
+              },
+              RoutingPolicy: 'WEIGHTED',
+            },
+            NamespaceId: {
+              'Fn::GetAtt': [
+                'MyNamespaceD0BB8558',
+                'Id',
+              ],
+            },
+          },
+        },
+      },
+    });
+
+
+  });
+
+  test('allows setting a custom routing policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'dns',
+    });
+
+    namespace.createService('MyService', {
+      dnsRecordType: servicediscovery.DnsRecordType.SRV,
+      routingPolicy: RoutingPolicy.WEIGHTED,
+    });
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        MyNamespaceD0BB8558: {
+          Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
+          Properties: {
+            Name: 'dns',
+          },
+        },
+        MyNamespaceMyService365E2470: {
+          Type: 'AWS::ServiceDiscovery::Service',
+          Properties: {
+            DnsConfig: {
+              DnsRecords: [
+                {
+                  TTL: 60,
+                  Type: 'SRV',
                 },
               ],
               NamespaceId: {

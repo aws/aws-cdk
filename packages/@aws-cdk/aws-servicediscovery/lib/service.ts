@@ -267,9 +267,11 @@ export class Service extends ServiceBase {
     }
 
     // Set defaults where necessary
-    const routingPolicy = (props.dnsRecordType === DnsRecordType.CNAME) || props.loadBalancer
-      ? RoutingPolicy.WEIGHTED
-      : RoutingPolicy.MULTIVALUE;
+    const routingPolicy =
+      props.routingPolicy ??
+      (props.dnsRecordType === DnsRecordType.CNAME || props.loadBalancer
+        ? RoutingPolicy.WEIGHTED
+        : RoutingPolicy.MULTIVALUE);
 
     const dnsRecordType = props.dnsRecordType || DnsRecordType.A;
 
