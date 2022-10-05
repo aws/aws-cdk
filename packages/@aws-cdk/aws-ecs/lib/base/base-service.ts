@@ -464,7 +464,7 @@ export abstract class BaseService extends Resource
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
     if (props.circuitBreaker && props.deploymentController?.type !== DeploymentControllerType.ECS) {
-      Annotations.of(this).addWarning('Deployment circuit breaker requires the ECS deployment controller.');
+      Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
     }
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
       service: 'ecs',
