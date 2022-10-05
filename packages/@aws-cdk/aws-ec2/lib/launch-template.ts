@@ -12,10 +12,8 @@ import {
   TagType,
   Tags,
   Token,
-  Aspects,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { LaunchTemplateRequireImdsv2Aspect } from '.';
 import { Connections, IConnectable } from './connections';
 import { CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
@@ -364,7 +362,7 @@ export interface LaunchTemplateProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpendpoint
    *
-   * @default - true
+   * @default true
    */
   readonly httpEndpoint?: boolean;
 
@@ -373,7 +371,7 @@ export interface LaunchTemplateProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpprotocolipv6
    *
-   * @default - true
+   * @default true
    */
   readonly httpProtocolIpv6?: boolean;
 
@@ -382,7 +380,7 @@ export interface LaunchTemplateProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
    *
-   * @default - 1
+   * @default 1
    */
   readonly httpPutResponseHopLimit?: number;
 
@@ -391,7 +389,7 @@ export interface LaunchTemplateProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
    *
-   * @default LaunchTemplateHttpTokens.OPTIONAL
+   * @default LaunchTemplateHttpTokens.REQUIRED if requireImdsv2 is true otherwise LaunchTemplateHttpTokens.OPTIONAL
    */
   readonly httpTokens?: LaunchTemplateHttpTokens;
 
@@ -752,31 +750,31 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this.latestVersionNumber = resource.attrLatestVersionNumber;
     this.launchTemplateId = resource.ref;
     this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
-
-    if (props.requireImdsv2) {
-      Aspects.of(this).add(new LaunchTemplateRequireImdsv2Aspect());
-    }
   }
 
   private renderMetadataOptions(props: LaunchTemplateProps) {
-    if (props.httpEndpoint == undefined &&
-      props.httpProtocolIpv6 == undefined &&
-      props.httpPutResponseHopLimit == undefined &&
-      props.httpTokens == undefined &&
-      props.instanceMetadataTags == undefined
-    ) {
-      return undefined;
-    } else {
+    let requireMetadataOptions = false;
+    // if requireImdsv2 is true, httpTokens must be required.
+    if (props.requireImdsv2 === true && props.httpTokens !== LaunchTemplateHttpTokens.REQUIRED) {
+      Annotations.of(this).addError('httpTokens must be required when requireImdsv2 is true');
+    }
+    if (props.httpEndpoint !== undefined || props.httpProtocolIpv6 !== undefined || props.httpPutResponseHopLimit !== undefined ||
+      props.httpTokens !== undefined || props.instanceMetadataTags !== undefined || props.requireImdsv2 === true) {
+      requireMetadataOptions = true;
+    }
+    if (requireMetadataOptions) {
       return {
-        httpEndpoint: props.httpEndpoint == true ? 'enabled' :
-          props.httpEndpoint == false ? 'disabled' : undefined,
-        httpProtocolIpv6: props.httpProtocolIpv6 == true ? 'enabled' :
-          props.httpProtocolIpv6 == false ? 'disabled' : undefined,
+        httpEndpoint: props.httpEndpoint === true ? 'enabled' :
+          props.httpEndpoint === false ? 'disabled' : undefined,
+        httpProtocolIpv6: props.httpProtocolIpv6 === true ? 'enabled' :
+          props.httpProtocolIpv6 === false ? 'disabled' : undefined,
         httpPutResponseHopLimit: props.httpPutResponseHopLimit,
-        httpTokens: props.httpTokens,
-        instanceMetadataTags: props.instanceMetadataTags == true ? 'enabled' :
-          props.instanceMetadataTags == false ? 'disabled' : undefined,
+        httpTokens: props.requireImdsv2 === true ? LaunchTemplateHttpTokens.REQUIRED : props.httpTokens,
+        instanceMetadataTags: props.instanceMetadataTags === true ? 'enabled' :
+          props.instanceMetadataTags === false ? 'disabled' : undefined,
       };
+    } else {
+      return undefined;
     }
   }
 

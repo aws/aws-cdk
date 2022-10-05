@@ -876,4 +876,15 @@ describe('LaunchTemplate metadataOptions', () => {
     const errors = Annotations.fromStack(stack).findError('/Default/Template', Match.anyValue());
     expect(errors).toHaveLength(expected);
   });
+
+  test('throw when requireImdsv2 is true and httpTokens is OPTIONAL', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      requireImdsv2: true,
+      httpTokens: LaunchTemplateHttpTokens.OPTIONAL,
+    });
+    // THEN
+    const errors = Annotations.fromStack(stack).findError('/Default/Template', Match.anyValue());
+    expect(errors[0].entry.data).toMatch(/httpTokens must be required when requireImdsv2 is true/);
+  });
 });
