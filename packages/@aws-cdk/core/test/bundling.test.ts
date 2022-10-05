@@ -438,8 +438,6 @@ describe('bundling', () => {
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
-
-
   test('ensure selinux docker mount', () => {
     // GIVEN
     sinon.stub(process, 'platform').value('linux');
