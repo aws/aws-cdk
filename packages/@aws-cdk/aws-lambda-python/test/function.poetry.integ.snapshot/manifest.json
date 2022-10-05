@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8112ad5508e2643bdc358860414feb34c0375b34b86dfdaec27fab32c38ea900.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/82b489749eaabed0e009eb9fff1d35a4c9fc7bc4b1614c788a84481f99032f73.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -124,7 +124,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6124f12c447c253e12d289b2cbb005676d5dd3f56d70cb3213d2c534caae16cc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dbf8a3a98e250321c8158725e3c55158815b3610f42e036de4a1d9e1cd8f89d1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -153,16 +153,10 @@
             "data": "LambdaInvoke81c9998b1b428b309c8501e21b919d3dInvokeEBA46CA4"
           }
         ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/AssertEqualsLambdainvoke/Default/Default": [
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke81c9998b1b428b309c8501e21b919d3dAssertEqualsLambdainvoke0BDD9934"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/AssertEqualsLambdainvoke/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAssertEqualsLambdainvoke7418f30d48b25a0240557aece0f9bcb3"
+            "data": "AssertionResultsLambdaInvoke81c9998b1b428b309c8501e21b919d3d"
           }
         ],
         "/poetry/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -189,16 +183,10 @@
             "data": "LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292InvokeFD76DE7B"
           }
         ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/AssertEqualsLambdainvoke/Default/Default": [
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292AssertEqualsLambdainvoke3F6858A2"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/AssertEqualsLambdainvoke/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAssertEqualsLambdainvoke3a1682daaa67c2d3f1c57ad30bb121be"
+            "data": "AssertionResultsLambdaInvoke9a0beb4ea6cc38db92e9ff664c085292"
           }
         ],
         "/poetry/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/Default/Default": [
@@ -213,16 +201,10 @@
             "data": "LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75Invoke11F9A252"
           }
         ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/AssertEqualsLambdainvoke/Default/Default": [
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75AssertEqualsLambdainvoke2346EE1F"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/AssertEqualsLambdainvoke/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAssertEqualsLambdainvoke71fd18c839842d08b4fd70cd8691cb1f"
+            "data": "AssertionResultsLambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75"
           }
         ],
         "/poetry/DefaultTest/DeployAssert/BootstrapVersion": [
