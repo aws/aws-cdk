@@ -431,6 +431,51 @@ describe('queue encryption', () => {
   });
 });
 
+describe('encryption in transit', () => {
+  test('enforceSSL can be enabled', () => {
+    const stack = new Stack();
+    new sqs.Queue(stack, 'Queue', { enforceSSL: true });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+        'QueuePolicy25439813': {
+          'Type': 'AWS::SQS::QueuePolicy',
+          'Properties': {
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 'sqs:*',
+                  'Condition': {
+                    'Bool': {
+                      'aws:SecureTransport': 'false',
+                    },
+                  },
+                  'Effect': 'Deny',
+                  'Principal': {
+                    'AWS': '*',
+                  },
+                  'Resource': {
+                    'Fn::GetAtt': [
+                      'Queue4A7E3555',
+                      'Arn',
+                    ],
+                  },
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+          },
+        },
+      },
+    });
+  });
+});
+
 test('test ".fifo" suffixed queues register as fifo', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'Queue', {

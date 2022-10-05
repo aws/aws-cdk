@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Duration, RemovalPolicy, Stack, Token, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -169,6 +170,14 @@ export interface QueueProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Enforce encryption of data in transit.
+   * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-security-best-practices.html#enforce-encryption-data-in-transit
+   *
+   * @default false
+   */
+  readonly enforceSSL?: boolean;
 }
 
 /**
@@ -404,6 +413,11 @@ export class Queue extends QueueBase {
 
       throw new Error(`Unexpected 'encryptionType': ${encryption}`);
     }
+
+    // Enforce encryption of data in transit
+    if (props.enforceSSL) {
+      this.enforceSSLStatement();
+    }
   }
 
   /**
@@ -446,6 +460,22 @@ export class Queue extends QueueBase {
       fifoThroughputLimit: props.fifoThroughputLimit,
       fifoQueue,
     };
+  }
+
+  /**
+   * Adds an iam statement to enforce encryption of data in transit.
+   */
+  private enforceSSLStatement() {
+    const statement = new iam.PolicyStatement({
+      actions: ['sqs:*'],
+      conditions: {
+        Bool: { 'aws:SecureTransport': 'false' },
+      },
+      effect: iam.Effect.DENY,
+      resources: [this.queueArn],
+      principals: [new iam.AnyPrincipal()],
+    });
+    this.addToResourcePolicy(statement);
   }
 }
 
