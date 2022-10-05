@@ -95,6 +95,23 @@ new glue.Table(stack, 'MyPartitionFilteredTable', {
   enablePartitionFiltering: true,
 });
 
+const myView = new glue.View(stack, 'SimpleView', {
+  database,
+  tableName: 'simple_view',
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  sql: 'select "value1" as col1',
+});
+
+const myViewWithMoreComplexType = new glue.View(stack, 'ViewWithComplexType', {
+  database,
+  tableName: 'complex_view',
+  columns,
+  sql: 'select "v1" as col1, "v2" as col2, array("v3.1","v3.2") as col3',
+});
+
 const user = new iam.User(stack, 'MyUser');
 csvTable.grantReadWrite(user);
 encryptedTable.grantReadWrite(user);
@@ -103,5 +120,8 @@ const anotherUser = new iam.User(stack, 'AnotherUser');
 avroTable.grantReadWrite(anotherUser);
 jsonTable.grantReadWrite(anotherUser);
 parquetTable.grantReadWrite(anotherUser);
+myView.grantRead(anotherUser);
+myViewWithMoreComplexType.grantRead(anotherUser);
+
 
 app.synth();

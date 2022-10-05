@@ -216,6 +216,26 @@ new glue.Table(this, 'MyTable', {
 
 By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
 
+### View
+
+A Glue view is a special glue Table that reference other existing glue tables or views.
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.View(this, 'MyView', {
+  database: myDatabase,
+    tableName: 'my_view',
+    columns: [{
+      name: 'col',
+      type: glue.Schema.STRING,
+    }],
+    sql: 'select "1" as col',
+  });
+```
+
+As the Glue view is nothing more than a special glue table it needs a `tableName` property.
+In order to make the view working, ensure `sql` property validity, and constitency with view `columns`.
+
 ### Partition Keys
 
 To improve query performance, a table can specify `partitionKeys` on which data is stored and queried separately. For example, you might partition a table by `year` and `month` to optimize queries based on a time window:

@@ -33,6 +33,11 @@ export interface Type {
    * Glue InputString for this type.
    */
   readonly inputString: string;
+
+  /**
+   * Glue type converted in Presto type for View usage
+   */
+  readonly prestoInputString: string;
 }
 
 /**
@@ -42,11 +47,13 @@ export class Schema {
   public static readonly BOOLEAN: Type = {
     isPrimitive: true,
     inputString: 'boolean',
+    prestoInputString: 'boolean',
   };
 
   public static readonly BINARY: Type = {
     isPrimitive: true,
     inputString: 'binary',
+    prestoInputString: 'varbinary',
   };
 
   /**
@@ -55,16 +62,19 @@ export class Schema {
   public static readonly BIG_INT: Type = {
     isPrimitive: true,
     inputString: 'bigint',
+    prestoInputString: 'bigint',
   };
 
   public static readonly DOUBLE: Type = {
     isPrimitive: true,
     inputString: 'double',
+    prestoInputString: 'double',
   };
 
   public static readonly FLOAT: Type = {
     isPrimitive: true,
     inputString: 'float',
+    prestoInputString: 'real',
   };
 
   /**
@@ -73,6 +83,7 @@ export class Schema {
   public static readonly INTEGER: Type = {
     isPrimitive: true,
     inputString: 'int',
+    prestoInputString: 'integer',
   };
 
   /**
@@ -81,6 +92,7 @@ export class Schema {
   public static readonly SMALL_INT: Type = {
     isPrimitive: true,
     inputString: 'smallint',
+    prestoInputString: 'smallint',
   };
 
   /**
@@ -89,6 +101,7 @@ export class Schema {
   public static readonly TINY_INT: Type = {
     isPrimitive: true,
     inputString: 'tinyint',
+    prestoInputString: 'tinyint',
   };
 
   /**
@@ -97,6 +110,7 @@ export class Schema {
   public static readonly DATE: Type = {
     isPrimitive: true,
     inputString: 'date',
+    prestoInputString: 'date',
   };
 
   /**
@@ -105,6 +119,7 @@ export class Schema {
   public static readonly TIMESTAMP: Type = {
     isPrimitive: true,
     inputString: 'timestamp',
+    prestoInputString: 'timestamp',
   };
 
   /**
@@ -113,6 +128,7 @@ export class Schema {
   public static readonly STRING: Type = {
     isPrimitive: true,
     inputString: 'string',
+    prestoInputString: 'varchar',
   };
 
   /**
@@ -127,6 +143,7 @@ export class Schema {
     return {
       isPrimitive: true,
       inputString: scale !== undefined ? `decimal(${precision},${scale})` : `decimal(${precision})`,
+      prestoInputString: scale !== undefined ? `decimal(${precision},${scale})` : `decimal(${precision})`,
     };
   }
 
@@ -145,6 +162,7 @@ export class Schema {
     return {
       isPrimitive: true,
       inputString: `char(${length})`,
+      prestoInputString: `char(${length})`,
     };
   }
 
@@ -163,6 +181,7 @@ export class Schema {
     return {
       isPrimitive: true,
       inputString: `varchar(${length})`,
+      prestoInputString: `varchar(${length})`,
     };
   }
 
@@ -175,6 +194,7 @@ export class Schema {
     return {
       isPrimitive: false,
       inputString: `array<${itemType.inputString}>`,
+      prestoInputString: `array(${itemType.inputString})`,
     };
   }
 
@@ -191,6 +211,7 @@ export class Schema {
     return {
       isPrimitive: false,
       inputString: `map<${keyType.inputString},${valueType.inputString}>`,
+      prestoInputString: `map(${keyType.inputString},${valueType.inputString})`,
     };
   }
 
@@ -209,6 +230,7 @@ export class Schema {
           return `${column.name}:${column.type.inputString} COMMENT '${column.comment}'`;
         }
       }).join(',')}>`,
+      prestoInputString: `struct(${columns.map(column => `"${column.name}" ${column.type.inputString}`).join(',')}>`,
     };
   }
 }
