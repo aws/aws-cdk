@@ -97,6 +97,7 @@ async function findAllHotswappableChanges(
     } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT) {
       // empty 'if' just for flow-aware typing to kick in...
     } else {
+      // run isHotswappable* functions lazily to prevent unhandled rejections
       promises.push(() => [
         isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),

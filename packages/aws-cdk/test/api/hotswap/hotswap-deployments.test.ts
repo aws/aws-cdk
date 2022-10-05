@@ -416,7 +416,7 @@ test('A change to both a hotswappable resource and a stack output results in a f
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
 
-test('Multiple CfnEvaluationException', async () => {
+test('Multiple CfnEvaluationException will not cause unhandled rejections', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
     Resources: {
