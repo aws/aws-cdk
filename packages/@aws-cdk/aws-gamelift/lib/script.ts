@@ -13,7 +13,7 @@ import { CfnScript } from './gamelift.generated';
  * and add custom game logic as appropriate to host game sessions for your players.
  * You upload the Realtime script to the GameLift service in the Regions where you plan to set up fleets.
  *
- * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-build-intro.html
+ * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/realtime-script-uploading.html
  */
 export interface IScript extends cdk.IResource, iam.IGrantable {
 

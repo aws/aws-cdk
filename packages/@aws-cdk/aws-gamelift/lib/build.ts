@@ -13,7 +13,7 @@ import { CfnBuild } from './gamelift.generated';
  * The game build must be integrated with the GameLift service.
  * You upload game build files to the GameLift service in the Regions where you plan to set up fleets.
  *
- * https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-build-cli-uploading.html
+ * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-build-cli-uploading.html
  */
 export interface IBuild extends cdk.IResource, iam.IGrantable {
 
