@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.44.0](https://github.com/aws/aws-cdk/compare/v2.43.1...v2.44.0) (2022-09-28)
+
+
+### Features
+
+* **assets:** support drop-in docker replacements by setting `$CDK_DOCKER` ([#21838](https://github.com/aws/aws-cdk/issues/21838)) ([d52310e](https://github.com/aws/aws-cdk/commit/d52310ea2104dd1ed13761944d078ffce46a299f)), closes [40aws-cdk/core/lib/bundling.ts#L523](https://github.com/40aws-cdk/core/lib/bundling.ts/issues/L523) [#21836](https://github.com/aws/aws-cdk/issues/21836)
+* **backup:** add copy actions to backup plan rules ([#22244](https://github.com/aws/aws-cdk/issues/22244)) ([d87a651](https://github.com/aws/aws-cdk/commit/d87a651608d23f3bfc3c178093d92b5bdda71084)), closes [#22173](https://github.com/aws/aws-cdk/issues/22173)
+* **cfnspec:** cloudformation spec v89.0.0 ([#22232](https://github.com/aws/aws-cdk/issues/22232)) ([953d684](https://github.com/aws/aws-cdk/commit/953d6841fa3ed43258d0454e245cebcab6323e0d))
+* **cli:** `cdk deploy --method=direct` is faster ([#22079](https://github.com/aws/aws-cdk/issues/22079)) ([dd6ead4](https://github.com/aws/aws-cdk/commit/dd6ead447a80cdec3379a3ced2e04b7d15f9c55d))
+* **cloudwatch:** add gauge widget ([#22213](https://github.com/aws/aws-cdk/issues/22213)) ([d9f0e80](https://github.com/aws/aws-cdk/commit/d9f0e809d583d23cb83b4e2855574675a669c33f)), closes [#22136](https://github.com/aws/aws-cdk/issues/22136)
+* **core:** 'postCliContext' property allows context that cannot be overridden by the CLI ([#21743](https://github.com/aws/aws-cdk/issues/21743)) ([a618096](https://github.com/aws/aws-cdk/commit/a618096432a27a808a0352ea186fe1e4db2911c4))
+* **dynamodb:** Changes how metricForOperation methods are used ([#22097](https://github.com/aws/aws-cdk/issues/22097)) ([fcb311d](https://github.com/aws/aws-cdk/commit/fcb311d615422b76f18b6be60dd466b315fcd6b0)), closes [#21963](https://github.com/aws/aws-cdk/issues/21963)
+* **logs:** add dimensions to metric filter ([#21654](https://github.com/aws/aws-cdk/issues/21654)) ([f834a45](https://github.com/aws/aws-cdk/commit/f834a4537643b32131076111be0693c6f8f96b24)), closes [/github.com/aws/aws-cdk/issues/16999#issuecomment-1005172655](https://github.com/aws//github.com/aws/aws-cdk/issues/16999/issues/issuecomment-1005172655) [#16999](https://github.com/aws/aws-cdk/issues/16999)
+* **pipelines:** allow disabling use of change sets ([#21619](https://github.com/aws/aws-cdk/issues/21619)) ([05723e7](https://github.com/aws/aws-cdk/commit/05723e74cc0e760f570c36ec02a70e8936287814)), closes [#20827](https://github.com/aws/aws-cdk/issues/20827)
+* **s3-deployment:** extract flag to disable automatic unzipping ([#21805](https://github.com/aws/aws-cdk/issues/21805)) ([91898b5](https://github.com/aws/aws-cdk/commit/91898b51573c0bfd0f26ae7610feb6a400bc8159)), closes [#8065](https://github.com/aws/aws-cdk/issues/8065)
+
+
+### Bug Fixes
+
+* **aws-elasticloadbalancingv2:** Validation for interval and timeout of application-target-group ([#22225](https://github.com/aws/aws-cdk/issues/22225)) ([6128e39](https://github.com/aws/aws-cdk/commit/6128e3908f4f6b6a1db66ebf7f77b6c966d1f9e7))
+* **cli:** SSO credentials do not work when using a proxy ([#22115](https://github.com/aws/aws-cdk/issues/22115)) ([c425e8c](https://github.com/aws/aws-cdk/commit/c425e8ca1a3d296eb6a7fd7e005d07c1eadd16aa)), closes [#21328](https://github.com/aws/aws-cdk/issues/21328)
+* **elbv2:** Use correct format for parsing imported target group ARNs ([#22153](https://github.com/aws/aws-cdk/issues/22153)) ([4704d4c](https://github.com/aws/aws-cdk/commit/4704d4c4ac065634dbada3732193a6753369dd12))
+* **rds:** changing engine versions would fail to update on DBInstances that were part of a DBCluster ([#22185](https://github.com/aws/aws-cdk/issues/22185)) ([c070ace](https://github.com/aws/aws-cdk/commit/c070acea1b12ec4f73c7d2087c5408d7e38a90a3)), closes [#21758](https://github.com/aws/aws-cdk/issues/21758) [#22180](https://github.com/aws/aws-cdk/issues/22180)
+* cannot use values that return an instance of a deprecated class for non TS / JS language ([#22204](https://github.com/aws/aws-cdk/issues/22204)) ([4cad2cf](https://github.com/aws/aws-cdk/commit/4cad2cf7e1ca41dedae6adc8866792e5f71b2123))
+
 ## [2.43.1](https://github.com/aws/aws-cdk/compare/v2.43.0...v2.43.1) (2022-09-23)
 
 
