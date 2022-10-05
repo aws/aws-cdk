@@ -24,6 +24,9 @@ export interface IStage extends IResource {
    */
   readonly restApi: IRestApi;
 
+  /**
+   * Add an ApiKey to this Stage
+   */
   addApiKey(id: string, options?: ApiKeyOptions): IApiKey;
 }
 
@@ -213,6 +216,9 @@ export interface StageAttributes {
   readonly restApi: IRestApi;
 }
 
+/**
+ * Base class for an ApiGateway Stage
+ */
 export abstract class StageBase extends Resource implements IStage {
   public abstract readonly stageName: string;
   public abstract readonly restApi: IRestApi;
