@@ -7,7 +7,13 @@ import { Content } from './content';
 import { CfnBuild } from './gamelift.generated';
 
 /**
- * Represents a GameLift server build.
+ * Your custom-built game server software that runs on GameLift and hosts game sessions for your players.
+ * A game build represents the set of files that run your game server on a particular operating system.
+ * You can have many different builds, such as for different flavors of your game.
+ * The game build must be integrated with the GameLift service.
+ * You upload game build files to the GameLift service in the Regions where you plan to set up fleets.
+ *
+ * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-build-cli-uploading.html
  */
 export interface IBuild extends cdk.IResource, iam.IGrantable {
 
