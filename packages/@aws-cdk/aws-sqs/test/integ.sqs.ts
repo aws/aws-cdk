@@ -21,6 +21,8 @@ const highThroughputFifo = new Queue(stack, 'HighThroughputFifoQueue', {
   fifoThroughputLimit: FifoThroughputLimit.PER_MESSAGE_GROUP_ID,
   deduplicationScope: DeduplicationScope.MESSAGE_GROUP,
 });
+const ssl = new Queue(stack, 'SSLQueue', { enforceSSL: true });
+
 
 const role = new Role(stack, 'Role', {
   assumedBy: new AccountRootPrincipal(),
@@ -30,6 +32,7 @@ dlq.grantConsumeMessages(role);
 queue.grantConsumeMessages(role);
 fifo.grantConsumeMessages(role);
 highThroughputFifo.grantConsumeMessages(role);
+ssl.grantConsumeMessages(role);
 
 new CfnOutput(stack, 'QueueUrl', { value: queue.queueUrl });
 
