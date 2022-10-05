@@ -341,7 +341,7 @@ be deployed, and then executes it. This behavior can be controlled with the
 `--method` parameter:
 
 - `--method=change-set` (default): create and execute the change set.
-- `--method=prepare-change-set`: create teh change set but don't execute it.
+- `--method=prepare-change-set`: create the change set but don't execute it.
   This is useful if you have external tools that will inspect the change set or
   you have an approval process for change sets.
 - `--method=direct`: do not create a change set but apply the change immediately.
