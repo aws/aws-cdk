@@ -429,6 +429,54 @@ describe('queue encryption', () => {
       },
     });
   });
+
+  test('it is possible to use sqs managed server side encryption', () => {
+    const stack = new Stack();
+
+    new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.SQS_MANAGED });
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'SqsManagedSseEnabled': true,
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
+  });
+
+  test('it is possible to disable encryption (unencrypted)', () => {
+    const stack = new Stack();
+
+    new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.UNENCRYPTED });
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'SqsManagedSseEnabled': false,
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
+  });
+
+  test('encryptionMasterKey is not supported if encryption type SQS_MANAGED is used', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'CustomKey');
+
+    // THEN
+    expect(() => new sqs.Queue(stack, 'Queue', {
+      encryption: sqs.QueueEncryption.SQS_MANAGED,
+      encryptionMasterKey: key,
+    })).toThrow(/'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used/);
+  });
 });
 
 describe('encryption in transit', () => {
