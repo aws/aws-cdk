@@ -336,7 +336,7 @@ The `progress` key can also be specified as a user setting (`~/.cdk.json`)
 
 #### CloudFormation Change Sets vs direct stack updates
 
-By default, CDK will create a CloudFormation change with the changes that will
+By default, CDK creates a CloudFormation change set with the changes that will
 be deployed and then executes it. This behavior can be controlled with the
 `--method` parameter:
 
