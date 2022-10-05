@@ -452,13 +452,17 @@ describe('bundling', () => {
     const image = DockerImage.fromRegistry('alpine');
 
     // GIVEN
-    image.run({
-      command: ['cool', 'command'],
-      volumesFrom: process.env.HOSTNAME,
-      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
-      workingDirectory: '/working-directory',
-      user: 'user:group',
-    });
+    try {
+      image.run({
+        command: ['cool', 'command'],
+        volumesFrom: process.env.HOSTNAME,
+        volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+        workingDirectory: '/working-directory',
+        user: 'user:group',
+      });
+    } catch (error) {
+      // expected
+    }
 
     expect(spawnSyncStub.calledWith('docker', [
       'run', '--rm',
