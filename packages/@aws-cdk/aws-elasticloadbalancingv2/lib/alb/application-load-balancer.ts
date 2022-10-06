@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Duration, Lazy, Names, Resource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -414,6 +415,19 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       ...fn({ LoadBalancer: this.loadBalancerFullName }),
       ...props,
     }).attachTo(this);
+  }
+
+  /**
+   * Enable access logging for this load balancer.
+   *
+   * A region must be specified on the stack containing the load balancer; you cannot enable logging on
+   * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
+   */
+  public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
+    if (bucket.encryptionKey) {
+      throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
+    }
+    return super.logAccessLogs(bucket, prefix);
   }
 }
 
