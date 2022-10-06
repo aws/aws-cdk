@@ -163,7 +163,7 @@ export interface EcsDeploymentGroupProps {
    * configuring the service's deployment controller property to be `CODE_DEPLOY`.
    *
    * For non-imported services, the ECS service's task definition property will also
-   * be updated to remove thetask definition revision ID.  This change prevents CloudFormation from
+   * be updated to remove the task definition revision ID.  This change prevents CloudFormation from
    * attempting to re-deploy the service when a new revision of the task definition is
    * created by the stack.  In order to deploy a new task definition revision to the ECS
    * service after stack creation, deploy the change directly through CodeDeploy using
