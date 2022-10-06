@@ -369,7 +369,11 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  context: {
+    '@aws-cdk/core:assetHashSalt': `${Date.now()}`, // Force all assets to be unique
+  },
+});
 
 const defaultEnv = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
