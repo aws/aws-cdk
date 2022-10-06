@@ -62,7 +62,7 @@
     "jsii-reflect": "^1.69.0",
     "markdownlint-cli": "^0.32.2",
     "nyc": "^15.1.0",
-    "semver": "^7.3.7",
+    "semver": "^7.3.8",
     "ts-jest": "^27.1.5",
     "typescript": "~3.9.10",
     "yargs": "^16.2.0"
