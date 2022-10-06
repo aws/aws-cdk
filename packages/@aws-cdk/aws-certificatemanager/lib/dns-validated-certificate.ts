@@ -122,6 +122,16 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     requestorFunction.addToRolePolicy(new iam.PolicyStatement({
       actions: ['route53:changeResourceRecordSets'],
       resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
+      conditions: {
+        'ForAllValues:StringEquals': {
+          'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+            `*.${props.domainName}`,
+            ...(props.subjectAlternativeNames ?? []).map(d => `*.${d}`),
+          ],
+          'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
+          'route53:ChangeResourceRecordSetsActions': props.cleanupRoute53Records ? ['UPSERT', 'DELETE'] : ['UPSERT'],
+        },
+      },
     }));
 
     const certificate = new cdk.CustomResource(this, 'CertificateRequestorResource', {
