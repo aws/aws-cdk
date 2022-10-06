@@ -385,11 +385,12 @@ export interface LaunchTemplateProps {
   readonly httpPutResponseHopLimit?: number;
 
   /**
-   * The state of token usage for your instance metadata requests.
+   * The state of token usage for your instance metadata requests.  The default state is `optional` if not specified. However,
+   * if requireImdsv2 is true, the state must be `required`.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
    *
-   * @default LaunchTemplateHttpTokens.REQUIRED if requireImdsv2 is true otherwise LaunchTemplateHttpTokens.OPTIONAL
+   * @default LaunchTemplateHttpTokens.OPTIONAL
    */
   readonly httpTokens?: LaunchTemplateHttpTokens;
 
