@@ -83,6 +83,7 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
@@ -126,7 +127,8 @@
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazonProps",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderGoogleProps",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAppleProps",
-      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderOidcProps"
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderOidcProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderSamlProps"
     ]
   },
   "stability": "stable",

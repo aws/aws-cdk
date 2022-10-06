@@ -181,7 +181,7 @@ export class HostedZone extends Resource implements IHostedZone {
    * @param vpc the other VPC to add.
    */
   public addVpc(vpc: ec2.IVpc) {
-    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: Stack.of(vpc).region });
+    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
   }
 }
 

@@ -1,8 +1,8 @@
-/// !cdk-integ pragma:disable-update-workflow
 import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import { EksCall, HttpMethods } from '../../lib';
 
 /*
@@ -18,7 +18,7 @@ import { EksCall, HttpMethods } from '../../lib';
  */
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-eks-call-integ');
+const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-eks-call-integ-test');
 
 const cluster = new eks.Cluster(stack, 'EksCluster', {
   version: eks.KubernetesVersion.V1_21,
@@ -48,6 +48,10 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
 
 new cdk.CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
+});
+
+new integ.IntegTest(app, 'aws-stepfunctions-tasks-eks-call-integ', {
+  testCases: [stack],
 });
 
 app.synth();

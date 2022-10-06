@@ -163,6 +163,9 @@ const mf = new logs.MetricFilter(this, 'MetricFilter', {
   metricName: 'Latency',
   filterPattern: logs.FilterPattern.exists('$.latency'),
   metricValue: '$.latency',
+  dimensions: {
+    ErrorCode: '$.errorCode',
+  }
 });
 
 //expose a metric from the metric filter

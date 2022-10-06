@@ -15,7 +15,7 @@
     ]
    }
   },
-  "myvpcingressSubnet1Subnet82F0259C": {
+  "myvpcPublicSubnet1Subnet6BD75C12": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "VpcId": {
@@ -29,12 +29,12 @@
       }
      ]
     },
-    "CidrBlock": "10.0.0.0/24",
+    "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
       "Key": "aws-cdk:subnet-name",
-      "Value": "ingress"
+      "Value": "Public"
      },
      {
       "Key": "aws-cdk:subnet-type",
@@ -42,12 +42,12 @@
      },
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1"
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1"
      }
     ]
    }
   },
-  "myvpcingressSubnet1RouteTableD6322DD5": {
+  "myvpcPublicSubnet1RouteTableF7E8D7F1": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "VpcId": {
@@ -56,27 +56,27 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1"
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1"
      }
     ]
    }
   },
-  "myvpcingressSubnet1RouteTableAssociation12FE9C06": {
+  "myvpcPublicSubnet1RouteTableAssociationC697FA56": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "myvpcingressSubnet1RouteTableD6322DD5"
+     "Ref": "myvpcPublicSubnet1RouteTableF7E8D7F1"
     },
     "SubnetId": {
-     "Ref": "myvpcingressSubnet1Subnet82F0259C"
+     "Ref": "myvpcPublicSubnet1Subnet6BD75C12"
     }
    }
   },
-  "myvpcingressSubnet1DefaultRoute6FCDFDDF": {
+  "myvpcPublicSubnet1DefaultRouteBE259807": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "RouteTableId": {
-     "Ref": "myvpcingressSubnet1RouteTableD6322DD5"
+     "Ref": "myvpcPublicSubnet1RouteTableF7E8D7F1"
     },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
@@ -87,7 +87,43 @@
     "myvpcVPCGWD483DB64"
    ]
   },
-  "myvpcingressSubnet2Subnet56945106": {
+  "myvpcPublicSubnet1EIP88D18203": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "myvpcPublicSubnet1NATGatewayD3DC5B8D": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "myvpcPublicSubnet1Subnet6BD75C12"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "myvpcPublicSubnet1EIP88D18203",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "myvpcPublicSubnet1DefaultRouteBE259807",
+    "myvpcPublicSubnet1RouteTableAssociationC697FA56"
+   ]
+  },
+  "myvpcPublicSubnet2Subnet844B7F05": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "VpcId": {
@@ -101,12 +137,12 @@
       }
      ]
     },
-    "CidrBlock": "10.0.1.0/24",
+    "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
       "Key": "aws-cdk:subnet-name",
-      "Value": "ingress"
+      "Value": "Public"
      },
      {
       "Key": "aws-cdk:subnet-type",
@@ -114,12 +150,12 @@
      },
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2"
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2"
      }
     ]
    }
   },
-  "myvpcingressSubnet2RouteTable2112B53A": {
+  "myvpcPublicSubnet2RouteTable9A4CA50C": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "VpcId": {
@@ -128,27 +164,27 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2"
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2"
      }
     ]
    }
   },
-  "myvpcingressSubnet2RouteTableAssociation08B3BE06": {
+  "myvpcPublicSubnet2RouteTableAssociation28F6DD6F": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "myvpcingressSubnet2RouteTable2112B53A"
+     "Ref": "myvpcPublicSubnet2RouteTable9A4CA50C"
     },
     "SubnetId": {
-     "Ref": "myvpcingressSubnet2Subnet56945106"
+     "Ref": "myvpcPublicSubnet2Subnet844B7F05"
     }
    }
   },
-  "myvpcingressSubnet2DefaultRouteBF3C1EC8": {
+  "myvpcPublicSubnet2DefaultRoute22D543BA": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "RouteTableId": {
-     "Ref": "myvpcingressSubnet2RouteTable2112B53A"
+     "Ref": "myvpcPublicSubnet2RouteTable9A4CA50C"
     },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
@@ -158,6 +194,180 @@
    "DependsOn": [
     "myvpcVPCGWD483DB64"
    ]
+  },
+  "myvpcPublicSubnet2EIPA3AF827D": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "myvpcPublicSubnet2NATGateway45472CCD": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "myvpcPublicSubnet2Subnet844B7F05"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "myvpcPublicSubnet2EIPA3AF827D",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "myvpcPublicSubnet2DefaultRoute22D543BA",
+    "myvpcPublicSubnet2RouteTableAssociation28F6DD6F"
+   ]
+  },
+  "myvpcPrivateSubnet1SubnetAE3DECEE": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "myvpc9455A260"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "myvpcPrivateSubnet1RouteTable991B69A9": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "myvpc9455A260"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "myvpcPrivateSubnet1RouteTableAssociation91351DDE": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "myvpcPrivateSubnet1RouteTable991B69A9"
+    },
+    "SubnetId": {
+     "Ref": "myvpcPrivateSubnet1SubnetAE3DECEE"
+    }
+   }
+  },
+  "myvpcPrivateSubnet1DefaultRouteA1815BF3": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "myvpcPrivateSubnet1RouteTable991B69A9"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "myvpcPublicSubnet1NATGatewayD3DC5B8D"
+    }
+   }
+  },
+  "myvpcPrivateSubnet2SubnetE09939FB": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "myvpc9455A260"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "myvpcPrivateSubnet2RouteTableF2B44BF5": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "myvpc9455A260"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "myvpcPrivateSubnet2RouteTableAssociation071745F0": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "myvpcPrivateSubnet2RouteTableF2B44BF5"
+    },
+    "SubnetId": {
+     "Ref": "myvpcPrivateSubnet2SubnetE09939FB"
+    }
+   }
+  },
+  "myvpcPrivateSubnet2DefaultRouteB54E314A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "myvpcPrivateSubnet2RouteTableF2B44BF5"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "myvpcPublicSubnet2NATGateway45472CCD"
+    }
+   }
   },
   "myvpcIGW24C0BBAE": {
    "Type": "AWS::EC2::InternetGateway",
@@ -224,10 +434,10 @@
     ]
    },
    "DependsOn": [
-    "myvpcingressSubnet1DefaultRoute6FCDFDDF",
-    "myvpcingressSubnet1RouteTableAssociation12FE9C06",
-    "myvpcingressSubnet2DefaultRouteBF3C1EC8",
-    "myvpcingressSubnet2RouteTableAssociation08B3BE06"
+    "myvpcPrivateSubnet1DefaultRouteA1815BF3",
+    "myvpcPrivateSubnet1RouteTableAssociation91351DDE",
+    "myvpcPrivateSubnet2DefaultRouteB54E314A",
+    "myvpcPrivateSubnet2RouteTableAssociation071745F0"
    ]
   },
   "myhandlerSecurityGroupF566A239": {
@@ -246,10 +456,10 @@
     }
    },
    "DependsOn": [
-    "myvpcingressSubnet1DefaultRoute6FCDFDDF",
-    "myvpcingressSubnet1RouteTableAssociation12FE9C06",
-    "myvpcingressSubnet2DefaultRouteBF3C1EC8",
-    "myvpcingressSubnet2RouteTableAssociation08B3BE06"
+    "myvpcPrivateSubnet1DefaultRouteA1815BF3",
+    "myvpcPrivateSubnet1RouteTableAssociation91351DDE",
+    "myvpcPrivateSubnet2DefaultRouteB54E314A",
+    "myvpcPrivateSubnet2RouteTableAssociation071745F0"
    ]
   },
   "myhandlerD202FA8E": {
@@ -259,7 +469,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983b.zip"
+     "S3Key": "3b4e770c8242272e96f6faafd45d2446549a060a25dcce2d246445447e356ca9.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -280,30 +490,30 @@
      ],
      "SubnetIds": [
       {
-       "Ref": "myvpcingressSubnet1Subnet82F0259C"
+       "Ref": "myvpcPrivateSubnet1SubnetAE3DECEE"
       },
       {
-       "Ref": "myvpcingressSubnet2Subnet56945106"
+       "Ref": "myvpcPrivateSubnet2SubnetE09939FB"
       }
      ]
     }
    },
    "DependsOn": [
     "myhandlerServiceRole77891068",
-    "myvpcingressSubnet1DefaultRoute6FCDFDDF",
-    "myvpcingressSubnet1RouteTableAssociation12FE9C06",
-    "myvpcingressSubnet2DefaultRouteBF3C1EC8",
-    "myvpcingressSubnet2RouteTableAssociation08B3BE06"
+    "myvpcPrivateSubnet1DefaultRouteA1815BF3",
+    "myvpcPrivateSubnet1RouteTableAssociation91351DDE",
+    "myvpcPrivateSubnet2DefaultRouteB54E314A",
+    "myvpcPrivateSubnet2RouteTableAssociation071745F0"
    ]
   }
  },
  "Outputs": {
-  "FunctionArn": {
+  "ExportsOutputRefmyhandlerD202FA8E369E8804": {
    "Value": {
-    "Fn::GetAtt": [
-     "myhandlerD202FA8E",
-     "Arn"
-    ]
+    "Ref": "myhandlerD202FA8E"
+   },
+   "Export": {
+    "Name": "cdk-integ-lambda-python-vpc:ExportsOutputRefmyhandlerD202FA8E369E8804"
    }
   }
  },

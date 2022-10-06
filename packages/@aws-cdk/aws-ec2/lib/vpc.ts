@@ -763,6 +763,13 @@ export interface VpcAttributes {
    * VPN gateway's identifier
    */
   readonly vpnGatewayId?: string;
+
+  /**
+   * The region the VPC is in
+   *
+   * @default - The region of the stack where the VPC belongs to
+   */
+  readonly region?: string;
 }
 
 export interface SubnetAttributes {
@@ -1203,7 +1210,7 @@ export class Vpc extends VpcBase {
       dummyValue: undefined,
     }).value;
 
-    return new LookedUpVpc(scope, id, attributes || DUMMY_VPC_PROPS, attributes === undefined);
+    return new LookedUpVpc(scope, id, attributes ?? DUMMY_VPC_PROPS, attributes === undefined);
 
     /**
      * Prefixes all keys in the argument with `tag:`.`
@@ -2008,7 +2015,9 @@ class ImportedVpc extends VpcBase {
   private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: VpcAttributes, isIncomplete: boolean) {
-    super(scope, id);
+    super(scope, id, {
+      region: props.region,
+    });
 
     this.vpcId = props.vpcId;
     this.vpcArn = Arn.format({
@@ -2058,7 +2067,9 @@ class LookedUpVpc extends VpcBase {
   private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse, isIncomplete: boolean) {
-    super(scope, id);
+    super(scope, id, {
+      region: props.region,
+    });
 
     this.vpcId = props.vpcId;
     this.vpcArn = Arn.format({
