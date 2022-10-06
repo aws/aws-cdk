@@ -264,6 +264,26 @@ integ.assertions.awsApiCall('SQS', 'receiveMessage', {
 });
 ```
 
+
+Additionally, you can test non environment-agnostic stacks by setting the environment for the integration tests:
+
+```ts
+declare const app: App;
+const env = { region: 'us-west-2' }
+const stack = new Stack(app, 'nlb-test', { env: env } );
+
+const nlb = new elbv2.NetworkLoadBalancer(stack, 'nlb', { vpc: new ec2.Vpc(stack, 'vpc') })
+// requires region to be set
+nlb.logAccessLogs(new s3.Bucket(stack, 'logbucket'))
+const integ = new IntegTest(app, 'Integ', {
+  testCases: [stack],
+  env: env,
+});
+integ.assertions.awsApiCall('Elbv2', 'describeLoadBalancers', {
+    Names: [nlb.loadBalancerName]
+});
+```
+
 By default, the `AwsApiCall` construct will automatically add the correct IAM policies
 to allow the Lambda function to make the API call. It does this based on the `service`
 and `api` that is provided. In the above example the service is `SQS` and the api is

@@ -1,5 +1,5 @@
 import { IntegManifest, Manifest, TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
-import { attachCustomSynthesis, Stack, ISynthesisSession, StackProps } from '@aws-cdk/core';
+import { attachCustomSynthesis, Environment, ISynthesisSession, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDeployAssert } from './assertions';
 import { DeployAssert } from './assertions/private/deploy-assert';
@@ -15,6 +15,13 @@ export interface IntegTestCaseProps extends TestOptions {
    * Stacks to be deployed during the test
    */
   readonly stacks: Stack[];
+
+  /**
+   * Specify an environment for the assertions stack
+   *
+   * @default - environment-agnostic
+   */
+  readonly env?: Environment
 }
 
 /**
@@ -35,7 +42,7 @@ export class IntegTestCase extends Construct {
   constructor(scope: Construct, id: string, private readonly props: IntegTestCaseProps) {
     super(scope, id);
 
-    this._assert = new DeployAssert(this);
+    this._assert = new DeployAssert(this, { env: props.env });
     this.assertions = this._assert;
   }
 
@@ -63,7 +70,7 @@ export class IntegTestCase extends Construct {
 /**
  * Properties of an integration test case stack
  */
-export interface IntegTestCaseStackProps extends TestOptions, StackProps {}
+export interface IntegTestCaseStackProps extends TestOptions, StackProps { }
 
 /**
  * An integration test case stack. Allows the definition of test properties
@@ -78,7 +85,7 @@ export class IntegTestCaseStack extends Stack {
    * Returns whether the construct is a IntegTestCaseStack
    */
   public static isIntegTestCaseStack(x: any): x is IntegTestCaseStack {
-    return x !== null && typeof(x) === 'object' && TEST_CASE_STACK_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && TEST_CASE_STACK_SYMBOL in x;
   }
 
   /**
@@ -125,6 +132,13 @@ export interface IntegTestProps extends TestOptions {
    * @default false
    */
   readonly enableLookups?: boolean;
+
+  /**
+   * Set an AWS environment (account/region) for the assertions stack.
+   *
+   * @default - environment-agnostic
+   */
+  readonly env?: Environment
 }
 
 /**
@@ -150,6 +164,7 @@ export class IntegTest extends Construct {
       allowDestroy: props.allowDestroy,
       cdkCommandOptions: props.cdkCommandOptions,
       stackUpdateWorkflow: props.stackUpdateWorkflow,
+      env: props.env,
     });
     this.assertions = defaultTestCase.assertions;
 
