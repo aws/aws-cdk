@@ -261,7 +261,7 @@ export class Certificate extends CertificateBase implements ICertificate {
       certificateTransparencyLoggingPreference,
     });
 
-    Tags.of(cert).add(NAME_TAG, props.certificateName || this.node.path);
+    Tags.of(cert).add(NAME_TAG, props.certificateName || this.node.path.slice(0, 255));
 
     this.certificateArn = cert.ref;
   }
