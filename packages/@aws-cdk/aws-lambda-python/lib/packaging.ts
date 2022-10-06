@@ -21,58 +21,69 @@ export interface PackagingProps {
   readonly exportCommand?: string;
 }
 
+class PoetryPackagingProps {
+  /**
+   * Whether to export Poetry dependencies without hashes. This can fix build issues when some dependencies are exporting
+   * with hashes and others are not, causing pip to fail the build.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/19232
+   * @default Hashes are included in the exported `requirements.txt` file
+   */
+  readonly poetryExcludeHashes?: boolean;
+}
+
 export class Packaging {
 
   /**
    * Standard packaging with `pip`.
    */
-  public static readonly PIP = new Packaging({
-    dependenciesFile: DependenciesFile.PIP,
-  });
+  public static withPip(): Packaging {
+    return new Packaging({
+      dependenciesFile: DependenciesFile.PIP,
+    });
+  }
 
   /**
    * Packaging with `pipenv`.
    */
-  public static readonly PIPENV = new Packaging({
-    dependenciesFile: DependenciesFile.PIPENV,
-    // By default, pipenv creates a virtualenv in `/.local`, so we force it to create one in the package directory.
-    // At the end, we remove the virtualenv to avoid creating a duplicate copy in the Lambda package.
-    exportCommand: `PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > ${DependenciesFile.PIP} && rm -rf .venv`,
-  });
+  public static withPipenv(): Packaging {
+    return new Packaging({
+      dependenciesFile: DependenciesFile.PIPENV,
+      // By default, pipenv creates a virtualenv in `/.local`, so we force it to create one in the package directory.
+      // At the end, we remove the virtualenv to avoid creating a duplicate copy in the Lambda package.
+      exportCommand: `PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > ${DependenciesFile.PIP} && rm -rf .venv`,
+    });
+  }
 
   /**
    * Packaging with `poetry`.
    */
-  public static readonly POETRY = new Packaging({
-    dependenciesFile: DependenciesFile.POETRY,
-    // Export dependencies with credentials available in the bundling image.
-    exportCommand: `poetry export --with-credentials --format ${DependenciesFile.PIP} --output ${DependenciesFile.PIP}`,
-  });
-
-  /**
-   * Packaging with `poetry`.
-   */
-  public static readonly POETRY_EXCLUDE_HASHES = new Packaging({
-    dependenciesFile: DependenciesFile.POETRY,
-    // Export dependencies with credentials available in the bundling image, without dependency hashes
-    // This prevents pip failures when not all dependencies come with a hash
-    exportCommand: `poetry export --without-hashes --with-credentials --format ${DependenciesFile.PIP} --output ${DependenciesFile.PIP}`,
-  });
+  public static withPoetry(props?: PoetryPackagingProps) {
+    return new Packaging({
+      dependenciesFile: DependenciesFile.POETRY,
+      // Export dependencies with credentials available in the bundling image.
+      exportCommand: props?.poetryExcludeHashes ?
+        `poetry export --without-hashes --with-credentials --format ${DependenciesFile.PIP} --output ${DependenciesFile.PIP}` :
+        `poetry export --with-credentials --format ${DependenciesFile.PIP} --output ${DependenciesFile.PIP}`,
+    });
+  }
 
   /**
    * No dependencies or packaging.
    */
-  public static readonly NONE = new Packaging({ dependenciesFile: DependenciesFile.NONE });
+  public static withNoPackaging(): Packaging {
+    return new Packaging({ dependenciesFile: DependenciesFile.NONE });
+  }
 
   public static fromEntry(entry: string, poetryExcludeHashes?: boolean): Packaging {
     if (fs.existsSync(path.join(entry, DependenciesFile.PIPENV))) {
-      return Packaging.PIPENV;
+      return this.withPipenv();
     } if (fs.existsSync(path.join(entry, DependenciesFile.POETRY))) {
-      return poetryExcludeHashes ? Packaging.POETRY_EXCLUDE_HASHES : Packaging.POETRY;
+      return this.withPoetry({ poetryExcludeHashes });
     } else if (fs.existsSync(path.join(entry, DependenciesFile.PIP))) {
-      return Packaging.PIP;
+      return this.withPip();
     } else {
-      return Packaging.NONE;
+      return this.withNoPackaging();
     }
   }
 
