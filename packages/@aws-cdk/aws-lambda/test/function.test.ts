@@ -26,7 +26,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -50,7 +50,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs14.x',
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
     });
@@ -61,7 +61,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       initialPolicy: [new iam.PolicyStatement({ actions: ['*'], resources: ['*'] })],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -103,7 +103,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs14.x',
       },
       DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     });
@@ -639,7 +639,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       functionName: 'OneFunctionToRuleThemAll',
       deadLetterQueueEnabled: true,
     });
@@ -707,7 +707,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs14.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -731,7 +731,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       deadLetterQueueEnabled: true,
     });
 
@@ -757,7 +757,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       deadLetterQueueEnabled: false,
     });
 
@@ -772,7 +772,7 @@ describe('function', () => {
           'Arn',
         ],
       },
-      Runtime: 'nodejs10.x',
+      Runtime: 'nodejs14.x',
     });
   });
 
@@ -787,7 +787,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       deadLetterQueue: dlQueue,
     });
 
@@ -832,7 +832,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       deadLetterQueueEnabled: true,
       deadLetterQueue: dlQueue,
     });
@@ -878,7 +878,7 @@ describe('function', () => {
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       deadLetterQueueEnabled: false,
       deadLetterQueue: dlQueue,
     })).toThrow(/deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
@@ -892,7 +892,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       deadLetterTopic: dlTopic,
     });
 
@@ -927,7 +927,7 @@ describe('function', () => {
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       deadLetterQueueEnabled: false,
       deadLetterTopic: dlTopic,
     })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
@@ -941,7 +941,7 @@ describe('function', () => {
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       deadLetterQueueEnabled: true,
       deadLetterTopic: dlTopic,
     })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
@@ -956,7 +956,7 @@ describe('function', () => {
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       deadLetterQueue: dlQueue,
       deadLetterTopic: dlTopic,
     })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
@@ -968,7 +968,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       tracing: lambda.Tracing.ACTIVE,
     });
 
@@ -1006,7 +1006,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs14.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1024,7 +1024,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       tracing: lambda.Tracing.PASS_THROUGH,
     });
 
@@ -1062,7 +1062,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs14.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1080,7 +1080,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       tracing: lambda.Tracing.DISABLED,
     });
 
@@ -1098,7 +1098,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs14.x',
       },
       DependsOn: [
         'MyLambdaServiceRole4539ECB6',
@@ -1132,7 +1132,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
 
       // WHEN
@@ -1162,7 +1162,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
       const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
@@ -1188,7 +1188,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
       const account = new iam.AccountPrincipal('123456789012');
 
@@ -1214,7 +1214,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
       const account = new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole');
 
@@ -1240,7 +1240,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
       const service = new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com');
 
@@ -1269,7 +1269,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
 
       // WHEN
@@ -1301,7 +1301,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
 
       // WHEN
@@ -1402,7 +1402,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // THEN
@@ -1421,7 +1421,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     let bindTarget;
@@ -1513,10 +1513,10 @@ describe('function', () => {
     // THEN
     expect(() => new lambda.Function(stack, 'Function', {
       layers: [layer],
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
-    })).toThrow(/nodejs10.x is not in \[nodejs14.x\]/);
+    })).toThrow(/nodejs16.x is not in \[nodejs14.x\]/);
   });
 
   test('using more than 5 layers', () => {
@@ -1524,13 +1524,13 @@ describe('function', () => {
     const stack = new cdk.Stack(undefined, 'TestStack');
     const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
-      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
     }));
 
     // THEN
     expect(() => new lambda.Function(stack, 'Function', {
       layers,
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
     })).toThrow(/Unable to add layer:/);
@@ -1614,7 +1614,7 @@ describe('function', () => {
     // WHEN
     new lambda.Function(stack, 'fn', {
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.bam',
       events: [
         new EventSource(),
@@ -1690,7 +1690,7 @@ describe('function', () => {
     new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       onFailure: {
         bind: () => ({ destination: 'on-failure-arn' }),
       },
@@ -1726,7 +1726,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       maxEventAge: cdk.Duration.hours(1),
     });
 
@@ -1760,7 +1760,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -1891,7 +1891,7 @@ describe('function', () => {
     // WHEN/THEN
     expect(() => new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline(''),
     })).toThrow(/Lambda inline code cannot be empty/);
   });
@@ -1900,7 +1900,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
     });
     const logGroup = fn.logGroup;
@@ -1918,7 +1918,7 @@ describe('function', () => {
 
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
       deadLetterQueue: dlQueue,
     });
@@ -1940,7 +1940,7 @@ describe('function', () => {
 
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
       deadLetterTopic: dlTopic,
     });
@@ -1957,7 +1957,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
       deadLetterQueueEnabled: true,
     });
@@ -1974,7 +1974,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
     });
     const deadLetterQueue = fn.deadLetterQueue;
@@ -1988,7 +1988,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline('foo'),
       logRetention: logs.RetentionDays.FIVE_DAYS,
     });
@@ -2015,7 +2015,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const version1 = fn.latestVersion;
@@ -2043,7 +2043,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       environment: {
         SOME: 'Variable',
       },
@@ -2234,7 +2234,7 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
@@ -2580,7 +2580,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         codeSigningConfig,
       });
 
@@ -2745,7 +2745,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
         handler: 'index.hello',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
 
       // WHEN
@@ -2769,7 +2769,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
         handler: 'index.hello',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
 
       // WHEN
@@ -2818,7 +2818,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
         handler: 'index.hello',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
       fn.addFunctionUrl();
 

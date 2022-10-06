@@ -91,7 +91,7 @@ your domain name, and provide one (or more) domain names from the certificate fo
 
 The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
 may either be created by ACM, or created elsewhere and imported into ACM. When a certificate is used, the distribution will support HTTPS connections
-from SNI only and a minimum protocol version of TLSv1.2_2021 if the `@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021` feature flag is set, and TLSv1.2_2019 otherwise. 
+from SNI only and a minimum protocol version of TLSv1.2_2021 if the `@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021` feature flag is set, and TLSv1.2_2019 otherwise.
 
 ```ts
 // To use your own domain name in a Distribution, you must associate a certificate
@@ -361,7 +361,7 @@ on every request:
 // A Lambda@Edge function added to default behavior of a Distribution
 // and triggered on every request
 const myFunc = new cloudfront.experimental.EdgeFunction(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -392,7 +392,7 @@ If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead
 ```ts
 // Using a lambda Function instead of an EdgeFunction for stacks in `us-east-`.
 const myFunc = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -405,14 +405,14 @@ you can also set a specific stack ID for each Lambda@Edge.
 // Setting stackIds for EdgeFunctions that can be referenced from different applications
 // on the same account.
 const myFunc1 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction1', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler1')),
   stackId: 'edge-lambda-stack-id-1',
 });
 
 const myFunc2 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction2', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler2')),
   stackId: 'edge-lambda-stack-id-2',
@@ -558,7 +558,7 @@ configuration properties have been changed:
 | `loggingConfig`                | `enableLogging`; configure with `logBucket` `logFilePrefix` and `logIncludesCookies`           |
 | `viewerProtocolPolicy`         | removed; set on each behavior instead. default changed from `REDIRECT_TO_HTTPS` to `ALLOW_ALL` |
 
-After switching constructs, you need to maintain the same logical ID for the underlying [CfnDistribution](https://docs.aws.amazon.com/cdk/api/v1/docs/@aws-cdk_aws-cloudfront.CfnDistribution.html) if you wish to avoid the deletion and recreation of your distribution. 
+After switching constructs, you need to maintain the same logical ID for the underlying [CfnDistribution](https://docs.aws.amazon.com/cdk/api/v1/docs/@aws-cdk_aws-cloudfront.CfnDistribution.html) if you wish to avoid the deletion and recreation of your distribution.
 To do this, use [escape hatches](https://docs.aws.amazon.com/cdk/v2/guide/cfn_layer.html) to override the logical ID created by the new Distribution construct with the logical ID created by the old construct.
 
 Example:
@@ -714,7 +714,7 @@ new cloudfront.CloudFrontWebDistribution(this, 'MyCfWebDistribution', {
 });
 ```
 
-Becomes: 
+Becomes:
 
 ```ts
 declare const sourceBucket: s3.Bucket;
@@ -733,8 +733,8 @@ cfnDistribution.addPropertyOverride('ViewerCertificate.SslSupportMethod', 'sni-o
 
 ### Other changes
 
-A number of default settings have changed on the new API when creating a new distribution, behavior, and origin. 
-After making the major changes needed for the migration, run `cdk diff` to see what settings have changed. 
+A number of default settings have changed on the new API when creating a new distribution, behavior, and origin.
+After making the major changes needed for the migration, run `cdk diff` to see what settings have changed.
 If no changes are desired during migration, you will at the least be able to use [escape hatches](https://docs.aws.amazon.com/cdk/v2/guide/cfn_layer.html) to override what the CDK synthesizes, if you can't change the properties directly.
 
 ## CloudFrontWebDistribution API
@@ -940,7 +940,7 @@ The following example command uses OpenSSL to generate an RSA key pair with a le
 openssl genrsa -out private_key.pem 2048
 ```
 
-The resulting file contains both the public and the private key. The following example command extracts the public key from the file named `private_key.pem` and stores it in `public_key.pem`. 
+The resulting file contains both the public and the private key. The following example command extracts the public key from the file named `private_key.pem` and stores it in `public_key.pem`.
 
 ```bash
 openssl rsa -pubout -in private_key.pem -out public_key.pem
@@ -966,4 +966,4 @@ new cloudfront.KeyGroup(this, 'MyKeyGroup', {
 See:
 
 * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
-* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html 
+* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html

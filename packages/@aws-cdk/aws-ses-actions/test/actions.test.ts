@@ -85,7 +85,7 @@ test('add lambda action', () => {
   const fn = new lambda.Function(stack, 'Function', {
     code: lambda.Code.fromInline('boom'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
   });
 
   rule.addAction(new actions.Lambda({

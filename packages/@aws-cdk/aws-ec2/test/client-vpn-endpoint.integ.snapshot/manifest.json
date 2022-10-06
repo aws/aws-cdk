@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -19,13 +19,13 @@
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f",
-              "id": "c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f",
+              "path": "asset.1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8a",
+              "id": "1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8a",
               "packaging": "zip",
-              "sourceHash": "c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f",
-              "s3BucketParameter": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3Bucket42BD8ED5",
-              "s3KeyParameter": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3VersionKeyA7C3DEE3",
-              "artifactHashParameter": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fArtifactHash18BB2B9F"
+              "sourceHash": "1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8a",
+              "s3BucketParameter": "AssetParameters1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8aS3Bucket4E8C33C0",
+              "s3KeyParameter": "AssetParameters1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8aS3VersionKeyE2343283",
+              "artifactHashParameter": "AssetParameters1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8aArtifactHashEE06FD36"
             }
           }
         ],
@@ -53,22 +53,22 @@
             "data": "CustomACMImportCertificatesCustomResourceProviderHandler2EB12457"
           }
         ],
-        "/cdk-ec2-client-vpn-endpoint/AssetParameters/c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f/S3Bucket": [
+        "/cdk-ec2-client-vpn-endpoint/AssetParameters/1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8a/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3Bucket42BD8ED5"
+            "data": "AssetParameters1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8aS3Bucket4E8C33C0"
           }
         ],
-        "/cdk-ec2-client-vpn-endpoint/AssetParameters/c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f/S3VersionKey": [
+        "/cdk-ec2-client-vpn-endpoint/AssetParameters/1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8a/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3VersionKeyA7C3DEE3"
+            "data": "AssetParameters1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8aS3VersionKeyE2343283"
           }
         ],
-        "/cdk-ec2-client-vpn-endpoint/AssetParameters/c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f/ArtifactHash": [
+        "/cdk-ec2-client-vpn-endpoint/AssetParameters/1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8a/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fArtifactHash18BB2B9F"
+            "data": "AssetParameters1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8aArtifactHashEE06FD36"
           }
         ],
         "/cdk-ec2-client-vpn-endpoint/Vpc/Resource": [
