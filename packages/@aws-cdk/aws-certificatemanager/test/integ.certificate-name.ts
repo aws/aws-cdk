@@ -31,4 +31,5 @@ new Certificate(stack, 'Certificate', {
 new IntegTest(app, 'integ-test', {
   testCases: [stack],
   diffAssets: true,
+  enableLookups: true,
 });
