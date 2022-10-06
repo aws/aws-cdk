@@ -4,7 +4,6 @@ import { App, Stack, Duration } from '@aws-cdk/core';
 import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests';
 import { MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer, Cors } from '../../lib';
 
-/// !show
 const app = new App();
 const stack = new Stack(app, 'TokenAuthorizerInteg');
 
@@ -42,7 +41,6 @@ restapi.root.addMethod('ANY', new MockIntegration({
     { statusCode: '200' },
   ],
 });
-/// !hide
 
 const integ = new IntegTest(app, 'apigw-token-auth', {
   testCases: [stack],
