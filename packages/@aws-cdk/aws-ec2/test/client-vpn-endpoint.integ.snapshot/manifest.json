@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "cdk-ec2-client-vpn-endpoint.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-ec2-client-vpn-endpoint.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "cdk-ec2-client-vpn-endpoint": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-ec2-client-vpn-endpoint.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/cdk-ec2-client-vpn-endpoint": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f",
-              "id": "c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f",
-              "packaging": "zip",
-              "sourceHash": "c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f",
-              "s3BucketParameter": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3Bucket42BD8ED5",
-              "s3KeyParameter": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3VersionKeyA7C3DEE3",
-              "artifactHashParameter": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fArtifactHash18BB2B9F"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb04fd0d871fbd342944b7f642eee0dfa94e90f5b5be7498df0a43825361b275.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-ec2-client-vpn-endpoint.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-ec2-client-vpn-endpoint.assets"
+      ],
+      "metadata": {
         "/cdk-ec2-client-vpn-endpoint/ImportCertificates/CreateCertificates/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -51,24 +61,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomACMImportCertificatesCustomResourceProviderHandler2EB12457"
-          }
-        ],
-        "/cdk-ec2-client-vpn-endpoint/AssetParameters/c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3Bucket42BD8ED5"
-          }
-        ],
-        "/cdk-ec2-client-vpn-endpoint/AssetParameters/c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3VersionKeyA7C3DEE3"
-          }
-        ],
-        "/cdk-ec2-client-vpn-endpoint/AssetParameters/c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fArtifactHash18BB2B9F"
           }
         ],
         "/cdk-ec2-client-vpn-endpoint/Vpc/Resource": [
@@ -207,6 +199,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LogGroupF5B46931"
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

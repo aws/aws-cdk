@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-interface-vpc-endpoint.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-interface-vpc-endpoint.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-interface-vpc-endpoint": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/us-west-2",
       "properties": {
         "templateFile": "aws-cdk-interface-vpc-endpoint.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/1c13493c95c71212ba5a2eeb1a18529e6362ef7c4779a13575755c6d4930b633.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-interface-vpc-endpoint.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "aws-cdk-interface-vpc-endpoint.assets"
+      ],
       "metadata": {
         "/aws-cdk-interface-vpc-endpoint/VPC/Resource": [
           {
@@ -175,6 +199,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AliasEndpointRecord40E9201F"
+          }
+        ],
+        "/aws-cdk-interface-vpc-endpoint/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-interface-vpc-endpoint/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

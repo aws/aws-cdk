@@ -40,14 +40,14 @@ export class SqsSubscription implements sns.ITopicSubscription {
 
     // add a statement to the queue resource policy which allows this topic
     // to send messages to the queue.
-    this.queue.addToResourcePolicy(new iam.PolicyStatement({
+    const queuePolicyDependable = this.queue.addToResourcePolicy(new iam.PolicyStatement({
       resources: [this.queue.queueArn],
       actions: ['sqs:SendMessage'],
       principals: [snsServicePrincipal],
       conditions: {
         ArnEquals: { 'aws:SourceArn': topic.topicArn },
       },
-    }));
+    })).policyDependable;
 
     // if the queue is encrypted, add a statement to the key resource policy
     // which allows this topic to decrypt KMS keys
@@ -77,6 +77,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
       filterPolicy: this.props.filterPolicy,
       region: this.regionFromArn(topic),
       deadLetterQueue: this.props.deadLetterQueue,
+      subscriptionDependency: queuePolicyDependable,
     };
   }
 

@@ -37,7 +37,7 @@ test('Bundling a function without dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rT /asset-input/ /asset-output',
+        'cp -rTL /asset-input/ /asset-output && cd /asset-output',
       ],
     }),
   }));
@@ -66,7 +66,7 @@ test('Bundling a function with requirements.txt', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'python -m pip install -r requirements.txt -t /asset-output && cp -rT /asset-input/ /asset-output',
+        'cp -rTL /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
       ],
     }),
   }));
@@ -89,7 +89,7 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'python -m pip install -r requirements.txt -t /asset-output && cp -rT /asset-input/ /asset-output',
+        'cp -rTL /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
       ],
     }),
   }));
@@ -109,7 +109,7 @@ test('Bundling a layer with dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'python -m pip install -r requirements.txt -t /asset-output/python && cp -rT /asset-input/ /asset-output/python',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -129,7 +129,7 @@ test('Bundling a python code layer', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rT /asset-input/ /asset-output/python',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python',
       ],
     }),
   }));
@@ -149,7 +149,7 @@ test('Bundling a function with pipenv dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python && cp -rT /asset-input/ /asset-output/python',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -176,7 +176,7 @@ test('Bundling a function with poetry dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'poetry export --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python && cp -rT /asset-input/ /asset-output/python',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -206,7 +206,7 @@ test('Bundling a function with custom bundling image', () => {
       image,
       command: [
         'bash', '-c',
-        'python -m pip install -r requirements.txt -t /asset-output/python && cp -rT /asset-input/ /asset-output/python',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));

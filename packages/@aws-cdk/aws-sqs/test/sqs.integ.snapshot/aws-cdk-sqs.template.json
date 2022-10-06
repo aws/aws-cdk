@@ -81,6 +81,22 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "SqsManagedEncryptedQueue587679B3": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "UnencryptedQueue57F92F9C": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": false
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "Role1ABCC5F0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -151,6 +167,18 @@
           "Queue4A7E3555",
           "Arn"
          ]
+        },
+        {
+         "Fn::GetAtt": [
+          "SqsManagedEncryptedQueue587679B3",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "UnencryptedQueue57F92F9C",
+          "Arn"
+         ]
         }
        ]
       },
@@ -181,6 +209,40 @@
    "Value": {
     "Ref": "Queue4A7E3555"
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

@@ -3,7 +3,7 @@
   "testCases": {
     "executionRoleAlbFargateTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ"
+        "aws-ecs-integ-fargate-execrole"
       ],
       "assertionStack": "executionRoleAlbFargateTest/DefaultTest/DeployAssert"
     }

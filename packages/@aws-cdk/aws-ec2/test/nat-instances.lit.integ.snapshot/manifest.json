@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-vpc-nat-instances.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-vpc-nat-instances.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-vpc-nat-instances": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://12345678/test-region",
       "properties": {
         "templateFile": "aws-cdk-vpc-nat-instances.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/e4dbe80af6eeee2738dcf9e044fca324cf75250bb423481c324c446909f8dce3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-vpc-nat-instances.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "aws-cdk-vpc-nat-instances.assets"
+      ],
       "metadata": {
         "/aws-cdk-vpc-nat-instances/MyVpc/Resource": [
           {
@@ -24,10 +48,7 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1SubnetF6608456",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet1SubnetF6608456"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/RouteTable": [
@@ -39,10 +60,7 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/DefaultRoute": [
@@ -60,19 +78,13 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/NatInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1NatInstance8E94E5F7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet1NatInstance8E94E5F7"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2Subnet492B6BFB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet2Subnet492B6BFB"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/RouteTable": [
@@ -84,10 +96,7 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/DefaultRoute": [
@@ -105,19 +114,13 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/NatInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2NatInstance04BCE4E3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet2NatInstance04BCE4E3"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet3Subnet57EEE236",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet3Subnet57EEE236"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet3/RouteTable": [
@@ -129,10 +132,7 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet3/DefaultRoute": [
@@ -144,10 +144,7 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1Subnet5057CF7E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPrivateSubnet1Subnet5057CF7E"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet1/RouteTable": [
@@ -159,10 +156,7 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet1/DefaultRoute": [
@@ -174,10 +168,7 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2Subnet0040C983",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPrivateSubnet2Subnet0040C983"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet2/RouteTable": [
@@ -189,10 +180,7 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet2/DefaultRoute": [
@@ -204,10 +192,7 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet3Subnet772D6AD7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPrivateSubnet3Subnet772D6AD7"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet3/RouteTable": [
@@ -219,10 +204,7 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet3RouteTableAssociationD951741C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPrivateSubnet3RouteTableAssociationD951741C"
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet3/DefaultRoute": [
@@ -253,6 +235,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcNatRoleF1616EE9"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

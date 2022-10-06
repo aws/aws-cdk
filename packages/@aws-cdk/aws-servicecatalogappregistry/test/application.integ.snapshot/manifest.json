@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "integ-servicecatalogappregistry-application.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-servicecatalogappregistry-application.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "integ-servicecatalogappregistry-application": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-servicecatalogappregistry-application.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d03aa6239eb3b20f4b72fb3dd44a4082d06d7a5451d0ac3855bd1aa78aecfbe9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-servicecatalogappregistry-application.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "integ-servicecatalogappregistry-application.assets"
+      ],
       "metadata": {
         "/integ-servicecatalogappregistry-application/TestApplication/Resource": [
           {
@@ -51,13 +75,16 @@
             "data": "MyRoleF48FFE04"
           }
         ],
-        "TestApplicationRAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB233482C38": [
+        "/integ-servicecatalogappregistry-application/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestApplicationRAMShareintegservicecatalogappregistryapplicationTestApplicationF7821DB233482C38",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

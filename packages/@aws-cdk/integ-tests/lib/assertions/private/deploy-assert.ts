@@ -1,9 +1,10 @@
 import { Stack } from '@aws-cdk/core';
 import { Construct, IConstruct, Node } from 'constructs';
+import { IApiCall } from '../api-call-base';
 import { EqualsAssertion } from '../assertions';
 import { ExpectedResult, ActualResult } from '../common';
 import { md5hash } from '../private/hash';
-import { AwsApiCall, LambdaInvokeFunction, IAwsApiCall, LambdaInvokeFunctionProps } from '../sdk';
+import { AwsApiCall, LambdaInvokeFunction, LambdaInvokeFunctionProps } from '../sdk';
 import { IDeployAssert } from '../types';
 
 
@@ -49,7 +50,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
     Object.defineProperty(this, DEPLOY_ASSERT_SYMBOL, { value: true });
   }
 
-  public awsApiCall(service: string, api: string, parameters?: any): IAwsApiCall {
+  public awsApiCall(service: string, api: string, parameters?: any): IApiCall {
     return new AwsApiCall(this.scope, `AwsApiCall${service}${api}`, {
       api,
       service,
@@ -57,7 +58,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
     });
   }
 
-  public invokeFunction(props: LambdaInvokeFunctionProps): IAwsApiCall {
+  public invokeFunction(props: LambdaInvokeFunctionProps): IApiCall {
     const hash = md5hash(this.scope.resolve(props));
     return new LambdaInvokeFunction(this.scope, `LambdaInvoke${hash}`, props);
   }

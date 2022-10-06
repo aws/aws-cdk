@@ -5,7 +5,7 @@
       "stacks": [
         "aws-cdk-apigw-alias-integ"
       ],
-      "assertionStack": "apigatewaydomainnameDefaultTestDeployAssertC8336909"
+      "assertionStack": "apigateway-domain-name/DefaultTest/DeployAssert"
     }
   }
 }

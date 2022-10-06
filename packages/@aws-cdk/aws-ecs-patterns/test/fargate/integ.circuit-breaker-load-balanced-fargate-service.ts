@@ -5,7 +5,7 @@ import * as integ from '@aws-cdk/integ-tests';
 import { ApplicationLoadBalancedFargateService } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-integ-circuit-breaker');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 

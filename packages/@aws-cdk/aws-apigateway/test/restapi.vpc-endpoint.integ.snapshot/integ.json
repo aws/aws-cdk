@@ -5,7 +5,7 @@
       "stacks": [
         "test-apigateway-vpcendpoint"
       ],
-      "assertionStack": "apigatewayvpcendpointDefaultTestDeployAssert95ED9392"
+      "assertionStack": "apigateway-vpcendpoint/DefaultTest/DeployAssert"
     }
   }
 }

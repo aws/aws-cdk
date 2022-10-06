@@ -252,3 +252,35 @@ test('specifying retry policy', () => {
     ],
   });
 });
+
+test('specifying retry policy with 0 retryAttempts', () => {
+  const stack = new Stack();
+  const queue = new sqs.Queue(stack, 'MyQueue', { fifo: true });
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    retryAttempts: 0,
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        RetryPolicy: {
+          MaximumRetryAttempts: 0,
+        },
+      },
+    ],
+  });
+});
