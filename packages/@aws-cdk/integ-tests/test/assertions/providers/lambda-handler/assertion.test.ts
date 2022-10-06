@@ -50,7 +50,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data).toEqual('{"status":"success"}');
+      expect(response.assertion).toEqual('{"status":"success"}');
     });
 
     test('fail', async () => {
@@ -65,7 +65,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(JSON.parse(response.data)).toEqual({
+      expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
         message: expect.stringMatching(/String 'this is the actual results' did not match pattern 'abcd' (using stringLikeRegexp matcher)*/),
       });
@@ -95,7 +95,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data).toEqual('{"status":"success"}');
+      expect(response.assertion).toEqual('{"status":"success"}');
     });
 
     test('fail', async () => {
@@ -121,7 +121,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(JSON.parse(response.data)).toEqual({
+      expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
         message: expect.stringMatching(/Missing element at pattern index 0 (using arrayWith matcher)*/),
       });
@@ -159,7 +159,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data).toEqual('{"status":"success"}');
+      expect(response.assertion).toEqual('{"status":"success"}');
     });
 
     test('fail', async () => {
@@ -180,7 +180,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(JSON.parse(response.data)).toEqual({
+      expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
         message: 'Expected bar but received foo at /stringParam (using objectLike matcher)\n' +
           '{\n  \"stringParam\": \"foo\",\n  \"numberParam\": 3,\n  \"booleanParam\": true\n}',
@@ -209,7 +209,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data).toEqual('{"status":"success"}');
+      expect(response.assertion).toEqual('{"status":"success"}');
     });
 
     test('string equals pass', async () => {
@@ -224,7 +224,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(response.data).toEqual('{"status":"success"}');
+      expect(response.assertion).toEqual('{"status":"success"}');
     });
 
     test('fail', async () => {
@@ -243,7 +243,7 @@ describe('AssertionHandler', () => {
       const response: AssertionResult = await handler.processEvent(request);
 
       // THEN
-      expect(JSON.parse(response.data)).toEqual({
+      expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
         message: 'Expected bar but received foo at /stringParam (using exact matcher)\n{\n  \"stringParam\": \"foo\"\n}',
       });

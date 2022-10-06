@@ -1263,6 +1263,21 @@ describe('regionalFact', () => {
       },
     });
   });
+
+  test('stack.addMetadata() adds metadata', () => {
+    const stack = new Stack();
+
+    stack.addMetadata('Instances', { Description: 'Information about the instances' });
+    stack.addMetadata('Databases', { Description: 'Information about the databases' } );
+
+    expect(toCloudFormation(stack)).toEqual({
+      Metadata: {
+        Instances: { Description: 'Information about the instances' },
+        Databases: { Description: 'Information about the databases' },
+      },
+    });
+  });
+
 });
 
 class StackWithPostProcessor extends Stack {

@@ -83,7 +83,7 @@ export interface IApiCall extends IConstruct {
    *
    * message.assertAtPath('Messages.0.Body', ExpectedResult.stringLikeRegexp('hello'));
    */
-  assertAtPath(path: string, expected: ExpectedResult): void;
+  assertAtPath(path: string, expected: ExpectedResult): IApiCall;
 
   /**
    * Allows you to chain IApiCalls. This adds an explicit dependency
@@ -107,7 +107,6 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
   protected abstract readonly apiCallResource: CustomResource;
   protected expectedResult?: string;
   protected flattenResponse: string = 'false';
-  protected stateMachineArn?: string;
 
   public abstract readonly provider: AssertionsProvider;
 
@@ -130,7 +129,7 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
     this.expectedResult = expected.result;
   }
 
-  public abstract assertAtPath(path: string, expected: ExpectedResult): void;
+  public abstract assertAtPath(path: string, expected: ExpectedResult): IApiCall;
 
   public next(next: IApiCall): IApiCall {
     next.node.addDependency(this);

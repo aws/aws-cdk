@@ -1,10 +1,10 @@
 import { CfnResourceShare } from '@aws-cdk/aws-ram';
 import * as cdk from '@aws-cdk/core';
-import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
+import { Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { InputValidator } from './private/validation';
 import { CfnAttributeGroup } from './servicecatalogappregistry.generated';
-import { Names } from '@aws-cdk/core';
 
 const ATTRIBUTE_GROUP_READ_ONLY_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly';
 const ATTRIBUTE_GROUP_ALLOW_ACCESS_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupAllowAssociation';

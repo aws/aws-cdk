@@ -3,7 +3,8 @@ import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { debug, print, trace } from './logging';
+import { debug, print } from './logging';
+import { some, ConstructTreeNode, loadTreeFromDir } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
@@ -79,7 +80,7 @@ export function filterNotices(data: Notice[], options: FilterNoticeOptions): Not
   const filter = new NoticeFilter({
     cliVersion: options.cliVersion ?? versionNumber(),
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
-    tree: loadTree(options.outdir ?? 'cdk.out').tree,
+    tree: loadTreeFromDir(options.outdir ?? 'cdk.out'),
   });
   return data.filter(notice => filter.apply(notice));
 }
@@ -334,53 +335,5 @@ function match(query: Component[], tree: ConstructTreeNode): boolean {
 
   function compareVersions(pattern: string, target: string | undefined): boolean {
     return semver.satisfies(target ?? '', pattern);
-  }
-}
-
-function loadTree(outdir: string) {
-  try {
-    return fs.readJSONSync(path.join(outdir, 'tree.json'));
-  } catch (e) {
-    trace(`Failed to get tree.json file: ${e}. Proceeding with empty tree.`);
-    return {};
-  }
-}
-
-/**
- * Source information on a construct (class fqn and version)
- */
-interface ConstructInfo {
-  readonly fqn: string;
-  readonly version: string;
-}
-
-/**
- * A node in the construct tree.
- * @internal
- */
-interface ConstructTreeNode {
-  readonly id: string;
-  readonly path: string;
-  readonly children?: { [key: string]: ConstructTreeNode };
-  readonly attributes?: { [key: string]: any };
-
-  /**
-   * Information on the construct class that led to this node, if available
-   */
-  readonly constructInfo?: ConstructInfo;
-}
-
-function some(node: ConstructTreeNode, predicate: (n: ConstructTreeNode) => boolean): boolean {
-  return node != null && (predicate(node) || findInChildren());
-
-  function findInChildren(): boolean {
-    if (node.children == null) { return false; }
-
-    for (const name in node.children) {
-      if (some(node.children[name], predicate)) {
-        return true;
-      }
-    }
-    return false;
   }
 }

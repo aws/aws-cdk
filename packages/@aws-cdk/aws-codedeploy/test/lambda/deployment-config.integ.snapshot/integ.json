@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "LambdaDeploymentConfigTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codedeploy-lambda-config"
+      ],
+      "assertionStack": "LambdaDeploymentConfigTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaDeploymentConfigTestDefaultTestDeployAssert161B09F6"
+    }
+  }
+}

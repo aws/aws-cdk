@@ -8,6 +8,7 @@ export * from './codedeploy/ecs-deploy-action';
 export * from './codedeploy/server-deploy-action';
 export * from './ecr/source-action';
 export * from './ecs/deploy-action';
+export * from './elastic-beanstalk/deploy-action';
 export * from './github/source-action';
 export * from './jenkins/jenkins-action';
 export * from './jenkins/jenkins-provider';

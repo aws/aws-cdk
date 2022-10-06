@@ -17,6 +17,12 @@ class Test extends cdk.Stack {
         sub: apigateway.AccessLogField.contextAuthorizerClaims('sub'),
         email: apigateway.AccessLogField.contextAuthorizerClaims('email'),
       },
+      clientCertPem: apigateway.AccessLogField.contextIdentityClientCertPem(),
+      subjectDN: apigateway.AccessLogField.contextIdentityClientCertSubjectDN(),
+      issunerDN: apigateway.AccessLogField.contextIdentityClientCertIssunerDN(),
+      serialNumber: apigateway.AccessLogField.contextIdentityClientCertSerialNumber(),
+      validityNotBefore: apigateway.AccessLogField.contextIdentityClientCertValidityNotBefore(),
+      validityNotAfter: apigateway.AccessLogField.contextIdentityClientCertValidityNotAfter(),
     }));
 
     const logGroup = new logs.LogGroup(this, 'MyLogGroup');

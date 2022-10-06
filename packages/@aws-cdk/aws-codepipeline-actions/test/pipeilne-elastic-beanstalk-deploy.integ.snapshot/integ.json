@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "codepipeline-elastic-beanstalk-deploy/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codepipeline-elastic-beanstalk-deploy"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "codepipeline-elastic-beanstalk-deploy/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelineelasticbeanstalkdeployDefaultTestDeployAssert785E452B"
+    }
+  }
+}

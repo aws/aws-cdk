@@ -1,10 +1,7 @@
 import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Node, IConstruct } from 'constructs';
-import { FileAssetSource, FileAssetPackaging } from '../assets';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { ISynthesisSession } from './types';
@@ -171,17 +168,4 @@ export class StringSpecializer {
  */
 export function resolvedOr<A>(x: string, def: A): string | A {
   return Token.isUnresolved(x) ? def : x;
-}
-
-export function stackTemplateFileAsset(stack: Stack, session: ISynthesisSession): FileAssetSource {
-  const templatePath = path.join(session.assembly.outdir, stack.templateFile);
-  const template = fs.readFileSync(templatePath, { encoding: 'utf-8' });
-
-  const sourceHash = contentHash(template);
-
-  return {
-    fileName: stack.templateFile,
-    packaging: FileAssetPackaging.FILE,
-    sourceHash,
-  };
 }

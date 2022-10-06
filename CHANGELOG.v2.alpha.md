@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.45.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.44.0-alpha.0...v2.45.0-alpha.0) (2022-10-06)
+
+
+### Features
+
+* **gamelift:** add Build L2 constructs for GameLift ([#22313](https://github.com/aws/aws-cdk/issues/22313)) ([983d26e](https://github.com/aws/aws-cdk/commit/983d26e4e7cbb40fe1148ec635efe8093d850835))
+* **gamelift:** add Script L2 Construct for GameLift ([#22343](https://github.com/aws/aws-cdk/issues/22343)) ([da181ba](https://github.com/aws/aws-cdk/commit/da181bac2a7fee2cad8915006d4501074fcb04d4))
+* **neptune:** enable cloudwatch logs exports ([#22004](https://github.com/aws/aws-cdk/issues/22004)) ([2b2bb01](https://github.com/aws/aws-cdk/commit/2b2bb01dbe00c79e7f5a0513a2e1f76f6cdcbc11)), closes [#20248](https://github.com/aws/aws-cdk/issues/20248) [#15888](https://github.com/aws/aws-cdk/issues/15888)
+* **servicecatalogappregistry:** application-associator L2 Construct ([#22024](https://github.com/aws/aws-cdk/issues/22024)) ([a2b7a46](https://github.com/aws/aws-cdk/commit/a2b7a4624638a458bfb6e8e09c67a77e48e1d167))
+
 ## [2.44.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.43.1-alpha.0...v2.44.0-alpha.0) (2022-09-28)
 
 

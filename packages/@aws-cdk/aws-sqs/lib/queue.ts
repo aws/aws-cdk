@@ -87,12 +87,12 @@ export interface QueueProps {
    * Be aware that encryption is not available in all regions, please see the docs
    * for current availability details.
    *
-   * @default Unencrypted
+   * @default SQS_MANAGED (SSE-SQS) for newly created queues
    */
   readonly encryption?: QueueEncryption;
 
   /**
-   * External KMS master key to use for queue encryption.
+   * External KMS key to use for queue encryption.
    *
    * Individual messages will be encrypted using data keys. The data keys in
    * turn will be encrypted using this key, and reused for a maximum of
@@ -196,9 +196,9 @@ export enum QueueEncryption {
   UNENCRYPTED = 'NONE',
 
   /**
-   * Server-side KMS encryption with a master key managed by SQS.
+   * Server-side KMS encryption with a KMS key managed by SQS.
    */
-  KMS_MANAGED = 'MANAGED',
+  KMS_MANAGED = 'KMS_MANAGED',
 
   /**
    * Server-side encryption with a KMS key managed by the user.
@@ -206,6 +206,14 @@ export enum QueueEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+
+  /**
+   * Server-side encryption key managed by SQS (SSE-SQS).
+   *
+   * To learn more about SSE-SQS on Amazon SQS, please visit the
+   * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
+   */
+  SQS_MANAGED = 'SQS_MANAGED'
 }
 
 /**
@@ -369,14 +377,26 @@ export class Queue extends QueueBase {
     this.deadLetterQueue = props.deadLetterQueue;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
-      let encryption = props.encryption || QueueEncryption.UNENCRYPTED;
+      let encryption = props.encryption;
+
+      if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
+        throw new Error("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used");
+      }
 
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
         encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
       }
 
-      if (encryption === QueueEncryption.UNENCRYPTED) {
+      if (!encryption) {
         return { encryptionProps: {} };
+      }
+
+      if (encryption === QueueEncryption.UNENCRYPTED) {
+        return {
+          encryptionProps: {
+            sqsManagedSseEnabled: false,
+          },
+        };
       }
 
       if (encryption === QueueEncryption.KMS_MANAGED) {
@@ -398,6 +418,14 @@ export class Queue extends QueueBase {
           encryptionProps: {
             kmsMasterKeyId: masterKey.keyArn,
             kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds(),
+          },
+        };
+      }
+
+      if (encryption === QueueEncryption.SQS_MANAGED) {
+        return {
+          encryptionProps: {
+            sqsManagedSseEnabled: true,
           },
         };
       }
@@ -459,4 +487,5 @@ interface FifoProps {
 interface EncryptionProps {
   readonly kmsMasterKeyId?: string;
   readonly kmsDataKeyReusePeriodSeconds?: number;
+  readonly sqsManagedSseEnabled?: boolean;
 }

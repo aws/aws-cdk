@@ -1,3 +1,4 @@
+import { Template, Match } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { AthenaStartQueryExecution, EncryptionOption } from '../../lib/athena/start-query-execution';
@@ -173,5 +174,63 @@ describe('Start Query Execution', () => {
 
     // THEN
     expect(stack.resolve(task.toStateJson())).not.toHaveProperty('Parameters.QueryExecutionContext');
+  });
+
+  test('bucket arn is formatted as expected in generated policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = new AthenaStartQueryExecution(stack, 'Query', {
+      queryString: 'CREATE DATABASE database',
+      clientRequestToken: 'unique-client-request-token',
+      resultConfiguration: {
+        outputLocation: {
+          bucketName: 'query-results-bucket',
+          objectKey: 'folder',
+        },
+      },
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definition: task,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              's3:AbortMultipartUpload',
+              's3:ListBucketMultipartUploads',
+              's3:ListMultipartUploadParts',
+              's3:PutObject',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':s3:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':query-results-bucket/folder',
+                ],
+              ],
+            },
+          },
+        ]),
+      }),
+    });
   });
 });

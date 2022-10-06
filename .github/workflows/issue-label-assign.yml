@@ -282,5 +282,7 @@ env:
            {"area":"@aws-cdk/yaml-cfn","keywords":["aws-yaml-cfn","yaml-cfn"],"labels":["@aws-cdk/aws-yaml-cfn"],"assignees":["kaizencc"]},
            {"area":"@aws-cdk/aws-lightsail","keywords":["lightsail","aws-lightsail"],"labels":["@aws-cdk/aws-lightsail"],"assignees":["corymhall"]},
            {"area":"@aws-cdk/aws-aps","keywords":["aps","aws-aps","prometheus"],"labels":["@aws-cdk/aws-aps"],"assignees":["corymhall"]},
-           {"area":"@aws-cdk/triggers","keywords":["trigger","triggers"],"labels":["@aws-cdk/triggers"],"assignees":["otaviomacedo"]}
+           {"area":"@aws-cdk/triggers","keywords":["trigger","triggers"],"labels":["@aws-cdk/triggers"],"assignees":["otaviomacedo"]},
+           {"area":"@aws-cdk/integ-tests","keywords":["integ-tests", "integ"],"labels":["@aws-cdk/integ-tests"],"assignees":["corymhall"]},
+           {"area":"@aws-cdk/integ-runner","keywords":["integ-runner"],"labels":["@aws-cdk/integ-runner"],"assignees":["corymhall"]}
            ]

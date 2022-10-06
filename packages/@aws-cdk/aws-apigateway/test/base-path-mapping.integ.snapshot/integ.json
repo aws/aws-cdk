@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "base-path-mapping/DefaultTest": {
+      "stacks": [
+        "test-stack"
+      ],
+      "assertionStack": "base-path-mapping/DefaultTest/DeployAssert",
+      "assertionStackName": "basepathmappingDefaultTestDeployAssertDA82B6F0"
+    }
+  }
+}

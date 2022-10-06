@@ -726,6 +726,59 @@ describe('resource', () => {
       });
     });
 
+    test('Can override a an object with an intrinsic', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const condition = new CfnCondition(stack, 'MyCondition', {
+        expression: Fn.conditionEquals('us-east-1', 'us-east-1'),
+      });
+      const resource = new CfnResource(stack, 'MyResource', {
+        type: 'MyResourceType',
+        properties: {
+          prop1: {
+            subprop: {
+              name: Fn.getAtt('resource', 'abc'),
+            },
+          },
+        },
+      });
+      const isEnabled = Fn.conditionIf(condition.logicalId, {
+        Ref: 'AWS::NoValue',
+      }, {
+        name: Fn.getAtt('resource', 'abc'),
+      });
+
+      // WHEN
+      resource.addPropertyOverride('prop1.subprop', isEnabled);
+      const cfn = toCloudFormation(stack);
+
+      // THEN
+      expect(cfn.Resources.MyResource).toEqual({
+        Type: 'MyResourceType',
+        Properties: {
+          prop1: {
+            subprop: {
+              'Fn::If': [
+                'MyCondition',
+                {
+                  Ref: 'AWS::NoValue',
+                },
+                {
+                  name: {
+                    'Fn::GetAtt': [
+                      'resource',
+                      'abc',
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        },
+      });
+    });
+
     test('overrides allow overriding a nested intrinsic', () => {
       // GIVEN
       const stack = new Stack();
