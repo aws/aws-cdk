@@ -57,6 +57,7 @@ class CompositeAlarmIntegrationTest extends Stack {
 
     new CompositeAlarm(this, 'CompositeAlarm', {
       alarmRule,
+      actionsSuppressor: alarm5,
     });
   }
 
