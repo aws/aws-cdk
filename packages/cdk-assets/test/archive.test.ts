@@ -23,7 +23,7 @@ test('zipDirectory can take a directory and produce a zip from it', async () => 
 
     await expect(exec(`diff -bur ${originalDir} ${extractDir}`)).resolves.toBeTruthy();
 
-    // inspect the zile file to check that dates are reset
+    // inspect the zip file to check that dates are reset
     const zip = await fs.readFile(zipFile);
     const zipData = await jszip.loadAsync(zip);
     const dates = Object.values(zipData.files).map(file => file.date.toISOString());
