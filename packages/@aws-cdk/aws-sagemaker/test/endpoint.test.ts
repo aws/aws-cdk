@@ -29,6 +29,19 @@ describe('When searching an Endpoint for a production variant', () => {
     // THEN
     expect(when).toThrow(/No variant with name: 'missing-variant'/);
   });
+
+  test('from an imported IEndpointConfig, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const endpointConfig = sagemaker.EndpointConfig.fromEndpointConfigName(stack, 'EndpointConfig', 'MyEndpointConfig');
+    const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
+
+    // WHEN
+    const when = () => endpoint.findInstanceProductionVariant('variant');
+
+    // THEN
+    expect(when).toThrow(/Production variant lookup is not supported for an imported IEndpointConfig/);
+  });
 });
 
 describe('When fetching production variants from an Endpoint', () => {
@@ -45,6 +58,19 @@ describe('When fetching production variants from an Endpoint', () => {
     // THEN
     expect(variants.length).toEqual(1);
     expect(variants[0].variantName).toEqual('variant');
+  });
+
+  test('with an imported IEndpointConfig, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const endpointConfig = sagemaker.EndpointConfig.fromEndpointConfigName(stack, 'EndpointConfig', 'MyEndpointConfig');
+    const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
+
+    // WHEN
+    const when = () => endpoint.instanceProductionVariants;
+
+    // THEN
+    expect(when).toThrow(/Production variant lookup is not supported for an imported IEndpointConfig/);
   });
 });
 

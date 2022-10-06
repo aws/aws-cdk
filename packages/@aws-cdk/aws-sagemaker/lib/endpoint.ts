@@ -5,7 +5,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { EndpointConfig, InstanceProductionVariant } from './endpoint-config';
+import { EndpointConfig, IEndpointConfig, InstanceProductionVariant } from './endpoint-config';
 import { InstanceType } from './instance-type';
 import { CfnEndpoint } from './sagemaker.generated';
 import { ScalableInstanceCount } from './scalable-instance-count';
@@ -317,10 +317,8 @@ export interface EndpointProps {
 
   /**
    * The endpoint configuration to use for this endpoint.
-   *
-   * [disable-awslint:ref-via-interface]
    */
-  readonly endpointConfig: EndpointConfig;
+  readonly endpointConfig: IEndpointConfig;
 }
 
 /**
@@ -373,7 +371,7 @@ export class Endpoint extends EndpointBase {
    * @attribute
    */
   public readonly endpointName: string;
-  private readonly endpointConfig: EndpointConfig;
+  private readonly endpointConfig: IEndpointConfig;
 
   constructor(scope: Construct, id: string, props: EndpointProps) {
     super(scope, id, {
@@ -402,7 +400,11 @@ export class Endpoint extends EndpointBase {
    * Get instance production variants associated with endpoint.
    */
   public get instanceProductionVariants(): IEndpointInstanceProductionVariant[] {
-    return this.endpointConfig.instanceProductionVariants.map(v => new EndpointInstanceProductionVariant(this, v));
+    if (this.endpointConfig instanceof EndpointConfig) {
+      return this.endpointConfig.instanceProductionVariants.map(v => new EndpointInstanceProductionVariant(this, v));
+    }
+
+    throw new Error('Production variant lookup is not supported for an imported IEndpointConfig');
   }
 
   /**
@@ -410,7 +412,11 @@ export class Endpoint extends EndpointBase {
    * @param name Variant name from production variant
    */
   public findInstanceProductionVariant(name: string): IEndpointInstanceProductionVariant {
-    const variant = this.endpointConfig.findInstanceProductionVariant(name);
-    return new EndpointInstanceProductionVariant(this, variant);
+    if (this.endpointConfig instanceof EndpointConfig) {
+      const variant = this.endpointConfig.findInstanceProductionVariant(name);
+      return new EndpointInstanceProductionVariant(this, variant);
+    }
+
+    throw new Error('Production variant lookup is not supported for an imported IEndpointConfig');
   }
 }
