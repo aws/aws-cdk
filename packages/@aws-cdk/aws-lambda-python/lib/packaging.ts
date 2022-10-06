@@ -21,7 +21,7 @@ export interface PackagingProps {
   readonly exportCommand?: string;
 }
 
-class PoetryPackagingProps {
+export interface PoetryPackagingProps {
   /**
    * Whether to export Poetry dependencies without hashes. This can fix build issues when some dependencies are exporting
    * with hashes and others are not, causing pip to fail the build.
