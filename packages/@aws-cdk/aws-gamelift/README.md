@@ -66,7 +66,9 @@ your game server files. This section provides guidance on preparing and uploadin
 files or Realtime Servers server script files. When you upload files, you create a GameLift build or script resource, which
 you then deploy on fleets of hosting resources.
 
-### Upload a custom server build to GameLift
+To troubleshoot fleet activation problems related to the server script, see [Debug GameLift fleet issues](https://docs.aws.amazon.com/gamelift/latest/developerguide/fleets-creating-debug.html).
+
+#### Upload a custom server build to GameLift
 
 Before uploading your configured game server to GameLift for hosting, package the game build files into a build directory.
 This directory must include all components required to run your game servers and host game sessions, including the following:
@@ -86,6 +88,24 @@ services.
 ```ts
 declare const bucket: s3.Bucket;
 new gamelift.Build(this, 'Build', {
+  content: gamelift.Content.fromBucket(bucket, "sample-asset-key")
+});
+```
+
+#### Upload a realtime server Script
+
+Your server script can include one or more files combined into a single .zip file for uploading. The .zip file must contain
+all files that your script needs to run.
+
+You can store your zipped script files in either a local file directory or in an Amazon Simple Storage Service (Amazon S3)
+bucket or defines a directory asset which is archived as a .zip file and uploaded to S3 during deployment.
+
+After you create the script resource, GameLift deploys the script with a new Realtime Servers fleet. GameLift installs your
+server script onto each instance in the fleet, placing the script files in `/local/game`.
+
+```ts
+declare const bucket: s3.Bucket;
+new gamelift.Script(this, 'Script', {
   content: gamelift.Content.fromBucket(bucket, "sample-asset-key")
 });
 ```
