@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.102"
+          "version": "10.1.123"
         }
       },
       "integ-dns-validated-certificate": {
@@ -100,6 +100,19 @@
                                     },
                                     {
                                       "Action": "route53:changeResourceRecordSets",
+                                      "Condition": {
+                                        "ForAllValues:StringEquals": {
+                                          "route53:ChangeResourceRecordSetsNormalizedRecordNames": [
+                                            "*.example.com"
+                                          ],
+                                          "route53:ChangeResourceRecordSetsRecordTypes": [
+                                            "CNAME"
+                                          ],
+                                          "route53:ChangeResourceRecordSetsActions": [
+                                            "UPSERT"
+                                          ]
+                                        }
+                                      },
                                       "Effect": "Allow",
                                       "Resource": {
                                         "Fn::Join": [
@@ -253,7 +266,7 @@
                 "path": "integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.102"
+                  "version": "10.1.123"
                 }
               },
               "DeployAssert": {

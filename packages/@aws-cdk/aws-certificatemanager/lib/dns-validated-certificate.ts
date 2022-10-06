@@ -125,8 +125,8 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
       conditions: {
         'ForAllValues:StringEquals': {
           'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
-            `*.${props.domainName}`,
-            ...(props.subjectAlternativeNames ?? []).map(d => `*.${d}`),
+            props.domainName.startsWith('*') ? props.domainName : `*.${props.domainName}`,
+            ...(props.subjectAlternativeNames ?? []).map(d => d.startsWith('*') ? d : `*.${d}`),
           ],
           'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
           'route53:ChangeResourceRecordSetsActions': props.cleanupRoute53Records ? ['UPSERT', 'DELETE'] : ['UPSERT'],
