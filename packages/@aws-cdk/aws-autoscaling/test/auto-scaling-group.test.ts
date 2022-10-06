@@ -665,7 +665,7 @@ describe('auto scaling group', () => {
     expect(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup).toEqual(true);
   });
 
-  test('can set blockDeviceMappings', () => {
+  testDeprecated('can set blockDeviceMappings', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
