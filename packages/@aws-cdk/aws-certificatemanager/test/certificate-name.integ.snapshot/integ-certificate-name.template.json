@@ -3,11 +3,11 @@
   "Certificate4E7ABB08": {
    "Type": "AWS::CertificateManager::Certificate",
    "Properties": {
-    "DomainName": "cdk.test.quicktravel.au",
+    "DomainName": "*.example.com",
     "DomainValidationOptions": [
      {
-      "DomainName": "cdk.test.quicktravel.au",
-      "HostedZoneId": "Z03784312YS6U1E67BXVC"
+      "DomainName": "*.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
      }
     ],
     "Tags": [

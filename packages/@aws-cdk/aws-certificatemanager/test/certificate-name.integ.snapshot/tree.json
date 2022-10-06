@@ -34,11 +34,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
-                    "domainName": "cdk.test.quicktravel.au",
+                    "domainName": "*.example.com",
                     "domainValidationOptions": [
                       {
-                        "domainName": "cdk.test.quicktravel.au",
-                        "hostedZoneId": "Z03784312YS6U1E67BXVC"
+                        "domainName": "*.example.com",
+                        "hostedZoneId": "Z23ABC4XYZL05B"
                       }
                     ],
                     "tags": [
