@@ -70,6 +70,7 @@ async function moveIntoPlace(source: string, target: string, logger: Logger) {
         await fs.unlink(target);
       }
       await fs.rename(source, target);
+      return;
     } catch (e) {
       if (e.code !== 'EPERM' || attempts-- <= 0) {
         throw e;
