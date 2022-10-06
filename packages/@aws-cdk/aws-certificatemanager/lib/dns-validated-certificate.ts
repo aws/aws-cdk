@@ -124,12 +124,14 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
       resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
       conditions: {
         'ForAllValues:StringEquals': {
-          'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
-            props.domainName.startsWith('*') ? props.domainName : `*.${props.domainName}`,
-            ...(props.subjectAlternativeNames ?? []).map(d => d.startsWith('*') ? d : `*.${d}`),
-          ],
           'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
           'route53:ChangeResourceRecordSetsActions': props.cleanupRoute53Records ? ['UPSERT', 'DELETE'] : ['UPSERT'],
+        },
+        'ForAllValues:StringLike': {
+          'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+            addWildcard(props.domainName),
+            ...(props.subjectAlternativeNames ?? []).map(d => addWildcard(d)),
+          ],
         },
       },
     }));
@@ -169,4 +171,12 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     }
     return errors;
   }
+}
+
+// https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/specifying-rrset-conditions.html
+function addWildcard(domainName: string) {
+  if (domainName.startsWith('*.')) {
+    return domainName;
+  }
+  return `*.${domainName}`;
 }
