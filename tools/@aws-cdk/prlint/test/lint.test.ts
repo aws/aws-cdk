@@ -11,6 +11,52 @@ afterAll(() => {
 
 let mockCreateReview: (errorMessage: string) => Promise<any>;
 
+describe('pr title', () => {
+  test('valid title without scope', async () => {
+    const issue = {
+      number: 1,
+      title: 'chore: some title',
+      body: 'this is a body',
+      labels: [],
+    }
+    const prLinter = configureMock(issue);
+    await prLinter.validate();
+  });
+
+  test('valid title with scope', async () => {
+    const issue = {
+      number: 1,
+      title: 'fix(scope): some title',
+      body: 'this is a body',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }],
+    }
+    const prLinter = configureMock(issue);
+    await prLinter.validate();
+  });
+
+  test('valid title with multiple scopes', async () => {
+    const issue = {
+      number: 1,
+      title: 'feat(scope1,scope2): some title',
+      body: 'this is a body',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }, { name: 'pr-linter/exempt-readme' }],
+    }
+    const prLinter = configureMock(issue);
+    await prLinter.validate();
+  });
+
+  test('invalid title', async () => {
+    const issue = {
+      number: 1,
+      title: 'unknown: some title',
+      body: 'this is a body',
+      labels: [],
+    }
+    const prLinter = configureMock(issue);
+    await expect(prLinter.validate()).rejects.toThrow(/Conventional Commits/);
+  });
+});
+
 describe('breaking changes format', () => {
   test('disallow variations to "BREAKING CHANGE:"', async () => {
     const issue = {
