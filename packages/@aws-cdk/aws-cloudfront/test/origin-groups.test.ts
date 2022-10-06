@@ -1,10 +1,11 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { CloudFrontWebDistribution, FailoverStatusCode } from '../lib';
 
 describe('origin group', () => {
-  test('Distribution with custom origin failover', () => {
+  testDeprecated('Distribution with custom origin failover', () => {
     const stack = new cdk.Stack();
 
     new CloudFrontWebDistribution(stack, 'ADistribution', {
