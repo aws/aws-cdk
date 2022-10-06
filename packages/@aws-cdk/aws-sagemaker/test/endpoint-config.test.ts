@@ -1,8 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import * as sagemaker from '../lib';
 
-describe('When validating stack containing an EndpointConfig', () => {
-  test('with more than 10 production variants, an exception is thrown on synthesis', () => {
+describe('When synthesizing a stack containing an EndpointConfig', () => {
+  test('with more than 10 production variants, an exception is thrown', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
@@ -24,7 +24,7 @@ describe('When validating stack containing an EndpointConfig', () => {
     expect(when).toThrow(/Can\'t have more than 10 production variants/);
   });
 
-  test('with no production variants, an exception is thrown on synthesis', () => {
+  test('with no production variants, an exception is thrown', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
