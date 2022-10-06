@@ -3114,6 +3114,18 @@ test('FunctionVersionUpgrade adds new description to function', () => {
   });
 });
 
+test('function using a reserved environment variable', () => {
+  const stack = new cdk.Stack();
+  expect(() => new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'index.handler',
+    runtime: lambda.Runtime.PYTHON_3_9,
+    environment: {
+      AWS_REGION: 'ap-southeast-2',
+    },
+  })).toThrow(/AWS_REGION environment variable is reserved/);
+});
+
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
