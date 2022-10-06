@@ -756,7 +756,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   private renderMetadataOptions(props: LaunchTemplateProps) {
     let requireMetadataOptions = false;
     // if requireImdsv2 is true, httpTokens must be required.
-    if (props.requireImdsv2 === true && props.httpTokens !== LaunchTemplateHttpTokens.REQUIRED) {
+    if (props.requireImdsv2 === true && props.httpTokens === LaunchTemplateHttpTokens.OPTIONAL) {
       Annotations.of(this).addError('httpTokens must be required when requireImdsv2 is true');
     }
     if (props.httpEndpoint !== undefined || props.httpProtocolIpv6 !== undefined || props.httpPutResponseHopLimit !== undefined ||

@@ -887,4 +887,20 @@ describe('LaunchTemplate metadataOptions', () => {
     const errors = Annotations.fromStack(stack).findError('/Default/Template', Match.anyValue());
     expect(errors[0].entry.data).toMatch(/httpTokens must be required when requireImdsv2 is true/);
   });
+  test('httpTokens REQUIRED is allowed when requireImdsv2 is true', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      requireImdsv2: true,
+      httpTokens: LaunchTemplateHttpTokens.REQUIRED,
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpTokens: 'required',
+        },
+      },
+    });
+
+  });
 });
