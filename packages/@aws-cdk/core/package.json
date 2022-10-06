@@ -183,12 +183,16 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.104",
+    "@types/aws-lambda": "^8.10.106",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.5.2",
     "@types/lodash": "^4.14.185",
     "@types/minimatch": "^3.0.5",
+<<<<<<< HEAD
     "@types/node": "^10.17.60",
+=======
+    "@types/node": "^14.18.31",
+>>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
     "@types/sinon": "^9.0.11",
     "fast-check": "^2.25.0",
     "jest": "^27.5.1",

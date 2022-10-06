@@ -29,7 +29,11 @@
     "@types/jest": "^27.5.2",
     "@types/license-checker": "^25.0.3",
     "@types/madge": "^5.0.0",
+<<<<<<< HEAD
     "@types/node": "^12",
+=======
+    "@types/node": "^14.18.31",
+>>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
     "eslint": "^8",
@@ -40,13 +44,13 @@
     "jest-junit": "^13",
     "json-schema": "^0.4.0",
     "npm-check-updates": "^12",
-    "projen": "^0.62.13",
+    "projen": "^0.62.24",
     "standard-version": "^9",
     "ts-jest": "^27.1.5",
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "esbuild": "^0.15.8",
+    "esbuild": "^0.15.9",
     "fs-extra": "^10.1.0",
     "license-checker": "^25.0.1",
     "madge": "^5.0.1",

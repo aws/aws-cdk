@@ -67,7 +67,13 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.5.2",
+<<<<<<< HEAD
     "@types/node": "^10.17.60",
+=======
+    "@types/node": "^14.18.31",
+    "aws-sdk": "^2.1211.0",
+    "aws-sdk-mock": "5.6.0",
+>>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
     "jest": "^27.5.1",
     "nock": "^13.2.9",
     "aws-sdk-mock": "5.6.0",
