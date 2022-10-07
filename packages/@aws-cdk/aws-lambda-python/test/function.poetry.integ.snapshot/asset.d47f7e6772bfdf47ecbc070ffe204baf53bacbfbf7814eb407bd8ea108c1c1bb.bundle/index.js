@@ -404,20 +404,11 @@ var CustomResourceHandler = class {
   }
   async handle() {
     try {
-      console.log(`Event: ${JSON.stringify({ ...this.event, ResponseURL: "..." })}`);
       const response = await this.processEvent(this.event.ResourceProperties);
-      console.log(`Event output : ${JSON.stringify(response)}`);
-      await this.respond({
-        status: "SUCCESS",
-        reason: "OK",
-        data: response
-      });
+      return response;
     } catch (e) {
       console.log(e);
-      await this.respond({
-        status: "FAILED",
-        reason: e.message ?? "Internal Error"
-      });
+      throw e;
     } finally {
       clearTimeout(this.timeout);
     }
@@ -479,7 +470,8 @@ var AssertionHandler = class extends CustomResourceHandler {
     matchResult.finished();
     if (matchResult.hasFailed()) {
       result = {
-        data: JSON.stringify({
+        failed: true,
+        assertion: JSON.stringify({
           status: "fail",
           message: [
             ...matchResult.toHumanStrings(),
@@ -488,11 +480,11 @@ var AssertionHandler = class extends CustomResourceHandler {
         })
       };
       if (request2.failDeployment) {
-        throw new Error(result.data);
+        throw new Error(result.assertion);
       }
     } else {
       result = {
-        data: JSON.stringify({
+        assertion: JSON.stringify({
           status: "success"
         })
       };
@@ -562,7 +554,10 @@ function flatten(object) {
     {},
     ...function _flatten(child, path = []) {
       return [].concat(...Object.keys(child).map((key) => {
-        const childKey = Buffer.isBuffer(child[key]) ? child[key].toString("utf8") : child[key];
+        let childKey = Buffer.isBuffer(child[key]) ? child[key].toString("utf8") : child[key];
+        if (typeof childKey === "string") {
+          childKey = isJsonString(childKey);
+        }
         return typeof childKey === "object" && childKey !== null ? _flatten(childKey, path.concat([key])) : { [path.concat([key]).join(".")]: childKey };
       }));
     }(object)
@@ -572,6 +567,9 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
   async processEvent(request2) {
     const AWS = require("aws-sdk");
     console.log(`AWS SDK VERSION: ${AWS.VERSION}`);
+    if (!Object.prototype.hasOwnProperty.call(AWS, request2.service)) {
+      throw Error(`Service ${request2.service} does not exist in AWS SDK version ${AWS.VERSION}.`);
+    }
     const service = new AWS[request2.service]();
     const response = await service[request2.api](request2.parameters && decode(request2.parameters)).promise();
     console.log(`SDK response received ${JSON.stringify(response)}`);
@@ -582,9 +580,18 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
     const flatData = {
       ...flatten(respond)
     };
-    return request2.flattenResponse === "true" ? flatData : respond;
+    const resp = request2.flattenResponse === "true" ? flatData : respond;
+    console.log(`Returning result ${JSON.stringify(resp)}`);
+    return resp;
   }
 };
+function isJsonString(value) {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+}
 
 // lib/assertions/providers/lambda-handler/types.ts
 var ASSERT_RESOURCE_TYPE = "Custom::DeployAssert@AssertEquals";
@@ -592,18 +599,68 @@ var SDK_RESOURCE_TYPE_PREFIX = "Custom::DeployAssert@SdkCall";
 
 // lib/assertions/providers/lambda-handler/index.ts
 async function handler(event, context) {
+  console.log(`Event: ${JSON.stringify({ ...event, ResponseURL: "..." })}`);
   const provider = createResourceHandler(event, context);
-  await provider.handle();
+  try {
+    if (event.RequestType === "Delete") {
+      await provider.respond({
+        status: "SUCCESS",
+        reason: "OK"
+      });
+      return;
+    }
+    const result = await provider.handle();
+    const actualPath = event.ResourceProperties.actualPath;
+    const actual = actualPath ? result[`apiCallResponse.${actualPath}`] : result.apiCallResponse;
+    if ("expected" in event.ResourceProperties) {
+      const assertion = new AssertionHandler({
+        ...event,
+        ResourceProperties: {
+          ServiceToken: event.ServiceToken,
+          actual,
+          expected: event.ResourceProperties.expected
+        }
+      }, context);
+      try {
+        const assertionResult = await assertion.handle();
+        await provider.respond({
+          status: "SUCCESS",
+          reason: "OK",
+          data: {
+            ...assertionResult,
+            ...result
+          }
+        });
+        return;
+      } catch (e) {
+        await provider.respond({
+          status: "FAILED",
+          reason: e.message ?? "Internal Error"
+        });
+        return;
+      }
+    }
+    await provider.respond({
+      status: "SUCCESS",
+      reason: "OK",
+      data: result
+    });
+  } catch (e) {
+    await provider.respond({
+      status: "FAILED",
+      reason: e.message ?? "Internal Error"
+    });
+    return;
+  }
+  return;
 }
 function createResourceHandler(event, context) {
   if (event.ResourceType.startsWith(SDK_RESOURCE_TYPE_PREFIX)) {
     return new AwsApiCallHandler(event, context);
-  }
-  switch (event.ResourceType) {
-    case ASSERT_RESOURCE_TYPE:
-      return new AssertionHandler(event, context);
-    default:
-      throw new Error(`Unsupported resource type "${event.ResourceType}`);
+  } else if (event.ResourceType.startsWith(ASSERT_RESOURCE_TYPE)) {
+    return new AssertionHandler(event, context);
+  } else {
+    throw new Error(`Unsupported resource type "${event.ResourceType}`);
   }
 }
 // Annotate the CommonJS export names for ESM import in node:
