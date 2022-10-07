@@ -741,7 +741,11 @@
     },
     "DeploymentConfiguration": {
      "MaximumPercent": 200,
-     "MinimumHealthyPercent": 50
+     "MinimumHealthyPercent": 50,
+     "DeploymentCircuitBreaker": {
+      "Enable": true,
+      "Rollback": true
+     }
     },
     "EnableECSManagedTags": true,
     "EnableExecuteCommand": true,

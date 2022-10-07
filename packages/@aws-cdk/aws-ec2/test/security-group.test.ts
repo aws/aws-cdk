@@ -43,7 +43,7 @@ describe('security group', () => {
           IpProtocol: '-1',
         },
         {
-          CidrIp: '::/0',
+          CidrIpv6: '::/0',
           Description: 'Allow all outbound ipv6 traffic by default',
           IpProtocol: '-1',
         },
