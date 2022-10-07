@@ -7,13 +7,13 @@ import { AssetHashType, DockerImage } from '@aws-cdk/core';
 export interface BundlingOptions {
 
   /**
-   * Whether to export Poetry dependencies without hashes. This can fix build issues when some dependencies are exporting
-   * with hashes and others are not, causing pip to fail the build.
+   * Whether to export Poetry dependencies with hashes. Note that this can cause builds to fail if not all dependencies
+   * export with a hash.
    *
    * @see https://github.com/aws/aws-cdk/issues/19232
-   * @default Hashes are included in the exported `requirements.txt` file
+   * @default Hashes are NOT included in the exported `requirements.txt` file
    */
-  readonly poetryExcludeHashes?: boolean;
+  readonly poetryIncludeHashes?: boolean;
 
   /**
    * Output path suffix: the suffix for the directory into which the bundled output is written.
