@@ -451,9 +451,6 @@ test('setting ALB circuitBreaker works', () => {
         Rollback: true,
       },
     },
-    DeploymentController: {
-      Type: 'ECS',
-    },
   });
 });
 
@@ -476,9 +473,6 @@ test('setting NLB circuitBreaker works', () => {
         Enable: true,
         Rollback: true,
       },
-    },
-    DeploymentController: {
-      Type: 'ECS',
     },
   });
 });
