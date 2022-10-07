@@ -79,11 +79,11 @@ export class Packaging {
     return new Packaging({ dependenciesFile: DependenciesFile.NONE });
   }
 
-  public static fromEntry(entry: string, poetryExcludeHashes?: boolean): Packaging {
+  public static fromEntry(entry: string, poetryIncludeHashes?: boolean): Packaging {
     if (fs.existsSync(path.join(entry, DependenciesFile.PIPENV))) {
       return this.withPipenv();
     } if (fs.existsSync(path.join(entry, DependenciesFile.POETRY))) {
-      return this.withPoetry({ poetryIncludeHashes: poetryExcludeHashes });
+      return this.withPoetry({ poetryIncludeHashes });
     } else if (fs.existsSync(path.join(entry, DependenciesFile.PIP))) {
       return this.withPip();
     } else {
