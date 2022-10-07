@@ -1,0 +1,163 @@
+{
+    "PropertyTypes": {
+        "patch": {
+            "description": "Add AWS::ECS::Cluster.ServiceConnectDefaults and ServiceConnectService properties",
+            "operations": [
+                {
+                    "op": "add",
+                    "path": "/AWS::ECS::Cluster.ServiceConnectDefaults",
+                    "value": {
+                        "Documentation": "",
+                        "Properties": {
+                            "Namespace": {
+                                "Documentation": "",
+                                "PrimitiveType": "String",
+                                "Required": true,
+                                "UpdateType": "Mutable"
+                            }
+                        }
+                    }
+                },
+                {
+                    "op": "add",
+                    "path": "/AWS::ECS::Service.ServiceConnectService",
+                    "value": {
+                        "Documentation": "",
+                        "Properties": {
+                            "PortName": {
+                                "Documentation": "",
+                                "PrimitiveType": "String",
+                                "Required": true,
+                                "UpdateType": "Immutable"
+                            },
+                            "DiscoveryName": {
+                                "Documentation": "",
+                                "PrimitiveType": "String",
+                                "Required": false,
+                                "UpdateType": "Immutable"
+                            },
+                            "ClientAliases": {
+                                "Documentation": "",
+                                "Type": "List",
+                                "ItemType": "ServiceConnectClientAlias",
+                                "Required": false,
+                                "UpdateType": "Immutable"
+                            },
+                            "LogConfiguration": {
+                                "Documentation": "",
+                                "Type": "LogConfiguration",
+                                "Required": false,
+                                "UpdateType": "Immutable"
+                            }
+                        }
+                    }
+                },
+                {
+                    "op": "add",
+                    "path": "/AWS::ECS::Service.LogConfiguration",
+                    "value": {
+                        "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinitions-logconfiguration.html",
+                        "Properties": {
+                            "LogDriver": {
+                                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinitions-logconfiguration.html#cfn-ecs-taskdefinition-containerdefinition-logconfiguration-logdriver",
+                                "PrimitiveType": "String",
+                                "Required": true,
+                                "UpdateType": "Immutable"
+                            },
+                            "Options": {
+                                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinitions-logconfiguration.html#cfn-ecs-taskdefinition-containerdefinition-logconfiguration-options",
+                                "PrimitiveItemType": "String",
+                                "Required": false,
+                                "Type": "Map",
+                                "UpdateType": "Immutable"
+                            },
+                            "SecretOptions": {
+                                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinitions-logconfiguration.html#cfn-ecs-taskdefinition-logconfiguration-secretoptions",
+                                "ItemType": "Secret",
+                                "Required": false,
+                                "Type": "List",
+                                "UpdateType": "Immutable"
+                            }
+                        }
+                    }
+                },
+                {
+                    "op": "add",
+                    "path": "/AWS::ECS::Service.Secret",
+                    "value": {
+                        "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-secret.html",
+                        "Properties": {
+                            "Name": {
+                                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-secret.html#cfn-ecs-taskdefinition-secret-name",
+                                "PrimitiveType": "String",
+                                "Required": true,
+                                "UpdateType": "Immutable"
+                            },
+                            "ValueFrom": {
+                                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-secret.html#cfn-ecs-taskdefinition-secret-valuefrom",
+                                "PrimitiveType": "String",
+                                "Required": true,
+                                "UpdateType": "Immutable"
+                            }
+                        }
+                    }
+                },
+                {
+                    "op": "add",
+                    "path": "/AWS::ECS::Service.ServiceConnectClientAlias",
+                    "value": {
+                        "Documentation": "",
+                        "Properties": {
+                            "Port": {
+                                "Documentation": "",
+                                "PrimitiveType": "Integer",
+                                "Required": true,
+                                "UpdateType": "Immutable"
+                            },
+                            "DnsName": {
+                                "Documentation": "",
+                                "PrimitiveType": "String",
+                                "Required": true,
+                                "UpdateType": "Immutable"
+                            }
+                        }
+                    }
+                },
+                {
+                    "op": "add",
+                    "path": "/AWS::ECS::Service.ServiceConnectConfiguration",
+                    "value": {
+                        "Documentation": "",
+                        "Properties": {
+                            "Enabled": {
+                                "Documentation": "",
+                                "PrimitiveType": "Boolean",
+                                "Required": true,
+                                "UpdateType": "Immutable"
+                            },
+                            "Namespace": {
+                                "Documentation": "",
+                                "PrimitiveType": "String",
+                                "Required": false,
+                                "UpdateType": "Immutable"
+                            },
+                            "Services": {
+                                "Documentation": "",
+                                "Type": "List",
+                                "ItemType": "ServiceConnectService",
+                                "Required": false,
+                                "UpdateType": "Immutable"
+                            },
+                            "LogConfiguration": {
+                                "Documentation": "",
+                                "Type": "LogConfiguration",
+                                "Required": false,
+                                "UpdateType": "Immutable"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
