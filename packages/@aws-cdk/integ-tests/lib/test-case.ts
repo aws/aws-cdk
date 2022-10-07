@@ -1,5 +1,5 @@
 import { IntegManifest, Manifest, TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
-import { attachCustomSynthesis, Environment, ISynthesisSession, Stack, StackProps } from '@aws-cdk/core';
+import { attachCustomSynthesis, ISynthesisSession, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDeployAssert } from './assertions';
 import { DeployAssert } from './assertions/private/deploy-assert';
@@ -17,11 +17,11 @@ export interface IntegTestCaseProps extends TestOptions {
   readonly stacks: Stack[];
 
   /**
-   * Specify an environment for the assertions stack
+   * Specify a stack to use for assertions
    *
-   * @default - environment-agnostic
+   * @default - a stack is created for you
    */
-  readonly env?: Environment
+  readonly assertionsStack?: Stack
 }
 
 /**
@@ -42,7 +42,7 @@ export class IntegTestCase extends Construct {
   constructor(scope: Construct, id: string, private readonly props: IntegTestCaseProps) {
     super(scope, id);
 
-    this._assert = new DeployAssert(this, { env: props.env });
+    this._assert = new DeployAssert(this, { stack: props.assertionsStack });
     this.assertions = this._assert;
   }
 
@@ -126,7 +126,7 @@ export interface IntegTestProps extends TestOptions {
   /**
    * Enable lookups for this test. If lookups are enabled
    * then `stackUpdateWorkflow` must be set to false.
-   * Lookups should only be enabled when you are explicitely testing
+   * Lookups should only be enabled when you are explicitly testing
    * lookups.
    *
    * @default false
@@ -134,11 +134,11 @@ export interface IntegTestProps extends TestOptions {
   readonly enableLookups?: boolean;
 
   /**
-   * Set an AWS environment (account/region) for the assertions stack.
+   * Specify a stack to use for assertions
    *
-   * @default - environment-agnostic
+   * @default - a stack is created for you
    */
-  readonly env?: Environment
+  readonly assertionsStack?: Stack
 }
 
 /**
@@ -164,7 +164,7 @@ export class IntegTest extends Construct {
       allowDestroy: props.allowDestroy,
       cdkCommandOptions: props.cdkCommandOptions,
       stackUpdateWorkflow: props.stackUpdateWorkflow,
-      env: props.env,
+      assertionsStack: props.assertionsStack,
     });
     this.assertions = defaultTestCase.assertions;
 

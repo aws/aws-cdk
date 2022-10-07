@@ -166,34 +166,51 @@ describe('DeployAssert', () => {
   });
 });
 
-describe('Environment aware assertions', () => {
-  test('throw when environment not provided', () => {
+describe('User provided assertions stack', () => {
+  test('Same stack for integration test and assertions', () => {
     //GIVEN
     const app = new App();
-    const env = { region: 'us-west-2' };
-    const stack = new Stack(app, 'TestStack', { env: env });
-    const cr = new CustomResource(stack, 'cr', { serviceToken: 'foo' });
-    const integ = new IntegTest(app, 'integ', {
-      testCases: [stack],
-    });
-    integ.assertions.awsApiCall('Service', 'api', { Reference: cr.getAttString('bar') });
+    const stack = new Stack(app, 'TestStack');
+    const deplossert = new DeployAssert(app, { stack });
 
     // WHEN
-    expect(() => {
-      // THEN
-      app.synth();
-    }).toThrow(/only supported for stacks deployed to the same environment/);
+    const cr = new CustomResource(stack, 'cr', { resourceType: 'Custom::Bar', serviceToken: 'foo' });
+    deplossert.awsApiCall('Service', 'Api', { Reference: cr.ref });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('Custom::DeployAssert@SdkCallServiceApi', 1);
+    template.resourceCountIs('Custom::Bar', 1);
+  });
+
+  test('Different stack for integration test and assertions', () => {
+    //GIVEN
+    const app = new App();
+    const integStack = new Stack(app, 'TestStack');
+    const assertionsStack = new Stack(app, 'AssertionsStack');
+    const deplossert = new DeployAssert(app, { stack: assertionsStack });
+
+    // WHEN
+    const cr = new CustomResource(integStack, 'cr', { resourceType: 'Custom::Bar', serviceToken: 'foo' });
+    deplossert.awsApiCall('Service', 'Api', { Reference: cr.ref });
+
+    // THEN
+    const integTemplate = Template.fromStack(integStack);
+    const assertionsTemplate = Template.fromStack(assertionsStack);
+    integTemplate.resourceCountIs('Custom::Bar', 1);
+    assertionsTemplate.resourceCountIs('Custom::DeployAssert@SdkCallServiceApi', 1);
   });
 
   test('not throw when environment matches', () => {
     //GIVEN
     const app = new App();
     const env = { region: 'us-west-2' };
-    const stack = new Stack(app, 'TestStack', { env: env });
-    const cr = new CustomResource(stack, 'cr', { serviceToken: 'foo' });
+    const integStack = new Stack(app, 'IntegStack', { env: env });
+    const assertionsStack = new Stack(app, 'AssertionsStack', { env: env });
+    const cr = new CustomResource(integStack, 'cr', { serviceToken: 'foo' });
     const integ = new IntegTest(app, 'integ', {
-      testCases: [stack],
-      env: env,
+      testCases: [integStack],
+      assertionsStack: assertionsStack,
     });
     integ.assertions.awsApiCall('Service', 'api', { Reference: cr.getAttString('bar') });
 

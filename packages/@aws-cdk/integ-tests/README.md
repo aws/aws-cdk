@@ -192,6 +192,17 @@ const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
 integ.assertions.awsApiCall('S3', 'getObject');
 ```
 
+By default an assertions stack is automatically generated for you. You may however provide your own stack to use. 
+
+```ts
+declare const app: App;
+declare const stack: Stack;
+declare const assertionsStack: Stack;
+
+const integ = new IntegTest(app, 'Integ', { testCases: [stack], assertionsStack: assertionsStack });
+integ.assertions.awsApiCall('S3', 'getObject');
+```
+
 - Part of a  normal CDK deployment
 
 In this case you may be using assertions as part of a normal CDK deployment in order to make an assertion on the infrastructure
@@ -261,26 +272,6 @@ const integ = new IntegTest(app, 'Integ', {
 });
 integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: 'url',
-});
-```
-
-
-Additionally, you can test non environment-agnostic stacks by setting the environment for the integration tests:
-
-```ts
-declare const app: App;
-const env = { region: 'us-west-2' }
-const stack = new Stack(app, 'nlb-test', { env: env } );
-
-const nlb = new elbv2.NetworkLoadBalancer(stack, 'nlb', { vpc: new ec2.Vpc(stack, 'vpc') })
-// requires region to be set
-nlb.logAccessLogs(new s3.Bucket(stack, 'logbucket'))
-const integ = new IntegTest(app, 'Integ', {
-  testCases: [stack],
-  env: env,
-});
-integ.assertions.awsApiCall('Elbv2', 'describeLoadBalancers', {
-    Names: [nlb.loadBalancerName]
 });
 ```
 

@@ -1,4 +1,4 @@
-import { Environment, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Construct, IConstruct, Node } from 'constructs';
 import { IApiCall } from '../api-call-base';
 import { EqualsAssertion } from '../assertions';
@@ -16,11 +16,11 @@ const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
 export interface DeployAssertProps {
 
   /**
-   * The environment for the assertions stack
+   * A stack to use for assertions
    *
-   * @default - environment-agnostic
+   * @default - a stack is created for you
    */
-  readonly env?: Environment
+  readonly stack?: Stack
 }
 
 /**
@@ -53,7 +53,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
   constructor(scope: Construct, props?: DeployAssertProps) {
     super(scope, 'Default');
 
-    this.scope = new Stack(scope, 'DeployAssert', { env: props?.env });
+    this.scope = props?.stack ?? new Stack(scope, 'DeployAssert');
 
     Object.defineProperty(this, DEPLOY_ASSERT_SYMBOL, { value: true });
   }
