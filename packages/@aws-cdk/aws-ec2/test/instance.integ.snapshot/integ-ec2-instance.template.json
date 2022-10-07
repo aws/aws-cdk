@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/VPC"
+      "Value": "integ-ec2-instance/VPC"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PublicSubnet1"
+      "Value": "integ-ec2-instance/VPC/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PublicSubnet1"
+      "Value": "integ-ec2-instance/VPC/PublicSubnet1"
      }
     ]
    }
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PublicSubnet1"
+      "Value": "integ-ec2-instance/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,10 +114,14 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PublicSubnet1"
+      "Value": "integ-ec2-instance/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -146,7 +150,7 @@
      },
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PublicSubnet2"
+      "Value": "integ-ec2-instance/VPC/PublicSubnet2"
      }
     ]
    }
@@ -160,7 +164,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PublicSubnet2"
+      "Value": "integ-ec2-instance/VPC/PublicSubnet2"
      }
     ]
    }
@@ -198,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PublicSubnet2"
+      "Value": "integ-ec2-instance/VPC/PublicSubnet2"
      }
     ]
    }
@@ -218,10 +222,14 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PublicSubnet2"
+      "Value": "integ-ec2-instance/VPC/PublicSubnet2"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
   },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
@@ -250,7 +258,7 @@
      },
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PrivateSubnet1"
+      "Value": "integ-ec2-instance/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -264,7 +272,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PrivateSubnet1"
+      "Value": "integ-ec2-instance/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -319,7 +327,7 @@
      },
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PrivateSubnet2"
+      "Value": "integ-ec2-instance/VPC/PrivateSubnet2"
      }
     ]
    }
@@ -333,7 +341,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/VPC/PrivateSubnet2"
+      "Value": "integ-ec2-instance/VPC/PrivateSubnet2"
      }
     ]
    }
@@ -367,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/VPC"
+      "Value": "integ-ec2-instance/VPC"
      }
     ]
    }
@@ -383,14 +391,19 @@
     }
    }
   },
-  "InstanceInstanceSecurityGroupF0E2D5BE": {
+  "IntegSg68DC2C7E": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "TestStack/Instance/InstanceSecurityGroup",
+    "GroupDescription": "integ-ec2-instance/IntegSg",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
       "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     },
+     {
+      "CidrIpv6": "::/0",
+      "Description": "Allow all outbound ipv6 traffic by default",
       "IpProtocol": "-1"
      }
     ],
@@ -401,12 +414,6 @@
       "FromPort": 8,
       "IpProtocol": "icmp",
       "ToPort": -1
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "TestStack/Instance"
      }
     ],
     "VpcId": {
@@ -442,7 +449,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/Instance"
+      "Value": "integ-ec2-instance/Instance"
      }
     ]
    }
@@ -500,7 +507,7 @@
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "InstanceInstanceSecurityGroupF0E2D5BE",
+       "IntegSg68DC2C7E",
        "GroupId"
       ]
      }
@@ -511,7 +518,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestStack/Instance"
+      "Value": "integ-ec2-instance/Instance"
      }
     ],
     "UserData": {
@@ -528,6 +535,38 @@
   "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }
