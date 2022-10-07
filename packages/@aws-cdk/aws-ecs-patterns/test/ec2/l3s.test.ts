@@ -1573,9 +1573,6 @@ test('ALB with circuit breaker', () => {
         Rollback: true,
       },
     },
-    DeploymentController: {
-      Type: 'ECS',
-    },
   });
 });
 
@@ -1609,9 +1606,6 @@ test('NLB with circuit breaker', () => {
         Enable: true,
         Rollback: true,
       },
-    },
-    DeploymentController: {
-      Type: 'ECS',
     },
   });
 });

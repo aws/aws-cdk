@@ -657,6 +657,33 @@ describe('fargate service', () => {
       });
     });
 
+    test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.EXTERNAL,
+        },
+        circuitBreaker: { rollback: true },
+      });
+
+      // THEN
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
+
+    });
+
+
     test('errors when no container specified on task definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -2415,9 +2442,6 @@ describe('fargate service', () => {
             Enable: true,
             Rollback: true,
           },
-        },
-        DeploymentController: {
-          Type: ecs.DeploymentControllerType.ECS,
         },
       });
     });
