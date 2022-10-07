@@ -438,7 +438,7 @@ function hasLabel(pr: GitHubPr, labelName: string): boolean {
  */
  function validateTitlePrefix(pr: GitHubPr): TestResult {
   const result = new TestResult();
-  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test|revert)(\([\w_-]+\))?: /;
+  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test|Revert)(\([\w_-]+\))?: /;
   const m = titleRe.exec(pr.title);
   result.assessFailure(
     !m,
