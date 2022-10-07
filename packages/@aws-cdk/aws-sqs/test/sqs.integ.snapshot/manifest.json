@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a660932c356f8eec80b4314b041c64311fd29803603b65a95351137afa8eba04.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7fd5f7d37f2f344aa43e18636af702436c91c871b1380d772857c431c603bb27.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -79,6 +79,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "UnencryptedQueue57F92F9C"
+          }
+        ],
+        "/aws-cdk-sqs/SSLQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SSLQueue4E9BF022"
+          }
+        ],
+        "/aws-cdk-sqs/SSLQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SSLQueuePolicy5ABFDF4F"
           }
         ],
         "/aws-cdk-sqs/Role/Resource": [
