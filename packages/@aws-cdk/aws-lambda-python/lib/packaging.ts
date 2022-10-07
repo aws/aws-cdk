@@ -62,9 +62,13 @@ export class Packaging {
     return new Packaging({
       dependenciesFile: DependenciesFile.POETRY,
       // Export dependencies with credentials available in the bundling image.
-      exportCommand: props?.poetryExcludeHashes ?
-        `poetry export --without-hashes --with-credentials --format ${DependenciesFile.PIP} --output ${DependenciesFile.PIP}` :
-        `poetry export --with-credentials --format ${DependenciesFile.PIP} --output ${DependenciesFile.PIP}`,
+      exportCommand: [
+	    'poetry', 'export',
+        ...props?.poetryExcludeHashes ? ['--without-hashes'] : [],
+        '--with-credentials',
+        '--format', DependenciesFile.PIP,
+        '--output', DependenciesFile.PIP,
+	  ].join(' '),
     });
   }
 
