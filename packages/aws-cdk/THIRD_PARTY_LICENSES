@@ -1,6 +1,6 @@
 The aws-cdk package includes the following third-party software/licensing:
 
-** @jsii/check-node@1.68.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.68.0 | Apache-2.0
+** @jsii/check-node@1.69.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.69.0 | Apache-2.0
 jsii
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -268,7 +268,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1219.0 - https://www.npmjs.com/package/aws-sdk/v/2.1219.0 | Apache-2.0
+** aws-sdk@2.1230.0 - https://www.npmjs.com/package/aws-sdk/v/2.1230.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -3031,7 +3031,7 @@ License, as follows:
 
 ----------------
 
-** semver@7.3.7 - https://www.npmjs.com/package/semver/v/7.3.7 | ISC
+** semver@7.3.8 - https://www.npmjs.com/package/semver/v/7.3.8 | ISC
 The ISC License
 
 Copyright (c) Isaac Z. Schlueter and Contributors
@@ -3113,7 +3113,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** socks@2.7.0 - https://www.npmjs.com/package/socks/v/2.7.0 | MIT
+** socks@2.7.1 - https://www.npmjs.com/package/socks/v/2.7.1 | MIT
 The MIT License (MIT)
 
 Copyright (c) 2013 Josh Glazebrook

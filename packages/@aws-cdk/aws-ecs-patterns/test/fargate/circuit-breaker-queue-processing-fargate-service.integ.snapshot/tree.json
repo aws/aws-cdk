@@ -1107,9 +1107,6 @@
                             "rollback": true
                           }
                         },
-                        "deploymentController": {
-                          "type": "ECS"
-                        },
                         "enableEcsManagedTags": false,
                         "launchType": "FARGATE",
                         "networkConfiguration": {
