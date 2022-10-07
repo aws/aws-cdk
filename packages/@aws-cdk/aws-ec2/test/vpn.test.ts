@@ -1,4 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { PublicSubnet, Vpc, VpnConnection } from '../lib';
 
@@ -84,7 +85,7 @@ describe('vpn', () => {
 
   });
 
-  test.each([false, true])('with tunnel options, using secret: %p', (secret) => {
+  test('with tunnel options, using secret value', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -92,17 +93,44 @@ describe('vpn', () => {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
-          tunnelOptions: [
-            secret
-              ? {
-                preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
-                tunnelInsideCidr: '169.254.10.0/30',
-              }
-              : {
-                preSharedKey: 'secretkey1234',
-                tunnelInsideCidr: '169.254.10.0/30',
-              },
-          ],
+          tunnelOptions: [{
+            preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+            tunnelInsideCidr: '169.254.10.0/30',
+          }],
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnection', {
+      CustomerGatewayId: {
+        Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF',
+      },
+      Type: 'ipsec.1',
+      VpnGatewayId: {
+        Ref: 'VpcNetworkVpnGateway501295FA',
+      },
+      StaticRoutesOnly: false,
+      VpnTunnelOptionsSpecifications: [
+        {
+          PreSharedKey: 'secretkey1234',
+          TunnelInsideCidr: '169.254.10.0/30',
+        },
+      ],
+    });
+  });
+
+  testDeprecated('with tunnel options, using secret', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    new Vpc(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          ip: '192.0.2.1',
+          tunnelOptions: [{
+            preSharedKey: 'secretkey1234',
+            tunnelInsideCidr: '169.254.10.0/30',
+          }],
         },
       },
     });
@@ -150,13 +178,13 @@ describe('vpn', () => {
           ip: '192.0.2.1',
           tunnelOptions: [
             {
-              preSharedKey: 'secretkey1234',
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
             },
             {
-              preSharedKey: 'secretkey1234',
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
             },
             {
-              preSharedKey: 'secretkey1234',
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
             },
           ],
         },
@@ -189,7 +217,7 @@ describe('vpn', () => {
 
   });
 
-  test('fails when specifying an invalid pre-shared key', () => {
+  testDeprecated('fails when specifying an invalid pre-shared key', () => {
     // GIVEN
     const stack = new Stack();
 
