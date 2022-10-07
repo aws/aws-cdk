@@ -171,11 +171,14 @@ describe('User provided assertions stack', () => {
     //GIVEN
     const app = new App();
     const stack = new Stack(app, 'TestStack');
-    const deplossert = new DeployAssert(app, { stack });
 
     // WHEN
     const cr = new CustomResource(stack, 'cr', { resourceType: 'Custom::Bar', serviceToken: 'foo' });
-    deplossert.awsApiCall('Service', 'Api', { Reference: cr.ref });
+    const integ = new IntegTest(app, 'integ', {
+      testCases: [stack],
+      assertionStack: stack,
+    });
+    integ.assertions.awsApiCall('Service', 'Api', { Reference: cr.ref });
 
     // THEN
     const template = Template.fromStack(stack);
@@ -187,18 +190,21 @@ describe('User provided assertions stack', () => {
     //GIVEN
     const app = new App();
     const integStack = new Stack(app, 'TestStack');
-    const assertionsStack = new Stack(app, 'AssertionsStack');
-    const deplossert = new DeployAssert(app, { stack: assertionsStack });
+    const assertionStack = new Stack(app, 'AssertionsStack');
+    const integ = new IntegTest(app, 'integ', {
+      testCases: [integStack],
+      assertionStack: assertionStack,
+    });
 
     // WHEN
     const cr = new CustomResource(integStack, 'cr', { resourceType: 'Custom::Bar', serviceToken: 'foo' });
-    deplossert.awsApiCall('Service', 'Api', { Reference: cr.ref });
+    integ.assertions.awsApiCall('Service', 'Api', { Reference: cr.ref });
 
     // THEN
     const integTemplate = Template.fromStack(integStack);
-    const assertionsTemplate = Template.fromStack(assertionsStack);
+    const assertionTemplate = Template.fromStack(assertionStack);
     integTemplate.resourceCountIs('Custom::Bar', 1);
-    assertionsTemplate.resourceCountIs('Custom::DeployAssert@SdkCallServiceApi', 1);
+    assertionTemplate.resourceCountIs('Custom::DeployAssert@SdkCallServiceApi', 1);
   });
 
   test('not throw when environment matches', () => {
@@ -206,11 +212,11 @@ describe('User provided assertions stack', () => {
     const app = new App();
     const env = { region: 'us-west-2' };
     const integStack = new Stack(app, 'IntegStack', { env: env });
-    const assertionsStack = new Stack(app, 'AssertionsStack', { env: env });
+    const assertionStack = new Stack(app, 'AssertionsStack', { env: env });
     const cr = new CustomResource(integStack, 'cr', { serviceToken: 'foo' });
     const integ = new IntegTest(app, 'integ', {
       testCases: [integStack],
-      assertionsStack: assertionsStack,
+      assertionStack: assertionStack,
     });
     integ.assertions.awsApiCall('Service', 'api', { Reference: cr.getAttString('bar') });
 

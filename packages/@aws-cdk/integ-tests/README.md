@@ -197,9 +197,9 @@ By default an assertions stack is automatically generated for you. You may howev
 ```ts
 declare const app: App;
 declare const stack: Stack;
-declare const assertionsStack: Stack;
+declare const assertionStack: Stack;
 
-const integ = new IntegTest(app, 'Integ', { testCases: [stack], assertionsStack: assertionsStack });
+const integ = new IntegTest(app, 'Integ', { testCases: [stack], assertionStack: assertionStack });
 integ.assertions.awsApiCall('S3', 'getObject');
 ```
 

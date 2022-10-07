@@ -21,7 +21,7 @@ export interface IntegTestCaseProps extends TestOptions {
    *
    * @default - a stack is created for you
    */
-  readonly assertionsStack?: Stack
+  readonly assertionStack?: Stack
 }
 
 /**
@@ -42,7 +42,7 @@ export class IntegTestCase extends Construct {
   constructor(scope: Construct, id: string, private readonly props: IntegTestCaseProps) {
     super(scope, id);
 
-    this._assert = new DeployAssert(this, { stack: props.assertionsStack });
+    this._assert = new DeployAssert(this, { stack: props.assertionStack });
     this.assertions = this._assert;
   }
 
@@ -138,7 +138,7 @@ export interface IntegTestProps extends TestOptions {
    *
    * @default - a stack is created for you
    */
-  readonly assertionsStack?: Stack
+  readonly assertionStack?: Stack
 }
 
 /**
@@ -164,7 +164,7 @@ export class IntegTest extends Construct {
       allowDestroy: props.allowDestroy,
       cdkCommandOptions: props.cdkCommandOptions,
       stackUpdateWorkflow: props.stackUpdateWorkflow,
-      assertionsStack: props.assertionsStack,
+      assertionStack: props.assertionStack,
     });
     this.assertions = defaultTestCase.assertions;
 
