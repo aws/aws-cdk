@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/824f9ae87e8bb069d7316bd7955079be850bbe42b32fc16c6c57738078b57296.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/784177efbde5b0ae9662ffc9f5f85895be269347870d0564efaa1281f8a1c38e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -211,6 +211,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterEB0386A7"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/Cluster/ParameterGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterParameterGroup879806FD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-database/User/Secret/Resource": [

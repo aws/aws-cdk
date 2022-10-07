@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "ssm-string-param/DefaultTest": {
+      "stacks": [
+        "list-param"
+      ],
+      "assertionStack": "ssm-string-param/DefaultTest/DeployAssert",
+      "assertionStackName": "ssmstringparamDefaultTestDeployAssert9C612E37"
+    }
+  }
+}
