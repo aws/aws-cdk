@@ -88,7 +88,7 @@
        "Arn"
       ]
      },
-     "Format": "{\"requestId\":\"$context.requestId\",\"sourceIp\":\"$context.identity.sourceIp\",\"method\":\"$context.httpMethod\",\"callerAccountId\":\"$context.identity.accountId\",\"ownerAccountId\":\"$context.accountId\",\"userContext\":{\"sub\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\"}}"
+     "Format": "{\"requestId\":\"$context.requestId\",\"sourceIp\":\"$context.identity.sourceIp\",\"method\":\"$context.httpMethod\",\"callerAccountId\":\"$context.identity.accountId\",\"ownerAccountId\":\"$context.accountId\",\"userContext\":{\"sub\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\"},\"clientCertPem\":\"$context.identity.clientCert.clientCertPem\",\"subjectDN\":\"$context.identity.clientCert.subjectDN\",\"issunerDN\":\"$context.identity.clientCert.issuerDN\",\"serialNumber\":\"$context.identity.clientCert.serialNumber\",\"validityNotBefore\":\"$context.identity.clientCert.validity.notBefore\",\"validityNotAfter\":\"$context.identity.clientCert.validity.notAfter\"}"
     },
     "DeploymentId": {
      "Ref": "MyApiDeploymentECB0D05E81594d6748b4b291f993111a5070d710"
