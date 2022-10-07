@@ -73,6 +73,18 @@ new sqs.Queue(this, 'Queue', {
 });
 ```
 
+## Encryption in transit
+
+If you want to enforce encryption of data in transit, set the `enforceSSL` property to `true`.
+A resource policy statement that allows only encrypted connections over HTTPS (TLS)
+will be added to the queue.
+
+```ts
+new sqs.Queue(this, 'Queue', {
+  enforceSSL: true,
+});
+```
+
 ## First-In-First-Out (FIFO) queues
 
 FIFO queues give guarantees on the order in which messages are dequeued, and have additional
