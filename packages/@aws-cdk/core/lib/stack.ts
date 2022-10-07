@@ -731,6 +731,19 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Adds an arbitary key-value pair, with information you want to record about the stack.
+   * These get translated to the Metadata section of the generated template.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
+   */
+  public addMetadata(key: string, value: any) {
+    if (!this.templateOptions.metadata) {
+      this.templateOptions.metadata = {};
+    }
+    this.templateOptions.metadata[key] = value;
+  }
+
+  /**
    * Called implicitly by the `addDependency` helper function in order to
    * realize a dependency between two top-level stacks at the assembly level.
    *
