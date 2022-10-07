@@ -662,7 +662,7 @@ export class SecurityGroup extends SecurityGroupBase {
       } else {
         this.directEgressRules.push({
           ipProtocol: '-1',
-          cidrIp: peer.uniqueId,
+          cidrIpv6: peer.uniqueId,
           description,
         });
       }
