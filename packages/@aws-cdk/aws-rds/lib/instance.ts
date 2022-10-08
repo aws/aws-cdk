@@ -328,6 +328,13 @@ export interface DatabaseInstanceNewProps {
   readonly instanceIdentifier?: string;
 
   /**
+   * The identifier of the DB cluster that the instance will belong to.
+   *
+   * @default - not belong to any cluster
+   */
+  readonly clusterIdentifier?: string;
+
+  /**
    * The VPC network where the DB subnet group should be created.
    */
   readonly vpc: ec2.IVpc;
@@ -617,6 +624,13 @@ export interface DatabaseInstanceNewProps {
    * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
+
+  /**
+   * Indicates whether the DB isntance is an Aurora V2 serverless instance.
+   *
+   * @default false
+   */
+  readonly serverlessInstance?: boolean;
 }
 
 /**
@@ -725,7 +739,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
       backupRetentionPeriod: props.backupRetention?.toDays(),
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
-      dbInstanceClass: Lazy.string({ produce: () => `db.${this.instanceType}` }),
+      dbInstanceClass: props.serverlessInstance ? 'db.serverless' : Lazy.string({ produce: () => `db.${this.instanceType}` }),
       dbInstanceIdentifier: Token.isUnresolved(props.instanceIdentifier)
         // if the passed identifier is a Token,
         // we need to use the physicalName of the database
@@ -733,13 +747,14 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         // as it might be used in a cross-environment fashion
         ? this.physicalName
         : maybeLowercasedInstanceId,
+      dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
       enableIamDatabaseAuthentication: Lazy.any({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
-      iops,
+      iops: props.serverlessInstance === true ? undefined : iops,
       monitoringInterval: props.monitoringInterval?.toSeconds(),
       monitoringRoleArn: monitoringRole?.roleArn,
       multiAz: props.multiAz,
@@ -754,9 +769,9 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
-      storageType,
+      storageType: props.serverlessInstance === true ? undefined : storageType,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
-      maxAllocatedStorage: props.maxAllocatedStorage,
+      maxAllocatedStorage: props.serverlessInstance === true ? undefined : props.maxAllocatedStorage,
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
     };
@@ -905,7 +920,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       ...this.newCfnProps,
       associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
       optionGroupName: engineConfig.optionGroup?.optionGroupName,
-      allocatedStorage: props.allocatedStorage?.toString() ?? '100',
+      allocatedStorage: props.serverlessInstance === true ? undefined : props.allocatedStorage?.toString() ?? '100',
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
       engine: engineType,

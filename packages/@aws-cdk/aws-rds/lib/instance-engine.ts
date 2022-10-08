@@ -636,6 +636,34 @@ class MySqlInstanceEngine extends InstanceEngineBase {
 }
 
 /**
+ * Properties for Aurora MySQL instance engines.
+ * Used in {@link DatabaseInstanceEngine.mysql}.
+ */
+export interface AuroraMySqlInstanceEngineProps {
+  /** The exact version of the engine to use. */
+  readonly version: MysqlEngineVersion;
+}
+
+class AuroraMySqlInstanceEngine extends InstanceEngineBase {
+  public readonly supportsReadReplicaBackups = true;
+
+  constructor(version?: MysqlEngineVersion) {
+    super({
+      engineType: 'aurora-mysql',
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
+      version: version
+        ? {
+          fullVersion: version.mysqlFullVersion,
+          majorVersion: version.mysqlMajorVersion,
+        }
+        : undefined,
+      engineFamily: 'MYSQL',
+    });
+  }
+}
+
+/**
  * Features supported by the Postgres database engine
  */
 export interface PostgresEngineFeatures {
@@ -1753,6 +1781,9 @@ export class DatabaseInstanceEngine {
    */
   public static readonly MYSQL: IInstanceEngine = new MySqlInstanceEngine();
 
+  public static readonly AURORA_MYSQL: IInstanceEngine = new AuroraMySqlInstanceEngine();
+
+
   /**
    * The unversioned 'oracle-ee' instance engine.
    *
@@ -1847,6 +1878,11 @@ export class DatabaseInstanceEngine {
   /** Creates a new MySQL instance engine. */
   public static mysql(props: MySqlInstanceEngineProps): IInstanceEngine {
     return new MySqlInstanceEngine(props.version);
+  }
+
+  /** Creates a new Aurora MySQL instance engine. */
+  public static auroraMySql(props: AuroraMySqlInstanceEngineProps): IInstanceEngine {
+    return new AuroraMySqlInstanceEngine(props.version);
   }
 
   /** Creates a new PostgreSQL instance engine. */
