@@ -43,7 +43,7 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
   readonly clusterReadEndpoint: Endpoint;
 
   /**
-   * Grant the given identity to access to the Datas API.
+   * Grant the given identity to access to the Data API.
    *
    * @param grantee The principal to grant access to
    */
