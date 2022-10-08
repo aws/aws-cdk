@@ -1768,6 +1768,29 @@ describe('cluster', () => {
       )).toEqual(true);
     });
 
+    test('addAutoScalingGroupCapacity requires imdsv2', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        prune: false,
+      });
+
+      // WHEN
+      cluster.addAutoScalingGroupCapacity('RequiresImdsv2', {
+        instanceType: new ec2.InstanceType('t2.nano'),
+        requireImdsv2: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+        MetadataOptions: {
+          HttpTokens: 'required',
+        },
+      });
+    });
+
     test('BottleRocketImage() with specific kubernetesVersion return correct AMI', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();

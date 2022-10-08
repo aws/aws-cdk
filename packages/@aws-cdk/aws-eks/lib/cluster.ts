@@ -1976,6 +1976,13 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    * @default true
    */
   readonly spotInterruptHandler?: boolean;
+
+  /**
+   * Whether IMDSv2 should be required on launched instances.
+   *
+   * @default false
+   */
+  readonly requireImdsv2?: boolean;
 }
 
 /**
