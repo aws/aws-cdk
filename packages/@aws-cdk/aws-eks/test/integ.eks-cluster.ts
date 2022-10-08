@@ -54,6 +54,8 @@ class EksClusterStack extends Stack {
 
     this.assertCapacityArm();
 
+    this.assertCapacityImdsv2();
+
     this.assertBottlerocket();
 
     this.assertSpotCapacity();
@@ -292,6 +294,15 @@ class EksClusterStack extends Stack {
     this.cluster.addAutoScalingGroupCapacity('NodesArm', {
       instanceType: new ec2.InstanceType('m6g.medium'),
       minCapacity: 1,
+    });
+  }
+
+  private assertCapacityImdsv2() {
+    // add capacity to the cluster with IMDSv2 enforcement.
+    this.cluster.addAutoScalingGroupCapacity('NodesImdsv2', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+      minCapacity: 1,
+      requireImdsv2: true,
     });
   }
 

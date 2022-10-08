@@ -376,6 +376,18 @@ cluster.addAutoScalingGroupCapacity('frontend-nodes', {
 });
 ```
 
+To enforce [IMDSv2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) on all instances provisioned by the `cluster.AddAutoScalingGroupCapacity` method, set the `requireImdsv2` property:
+
+```ts
+declare const cluster: eks.Cluster;
+cluster.addAutoScalingGroupCapacity('frontend-nodes', {
+  instanceType: new ec2.InstanceType('t2.medium'),
+  minCapacity: 3,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  requireImdsv2: true,
+});
+```
+
 To connect an already initialized auto-scaling group, use the `cluster.connectAutoScalingGroupCapacity()` method:
 
 ```ts

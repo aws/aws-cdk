@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/6b22baf50159d04458f3e0d9c67779233d653fa4b595ff1c1db414f102724306.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/535e184076ed45f6d743b5a443f29df55ea9fd6673bdb3d8f94c00464aa82ad5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -201,6 +201,12 @@
             "data": "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterNodesArmInstanceSecurityGroup52C45858443B84847DA"
           }
         ],
+        "/aws-cdk-eks-cluster-test/Cluster/ControlPlaneSecurityGroup/from awscdkeksclustertestClusterNodesImdsv2InstanceSecurityGroupEDB578F0:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterNodesImdsv2InstanceSecurityGroupEDB578F044350C63D32"
+          }
+        ],
         "/aws-cdk-eks-cluster-test/Cluster/ControlPlaneSecurityGroup/from awscdkeksclustertestClusterBottlerocketNodesInstanceSecurityGroup83FE7914:443": [
           {
             "type": "aws:cdk:logicalId",
@@ -247,6 +253,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterClusterSecurityGroupfromawscdkeksclustertestClusterNodesArmInstanceSecurityGroup52C45858443A88C1345"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/ClusterSecurityGroup/from awscdkeksclustertestClusterNodesImdsv2InstanceSecurityGroupEDB578F0:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclustertestClusterNodesImdsv2InstanceSecurityGroupEDB578F04434E1A82D4"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/ClusterSecurityGroup/from awscdkeksclustertestClusterBottlerocketNodesInstanceSecurityGroup83FE7914:443": [
@@ -473,6 +485,92 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodesArmASG40A593D0"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/NodesImdsv2/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/NodesImdsv2/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterNodesImdsv2InstanceSecurityGroup79907FA0"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/NodesImdsv2/InstanceSecurityGroup/from awscdkeksclustertestClusterNodesImdsv2InstanceSecurityGroupEDB578F0:ALL TRAFFIC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterNodesImdsv2InstanceSecurityGroupfromawscdkeksclustertestClusterNodesImdsv2InstanceSecurityGroupEDB578F0ALLTRAFFIC93D8F86A"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/NodesImdsv2/InstanceSecurityGroup/from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterNodesImdsv2InstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A32443228D15CB"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/NodesImdsv2/InstanceSecurityGroup/from awscdkeksclustertestClusterControlPlaneSecurityGroup2F130134:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterNodesImdsv2InstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F13013444371C06B83"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/NodesImdsv2/InstanceSecurityGroup/from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:1025-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterNodesImdsv2InstanceSecurityGroupfromawscdkeksclustertestClusterClusterSecurityGroupF7265A32102565535930B310D"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/NodesImdsv2/InstanceSecurityGroup/from awscdkeksclustertestClusterControlPlaneSecurityGroup2F130134:1025-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterNodesImdsv2InstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F130134102565535E3706B0E"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/NodesImdsv2/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterNodesImdsv2InstanceRole0AA2ACBB"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/NodesImdsv2/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterNodesImdsv2InstanceProfile795D2072"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/NodesImdsv2/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterNodesImdsv2LaunchConfig8422316E"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/Cluster/NodesImdsv2/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterNodesImdsv2ASGE8C34C8D"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/InstanceSecurityGroup": [
