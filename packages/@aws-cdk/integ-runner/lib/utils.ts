@@ -41,6 +41,18 @@ export function chain(commands: string[]): string {
   return commands.filter(c => !!c).join(' && ');
 }
 
+/**
+ * Prepare command for execution by exec
+ */
+export function prepareForExec(command: string): string[] {
+  let chunks = command.split(/\s+/);
+  const cmd = chunks.shift();
+  if (cmd !== undefined) {
+    return [cmd, chunks.join(' ')];
+  }
+  return [];
+}
+
 
 /**
  * A class holding a set of items which are being crossed off in time

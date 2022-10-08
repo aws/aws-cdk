@@ -347,16 +347,16 @@ describe('IntegTest runIntegTests', () => {
     // THEN
     expect(spawnSyncMock.mock.calls).toEqual(expect.arrayContaining([
       expect.arrayContaining([
-        'echo "preDeploy"',
+        'echo', ['"preDeploy hook"'],
       ]),
       expect.arrayContaining([
-        'echo "postDeploy"',
+        'echo', ['"postDeploy hook"'],
       ]),
       expect.arrayContaining([
-        'echo "preDestroy"',
+        'echo', ['"preDestroy hook"'],
       ]),
       expect.arrayContaining([
-        'echo "postDestroy"',
+        'echo', ['"postDestroy hook"'],
       ]),
     ]));
   });
