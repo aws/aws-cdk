@@ -6,7 +6,7 @@
       "stackUpdateWorkflow": false,
       "diffAssets": false,
       "hooks": {
-        "preDeploy": ["echo \"preDeploy hook\""],
+        "preDeploy": ["echo \"preDeploy hook\"", "ls", "echo -n \"No new line\""],
         "postDeploy": ["echo \"postDeploy hook\""],
         "preDestroy": ["echo \"preDestroy hook\""],
         "postDestroy": ["echo \"postDestroy hook\""]
