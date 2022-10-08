@@ -630,7 +630,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default false
    */
-  readonly serverlessInstance?: boolean;
+  readonly serverless?: boolean;
 }
 
 /**
@@ -739,7 +739,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
       backupRetentionPeriod: props.backupRetention?.toDays(),
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
-      dbInstanceClass: props.serverlessInstance ? 'db.serverless' : Lazy.string({ produce: () => `db.${this.instanceType}` }),
+      dbInstanceClass: props.serverless ? 'db.serverless' : Lazy.string({ produce: () => `db.${this.instanceType}` }),
       dbInstanceIdentifier: Token.isUnresolved(props.instanceIdentifier)
         // if the passed identifier is a Token,
         // we need to use the physicalName of the database
@@ -748,13 +748,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         ? this.physicalName
         : maybeLowercasedInstanceId,
       dbClusterIdentifier: props.clusterIdentifier,
-      dbSubnetGroupName: subnetGroup.subnetGroupName,
+      dbSubnetGroupName: props.serverless === true ? undefined : subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
       enableIamDatabaseAuthentication: Lazy.any({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
-      iops: props.serverlessInstance === true ? undefined : iops,
+      iops: props.serverless === true ? undefined : iops,
       monitoringInterval: props.monitoringInterval?.toSeconds(),
       monitoringRoleArn: monitoringRole?.roleArn,
       multiAz: props.multiAz,
@@ -769,9 +769,9 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
-      storageType: props.serverlessInstance === true ? undefined : storageType,
-      vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
-      maxAllocatedStorage: props.serverlessInstance === true ? undefined : props.maxAllocatedStorage,
+      storageType: props.serverless === true ? undefined : storageType,
+      vpcSecurityGroups: props.serverless === true ? undefined : securityGroups.map(s => s.securityGroupId),
+      maxAllocatedStorage: props.serverless === true ? undefined : props.maxAllocatedStorage,
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
     };
@@ -920,7 +920,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       ...this.newCfnProps,
       associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
       optionGroupName: engineConfig.optionGroup?.optionGroupName,
-      allocatedStorage: props.serverlessInstance === true ? undefined : props.allocatedStorage?.toString() ?? '100',
+      allocatedStorage: props.serverless === true ? undefined : props.allocatedStorage?.toString() ?? '100',
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
       engine: engineType,
@@ -1032,8 +1032,8 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
-      masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.unsafeUnwrap(),
+      masterUsername: props.serverless === true ? undefined : credentials.username,
+      masterUserPassword: props.serverless === true ? undefined : credentials.password?.unsafeUnwrap(),
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
