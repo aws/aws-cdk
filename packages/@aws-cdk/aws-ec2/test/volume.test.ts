@@ -1436,4 +1436,36 @@ describe('volume', () => {
       }).toThrow(/volumes must be between/);
     }
   });
+
+  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new Volume(stack, 'Volume', {
+        availabilityZone: 'us-east-1a',
+        size: cdk.Size.gibibytes(1),
+        volumeType: EbsDeviceVolumeType.GP3,
+        throughput,
+      });
+    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 1000/);
+  });
+
+  test.each([
+    ...Object.values(EbsDeviceVolumeType).filter((v) => v !== 'gp3'),
+  ])('throws if throughput is set on any volume type other than GP3', (volumeType) => {
+    const stack = new cdk.Stack();
+    const iops = [
+      EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+      EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
+    ].includes(volumeType) ? 100 : null;
+    expect(() => {
+      new Volume(stack, 'Volume', {
+        availabilityZone: 'us-east-1a',
+        size: cdk.Size.gibibytes(125),
+        volumeType,
+        ...iops ? { iops }: {},
+        throughput: 125,
+      });
+    }).toThrow(/throughput property requires volumeType: EbsDeviceVolumeType.GP3/);
+  });
+
 });

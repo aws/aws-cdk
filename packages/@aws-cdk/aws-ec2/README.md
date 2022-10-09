@@ -1326,6 +1326,19 @@ You can configure [tag propagation on volume creation](https://docs.aws.amazon.c
   });
 ```
 
+#### Throughput on GP3 Volumes
+
+You can specify the `throughput` of a GP3 volume from 125 (default) to 1000.
+
+```ts
+new ec2.Volume(this, 'Volume', {
+  availabilityZone: 'us-east-1a',
+  size: cdk.Size.gibibytes(125),
+  volumeType: EbsDeviceVolumeType.GP3,
+  throughput: 125,
+});
+```
+
 ### Configuring Instance Metadata Service (IMDS)
 
 #### Toggling IMDSv1

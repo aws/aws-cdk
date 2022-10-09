@@ -443,6 +443,13 @@ export interface VolumeProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The throughput that the volume supports, in MiB/s
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-throughput
+   * @default - 125 MiB/s
+   */
+  readonly throughput?: number;
 }
 
 /**
@@ -735,6 +742,15 @@ export class Volume extends VolumeBase {
       const { Min, Max } = sizeRanges[volumeType];
       if (size < Min || size > Max) {
         throw new Error(`\`${volumeType}\` volumes must be between ${Min} GiB and ${Max} GiB in size.`);
+      }
+    }
+
+    if (props.throughput) {
+      if (props.volumeType != EbsDeviceVolumeType.GP3) {
+        throw new Error('throughput property requires volumeType: EbsDeviceVolumeType.GP3');
+      }
+      if (props.throughput < 125 || props.throughput > 1000) {
+        throw new Error('throughput property takes a minimum of 125 and a maximum of 1000');
       }
     }
   }
