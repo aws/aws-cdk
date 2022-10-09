@@ -402,6 +402,66 @@ export enum FlowLogMaxAggregationInterval {
 }
 
 /**
+ * The following table describes all of the available fields for a flow log record.
+ */
+export class LogFormatField {
+  /**
+    * The VPC Flow Logs version.
+    */
+  public static readonly VERSION = '${version}';
+
+  /**
+  * The AWS account ID of the owner of the source network interface for which traffic is recorded.
+  */
+  public static readonly ACCOUNT_ID = '${account-id}';
+
+  /**
+  * The ID of the network interface for which the traffic is recorded.
+  */
+  public static readonly INTERFACE_ID = '${interface-id}';
+
+  /**
+    * The source address for incoming traffic, or the IPv4 or IPv6 address of the network interface
+    * for outgoing traffic on the network interface.
+    */
+  public static readonly SRC_ADDR = '${srcaddr}';
+
+  /**
+    * The destination address for outgoing traffic, or the IPv4 or IPv6 address of the network interface
+    * for incoming traffic on the network interface.
+    */
+  public static readonly DST_ADDR = '${dstaddr}';
+
+  /**
+    * The source port of the traffic.
+    */
+  public static readonly SRC_PORT = '${srcport}';
+
+  /**
+    * The destination port of the traffic.
+    */
+  public static readonly DST_PORT = '${dstport}';
+
+  /**
+    * The IANA protocol number of the traffic.
+    */
+  public static readonly PROTOCOL = '${protocol}';
+
+  /**
+    * The number of packets transferred during the flow.
+    */
+  public static readonly PACKETS = '${packets}';
+
+  /**
+    * The number of bytes transferred during the flow.
+    */
+  public static readonly BYTES = '${bytes}';
+
+  // ToDo: add other Available fields
+
+}
+
+/**
  * Options to add a flow log to a VPC
  */
 export interface FlowLogOptions {
@@ -419,6 +479,14 @@ export interface FlowLogOptions {
    * @default FlowLogDestinationType.toCloudWatchLogs()
    */
   readonly destination?: FlowLogDestination;
+
+  /**
+   * The fields to include in the flow log record, in the order in which they should appear.
+   * See https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html#flow-log-records
+   *
+   * @default - No custom log format options provided.
+   */
+  readonly customLogFormatFields?: LogFormatField[];
 
   /**
    * The maximum interval of time during which a flow of packets is captured
@@ -521,6 +589,10 @@ export class FlowLog extends FlowLogBase {
     if (this.bucket) {
       logDestination = this.keyPrefix ? this.bucket.arnForObjects(this.keyPrefix) : this.bucket.bucketArn;
     }
+    let customLogFormat: string | undefined = undefined;
+    if (props.customLogFormatFields) {
+      customLogFormat = props.customLogFormatFields.join(' ');
+    }
 
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
       destinationOptions: destinationConfig.destinationOptions,
@@ -533,6 +605,7 @@ export class FlowLog extends FlowLogBase {
       trafficType: props.trafficType
         ? props.trafficType
         : FlowLogTrafficType.ALL,
+      logFormat: customLogFormat,
       logDestination,
     });
 

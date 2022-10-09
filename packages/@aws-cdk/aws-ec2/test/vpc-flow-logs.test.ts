@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
-import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, Vpc } from '../lib';
+import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, LogFormatField, Vpc } from '../lib';
 
 describe('vpc flow logs', () => {
   test('with defaults set, it successfully creates with cloudwatch logs destination', () => {
@@ -502,6 +502,31 @@ test('add to vpc with maxAggregationInterval', () => {
   });
 });
 
+test('with custom log format set, it successfully creates with cloudwatch log destination', () => {
+  const stack = getTestStack();
+
+  new FlowLog(stack, 'FlowLogs', {
+    resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
+    customLogFormatFields: [
+      LogFormatField.SRC_PORT,
+      LogFormatField.DST_PORT,
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+    ResourceType: 'NetworkInterface',
+    TrafficType: 'ALL',
+    ResourceId: 'eni-123455',
+    DeliverLogsPermissionArn: {
+      'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
+    },
+    LogFormat: '${srcport} ${dstport}',
+    LogGroupName: {
+      Ref: 'FlowLogsLogGroup9853A85F',
+    },
+  });
+
+});
 
 function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', {
