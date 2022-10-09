@@ -66,6 +66,13 @@ export interface EbsDeviceOptionsBase {
    * @default {@link EbsDeviceVolumeType.GP2}
    */
   readonly volumeType?: EbsDeviceVolumeType;
+
+  /**
+   * The throughput that the volume supports, in MiB/s
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+   * @default - 125 MiB/s
+   */
+  readonly throughput?: number;
 }
 
 /**
