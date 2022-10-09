@@ -262,6 +262,24 @@ describe('staging', () => {
     expect(withExtra.assetHash).toEqual('c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
   });
 
+  test('can specify extra asset salt via context key', () => {
+    // GIVEN
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    const saltedApp = new App({ context: { '@aws-cdk/core:assetHashSalt': 'magic' } });
+    const saltedStack = new Stack(saltedApp, 'stack');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'X', { sourcePath: directory });
+    const saltedAsset = new AssetStaging(saltedStack, 'X', { sourcePath: directory });
+
+    // THEN
+    expect(asset.assetHash).not.toEqual(saltedAsset.assetHash);
+  });
+
   test('with bundling', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });

@@ -67,6 +67,7 @@ export class Bundling implements CdkBundlingOptions {
       architecture = Architecture.X86_64,
       outputPathSuffix = '',
       image,
+      poetryIncludeHashes,
     } = props;
 
     const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
@@ -75,6 +76,7 @@ export class Bundling implements CdkBundlingOptions {
       entry,
       inputDir: AssetStaging.BUNDLING_INPUT_DIR,
       outputDir: outputPath,
+      poetryIncludeHashes,
     });
 
     this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '../lib'), {
@@ -89,7 +91,7 @@ export class Bundling implements CdkBundlingOptions {
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {
-    const packaging = Packaging.fromEntry(options.entry);
+    const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes);
     let bundlingCommands: string[] = [];
     bundlingCommands.push(`cp -rTL ${options.inputDir}/ ${options.outputDir}`);
     bundlingCommands.push(`cd ${options.outputDir}`);
@@ -105,6 +107,7 @@ interface BundlingCommandOptions {
   readonly entry: string;
   readonly inputDir: string;
   readonly outputDir: string;
+  readonly poetryIncludeHashes?: boolean;
 }
 
 /**
