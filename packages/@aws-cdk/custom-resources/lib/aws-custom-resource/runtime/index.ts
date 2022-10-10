@@ -171,6 +171,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
         credentials = new AWS.ChainableTemporaryCredentials({
           params: params,
+          stsConfig: { stsRegionalEndpoints: 'regional' },
         });
       }
 
