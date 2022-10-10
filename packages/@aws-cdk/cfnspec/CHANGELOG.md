@@ -1,3 +1,72 @@
+# CloudFormation Resource Specification v92.0.0
+
+## New Resource Types
+
+* AWS::GreengrassV2::Deployment
+* AWS::M2::Application
+* AWS::Rekognition::StreamProcessor
+* AWS::Transfer::Agreement
+* AWS::Transfer::Certificate
+* AWS::Transfer::Connector
+* AWS::Transfer::Profile
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::Model ModelId (__added__)
+* AWS::EC2::EIP PublicIp (__added__)
+* AWS::EC2::EIP Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-eip.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-eip.html
+* AWS::EC2::VPCEndpoint Id (__added__)
+* AWS::EC2::VPCEndpoint DnsEntries.DuplicatesAllowed (__added__)
+* AWS::EC2::VPCEndpoint NetworkInterfaceIds.DuplicatesAllowed (__added__)
+* AWS::RDS::DBProxy VpcId (__added__)
+
+## Property Changes
+
+* AWS::EC2::EIP Domain.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-eip.html#cfn-ec2-eip-domain
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-eip.html#cfn-ec2-eip-domain
+* AWS::EC2::EIP InstanceId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-eip.html#cfn-ec2-eip-instanceid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-eip.html#cfn-ec2-eip-instanceid
+* AWS::EC2::EIP InstanceId.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::EC2::EIP NetworkBorderGroup.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-eip.html#cfn-ec2-eip-networkbordergroup
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-eip.html#cfn-ec2-eip-networkbordergroup
+* AWS::EC2::EIP PublicIpv4Pool.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-eip.html#cfn-ec2-eip-publicipv4pool
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-eip.html#cfn-ec2-eip-publicipv4pool
+* AWS::EC2::EIP PublicIpv4Pool.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::EC2::EIP Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-eip.html#cfn-ec2-eip-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-eip.html#cfn-ec2-eip-tags
+* AWS::Route53RecoveryReadiness::Cell CellName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Route53RecoveryReadiness::ReadinessCheck ReadinessCheckName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Route53RecoveryReadiness::RecoveryGroup RecoveryGroupName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Route53RecoveryReadiness::ResourceSet ResourceSetName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::EndpointConfig ExplainerConfig (__added__)
+
+## Property Type Changes
+
+* AWS::M2::Environment.EfsStorageConfiguration (__added__)
+* AWS::M2::Environment.FsxStorageConfiguration (__added__)
+* AWS::SageMaker::EndpointConfig.ExplainerConfig (__added__)
+* AWS::S3::MultiRegionAccessPoint.Region AccountId (__deleted__)
+
+
 # CloudFormation Resource Specification v91.0.0
 
 ## New Resource Types
