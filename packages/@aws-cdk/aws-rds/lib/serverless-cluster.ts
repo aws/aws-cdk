@@ -520,7 +520,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     // maxCapacity should be higher than 0.5 and we can't specify 0.5 for both minCapacity and maxCapacity so maxCapacity should be at least 1
     // @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
     if (minCapacity && minCapacity < 0.5 || maxCapacity && maxCapacity < 1) {
-      throw new Error('the smallest value that you can use for minCapacity and maxCapacity is 0.5 and 1');
+      throw new Error('The smallest value that you can use for minCapacity and maxCapacity is 0.5 and 1.');
     }
 
     if (maxCapacity && maxCapacity > 128) {
