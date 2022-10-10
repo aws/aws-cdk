@@ -192,6 +192,17 @@ const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
 integ.assertions.awsApiCall('S3', 'getObject');
 ```
 
+By default an assertions stack is automatically generated for you. You may however provide your own stack to use. 
+
+```ts
+declare const app: App;
+declare const stack: Stack;
+declare const assertionStack: Stack;
+
+const integ = new IntegTest(app, 'Integ', { testCases: [stack], assertionStack: assertionStack });
+integ.assertions.awsApiCall('S3', 'getObject');
+```
+
 - Part of a  normal CDK deployment
 
 In this case you may be using assertions as part of a normal CDK deployment in order to make an assertion on the infrastructure

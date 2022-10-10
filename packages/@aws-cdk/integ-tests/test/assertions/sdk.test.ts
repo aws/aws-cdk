@@ -1,6 +1,6 @@
-import { Template, Match } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import { App, CfnOutput } from '@aws-cdk/core';
-import { LogType, InvocationType, ExpectedResult } from '../../lib/assertions';
+import { ExpectedResult, InvocationType, LogType } from '../../lib/assertions';
 import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
 
 describe('AwsApiCall', () => {
