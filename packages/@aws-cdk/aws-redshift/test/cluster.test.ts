@@ -614,7 +614,7 @@ test('elastic ip address', () => {
 });
 
 describe('reboot for Parameter Changes', () => {
-  test('cluster without parameter group', () => {
+  test('throw error for cluster without parameter group', () => {
     // Given
     const cluster = new Cluster(stack, 'Redshift', {
       masterUser: {
@@ -622,11 +622,43 @@ describe('reboot for Parameter Changes', () => {
       },
       vpc,
     });
-
+    cluster.enableRebootForParameterChanges();
     // WHEN
-    expect(() => cluster.enableRebootForParameterChanges())
+    expect(() => Template.fromStack(stack))
       // THEN
       .toThrowError(/Cannot enable reboot for parameter changes/);
+  });
+
+  test('throw error for cluster with imported parameter group', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      parameterGroup: ClusterParameterGroup.fromClusterParameterGroupName(stack, 'foo', 'bar'),
+    });
+    cluster.enableRebootForParameterChanges();
+    // WHEN
+    expect(() => Template.fromStack(stack))
+      // THEN
+      .toThrowError(/Cannot enable reboot for parameter changes/);
+  });
+
+  test('not throw error when parameter group is created after enabling reboots', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      rebootForParameterChanges: true,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+    // WHEN
+    expect(() => Template.fromStack(stack))
+      // THEN
+      .not.toThrowError(/Cannot enable reboot for parameter changes/);
   });
 
   test('cluster with parameter group', () => {
@@ -692,22 +724,6 @@ describe('reboot for Parameter Changes', () => {
         },
       ),
     });
-  });
-
-  test('cluster with imported parameter group', () => {
-    // Given
-    const cluster = new Cluster(stack, 'Redshift', {
-      masterUser: {
-        masterUsername: 'admin',
-      },
-      vpc,
-      parameterGroup: ClusterParameterGroup.fromClusterParameterGroupName(stack, 'foo', 'bar'),
-    });
-
-    // WHEN
-    expect(() => cluster.enableRebootForParameterChanges())
-      // THEN
-      .toThrowError(/Cannot enable reboot for parameter changes/);
   });
 
 });

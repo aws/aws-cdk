@@ -673,12 +673,6 @@ export class Cluster extends ClusterBase {
    * Enables automatic cluster rebooting when changes to the cluster's parameter group require a restart to apply.
    */
   public enableRebootForParameterChanges(): void {
-    if (!this.parameterGroup) {
-      throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
-    }
-    if (!(this.parameterGroup instanceof ClusterParameterGroup)) {
-      throw new Error('Cannot enable reboot for parameter changes when using an imported parameter group.');
-    }
     if (!this.rebootForParameterChangesEnabled) {
       this.rebootForParameterChangesEnabled = true;
       const rebootFunction = new lambda.SingletonFunction(this, 'RedshiftClusterRebooterFunction', {
@@ -711,7 +705,14 @@ export class Cluster extends ClusterBase {
         serviceToken: provider.serviceToken,
         properties: {
           ClusterId: this.clusterName,
-          ParameterGroupName: this.parameterGroup.clusterParameterGroupName,
+          ParameterGroupName: Lazy.string({
+            produce: () => {
+              if (!this.parameterGroup) {
+                throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
+              }
+              return this.parameterGroup.clusterParameterGroupName;
+            },
+          }),
           ParametersString: Lazy.string({
             produce: () => {
               if (!(this.parameterGroup instanceof ClusterParameterGroup)) {
@@ -722,7 +723,14 @@ export class Cluster extends ClusterBase {
           }),
         },
       });
-      customResource.node.addDependency(this, this.parameterGroup);
+      Lazy.any({
+        produce: () => {
+          if (!this.parameterGroup) {
+            throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
+          }
+          customResource.node.addDependency(this, this.parameterGroup);
+        },
+      });
     }
   }
 }
