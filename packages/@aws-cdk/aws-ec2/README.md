@@ -217,6 +217,42 @@ new ec2.Vpc(this, 'TheVPC', {
 provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
 ```
 
+### Ip Address Management - IPAM
+
+To facilitate options for flexibility in the allocation and use of IP space within Vpc and Subnet including strategy and implementation for the allocation, Vpc utilizes an IpamProvider.
+
+By default, the Vpc construct will create and use a StaticIpam for you if you do not pass an `ipamProvider` to Vpc. StaticIpam is an implementation of the Original CDK Vpc and Subnet IP address allocation strategy and implementation. 
+
+You must supply at most one of ipamProvider or cidr to Vpc.
+
+StaticIpam will first try to allocated space from the Vpc Cidr any Subnets that explicitly have a `cidrMask` as part of a SubnetConfiguration, this includes reserved subnets, after this any remaining space is divided between the rest of the required subnets.
+
+When using StaticIpam concrete Cidr values are generated in the synthesized CloudFormation template.
+
+```ts
+new ec2.Vpc(stack, 'TheVPC', {
+  ipamProvider: new ec2.StaticIpam('10.0.1.0/20')
+});
+```
+
+AwsIpam uses Amazon VPC IP Address Manager (IPAM) to allocated the Cidr for the Vpc. For information on Amazon VPC IP Address Manager please see the [official documentation](https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html).
+
+AWS Ipam requires a `ipv4IpamPoolId` be set to the Amazon VPC IP Address Manager Pool Id used for the Vpc Cidr allocation, additionally an `ipv4NetmaskLength` must be set, which defines the size of cidr that will be requested from the Pool at deploy time by the CloudFormation engine.
+
+Subnets are allocated locally of a size defined by `defaultSubnetIpv4NetmaskLength` in the provider or by using any explicit `cidrMask` from a supplied SubnetConfiguration. The provider AwsIpam dose not attempt to allocated any remaining space in the Vpc's Cidr space.
+
+```ts
+new ec2.Vpc(stack, 'TheVPC', {
+  ipamProvider: new ec2.AwsIpam({
+    ipv4IpamPoolId: pool.ref,
+    ipv4NetmaskLength: 18,
+    defaultSubnetIpv4NetmaskLength: 24
+  })
+});
+```
+
+When using AwsIpam the final Cidr allocation for Vpc and Subnets are unknown at synth time. Because of this Subnet Cidr values are synthesized as CloudFormation Intrinsic functions representing their offset within the Vpc Cidr space and not concrete values.
+
 ### Advanced Subnet Configuration
 
 If the default VPC configuration (public and private subnets spanning the

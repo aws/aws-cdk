@@ -410,19 +410,22 @@ describe('vpc', () => {
         ],
         maxAzs: 3,
       });
+
+      const template = Template.fromStack(stack);
+
       for (let i = 0; i < 3; i++) {
-        Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        template.hasResourceProperties('AWS::EC2::Subnet', {
           CidrBlock: `10.0.${i}.0/24`,
         });
       }
       for (let i = 3; i < 6; i++) {
-        const matchingSubnets = Template.fromStack(stack).findResources('AWS::EC2::Subnet', {
+        const matchingSubnets = template.findResources('AWS::EC2::Subnet', {
           CidrBlock: `10.0.${i}.0/24`,
         });
         expect(Object.keys(matchingSubnets).length).toBe(0);
       }
       for (let i = 6; i < 9; i++) {
-        Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        template.hasResourceProperties('AWS::EC2::Subnet', {
           CidrBlock: `10.0.${i}.0/24`,
         });
       }
