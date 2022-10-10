@@ -524,7 +524,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     }
 
     if (maxCapacity && maxCapacity > 128) {
-      throw new Error('the largest value that you can use for maxCapacity is 128');
+      throw new Error('The largest value that you can use for maxCapacity is 128.');
     }
 
     if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
