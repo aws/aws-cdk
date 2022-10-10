@@ -528,7 +528,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     }
 
     if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
-      throw new Error('maximum capacity must be greater than or equal to minimum capacity.');
+      throw new Error('Maximum capacity must be greater than or equal to minimum capacity.');
     }
 
     if (minCapacity && minCapacity % 0.5 !== 0 || maxCapacity && maxCapacity % 0.5 !== 0) {
