@@ -1509,6 +1509,18 @@ const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
+And the following demonstrates how to enable metadata options support.
+
+```ts
+new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  httpEndpoint: true,
+  httpProtocolIpv6: true,
+  httpPutResponseHopLimit: 1,
+  httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,
+  instanceMetadataTags: true,
+});
+```
+
 ## Detailed Monitoring
 
 The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
