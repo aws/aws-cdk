@@ -1918,7 +1918,7 @@ export class DatabaseInstanceEngine {
     return new AuroraMySqlInstanceEngine(props.version);
   }
 
-  /** Creates a new Aurora MySQL instance engine. */
+  /** Creates a new Aurora Postgres instance engine. */
   public static auroraPostgres(props: AuroraPostgresInstanceEngineProps): IInstanceEngine {
     return new AuroraPostgresInstanceEngine(props.version);
   }
