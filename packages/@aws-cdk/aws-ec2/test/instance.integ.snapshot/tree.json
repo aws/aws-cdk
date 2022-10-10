@@ -8,21 +8,21 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.123"
         }
       },
-      "TestStack": {
-        "id": "TestStack",
-        "path": "TestStack",
+      "integ-ec2-instance": {
+        "id": "integ-ec2-instance",
+        "path": "integ-ec2-instance",
         "children": {
           "VPC": {
             "id": "VPC",
-            "path": "TestStack/VPC",
+            "path": "integ-ec2-instance/VPC",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "TestStack/VPC/Resource",
+                "path": "integ-ec2-instance/VPC/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -33,7 +33,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "TestStack/VPC"
+                        "value": "integ-ec2-instance/VPC"
                       }
                     ]
                   }
@@ -45,11 +45,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "TestStack/VPC/PublicSubnet1",
+                "path": "integ-ec2-instance/VPC/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "TestStack/VPC/PublicSubnet1/Subnet",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -77,7 +77,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PublicSubnet1"
+                            "value": "integ-ec2-instance/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -89,7 +89,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "TestStack/VPC/PublicSubnet1/Acl",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -97,7 +97,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "TestStack/VPC/PublicSubnet1/RouteTable",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -107,7 +107,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PublicSubnet1"
+                            "value": "integ-ec2-instance/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -119,7 +119,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "TestStack/VPC/PublicSubnet1/RouteTableAssociation",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -138,7 +138,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "TestStack/VPC/PublicSubnet1/DefaultRoute",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "TestStack/VPC/PublicSubnet1/EIP",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -166,7 +166,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PublicSubnet1"
+                            "value": "integ-ec2-instance/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -178,7 +178,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "TestStack/VPC/PublicSubnet1/NATGateway",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -194,7 +194,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PublicSubnet1"
+                            "value": "integ-ec2-instance/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -212,11 +212,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "TestStack/VPC/PublicSubnet2",
+                "path": "integ-ec2-instance/VPC/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "TestStack/VPC/PublicSubnet2/Subnet",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -244,7 +244,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PublicSubnet2"
+                            "value": "integ-ec2-instance/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -256,7 +256,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "TestStack/VPC/PublicSubnet2/Acl",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -264,7 +264,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "TestStack/VPC/PublicSubnet2/RouteTable",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -274,7 +274,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PublicSubnet2"
+                            "value": "integ-ec2-instance/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -286,7 +286,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "TestStack/VPC/PublicSubnet2/RouteTableAssociation",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -305,7 +305,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "TestStack/VPC/PublicSubnet2/DefaultRoute",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +325,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "TestStack/VPC/PublicSubnet2/EIP",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -333,7 +333,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PublicSubnet2"
+                            "value": "integ-ec2-instance/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -345,7 +345,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "TestStack/VPC/PublicSubnet2/NATGateway",
+                    "path": "integ-ec2-instance/VPC/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -361,7 +361,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PublicSubnet2"
+                            "value": "integ-ec2-instance/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -379,11 +379,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "TestStack/VPC/PrivateSubnet1",
+                "path": "integ-ec2-instance/VPC/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "TestStack/VPC/PrivateSubnet1/Subnet",
+                    "path": "integ-ec2-instance/VPC/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -411,7 +411,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PrivateSubnet1"
+                            "value": "integ-ec2-instance/VPC/PrivateSubnet1"
                           }
                         ]
                       }
@@ -423,7 +423,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "TestStack/VPC/PrivateSubnet1/Acl",
+                    "path": "integ-ec2-instance/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -431,7 +431,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "TestStack/VPC/PrivateSubnet1/RouteTable",
+                    "path": "integ-ec2-instance/VPC/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -441,7 +441,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PrivateSubnet1"
+                            "value": "integ-ec2-instance/VPC/PrivateSubnet1"
                           }
                         ]
                       }
@@ -453,7 +453,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "TestStack/VPC/PrivateSubnet1/RouteTableAssociation",
+                    "path": "integ-ec2-instance/VPC/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -472,7 +472,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "TestStack/VPC/PrivateSubnet1/DefaultRoute",
+                    "path": "integ-ec2-instance/VPC/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -498,11 +498,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "TestStack/VPC/PrivateSubnet2",
+                "path": "integ-ec2-instance/VPC/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "TestStack/VPC/PrivateSubnet2/Subnet",
+                    "path": "integ-ec2-instance/VPC/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -530,7 +530,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PrivateSubnet2"
+                            "value": "integ-ec2-instance/VPC/PrivateSubnet2"
                           }
                         ]
                       }
@@ -542,7 +542,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "TestStack/VPC/PrivateSubnet2/Acl",
+                    "path": "integ-ec2-instance/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -550,7 +550,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "TestStack/VPC/PrivateSubnet2/RouteTable",
+                    "path": "integ-ec2-instance/VPC/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -560,7 +560,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/VPC/PrivateSubnet2"
+                            "value": "integ-ec2-instance/VPC/PrivateSubnet2"
                           }
                         ]
                       }
@@ -572,7 +572,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "TestStack/VPC/PrivateSubnet2/RouteTableAssociation",
+                    "path": "integ-ec2-instance/VPC/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -591,7 +591,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "TestStack/VPC/PrivateSubnet2/DefaultRoute",
+                    "path": "integ-ec2-instance/VPC/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -617,14 +617,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "TestStack/VPC/IGW",
+                "path": "integ-ec2-instance/VPC/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "TestStack/VPC"
+                        "value": "integ-ec2-instance/VPC"
                       }
                     ]
                   }
@@ -636,7 +636,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "TestStack/VPC/VPCGW",
+                "path": "integ-ec2-instance/VPC/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -659,66 +659,65 @@
               "version": "0.0.0"
             }
           },
-          "Instance": {
-            "id": "Instance",
-            "path": "TestStack/Instance",
+          "IntegSg": {
+            "id": "IntegSg",
+            "path": "integ-ec2-instance/IntegSg",
             "children": {
-              "InstanceSecurityGroup": {
-                "id": "InstanceSecurityGroup",
-                "path": "TestStack/Instance/InstanceSecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "TestStack/Instance/InstanceSecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "TestStack/Instance/InstanceSecurityGroup",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "securityGroupIngress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "ipProtocol": "icmp",
-                            "fromPort": 8,
-                            "toPort": -1,
-                            "description": "from 0.0.0.0/0:ICMP Type 8"
-                          }
-                        ],
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "TestStack/Instance"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-ec2-instance/IntegSg/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "integ-ec2-instance/IntegSg",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
+                      },
+                      {
+                        "ipProtocol": "-1",
+                        "cidrIpv6": "::/0",
+                        "description": "Allow all outbound ipv6 traffic by default"
                       }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
+                    ],
+                    "securityGroupIngress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "ipProtocol": "icmp",
+                        "fromPort": 8,
+                        "toPort": -1,
+                        "description": "from 0.0.0.0/0:ICMP Type 8"
+                      }
+                    ],
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
                   "version": "0.0.0"
                 }
-              },
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+              "version": "0.0.0"
+            }
+          },
+          "Instance": {
+            "id": "Instance",
+            "path": "integ-ec2-instance/Instance",
+            "children": {
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "TestStack/Instance/InstanceRole",
+                "path": "integ-ec2-instance/Instance/InstanceRole",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "TestStack/Instance/InstanceRole/Resource",
+                    "path": "integ-ec2-instance/Instance/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -747,7 +746,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/Instance"
+                            "value": "integ-ec2-instance/Instance"
                           }
                         ]
                       }
@@ -759,11 +758,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "TestStack/Instance/InstanceRole/DefaultPolicy",
+                    "path": "integ-ec2-instance/Instance/InstanceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "TestStack/Instance/InstanceRole/DefaultPolicy/Resource",
+                        "path": "integ-ec2-instance/Instance/InstanceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -804,7 +803,7 @@
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "TestStack/Instance/InstanceProfile",
+                "path": "integ-ec2-instance/Instance/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -822,7 +821,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "TestStack/Instance/Resource",
+                "path": "integ-ec2-instance/Instance/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                   "aws:cdk:cloudformation:props": {
@@ -845,7 +844,7 @@
                     "securityGroupIds": [
                       {
                         "Fn::GetAtt": [
-                          "InstanceInstanceSecurityGroupF0E2D5BE",
+                          "IntegSg68DC2C7E",
                           "GroupId"
                         ]
                       }
@@ -856,7 +855,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "TestStack/Instance"
+                        "value": "integ-ec2-instance/Instance"
                       }
                     ],
                     "userData": {
@@ -877,7 +876,7 @@
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "TestStack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "integ-ec2-instance/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
@@ -885,7 +884,7 @@
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "TestStack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "integ-ec2-instance/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
@@ -894,6 +893,42 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "instance-test": {
+        "id": "instance-test",
+        "path": "instance-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "instance-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "instance-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.123"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "instance-test/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

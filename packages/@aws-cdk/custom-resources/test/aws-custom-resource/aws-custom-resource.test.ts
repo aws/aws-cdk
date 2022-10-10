@@ -791,7 +791,7 @@ test('can specify VPC', () => {
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
     vpc,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
   });
 
   // THEN
