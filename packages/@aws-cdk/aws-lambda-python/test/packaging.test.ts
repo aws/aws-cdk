@@ -6,7 +6,7 @@ test('Packging with no dependencies', () => {
   const packaging = Packaging.fromEntry(entry);
 
   // pip packaging identified.
-  expect(packaging).toEqual(Packaging.NONE);
+  expect(packaging).toEqual(Packaging.withNoPackaging());
 });
 
 test('Packging with requirements.txt', () => {
@@ -14,7 +14,7 @@ test('Packging with requirements.txt', () => {
   const packaging = Packaging.fromEntry(entry);
 
   // pip packaging identified.
-  expect(packaging).toEqual(Packaging.PIP);
+  expect(packaging).toEqual(Packaging.withPip());
 });
 
 test('Packging with pipenv', () => {
@@ -22,7 +22,7 @@ test('Packging with pipenv', () => {
   const packaging = Packaging.fromEntry(entry);
 
   // pip packaging identified.
-  expect(packaging).toEqual(Packaging.PIPENV);
+  expect(packaging).toEqual(Packaging.withPipenv());
 });
 
 test('Packging with poetry', () => {
@@ -30,5 +30,5 @@ test('Packging with poetry', () => {
   const packaging = Packaging.fromEntry(entry);
 
   // pip packaging identified.
-  expect(packaging).toEqual(Packaging.POETRY);
+  expect(packaging).toEqual(Packaging.withPoetry());
 });
