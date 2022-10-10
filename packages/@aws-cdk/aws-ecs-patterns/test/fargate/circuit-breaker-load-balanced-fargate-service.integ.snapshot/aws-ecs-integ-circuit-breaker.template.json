@@ -634,6 +634,9 @@
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
+    "DeploymentController": {
+     "Type": "ECS"
+    },
     "EnableECSManagedTags": false,
     "HealthCheckGracePeriodSeconds": 60,
     "LaunchType": "FARGATE",

@@ -1121,6 +1121,9 @@
                             "rollback": true
                           }
                         },
+                        "deploymentController": {
+                          "type": "ECS"
+                        },
                         "enableEcsManagedTags": false,
                         "healthCheckGracePeriodSeconds": 60,
                         "launchType": "FARGATE",
