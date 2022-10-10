@@ -626,11 +626,11 @@ export interface DatabaseInstanceNewProps {
   readonly publiclyAccessible?: boolean;
 
   /**
-   * Indicates whether the DB isntance is an Aurora V2 serverless instance.
+   * Indicates whether the DB isntance is an Aurora Serverless v2 instance.
    *
-   * @default false
+   * @default - undefined(not an Aurora serverless v2 instance)
    */
-  readonly serverless?: boolean;
+  readonly serverlessV2InstanceType?: ServerlessV2InstanceType;
 }
 
 /**
@@ -655,6 +655,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   private readonly domainId?: string;
   private readonly domainRole?: iam.IRole;
+  protected readonly serverlessV2Instance?: boolean;
 
   protected enableIamAuthentication?: boolean;
 
@@ -704,6 +705,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       });
     }
 
+    this.serverlessV2Instance = props.serverlessV2InstanceType !== undefined ? true : false;
+
     const storageType = props.storageType || StorageType.GP2;
     const iops = storageType === StorageType.IO1 ? (props.iops || 1000) : undefined;
 
@@ -739,7 +742,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
       backupRetentionPeriod: props.backupRetention?.toDays(),
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
-      dbInstanceClass: props.serverless ? 'db.serverless' : Lazy.string({ produce: () => `db.${this.instanceType}` }),
+      dbInstanceClass: props.serverlessV2InstanceType === ServerlessV2InstanceType.SERVERLESS ? 'db.serverless' : Lazy.string({ produce: () => `db.${this.instanceType}` }),
       dbInstanceIdentifier: Token.isUnresolved(props.instanceIdentifier)
         // if the passed identifier is a Token,
         // we need to use the physicalName of the database
@@ -748,13 +751,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         ? this.physicalName
         : maybeLowercasedInstanceId,
       dbClusterIdentifier: props.clusterIdentifier,
-      dbSubnetGroupName: props.serverless === true ? undefined : subnetGroup.subnetGroupName,
+      dbSubnetGroupName: this.serverlessV2Instance ? undefined : subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
       enableIamDatabaseAuthentication: Lazy.any({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
-      iops: props.serverless === true ? undefined : iops,
+      iops: this.serverlessV2Instance ? undefined : iops,
       monitoringInterval: props.monitoringInterval?.toSeconds(),
       monitoringRoleArn: monitoringRole?.roleArn,
       multiAz: props.multiAz,
@@ -769,9 +772,9 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
-      storageType: props.serverless === true ? undefined : storageType,
-      vpcSecurityGroups: props.serverless === true ? undefined : securityGroups.map(s => s.securityGroupId),
-      maxAllocatedStorage: props.serverless === true ? undefined : props.maxAllocatedStorage,
+      storageType: this.serverlessV2Instance ? undefined : storageType,
+      vpcSecurityGroups: this.serverlessV2Instance ? undefined : securityGroups.map(s => s.securityGroupId),
+      maxAllocatedStorage: this.serverlessV2Instance ? undefined : props.maxAllocatedStorage,
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
     };
@@ -920,7 +923,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       ...this.newCfnProps,
       associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
       optionGroupName: engineConfig.optionGroup?.optionGroupName,
-      allocatedStorage: props.serverless === true ? undefined : props.allocatedStorage?.toString() ?? '100',
+      allocatedStorage: this.serverlessV2Instance ? undefined : props.allocatedStorage?.toString() ?? '100',
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
       engine: engineType,
@@ -974,6 +977,14 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       target: this,
     });
   }
+}
+
+/**
+ * Indicates whether this instance belongs to an Aurora Serverless v2 cluster.
+ */
+export enum ServerlessV2InstanceType {
+  SERVERLESS,
+  PROVISIONED,
 }
 
 /**
@@ -1032,8 +1043,8 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
-      masterUsername: props.serverless === true ? undefined : credentials.username,
-      masterUserPassword: props.serverless === true ? undefined : credentials.password?.unsafeUnwrap(),
+      masterUsername: this.serverlessV2Instance ? undefined : credentials.username,
+      masterUserPassword: this.serverlessV2Instance ? undefined : credentials.password?.unsafeUnwrap(),
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
