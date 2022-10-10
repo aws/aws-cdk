@@ -301,9 +301,6 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
     },
     LaunchType: 'EC2',
     ServiceName: 'ecs-test-service',
-    DeploymentController: {
-      Type: 'ECS',
-    },
     PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
     PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
   });

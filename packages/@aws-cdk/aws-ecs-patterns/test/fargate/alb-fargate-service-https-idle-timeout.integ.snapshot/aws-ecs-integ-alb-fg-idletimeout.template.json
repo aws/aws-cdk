@@ -551,6 +551,12 @@
       "HostedZoneId": "fakeId"
      }
     ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-ecs-integ-alb-fg-idletimeout/myService/Certificate"
+     }
+    ],
     "ValidationMethod": "DNS"
    }
   },
