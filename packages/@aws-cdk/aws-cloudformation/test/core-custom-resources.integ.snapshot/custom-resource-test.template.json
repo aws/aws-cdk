@@ -64,6 +64,20 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "MyLengthyTypeResource": {
+   "Type": "Custom::Given_Resource_Type_Is_Exactly_Sixty_Characters_Long",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomReflectCustomResourceProviderHandler2E189D0B",
+      "Arn"
+     ]
+    },
+    "physicalResourceId": "MyPhysicalLengthyType"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
