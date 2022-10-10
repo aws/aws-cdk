@@ -1,0 +1,12 @@
+*.js
+*.js.map
+*.d.ts
+
+node_modules/
+
+dist
+.LAST_PACKAGE
+.LAST_BUILD
+*.snk
+!.eslintrc.js
+!jest.config.js

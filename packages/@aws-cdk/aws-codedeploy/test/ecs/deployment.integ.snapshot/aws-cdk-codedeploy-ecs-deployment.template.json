@@ -1,0 +1,2346 @@
+{
+ "Resources": {
+  "VPCB9E5F0B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1SubnetB4246D30": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1RouteTableFEE4B781": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    }
+   }
+  },
+  "VPCPublicSubnet1DefaultRoute91CEF279": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCPublicSubnet1EIP6AD938E8": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1NATGatewayE0556630": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet1EIP6AD938E8",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
+  },
+  "VPCPublicSubnet2Subnet74179F39": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2RouteTable6F1A15F1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2RouteTableAssociation5A808732": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    }
+   }
+  },
+  "VPCPublicSubnet2DefaultRouteB7481BBA": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCPublicSubnet2EIP4947BC00": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2NATGateway3C070193": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet2EIP4947BC00",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
+  },
+  "VPCPrivateSubnet1Subnet8BCA10E0": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet1RouteTableBE8A6027": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet1RouteTableAssociation347902D1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+    }
+   }
+  },
+  "VPCPrivateSubnet1DefaultRouteAE1D6490": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    }
+   }
+  },
+  "VPCPrivateSubnet2SubnetCFCDAA7A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet2RouteTable0A19E10E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    }
+   }
+  },
+  "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet2NATGateway3C070193"
+    }
+   }
+  },
+  "VPCIGWB7E252D3": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-deployment/VPC"
+     }
+    ]
+   }
+  },
+  "VPCVPCGW99B986DC": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "InternetGatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   }
+  },
+  "EcsCluster97242B84": {
+   "Type": "AWS::ECS::Cluster"
+  },
+  "TaskDefTaskRole1EDB4A67": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TaskDef54694570": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "Image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
+      "Name": "Container",
+      "PortMappings": [
+       {
+        "ContainerPort": 80,
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "Cpu": "256",
+    "Family": "awscdkcodedeployecsdeploymentTaskDef1F26DB5D",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "TaskDefTaskRole1EDB4A67",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "FargateServiceAC2B3B85": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "EcsCluster97242B84"
+    },
+    "DeploymentConfiguration": {
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DeploymentController": {
+     "Type": "CODE_DEPLOY"
+    },
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "Container",
+      "ContainerPort": 80,
+      "TargetGroupArn": {
+       "Ref": "ServiceLBProdListenerBlueTGGroupB47699CD"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "FargateServiceSecurityGroup0A0E79CB",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+       },
+       {
+        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+       }
+      ]
+     }
+    },
+    "TaskDefinition": "awscdkcodedeployecsdeploymentTaskDef1F26DB5D"
+   },
+   "DependsOn": [
+    "GreenTG71A27F2F",
+    "ServiceLBProdListenerBlueTGGroupB47699CD",
+    "ServiceLBProdListener0E7627EE",
+    "ServiceLBTestListener3EA49939",
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67"
+   ]
+  },
+  "FargateServiceSecurityGroup0A0E79CB": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-codedeploy-ecs-deployment/FargateService/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "GreenTG71A27F2F",
+    "ServiceLBTestListener3EA49939",
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67"
+   ]
+  },
+  "FargateServiceSecurityGroupfromawscdkcodedeployecsdeploymentServiceLBSecurityGroup2743D26B80924AA2B4": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "FargateServiceSecurityGroup0A0E79CB",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ServiceLBSecurityGroup2EA7EDA1",
+      "GroupId"
+     ]
+    },
+    "ToPort": 80
+   },
+   "DependsOn": [
+    "GreenTG71A27F2F",
+    "ServiceLBTestListener3EA49939",
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67"
+   ]
+  },
+  "ServiceLBBDAD0B9B": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internal",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "ServiceLBSecurityGroup2EA7EDA1",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ],
+    "Type": "application"
+   }
+  },
+  "ServiceLBSecurityGroup2EA7EDA1": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awscdkcodedeployecsdeploymentServiceLB8F9317EC",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     },
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 9002",
+      "FromPort": 9002,
+      "IpProtocol": "tcp",
+      "ToPort": 9002
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "ServiceLBSecurityGrouptoawscdkcodedeployecsdeploymentFargateServiceSecurityGroupF90DCF8D8040F23657": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "GroupId": {
+     "Fn::GetAtt": [
+      "ServiceLBSecurityGroup2EA7EDA1",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "FargateServiceSecurityGroup0A0E79CB",
+      "GroupId"
+     ]
+    },
+    "FromPort": 80,
+    "ToPort": 80
+   }
+  },
+  "ServiceLBProdListener0E7627EE": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "ServiceLBProdListenerBlueTGGroupB47699CD"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "ServiceLBBDAD0B9B"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   },
+   "DependsOn": [
+    "GreenTG71A27F2F"
+   ]
+  },
+  "ServiceLBProdListenerBlueTGGroupB47699CD": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckIntervalSeconds": 5,
+    "HealthCheckTimeoutSeconds": 4,
+    "HealthyThresholdCount": 2,
+    "Matcher": {
+     "HttpCode": "200"
+    },
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "deregistration_delay.timeout_seconds",
+      "Value": "30"
+     },
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "UnhealthyThresholdCount": 3,
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "GreenTG71A27F2F"
+   ]
+  },
+  "ServiceLBTestListener3EA49939": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "GreenTG71A27F2F"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "ServiceLBBDAD0B9B"
+    },
+    "Port": 9002,
+    "Protocol": "HTTP"
+   },
+   "DependsOn": [
+    "ServiceLBProdListenerBlueTGGroupB47699CD"
+   ]
+  },
+  "GreenTG71A27F2F": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckIntervalSeconds": 5,
+    "HealthCheckTimeoutSeconds": 4,
+    "HealthyThresholdCount": 2,
+    "Matcher": {
+     "HttpCode": "200"
+    },
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "deregistration_delay.timeout_seconds",
+      "Value": "30"
+     },
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "UnhealthyThresholdCount": 3,
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "BlueUnhealthyHosts48919A97": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 2,
+    "AlarmName": "aws-cdk-codedeploy-ecs-deployment-Unhealthy-Hosts-Blue",
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Name": "TargetGroup",
+      "Value": {
+       "Fn::GetAtt": [
+        "ServiceLBProdListenerBlueTGGroupB47699CD",
+        "TargetGroupFullName"
+       ]
+      }
+     }
+    ],
+    "MetricName": "UnHealthyHostCount",
+    "Namespace": "AWS/ApplicationELB",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  },
+  "Blue5xx7E9798A6": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "AlarmName": "aws-cdk-codedeploy-ecs-deployment-Http-500-Blue",
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Name": "TargetGroup",
+      "Value": {
+       "Fn::GetAtt": [
+        "ServiceLBProdListenerBlueTGGroupB47699CD",
+        "TargetGroupFullName"
+       ]
+      }
+     }
+    ],
+    "MetricName": "HTTPCode_Target_5XX_Count",
+    "Namespace": "AWS/ApplicationELB",
+    "Period": 60,
+    "Statistic": "Sum",
+    "Threshold": 1
+   }
+  },
+  "GreenUnhealthyHosts8D9D09C1": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 2,
+    "AlarmName": "aws-cdk-codedeploy-ecs-deployment-Unhealthy-Hosts-Green",
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Name": "TargetGroup",
+      "Value": {
+       "Fn::GetAtt": [
+        "GreenTG71A27F2F",
+        "TargetGroupFullName"
+       ]
+      }
+     }
+    ],
+    "MetricName": "UnHealthyHostCount",
+    "Namespace": "AWS/ApplicationELB",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  },
+  "Green5xx1A511A06": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "AlarmName": "aws-cdk-codedeploy-ecs-deployment-Http-500-Green",
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Name": "TargetGroup",
+      "Value": {
+       "Fn::GetAtt": [
+        "GreenTG71A27F2F",
+        "TargetGroupFullName"
+       ]
+      }
+     }
+    ],
+    "MetricName": "HTTPCode_Target_5XX_Count",
+    "Namespace": "AWS/ApplicationELB",
+    "Period": 60,
+    "Statistic": "Sum",
+    "Threshold": 1
+   }
+  },
+  "CanaryConfig039778DD": {
+   "Type": "AWS::CodeDeploy::DeploymentConfig",
+   "Properties": {
+    "ComputePlatform": "ECS",
+    "TrafficRoutingConfig": {
+     "TimeBasedCanary": {
+      "CanaryInterval": 1,
+      "CanaryPercentage": 20
+     },
+     "Type": "TimeBasedCanary"
+    }
+   }
+  },
+  "AppF1B96344": {
+   "Type": "AWS::CodeDeploy::Application",
+   "Properties": {
+    "ApplicationName": "MyApp",
+    "ComputePlatform": "ECS"
+   }
+  },
+  "DGServiceRoleD0230320": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": {
+         "Fn::FindInMap": [
+          "ServiceprincipalMap",
+          {
+           "Ref": "AWS::Region"
+          },
+          "codedeploy"
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSCodeDeployRoleForECS"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGEC40E9EF": {
+   "Type": "AWS::CodeDeploy::DeploymentGroup",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "AppF1B96344"
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "DGServiceRoleD0230320",
+      "Arn"
+     ]
+    },
+    "AlarmConfiguration": {
+     "Alarms": [
+      {
+       "Name": {
+        "Ref": "BlueUnhealthyHosts48919A97"
+       }
+      },
+      {
+       "Name": {
+        "Ref": "Blue5xx7E9798A6"
+       }
+      },
+      {
+       "Name": {
+        "Ref": "GreenUnhealthyHosts8D9D09C1"
+       }
+      },
+      {
+       "Name": {
+        "Ref": "Green5xx1A511A06"
+       }
+      }
+     ],
+     "Enabled": true
+    },
+    "AutoRollbackConfiguration": {
+     "Enabled": true,
+     "Events": [
+      "DEPLOYMENT_FAILURE",
+      "DEPLOYMENT_STOP_ON_REQUEST",
+      "DEPLOYMENT_STOP_ON_ALARM"
+     ]
+    },
+    "BlueGreenDeploymentConfiguration": {
+     "DeploymentReadyOption": {
+      "ActionOnTimeout": "CONTINUE_DEPLOYMENT",
+      "WaitTimeInMinutes": 0
+     },
+     "TerminateBlueInstancesOnDeploymentSuccess": {
+      "Action": "TERMINATE",
+      "TerminationWaitTimeInMinutes": 1
+     }
+    },
+    "DeploymentConfigName": {
+     "Ref": "CanaryConfig039778DD"
+    },
+    "DeploymentGroupName": "MyDG",
+    "DeploymentStyle": {
+     "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+     "DeploymentType": "BLUE_GREEN"
+    },
+    "ECSServices": [
+     {
+      "ClusterName": {
+       "Ref": "EcsCluster97242B84"
+      },
+      "ServiceName": {
+       "Fn::GetAtt": [
+        "FargateServiceAC2B3B85",
+        "Name"
+       ]
+      }
+     }
+    ],
+    "LoadBalancerInfo": {
+     "TargetGroupPairInfoList": [
+      {
+       "ProdTrafficRoute": {
+        "ListenerArns": [
+         {
+          "Ref": "ServiceLBProdListener0E7627EE"
+         }
+        ]
+       },
+       "TargetGroups": [
+        {
+         "Name": {
+          "Fn::GetAtt": [
+           "ServiceLBProdListenerBlueTGGroupB47699CD",
+           "TargetGroupName"
+          ]
+         }
+        },
+        {
+         "Name": {
+          "Fn::GetAtt": [
+           "GreenTG71A27F2F",
+           "TargetGroupName"
+          ]
+         }
+        }
+       ],
+       "TestTrafficRoute": {
+        "ListenerArns": [
+         {
+          "Ref": "ServiceLBTestListener3EA49939"
+         }
+        ]
+       }
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderOnEventLambdaServiceRole60156287": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderOnEventLambdaServiceRoleDefaultPolicyEF38149C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "codedeploy:GetApplicationRevision",
+        "codedeploy:RegisterApplicationRevision"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codedeploy:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":application:",
+          {
+           "Ref": "AppF1B96344"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "codedeploy:CreateDeployment",
+        "codedeploy:GetDeployment",
+        "codedeploy:StopDeployment"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codedeploy:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":deploymentgroup:",
+          {
+           "Ref": "AppF1B96344"
+          },
+          "/",
+          {
+           "Ref": "DGEC40E9EF"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "codedeploy:GetDeploymentConfig",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codedeploy:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":deploymentconfig:",
+          {
+           "Ref": "CanaryConfig039778DD"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DGDeploymentDeploymentProviderOnEventLambdaServiceRoleDefaultPolicyEF38149C",
+    "Roles": [
+     {
+      "Ref": "DGDeploymentDeploymentProviderOnEventLambdaServiceRole60156287"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderOnEventLambdaBFB24F49": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1441a653914635996087caa4fac8e0e31589bf1601556f25eef99b2411745ba7.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "DGDeploymentDeploymentProviderOnEventLambdaServiceRole60156287",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": {
+     "Fn::Join": [
+      "",
+      [
+       "EcsDeploymentProvider-",
+       {
+        "Ref": "AppF1B96344"
+       },
+       "-",
+       {
+        "Ref": "DGEC40E9EF"
+       },
+       "-onEvent"
+      ]
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs16.x",
+    "Timeout": 60
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD",
+    "DGDeploymentDeploymentProviderOnEventLambdaServiceRoleDefaultPolicyEF38149C",
+    "DGDeploymentDeploymentProviderOnEventLambdaServiceRole60156287"
+   ]
+  },
+  "DGDeploymentDeploymentProviderIsCompleteLambdaServiceRole1AC61641": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderIsCompleteLambdaServiceRoleDefaultPolicyA5163F46": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "codedeploy:GetDeployment",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codedeploy:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":deploymentgroup:",
+          {
+           "Ref": "AppF1B96344"
+          },
+          "/",
+          {
+           "Ref": "DGEC40E9EF"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DGDeploymentDeploymentProviderIsCompleteLambdaServiceRoleDefaultPolicyA5163F46",
+    "Roles": [
+     {
+      "Ref": "DGDeploymentDeploymentProviderIsCompleteLambdaServiceRole1AC61641"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderIsCompleteLambda07F9DC34": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6ac1448e726779b45302ae5560690a6ce8925b2bcd7f3da633ee6abc605b5bac.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "DGDeploymentDeploymentProviderIsCompleteLambdaServiceRole1AC61641",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": {
+     "Fn::Join": [
+      "",
+      [
+       "EcsDeploymentProvider-",
+       {
+        "Ref": "AppF1B96344"
+       },
+       "-",
+       {
+        "Ref": "DGEC40E9EF"
+       },
+       "-isComplete"
+      ]
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs16.x",
+    "Timeout": 60
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD",
+    "DGDeploymentDeploymentProviderIsCompleteLambdaServiceRoleDefaultPolicyA5163F46",
+    "DGDeploymentDeploymentProviderIsCompleteLambdaServiceRole1AC61641"
+   ]
+  },
+  "DGDeploymentDeploymentProviderframeworkonEventServiceRoleC4DB5791": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderframeworkonEventServiceRoleDefaultPolicy1B65235C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DGDeploymentDeploymentProviderIsCompleteLambda07F9DC34",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "DGDeploymentDeploymentProviderOnEventLambdaBFB24F49",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DGDeploymentDeploymentProviderIsCompleteLambda07F9DC34",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DGDeploymentDeploymentProviderOnEventLambdaBFB24F49",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "DGDeploymentDeploymentProviderwaiterstatemachine566875DD"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DGDeploymentDeploymentProviderframeworkonEventServiceRoleDefaultPolicy1B65235C",
+    "Roles": [
+     {
+      "Ref": "DGDeploymentDeploymentProviderframeworkonEventServiceRoleC4DB5791"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderframeworkonEvent3D5E95D0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "DGDeploymentDeploymentProviderframeworkonEventServiceRoleC4DB5791",
+      "Arn"
+     ]
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-codedeploy-ecs-deployment/DG/Deployment/DeploymentProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "DGDeploymentDeploymentProviderOnEventLambdaBFB24F49",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "DGDeploymentDeploymentProviderIsCompleteLambda07F9DC34",
+        "Arn"
+       ]
+      },
+      "WAITER_STATE_MACHINE_ARN": {
+       "Ref": "DGDeploymentDeploymentProviderwaiterstatemachine566875DD"
+      }
+     }
+    },
+    "FunctionName": {
+     "Fn::Join": [
+      "",
+      [
+       "EcsDeploymentProvider-",
+       {
+        "Ref": "AppF1B96344"
+       },
+       "-",
+       {
+        "Ref": "DGEC40E9EF"
+       },
+       "-provider"
+      ]
+     ]
+    },
+    "Handler": "framework.onEvent",
+    "Runtime": "nodejs14.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD",
+    "DGDeploymentDeploymentProviderframeworkonEventServiceRoleDefaultPolicy1B65235C",
+    "DGDeploymentDeploymentProviderframeworkonEventServiceRoleC4DB5791"
+   ]
+  },
+  "DGDeploymentDeploymentProviderframeworkisCompleteServiceRole06E09942": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderframeworkisCompleteServiceRoleDefaultPolicy03E372CD": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DGDeploymentDeploymentProviderIsCompleteLambda07F9DC34",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "DGDeploymentDeploymentProviderOnEventLambdaBFB24F49",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DGDeploymentDeploymentProviderIsCompleteLambda07F9DC34",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DGDeploymentDeploymentProviderOnEventLambdaBFB24F49",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DGDeploymentDeploymentProviderframeworkisCompleteServiceRoleDefaultPolicy03E372CD",
+    "Roles": [
+     {
+      "Ref": "DGDeploymentDeploymentProviderframeworkisCompleteServiceRole06E09942"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderframeworkisCompleteB0CC33B1": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "DGDeploymentDeploymentProviderframeworkisCompleteServiceRole06E09942",
+      "Arn"
+     ]
+    },
+    "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-codedeploy-ecs-deployment/DG/Deployment/DeploymentProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "DGDeploymentDeploymentProviderOnEventLambdaBFB24F49",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "DGDeploymentDeploymentProviderIsCompleteLambda07F9DC34",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.isComplete",
+    "Runtime": "nodejs14.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD",
+    "DGDeploymentDeploymentProviderframeworkisCompleteServiceRoleDefaultPolicy03E372CD",
+    "DGDeploymentDeploymentProviderframeworkisCompleteServiceRole06E09942"
+   ]
+  },
+  "DGDeploymentDeploymentProviderframeworkonTimeoutServiceRole2B298F04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderframeworkonTimeoutServiceRoleDefaultPolicy0229C11D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DGDeploymentDeploymentProviderIsCompleteLambda07F9DC34",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "DGDeploymentDeploymentProviderOnEventLambdaBFB24F49",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DGDeploymentDeploymentProviderIsCompleteLambda07F9DC34",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DGDeploymentDeploymentProviderOnEventLambdaBFB24F49",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DGDeploymentDeploymentProviderframeworkonTimeoutServiceRoleDefaultPolicy0229C11D",
+    "Roles": [
+     {
+      "Ref": "DGDeploymentDeploymentProviderframeworkonTimeoutServiceRole2B298F04"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderframeworkonTimeout1C8F1544": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "DGDeploymentDeploymentProviderframeworkonTimeoutServiceRole2B298F04",
+      "Arn"
+     ]
+    },
+    "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-codedeploy-ecs-deployment/DG/Deployment/DeploymentProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "DGDeploymentDeploymentProviderOnEventLambdaBFB24F49",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "DGDeploymentDeploymentProviderIsCompleteLambda07F9DC34",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onTimeout",
+    "Runtime": "nodejs14.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD",
+    "DGDeploymentDeploymentProviderframeworkonTimeoutServiceRoleDefaultPolicy0229C11D",
+    "DGDeploymentDeploymentProviderframeworkonTimeoutServiceRole2B298F04"
+   ]
+  },
+  "DGDeploymentDeploymentProviderwaiterstatemachineRole56202F5B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": {
+         "Fn::FindInMap": [
+          "ServiceprincipalMap",
+          {
+           "Ref": "AWS::Region"
+          },
+          "states"
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderwaiterstatemachineRoleDefaultPolicyDA934EB5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DGDeploymentDeploymentProviderframeworkisCompleteB0CC33B1",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "DGDeploymentDeploymentProviderframeworkonTimeout1C8F1544",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DGDeploymentDeploymentProviderframeworkisCompleteB0CC33B1",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DGDeploymentDeploymentProviderframeworkonTimeout1C8F1544",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DGDeploymentDeploymentProviderwaiterstatemachineRoleDefaultPolicyDA934EB5",
+    "Roles": [
+     {
+      "Ref": "DGDeploymentDeploymentProviderwaiterstatemachineRole56202F5B"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "DGDeploymentDeploymentProviderwaiterstatemachine566875DD": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":15,\"MaxAttempts\":240,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "DGDeploymentDeploymentProviderframeworkisCompleteB0CC33B1",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "DGDeploymentDeploymentProviderframeworkonTimeout1C8F1544",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "DGDeploymentDeploymentProviderwaiterstatemachineRole56202F5B",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD",
+    "DGDeploymentDeploymentProviderwaiterstatemachineRoleDefaultPolicyDA934EB5",
+    "DGDeploymentDeploymentProviderwaiterstatemachineRole56202F5B"
+   ]
+  },
+  "DGDeploymentDeploymentResource6D225FF6": {
+   "Type": "Custom::EcsDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "DGDeploymentDeploymentProviderframeworkonEvent3D5E95D0",
+      "Arn"
+     ]
+    },
+    "applicationName": {
+     "Ref": "AppF1B96344"
+    },
+    "deploymentConfigName": {
+     "Ref": "CanaryConfig039778DD"
+    },
+    "deploymentGroupName": {
+     "Ref": "DGEC40E9EF"
+    },
+    "autoRollbackConfigurationEnabled": "true",
+    "autoRollbackConfigurationEvents": "DEPLOYMENT_STOP_ON_REQUEST",
+    "description": "test deployment",
+    "revisionAppSpecContent": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"version\":\"0.0\",\"Resources\":[{\"TargetService\":{\"Type\":\"AWS::ECS::Service\",\"Properties\":{\"TaskDefinition\":\"",
+       {
+        "Ref": "TaskDef54694570"
+       },
+       "\",\"LoadBalancerInfo\":{\"ContainerName\":\"Container\",\"ContainerPort\":80}}}}]}"
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "Subnet1Id": {
+   "Value": {
+    "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+   }
+  },
+  "Subnet2Id": {
+   "Value": {
+    "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+   }
+  },
+  "SecurityGroupId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FargateServiceSecurityGroup0A0E79CB",
+     "GroupId"
+    ]
+   }
+  },
+  "CodeDeployApplicationName": {
+   "Value": {
+    "Ref": "AppF1B96344"
+   }
+  },
+  "CodeDeployDeploymentGroupName": {
+   "Value": {
+    "Ref": "DGEC40E9EF"
+   }
+  },
+  "DeploymentId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "DGDeploymentDeploymentResource6D225FF6",
+     "deploymentId"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "ServiceprincipalMap": {
+   "af-south-1": {
+    "codedeploy": "codedeploy.af-south-1.amazonaws.com",
+    "states": "states.af-south-1.amazonaws.com"
+   },
+   "ap-east-1": {
+    "codedeploy": "codedeploy.ap-east-1.amazonaws.com",
+    "states": "states.ap-east-1.amazonaws.com"
+   },
+   "ap-northeast-1": {
+    "codedeploy": "codedeploy.ap-northeast-1.amazonaws.com",
+    "states": "states.ap-northeast-1.amazonaws.com"
+   },
+   "ap-northeast-2": {
+    "codedeploy": "codedeploy.ap-northeast-2.amazonaws.com",
+    "states": "states.ap-northeast-2.amazonaws.com"
+   },
+   "ap-northeast-3": {
+    "codedeploy": "codedeploy.ap-northeast-3.amazonaws.com",
+    "states": "states.ap-northeast-3.amazonaws.com"
+   },
+   "ap-south-1": {
+    "codedeploy": "codedeploy.ap-south-1.amazonaws.com",
+    "states": "states.ap-south-1.amazonaws.com"
+   },
+   "ap-southeast-1": {
+    "codedeploy": "codedeploy.ap-southeast-1.amazonaws.com",
+    "states": "states.ap-southeast-1.amazonaws.com"
+   },
+   "ap-southeast-2": {
+    "codedeploy": "codedeploy.ap-southeast-2.amazonaws.com",
+    "states": "states.ap-southeast-2.amazonaws.com"
+   },
+   "ap-southeast-3": {
+    "codedeploy": "codedeploy.ap-southeast-3.amazonaws.com",
+    "states": "states.ap-southeast-3.amazonaws.com"
+   },
+   "ca-central-1": {
+    "codedeploy": "codedeploy.ca-central-1.amazonaws.com",
+    "states": "states.ca-central-1.amazonaws.com"
+   },
+   "cn-north-1": {
+    "codedeploy": "codedeploy.cn-north-1.amazonaws.com.cn",
+    "states": "states.cn-north-1.amazonaws.com"
+   },
+   "cn-northwest-1": {
+    "codedeploy": "codedeploy.cn-northwest-1.amazonaws.com.cn",
+    "states": "states.cn-northwest-1.amazonaws.com"
+   },
+   "eu-central-1": {
+    "codedeploy": "codedeploy.eu-central-1.amazonaws.com",
+    "states": "states.eu-central-1.amazonaws.com"
+   },
+   "eu-north-1": {
+    "codedeploy": "codedeploy.eu-north-1.amazonaws.com",
+    "states": "states.eu-north-1.amazonaws.com"
+   },
+   "eu-south-1": {
+    "codedeploy": "codedeploy.eu-south-1.amazonaws.com",
+    "states": "states.eu-south-1.amazonaws.com"
+   },
+   "eu-south-2": {
+    "codedeploy": "codedeploy.eu-south-2.amazonaws.com",
+    "states": "states.eu-south-2.amazonaws.com"
+   },
+   "eu-west-1": {
+    "codedeploy": "codedeploy.eu-west-1.amazonaws.com",
+    "states": "states.eu-west-1.amazonaws.com"
+   },
+   "eu-west-2": {
+    "codedeploy": "codedeploy.eu-west-2.amazonaws.com",
+    "states": "states.eu-west-2.amazonaws.com"
+   },
+   "eu-west-3": {
+    "codedeploy": "codedeploy.eu-west-3.amazonaws.com",
+    "states": "states.eu-west-3.amazonaws.com"
+   },
+   "me-south-1": {
+    "codedeploy": "codedeploy.me-south-1.amazonaws.com",
+    "states": "states.me-south-1.amazonaws.com"
+   },
+   "sa-east-1": {
+    "codedeploy": "codedeploy.sa-east-1.amazonaws.com",
+    "states": "states.sa-east-1.amazonaws.com"
+   },
+   "us-east-1": {
+    "codedeploy": "codedeploy.us-east-1.amazonaws.com",
+    "states": "states.us-east-1.amazonaws.com"
+   },
+   "us-east-2": {
+    "codedeploy": "codedeploy.us-east-2.amazonaws.com",
+    "states": "states.us-east-2.amazonaws.com"
+   },
+   "us-gov-east-1": {
+    "codedeploy": "codedeploy.us-gov-east-1.amazonaws.com",
+    "states": "states.us-gov-east-1.amazonaws.com"
+   },
+   "us-gov-west-1": {
+    "codedeploy": "codedeploy.us-gov-west-1.amazonaws.com",
+    "states": "states.us-gov-west-1.amazonaws.com"
+   },
+   "us-iso-east-1": {
+    "codedeploy": "codedeploy.amazonaws.com",
+    "states": "states.amazonaws.com"
+   },
+   "us-iso-west-1": {
+    "codedeploy": "codedeploy.amazonaws.com",
+    "states": "states.amazonaws.com"
+   },
+   "us-isob-east-1": {
+    "codedeploy": "codedeploy.amazonaws.com",
+    "states": "states.amazonaws.com"
+   },
+   "us-west-1": {
+    "codedeploy": "codedeploy.us-west-1.amazonaws.com",
+    "states": "states.us-west-1.amazonaws.com"
+   },
+   "us-west-2": {
+    "codedeploy": "codedeploy.us-west-2.amazonaws.com",
+    "states": "states.us-west-2.amazonaws.com"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

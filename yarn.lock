@@ -379,6 +379,11 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
+"@extra-number/significant-digits@^1.1.1":
+  version "1.3.9"
+  resolved "https://registry.npmjs.org/@extra-number/significant-digits/-/significant-digits-1.3.9.tgz#06f3acc4aa688af3ed76bf5f30bca6de9d60883f"
+  integrity sha512-E5PY/bCwrNqEHh4QS6AQBinLZ+sxM1lT8tsSVYk8VwhWIPp6fCU/BMRVq0V8iJ8LwS3FHmaA4vUzb78s4BIIyA==
+
 "@gar/promisify@^1.0.1", "@gar/promisify@^1.1.3":
   version "1.1.3"
   resolved "https://registry.npmjs.org/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
@@ -1734,7 +1739,7 @@
   dependencies:
     "@types/glob" "*"
 
-"@types/aws-lambda@^8.10.108":
+"@types/aws-lambda@*", "@types/aws-lambda@^8.10.108":
   version "8.10.108"
   resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.108.tgz#ddadf0d9182f2f5e689ce5fc05b5f711fad6d115"
   integrity sha512-1yh1W1WoqK3lGHy+V/Fi55zobxrDHUUsluCWdMlOXkCvtsCmHPXOG+CQ2STIL4B1g6xi6I6XzxaF8V9+zeIFLA==
@@ -1871,6 +1876,13 @@
   version "0.0.29"
   resolved "https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
+
+"@types/lambda-tester@^3.6.1":
+  version "3.6.1"
+  resolved "https://registry.npmjs.org/@types/lambda-tester/-/lambda-tester-3.6.1.tgz#e09d79a191a4cef6ffa4fc4805eb614c8b15edd6"
+  integrity sha512-cKg0SdVrtjkiAJcVTGabD+u+eAIdjBJ+qgXiolw0hffW6B/1o+h63EptSUo/BTYpkoRxnHFkHS55y4cWja4xIw==
+  dependencies:
+    "@types/aws-lambda" "*"
 
 "@types/license-checker@^25.0.3":
   version "25.0.3"
@@ -2397,6 +2409,11 @@ app-root-path@^2.2.1:
   resolved "https://registry.npmjs.org/app-root-path/-/app-root-path-2.2.1.tgz#d0df4a682ee408273583d43f6f79e9892624bc9a"
   integrity sha512-91IFKeKk7FjfmezPKkwtaRvSpnUc4gDwPAjA1YZ9Gn0q0PPeW+vbeUsZuyDwjI7+QTHhcLen2v25fi/AmhvbJA==
 
+app-root-path@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/app-root-path/-/app-root-path-3.1.0.tgz#5971a2fc12ba170369a7a1ef018c71e6e47c2e86"
+  integrity sha512-biN3PwB2gUtjaYy/isrU3aNWI5w+fAfvHkSvCKeQGxhmYpwKFUxudR3Yya+KqVRHBmEDYh+/lTozYCFbmzX4nA==
+
 append-transform@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/append-transform/-/append-transform-2.0.0.tgz#99d9d29c7b38391e6f428d28ce136551f0b77e12"
@@ -2602,7 +2619,7 @@ available-typed-arrays@^1.0.5:
   resolved "https://registry.npmjs.org/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz#92f95616501069d07d10edb2fc37d3e1c65123b7"
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
-aws-cdk-lib@^2.47.0:
+aws-cdk-lib@2.47.0:
   version "2.47.0"
   resolved "https://registry.npmjs.org/aws-cdk-lib/-/aws-cdk-lib-2.47.0.tgz#0f4f6adf2439caffd26686393a6e58ced3995833"
   integrity sha512-XnxA7FMhJljsj6OtMMDbUi5lPPYcrehAxqpui5b2Nv2cBWhiG7Wb5baOuQy7niyPhZEX03A4k0vYFas/nnB91g==
@@ -6964,6 +6981,16 @@ kleur@^3.0.3:
   resolved "https://registry.npmjs.org/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
+lambda-event-mock@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/lambda-event-mock/-/lambda-event-mock-1.5.0.tgz#9cb1ce2bec4271f918d485fef0a327d194dd120f"
+  integrity sha512-vx1d+vZqi7FF6B3+mAfHnY/6Tlp6BheL2ta0MJS0cIRB3Rc4I5cviHTkiJxHdE156gXx3ZjlQRJrS4puXvtrhA==
+  dependencies:
+    "@extra-number/significant-digits" "^1.1.1"
+    clone-deep "^4.0.1"
+    uuid "^3.3.3"
+    vandium-utils "^1.2.0"
+
 lambda-leak@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/lambda-leak/-/lambda-leak-2.0.0.tgz#771985d3628487f6e885afae2b54510dcfb2cd7e"
@@ -6981,6 +7008,20 @@ lambda-tester@^3.6.0:
     semver "^6.1.1"
     uuid "^3.3.2"
     vandium-utils "^1.1.1"
+
+lambda-tester@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.npmjs.org/lambda-tester/-/lambda-tester-4.0.1.tgz#91f0fc1266cdceae09a5ddbbdbc209c214beb98c"
+  integrity sha512-ft6XHk84B6/dYEzyI3anKoGWz08xQ5allEHiFYDUzaYTymgVK7tiBkCEbuWx+MFvH7OpFNsJXVtjXm0X8iH3Iw==
+  dependencies:
+    app-root-path "^3.0.0"
+    dotenv "^8.0.0"
+    dotenv-json "^1.0.0"
+    lambda-event-mock "^1.5.0"
+    lambda-leak "^2.0.0"
+    semver "^6.1.1"
+    uuid "^3.3.3"
+    vandium-utils "^2.0.0"
 
 latest-version@^5.1.0:
   version "5.1.0"
@@ -10585,7 +10626,7 @@ typescript@^3.9.10, typescript@^3.9.5, typescript@^3.9.7, typescript@~3.9.10:
   resolved "https://registry.npmjs.org/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
   integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
 
-typescript@^4.5.5:
+typescript@^4.5.5, typescript@^4.8.4:
   version "4.8.4"
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.8.4.tgz#c464abca159669597be5f96b8943500b238e60e6"
   integrity sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==
@@ -10791,7 +10832,7 @@ uuid@8.0.0:
   resolved "https://registry.npmjs.org/uuid/-/uuid-8.0.0.tgz#bc6ccf91b5ff0ac07bbcdbf1c7c4e150db4dbb6c"
   integrity sha512-jOXGuXZAWdsTH7eZLtyXMqUb9EcWMGZNbL9YcGBJl4MH4nrxHmZJhEHvyLFrkxo+28uLb/NYRcStH48fnD0Vzw==
 
-uuid@^3.3.2:
+uuid@^3.3.2, uuid@^3.3.3:
   version "3.4.0"
   resolved "https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
@@ -10842,10 +10883,15 @@ validate-npm-package-name@^4.0.0:
   dependencies:
     builtins "^5.0.0"
 
-vandium-utils@^1.1.1:
+vandium-utils@^1.1.1, vandium-utils@^1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/vandium-utils/-/vandium-utils-1.2.0.tgz#44735de4b7641a05de59ebe945f174e582db4f59"
   integrity sha512-yxYUDZz4BNo0CW/z5w4mvclitt5zolY7zjW97i6tTE+sU63cxYs1A6Bl9+jtIQa3+0hkeqY87k+7ptRvmeHe3g==
+
+vandium-utils@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/vandium-utils/-/vandium-utils-2.0.0.tgz#87389bdcb85551aaaba1cc95937ba756589214fa"
+  integrity sha512-XWbQ/0H03TpYDXk8sLScBEZpE7TbA0CHDL6/Xjt37IBYKLsHUQuBlL44ttAUs9zoBOLFxsW7HehXcuWCNyqOxQ==
 
 verror@1.10.0:
   version "1.10.0"
