@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import { AwsCustomResource, PhysicalResourceId, AwsCustomResourcePolicy } from '@aws-cdk/custom-resources';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
+// import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
+import { ExpectedResult, IntegTest, AwsApiCall } from '@aws-cdk/integ-tests';
 import { AwsIpam, CfnIPAM, CfnIPAMPool, CfnVPC, SubnetType, Vpc } from '../lib';
 
 const app = new cdk.App();
@@ -43,22 +43,32 @@ const awsIpamVpc = new Vpc(stack, 'AwsIpamVpc', {
   }],
 });
 
-new AwsCustomResource(stack, 'cleanUpIpam', { // Cleanup as the IPAM does not delete otherwise, must use aws-sdk-js2 newer than: 1094.0
+new AwsApiCall(stack, 'cleanUpIpam', {
+  service: 'EC2',
+  api: 'deleteIpam',
   installLatestAwsSdk: true,
-  onCreate: {
-    service: 'EC2',
-    action: 'deleteIpam',
-    parameters: {
-      IpamId: ipam.getAtt('IpamId').toString(),
-      Cascade: true,
-    },
-    physicalResourceId: PhysicalResourceId.of('cleanUpIpam'),
+  parameters: {
+    IpamId: ipam.attrIpamId,
+    Cascade: true,
   },
+});
 
-  policy: AwsCustomResourcePolicy.fromSdkCalls({
-    resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-  }),
-}).node.addDependency(awsIpamVpc);
+// new AwsCustomResource(stack, 'cleanUpIpam', { // Cleanup as the IPAM does not delete otherwise, must use aws-sdk-js2 newer than: 1094.0
+//   installLatestAwsSdk: true,
+//   onCreate: {
+//     service: 'EC2',
+//     action: 'deleteIpam',
+//     parameters: {
+//       IpamId: ipam.getAtt('IpamId').toString(),
+//       Cascade: true,
+//     },
+//     physicalResourceId: PhysicalResourceId.of('cleanUpIpam'),
+//   },
+
+//   policy: AwsCustomResourcePolicy.fromSdkCalls({
+//     resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+//   }),
+// }).node.addDependency(awsIpamVpc);
 
 
 /**
@@ -72,11 +82,11 @@ const integ = new IntegTest(app, 'Vpc-Ipam', {
 integ.assertions.awsApiCall('EC2', 'describeVpcs', {
   VpcIds: [(awsIpamVpc.node.defaultChild as CfnVPC).getAtt('VpcId').toString()],
 }).expect(ExpectedResult.objectLike({
-  "Vpcs": [
-      {
-          "CidrBlock": "100.100.0.0/18",
-      }
-  ]
+  Vpcs: [
+    {
+      CidrBlock: '100.100.0.0/18',
+    },
+  ],
 }));
 
 app.synth();
