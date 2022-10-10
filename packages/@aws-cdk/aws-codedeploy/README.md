@@ -26,6 +26,7 @@
   - [ECS Applications](#ecs-applications)
   - [ECS Deployment Groups](#ecs-deployment-groups)
   - [ECS Deployment Configurations](#ecs-deployment-configurations)
+  - [ECS Deployments](#ecs-deployments)
 
 ## Introduction
 
@@ -652,4 +653,55 @@ const deploymentConfig = codedeploy.EcsDeploymentConfig.fromEcsDeploymentConfigN
   'ExistingDeploymentConfiguration',
   'MyExistingDeploymentConfiguration',
 );
+```
+
+## ECS Deployments
+
+CodeDeploy for ECS can manage the deployment of new task definitions to ECS services.
+Only 1 deployment construct can be defined for a given EcsDeploymentGroup.
+
+```ts
+declare const deploymentGroup: codeDeploy.IEcsDeploymentGroup;
+declare const taskDefinition: ecs.ITaskDefinition;
+
+new codedeploy.EcsDeployment({
+  deploymentGroup,
+  appspec: new codedeploy.EcsAppSpec({
+    taskDefinition,
+    containerName: 'mycontainer',
+    containerPort: 80,
+  }),
+});
+```
+
+The deployment will use the AutoRollbackConfig for the EcsDeploymentGroup unless it is overridden in the deployment:
+
+```ts
+new codedeploy.EcsDeployment({
+  deploymentGroup,
+  appspec: new codedeploy.EcsAppSpec({
+    taskDefinition,
+    containerName: 'mycontainer',
+    containerPort: 80,
+  }),
+  autoRollback: {
+    failedDeployment: true,
+    deploymentInAlarm: true,
+    stoppedDeployment: false,
+  },
+});
+```
+
+By default, the deployment will timeout after 30 minutes. The timeout value can be overridden:
+
+```ts
+new codedeploy.EcsDeployment({
+  deploymentGroup,
+  appspec: new codedeploy.EcsAppSpec({
+    taskDefinition,
+    containerName: 'mycontainer',
+    containerPort: 80,
+  }),
+  timeout: Duration.minutes(60),
+});
 ```

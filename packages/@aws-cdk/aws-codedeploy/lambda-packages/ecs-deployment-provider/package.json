@@ -1,0 +1,54 @@
+{
+  "name": "@aws-cdk/ecs-deployment-provider",
+  "private": true,
+  "version": "0.0.0",
+  "description": "This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.",
+  "main": "lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "echo No build",
+    "test": "jest",
+    "eslint": "eslint lib test",
+    "build+test+package": "npm run build+test",
+    "build+test": "npm run build && npm test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "codedeploy"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@types/aws-lambda": "^8.10.104",
+    "@types/lambda-tester": "^3.6.1",
+    "@types/node": "^14.0.23",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
+    "aws-sdk-client-mock": "^1.0.0",
+    "aws-sdk-client-mock-jest": "^2.0.0",
+    "eslint": "^7.32.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-standard": "^4.1.0",
+    "jest": "^27.5.1",
+    "lambda-tester": "^4.0.1",
+    "ts-jest": "^27.1.5",
+    "typescript": "^4.8.4",
+    "@aws-lambda-powertools/logger": "^1.2.1",
+    "@aws-sdk/client-codedeploy": "^3.137.0",
+    "@middy/core": "^3.5.0"
+  }
+}
