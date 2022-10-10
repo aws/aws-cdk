@@ -616,15 +616,18 @@ new rds.DatabaseInstance(this, 'Database', {
 
 You cannot specify a parameter map and a parameter group at the same time.
 
-## Serverless
+## Amazon Aurora Serverless
 
 [Amazon Aurora Serverless](https://aws.amazon.com/rds/aurora/serverless/) is an on-demand, auto-scaling configuration for Amazon
 Aurora. The database will automatically start up, shut down, and scale capacity
-up or down based on your application's needs. It enables you to run your database
-in the cloud without managing any database instances.
+up or down based on your application's needs. You can run your database on AWS without managing database capacity.
 
-The following example initializes an Aurora Serverless PostgreSql cluster.
-Aurora Serverless clusters can specify scaling properties which will be used to
+### Amazon Aurora Serverless v1
+
+Amazon Aurora Serverless v1 is a simple, cost-effective option for infrequent, intermittent, or unpredictable workloads.
+
+The following example initializes an Aurora Serverless v1 PostgreSql cluster.
+Aurora Serverless v1 clusters can specify scaling properties with `scaling` which will be used to
 automatically scale the database cluster seamlessly based on the workload.
 
 ```ts
@@ -643,7 +646,7 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
 });
 ```
 
-Aurora Serverless Clusters do not support the following features:
+Aurora Serverless v1 Clusters do not support the following features:
 
 * Loading data from an Amazon S3 bucket
 * Saving data to an Amazon S3 bucket
@@ -658,9 +661,9 @@ Aurora Serverless Clusters do not support the following features:
 * Performance Insights
 * RDS Proxy
 
-Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html#aurora-serverless.limitations)
+Read more about the [limitations of Aurora Serverless v1](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html#aurora-serverless.limitations)
 
-Learn more about using Amazon Aurora Serverless by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
+Learn more about using Amazon Aurora Serverless v1 by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
 
 Use `ServerlessClusterFromSnapshot` to create a serverless cluster from a snapshot:
 
@@ -672,6 +675,116 @@ new rds.ServerlessClusterFromSnapshot(this, 'Cluster', {
   snapshotIdentifier: 'mySnapshot',
 });
 ```
+
+### Amazon Aurora Serverless v2
+
+Amazon Aurora Serverless v2 scales instantly to hundreds of thousands of transactions in a fraction of a second. 
+As it scales, it adjusts capacity in fine-grained increments to provide the right amount of database resources 
+that the application needs. There is no database capacity for you to manage. You pay only for the capacity your 
+application consumes, and you can save up to 90% of your database cost compared to the cost of provisioning capacity 
+for peak load.
+
+The following example initializes an Aurora Serverless v2 cluster with MySQL-compatibility. 
+The `scalingV2` property is required when you create an Aurora Serverless v2 cluster. At this moment, the Aurora Serverless v2
+only supports M
+
+In Aurora Serverless v2, you need to add one or more serverless instances into the cluster as the writer and reader instance. 
+Enable the `serverless` property of the `DatabaseInstance` construct when you add a serverless instance to your v2 cluster. 
+
+Read [Using Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html) and 
+[Getting started with Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.upgrade.html) to learn more about it.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// create an Aurora Serverless v2 cluster with MySQL compatibility
+const cluster = new rds.ServerlessCluster(this, 'aurora-serverlessv2-mysql-cluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_02_1,
+  }),
+  vpc,
+  scalingV2: {
+    maxCapacity: 4,
+    minCapacity: 2,
+  },
+  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'PG', 'default.aurora-mysql8.0'),
+});
+```
+
+Add the writer and reader instances to the cluster:
+
+```ts
+// adding a writer
+new rds.DatabaseInstance(this, 'instance1', {
+  vpc,
+  serverless: true,
+  clusterIdentifier: cluster.clusterIdentifier,
+  engine: rds.DatabaseInstanceEngine.auroraMySql({
+    version: rds.MysqlEngineVersion.of(
+      '8.0.mysql_aurora.3.02.1',
+      '8.0',
+    ),
+  }),
+});
+
+// adding a reader
+new rds.DatabaseInstance(this, 'instance2', {
+  vpc,
+  serverless: true,
+  clusterIdentifier: cluster.clusterIdentifier,
+  engine: rds.DatabaseInstanceEngine.auroraMySql({
+    version: rds.MysqlEngineVersion.of(
+      '8.0.mysql_aurora.3.02.1',
+      '8.0',
+    ),
+  }),
+});
+```
+
+For Aurora Serverless v2 cluster with PostgreSQL compatible edition:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// create an Aurora Serverless v2 cluster with PostgreSQL compatibility
+const pgcluster = new rds.ServerlessCluster(this, 'aurora-serverlessv2-postgres-cluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_14_4,
+  }),
+  vpc,
+  scalingV2: {
+    maxCapacity: 4,
+    minCapacity: 2,
+  },
+  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'pg-aurora-postgresql14', 'default.aurora-postgresql14'),
+});
+
+// adding a writer
+new rds.DatabaseInstance(this, 'pginstance1', {
+  vpc,
+  serverless: true,
+  clusterIdentifier: pgcluster.clusterIdentifier,
+  engine: rds.DatabaseInstanceEngine.auroraPostgres({
+    version: rds.PostgresEngineVersion.VER_14_4,
+  }),
+});
+
+// adding a reader
+new rds.DatabaseInstance(this, 'pginstance2', {
+  vpc,
+  serverless: true,
+  clusterIdentifier: pgcluster.clusterIdentifier,
+  engine: rds.DatabaseInstanceEngine.auroraPostgres({
+    version: rds.PostgresEngineVersion.VER_14_4,
+  }),
+});
+
+```
+
+
+
+
+
 
 ### Data API
 
