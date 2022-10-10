@@ -81,10 +81,24 @@ export interface RuleTargetConfig {
   readonly kinesisParameters?: CfnRule.KinesisParametersProperty;
 
   /**
+   * Contains the Amazon Redshift Data API parameters to use
+   * when the target is a Amazon Redshift cluster.
+   * @default - None
+   */
+  readonly redshiftDataParameters?: CfnRule.RedshiftDataParametersProperty;
+
+  /**
    * Parameters used when the rule invokes Amazon EC2 Systems Manager Run
    * Command.
    */
   readonly runCommandParameters?: CfnRule.RunCommandParametersProperty;
+
+  /**
+   * Contains the SageMaker Model Building Pipeline parameters
+   * to start execution of a SageMaker Model Building Pipeline.
+   * @default - None
+   */
+  readonly sageMakerPipelineParameters?: CfnRule.SageMakerPipelineParametersProperty;
 
   /**
    * Parameters used when the FIFO sqs queue is used an event target by the

@@ -684,6 +684,74 @@ describe('rule', () => {
     });
   });
 
+  test('can redShift and sagemaker be added to targets', () => {
+    const stack = new cdk.Stack();
+    const t1: IRuleTarget = {
+      bind: () => ({
+        id: '',
+        arn: 'ARN1',
+        redshiftDataParameters: {
+          database: 'sample-db',
+          sql: 'select * from sample-tbl',
+          dbUser: 'sample-user',
+          statementName: 'samplestatement',
+          withEvent: false,
+        },
+      }),
+    };
+
+    const t2: IRuleTarget = {
+      bind: () => ({
+        id: '',
+        arn: 'ARN2',
+        sageMakerPipelineParameters: {
+          pipelineParameterList: [{ name: 'sample-name', value: 'sample-value' }],
+        },
+      }),
+    };
+
+    const rule = new Rule(stack, 'EventRule', {
+      targets: [t1],
+      schedule: Schedule.rate(cdk.Duration.minutes(5)),
+    });
+
+    rule.addTarget(t2);
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'EventRule5A491D2C': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'ScheduleExpression': 'rate(5 minutes)',
+            'State': 'ENABLED',
+            'Targets': [
+              {
+                'Arn': 'ARN1',
+                'Id': 'Target0',
+                'RedshiftDataParameters': {
+                  'Database': 'sample-db',
+                  'Sql': 'select * from sample-tbl',
+                  'DbUser': 'sample-user',
+                  'StatementName': 'samplestatement',
+                  'WithEvent': false,
+                },
+              },
+              {
+                'Arn': 'ARN2',
+                'Id': 'Target1',
+                'SageMakerPipelineParameters': {
+                  'PipelineParameterList': [
+                    { 'Name': 'sample-name', 'Value': 'sample-value' },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      },
+    });
+  });
+
   describe('for cross-account and/or cross-region targets', () => {
     test('requires that the source stack specify a concrete account', () => {
       const app = new cdk.App();
