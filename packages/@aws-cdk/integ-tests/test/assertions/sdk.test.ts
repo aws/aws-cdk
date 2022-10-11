@@ -1,6 +1,6 @@
-import { Template, Match } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import { App, CfnOutput } from '@aws-cdk/core';
-import { LogType, InvocationType, ExpectedResult } from '../../lib/assertions';
+import { ExpectedResult, InvocationType, LogType } from '../../lib/assertions';
 import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
 
 describe('AwsApiCall', () => {
@@ -169,14 +169,8 @@ describe('AwsApiCall', () => {
 
       // THEN
       const template = Template.fromStack(deplossert.scope);
-      template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
+      template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
         expected: JSON.stringify({ $Exact: { foo: 'bar' } }),
-        actual: {
-          'Fn::GetAtt': [
-            'AwsApiCallMyServiceMyApi',
-            'apiCallResponse',
-          ],
-        },
       });
     });
 
@@ -191,14 +185,8 @@ describe('AwsApiCall', () => {
 
       // THEN
       const template = Template.fromStack(deplossert.scope);
-      template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
+      template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
         expected: JSON.stringify({ $ObjectLike: { foo: 'bar' } }),
-        actual: {
-          'Fn::GetAtt': [
-            'AwsApiCallMyServiceMyApi',
-            'apiCallResponse',
-          ],
-        },
       });
     });
 
@@ -213,14 +201,8 @@ describe('AwsApiCall', () => {
 
       // THEN
       const template = Template.fromStack(deplossert.scope);
-      template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
+      template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
         expected: JSON.stringify({ $Exact: 'bar' }),
-        actual: {
-          'Fn::GetAtt': [
-            'AwsApiCallMyServiceMyApi',
-            'apiCallResponse',
-          ],
-        },
       });
     });
   });

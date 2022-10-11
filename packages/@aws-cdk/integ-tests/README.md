@@ -18,7 +18,7 @@
 
 ## Overview
 
-This library is meant to be used in combination with the [integ-runner]() CLI
+This library is meant to be used in combination with the [integ-runner](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-runner) CLI
 to enable users to write and execute integration tests for AWS CDK Constructs.
 
 An integration test should be defined as a CDK application, and
@@ -182,13 +182,24 @@ There are two main scenarios in which assertions are created.
 - Part of an integration test using `integ-runner`
 
 In this case you would create an integration test using the `IntegTest` construct and then make assertions using the `assert` property.
-You should **not** utilize the assertion constructs directly, but should instead use the `methods` on `IntegTest.assert`.
+You should **not** utilize the assertion constructs directly, but should instead use the `methods` on `IntegTest.assertions`.
 
 ```ts
 declare const app: App;
 declare const stack: Stack;
 
 const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
+integ.assertions.awsApiCall('S3', 'getObject');
+```
+
+By default an assertions stack is automatically generated for you. You may however provide your own stack to use. 
+
+```ts
+declare const app: App;
+declare const stack: Stack;
+declare const assertionStack: Stack;
+
+const integ = new IntegTest(app, 'Integ', { testCases: [stack], assertionStack: assertionStack });
 integ.assertions.awsApiCall('S3', 'getObject');
 ```
 
@@ -407,6 +418,24 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 // assert the results
 describe.expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
+}));
+```
+
+#### Chain ApiCalls
+
+Sometimes it may be necessary to chain API Calls. Since each API call is its own resource, all you
+need to do is add a dependency between the calls. There is an helper method `next` that can be used.
+
+```ts
+declare const integ: IntegTest;
+
+integ.assertions.awsApiCall('S3', 'putObject', {
+  Bucket: 'my-bucket',
+  Key: 'my-key',
+  Body: 'helloWorld',
+}).next(integ.assertions.awsApiCall('S3', 'getObject', {
+  Bucket: 'my-bucket',
+  Key: 'my-key',
 }));
 ```
 
