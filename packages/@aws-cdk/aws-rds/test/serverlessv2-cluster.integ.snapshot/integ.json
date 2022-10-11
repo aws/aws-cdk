@@ -3,7 +3,7 @@
   "testCases": {
     "ServerlessV2Test/DefaultTest": {
       "stacks": [
-        "aws-cdk-rds-integ"
+        "aws-cdk-rds-integ2"
       ],
       "assertionStack": "ServerlessV2Test/DefaultTest/DeployAssert",
       "assertionStackName": "ServerlessV2TestDefaultTestDeployAssertB4A54F98"

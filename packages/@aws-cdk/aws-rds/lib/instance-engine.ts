@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct } from 'constructs';
+import { AuroraMysqlEngineVersion } from './cluster-engine';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IOptionGroup, OptionGroup } from './option-group';
@@ -639,23 +640,28 @@ class MySqlInstanceEngine extends InstanceEngineBase {
  * Properties for Aurora MySQL instance engines.
  * Used in {@link DatabaseInstanceEngine.auroraMySql}.
  */
-export interface AuroraMySqlInstanceEngineProps {
+export interface AuroraMysqlInstanceEngineProps {
   /** The exact version of the engine to use. */
-  readonly version: MysqlEngineVersion;
+  // readonly version: MysqlEngineVersion;
+  readonly version: AuroraMysqlEngineVersion;
+
 }
 
+/**
+ * The instance engine for Aurora MySQL for Aurora Serverless v2.
+ */
 class AuroraMySqlInstanceEngine extends InstanceEngineBase {
   public readonly supportsReadReplicaBackups = true;
 
-  constructor(version?: MysqlEngineVersion) {
+  constructor(version?: AuroraMysqlEngineVersion) {
     super({
       engineType: 'aurora-mysql',
       singleUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
       multiUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
       version: version
         ? {
-          fullVersion: version.mysqlFullVersion,
-          majorVersion: version.mysqlMajorVersion,
+          fullVersion: version.auroraMysqlFullVersion,
+          majorVersion: version.auroraMysqlMajorVersion,
         }
         : undefined,
       engineFamily: 'MYSQL',
@@ -1096,7 +1102,7 @@ export interface AuroraPostgresInstanceEngineProps {
   readonly version: PostgresEngineVersion;
 }
 /**
- * The instance engine for Aurora PostgreSQL for Aurora Serverless V2 cluster.
+ * The instance engine for Aurora PostgreSQL for Aurora Serverless v2.
  */
 class AuroraPostgresInstanceEngine extends InstanceEngineBase {
   public readonly supportsReadReplicaBackups = true;
@@ -1914,7 +1920,7 @@ export class DatabaseInstanceEngine {
   }
 
   /** Creates a new Aurora MySQL instance engine. */
-  public static auroraMySql(props: AuroraMySqlInstanceEngineProps): IInstanceEngine {
+  public static auroraMysql(props: AuroraMysqlInstanceEngineProps): IInstanceEngine {
     return new AuroraMySqlInstanceEngine(props.version);
   }
 

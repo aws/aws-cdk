@@ -693,12 +693,14 @@ To create an Aurora cluster with Aurora Serverless v2 support, specify `serverle
 declare const vpc: ec2.Vpc;
 
 const cluster = new rds.DatabaseCluster(stack, 'cluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_02_1,
+  }),
   serverlessV2Scaling: {
     maxCapacity: 1,
     minCapacity: 0.5,
   },
-  // do not create any provisioned instance with the cluster
+  // do not create any provisioned instance in the cluster
   instances: 0,
   instanceProps: {
     vpc,
@@ -710,24 +712,19 @@ const cluster = new rds.DatabaseCluster(stack, 'cluster', {
 
 // adding a serverless writer
 cluster.addServerlessInstance('instance1', {
-  engine: rds.DatabaseInstanceEngine.auroraMySql({
-    version: rds.MysqlEngineVersion.of(
-      '8.0.mysql_aurora.3.02.1',
-      '8.0',
-    ),
+  engine: rds.DatabaseInstanceEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_02_1,
   }),
 });
 
 // adding a serverless reader
 cluster.addServerlessInstance('instance2', {
-  engine: rds.DatabaseInstanceEngine.auroraMySql({
-    version: rds.MysqlEngineVersion.of(
-      '8.0.mysql_aurora.3.02.1',
-      '8.0',
-    ),
+  engine: rds.DatabaseInstanceEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_02_1,
   }),
 });
 ```
+
 To mix provisioned and serverless instances with Aurora Serverless v2 support in the cluster, use `addInstance` to add an
 provisioned instance into the cluster:
 
@@ -735,17 +732,11 @@ provisioned instance into the cluster:
 // adding a provisioned reader
 cluster.addInstance('instance3', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
-  engine: rds.DatabaseInstanceEngine.auroraMySql({
-    version: rds.MysqlEngineVersion.of(
-      '8.0.mysql_aurora.3.02.1',
-      '8.0',
-    ),
+  engine: rds.DatabaseInstanceEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_02_1,
   }),
 });
-
 ```
-
-
 For Aurora Serverless v2 with PostgreSQL compatible edition:
 
 ```ts
@@ -765,7 +756,6 @@ const cluster2 = new rds.DatabaseCluster(stack, 'cluster', {
       subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
   },
-  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'pg-aurora-postgresql14', 'default.aurora-postgresql14'),
 });
 
 // adding a serverless writer
@@ -783,7 +773,6 @@ cluster.addInstance('instance5', {
   }),
 });
 ```
-
 
 ### Data API
 

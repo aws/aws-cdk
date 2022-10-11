@@ -576,7 +576,7 @@
      ]
     },
     "ServerlessV2ScalingConfiguration": {
-     "MaxCapacity": 1,
+     "MaxCapacity": 4,
      "MinCapacity": 0.5
     },
     "VpcSecurityGroupIds": [
@@ -933,7 +933,7 @@
     },
     "Port": 5432,
     "ServerlessV2ScalingConfiguration": {
-     "MaxCapacity": 1,
+     "MaxCapacity": 4,
      "MinCapacity": 0.5
     },
     "VpcSecurityGroupIds": [
@@ -1290,7 +1290,7 @@
     },
     "ServerlessV2ScalingConfiguration": {
      "MaxCapacity": 4,
-     "MinCapacity": 2
+     "MinCapacity": 0.5
     },
     "VpcSecurityGroupIds": [
      {
@@ -1348,7 +1348,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "cluster4instance3SubnetGroupBEAEB646": {
+  "Cluster4cluster4instance3SubnetGroup202DE991": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
     "DBSubnetGroupDescription": "Subnet group for cluster4instance3 database",
@@ -1362,7 +1362,7 @@
     ]
    }
   },
-  "cluster4instance3SecurityGroupF6E483D9": {
+  "Cluster4cluster4instance3SecurityGroupBB3EF31C": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Security group for cluster4instance3 database",
@@ -1378,7 +1378,7 @@
     }
    }
   },
-  "cluster4instance3Secret667FDE59": {
+  "Cluster4cluster4instance3SecretD2E5938D": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "Description": {
@@ -1402,19 +1402,19 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "cluster4instance3SecretAttachment97E7013B": {
+  "Cluster4cluster4instance3SecretAttachment1805FAB4": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
    "Properties": {
     "SecretId": {
-     "Ref": "cluster4instance3Secret667FDE59"
+     "Ref": "Cluster4cluster4instance3SecretD2E5938D"
     },
     "TargetId": {
-     "Ref": "cluster4instance347C95923"
+     "Ref": "Cluster4cluster4instance304CF5B04"
     },
     "TargetType": "AWS::RDS::DBInstance"
    }
   },
-  "cluster4instance347C95923": {
+  "Cluster4cluster4instance304CF5B04": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "CopyTagsToSnapshot": true,
@@ -1530,7 +1530,7 @@
     },
     "ServerlessV2ScalingConfiguration": {
      "MaxCapacity": 4,
-     "MinCapacity": 2
+     "MinCapacity": 0.5
     },
     "VpcSecurityGroupIds": [
      {

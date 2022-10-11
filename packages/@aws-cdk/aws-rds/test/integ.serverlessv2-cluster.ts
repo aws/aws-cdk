@@ -10,7 +10,7 @@ const app = new cdk.App();
 //   account: process.env.CDK_DEFAULT_ACCOUNT,
 // };
 
-const stack = new cdk.Stack(app, 'aws-cdk-rds-integ');
+const stack = new cdk.Stack(app, 'aws-cdk-rds-integ2');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, natGateways: 1 });
 
@@ -48,7 +48,7 @@ new rds.ServerlessCluster(stack, 'aurora-serverlessv1-mysql-cluster', {
 const cluster2 = new rds.DatabaseCluster(stack, 'cluster2', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
   serverlessV2Scaling: {
-    maxCapacity: 1,
+    maxCapacity: 4,
     minCapacity: 0.5,
   },
   instances: 0,
@@ -63,35 +63,19 @@ const cluster2 = new rds.DatabaseCluster(stack, 'cluster2', {
 
 // adding a serverless writer
 cluster2.addServerlessInstance('cluster2instance1', {
-  engine: rds.DatabaseInstanceEngine.auroraMySql({
-    version: rds.MysqlEngineVersion.of(
-      '8.0.mysql_aurora.3.02.1',
-      '8.0',
-    ),
-  }),
+  engine: rds.DatabaseInstanceEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
 });
 
 // adding a serverless reader
 cluster2.addServerlessInstance('cluster2instance2', {
-  engine: rds.DatabaseInstanceEngine.auroraMySql({
-    version: rds.MysqlEngineVersion.of(
-      '8.0.mysql_aurora.3.02.1',
-      '8.0',
-    ),
-  }),
+  engine: rds.DatabaseInstanceEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
 });
 
 // adding a provisioned reader
 cluster2.addInstance('cluster2instance3', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
-  engine: rds.DatabaseInstanceEngine.auroraMySql({
-    version: rds.MysqlEngineVersion.of(
-      '8.0.mysql_aurora.3.02.1',
-      '8.0',
-    ),
-  }),
+  engine: rds.DatabaseInstanceEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
 });
-
 
 /**
  * Scenario 3: Aurora serverless v2 cluster for PostgreSQL. We mix serverless v2 instances
@@ -103,7 +87,7 @@ const cluster3 = new rds.DatabaseCluster(stack, 'cluster3', {
     version: rds.AuroraPostgresEngineVersion.VER_14_4,
   }),
   serverlessV2Scaling: {
-    maxCapacity: 1,
+    maxCapacity: 4,
     minCapacity: 0.5,
   },
   instances: 0,
@@ -114,30 +98,22 @@ const cluster3 = new rds.DatabaseCluster(stack, 'cluster3', {
     },
   },
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  parameterGroup: rds.ParameterGroup.fromParameterGroupName(stack, 'pg-aurora-postgresql14', 'default.aurora-postgresql14'),
 });
 
 // adding a serverless writer
 cluster3.addServerlessInstance('cluster3instance1', {
-  engine: rds.DatabaseInstanceEngine.auroraPostgres({
-    version: rds.PostgresEngineVersion.VER_14_4,
-  }),
+  engine: rds.DatabaseInstanceEngine.auroraPostgres({ version: rds.PostgresEngineVersion.VER_14_4 }),
 });
 
 // adding a serverless reader
 cluster3.addServerlessInstance('cluster3instance2', {
-  engine: rds.DatabaseInstanceEngine.auroraPostgres({
-    version: rds.PostgresEngineVersion.VER_14_4,
-  }),
+  engine: rds.DatabaseInstanceEngine.auroraPostgres({ version: rds.PostgresEngineVersion.VER_14_4 }),
 });
-
 
 // adding a provisioned reader
 cluster3.addInstance('cluster3instance3', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
-  engine: rds.DatabaseInstanceEngine.auroraPostgres({
-    version: rds.PostgresEngineVersion.VER_14_4,
-  }),
+  engine: rds.DatabaseInstanceEngine.auroraPostgres({ version: rds.PostgresEngineVersion.VER_14_4 }),
 });
 
 /**
@@ -148,7 +124,7 @@ const cluster4 = new rds.DatabaseCluster(stack, 'Cluster4', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
   serverlessV2Scaling: {
     maxCapacity: 4,
-    minCapacity: 2,
+    minCapacity: 0.5,
   },
   instanceProps: {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
@@ -160,16 +136,8 @@ const cluster4 = new rds.DatabaseCluster(stack, 'Cluster4', {
 });
 
 // adding a serverless reader
-new rds.DatabaseInstance(stack, 'cluster4instance3', {
-  vpc,
-  serverlessV2InstanceType: rds.ServerlessV2InstanceType.SERVERLESS,
-  clusterIdentifier: cluster4.clusterIdentifier,
-  engine: rds.DatabaseInstanceEngine.auroraMySql({
-    version: rds.MysqlEngineVersion.of(
-      '8.0.mysql_aurora.3.02.1',
-      '8.0',
-    ),
-  }),
+cluster4.addServerlessInstance('cluster4instance3', {
+  engine: rds.DatabaseInstanceEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
 });
 
 /**
@@ -180,7 +148,7 @@ const cluster5 = new rds.DatabaseCluster(stack, 'Cluster5', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
   serverlessV2Scaling: {
     maxCapacity: 4,
-    minCapacity: 2,
+    minCapacity: 0.5,
   },
   instances: 0,
   instanceProps: {
@@ -193,22 +161,12 @@ const cluster5 = new rds.DatabaseCluster(stack, 'Cluster5', {
 
 // adding a serverless v2 writer
 cluster5.addServerlessInstance('cluster5instance1', {
-  engine: rds.DatabaseInstanceEngine.auroraMySql({
-    version: rds.MysqlEngineVersion.of(
-      '8.0.mysql_aurora.3.02.1',
-      '8.0',
-    ),
-  }),
+  engine: rds.DatabaseInstanceEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
 });
 
 // adding a serverless v2 reader
 cluster5.addServerlessInstance('cluster5instance2', {
-  engine: rds.DatabaseInstanceEngine.auroraMySql({
-    version: rds.MysqlEngineVersion.of(
-      '8.0.mysql_aurora.3.02.1',
-      '8.0',
-    ),
-  }),
+  engine: rds.DatabaseInstanceEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
 });
 
 new integ.IntegTest(app, 'ServerlessV2Test', {

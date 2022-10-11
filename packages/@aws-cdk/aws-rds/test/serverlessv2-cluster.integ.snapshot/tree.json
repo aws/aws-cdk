@@ -12,17 +12,17 @@
           "version": "10.1.123"
         }
       },
-      "aws-cdk-rds-integ": {
-        "id": "aws-cdk-rds-integ",
-        "path": "aws-cdk-rds-integ",
+      "aws-cdk-rds-integ2": {
+        "id": "aws-cdk-rds-integ2",
+        "path": "aws-cdk-rds-integ2",
         "children": {
           "VPC": {
             "id": "VPC",
-            "path": "aws-cdk-rds-integ/VPC",
+            "path": "aws-cdk-rds-integ2/VPC",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-rds-integ/VPC/Resource",
+                "path": "aws-cdk-rds-integ2/VPC/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -33,7 +33,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-rds-integ/VPC"
+                        "value": "aws-cdk-rds-integ2/VPC"
                       }
                     ]
                   }
@@ -45,11 +45,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "aws-cdk-rds-integ/VPC/PublicSubnet1",
+                "path": "aws-cdk-rds-integ2/VPC/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet1/Subnet",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -77,7 +77,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+                            "value": "aws-cdk-rds-integ2/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -89,7 +89,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet1/Acl",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -97,7 +97,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet1/RouteTable",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -107,7 +107,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+                            "value": "aws-cdk-rds-integ2/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -119,7 +119,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -138,7 +138,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet1/DefaultRoute",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet1/EIP",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -166,7 +166,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+                            "value": "aws-cdk-rds-integ2/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -178,7 +178,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet1/NATGateway",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -194,7 +194,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+                            "value": "aws-cdk-rds-integ2/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -212,11 +212,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "aws-cdk-rds-integ/VPC/PublicSubnet2",
+                "path": "aws-cdk-rds-integ2/VPC/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet2/Subnet",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -244,7 +244,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+                            "value": "aws-cdk-rds-integ2/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -256,7 +256,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet2/Acl",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -264,7 +264,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet2/RouteTable",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -274,7 +274,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+                            "value": "aws-cdk-rds-integ2/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -286,7 +286,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -305,7 +305,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-rds-integ/VPC/PublicSubnet2/DefaultRoute",
+                    "path": "aws-cdk-rds-integ2/VPC/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -331,11 +331,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "aws-cdk-rds-integ/VPC/PrivateSubnet1",
+                "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-rds-integ/VPC/PrivateSubnet1/Subnet",
+                    "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -363,7 +363,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-integ/VPC/PrivateSubnet1"
+                            "value": "aws-cdk-rds-integ2/VPC/PrivateSubnet1"
                           }
                         ]
                       }
@@ -375,7 +375,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-rds-integ/VPC/PrivateSubnet1/Acl",
+                    "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -383,7 +383,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-rds-integ/VPC/PrivateSubnet1/RouteTable",
+                    "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -393,7 +393,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-integ/VPC/PrivateSubnet1"
+                            "value": "aws-cdk-rds-integ2/VPC/PrivateSubnet1"
                           }
                         ]
                       }
@@ -405,7 +405,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-rds-integ/VPC/PrivateSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -424,7 +424,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-rds-integ/VPC/PrivateSubnet1/DefaultRoute",
+                    "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -450,11 +450,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "aws-cdk-rds-integ/VPC/PrivateSubnet2",
+                "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-rds-integ/VPC/PrivateSubnet2/Subnet",
+                    "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -482,7 +482,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-integ/VPC/PrivateSubnet2"
+                            "value": "aws-cdk-rds-integ2/VPC/PrivateSubnet2"
                           }
                         ]
                       }
@@ -494,7 +494,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-rds-integ/VPC/PrivateSubnet2/Acl",
+                    "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -502,7 +502,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-rds-integ/VPC/PrivateSubnet2/RouteTable",
+                    "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -512,7 +512,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-integ/VPC/PrivateSubnet2"
+                            "value": "aws-cdk-rds-integ2/VPC/PrivateSubnet2"
                           }
                         ]
                       }
@@ -524,7 +524,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-rds-integ/VPC/PrivateSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -543,7 +543,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-rds-integ/VPC/PrivateSubnet2/DefaultRoute",
+                    "path": "aws-cdk-rds-integ2/VPC/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -569,14 +569,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "aws-cdk-rds-integ/VPC/IGW",
+                "path": "aws-cdk-rds-integ2/VPC/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-rds-integ/VPC"
+                        "value": "aws-cdk-rds-integ2/VPC"
                       }
                     ]
                   }
@@ -588,7 +588,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "aws-cdk-rds-integ/VPC/VPCGW",
+                "path": "aws-cdk-rds-integ2/VPC/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -613,11 +613,11 @@
           },
           "SubnetGroup": {
             "id": "SubnetGroup",
-            "path": "aws-cdk-rds-integ/SubnetGroup",
+            "path": "aws-cdk-rds-integ2/SubnetGroup",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "aws-cdk-rds-integ/SubnetGroup/Default",
+                "path": "aws-cdk-rds-integ2/SubnetGroup/Default",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                   "aws:cdk:cloudformation:props": {
@@ -646,15 +646,15 @@
           },
           "aurora-serverlessv1-mysql-cluster": {
             "id": "aurora-serverlessv1-mysql-cluster",
-            "path": "aws-cdk-rds-integ/aurora-serverlessv1-mysql-cluster",
+            "path": "aws-cdk-rds-integ2/aurora-serverlessv1-mysql-cluster",
             "children": {
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-rds-integ/aurora-serverlessv1-mysql-cluster/SecurityGroup",
+                "path": "aws-cdk-rds-integ2/aurora-serverlessv1-mysql-cluster/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/aurora-serverlessv1-mysql-cluster/SecurityGroup/Resource",
+                    "path": "aws-cdk-rds-integ2/aurora-serverlessv1-mysql-cluster/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -684,7 +684,7 @@
               },
               "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
                 "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
-                "path": "aws-cdk-rds-integ/aurora-serverlessv1-mysql-cluster/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "aws-cdk-rds-integ2/aurora-serverlessv1-mysql-cluster/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -692,11 +692,11 @@
               },
               "Secret": {
                 "id": "Secret",
-                "path": "aws-cdk-rds-integ/aurora-serverlessv1-mysql-cluster/Secret",
+                "path": "aws-cdk-rds-integ2/aurora-serverlessv1-mysql-cluster/Secret",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/aurora-serverlessv1-mysql-cluster/Secret/Resource",
+                    "path": "aws-cdk-rds-integ2/aurora-serverlessv1-mysql-cluster/Secret/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                       "aws:cdk:cloudformation:props": {
@@ -726,11 +726,11 @@
                   },
                   "Attachment": {
                     "id": "Attachment",
-                    "path": "aws-cdk-rds-integ/aurora-serverlessv1-mysql-cluster/Secret/Attachment",
+                    "path": "aws-cdk-rds-integ2/aurora-serverlessv1-mysql-cluster/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/aurora-serverlessv1-mysql-cluster/Secret/Attachment/Resource",
+                        "path": "aws-cdk-rds-integ2/aurora-serverlessv1-mysql-cluster/Secret/Attachment/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
@@ -762,7 +762,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-rds-integ/aurora-serverlessv1-mysql-cluster/Resource",
+                "path": "aws-cdk-rds-integ2/aurora-serverlessv1-mysql-cluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
@@ -827,15 +827,15 @@
           },
           "cluster2": {
             "id": "cluster2",
-            "path": "aws-cdk-rds-integ/cluster2",
+            "path": "aws-cdk-rds-integ2/cluster2",
             "children": {
               "Subnets": {
                 "id": "Subnets",
-                "path": "aws-cdk-rds-integ/cluster2/Subnets",
+                "path": "aws-cdk-rds-integ2/cluster2/Subnets",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-rds-integ/cluster2/Subnets/Default",
+                    "path": "aws-cdk-rds-integ2/cluster2/Subnets/Default",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
@@ -863,11 +863,11 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-rds-integ/cluster2/SecurityGroup",
+                "path": "aws-cdk-rds-integ2/cluster2/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster2/SecurityGroup/Resource",
+                    "path": "aws-cdk-rds-integ2/cluster2/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -897,7 +897,7 @@
               },
               "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
                 "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
-                "path": "aws-cdk-rds-integ/cluster2/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "aws-cdk-rds-integ2/cluster2/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -905,11 +905,11 @@
               },
               "Secret": {
                 "id": "Secret",
-                "path": "aws-cdk-rds-integ/cluster2/Secret",
+                "path": "aws-cdk-rds-integ2/cluster2/Secret",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster2/Secret/Resource",
+                    "path": "aws-cdk-rds-integ2/cluster2/Secret/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                       "aws:cdk:cloudformation:props": {
@@ -939,11 +939,11 @@
                   },
                   "Attachment": {
                     "id": "Attachment",
-                    "path": "aws-cdk-rds-integ/cluster2/Secret/Attachment",
+                    "path": "aws-cdk-rds-integ2/cluster2/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster2/Secret/Attachment/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster2/Secret/Attachment/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
@@ -975,7 +975,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-rds-integ/cluster2/Resource",
+                "path": "aws-cdk-rds-integ2/cluster2/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
@@ -1012,7 +1012,7 @@
                     },
                     "serverlessV2ScalingConfiguration": {
                       "minCapacity": 0.5,
-                      "maxCapacity": 1
+                      "maxCapacity": 4
                     },
                     "vpcSecurityGroupIds": [
                       {
@@ -1031,15 +1031,15 @@
               },
               "cluster2instance1": {
                 "id": "cluster2instance1",
-                "path": "aws-cdk-rds-integ/cluster2/cluster2instance1",
+                "path": "aws-cdk-rds-integ2/cluster2/cluster2instance1",
                 "children": {
                   "SubnetGroup": {
                     "id": "SubnetGroup",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance1/SubnetGroup",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance1/SubnetGroup",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance1/SubnetGroup/Default",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance1/SubnetGroup/Default",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                           "aws:cdk:cloudformation:props": {
@@ -1067,11 +1067,11 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance1/SecurityGroup",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance1/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance1/SecurityGroup/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance1/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
@@ -1101,11 +1101,11 @@
                   },
                   "Secret": {
                     "id": "Secret",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance1/Secret",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance1/Secret",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance1/Secret/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance1/Secret/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                           "aws:cdk:cloudformation:props": {
@@ -1135,11 +1135,11 @@
                       },
                       "Attachment": {
                         "id": "Attachment",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance1/Secret/Attachment",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance1/Secret/Attachment",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-rds-integ/cluster2/cluster2instance1/Secret/Attachment/Resource",
+                            "path": "aws-cdk-rds-integ2/cluster2/cluster2instance1/Secret/Attachment/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                               "aws:cdk:cloudformation:props": {
@@ -1171,7 +1171,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance1/Resource",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance1/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
@@ -1197,15 +1197,15 @@
               },
               "cluster2instance2": {
                 "id": "cluster2instance2",
-                "path": "aws-cdk-rds-integ/cluster2/cluster2instance2",
+                "path": "aws-cdk-rds-integ2/cluster2/cluster2instance2",
                 "children": {
                   "SubnetGroup": {
                     "id": "SubnetGroup",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance2/SubnetGroup",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance2/SubnetGroup",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance2/SubnetGroup/Default",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance2/SubnetGroup/Default",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                           "aws:cdk:cloudformation:props": {
@@ -1233,11 +1233,11 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance2/SecurityGroup",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance2/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance2/SecurityGroup/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance2/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
@@ -1267,11 +1267,11 @@
                   },
                   "Secret": {
                     "id": "Secret",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance2/Secret",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance2/Secret",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance2/Secret/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance2/Secret/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                           "aws:cdk:cloudformation:props": {
@@ -1301,11 +1301,11 @@
                       },
                       "Attachment": {
                         "id": "Attachment",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance2/Secret/Attachment",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance2/Secret/Attachment",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-rds-integ/cluster2/cluster2instance2/Secret/Attachment/Resource",
+                            "path": "aws-cdk-rds-integ2/cluster2/cluster2instance2/Secret/Attachment/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                               "aws:cdk:cloudformation:props": {
@@ -1337,7 +1337,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance2/Resource",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance2/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
@@ -1363,15 +1363,15 @@
               },
               "cluster2instance3": {
                 "id": "cluster2instance3",
-                "path": "aws-cdk-rds-integ/cluster2/cluster2instance3",
+                "path": "aws-cdk-rds-integ2/cluster2/cluster2instance3",
                 "children": {
                   "SubnetGroup": {
                     "id": "SubnetGroup",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance3/SubnetGroup",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance3/SubnetGroup",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance3/SubnetGroup/Default",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance3/SubnetGroup/Default",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                           "aws:cdk:cloudformation:props": {
@@ -1399,11 +1399,11 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance3/SecurityGroup",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance3/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance3/SecurityGroup/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance3/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
@@ -1433,11 +1433,11 @@
                   },
                   "Secret": {
                     "id": "Secret",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance3/Secret",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance3/Secret",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance3/Secret/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance3/Secret/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                           "aws:cdk:cloudformation:props": {
@@ -1467,11 +1467,11 @@
                       },
                       "Attachment": {
                         "id": "Attachment",
-                        "path": "aws-cdk-rds-integ/cluster2/cluster2instance3/Secret/Attachment",
+                        "path": "aws-cdk-rds-integ2/cluster2/cluster2instance3/Secret/Attachment",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-rds-integ/cluster2/cluster2instance3/Secret/Attachment/Resource",
+                            "path": "aws-cdk-rds-integ2/cluster2/cluster2instance3/Secret/Attachment/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                               "aws:cdk:cloudformation:props": {
@@ -1503,7 +1503,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster2/cluster2instance3/Resource",
+                    "path": "aws-cdk-rds-integ2/cluster2/cluster2instance3/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
@@ -1533,25 +1533,17 @@
               "version": "0.0.0"
             }
           },
-          "pg-aurora-postgresql14": {
-            "id": "pg-aurora-postgresql14",
-            "path": "aws-cdk-rds-integ/pg-aurora-postgresql14",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
-            }
-          },
           "cluster3": {
             "id": "cluster3",
-            "path": "aws-cdk-rds-integ/cluster3",
+            "path": "aws-cdk-rds-integ2/cluster3",
             "children": {
               "Subnets": {
                 "id": "Subnets",
-                "path": "aws-cdk-rds-integ/cluster3/Subnets",
+                "path": "aws-cdk-rds-integ2/cluster3/Subnets",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-rds-integ/cluster3/Subnets/Default",
+                    "path": "aws-cdk-rds-integ2/cluster3/Subnets/Default",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
@@ -1579,11 +1571,11 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-rds-integ/cluster3/SecurityGroup",
+                "path": "aws-cdk-rds-integ2/cluster3/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster3/SecurityGroup/Resource",
+                    "path": "aws-cdk-rds-integ2/cluster3/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -1611,13 +1603,21 @@
                   "version": "0.0.0"
                 }
               },
+              "AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup": {
+                "id": "AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "aws-cdk-rds-integ2/cluster3/AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Secret": {
                 "id": "Secret",
-                "path": "aws-cdk-rds-integ/cluster3/Secret",
+                "path": "aws-cdk-rds-integ2/cluster3/Secret",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster3/Secret/Resource",
+                    "path": "aws-cdk-rds-integ2/cluster3/Secret/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                       "aws:cdk:cloudformation:props": {
@@ -1647,11 +1647,11 @@
                   },
                   "Attachment": {
                     "id": "Attachment",
-                    "path": "aws-cdk-rds-integ/cluster3/Secret/Attachment",
+                    "path": "aws-cdk-rds-integ2/cluster3/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster3/Secret/Attachment/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster3/Secret/Attachment/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
@@ -1683,7 +1683,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-rds-integ/cluster3/Resource",
+                "path": "aws-cdk-rds-integ2/cluster3/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
@@ -1721,7 +1721,7 @@
                     "port": 5432,
                     "serverlessV2ScalingConfiguration": {
                       "minCapacity": 0.5,
-                      "maxCapacity": 1
+                      "maxCapacity": 4
                     },
                     "vpcSecurityGroupIds": [
                       {
@@ -1740,15 +1740,15 @@
               },
               "cluster3instance1": {
                 "id": "cluster3instance1",
-                "path": "aws-cdk-rds-integ/cluster3/cluster3instance1",
+                "path": "aws-cdk-rds-integ2/cluster3/cluster3instance1",
                 "children": {
                   "SubnetGroup": {
                     "id": "SubnetGroup",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance1/SubnetGroup",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance1/SubnetGroup",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance1/SubnetGroup/Default",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance1/SubnetGroup/Default",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                           "aws:cdk:cloudformation:props": {
@@ -1776,11 +1776,11 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance1/SecurityGroup",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance1/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance1/SecurityGroup/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance1/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
@@ -1810,11 +1810,11 @@
                   },
                   "Secret": {
                     "id": "Secret",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance1/Secret",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance1/Secret",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance1/Secret/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance1/Secret/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                           "aws:cdk:cloudformation:props": {
@@ -1844,11 +1844,11 @@
                       },
                       "Attachment": {
                         "id": "Attachment",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance1/Secret/Attachment",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance1/Secret/Attachment",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-rds-integ/cluster3/cluster3instance1/Secret/Attachment/Resource",
+                            "path": "aws-cdk-rds-integ2/cluster3/cluster3instance1/Secret/Attachment/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                               "aws:cdk:cloudformation:props": {
@@ -1880,7 +1880,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance1/Resource",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance1/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
@@ -1906,15 +1906,15 @@
               },
               "cluster3instance2": {
                 "id": "cluster3instance2",
-                "path": "aws-cdk-rds-integ/cluster3/cluster3instance2",
+                "path": "aws-cdk-rds-integ2/cluster3/cluster3instance2",
                 "children": {
                   "SubnetGroup": {
                     "id": "SubnetGroup",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance2/SubnetGroup",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance2/SubnetGroup",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance2/SubnetGroup/Default",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance2/SubnetGroup/Default",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                           "aws:cdk:cloudformation:props": {
@@ -1942,11 +1942,11 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance2/SecurityGroup",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance2/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance2/SecurityGroup/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance2/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
@@ -1976,11 +1976,11 @@
                   },
                   "Secret": {
                     "id": "Secret",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance2/Secret",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance2/Secret",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance2/Secret/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance2/Secret/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                           "aws:cdk:cloudformation:props": {
@@ -2010,11 +2010,11 @@
                       },
                       "Attachment": {
                         "id": "Attachment",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance2/Secret/Attachment",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance2/Secret/Attachment",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-rds-integ/cluster3/cluster3instance2/Secret/Attachment/Resource",
+                            "path": "aws-cdk-rds-integ2/cluster3/cluster3instance2/Secret/Attachment/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                               "aws:cdk:cloudformation:props": {
@@ -2046,7 +2046,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance2/Resource",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance2/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
@@ -2072,15 +2072,15 @@
               },
               "cluster3instance3": {
                 "id": "cluster3instance3",
-                "path": "aws-cdk-rds-integ/cluster3/cluster3instance3",
+                "path": "aws-cdk-rds-integ2/cluster3/cluster3instance3",
                 "children": {
                   "SubnetGroup": {
                     "id": "SubnetGroup",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance3/SubnetGroup",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance3/SubnetGroup",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance3/SubnetGroup/Default",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance3/SubnetGroup/Default",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                           "aws:cdk:cloudformation:props": {
@@ -2108,11 +2108,11 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance3/SecurityGroup",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance3/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance3/SecurityGroup/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance3/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
@@ -2142,11 +2142,11 @@
                   },
                   "Secret": {
                     "id": "Secret",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance3/Secret",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance3/Secret",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance3/Secret/Resource",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance3/Secret/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                           "aws:cdk:cloudformation:props": {
@@ -2176,11 +2176,11 @@
                       },
                       "Attachment": {
                         "id": "Attachment",
-                        "path": "aws-cdk-rds-integ/cluster3/cluster3instance3/Secret/Attachment",
+                        "path": "aws-cdk-rds-integ2/cluster3/cluster3instance3/Secret/Attachment",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-rds-integ/cluster3/cluster3instance3/Secret/Attachment/Resource",
+                            "path": "aws-cdk-rds-integ2/cluster3/cluster3instance3/Secret/Attachment/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                               "aws:cdk:cloudformation:props": {
@@ -2212,7 +2212,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster3/cluster3instance3/Resource",
+                    "path": "aws-cdk-rds-integ2/cluster3/cluster3instance3/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
@@ -2244,15 +2244,15 @@
           },
           "Cluster4": {
             "id": "Cluster4",
-            "path": "aws-cdk-rds-integ/Cluster4",
+            "path": "aws-cdk-rds-integ2/Cluster4",
             "children": {
               "Subnets": {
                 "id": "Subnets",
-                "path": "aws-cdk-rds-integ/Cluster4/Subnets",
+                "path": "aws-cdk-rds-integ2/Cluster4/Subnets",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-rds-integ/Cluster4/Subnets/Default",
+                    "path": "aws-cdk-rds-integ2/Cluster4/Subnets/Default",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
@@ -2280,11 +2280,11 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-rds-integ/Cluster4/SecurityGroup",
+                "path": "aws-cdk-rds-integ2/Cluster4/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/Cluster4/SecurityGroup/Resource",
+                    "path": "aws-cdk-rds-integ2/Cluster4/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -2314,7 +2314,7 @@
               },
               "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
                 "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
-                "path": "aws-cdk-rds-integ/Cluster4/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "aws-cdk-rds-integ2/Cluster4/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -2322,11 +2322,11 @@
               },
               "Secret": {
                 "id": "Secret",
-                "path": "aws-cdk-rds-integ/Cluster4/Secret",
+                "path": "aws-cdk-rds-integ2/Cluster4/Secret",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/Cluster4/Secret/Resource",
+                    "path": "aws-cdk-rds-integ2/Cluster4/Secret/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                       "aws:cdk:cloudformation:props": {
@@ -2356,11 +2356,11 @@
                   },
                   "Attachment": {
                     "id": "Attachment",
-                    "path": "aws-cdk-rds-integ/Cluster4/Secret/Attachment",
+                    "path": "aws-cdk-rds-integ2/Cluster4/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/Cluster4/Secret/Attachment/Resource",
+                        "path": "aws-cdk-rds-integ2/Cluster4/Secret/Attachment/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
@@ -2392,7 +2392,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-rds-integ/Cluster4/Resource",
+                "path": "aws-cdk-rds-integ2/Cluster4/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
@@ -2428,7 +2428,7 @@
                       ]
                     },
                     "serverlessV2ScalingConfiguration": {
-                      "minCapacity": 2,
+                      "minCapacity": 0.5,
                       "maxCapacity": 4
                     },
                     "vpcSecurityGroupIds": [
@@ -2448,7 +2448,7 @@
               },
               "Instance1": {
                 "id": "Instance1",
-                "path": "aws-cdk-rds-integ/Cluster4/Instance1",
+                "path": "aws-cdk-rds-integ2/Cluster4/Instance1",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
@@ -2470,7 +2470,7 @@
               },
               "Instance2": {
                 "id": "Instance2",
-                "path": "aws-cdk-rds-integ/Cluster4/Instance2",
+                "path": "aws-cdk-rds-integ2/Cluster4/Instance2",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
@@ -2489,6 +2489,172 @@
                   "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
                   "version": "0.0.0"
                 }
+              },
+              "cluster4instance3": {
+                "id": "cluster4instance3",
+                "path": "aws-cdk-rds-integ2/Cluster4/cluster4instance3",
+                "children": {
+                  "SubnetGroup": {
+                    "id": "SubnetGroup",
+                    "path": "aws-cdk-rds-integ2/Cluster4/cluster4instance3/SubnetGroup",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-rds-integ2/Cluster4/cluster4instance3/SubnetGroup/Default",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "dbSubnetGroupDescription": "Subnet group for cluster4instance3 database",
+                            "subnetIds": [
+                              {
+                                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                              },
+                              {
+                                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-rds.SubnetGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SecurityGroup": {
+                    "id": "SecurityGroup",
+                    "path": "aws-cdk-rds-integ2/Cluster4/cluster4instance3/SecurityGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-rds-integ2/Cluster4/cluster4instance3/SecurityGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "groupDescription": "Security group for cluster4instance3 database",
+                            "securityGroupEgress": [
+                              {
+                                "cidrIp": "0.0.0.0/0",
+                                "description": "Allow all outbound traffic by default",
+                                "ipProtocol": "-1"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "VPCB9E5F0B4"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Secret": {
+                    "id": "Secret",
+                    "path": "aws-cdk-rds-integ2/Cluster4/cluster4instance3/Secret",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-rds-integ2/Cluster4/cluster4instance3/Secret/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                          "aws:cdk:cloudformation:props": {
+                            "description": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "Generated by the CDK for stack: ",
+                                  {
+                                    "Ref": "AWS::StackName"
+                                  }
+                                ]
+                              ]
+                            },
+                            "generateSecretString": {
+                              "passwordLength": 30,
+                              "secretStringTemplate": "{\"username\":\"admin\"}",
+                              "generateStringKey": "password",
+                              "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Attachment": {
+                        "id": "Attachment",
+                        "path": "aws-cdk-rds-integ2/Cluster4/cluster4instance3/Secret/Attachment",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-rds-integ2/Cluster4/cluster4instance3/Secret/Attachment/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
+                              "aws:cdk:cloudformation:props": {
+                                "secretId": {
+                                  "Ref": "Cluster4cluster4instance3SecretD2E5938D"
+                                },
+                                "targetId": {
+                                  "Ref": "Cluster4cluster4instance304CF5B04"
+                                },
+                                "targetType": "AWS::RDS::DBInstance"
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-rds.DatabaseSecret",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-integ2/Cluster4/cluster4instance3/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
+                      "aws:cdk:cloudformation:props": {
+                        "copyTagsToSnapshot": true,
+                        "dbClusterIdentifier": {
+                          "Ref": "Cluster4567CABC4"
+                        },
+                        "dbInstanceClass": "db.serverless",
+                        "engine": "aurora-mysql",
+                        "engineVersion": "8.0.mysql_aurora.3.02.1"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.DatabaseInstance",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -2496,183 +2662,17 @@
               "version": "0.0.0"
             }
           },
-          "cluster4instance3": {
-            "id": "cluster4instance3",
-            "path": "aws-cdk-rds-integ/cluster4instance3",
-            "children": {
-              "SubnetGroup": {
-                "id": "SubnetGroup",
-                "path": "aws-cdk-rds-integ/cluster4instance3/SubnetGroup",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "aws-cdk-rds-integ/cluster4instance3/SubnetGroup/Default",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "dbSubnetGroupDescription": "Subnet group for cluster4instance3 database",
-                        "subnetIds": [
-                          {
-                            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
-                          },
-                          {
-                            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.SubnetGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "aws-cdk-rds-integ/cluster4instance3/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster4instance3/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "Security group for cluster4instance3 database",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "Secret": {
-                "id": "Secret",
-                "path": "aws-cdk-rds-integ/cluster4instance3/Secret",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-rds-integ/cluster4instance3/Secret/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
-                      "aws:cdk:cloudformation:props": {
-                        "description": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "Generated by the CDK for stack: ",
-                              {
-                                "Ref": "AWS::StackName"
-                              }
-                            ]
-                          ]
-                        },
-                        "generateSecretString": {
-                          "passwordLength": 30,
-                          "secretStringTemplate": "{\"username\":\"admin\"}",
-                          "generateStringKey": "password",
-                          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Attachment": {
-                    "id": "Attachment",
-                    "path": "aws-cdk-rds-integ/cluster4instance3/Secret/Attachment",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-rds-integ/cluster4instance3/Secret/Attachment/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
-                          "aws:cdk:cloudformation:props": {
-                            "secretId": {
-                              "Ref": "cluster4instance3Secret667FDE59"
-                            },
-                            "targetId": {
-                              "Ref": "cluster4instance347C95923"
-                            },
-                            "targetType": "AWS::RDS::DBInstance"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.DatabaseSecret",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-rds-integ/cluster4instance3/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
-                  "aws:cdk:cloudformation:props": {
-                    "copyTagsToSnapshot": true,
-                    "dbClusterIdentifier": {
-                      "Ref": "Cluster4567CABC4"
-                    },
-                    "dbInstanceClass": "db.serverless",
-                    "engine": "aurora-mysql",
-                    "engineVersion": "8.0.mysql_aurora.3.02.1"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-rds.DatabaseInstance",
-              "version": "0.0.0"
-            }
-          },
           "Cluster5": {
             "id": "Cluster5",
-            "path": "aws-cdk-rds-integ/Cluster5",
+            "path": "aws-cdk-rds-integ2/Cluster5",
             "children": {
               "Subnets": {
                 "id": "Subnets",
-                "path": "aws-cdk-rds-integ/Cluster5/Subnets",
+                "path": "aws-cdk-rds-integ2/Cluster5/Subnets",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-rds-integ/Cluster5/Subnets/Default",
+                    "path": "aws-cdk-rds-integ2/Cluster5/Subnets/Default",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
@@ -2700,11 +2700,11 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-rds-integ/Cluster5/SecurityGroup",
+                "path": "aws-cdk-rds-integ2/Cluster5/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/Cluster5/SecurityGroup/Resource",
+                    "path": "aws-cdk-rds-integ2/Cluster5/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -2734,7 +2734,7 @@
               },
               "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
                 "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
-                "path": "aws-cdk-rds-integ/Cluster5/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "aws-cdk-rds-integ2/Cluster5/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -2742,11 +2742,11 @@
               },
               "Secret": {
                 "id": "Secret",
-                "path": "aws-cdk-rds-integ/Cluster5/Secret",
+                "path": "aws-cdk-rds-integ2/Cluster5/Secret",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/Cluster5/Secret/Resource",
+                    "path": "aws-cdk-rds-integ2/Cluster5/Secret/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                       "aws:cdk:cloudformation:props": {
@@ -2776,11 +2776,11 @@
                   },
                   "Attachment": {
                     "id": "Attachment",
-                    "path": "aws-cdk-rds-integ/Cluster5/Secret/Attachment",
+                    "path": "aws-cdk-rds-integ2/Cluster5/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/Cluster5/Secret/Attachment/Resource",
+                        "path": "aws-cdk-rds-integ2/Cluster5/Secret/Attachment/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
@@ -2812,7 +2812,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-rds-integ/Cluster5/Resource",
+                "path": "aws-cdk-rds-integ2/Cluster5/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
@@ -2848,7 +2848,7 @@
                       ]
                     },
                     "serverlessV2ScalingConfiguration": {
-                      "minCapacity": 2,
+                      "minCapacity": 0.5,
                       "maxCapacity": 4
                     },
                     "vpcSecurityGroupIds": [
@@ -2868,15 +2868,15 @@
               },
               "cluster5instance1": {
                 "id": "cluster5instance1",
-                "path": "aws-cdk-rds-integ/Cluster5/cluster5instance1",
+                "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance1",
                 "children": {
                   "SubnetGroup": {
                     "id": "SubnetGroup",
-                    "path": "aws-cdk-rds-integ/Cluster5/cluster5instance1/SubnetGroup",
+                    "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance1/SubnetGroup",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-rds-integ/Cluster5/cluster5instance1/SubnetGroup/Default",
+                        "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance1/SubnetGroup/Default",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                           "aws:cdk:cloudformation:props": {
@@ -2904,11 +2904,11 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-cdk-rds-integ/Cluster5/cluster5instance1/SecurityGroup",
+                    "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance1/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/Cluster5/cluster5instance1/SecurityGroup/Resource",
+                        "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance1/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
@@ -2938,11 +2938,11 @@
                   },
                   "Secret": {
                     "id": "Secret",
-                    "path": "aws-cdk-rds-integ/Cluster5/cluster5instance1/Secret",
+                    "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance1/Secret",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/Cluster5/cluster5instance1/Secret/Resource",
+                        "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance1/Secret/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                           "aws:cdk:cloudformation:props": {
@@ -2972,11 +2972,11 @@
                       },
                       "Attachment": {
                         "id": "Attachment",
-                        "path": "aws-cdk-rds-integ/Cluster5/cluster5instance1/Secret/Attachment",
+                        "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance1/Secret/Attachment",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-rds-integ/Cluster5/cluster5instance1/Secret/Attachment/Resource",
+                            "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance1/Secret/Attachment/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                               "aws:cdk:cloudformation:props": {
@@ -3008,7 +3008,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/Cluster5/cluster5instance1/Resource",
+                    "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance1/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
@@ -3034,15 +3034,15 @@
               },
               "cluster5instance2": {
                 "id": "cluster5instance2",
-                "path": "aws-cdk-rds-integ/Cluster5/cluster5instance2",
+                "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance2",
                 "children": {
                   "SubnetGroup": {
                     "id": "SubnetGroup",
-                    "path": "aws-cdk-rds-integ/Cluster5/cluster5instance2/SubnetGroup",
+                    "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance2/SubnetGroup",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-rds-integ/Cluster5/cluster5instance2/SubnetGroup/Default",
+                        "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance2/SubnetGroup/Default",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                           "aws:cdk:cloudformation:props": {
@@ -3070,11 +3070,11 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-cdk-rds-integ/Cluster5/cluster5instance2/SecurityGroup",
+                    "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance2/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/Cluster5/cluster5instance2/SecurityGroup/Resource",
+                        "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance2/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
@@ -3104,11 +3104,11 @@
                   },
                   "Secret": {
                     "id": "Secret",
-                    "path": "aws-cdk-rds-integ/Cluster5/cluster5instance2/Secret",
+                    "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance2/Secret",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-integ/Cluster5/cluster5instance2/Secret/Resource",
+                        "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance2/Secret/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                           "aws:cdk:cloudformation:props": {
@@ -3138,11 +3138,11 @@
                       },
                       "Attachment": {
                         "id": "Attachment",
-                        "path": "aws-cdk-rds-integ/Cluster5/cluster5instance2/Secret/Attachment",
+                        "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance2/Secret/Attachment",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-rds-integ/Cluster5/cluster5instance2/Secret/Attachment/Resource",
+                            "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance2/Secret/Attachment/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                               "aws:cdk:cloudformation:props": {
@@ -3174,7 +3174,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-integ/Cluster5/cluster5instance2/Resource",
+                    "path": "aws-cdk-rds-integ2/Cluster5/cluster5instance2/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
