@@ -628,7 +628,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * Indicates whether the DB isntance is an Aurora Serverless v2 instance.
    *
-   * @default - undefined(not an Aurora serverless v2 instance)
+   * @default - provisioned instance.
    */
   readonly serverlessV2InstanceType?: ServerlessV2InstanceType;
 }
@@ -655,6 +655,9 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   private readonly domainId?: string;
   private readonly domainRole?: iam.IRole;
+  /**
+   * whether this instance is for serverless v2 enabled cluster.
+   */
   protected readonly serverlessV2Instance?: boolean;
 
   protected enableIamAuthentication?: boolean;
@@ -751,12 +754,19 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         ? this.physicalName
         : maybeLowercasedInstanceId,
       dbClusterIdentifier: props.clusterIdentifier,
+      /**
+       * if this instance is aurora serverless v2 instance, we should define subnetGroup in the cluster
+       * and leave this property undefined.
+       */
       dbSubnetGroupName: this.serverlessV2Instance ? undefined : subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
       enableIamDatabaseAuthentication: Lazy.any({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
+      /**
+       * if this instance is aurora serverless v2 instance, we should leave iops undefined.
+       */
       iops: this.serverlessV2Instance ? undefined : iops,
       monitoringInterval: props.monitoringInterval?.toSeconds(),
       monitoringRoleArn: monitoringRole?.roleArn,
@@ -772,8 +782,17 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
+      /**
+       * storageType should be undefined for aurora serverless v2 instances
+       */
       storageType: this.serverlessV2Instance ? undefined : storageType,
+      /**
+       * vpcSecurityGroups should be defined in the cluster for aurora serverless v2 instances
+       */
       vpcSecurityGroups: this.serverlessV2Instance ? undefined : securityGroups.map(s => s.securityGroupId),
+      /**
+       * maxAllocatedStorage should be undefined for aurora serverless v2 instances
+       */
       maxAllocatedStorage: this.serverlessV2Instance ? undefined : props.maxAllocatedStorage,
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
@@ -980,10 +999,16 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 }
 
 /**
- * Indicates whether this instance belongs to an Aurora Serverless v2 cluster.
+ * Indicates whether serverless or provisioned instance.
  */
 export enum ServerlessV2InstanceType {
+  /**
+   * Serverless v2 instance.
+   */
   SERVERLESS,
+  /**
+   * Provisioned instance.
+   */
   PROVISIONED,
 }
 

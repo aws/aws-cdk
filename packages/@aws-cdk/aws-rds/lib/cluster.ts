@@ -61,8 +61,6 @@ interface DatabaseClusterBaseProps {
   /**
    * How many replicas/instances to create
    *
-   * Has to be at least 1.
-   *
    * @default 2
    */
   readonly instances?: number;
@@ -669,12 +667,28 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   }
 }
 
+/**
+ * Options to create a serverless v2 instance for Aurora Serverless v2.
+ *
+ */
 export interface ServerlessInstanceOptions {
+  /**
+   * The instance engine of the instance.
+   */
   readonly engine: IInstanceEngine;
 }
 
+/**
+ * Options to create a provisioned instance for Aurora Serverless v2.
+ */
 export interface InstanceOptions {
+  /**
+   * The instance engine of the instance.
+   */
   readonly engine: IInstanceEngine;
+  /**
+   * The instance type of the instance.
+   */
   readonly instanceType: ec2.InstanceType;
 }
 

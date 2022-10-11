@@ -1820,6 +1820,12 @@ export class DatabaseInstanceEngine {
    */
   public static readonly MYSQL: IInstanceEngine = new MySqlInstanceEngine();
 
+  /**
+   * The unversioned 'aurora-mysql' instance engine.
+   *
+   * NOTE: using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link auroraMysql()} method
+   */
   public static readonly AURORA_MYSQL: IInstanceEngine = new AuroraMySqlInstanceEngine();
 
 
