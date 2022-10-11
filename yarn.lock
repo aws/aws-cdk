@@ -10,17 +10,10 @@
     "@actions/http-client" "^2.0.1"
     uuid "^8.3.2"
 
-<<<<<<< HEAD
 "@actions/github@^2.2.0":
   version "2.2.0"
   resolved "https://registry.npmjs.org/@actions/github/-/github-2.2.0.tgz#8952fe96b12b881fa39340f0e7202b04dc5c3e71"
   integrity sha512-9UAZqn8ywdR70n3GwVle4N8ALosQs4z50N7XMXrSTUVOmVpaBC5kE3TRTT7qQdi3OaQV24mjGuJZsHUmhD+ZXw==
-=======
-"@actions/github@^5.1.0":
-  version "5.1.0"
-  resolved "https://registry.npmjs.org/@actions/github/-/github-5.1.0.tgz#573fdba52b7b739b68f891f39eacfdd966a22b90"
-  integrity sha512-tuI80F7JQIhg77ZTTgUAPpVD7ZnP9oHSPN8xw7LOwtA4vEMbAjWJNbmLBfV7xua7r016GyjzWLuec5cs8f/a8A==
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
   dependencies:
     "@actions/http-client" "^1.0.3"
     "@octokit/graphql" "^4.3.1"
@@ -687,17 +680,10 @@
     chalk "^4.1.2"
     semver "^7.3.7"
 
-<<<<<<< HEAD
 "@jsii/spec@1.67.0", "@jsii/spec@^1.67.0":
   version "1.67.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.67.0.tgz#d318739b4e8e82118e505721917e86b51fb1585b"
   integrity sha512-C/rGqdqQTJxgN/6tWQ6qcbQnKH76moZAGP+deT/TVx9JrrtrabrFhWfdqjtNYqpgNl1HKmHOSEO3Id5bBoFgvw==
-=======
-"@jsii/spec@1.69.0", "@jsii/spec@^1.67.0", "@jsii/spec@^1.69.0":
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.69.0.tgz#aff2db2d930b04fb832a04ecb8f166b1cf21982f"
-  integrity sha512-Dj41jQc6GgbXHyc/IzhmKdrMJSuF7hetRmCkwMvj0/T2WWNAUK/UNNw40QnksfIhB8yooDAoMqGVU/71fbDyaA==
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
   dependencies:
     ajv "^8.11.0"
 
@@ -1999,7 +1985,6 @@
   resolved "https://registry.npmjs.org/@types/mockery/-/mockery-1.4.30.tgz#25f07fa7340371c7ee0fb9239511a34e0a19d5b7"
   integrity sha512-uv53RrNdhbkV/3VmVCtfImfYCWC3GTTRn3R11Whni3EJ+gb178tkZBVNj2edLY5CMrB749dQi+SJkg87jsN8UQ==
 
-<<<<<<< HEAD
 "@types/node@*", "@types/node@>= 8":
   version "18.7.18"
   resolved "https://registry.npmjs.org/@types/node/-/node-18.7.18.tgz#633184f55c322e4fb08612307c274ee6d5ed3154"
@@ -2014,17 +1999,6 @@
   version "12.20.55"
   resolved "https://registry.npmjs.org/@types/node/-/node-12.20.55.tgz#c329cbd434c42164f846b909bd6f85b5537f6240"
   integrity sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==
-=======
-"@types/node@*":
-  version "18.7.23"
-  resolved "https://registry.npmjs.org/@types/node/-/node-18.7.23.tgz#75c580983846181ebe5f4abc40fe9dfb2d65665f"
-  integrity sha512-DWNcCHolDq0ZKGizjx2DZjR/PqsYwAcYUJmfMWqtVU2MBMG5Mo+xFZrhGId5r/O5HOuMPyQEcM6KUBp5lBZZBg==
-
-"@types/node@^14.18.31":
-  version "14.18.31"
-  resolved "https://registry.npmjs.org/@types/node/-/node-14.18.31.tgz#4b873dea3122e71af4f77e65ec5841397ff254d3"
-  integrity sha512-vQAnaReSQkEDa8uwAyQby8bYGKu84R/deEc6mg5T8fX6gzCn8QW6rziSgsti1fNvsrswKUKPnVTi7uoB+u62Mw==
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
 
 "@types/node@^16.9.2":
   version "16.11.62"
@@ -2704,17 +2678,10 @@ aws-sdk-mock@5.6.0:
     sinon "^11.1.1"
     traverse "^0.6.6"
 
-<<<<<<< HEAD
 aws-sdk@^2.1093.0, aws-sdk@^2.596.0, aws-sdk@^2.848.0, aws-sdk@^2.928.0:
   version "2.1220.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1220.0.tgz#5cec163ee7799875e484afcdde93c4b1e713c64c"
   integrity sha512-l8KEOo2Cb066lLPhVDucx6JuNUrMVmZW937htKagf8rcADCbM0ySIGGKWbi2E8l44ptX3/tDOFnyiSislolATQ==
-=======
-aws-sdk@^2.1211.0, aws-sdk@^2.596.0, aws-sdk@^2.928.0:
-  version "2.1225.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1225.0.tgz#5747cd1842f461300fb1b8d034c7ef1ae14185a1"
-  integrity sha512-JYYYVpr4EktsohOrO8+KfhmHGt2x2zi20Ypkrtllhrh6fhtosduqpH5cQF7wYX/zEvjqduv0dHYd3sXCROHP8A==
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -3115,17 +3082,10 @@ cdk8s-plus-21@^1.0.0-beta.186:
   dependencies:
     minimatch "^3.1.2"
 
-<<<<<<< HEAD
 cdk8s@^1.7.34:
   version "1.7.34"
   resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-1.7.34.tgz#c9af6154ba14ffbc57658fb116f8105bcf9f5910"
   integrity sha512-Iu5W3rH+U4iIWN+cbcjC7+BFpEHDNyyUT0uYXDOdA0aTRH8JbwPLKHCsEb6QOBFqB7WSTqUQedG34x0t33e84A==
-=======
-cdk8s@^2.4.39:
-  version "2.4.39"
-  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.4.39.tgz#d0242df92f4cdfdfe4a687163f19ce4e54690c5d"
-  integrity sha512-OhCsV8bh2dm2Fp8lhCgYEzHQolvXjQBBb+R9LDnsIDXiTFOHXhYQUlmI/K2jofWgxUlZ+Sm8PSMjygsJkj+GLQ==
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
   dependencies:
     fast-json-patch "^3.1.1"
     follow-redirects "^1.15.2"
@@ -3317,17 +3277,10 @@ co@^4.6.0:
   resolved "https://registry.npmjs.org/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
   integrity sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==
 
-<<<<<<< HEAD
 codemaker@^1.67.0:
   version "1.67.0"
   resolved "https://registry.npmjs.org/codemaker/-/codemaker-1.67.0.tgz#adba45ef5058219cbd84e7b4bd70dfa60b98c3a2"
   integrity sha512-ChqnwbXIDIq8EAju+OMOnuzJ5MQWXvFaf4PMZo2RLbLiqUfx4+ATv/i1y0rY5uZ7nvKC8lRfwmbRsgsbWQHAhA==
-=======
-codemaker@^1.69.0:
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/codemaker/-/codemaker-1.69.0.tgz#e8432ee60bf84ac59630be8390a18a422eb8707c"
-  integrity sha512-FbJeIr6isHvABZ56wdujvRLQOJOmS6MoptN4ylLKDNr/dp/+tzpa9kY2R2Y7eWxMW5sTYFBNsVJDpErMcMwhig==
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
   dependencies:
     camelcase "^6.3.0"
     decamelize "^5.0.1"
@@ -3475,17 +3428,10 @@ console-control-strings@^1.0.0, console-control-strings@^1.1.0, console-control-
   resolved "https://registry.npmjs.org/console-control-strings/-/console-control-strings-1.1.0.tgz#3d7cf4464db6446ea644bf4b39507f9851008e8e"
   integrity sha512-ty/fTekppD2fIwRvnZAVdeOiGd1c7YXEixbgJTNzqcxJWKQnjJ/V1bNEEE6hygpM3WjwHFUVK6HTjWSzV4a8sQ==
 
-<<<<<<< HEAD
 constructs@^3.3.69:
   version "3.4.101"
   resolved "https://registry.npmjs.org/constructs/-/constructs-3.4.101.tgz#ac1f0765c0d59a7a36ebc8f26d9bdf8db2656ba1"
   integrity sha512-MN1BO1SipmmT3Qta9r8I346wNiRI20xMMgwg1T3DNwHd/mnXkYsZbd06LSm5SzxiLItPx2n6lJn6aQO9ei/faA==
-=======
-constructs@^10.0.0:
-  version "10.1.115"
-  resolved "https://registry.npmjs.org/constructs/-/constructs-10.1.115.tgz#2399afb4cdf280eda7ffd69f913c7e4344129435"
-  integrity sha512-pX3LI9Tf9ltsf0Qm7RCTdht0seLi4mLwjLuQ0znvzk2S88dWIKZdhzjI2zraN2kjY1a3fByYWg4aK8/St3sS+Q==
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
 
 conventional-changelog-angular@^5.0.12:
   version "5.0.13"
@@ -4931,11 +4877,7 @@ fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
   integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
 
-<<<<<<< HEAD
 fast-glob@^3.2.11, fast-glob@^3.2.9:
-=======
-fast-glob@^3.2.12, fast-glob@^3.2.9:
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
   version "3.2.12"
   resolved "https://registry.npmjs.org/fast-glob/-/fast-glob-3.2.12.tgz#7f39ec99c2e6ab030337142da9e0c18f37afae80"
   integrity sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==
@@ -6872,7 +6814,6 @@ jsesc@^2.5.1:
   resolved "https://registry.npmjs.org/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
 
-<<<<<<< HEAD
 jsii-diff@^1.67.0:
   version "1.67.0"
   resolved "https://registry.npmjs.org/jsii-diff/-/jsii-diff-1.67.0.tgz#b6b516f8c5da9c4d6a50024fbc8fa61ef7b388d8"
@@ -6899,40 +6840,11 @@ jsii-pacmak@^1.67.0:
     fs-extra "^10.1.0"
     jsii-reflect "^1.67.0"
     jsii-rosetta "^1.67.0"
-=======
-jsii-diff@^1.69.0:
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/jsii-diff/-/jsii-diff-1.69.0.tgz#2f9663f439e57e10f97066978789a1452a8b3ad4"
-  integrity sha512-QIJzD9Kr77M1xD8l7CHTfJubk9qxzTEtVwI5ISEK49+p67Ho2Sxp5rncdXBYoruXD/FmO1CT52aNmNHiNbhkig==
-  dependencies:
-    "@jsii/check-node" "1.69.0"
-    "@jsii/spec" "^1.69.0"
-    fs-extra "^10.1.0"
-    jsii-reflect "^1.69.0"
-    log4js "^6.6.1"
-    yargs "^16.2.0"
-
-jsii-pacmak@^1.69.0:
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/jsii-pacmak/-/jsii-pacmak-1.69.0.tgz#e72a7c92b00ab86eb754450f97a411474ba4521a"
-  integrity sha512-dMNyKOV+5mlRm7nT1UjpbXiYCPwHfiULH0JnBQWpGZBD3k8o9vVbMlV4oecxufTVrZH9DH39Mh+GQjR9yS9g1w==
-  dependencies:
-    "@jsii/check-node" "1.69.0"
-    "@jsii/spec" "^1.69.0"
-    clone "^2.1.2"
-    codemaker "^1.69.0"
-    commonmark "^0.30.0"
-    escape-string-regexp "^4.0.0"
-    fs-extra "^10.1.0"
-    jsii-reflect "^1.69.0"
-    jsii-rosetta "^1.69.0"
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
     semver "^7.3.7"
     spdx-license-list "^6.6.0"
     xmlbuilder "^15.1.1"
     yargs "^16.2.0"
 
-<<<<<<< HEAD
 jsii-reflect@^1.67.0:
   version "1.67.0"
   resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.67.0.tgz#49a59aa96e848bb5e7eb327e5f911b1241db76dd"
@@ -6956,38 +6868,12 @@ jsii-rosetta@^1.67.0:
     commonmark "^0.30.0"
     fast-glob "^3.2.11"
     jsii "1.67.0"
-=======
-jsii-reflect@^1.67.0, jsii-reflect@^1.69.0:
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.69.0.tgz#72d12449d64628086241768f71c0b592fddf007a"
-  integrity sha512-gQA4Yu3OlHVmD1X8ysYwgolV5JKS8WbY8p9AKCUQsNbflxUGpYwJrX/Otl+VdiYnIhBZ7+v+VvOG9eYGMUH6IQ==
-  dependencies:
-    "@jsii/check-node" "1.69.0"
-    "@jsii/spec" "^1.69.0"
-    chalk "^4"
-    fs-extra "^10.1.0"
-    oo-ascii-tree "^1.69.0"
-    yargs "^16.2.0"
-
-jsii-rosetta@^1.67.0, jsii-rosetta@^1.69.0:
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-1.69.0.tgz#f2b4ca0f1da310e2ac17a2228938e1b09268d823"
-  integrity sha512-zAvvzRShVMmUxNRLtbR4HShGEn17kyiED5XSo1CrVu4JzG6I7YEtYO1WrNFe1XTh76Bbi4OoamZm3Um91DPtXg==
-  dependencies:
-    "@jsii/check-node" "1.69.0"
-    "@jsii/spec" "1.69.0"
-    "@xmldom/xmldom" "^0.8.2"
-    commonmark "^0.30.0"
-    fast-glob "^3.2.12"
-    jsii "1.69.0"
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
     semver "^7.3.7"
     semver-intersect "^1.4.0"
     typescript "~3.9.10"
     workerpool "^6.2.1"
     yargs "^16.2.0"
 
-<<<<<<< HEAD
 jsii@1.67.0, jsii@^1.67.0:
   version "1.67.0"
   resolved "https://registry.npmjs.org/jsii/-/jsii-1.67.0.tgz#e529e24656eac589c59328301d5363742e8ca023"
@@ -6995,15 +6881,6 @@ jsii@1.67.0, jsii@^1.67.0:
   dependencies:
     "@jsii/check-node" "1.67.0"
     "@jsii/spec" "^1.67.0"
-=======
-jsii@1.69.0, jsii@^1.67.0, jsii@^1.69.0:
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-1.69.0.tgz#f3ec71ea710db8d3a0d677d39c32aa55930a903c"
-  integrity sha512-gusMQ8inlV2/51KsZmZ/H+FeoExrloksgeg8ohvIgF3tvqZKZDh0LvJFGNEeqcJzr+P1OZ3KHVEUI2M0XXicRw==
-  dependencies:
-    "@jsii/check-node" "1.69.0"
-    "@jsii/spec" "^1.69.0"
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
     case "^1.6.3"
     chalk "^4"
     fast-deep-equal "^3.1.3"
@@ -8532,17 +8409,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-<<<<<<< HEAD
 oo-ascii-tree@^1.67.0:
   version "1.67.0"
   resolved "https://registry.npmjs.org/oo-ascii-tree/-/oo-ascii-tree-1.67.0.tgz#229d3abdeefa5de106acd56c68671d2316227a80"
   integrity sha512-qnmzjsmOg8szLSbL3RRUi3bog/t3dDEexcuX4bkSJnvTHJqYUg2vdoTIjkbI67YT231fk7C8PRusMIOgrrBYUg==
-=======
-oo-ascii-tree@^1.69.0:
-  version "1.69.0"
-  resolved "https://registry.npmjs.org/oo-ascii-tree/-/oo-ascii-tree-1.69.0.tgz#6bc33967798cca797be480d66dbf776e34d34cd8"
-  integrity sha512-U5bHVg5nC4OHPNd6ZDSotQ1ccRA+4Rb+bWcY+IJuf4imtO3wrJeSDlKVgMf92mwdVDHMZJ3QKJgElCASdr9Bgw==
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
 
 open@^7.4.2:
   version "7.4.2"
@@ -9770,20 +9640,7 @@ safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   resolved "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
   integrity sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==
 
-<<<<<<< HEAD
 safe-stable-stringify@^2.2.0:
-=======
-safe-regex-test@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/safe-regex-test/-/safe-regex-test-1.0.0.tgz#793b874d524eb3640d1873aad03596db2d4f2295"
-  integrity sha512-JBUUzyOgEwXQY1NuPtvcj/qcBDbDmEvWufhlnXZIm75DEHp+afM1r1ujJpJsV/gSM4t59tpDyPi1sd6ZaPFfsA==
-  dependencies:
-    call-bind "^1.0.2"
-    get-intrinsic "^1.1.3"
-    is-regex "^1.1.4"
-
-safe-stable-stringify@*, safe-stable-stringify@^2.2.0:
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
   version "2.4.0"
   resolved "https://registry.npmjs.org/safe-stable-stringify/-/safe-stable-stringify-2.4.0.tgz#95fadb1bcf8057a1363e11052122f5da36a69215"
   integrity sha512-eehKHKpab6E741ud7ZIMcXhKcP6TSIezPkNZhy5U8xC6+VvrRdUA2tMgxGxaGl4cz7c2Ew5+mg5+wNB16KQqrA==

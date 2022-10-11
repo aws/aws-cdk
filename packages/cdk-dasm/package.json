@@ -29,11 +29,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-<<<<<<< HEAD
     "codemaker": "^1.67.0",
-=======
-    "codemaker": "^1.69.0",
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
     "yaml": "1.10.2"
   },
   "devDependencies": {

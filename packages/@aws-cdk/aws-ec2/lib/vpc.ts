@@ -2189,11 +2189,7 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
 
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
 
-<<<<<<< HEAD
-  if (count === 0 && hasPrivateSubnets) {
-=======
   if (count === 0 && hasPrivateSubnets && !hasCustomEgress) {
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
     // eslint-disable-next-line max-len
     throw new Error('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE(_WITH_NAT) subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
   }

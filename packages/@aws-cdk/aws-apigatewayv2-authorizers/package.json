@@ -85,12 +85,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-<<<<<<< HEAD
     "@types/aws-lambda": "^8.10.104",
-=======
-    "@types/aws-lambda": "^8.10.106",
-    "@aws-cdk/integ-tests": "0.0.0",
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
     "@types/jest": "^27.5.2"
   },
   "dependencies": {

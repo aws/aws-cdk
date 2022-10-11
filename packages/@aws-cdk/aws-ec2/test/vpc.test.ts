@@ -31,9 +31,6 @@ import {
 describe('vpc', () => {
   describe('When creating a VPC', () => {
 
-<<<<<<< HEAD
-    test('SubnetType.PRIVATE is equivalent to SubnetType.PRIVATE_WITH_NAT', () => {
-=======
     testDeprecated('SubnetType.PRIVATE_WITH_NAT is equivalent to SubnetType.PRIVATE_WITH_EGRESS', () => {
 
       const stack1 = getTestStack();
@@ -72,7 +69,6 @@ describe('vpc', () => {
     });
 
     testDeprecated('SubnetType.PRIVATE is equivalent to SubnetType.PRIVATE_WITH_NAT', () => {
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
 
       const stack1 = getTestStack();
       const stack2 = getTestStack();
@@ -746,11 +742,7 @@ describe('vpc', () => {
 
     });
 
-<<<<<<< HEAD
-    test('natGateways = 0 throws if no PRIVATE subnets configured', () => {
-=======
     testDeprecated('natGateways = 0 throws if PRIVATE_WITH_NAT subnets configured', () => {
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
       const stack = getTestStack();
       expect(() => {
         new Vpc(stack, 'VPC', {

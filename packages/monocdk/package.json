@@ -364,13 +364,8 @@
     "@aws-cdk/ubergen": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-<<<<<<< HEAD
     "@types/node": "^10.17.60",
     "constructs": "^3.3.69",
-=======
-    "@types/node": "^14.18.31",
-    "constructs": "^10.0.0",
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"

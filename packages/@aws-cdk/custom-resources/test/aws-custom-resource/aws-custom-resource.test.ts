@@ -742,9 +742,6 @@ test('assumedRoleArn adds statement for sts:assumeRole', () => {
       Version: '2012-10-17',
     },
   });
-<<<<<<< HEAD
-});
-=======
 });
 
 test('fails when at least one of policy or role is not specified', () => {
@@ -913,4 +910,3 @@ test('vpcSubnets without vpc results in an error', () => {
     vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
   })).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');
 });
->>>>>>> f169d7f73d (chore: version updates, including breaking changes in jsii (#22382))
