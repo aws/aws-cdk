@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Set bash to exit the script immediately on any error (e) and if any unset (u) variable is referenced.
+set -eu
+
 # Get the version to use from the package.json devDependencies
 lineWithPackageVersion=$(grep '@aws-cdk/asset-awscli-v1' ./package.json)
 version=$(echo $lineWithPackageVersion | cut -d '"' -f 4)
