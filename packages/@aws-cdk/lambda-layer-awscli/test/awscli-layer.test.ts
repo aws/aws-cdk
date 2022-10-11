@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { AwsCliLayer } from '../lib';
 
@@ -19,6 +19,8 @@ describe('create a layer version', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
       Description: '/opt/awscli/aws',
     });
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('.*'));
+    Annotations.fromStack(stack).hasInfo('*', Match.stringLikeRegexp('Successfully loaded @aws-cdk/asset-awscli-v1 from pre-installed packages.'));
   });
 
   test('downloading and installing package', () => {
@@ -35,6 +37,8 @@ describe('create a layer version', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
       Description: '/opt/awscli/aws',
     });
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('.*'));
+    Annotations.fromStack(stack).hasInfo('*', Match.stringLikeRegexp('Installing from: .*/.cdk/npm-cache/'));
   });
 
   test('using the fallback', () => {
@@ -46,11 +50,14 @@ describe('create a layer version', () => {
     const stack = new Stack();
 
     // WHEN
-    new AwsCliLayer(stack, 'MyLayer');
+    const layer = new AwsCliLayer(stack, 'MyLayer');
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
       Description: '/opt/awscli/aws',
     });
+    Annotations.fromStack(stack).hasInfo('*', Match.stringLikeRegexp('Unable to load @aws-cdk/asset-awscli-v1. Falling back to use layer.zip bundled with aws-cdk-lib'));
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('WARNING! ACTION REQUIRED!'));
+    expect(layer.node.tryFindChild('cli-notice')).toBeDefined();
   });
 });

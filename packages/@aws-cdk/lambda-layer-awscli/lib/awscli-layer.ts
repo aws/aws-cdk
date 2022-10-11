@@ -3,7 +3,8 @@ import * as childproc from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { FileSystem } from '@aws-cdk/core';
+import { Annotations, FileSystem } from '@aws-cdk/core';
+import { debugModeEnabled } from '@aws-cdk/core/lib/debug';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
@@ -65,15 +66,15 @@ export class AwsCliLayer extends lambda.LayerVersion {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const result = require(id);
-      logs.push(`require('${id}') succeeded.`);
+      if (result) {
+        logs.push(`require('${id}') succeeded.`);
+      }
       return result;
-    } catch (err) {
+    } catch (e) {
       logs.push(`require('${id}') failed.`);
-      if (err instanceof Error) {
-        logs.push(err.name);
-        logs.push(err.message);
-      } else {
-        // something here!
+      const eAsError = e as Error;
+      if (eAsError?.stack) {
+        logs.push(eAsError.stack);
       }
     }
   }
@@ -102,9 +103,7 @@ export class AwsCliLayer extends lambda.LayerVersion {
 
     const targetVersion = AwsCliLayer.requireWrapper(path.join(__dirname, '../package.json'), logs).devDependencies[AwsCliLayer.assetPackageName];
 
-    let assetPackage;
-
-    assetPackage = AwsCliLayer._tryLoadPackage(targetVersion, logs);
+    let assetPackage = AwsCliLayer._tryLoadPackage(targetVersion, logs);
 
     if (!assetPackage) {
       const downloadPath = AwsCliLayer._downloadPackage(targetVersion, logs);
@@ -115,6 +114,7 @@ export class AwsCliLayer extends lambda.LayerVersion {
 
     let code;
     if (assetPackage) {
+      // ask for feedback here
       const asset = new assetPackage.AwsCliAsset(scope, `${id}-asset`);
       code = lambda.Code.fromBucket(asset.bucket, asset.s3ObjectKey);
     }
@@ -133,10 +133,18 @@ export class AwsCliLayer extends lambda.LayerVersion {
       description: '/opt/awscli/aws',
     });
 
-    console.log(logs.join('\n'));
+    if (debugModeEnabled()) {
+      Annotations.of(this).addInfo(logs.join('\n'));
+    }
 
     if (fallback) {
-      console.error('we used the fallback when creating this construct, so a marker construct should be added to the tree for CLI notices');
+      Annotations.of(this).addWarning(`WARNING! ACTION REQUIRED! Your CDK application is using ${this.constructor.name} and this construct may experience a breaking change in a future release. See [] or [] for details and resolution instructions.`);
+      new Notice(this, 'cli-notice');
     }
   }
 }
+
+/**
+ * An empty construct that can be added to the tree as a marker for the CLI Notices
+ */
+class Notice extends Construct {}
