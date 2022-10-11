@@ -1681,6 +1681,19 @@ export class Cluster extends ClusterBase {
   }
 
   /**
+   * Add OpenIdConnect Provider
+   *
+   * @param id The ID of the nodegroup
+   * @param options options for creating a new nodegroup
+   */
+  public addOpenIdConnectProvider(openIdConnectProvider: iam.IOpenIdConnectProvider): void {
+    if (this._openIdConnectProvider) {
+      throw new Error('This cluster already has an openIdConnect Provider');
+    }
+
+    this._openIdConnectProvider = openIdConnectProvider;
+  }
+  /**
    * Lazily creates the AwsAuth resource, which manages AWS authentication mapping.
    */
   public get awsAuth() {
