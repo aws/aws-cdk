@@ -1,0 +1,1742 @@
+{
+ "Resources": {
+  "VPCB9E5F0B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1SubnetB4246D30": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1RouteTableFEE4B781": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    }
+   }
+  },
+  "VPCPublicSubnet1DefaultRoute91CEF279": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCPublicSubnet1EIP6AD938E8": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1NATGatewayE0556630": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet1EIP6AD938E8",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
+  },
+  "VPCPublicSubnet2Subnet74179F39": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2RouteTable6F1A15F1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2RouteTableAssociation5A808732": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    }
+   }
+  },
+  "VPCPublicSubnet2DefaultRouteB7481BBA": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCPrivateSubnet1Subnet8BCA10E0": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet1RouteTableBE8A6027": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet1RouteTableAssociation347902D1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+    }
+   }
+  },
+  "VPCPrivateSubnet1DefaultRouteAE1D6490": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    }
+   }
+  },
+  "VPCPrivateSubnet2SubnetCFCDAA7A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet2RouteTable0A19E10E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    }
+   }
+  },
+  "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    }
+   }
+  },
+  "VPCIGWB7E252D3": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-integ2/VPC"
+     }
+    ]
+   }
+  },
+  "VPCVPCGW99B986DC": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "InternetGatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   }
+  },
+  "SubnetGroup": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "My Subnet Group",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     },
+     {
+      "Ref": "VPCPublicSubnet2Subnet74179F39"
+     }
+    ],
+    "DBSubnetGroupName": "mynotlowercasesubnetgroupname2"
+   }
+  },
+  "auroraserverlessv1mysqlclusterSecurityGroup411C2655": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "auroraserverlessv1mysqlclusterSecret1E3E54EF": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "auroraserverlessv1mysqlclusterSecretAttachment51EBDBF2": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "auroraserverlessv1mysqlclusterSecret1E3E54EF"
+    },
+    "TargetId": {
+     "Ref": "auroraserverlessv1mysqlcluster90A622B9"
+    },
+    "TargetType": "AWS::RDS::DBCluster"
+   }
+  },
+  "auroraserverlessv1mysqlcluster90A622B9": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "Engine": "aurora-mysql",
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-mysql5.7",
+    "DBSubnetGroupName": {
+     "Ref": "SubnetGroup"
+    },
+    "EngineMode": "serverless",
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "auroraserverlessv1mysqlclusterSecret1E3E54EF"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "auroraserverlessv1mysqlclusterSecret1E3E54EF"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "ScalingConfiguration": {
+     "AutoPause": true,
+     "MaxCapacity": 32,
+     "MinCapacity": 8,
+     "SecondsUntilAutoPause": 600
+    },
+    "StorageEncrypted": true,
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "auroraserverlessv1mysqlclusterSecurityGroup411C2655",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster2Subnets3C501EF6": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for cluster2 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "cluster2SecurityGroupF0C29782": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "cluster2Secret23DB9E17": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster2SecretAttachmentA5F8FF00": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "cluster2Secret23DB9E17"
+    },
+    "TargetId": {
+     "Ref": "cluster22F320B54"
+    },
+    "TargetType": "AWS::RDS::DBCluster"
+   }
+  },
+  "cluster22F320B54": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "Engine": "aurora-mysql",
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBSubnetGroupName": {
+     "Ref": "cluster2Subnets3C501EF6"
+    },
+    "EngineVersion": "8.0.mysql_aurora.3.02.1",
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "cluster2Secret23DB9E17"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "cluster2Secret23DB9E17"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "ServerlessV2ScalingConfiguration": {
+     "MaxCapacity": 1,
+     "MinCapacity": 0.5
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "cluster2SecurityGroupF0C29782",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster2cluster2instance1SubnetGroupAFC8727F": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for cluster2instance1 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "cluster2cluster2instance1SecurityGroup256A0378": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for cluster2instance1 database",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "cluster2cluster2instance1Secret1963A5E7": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster2cluster2instance1SecretAttachment633FAF83": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "cluster2cluster2instance1Secret1963A5E7"
+    },
+    "TargetId": {
+     "Ref": "cluster2cluster2instance1E0ACA55B"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   }
+  },
+  "cluster2cluster2instance1E0ACA55B": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterIdentifier": {
+     "Ref": "cluster22F320B54"
+    },
+    "DBInstanceClass": "db.serverless",
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.02.1"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot"
+  },
+  "cluster2cluster2instance2SubnetGroup9B8421BE": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for cluster2instance2 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "cluster2cluster2instance2SecurityGroup024682FE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for cluster2instance2 database",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "cluster2cluster2instance2Secret51987039": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster2cluster2instance2SecretAttachmentE2AC6D0C": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "cluster2cluster2instance2Secret51987039"
+    },
+    "TargetId": {
+     "Ref": "cluster2cluster2instance2503A0696"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   }
+  },
+  "cluster2cluster2instance2503A0696": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterIdentifier": {
+     "Ref": "cluster22F320B54"
+    },
+    "DBInstanceClass": "db.serverless",
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.02.1"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot"
+  },
+  "cluster2cluster2instance3SubnetGroup3B951D23": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for cluster2instance3 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "cluster2cluster2instance3SecurityGroup8B69E72B": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for cluster2instance3 database",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "cluster2cluster2instance3SecretAD7B470E": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster2cluster2instance3SecretAttachment7414D897": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "cluster2cluster2instance3SecretAD7B470E"
+    },
+    "TargetId": {
+     "Ref": "cluster2cluster2instance3E08FD2AF"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   }
+  },
+  "cluster2cluster2instance3E08FD2AF": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterIdentifier": {
+     "Ref": "cluster22F320B54"
+    },
+    "DBInstanceClass": "db.r5.large",
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.02.1"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot"
+  },
+  "cluster3SubnetsE67D242C": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for cluster3 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "cluster3SecurityGroup04C70637": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "cluster3SecretE6A986B0": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"postgres\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster3SecretAttachment0321AD13": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "cluster3SecretE6A986B0"
+    },
+    "TargetId": {
+     "Ref": "cluster3EA240493"
+    },
+    "TargetType": "AWS::RDS::DBCluster"
+   }
+  },
+  "cluster3EA240493": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "Engine": "aurora-postgresql",
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-postgresql14",
+    "DBSubnetGroupName": {
+     "Ref": "cluster3SubnetsE67D242C"
+    },
+    "EngineVersion": "14.4",
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "cluster3SecretE6A986B0"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "cluster3SecretE6A986B0"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "Port": 5432,
+    "ServerlessV2ScalingConfiguration": {
+     "MaxCapacity": 1,
+     "MinCapacity": 0.5
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "cluster3SecurityGroup04C70637",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster3cluster3instance1SubnetGroupA79C5A87": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for cluster3instance1 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "cluster3cluster3instance1SecurityGroupBDF97E4B": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for cluster3instance1 database",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "cluster3cluster3instance1Secret0C43A2E8": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster3cluster3instance1SecretAttachment24203602": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "cluster3cluster3instance1Secret0C43A2E8"
+    },
+    "TargetId": {
+     "Ref": "cluster3cluster3instance1DC52ABB1"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   }
+  },
+  "cluster3cluster3instance1DC52ABB1": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterIdentifier": {
+     "Ref": "cluster3EA240493"
+    },
+    "DBInstanceClass": "db.serverless",
+    "Engine": "aurora-postgresql",
+    "EngineVersion": "14.4"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot"
+  },
+  "cluster3cluster3instance2SubnetGroup8BEB5E68": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for cluster3instance2 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "cluster3cluster3instance2SecurityGroupA74D24F5": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for cluster3instance2 database",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "cluster3cluster3instance2Secret336319C9": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster3cluster3instance2SecretAttachment7DBB210D": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "cluster3cluster3instance2Secret336319C9"
+    },
+    "TargetId": {
+     "Ref": "cluster3cluster3instance22F624E1E"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   }
+  },
+  "cluster3cluster3instance22F624E1E": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterIdentifier": {
+     "Ref": "cluster3EA240493"
+    },
+    "DBInstanceClass": "db.serverless",
+    "Engine": "aurora-postgresql",
+    "EngineVersion": "14.4"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot"
+  },
+  "cluster3cluster3instance3SubnetGroup906216DA": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for cluster3instance3 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "cluster3cluster3instance3SecurityGroup0E9B5C45": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for cluster3instance3 database",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "cluster3cluster3instance3SecretB4B19768": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster3cluster3instance3SecretAttachmentA8989CED": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "cluster3cluster3instance3SecretB4B19768"
+    },
+    "TargetId": {
+     "Ref": "cluster3cluster3instance3904EF45F"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   }
+  },
+  "cluster3cluster3instance3904EF45F": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterIdentifier": {
+     "Ref": "cluster3EA240493"
+    },
+    "DBInstanceClass": "db.r5.large",
+    "Engine": "aurora-postgresql",
+    "EngineVersion": "14.4"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot"
+  },
+  "Cluster4Subnets5AF39C96": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for Cluster4 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "Cluster4SecurityGroupABBFAE17": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "Cluster4Secret306365DB": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Cluster4SecretAttachment5C009D0E": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "Cluster4Secret306365DB"
+    },
+    "TargetId": {
+     "Ref": "Cluster4567CABC4"
+    },
+    "TargetType": "AWS::RDS::DBCluster"
+   }
+  },
+  "Cluster4567CABC4": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "Engine": "aurora-mysql",
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBSubnetGroupName": {
+     "Ref": "Cluster4Subnets5AF39C96"
+    },
+    "EngineVersion": "8.0.mysql_aurora.3.02.1",
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "Cluster4Secret306365DB"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "Cluster4Secret306365DB"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "ServerlessV2ScalingConfiguration": {
+     "MaxCapacity": 4,
+     "MinCapacity": 2
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "Cluster4SecurityGroupABBFAE17",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot"
+  },
+  "Cluster4Instance1DA9F0A14": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "Cluster4567CABC4"
+    },
+    "DBInstanceClass": "db.r5.large",
+    "DBSubnetGroupName": {
+     "Ref": "Cluster4Subnets5AF39C96"
+    },
+    "Engine": "aurora-mysql",
+    "PubliclyAccessible": false
+   },
+   "DependsOn": [
+    "VPCPrivateSubnet1DefaultRouteAE1D6490",
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Cluster4Instance242A71E63": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "Cluster4567CABC4"
+    },
+    "DBInstanceClass": "db.r5.large",
+    "DBSubnetGroupName": {
+     "Ref": "Cluster4Subnets5AF39C96"
+    },
+    "Engine": "aurora-mysql",
+    "PubliclyAccessible": false
+   },
+   "DependsOn": [
+    "VPCPrivateSubnet1DefaultRouteAE1D6490",
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster4instance3SubnetGroupBEAEB646": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for cluster4instance3 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "cluster4instance3SecurityGroupF6E483D9": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for cluster4instance3 database",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "cluster4instance3Secret667FDE59": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cluster4instance3SecretAttachment97E7013B": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "cluster4instance3Secret667FDE59"
+    },
+    "TargetId": {
+     "Ref": "cluster4instance347C95923"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   }
+  },
+  "cluster4instance347C95923": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterIdentifier": {
+     "Ref": "Cluster4567CABC4"
+    },
+    "DBInstanceClass": "db.serverless",
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.02.1"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot"
+  },
+  "Cluster5SubnetsCFBC7E1C": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for Cluster5 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "Cluster5SecurityGroup5ED30BCE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "Cluster5Secret9937ABC0": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Cluster5SecretAttachmentE81570F5": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "Cluster5Secret9937ABC0"
+    },
+    "TargetId": {
+     "Ref": "Cluster521C05A95"
+    },
+    "TargetType": "AWS::RDS::DBCluster"
+   }
+  },
+  "Cluster521C05A95": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "Engine": "aurora-mysql",
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBSubnetGroupName": {
+     "Ref": "Cluster5SubnetsCFBC7E1C"
+    },
+    "EngineVersion": "8.0.mysql_aurora.3.02.1",
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "Cluster5Secret9937ABC0"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "Cluster5Secret9937ABC0"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "ServerlessV2ScalingConfiguration": {
+     "MaxCapacity": 4,
+     "MinCapacity": 2
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "Cluster5SecurityGroup5ED30BCE",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot"
+  },
+  "Cluster5cluster5instance1SubnetGroup687CBF60": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for cluster5instance1 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "Cluster5cluster5instance1SecurityGroup0B6E6162": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for cluster5instance1 database",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "Cluster5cluster5instance1Secret4F1E17CF": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Cluster5cluster5instance1SecretAttachmentADCD902F": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "Cluster5cluster5instance1Secret4F1E17CF"
+    },
+    "TargetId": {
+     "Ref": "Cluster5cluster5instance1A9C963D5"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   }
+  },
+  "Cluster5cluster5instance1A9C963D5": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterIdentifier": {
+     "Ref": "Cluster521C05A95"
+    },
+    "DBInstanceClass": "db.serverless",
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.02.1"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot"
+  },
+  "Cluster5cluster5instance2SubnetGroup2C8747F6": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for cluster5instance2 database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   }
+  },
+  "Cluster5cluster5instance2SecurityGroup82C6A6A1": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for cluster5instance2 database",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "Cluster5cluster5instance2Secret9299A805": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Cluster5cluster5instance2SecretAttachmentA8ABC19C": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "Cluster5cluster5instance2Secret9299A805"
+    },
+    "TargetId": {
+     "Ref": "Cluster5cluster5instance240C271B4"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   }
+  },
+  "Cluster5cluster5instance240C271B4": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterIdentifier": {
+     "Ref": "Cluster521C05A95"
+    },
+    "DBInstanceClass": "db.serverless",
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.02.1"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "ServerlessV2Test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-integ"
+      ],
+      "assertionStack": "ServerlessV2Test/DefaultTest/DeployAssert",
+      "assertionStackName": "ServerlessV2TestDefaultTestDeployAssertB4A54F98"
+    }
+  }
+}
