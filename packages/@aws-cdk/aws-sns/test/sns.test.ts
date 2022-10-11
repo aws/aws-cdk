@@ -76,15 +76,17 @@ describe('Topic', () => {
 
     });
 
-    // NOTE: This test case should be invalid when CloudFormation problem reported in CDK issue 12386 is resolved
-    // see https://github.com/aws/aws-cdk/issues/12386
-    test('throw with missing topicName on fifo topic', () => {
+    test('Adds .fifo suffix when no topicName is passed', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new sns.Topic(stack, 'MyTopic', {
+      new sns.Topic(stack, 'MyTopic', {
         fifo: true,
-      })).toThrow(/FIFO SNS topics must be given a topic name./);
+      });
 
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        'FifoTopic': true,
+        'TopicName': 'MyTopic.fifo',
+      });
 
     });
 
