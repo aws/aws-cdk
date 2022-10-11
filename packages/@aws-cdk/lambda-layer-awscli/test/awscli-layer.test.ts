@@ -1,11 +1,17 @@
+import { env } from 'process';
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { AwsCliLayer } from '../lib';
 
 describe('create a layer version', () => {
 
+  beforeEach(() => {
+    env.CDK_DEBUG = 'true';
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
+    env.CDK_DEBUG = 'false';
   });
 
   test('using already installed package', () => {

@@ -35,10 +35,10 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@aws-cdk/asset-awscli-v1@0.0.13":
-  version "0.0.13"
-  resolved "https://registry.npmjs.org/@aws-cdk/asset-awscli-v1/-/asset-awscli-v1-0.0.13.tgz#8964f075ad3647a6fde657ea29f020b6ec903841"
-  integrity sha512-dZ856tGTmh9zR0fomydNwDnW2JDlCdnNzY5AwAoOB8ZgifXTYQxMzQ6dVoVEN6VPOB+UDW/eULeF3a7ER7xRvA==
+"@aws-cdk/asset-awscli-v1@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/asset-awscli-v1/-/asset-awscli-v1-2.0.0.tgz#5909552c03bb58842f230e279385c535924810a2"
+  integrity sha512-EBRA8fuP7I6/Dy9jh/6gHRm3OZLeomrXLL3OfK8x3uBrT7swCTExiwYiIGz+khwHuwKsFCSwi+pCu4YlBgiJrA==
 
 "@babel/code-frame@7.12.11":
   version "7.12.11"
