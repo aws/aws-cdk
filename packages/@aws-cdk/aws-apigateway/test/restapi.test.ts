@@ -977,7 +977,7 @@ describe('restapi', () => {
       });
     });
 
-    test('addApiKey is supported', () => {
+    testDeprecated('addApiKey is supported', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.SpecRestApi(stack, 'myapi', {

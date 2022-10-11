@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.108"
         }
       },
       "test-apigateway-restapi": {
@@ -180,8 +180,8 @@
                 "id": "Endpoint",
                 "path": "test-apigateway-restapi/my-api/Endpoint",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "Default": {
@@ -1066,11 +1066,101 @@
               "fqn": "@aws-cdk/aws-lambda.Function",
               "version": "0.0.0"
             }
+          },
+          "TestDeployment": {
+            "id": "TestDeployment",
+            "path": "test-apigateway-restapi/TestDeployment",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-apigateway-restapi/TestDeployment/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                  "aws:cdk:cloudformation:props": {
+                    "restApiId": {
+                      "Ref": "myapi4C7BF186"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.Deployment",
+              "version": "0.0.0"
+            }
+          },
+          "TestStage": {
+            "id": "TestStage",
+            "path": "test-apigateway-restapi/TestStage",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-apigateway-restapi/TestStage/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                  "aws:cdk:cloudformation:props": {
+                    "restApiId": {
+                      "Ref": "myapi4C7BF186"
+                    },
+                    "deploymentId": {
+                      "Ref": "TestDeploymentD77B56866f3141cef1e8fea8ab3b3b8bc90df36d"
+                    },
+                    "stageName": "prod"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                  "version": "0.0.0"
+                }
+              },
+              "MyTestApiKey": {
+                "id": "MyTestApiKey",
+                "path": "test-apigateway-restapi/TestStage/MyTestApiKey",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-apigateway-restapi/TestStage/MyTestApiKey/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::ApiKey",
+                      "aws:cdk:cloudformation:props": {
+                        "enabled": true,
+                        "stageKeys": [
+                          {
+                            "restApiId": {
+                              "Ref": "myapi4C7BF186"
+                            },
+                            "stageName": {
+                              "Ref": "TestStage3097EB68"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnApiKey",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.ApiKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.Stage",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       },
       "apigateway-restapi": {
@@ -1086,15 +1176,15 @@
                 "path": "apigateway-restapi/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.108"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "apigateway-restapi/DefaultTest/DeployAssert",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -1111,8 +1201,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

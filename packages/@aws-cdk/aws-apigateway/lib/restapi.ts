@@ -403,11 +403,11 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   /**
-   * Add an ApiKey
+   * Add an ApiKey to the deploymentStage
    */
   public addApiKey(id: string, options?: ApiKeyOptions): IApiKey {
     return new ApiKey(this, id, {
-      resources: [this],
+      stages: [this.deploymentStage],
       ...options,
     });
   }
