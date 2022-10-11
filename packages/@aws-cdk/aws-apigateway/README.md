@@ -1023,6 +1023,45 @@ new route53.ARecord(this, 'CustomDomainAliasRecord', {
 });
 ```
 
+### Custom Domains with multi-level api mapping
+
+Additional requirements for creating multi-level path mappings for RestApis:
+
+(both are defaults)
+
+- Must use `SecurityPolicy.TLS_1_2`
+- DomainNames must be `EndpointType.REGIONAL`
+
+```ts
+declare const acmCertificateForExampleCom: any;
+declare const restApi: apigateway.RestApi;
+
+new apigateway.DomainName(this, 'custom-domain', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  mapping: restApi,
+  basePath: 'orders/v1/api',
+});
+```
+
+To then add additional mappings to a domain you can use the `addApiMapping` method.
+
+```ts
+declare const acmCertificateForExampleCom: any;
+declare const restApi: apigateway.RestApi;
+declare const secondRestApi: apigateway.RestApi;
+
+const domain = new apigateway.DomainName(this, 'custom-domain', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  mapping: restApi,
+});
+
+domain.addApiMapping(secondRestApi.deploymentStage, {
+  basePath: 'orders/v2/api',
+});
+```
+
 ## Access Logging
 
 Access logging creates logs every time an API method is accessed. Access logs can have information on
