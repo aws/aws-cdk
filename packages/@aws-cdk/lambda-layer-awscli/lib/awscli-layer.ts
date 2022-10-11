@@ -8,120 +8,108 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
 /**
- * Options for AwsCliLayer
- */
-export interface AwsCliLayerProps {
-  /**
-   * Filter out logging statements.
-   *
-   * @default true
-   */
-  readonly quiet?: boolean;
-}
-
-/**
  * An AWS Lambda layer that includes the AWS CLI.
  */
 export class AwsCliLayer extends lambda.LayerVersion {
   /**
    * @internal
    */
-  public static _tryLoadPackage(targetVersion: string, log: (s: any) => void): any {
+  public static _tryLoadPackage(targetVersion: string, logs: string[]): any {
     let availableVersion;
+    let assetPackagePath;
     try {
-      const assetPackagePath = require.resolve(`${AwsCliLayer.assetPackageName}`);
-      availableVersion = AwsCliLayer.requireWrapper(path.join(assetPackagePath, '../../package.json'), log).version;
+      assetPackagePath = require.resolve(`${AwsCliLayer.assetPackageName}`);
     } catch (err) {
-      log('require.resolve error');
+      logs.push(`require.resolve('${AwsCliLayer.assetPackageName}') failed`);
+      return;
     }
+    availableVersion = AwsCliLayer.requireWrapper(path.join(assetPackagePath, '../../package.json'), logs).version;
 
     if (targetVersion === availableVersion) {
-      return AwsCliLayer.requireWrapper(AwsCliLayer.assetPackageName, log);
+      logs.push(`${AwsCliLayer.assetPackageName} already installed with correct version: ${availableVersion}.`);
+      const result = AwsCliLayer.requireWrapper(AwsCliLayer.assetPackageName, logs);
+      if (result) {
+        logs.push(`Successfully loaded ${AwsCliLayer.assetPackageName} from pre-installed packages.`);
+        return result;
+      }
     }
   }
 
   /**
    * @internal
    */
-  public static _downloadPackage(targetVersion: string, log: (s: string) => void): string | undefined {
+  public static _downloadPackage(targetVersion: string, logs: string[]): string | undefined {
     const cdkHomeDir = cxapi.cdkHomeDir();
     const downloadDir = path.join(cdkHomeDir, 'npm-cache');
     const downloadPath = path.join(downloadDir, `${AwsCliLayer.assetPackageNpmTarPrefix}${targetVersion}.tgz`);
-    log(downloadPath);
 
     if (fs.existsSync(downloadPath)) {
+      logs.push(`Using package archive already available at location: ${downloadPath}`);
       return downloadPath;
     }
+    logs.push(`Downloading package using npm pack to: ${downloadDir}`);
     childproc.execSync(`mkdir -p ${downloadDir}; cd ${downloadDir}; npm pack ${AwsCliLayer.assetPackageName}@${targetVersion} -q`);
     if (fs.existsSync(downloadPath)) {
+      logs.push('Successfully downloaded using npm pack.');
       return downloadPath;
     }
 
+    logs.push('Failed to download using npm pack.');
     return undefined;
   }
 
   private static readonly assetPackageName: string = '@aws-cdk/asset-awscli-v1';
   private static readonly assetPackageNpmTarPrefix: string = 'aws-cdk-asset-awscli-v1-';
 
-  private static requireWrapper(id: string, log: (s: any) => void): any {
+  private static requireWrapper(id: string, logs: string[]): any {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      return require(id);
+      const result = require(id);
+      logs.push(`require('${id}') succeeded.`);
+      return result;
     } catch (err) {
-      log(`require('${id}') failed`);
-      log(err);
+      logs.push(`require('${id}') failed.`);
       if (err instanceof Error) {
-        console.error(err.name, err.message.split('\n')[0]);
+        logs.push(err.name);
+        logs.push(err.message);
+      } else {
+        // something here!
       }
     }
   }
 
-  private static installAndLoadPackage(from: string, log: (s: any) => void): any {
-    const installDir = AwsCliLayer.findInstallDir(log);
+  private static installAndLoadPackage(from: string, logs: string[]): any {
+    const installDir = AwsCliLayer.findInstallDir();
     if (!installDir) {
+      logs.push('Unable to find an install directory. require.main.paths[0] is undefined.');
       return;
     }
-    log(`install dir: ${installDir}`);
+    logs.push(`Installing from: ${from} to: ${installDir}`);
     childproc.execSync(`npm install ${from} --no-save --prefix ${installDir} -q`);
-    return AwsCliLayer.requireWrapper(path.join(installDir, 'node_modules', AwsCliLayer.assetPackageName, 'lib/index.js'), log);
+    return AwsCliLayer.requireWrapper(path.join(installDir, 'node_modules', AwsCliLayer.assetPackageName, 'lib/index.js'), logs);
   }
 
-  private static findInstallDir(log: (s: any) => void): string | undefined {
+  private static findInstallDir(): string | undefined {
     if (!require.main?.paths) {
       return undefined;
     }
-    for (let p of require.main.paths) {
-      log(`p: ${p}`);
-      if (fs.existsSync(p)) {
-        return p;
-      }
-    }
-    return undefined;
+    return require.main.paths[0];
   }
 
-  constructor(scope: Construct, id: string, props?: AwsCliLayerProps) {
-    const quiet = props?.quiet ?? true;
-    const log = (s: any) => {
-      if (!quiet) {
-        console.log(s);
-      }
-    };
+  constructor(scope: Construct, id: string) {
+    const logs: string[] = [];
+    let fallback = false;
 
-    const targetVersion = AwsCliLayer.requireWrapper(path.join(__dirname, '../package.json'), log).devDependencies[AwsCliLayer.assetPackageName];
+    const targetVersion = AwsCliLayer.requireWrapper(path.join(__dirname, '../package.json'), logs).devDependencies[AwsCliLayer.assetPackageName];
 
     let assetPackage;
 
-    let downloadStyle = 'require';
-    log('trying regular require');
-    assetPackage = AwsCliLayer._tryLoadPackage(targetVersion, log);
+    assetPackage = AwsCliLayer._tryLoadPackage(targetVersion, logs);
 
     if (!assetPackage) {
-      downloadStyle = 'dynamic';
-      log('trying to download package');
-      const downloadPath = AwsCliLayer._downloadPackage(targetVersion, log);
+      const downloadPath = AwsCliLayer._downloadPackage(targetVersion, logs);
       if (downloadPath) {
-        log('trying to load from install location');
-        assetPackage = AwsCliLayer.installAndLoadPackage(downloadPath, log);
+        assetPackage = AwsCliLayer.installAndLoadPackage(downloadPath, logs);
       }
     }
 
@@ -129,9 +117,11 @@ export class AwsCliLayer extends lambda.LayerVersion {
     if (assetPackage) {
       const asset = new assetPackage.AwsCliAsset(scope, `${id}-asset`);
       code = lambda.Code.fromBucket(asset.bucket, asset.s3ObjectKey);
-    } else {
-      downloadStyle = 'fallback';
-      log('using fallback to original version');
+    }
+
+    if (!code) {
+      fallback = true;
+      logs.push(`Unable to load ${AwsCliLayer.assetPackageName}. Falling back to use layer.zip bundled with aws-cdk-lib`);
       code = lambda.Code.fromAsset(path.join(__dirname, 'layer.zip'), {
         // we hash the layer directory (it contains the tools versions and Dockerfile) because hashing the zip is non-deterministic
         assetHash: FileSystem.fingerprint(path.join(__dirname, '../layer')),
@@ -143,8 +133,10 @@ export class AwsCliLayer extends lambda.LayerVersion {
       description: '/opt/awscli/aws',
     });
 
-    if (downloadStyle === 'fallback') {
-      log('we used the fallback when creating this construct, so a marker construct should be added to the tree for CLI notices');
+    console.log(logs.join('\n'));
+
+    if (fallback) {
+      console.error('we used the fallback when creating this construct, so a marker construct should be added to the tree for CLI notices');
     }
   }
 }
