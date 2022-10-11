@@ -446,6 +446,9 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
     LaunchType: 'FARGATE',
     ServiceName: 'fargate-test-service',
     PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    DeploymentController: {
+      Type: 'ECS',
+    },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' });
