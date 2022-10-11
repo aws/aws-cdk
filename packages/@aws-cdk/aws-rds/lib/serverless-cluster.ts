@@ -49,12 +49,6 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
    */
   grantDataApiAccess(grantee: iam.IGrantable): iam.Grant
 }
-
-export enum ServerlessClusterVersion {
-  V_1,
-  V_2,
-};
-
 /**
  *  Common Properties to configure new Aurora Serverless Cluster or Aurora Serverless Cluster from snapshot
  */
@@ -63,8 +57,6 @@ interface ServerlessClusterNewProps {
    * What kind of database to start
    */
   readonly engine: IClusterEngine;
-
-  readonly engineVersion?: string;
 
   /**
    * An optional identifier for the cluster
@@ -128,13 +120,6 @@ interface ServerlessClusterNewProps {
    *   maximum capacity: 16 ACU
    */
   readonly scaling?: ServerlessScalingOptions;
-
-  /**
-   * Scaling configuration of an Aurora Serverless V2 database cluster.
-   *
-   * @default - TBC
-   */
-  readonly scalingV2?: ServerlessV2ScalingOptions;
 
   /**
    * The removal policy to apply when the cluster and its instances are removed
@@ -290,35 +275,6 @@ export interface ServerlessScalingOptions {
 }
 
 /**
- * Options for configuring scaling on an Aurora Serverless V2 cluster
- *
- */
-export interface ServerlessV2ScalingOptions {
-  /**
-   * The maximum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
-   * You can specify ACU values in half-step increments, such as 40, 40.5, 41, and so on. The largest value that you can use is 128.
-   * The maximum capacity must be higher than 0.5 ACUs.
-   *
-   * @default - determined by Aurora based on database engine
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-serverlessv2scalingconfiguration.html#cfn-rds-dbcluster-serverlessv2scalingconfiguration-maxcapacity
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
-   */
-  readonly maxCapacity?: number;
-
-  /**
-   * The minimum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
-   * You can specify ACU values in half-step increments, such as 8, 8.5, 9, and so on. The smallest value that you can use is 0.5.
-   *
-   * @default - determined by Aurora based on database engine
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-serverlessv2scalingconfiguration.html#cfn-rds-dbcluster-serverlessv2scalingconfiguration-mincapacity
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
-   */
-  readonly minCapacity?: number;
-}
-
-/**
  * New or imported Serverless Cluster
  */
 abstract class ServerlessClusterBase extends Resource implements IServerlessCluster {
@@ -403,7 +359,6 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
   protected enableDataApi?: boolean;
-  protected serverlessClusterVersion: ServerlessClusterVersion;
 
   constructor(scope: Construct, id: string, props: ServerlessClusterNewProps) {
     super(scope, id);
@@ -464,8 +419,6 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       ? props.clusterIdentifier?.toLowerCase()
       : props.clusterIdentifier;
 
-    this.serverlessClusterVersion = props.scalingV2 ? ServerlessClusterVersion.V_2 : ServerlessClusterVersion.V_1;
-
     this.newCfnProps = {
       backupRetentionPeriod: props.backupRetention?.toDays(),
       databaseName: props.defaultDatabaseName,
@@ -474,16 +427,13 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       dbSubnetGroupName: subnetGroup?.subnetGroupName,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       engine: props.engine.engineType,
-      engineVersion: props.engineVersion ?? props.engine.engineVersion?.fullVersion,
-      engineMode: this.serverlessClusterVersion === ServerlessClusterVersion.V_1 ? 'serverless' : undefined,
+      engineVersion: props.engine.engineVersion?.fullVersion,
+      engineMode: 'serverless',
       enableHttpEndpoint: Lazy.any({ produce: () => this.enableDataApi }),
-      scalingConfiguration: this.serverlessClusterVersion === ServerlessClusterVersion.V_1 && props.scaling ?
-        this.renderScalingConfiguration(props.scaling) : undefined,
+      scalingConfiguration: props.scaling ? this.renderScalingConfiguration(props.scaling) : undefined,
       storageEncrypted: true,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
-      serverlessV2ScalingConfiguration: this.serverlessClusterVersion === ServerlessClusterVersion.V_2 && props.scalingV2 ?
-        this.renderV2ScalingConfiguration(props.scalingV2) : undefined,
     };
 
     this.connections = new ec2.Connections({
@@ -510,34 +460,6 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       minCapacity: options.minCapacity,
       maxCapacity: options.maxCapacity,
       secondsUntilAutoPause: (secondsToAutoPause === 0) ? undefined : secondsToAutoPause,
-    };
-  }
-
-  private renderV2ScalingConfiguration(options: ServerlessV2ScalingOptions): CfnDBCluster.ServerlessV2ScalingConfigurationProperty {
-    const minCapacity = options.minCapacity;
-    const maxCapacity = options.maxCapacity;
-
-    // maxCapacity should be higher than 0.5 and we can't specify 0.5 for both minCapacity and maxCapacity so maxCapacity should be at least 1
-    // @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
-    if (minCapacity && minCapacity < 0.5 || maxCapacity && maxCapacity < 1) {
-      throw new Error('The smallest value that you can use for minCapacity and maxCapacity is 0.5 and 1.');
-    }
-
-    if (maxCapacity && maxCapacity > 128) {
-      throw new Error('The largest value that you can use for maxCapacity is 128.');
-    }
-
-    if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
-      throw new Error('Maximum capacity must be greater than or equal to minimum capacity.');
-    }
-
-    if (minCapacity && minCapacity % 0.5 !== 0 || maxCapacity && maxCapacity % 0.5 !== 0) {
-      throw Error('You can only specify ACU values in half-step increments, such as 40, 40.5, 41, and so on.');
-    }
-
-    return {
-      minCapacity: options.minCapacity,
-      maxCapacity: options.maxCapacity,
     };
   }
 }

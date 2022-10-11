@@ -681,44 +681,35 @@ new rds.ServerlessClusterFromSnapshot(this, 'Cluster', {
 Amazon Aurora Serverless v2 scales instantly to hundreds of thousands of transactions in a fraction of a second. 
 As it scales, it adjusts capacity in fine-grained increments to provide the right amount of database resources 
 that the application needs. There is no database capacity for you to manage. You pay only for the capacity your 
-application consumes, and you can save up to 90% of your database cost compared to the cost of provisioning capacity 
-for peak load.
-
-The following example initializes an Aurora Serverless v2 cluster with MySQL-compatibility. 
-The `scalingV2` property is required when you create an Aurora Serverless v2 cluster. At this moment, the Aurora Serverless v2
-only supports M
-
-In Aurora Serverless v2, you need to add one or more serverless instances into the cluster as the writer and reader instance. 
-Enable the `serverless` property of the `DatabaseInstance` construct when you add a serverless instance to your v2 cluster. 
+application consumes, and you can save up to 90% of your database cost compared to the cost of provisioning capacity for peak load.
 
 Read [Using Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html) and 
 [Getting started with Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.upgrade.html) to learn more about it.
 
+To create an Aurora cluster with Aurora Serverless v2 support, specify `serverlessV2Scaling` in the
+`DatabaseCluster` construct. The following example initializes an Aurora cluster with Serverless v2 support.
+
 ```ts
 declare const vpc: ec2.Vpc;
 
-// create an Aurora Serverless v2 cluster with MySQL compatibility
-const cluster = new rds.ServerlessCluster(this, 'aurora-serverlessv2-mysql-cluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_02_1,
-  }),
-  vpc,
-  scalingV2: {
-    maxCapacity: 4,
-    minCapacity: 2,
+const cluster = new rds.DatabaseCluster(stack, 'cluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
+  serverlessV2Scaling: {
+    maxCapacity: 1,
+    minCapacity: 0.5,
   },
-  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'PG', 'default.aurora-mysql8.0'),
+  // do not create any provisioned instance with the cluster
+  instances: 0,
+  instanceProps: {
+    vpc,
+    vpcSubnets: {
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+    },  
+  },
 });
-```
 
-Add the writer and reader instances to the cluster:
-
-```ts
-// adding a writer
-new rds.DatabaseInstance(this, 'instance1', {
-  vpc,
-  serverless: true,
-  clusterIdentifier: cluster.clusterIdentifier,
+// adding a serverless writer
+cluster.addServerlessInstance('instance1', {
   engine: rds.DatabaseInstanceEngine.auroraMySql({
     version: rds.MysqlEngineVersion.of(
       '8.0.mysql_aurora.3.02.1',
@@ -727,11 +718,8 @@ new rds.DatabaseInstance(this, 'instance1', {
   }),
 });
 
-// adding a reader
-new rds.DatabaseInstance(this, 'instance2', {
-  vpc,
-  serverless: true,
-  clusterIdentifier: cluster.clusterIdentifier,
+// adding a serverless reader
+cluster.addServerlessInstance('instance2', {
   engine: rds.DatabaseInstanceEngine.auroraMySql({
     version: rds.MysqlEngineVersion.of(
       '8.0.mysql_aurora.3.02.1',
@@ -740,50 +728,61 @@ new rds.DatabaseInstance(this, 'instance2', {
   }),
 });
 ```
-
-For Aurora Serverless v2 cluster with PostgreSQL compatible edition:
+To mix provisioned and serverless instances with Aurora Serverless v2 support in the cluster, use `addInstance` to add an
+provisioned instance into the cluster:
 
 ```ts
-declare const vpc: ec2.Vpc;
+// adding a provisioned reader
+cluster.addInstance('instance3', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  engine: rds.DatabaseInstanceEngine.auroraMySql({
+    version: rds.MysqlEngineVersion.of(
+      '8.0.mysql_aurora.3.02.1',
+      '8.0',
+    ),
+  }),
+});
 
-// create an Aurora Serverless v2 cluster with PostgreSQL compatibility
-const pgcluster = new rds.ServerlessCluster(this, 'aurora-serverlessv2-postgres-cluster', {
+```
+
+
+For Aurora Serverless v2 with PostgreSQL compatible edition:
+
+```ts
+const cluster2 = new rds.DatabaseCluster(stack, 'cluster', {
   engine: rds.DatabaseClusterEngine.auroraPostgres({
     version: rds.AuroraPostgresEngineVersion.VER_14_4,
   }),
-  vpc,
-  scalingV2: {
-    maxCapacity: 4,
-    minCapacity: 2,
+  serverlessV2Scaling: {
+    maxCapacity: 1,
+    minCapacity: 0.5,
+  },
+  // do not create any provisioned instance with the cluster
+  instances: 0,
+  instanceProps: {
+    vpc,
+    vpcSubnets: {
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+    },
   },
   parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'pg-aurora-postgresql14', 'default.aurora-postgresql14'),
 });
 
-// adding a writer
-new rds.DatabaseInstance(this, 'pginstance1', {
-  vpc,
-  serverless: true,
-  clusterIdentifier: pgcluster.clusterIdentifier,
+// adding a serverless writer
+cluster2.addServerlessInstance('instance4', {
   engine: rds.DatabaseInstanceEngine.auroraPostgres({
     version: rds.PostgresEngineVersion.VER_14_4,
   }),
 });
 
-// adding a reader
-new rds.DatabaseInstance(this, 'pginstance2', {
-  vpc,
-  serverless: true,
-  clusterIdentifier: pgcluster.clusterIdentifier,
+// adding a provisioned reader
+cluster.addInstance('instance5', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
   engine: rds.DatabaseInstanceEngine.auroraPostgres({
     version: rds.PostgresEngineVersion.VER_14_4,
   }),
 });
-
 ```
-
-
-
-
 
 
 ### Data API
