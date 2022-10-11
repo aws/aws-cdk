@@ -16,7 +16,7 @@ describe('isComplete', () => {
     return lambdaTester(handler)
       .event({} as IsCompleteRequest)
       .expectError((err: Error) => {
-        expect(err.message).toBe("Cannot read properties of undefined (reading 'deploymentInfo')");
+        expect(err.message).toBeDefined();
       });
   });
   test('Unknown event type fails', () => {
