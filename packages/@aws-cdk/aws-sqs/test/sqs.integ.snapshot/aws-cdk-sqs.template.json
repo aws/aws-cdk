@@ -89,6 +89,52 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "UnencryptedQueue57F92F9C": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": false
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SSLQueue4E9BF022": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SSLQueuePolicy5ABFDF4F": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "SSLQueue4E9BF022",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "SSLQueue4E9BF022"
+     }
+    ]
+   }
+  },
   "Role1ABCC5F0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -162,7 +208,19 @@
         },
         {
          "Fn::GetAtt": [
+          "SSLQueue4E9BF022",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
           "SqsManagedEncryptedQueue587679B3",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "UnencryptedQueue57F92F9C",
           "Arn"
          ]
         }
