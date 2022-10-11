@@ -884,10 +884,7 @@ describe('record set', () => {
               },
               {
                 Effect: 'Allow',
-                Action: [
-                  'route53:ChangeResourceRecordSets',
-                  'route53:ListResourceRecordSets',
-                ],
+                Action: 'route53:ListResourceRecordSets',
                 Resource: {
                   'Fn::Join': ['', [
                     'arn:',
@@ -895,6 +892,24 @@ describe('record set', () => {
                     ':route53:::hostedzone/',
                     { Ref: 'HostedZoneDB99F866' },
                   ]],
+                },
+              },
+              {
+                Effect: 'Allow',
+                Action: 'route53:ChangeResourceRecordSets',
+                Resource: {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':route53:::hostedzone/',
+                    { Ref: 'HostedZoneDB99F866' },
+                  ]],
+                },
+                Condition: {
+                  'ForAllValues:StringEquals': {
+                    'route53:ChangeResourceRecordSetsRecordTypes': ['A'],
+                    'route53:ChangeResourceRecordSetsActions': ['DELETE'],
+                  },
                 },
               },
             ],
