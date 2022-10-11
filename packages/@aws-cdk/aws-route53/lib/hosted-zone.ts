@@ -293,6 +293,12 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
               new iam.PolicyStatement({
                 actions: ['route53:ChangeResourceRecordSets'],
                 resources: [this.hostedZoneArn],
+                conditions: {
+                  'ForAllValues:StringEquals': {
+                    'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
+                    'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+                  },
+                },
               }),
               new iam.PolicyStatement({
                 actions: ['route53:ListHostedZonesByName'],

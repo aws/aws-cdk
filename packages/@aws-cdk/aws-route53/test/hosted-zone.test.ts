@@ -130,6 +130,12 @@ describe('hosted zone', () => {
                           ],
                         ],
                       },
+                      Condition: {
+                        'ForAllValues:StringEquals': {
+                          'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
+                          'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+                        },
+                      },
                     },
                     {
                       Action: 'route53:ListHostedZonesByName',
