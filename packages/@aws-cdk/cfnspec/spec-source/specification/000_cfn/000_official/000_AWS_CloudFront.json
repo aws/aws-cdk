@@ -1,5 +1,5 @@
 {
-  "$version": "89.0.0",
+  "$version": "92.0.0",
   "PropertyTypes": {
     "AWS::CloudFront::CachePolicy.CachePolicyConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-cachepolicy-cachepolicyconfig.html",
@@ -1115,6 +1115,28 @@
         }
       }
     },
+    "AWS::CloudFront::MonitoringSubscription.MonitoringSubscription": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-monitoringsubscription-monitoringsubscription.html",
+      "Properties": {
+        "RealtimeMetricsSubscriptionConfig": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-monitoringsubscription-monitoringsubscription.html#cfn-cloudfront-monitoringsubscription-monitoringsubscription-realtimemetricssubscriptionconfig",
+          "Required": false,
+          "Type": "RealtimeMetricsSubscriptionConfig",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::CloudFront::MonitoringSubscription.RealtimeMetricsSubscriptionConfig": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-monitoringsubscription-realtimemetricssubscriptionconfig.html",
+      "Properties": {
+        "RealtimeMetricsSubscriptionStatus": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-monitoringsubscription-realtimemetricssubscriptionconfig.html#cfn-cloudfront-monitoringsubscription-realtimemetricssubscriptionconfig-realtimemetricssubscriptionstatus",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::CloudFront::OriginAccessControl.OriginAccessControlConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-originaccesscontrol-originaccesscontrolconfig.html",
       "Properties": {
@@ -1883,6 +1905,23 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-keygroup.html#cfn-cloudfront-keygroup-keygroupconfig",
           "Required": true,
           "Type": "KeyGroupConfig",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::CloudFront::MonitoringSubscription": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-monitoringsubscription.html",
+      "Properties": {
+        "DistributionId": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-monitoringsubscription.html#cfn-cloudfront-monitoringsubscription-distributionid",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Immutable"
+        },
+        "MonitoringSubscription": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-monitoringsubscription.html#cfn-cloudfront-monitoringsubscription-monitoringsubscription",
+          "Required": true,
+          "Type": "MonitoringSubscription",
           "UpdateType": "Mutable"
         }
       }

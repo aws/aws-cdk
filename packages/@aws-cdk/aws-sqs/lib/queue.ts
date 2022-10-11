@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Duration, RemovalPolicy, Stack, Token, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -87,7 +88,7 @@ export interface QueueProps {
    * Be aware that encryption is not available in all regions, please see the docs
    * for current availability details.
    *
-   * @default Unencrypted
+   * @default SQS_MANAGED (SSE-SQS) for newly created queues
    */
   readonly encryption?: QueueEncryption;
 
@@ -169,6 +170,14 @@ export interface QueueProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Enforce encryption of data in transit.
+   * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-security-best-practices.html#enforce-encryption-data-in-transit
+   *
+   * @default false
+   */
+  readonly enforceSSL?: boolean;
 }
 
 /**
@@ -210,7 +219,6 @@ export enum QueueEncryption {
   /**
    * Server-side encryption key managed by SQS (SSE-SQS).
    *
-   * Support for SSE-SQS is available in all AWS Commercial and GovCloud Regions except the China Regions.
    * To learn more about SSE-SQS on Amazon SQS, please visit the
    * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
    */
@@ -378,7 +386,7 @@ export class Queue extends QueueBase {
     this.deadLetterQueue = props.deadLetterQueue;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
-      let encryption = props.encryption || QueueEncryption.UNENCRYPTED;
+      let encryption = props.encryption;
 
       if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
         throw new Error("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used");
@@ -388,8 +396,16 @@ export class Queue extends QueueBase {
         encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
       }
 
-      if (encryption === QueueEncryption.UNENCRYPTED) {
+      if (!encryption) {
         return { encryptionProps: {} };
+      }
+
+      if (encryption === QueueEncryption.UNENCRYPTED) {
+        return {
+          encryptionProps: {
+            sqsManagedSseEnabled: false,
+          },
+        };
       }
 
       if (encryption === QueueEncryption.KMS_MANAGED) {
@@ -424,6 +440,11 @@ export class Queue extends QueueBase {
       }
 
       throw new Error(`Unexpected 'encryptionType': ${encryption}`);
+    }
+
+    // Enforce encryption of data in transit
+    if (props.enforceSSL) {
+      this.enforceSSLStatement();
     }
   }
 
@@ -467,6 +488,22 @@ export class Queue extends QueueBase {
       fifoThroughputLimit: props.fifoThroughputLimit,
       fifoQueue,
     };
+  }
+
+  /**
+   * Adds an iam statement to enforce encryption of data in transit.
+   */
+  private enforceSSLStatement() {
+    const statement = new iam.PolicyStatement({
+      actions: ['sqs:*'],
+      conditions: {
+        Bool: { 'aws:SecureTransport': 'false' },
+      },
+      effect: iam.Effect.DENY,
+      resources: [this.queueArn],
+      principals: [new iam.AnyPrincipal()],
+    });
+    this.addToResourcePolicy(statement);
   }
 }
 
