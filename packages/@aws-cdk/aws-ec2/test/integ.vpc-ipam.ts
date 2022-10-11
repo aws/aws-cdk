@@ -1,6 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-// import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
-import { ExpectedResult, IntegTest, AwsApiCall } from '@aws-cdk/integ-tests';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
 import { AwsIpam, CfnIPAM, CfnIPAMPool, CfnVPC, SubnetType, Vpc } from '../lib';
 
 const app = new cdk.App();
@@ -43,33 +42,16 @@ const awsIpamVpc = new Vpc(stack, 'AwsIpamVpc', {
   }],
 });
 
-new AwsApiCall(stack, 'cleanUpIpam', {
-  service: 'EC2',
-  api: 'deleteIpam',
-  installLatestAwsSdk: true,
-  parameters: {
-    IpamId: ipam.attrIpamId,
-    Cascade: true,
-  },
-});
-
-// new AwsCustomResource(stack, 'cleanUpIpam', { // Cleanup as the IPAM does not delete otherwise, must use aws-sdk-js2 newer than: 1094.0
+// needs AwsApiCall Support for installLatestAwsSdk first, or another way to clean the Ipam
+// new AwsApiCall(stack, 'cleanUpIpam', {
+//   service: 'EC2',
+//   api: 'deleteIpam',
 //   installLatestAwsSdk: true,
-//   onCreate: {
-//     service: 'EC2',
-//     action: 'deleteIpam',
-//     parameters: {
-//       IpamId: ipam.getAtt('IpamId').toString(),
-//       Cascade: true,
-//     },
-//     physicalResourceId: PhysicalResourceId.of('cleanUpIpam'),
+//   parameters: {
+//     IpamId: ipam.attrIpamId,
+//     Cascade: true,
 //   },
-
-//   policy: AwsCustomResourcePolicy.fromSdkCalls({
-//     resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-//   }),
-// }).node.addDependency(awsIpamVpc);
-
+// });
 
 /**
  * Testing That the Vpc is Deployed with the correct Cidrs.
