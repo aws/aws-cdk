@@ -61,11 +61,13 @@ integration with social identity providers such as Facebook, Google, Amazon, Mic
 SAML.
 
 Using the CDK, a new user pool can be created as part of the stack using the construct's constructor. You may specify
-the `userPoolName` to give your own identifier to the user pool. If not, CloudFormation will generate a name.
+the `userPoolName` to give your own identifier to the user pool. If not, CloudFormation will generate a name. As shown
+below, setting usernames to be case insensitive is preferred in most situations.
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   userPoolName: 'myawesomeapp-userpool',
+  signInCaseSensitive: false, // case insensitive is preferred in most situations
 });
 ```
 
