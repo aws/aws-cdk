@@ -2,6 +2,7 @@ import * as childproc from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as semver from 'semver';
 
 export function _tryLoadPackage(packageName: string, targetVersion: string, logs: string[]): any {
   let availableVersion;
@@ -18,7 +19,7 @@ export function _tryLoadPackage(packageName: string, targetVersion: string, logs
   }
   availableVersion = requireWrapper(path.join(assetPackagePath, '../../package.json'), logs).version;
 
-  if (targetVersion === availableVersion) {
+  if (semver.satisfies(availableVersion, targetVersion)) {
     logs.push(`${packageName} already installed with correct version: ${availableVersion}.`);
     const result = requireWrapper(packageName, logs);
     if (result) {

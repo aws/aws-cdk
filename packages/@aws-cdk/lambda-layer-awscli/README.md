@@ -28,7 +28,7 @@ The CLI will be installed under `/opt/awscli/aws`.
 
 ## Troubleshooting
 
-### WARNING! [ACTION REQUIRED] Your CDK application is using ${this.constructor.name}. Add a dependency on ${AwsCliLayer.assetPackageName}, or the equivalent in your language, to remove this warning.
+### WARNING! [ACTION REQUIRED] Your CDK application is using ${this.constructor.name}. Add a dependency on ${AwsCliLayer.assetPackageName}, or the equivalent in your language, to remove this warning
 
 If you see the above message when synthesizing your CDK app, this is because we
 have introduced a change to dynamically load the Asset construct used by
