@@ -299,7 +299,6 @@ class CustomUserData extends UserData {
   public addSignalOnExitCommand(): void {
     throw new Error('CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.');
   }
-
 }
 
 /**
