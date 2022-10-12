@@ -31,7 +31,7 @@ import {
 describe('vpc', () => {
   describe('When creating a VPC', () => {
 
-    test('SubnetType.PRIVATE is equivalent to SubnetType.PRIVATE_WITH_NAT', () => {
+    testDeprecated('SubnetType.PRIVATE is equivalent to SubnetType.PRIVATE_WITH_NAT', () => {
 
       const stack1 = getTestStack();
       const stack2 = getTestStack();
@@ -68,7 +68,7 @@ describe('vpc', () => {
 
     });
 
-    test('SubnetType.ISOLATED is equivalent to SubnetType.PRIVATE_ISOLATED', () => {
+    testDeprecated('SubnetType.ISOLATED is equivalent to SubnetType.PRIVATE_ISOLATED', () => {
 
       const stack1 = getTestStack();
       const stack2 = getTestStack();
@@ -89,7 +89,6 @@ describe('vpc', () => {
           },
         ],
       });
-
       const t1 = Template.fromStack(stack1);
       const t2 = Template.fromStack(stack2);
 
@@ -706,7 +705,7 @@ describe('vpc', () => {
 
     });
 
-    test('natGateways = 0 throws if no PRIVATE subnets configured', () => {
+    testDeprecated('natGateways = 0 throws if PRIVATE_WITH_NAT subnets configured', () => {
       const stack = getTestStack();
       expect(() => {
         new Vpc(stack, 'VPC', {
@@ -722,7 +721,7 @@ describe('vpc', () => {
             },
           ],
         });
-      }).toThrow(/make sure you don't configure any PRIVATE subnets/);
+      }).toThrow(/make sure you don't configure any PRIVATE/);
 
 
     });
