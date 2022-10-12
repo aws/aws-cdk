@@ -737,6 +737,7 @@ cluster.addInstance('instance3', {
   }),
 });
 ```
+
 For Aurora Serverless v2 with PostgreSQL compatible edition:
 
 ```ts
