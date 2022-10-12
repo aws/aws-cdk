@@ -310,7 +310,9 @@ function validateJsonPath(path: string) {
 }
 
 function validateDataPath(path: string) {
-  if (path !== '$' && !path.startsWith('$.')) {
+  if (path !== '$'
+    && !path.startsWith('$[')
+    && !path.startsWith('$.')) {
     throw new Error("Data JSON path values must either be exactly equal to '$' or start with '$.'");
   }
 }
