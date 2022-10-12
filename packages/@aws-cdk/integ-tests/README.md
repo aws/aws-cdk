@@ -18,7 +18,7 @@
 
 ## Overview
 
-This library is meant to be used in combination with the [integ-runner]() CLI
+This library is meant to be used in combination with the [integ-runner](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-runner) CLI
 to enable users to write and execute integration tests for AWS CDK Constructs.
 
 An integration test should be defined as a CDK application, and
@@ -189,6 +189,17 @@ declare const app: App;
 declare const stack: Stack;
 
 const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
+integ.assertions.awsApiCall('S3', 'getObject');
+```
+
+By default an assertions stack is automatically generated for you. You may however provide your own stack to use. 
+
+```ts
+declare const app: App;
+declare const stack: Stack;
+declare const assertionStack: Stack;
+
+const integ = new IntegTest(app, 'Integ', { testCases: [stack], assertionStack: assertionStack });
 integ.assertions.awsApiCall('S3', 'getObject');
 ```
 
