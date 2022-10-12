@@ -2185,11 +2185,10 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
   const hasPrivateSubnets = subnetConfig.some(c => (c.subnetType === SubnetType.PRIVATE_WITH_NAT
     || c.subnetType === SubnetType.PRIVATE) && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC);
-  const hasCustomEgress = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE_WITH_EGRESS);
 
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
 
-  if (count === 0 && hasPrivateSubnets && !hasCustomEgress) {
+  if (count === 0 && hasPrivateSubnets) {
     // eslint-disable-next-line max-len
     throw new Error('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE(_WITH_NAT) subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
   }
