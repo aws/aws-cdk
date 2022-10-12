@@ -59,7 +59,7 @@ export class AwsCliLayer extends lambda.LayerVersion {
     }
 
     if (fallback) {
-      Annotations.of(this).addWarning(`WARNING! ACTION REQUIRED! Your CDK application is using ${this.constructor.name} and this construct may experience a breaking change for your environment in a future release. See https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.lambda_layer_awscli-readme.html or https://github.com/aws/aws-cdk/issues/999999999 for details and resolution instructions.`);
+      Annotations.of(this).addWarning(`WARNING! [ACTION REQUIRED] Your CDK application is using ${this.constructor.name}. Add a dependency on ${AwsCliLayer.assetPackageName}, or the equivalent in your language to remove this warning. See https://github.com/aws/aws-cdk/issues/999999999 for more information.`);
       new Notice(this, 'cli-notice');
     }
   }
