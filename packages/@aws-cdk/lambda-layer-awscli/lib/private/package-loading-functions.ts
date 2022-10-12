@@ -8,8 +8,12 @@ export function _tryLoadPackage(packageName: string, targetVersion: string, logs
   let assetPackagePath;
   try {
     assetPackagePath = require.resolve(`${packageName}`);
-  } catch (err) {
+  } catch (e) {
     logs.push(`require.resolve('${packageName}') failed`);
+    const eAsError = e as Error;
+    if (eAsError?.stack) {
+      logs.push(eAsError.stack);
+    }
     return;
   }
   availableVersion = requireWrapper(path.join(assetPackagePath, '../../package.json'), logs).version;
@@ -21,6 +25,8 @@ export function _tryLoadPackage(packageName: string, targetVersion: string, logs
       logs.push(`Successfully loaded ${packageName} from pre-installed packages.`);
       return result;
     }
+  } else {
+    logs.push(`${packageName} already installed with incorrect version: ${availableVersion}. Target version was: ${targetVersion}.`);
   }
 }
 
@@ -34,7 +40,10 @@ export function _downloadPackage(packageName: string, packageNpmTarPrefix: strin
     return downloadPath;
   }
   logs.push(`Downloading package using npm pack to: ${downloadDir}`);
-  childproc.execSync(`mkdir -p ${downloadDir}; cd ${downloadDir}; npm pack ${packageName}@${targetVersion} -q`);
+  fs.mkdirSync(downloadDir);
+  childproc.execSync(`npm pack ${packageName}@${targetVersion} -q`, {
+    cwd: downloadDir,
+  });
   if (fs.existsSync(downloadPath)) {
     logs.push('Successfully downloaded using npm pack.');
     return downloadPath;
