@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as semver from 'semver';
 
-export function _tryLoadPackage(packageName: string, targetVersion: string, logs: string[]): any {
+export function _tryLoadPackage(packageName: string, targetVersionRange: semver.Range, logs: string[]): any {
   let availableVersion;
   let assetPackagePath;
   try {
@@ -19,15 +19,15 @@ export function _tryLoadPackage(packageName: string, targetVersion: string, logs
   }
   availableVersion = requireWrapper(path.join(assetPackagePath, '../../package.json'), logs).version;
 
-  if (semver.satisfies(availableVersion, targetVersion)) {
-    logs.push(`${packageName} already installed with correct version: ${availableVersion}.`);
+  if (semver.satisfies(availableVersion, targetVersionRange)) {
+    logs.push(`${packageName} already installed with compatible version: ${availableVersion}.`);
     const result = requireWrapper(packageName, logs);
     if (result) {
       logs.push(`Successfully loaded ${packageName} from pre-installed packages.`);
       return result;
     }
   } else {
-    logs.push(`${packageName} already installed with incorrect version: ${availableVersion}. Target version was: ${targetVersion}.`);
+    logs.push(`${packageName} already installed with incompatible version: ${availableVersion}. Target version range was: ${targetVersionRange}.`);
   }
 }
 

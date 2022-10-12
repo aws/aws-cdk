@@ -4,6 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Annotations, FileSystem } from '@aws-cdk/core';
 import { debugModeEnabled } from '@aws-cdk/core/lib/debug';
 import { Construct } from 'constructs';
+import * as semver from 'semver';
 import { TARGET_VERSION } from './asset-package-version';
 import { installAndLoadPackage, _downloadPackage, _tryLoadPackage } from './private/package-loading-functions';
 
@@ -19,7 +20,7 @@ export class AwsCliLayer extends lambda.LayerVersion {
     const logs: string[] = [];
     let fallback = false;
 
-    let assetPackage = _tryLoadPackage(AwsCliLayer.assetPackageName, TARGET_VERSION, logs);
+    let assetPackage = _tryLoadPackage(AwsCliLayer.assetPackageName, new semver.Range(`^${TARGET_VERSION}`), logs);
 
     if (!assetPackage) {
       const downloadPath = _downloadPackage(AwsCliLayer.assetPackageName, AwsCliLayer.assetPackageNpmTarPrefix, TARGET_VERSION, logs);
@@ -52,7 +53,6 @@ export class AwsCliLayer extends lambda.LayerVersion {
       code: code,
       description: '/opt/awscli/aws',
     });
-    console.log(logs.join('\n'));
 
     if (debugModeEnabled()) {
       Annotations.of(this).addInfo(logs.join('\n'));
