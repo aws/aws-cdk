@@ -115,6 +115,8 @@
       "@aws-cdk/core/minimatch/**",
       "@aws-cdk/cx-api/semver",
       "@aws-cdk/cx-api/semver/**",
+      "@aws-cdk/lambda-layer-awscli/semver",
+      "@aws-cdk/lambda-layer-awscli/semver/**",
       "@aws-cdk/pipelines/aws-sdk",
       "@aws-cdk/pipelines/aws-sdk/**",
       "@aws-cdk/yaml-cfn/yaml",
