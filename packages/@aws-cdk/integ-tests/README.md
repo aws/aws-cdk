@@ -439,3 +439,52 @@ integ.assertions.awsApiCall('S3', 'putObject', {
 }));
 ```
 
+#### Wait for results
+
+A common use case when performing assertions is to wait for a condition to pass. Sometimes the thing
+that you are asserting against is not done provisioning by the time the assertion runs. In these
+cases it is possible to run the assertion asynchronously by calling the `waitForAssertions()` method.
+
+Taking the example above of executing a StepFunctions state machine, depending on the complexity of
+the state machine, it might take a while for it to complete.
+
+```ts
+declare const app: App;
+declare const stack: Stack;
+declare const sm: IStateMachine;
+
+const testCase = new IntegTest(app, 'IntegTest', {
+  testCases: [stack],
+});
+
+// Start an execution
+const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', {
+  stateMachineArn: sm.stateMachineArn,
+});
+
+// describe the results of the execution
+const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+  executionArn: start.getAttString('executionArn'),
+}).expect(ExpectedResult.objectLike({
+  status: 'SUCCEEDED',
+})).waitForAssertions();
+```
+
+When you call `waitForAssertions()` the assertion provider will continuously make the `awsApiCall` until the
+`ExpectedResult` is met. You can also control the parameters for waiting, for example:
+
+```ts
+declare const testCase: IntegTest;
+declare const start: IApiCall;
+
+const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+  executionArn: start.getAttString('executionArn'),
+}).expect(ExpectedResult.objectLike({
+  status: 'SUCCEEDED',
+})).waitForAssertions({
+  totalTimeout: Duration.minutes(5),
+  interval: Duration.seconds(15),
+  backoffRate: 3,
+});
+```
+
