@@ -19,7 +19,7 @@ parallel.branch(passStringList).branch(passSingleString);
 
 const joinPass = new sfn.Pass(stack, 'JP', {
   parameters: {
-    'resultStringList.$': '$[0].newStringList',
+    'resultStringList.$': sfn.JsonPath.listAt('$[0].newStringList'),
     'newSingleString.$': '$[1].newSingleString',
   },
 });

@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.102"
+          "version": "10.1.123"
         }
       },
       "listAt-after-parallel": {
@@ -107,7 +107,7 @@
                         "Arn"
                       ]
                     },
-                    "definitionString": "{\"StartAt\":\"PRL\",\"States\":{\"PRL\":{\"Type\":\"Parallel\",\"ResultPath\":\"$\",\"Next\":\"JP\",\"Branches\":[{\"StartAt\":\"PSL\",\"States\":{\"PSL\":{\"Type\":\"Pass\",\"Parameters\":{\"newStringList.$\":\"$.stringList\"},\"End\":true}}},{\"StartAt\":\"PSS\",\"States\":{\"PSS\":{\"Type\":\"Pass\",\"Parameters\":{\"newSingleString.$\":\"$.singleString\"},\"End\":true}}}]},\"JP\":{\"Type\":\"Pass\",\"Parameters\":{\"resultStringList.$\":\"$[0].newStringList\",\"newSingleString.$\":\"$[1].newSingleString\"},\"End\":true}},\"TimeoutSeconds\":30}"
+                    "definitionString": "{\"StartAt\":\"PRL\",\"States\":{\"PRL\":{\"Type\":\"Parallel\",\"ResultPath\":\"$\",\"Next\":\"JP\",\"Branches\":[{\"StartAt\":\"PSL\",\"States\":{\"PSL\":{\"Type\":\"Pass\",\"Parameters\":{\"newStringList.$\":\"$.stringList\"},\"End\":true}}},{\"StartAt\":\"PSS\",\"States\":{\"PSS\":{\"Type\":\"Pass\",\"Parameters\":{\"newSingleString.$\":\"$.singleString\"},\"End\":true}}}]},\"JP\":{\"Type\":\"Pass\",\"Parameters\":{\"resultStringList.$.$\":\"$[0].newStringList\",\"newSingleString.$\":\"$[1].newSingleString\"},\"End\":true}},\"TimeoutSeconds\":30}"
                   }
                 },
                 "constructInfo": {
@@ -148,7 +148,7 @@
                 "path": "SQSFilterCriteria/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.102"
+                  "version": "10.1.123"
                 }
               },
               "DeployAssert": {
