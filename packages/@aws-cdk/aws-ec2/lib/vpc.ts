@@ -2190,7 +2190,7 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
 
   if (count === 0 && hasPrivateSubnets) {
     // eslint-disable-next-line max-len
-    throw new Error('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
+    throw new Error('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE(_WITH_NAT) subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
   }
 
   if (count > 0 && !hasPublicSubnets) {
