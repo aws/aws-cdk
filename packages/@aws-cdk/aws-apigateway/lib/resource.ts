@@ -4,7 +4,7 @@ import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations';
-import { Method, MethodOptions } from './method';
+import { Method, MethodOptions, AuthorizationType } from './method';
 import { IRestApi, RestApi } from './restapi';
 
 export interface IResource extends IResourceBase {
@@ -296,6 +296,12 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
         { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() },
       ],
     }), {
+      authorizer: {
+        authorizerId: '',
+        authorizationType: AuthorizationType.NONE,
+      },
+      apiKeyRequired: false,
+      authorizationType: AuthorizationType.NONE,
       methodResponses: [
         { statusCode: `${statusCode}`, responseParameters: methodResponseParams },
       ],
