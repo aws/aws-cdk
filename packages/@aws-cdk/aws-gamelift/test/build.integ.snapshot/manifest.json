@@ -1,0 +1,64 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-gamelift-build.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-gamelift-build.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-gamelift-build": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-gamelift-build.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c561e93c7a2947a15dba683670660e922cf493e17b2a6f8ca03cf221442c222.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-gamelift-build.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-gamelift-build.assets"
+      ],
+      "metadata": {
+        "/aws-gamelift-build/Build/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildServiceRole1F57E904"
+          }
+        ],
+        "/aws-gamelift-build/Build/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildServiceRoleDefaultPolicyCB7101C6"
+          }
+        ],
+        "/aws-gamelift-build/Build/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Build45A36621"
+          }
+        ]
+      },
+      "displayName": "aws-gamelift-build"
+    }
+  }
+}

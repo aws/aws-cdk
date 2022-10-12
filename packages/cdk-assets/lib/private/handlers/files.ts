@@ -143,7 +143,7 @@ export class FileAssetHandler implements IAssetHandler {
       }
 
       this.host.emitMessage(EventType.BUILD, `Zip ${fullPath} -> ${packagedPath}`);
-      await zipDirectory(fullPath, packagedPath);
+      await zipDirectory(fullPath, packagedPath, (m) => this.host.emitMessage(EventType.DEBUG, m));
       return { packagedPath, contentType };
     } else {
       const contentType = mime.getType(fullPath) ?? 'application/octet-stream';
