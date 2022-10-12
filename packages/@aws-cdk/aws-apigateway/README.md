@@ -389,6 +389,22 @@ declare const lambdaFn: lambda.Function;
 importedKey.grantRead(lambdaFn);
 ```
 
+### Adding an API Key to an imported RestApi
+
+API Keys are added to ApiGateway Stages, not to the API itself. When you import a RestApi
+it does not have any information on the Stages that may be associated with it. Since adding an API
+Key requires a stage, you should instead add the Api Key to the imported Stage.
+
+```ts
+declare const restApi: apigateway.IRestApi;
+const importedStage = apigateway.Stage.fromStageAttributes(this, 'imported-stage', {
+  stageName: 'myStageName',
+  restApi,
+});
+
+importedStage.addApiKey('MyApiKey');
+```
+
 ### ⚠️ Multiple API Keys
 
 It is possible to specify multiple API keys for a given Usage Plan, by calling `usagePlan.addApiKey()`.
@@ -426,7 +442,7 @@ declare const api: apigateway.RestApi;
 
 const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
   customerId: 'hello-customer',
-  resources: [api],
+  stages: [api.deploymentStage],
   quota: {
     limit: 10000,
     period: apigateway.Period.MONTH
