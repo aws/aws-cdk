@@ -15,7 +15,7 @@ export interface WaiterStateMachineOptions {
   readonly totalTimeout?: Duration;
 
   /**
-   * The interval to wait between attempts.
+   * The interval (number of seconds) to wait between attempts.
    *
    * @default Duration.seconds(5)
    */
@@ -24,7 +24,13 @@ export interface WaiterStateMachineOptions {
   /**
    * Backoff between attempts.
    *
-   * @default 1
+   * This is the multiplier by which the retry interval increases
+   * after each retry attempt.
+   *
+   * By default there is no backoff. Each retry will wait the amount of time
+   * specified by `interval`.
+   *
+   * @default 1 (no backoff)
    */
   readonly backoffRate?: number;
 }
@@ -40,6 +46,20 @@ export interface WaiterStateMachineProps extends WaiterStateMachineOptions {}
  *
  * The state machine continuously calls the isCompleteHandler, until it succeeds or times out.
  * The handler is called `maxAttempts` times with an `interval` duration and a `backoffRate` rate.
+ *
+ * For example with:
+ * - maxAttempts = 360 (30 minutes)
+ * - interval = 5
+ * - backoffRate = 1 (no backoff)
+ *
+ * it will make the API Call every 5 seconds and fail after 360 failures.
+ *
+ * If the backoff rate is changed to 2 (for example), it will
+ * - make the first call
+ * - wait 5 seconds
+ * - make the second call
+ * - wait 15 seconds
+ * - etc.
  */
 export class WaiterStateMachine extends Construct {
   /**
@@ -61,7 +81,7 @@ export class WaiterStateMachine extends Construct {
     super(scope, id);
     const interval = props.interval || Duration.seconds(5);
     const totalTimeout = props.totalTimeout || Duration.minutes(30);
-    const maxAttempts = totalTimeout.toSeconds() / interval.toSeconds();
+    const maxAttempts = calculateMaxRetries(totalTimeout.toSeconds(), interval.toSeconds(), props.backoffRate ?? 1);
 
     if (Math.round(maxAttempts) !== maxAttempts) {
       throw new Error(`Cannot determine retry count since totalTimeout=${totalTimeout.toSeconds()}s is not integrally dividable by queryInterval=${interval.toSeconds()}s`);
@@ -143,4 +163,20 @@ export class WaiterStateMachine extends Construct {
     this.isCompleteProvider.grantInvoke(this.roleArn);
     timeoutProvider.grantInvoke(this.roleArn);
   }
+}
+
+/**
+ * Calculate the max number of retries
+ */
+function calculateMaxRetries(maxSeconds: number, intervalSeconds: number, backoff: number): number {
+  let retries = 1;
+  let nextInterval = intervalSeconds;
+  let i = 0;
+  while (i < maxSeconds) {
+    nextInterval = nextInterval+nextInterval*backoff;
+    i+=nextInterval;
+    if (i >= maxSeconds) break;
+    retries++;
+  }
+  return retries;
 }

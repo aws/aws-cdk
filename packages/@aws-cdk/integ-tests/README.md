@@ -432,7 +432,7 @@ integ.assertions.awsApiCall('S3', 'putObject', {
 
 A common use case when performing assertions is to wait for a condition to pass. Sometimes the thing
 that you are asserting against is not done provisioning by the time the assertion runs. In these
-cases it is possible to run the assertion asynchronously by calling the `wait()` method.
+cases it is possible to run the assertion asynchronously by calling the `waitForAssertions()` method.
 
 Taking the example above of executing a StepFunctions state machine, depending on the complexity of
 the state machine, it might take a while for it to complete.
@@ -459,7 +459,7 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 })).waitForAssertions();
 ```
 
-When you call `wait()` the assertion provider will continuously make the `awsApiCall` until the
+When you call `waitForAssertions()` the assertion provider will continuously make the `awsApiCall` until the
 `ExpectedResult` is met. You can also control the parameters for waiting, for example:
 
 ```ts

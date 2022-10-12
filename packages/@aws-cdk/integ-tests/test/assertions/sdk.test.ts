@@ -1,5 +1,5 @@
 import { Template, Match } from '@aws-cdk/assertions';
-import { App, CfnOutput } from '@aws-cdk/core';
+import { App, CfnOutput, Duration } from '@aws-cdk/core';
 import { LogType, InvocationType, ExpectedResult } from '../../lib/assertions';
 import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
 
@@ -162,6 +162,49 @@ describe('AwsApiCall', () => {
             },
           ],
         },
+      },
+    });
+  });
+  test('waitFor with options', () => {
+    // GIVEN
+    const app = new App();
+    const deplossert = new DeployAssert(app);
+
+    // WHEN
+    deplossert.awsApiCall('MyService', 'MyApi', {
+      param1: 'val1',
+      param2: 2,
+    }).expect(ExpectedResult.objectLike({
+      Key: 'Value',
+    })).waitForAssertions({
+      interval: Duration.seconds(10),
+      backoffRate: 2,
+      totalTimeout: Duration.minutes(10),
+    });
+
+    // THEN
+    Template.fromStack(deplossert.scope).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: {
+        'Fn::Join': [
+          '',
+          [
+            '{"StartAt":"framework-isComplete-task","States":{"framework-isComplete-task":{"End":true,"Retry":[{"ErrorEquals":["States.ALL"],"IntervalSeconds":10,"MaxAttempts":4,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"Next":"framework-onTimeout-task"}],"Type":"Task","Resource":"',
+            {
+              'Fn::GetAtt': [
+                'SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE',
+                'Arn',
+              ],
+            },
+            '"},"framework-onTimeout-task":{"End":true,"Type":"Task","Resource":"',
+            {
+              'Fn::GetAtt': [
+                'SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA',
+                'Arn',
+              ],
+            },
+            '"}}}',
+          ],
+        ],
       },
     });
   });
