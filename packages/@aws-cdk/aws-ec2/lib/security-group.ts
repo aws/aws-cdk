@@ -535,13 +535,14 @@ export class SecurityGroup extends SecurityGroupBase {
     const isIpv6 = peer.toEgressRuleConfig().hasOwnProperty('cidrIpv6');
 
     if (!isIpv6 && this.allowAllOutbound) {
-      // In the case of "allowAllOutbound", we don't add any more rules. There
-      // is only one rule which allows all traffic and that subsumes any other
-      // rule.
-      if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
-        Annotations.of(this).addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup');
-      }
-      return;
+      // commented out lines 539 to 545 to fix issue #9565
+      // // In the case of "allowAllOutbound", we don't add any more rules. There
+      // // is only one rule which allows all traffic and that subsumes any other
+      // // rule.
+      // if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
+      //   Annotations.of(this).addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup');
+      // }
+      // return;
     } else if (!isIpv6 && !this.allowAllOutbound) {
       // Otherwise, if the bogus rule exists we can now remove it because the
       // presence of any other rule will get rid of EC2's implicit "all
