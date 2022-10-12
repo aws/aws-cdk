@@ -591,5 +591,4 @@ export class MultipartUserData extends UserData {
       throw new Error(MultipartUserData.USE_PART_ERROR);
     }
   }
-
 }
