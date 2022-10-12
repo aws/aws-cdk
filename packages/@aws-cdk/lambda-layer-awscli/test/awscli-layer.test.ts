@@ -65,7 +65,7 @@ describe('create a layer version', () => {
       Description: '/opt/awscli/aws',
     });
     Annotations.fromStack(stack).hasInfo('*', Match.stringLikeRegexp('Unable to load @aws-cdk/asset-awscli-v1. Falling back to use layer.zip bundled with aws-cdk-lib'));
-    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('WARNING! ACTION REQUIRED!'));
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('[ACTION REQUIRED]'));
     expect(layer.node.tryFindChild('cli-notice')).toBeDefined();
   });
 });
