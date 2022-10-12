@@ -1,6 +1,6 @@
 import * as child_process from 'child_process';
 import { CdkCliWrapper } from '../lib/cdk-wrapper';
-import { RequireApproval } from '../lib/commands';
+import { RequireApproval, StackActivityProgress } from '../lib/commands';
 let spawnSyncMock: jest.SpyInstance;
 
 beforeEach(() => {
@@ -33,7 +33,7 @@ test('default deploy', () => {
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
     expect.stringMatching(/cdk/),
-    ['deploy', '--app', 'node bin/my-app.js', 'test-stack1'],
+    ['deploy', '--progress', 'events', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.anything(),
       cwd: '/project',
@@ -82,6 +82,7 @@ test('deploy with all arguments', () => {
     toolkitStackName: 'Toolkit',
     versionReporting: true,
     usePreviousParameters: true,
+    progress: StackActivityProgress.BAR,
   });
 
   // THEN
@@ -120,6 +121,7 @@ test('deploy with all arguments', () => {
       '--change-set-name', 'my-change-set',
       '--toolkit-stack-name', 'Toolkit',
       '--previous-parameters',
+      '--progress', 'bar',
       '--app',
       'node bin/my-app.js',
       'test-stack1',
@@ -149,6 +151,7 @@ test('can parse boolean arguments', () => {
     expect.stringMatching(/cdk/),
     [
       'deploy',
+      '--progress', 'events',
       '--app',
       'node bin/my-app.js',
       '--json',
@@ -184,6 +187,7 @@ test('can parse parameters', () => {
       'deploy',
       '--parameters', 'myparam=test',
       '--parameters', 'test-stack1:myotherparam=test',
+      '--progress', 'events',
       '--app',
       'node bin/my-app.js',
       'test-stack1',
@@ -214,6 +218,7 @@ test('can parse context', () => {
     expect.stringMatching(/cdk/),
     [
       'deploy',
+      '--progress', 'events',
       '--app',
       'node bin/my-app.js',
       '--context', 'myContext=value',
@@ -248,6 +253,7 @@ test('can parse array arguments', () => {
       'deploy',
       '--notification-arns', 'arn:aws:us-east-1:1111111111:some:resource',
       '--notification-arns', 'arn:aws:us-east-1:1111111111:some:other-resource',
+      '--progress', 'events',
       '--app',
       'node bin/my-app.js',
       'test-stack1',
@@ -275,7 +281,7 @@ test('can provide additional environment', () => {
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
     expect.stringMatching(/cdk/),
-    ['deploy', '--app', 'node bin/my-app.js', 'test-stack1'],
+    ['deploy', '--progress', 'events', '--app', 'node bin/my-app.js', 'test-stack1'],
     expect.objectContaining({
       env: expect.objectContaining({
         KEY: 'value',

@@ -86,10 +86,10 @@
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.101",
+    "@types/aws-lambda": "^8.10.107",
     "@types/jest": "^27.5.2",
     "@types/sinon": "^9.0.11",
-    "aws-sdk": "^2.848.0",
+    "aws-sdk": "^2.1211.0",
     "aws-sdk-mock": "5.6.0",
     "jest": "^27.5.1",
     "nock": "^13.2.9",
@@ -131,7 +131,8 @@
       "docs-public-apis:@aws-cdk/aws-logs.CrossAccountDestination.addToPolicy",
       "docs-public-apis:@aws-cdk/aws-logs.JsonPattern.jsonPatternString",
       "docs-public-apis:@aws-cdk/aws-logs.ColumnRestriction",
-      "docs-public-apis:@aws-cdk/aws-logs.SpaceDelimitedTextPattern.logPatternString"
+      "docs-public-apis:@aws-cdk/aws-logs.SpaceDelimitedTextPattern.logPatternString",
+      "resource-attribute:@aws-cdk/aws-logs.SubscriptionFilter.subscriptionFilterFilterName"
     ]
   },
   "stability": "stable",

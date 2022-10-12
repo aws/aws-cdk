@@ -5,7 +5,7 @@
       "stacks": [
         "aws-ecs-patterns-queue"
       ],
-      "assertionStack": "circuitBreakerQueueProcessingFargateTestDefaultTestDeployAssert0128E6E6"
+      "assertionStack": "circuitBreakerQueueProcessingFargateTest/DefaultTest/DeployAssert"
     }
   }
 }

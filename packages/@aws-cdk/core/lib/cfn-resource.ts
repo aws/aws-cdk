@@ -677,6 +677,35 @@ function deepMerge(target: any, ...sources: any[]) {
           }
         }
 
+        /**
+         * There might also be the case where the source is an intrinsic
+         *
+         *    target: {
+         *      Type: 'MyResourceType',
+         *      Properties: {
+         *        prop1: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
+         *      }
+         *    }
+         *    sources: [ {
+         *      Properties: {
+         *        prop1: { subprop: { 'Fn::If': ['SomeCondition', {...}, {...}] }}
+         *      }
+         *    } ]
+         *
+         * We end up in a place that is the reverse of the above check, the source
+         * becomes an intrinsic before the target
+         *
+         *   target: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
+         *   sources: [{
+         *     'Fn::If': [ 'MyCondition', {...}, {...} ]
+         *   }]
+         */
+        if (Object.keys(value).length === 1) {
+          if (MERGE_EXCLUDE_KEYS.includes(Object.keys(value)[0])) {
+            target[key] = {};
+          }
+        }
+
         deepMerge(target[key], value);
 
         // if the result of the merge is an empty object, it's because the

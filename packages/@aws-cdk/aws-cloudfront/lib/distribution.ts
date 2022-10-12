@@ -356,6 +356,10 @@ export class Distribution extends Resource implements IDistribution {
       const scope = new Construct(this, `Origin${originIndex}`);
       const originId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
       const originBindConfig = origin.bind(scope, { originId });
+      const duplicateId = this.boundOrigins.find(boundOrigin => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id);
+      if (duplicateId) {
+        throw new Error(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`);
+      }
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, ...originBindConfig });
       } else {
@@ -370,7 +374,7 @@ export class Distribution extends Resource implements IDistribution {
         this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
         return originGroupId;
       }
-      return originId;
+      return originBindConfig.originProperty?.id ?? originId;
     }
   }
 
@@ -486,7 +490,11 @@ export enum HttpVersion {
   /** HTTP 1.1 */
   HTTP1_1 = 'http1.1',
   /** HTTP 2 */
-  HTTP2 = 'http2'
+  HTTP2 = 'http2',
+  /** HTTP 2 and HTTP 3 */
+  HTTP2_AND_3 = 'http2and3',
+  /** HTTP 3 */
+  HTTP3 = 'http3'
 }
 
 /**

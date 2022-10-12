@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "b46243a85fa78a60c8c08f56d5211404759425a87ab9baa1c9340a10688aeafa": {
+      "source": {
+        "path": "aws-ecs-integ-appmesh-proxy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b46243a85fa78a60c8c08f56d5211404759425a87ab9baa1c9340a10688aeafa.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

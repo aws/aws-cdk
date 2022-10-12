@@ -18,6 +18,7 @@ export interface IClusterParameterGroup extends IResource {
  * A new cluster or instance parameter group
  */
 abstract class ClusterParameterGroupBase extends Resource implements IClusterParameterGroup {
+
   /**
    * The name of the parameter group
    */
@@ -62,17 +63,46 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
    */
   public readonly clusterParameterGroupName: string;
 
+  /**
+   * The parameters in the parameter group
+  */
+  readonly parameters: { [name: string]: string };
+
+  /**
+   * The underlying CfnClusterParameterGroup
+  */
+  private readonly resource: CfnClusterParameterGroup;
+
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
-
-    const resource = new CfnClusterParameterGroup(this, 'Resource', {
+    this.parameters = props.parameters;
+    this.resource = new CfnClusterParameterGroup(this, 'Resource', {
       description: props.description || 'Cluster parameter group for family redshift-1.0',
       parameterGroupFamily: 'redshift-1.0',
-      parameters: Object.entries(props.parameters).map(([name, value]) => {
-        return { parameterName: name, parameterValue: value };
-      }),
+      parameters: this.parseParameters(),
     });
 
-    this.clusterParameterGroupName = resource.ref;
+    this.clusterParameterGroupName = this.resource.ref;
+  }
+  private parseParameters(): any {
+    return Object.entries(this.parameters).map(([name, value]) => {
+      return { parameterName: name, parameterValue: value };
+    });
+  }
+
+  /**
+   * Adds a parameter to the parameter group
+   *
+   * @param name the parameter name
+   * @param value the parameter name
+   */
+  public addParameter(name: string, value: string): void {
+    const existingValue = Object.entries(this.parameters).find(([key, _]) => key === name)?.[1];
+    if (existingValue === undefined) {
+      this.parameters[name] = value;
+      this.resource.parameters = this.parseParameters();
+    } else if (existingValue !== value) {
+      throw new Error(`The parameter group already contains the parameter "${name}", but with a different value (Given: ${value}, Existing: ${existingValue}).`);
+    }
   }
 }

@@ -279,6 +279,9 @@ class DockerStackWithCustomFile extends cdk.Stack {
   }
 }
 
+/**
+ * A stack that will never succeed deploying (done in a way that CDK cannot detect but CFN will complain about)
+ */
 class FailedStack extends cdk.Stack {
 
   constructor(parent, id, props) {
@@ -366,7 +369,11 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  context: {
+    '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID, // Force all assets to be unique, but consistent in one build
+  },
+});
 
 const defaultEnv = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
@@ -400,7 +407,11 @@ switch (stackSet) {
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
-    new FailedStack(app, `${stackPrefix}-failed`)
+    const failed = new FailedStack(app, `${stackPrefix}-failed`)
+
+    // A stack that depends on the failed stack -- used to test that '-e' does not deploy the failing stack
+    const dependsOnFailed = new OutputsStack(app, `${stackPrefix}-depends-on-failed`);
+    dependsOnFailed.addDependency(failed);
 
     if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
       const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };

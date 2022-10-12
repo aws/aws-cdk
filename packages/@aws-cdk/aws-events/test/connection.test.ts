@@ -88,6 +88,7 @@ test('oauth connection', () => {
           HeaderParameters: [{
             Key: 'oAuthHeaderKey',
             Value: 'oAuthHeaderValue',
+            IsValueSecret: false,
           }],
         },
       },
@@ -100,5 +101,59 @@ test('oauth connection', () => {
     },
     Name: 'testConnection',
     Description: 'ConnectionDescription',
+  });
+});
+
+test('Additional plaintext headers', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new events.Connection(stack, 'Connection', {
+    authorization: events.Authorization.apiKey('keyname', SecretValue.unsafePlainText('keyvalue')),
+    headerParameters: {
+      'content-type': events.HttpParameter.fromString('application/json'),
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::Events::Connection', {
+    AuthParameters: {
+      InvocationHttpParameters: {
+        HeaderParameters: [{
+          Key: 'content-type',
+          Value: 'application/json',
+          IsValueSecret: false,
+        }],
+      },
+    },
+  });
+});
+
+test('Additional secret headers', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new events.Connection(stack, 'Connection', {
+    authorization: events.Authorization.apiKey('keyname', SecretValue.unsafePlainText('keyvalue')),
+    headerParameters: {
+      'client-secret': events.HttpParameter.fromSecret(SecretValue.unsafePlainText('apiSecret')),
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::Events::Connection', {
+    AuthParameters: {
+      InvocationHttpParameters: {
+        HeaderParameters: [{
+          Key: 'client-secret',
+          Value: 'apiSecret',
+          IsValueSecret: true,
+        }],
+      },
+    },
   });
 });

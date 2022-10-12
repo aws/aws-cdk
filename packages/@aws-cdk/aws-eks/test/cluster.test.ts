@@ -132,7 +132,7 @@ describe('cluster', () => {
     test('throws if selecting more than one subnet group', () => {
       expect(() => new eks.Cluster(stack, 'Cluster', {
         vpc: vpc,
-        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }],
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
         defaultCapacity: 0,
         version: eks.KubernetesVersion.V1_21,
       })).toThrow(/cannot select multiple subnet groups/);
@@ -2798,7 +2798,7 @@ describe('cluster', () => {
         natGateways: 1,
         subnetConfiguration: [
           {
-            subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+            subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
             name: 'Private1',
           },
           {
@@ -2855,7 +2855,7 @@ describe('cluster', () => {
 
       for (let i = 0; i < 20; i++) {
         subnetConfiguration.push({
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           name: `Private${i}`,
         },
         );
@@ -2904,7 +2904,7 @@ describe('cluster', () => {
 
       for (let i = 0; i < 20; i++) {
         subnetConfiguration.push({
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           name: `Private${i}`,
         },
         );
@@ -3152,100 +3152,6 @@ describe('cluster', () => {
       Config: {
         kubernetesNetworkConfig: {
           serviceIpv4Cidr: customCidr,
-        },
-      },
-    });
-  });
-
-  test('create a cluster without logging configure', () => {
-    // GIVEN
-    const { stack } = testFixture();
-
-    // WHEN
-    new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-    });
-
-    // THEN
-    Template.fromStack(stack).resourceCountIs('Custom::AWSCDK-EKS-Cluster::Config::logging', 0);
-  });
-
-  test('create a cluster with partial logging configure', () => {
-    // GIVEN
-    const { stack } = testFixture();
-
-    // WHEN
-    new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      clusterLogging: [
-        eks.ClusterLoggingTypes.API,
-        eks.ClusterLoggingTypes.AUTHENTICATOR,
-        eks.ClusterLoggingTypes.SCHEDULER,
-      ],
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
-        logging: {
-          clusterLogging: [
-            {
-              enabled: true,
-              types: [
-                'api',
-                'authenticator',
-                'scheduler',
-              ],
-            },
-            {
-              enabled: false,
-              types: [
-                'audit',
-                'controllerManager',
-              ],
-            },
-          ],
-        },
-      },
-    });
-  });
-
-  test('create a cluster with all logging configure', () => {
-    // GIVEN
-    const { stack } = testFixture();
-
-    // WHEN
-    new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      clusterLogging: [
-        eks.ClusterLoggingTypes.API,
-        eks.ClusterLoggingTypes.AUDIT,
-        eks.ClusterLoggingTypes.AUTHENTICATOR,
-        eks.ClusterLoggingTypes.CONTROLLER_MANAGER,
-        eks.ClusterLoggingTypes.SCHEDULER,
-      ],
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
-        logging: {
-          clusterLogging: [
-            {
-              enabled: true,
-              types: [
-                'api',
-                'audit',
-                'authenticator',
-                'controllerManager',
-                'scheduler',
-              ],
-            },
-            {
-              enabled: false,
-              types: [],
-            },
-          ],
         },
       },
     });

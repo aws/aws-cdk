@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "cd0db44e940f2fdeff9e467d9fe0f2822733a56b6ab405747da5cf7a8ffca6b3": {
+      "source": {
+        "path": "iotevents-put-message-action-test-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cd0db44e940f2fdeff9e467d9fe0f2822733a56b6ab405747da5cf7a8ffca6b3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

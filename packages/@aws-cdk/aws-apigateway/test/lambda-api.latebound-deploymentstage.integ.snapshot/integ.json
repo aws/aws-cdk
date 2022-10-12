@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.lambda-api.latebound-deploymentstage": {
+    "lambda-api-latebound-deploymentstage/DefaultTest": {
       "stacks": [
         "LateBoundDeploymentStageStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

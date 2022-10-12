@@ -14,14 +14,14 @@
     "parameters": {
      "Entries": [
       {
-       "Detail": "{\"date\":\"abc1655234384146\"}",
+       "Detail": "{\"date\":\"abc1663960602347\"}",
        "DetailType": "cdk-integ-custom-rule",
        "Source": "cdk-integ"
       }
      ]
     },
     "flattenResponse": "false",
-    "salt": "1655234384148"
+    "salt": "1663960602348"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -91,41 +91,9 @@
     "Runtime": "nodejs14.x",
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3BucketA9F12763"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3VersionKey589F30A2"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3VersionKey589F30A2"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "d47f7e6772bfdf47ecbc070ffe204baf53bacbfbf7814eb407bd8ea108c1c1bb.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -148,69 +116,67 @@
     },
     "service": "CloudWatchLogs",
     "api": "filterLogEvents",
+    "expected": "{\"$StringLike\":\"abc1663960602347\"}",
+    "actualPath": "events.0.message",
     "parameters": {
      "logGroupName": {
       "Fn::ImportValue": "log-group-events:ExportsOutputRefloggroup2F19C5C9B4F4C6918"
      },
-     "startTime": "1655234384146",
+     "startTime": "1663960602347",
      "limit": 1
     },
     "flattenResponse": "true",
-    "salt": "1655234384149"
+    "salt": "1663960602348"
    },
    "DependsOn": [
     "AwsApiCallEventBridgeputEvents"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallCloudWatchLogsfilterLogEventsAssertEqualsCloudWatchLogsfilterLogEvents148E959E": {
-   "Type": "Custom::DeployAssert@AssertEquals",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "actual": {
-     "Fn::GetAtt": [
-      "AwsApiCallCloudWatchLogsfilterLogEvents",
-      "apiCallResponse.events.0.message"
-     ]
-    },
-    "expected": "{\"$StringLike\":\"abc1655234384146\"}",
-    "salt": "1655234384149"
-   },
-   "DependsOn": [
-    "AwsApiCallEventBridgeputEvents"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  }
- },
- "Parameters": {
-  "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3BucketA9F12763": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736\""
-  },
-  "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736S3VersionKey589F30A2": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736\""
-  },
-  "AssetParameters41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736ArtifactHash2CC614EA": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"41fc8f2dc7c01b34dda9916c7f763e7b7909eb629da9ffe879cb786114aae736\""
   }
  },
  "Outputs": {
-  "AssertionResultsAssertEqualsCloudWatchLogsfilterLogEvents": {
+  "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudWatchLogsfilterLogEventsAssertEqualsCloudWatchLogsfilterLogEvents148E959E",
-     "data"
+     "AwsApiCallCloudWatchLogsfilterLogEvents",
+     "assertion"
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

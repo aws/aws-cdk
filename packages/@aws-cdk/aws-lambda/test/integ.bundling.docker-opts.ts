@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
@@ -43,7 +42,7 @@ class TestStack extends Stack {
 const app = new App();
 const stack = new TestStack(app, 'cdk-integ-lambda-bundling-docker-bundling-opts');
 
-const integ = new IntegTest(app, 'Bundling', {
+const integ = new IntegTest(app, 'DockerOptsBundling', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });

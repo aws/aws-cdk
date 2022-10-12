@@ -103,7 +103,10 @@ export interface BackupVaultProps {
 }
 
 /**
- * Backup vault events
+ * Backup vault events. Some events are no longer supported and will not return
+ * statuses or notifications.
+ *
+ * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/API_PutBackupVaultNotifications.html#API_PutBackupVaultNotifications_RequestBody
  */
 export enum BackupVaultEvents {
   /** BACKUP_JOB_STARTED */
@@ -136,6 +139,10 @@ export enum BackupVaultEvents {
   BACKUP_PLAN_CREATED = 'BACKUP_PLAN_CREATED',
   /** BACKUP_PLAN_MODIFIED */
   BACKUP_PLAN_MODIFIED = 'BACKUP_PLAN_MODIFIED',
+  /** S3_BACKUP_OBJECT_FAILED */
+  S3_BACKUP_OBJECT_FAILED = 'S3_BACKUP_OBJECT_FAILED',
+  /** BACKUP_PLAN_MODIFIED */
+  S3_RESTORE_OBJECT_FAILED = 'S3_RESTORE_OBJECT_FAILED',
 }
 
 /**

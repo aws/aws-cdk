@@ -767,9 +767,6 @@
      "email",
      "phone_number"
     ],
-    "UserAttributeUpdateSettings": {
-     "AttributesRequireVerificationBeforeUpdate": ["email", "phone_number"]
-    },
     "EmailVerificationMessage": "verification email body from the integ test. Code is {####}.",
     "EmailVerificationSubject": "verification email subject from the integ test",
     "LambdaConfig": {
@@ -902,6 +899,12 @@
      }
     },
     "SmsVerificationMessage": "verification sms message from the integ test. Code is {####}.",
+    "UserAttributeUpdateSettings": {
+     "AttributesRequireVerificationBeforeUpdate": [
+      "email",
+      "phone_number"
+     ]
+    },
     "UserPoolName": "MyUserPool",
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",
@@ -945,6 +948,40 @@
      ]
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

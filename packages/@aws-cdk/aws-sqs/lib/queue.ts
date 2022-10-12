@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Duration, RemovalPolicy, Stack, Token, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -87,12 +88,12 @@ export interface QueueProps {
    * Be aware that encryption is not available in all regions, please see the docs
    * for current availability details.
    *
-   * @default Unencrypted
+   * @default SQS_MANAGED (SSE-SQS) for newly created queues
    */
   readonly encryption?: QueueEncryption;
 
   /**
-   * External KMS master key to use for queue encryption.
+   * External KMS key to use for queue encryption.
    *
    * Individual messages will be encrypted using data keys. The data keys in
    * turn will be encrypted using this key, and reused for a maximum of
@@ -169,6 +170,14 @@ export interface QueueProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Enforce encryption of data in transit.
+   * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-security-best-practices.html#enforce-encryption-data-in-transit
+   *
+   * @default false
+   */
+  readonly enforceSSL?: boolean;
 }
 
 /**
@@ -196,9 +205,9 @@ export enum QueueEncryption {
   UNENCRYPTED = 'NONE',
 
   /**
-   * Server-side KMS encryption with a master key managed by SQS.
+   * Server-side KMS encryption with a KMS key managed by SQS.
    */
-  KMS_MANAGED = 'MANAGED',
+  KMS_MANAGED = 'KMS_MANAGED',
 
   /**
    * Server-side encryption with a KMS key managed by the user.
@@ -206,6 +215,14 @@ export enum QueueEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+
+  /**
+   * Server-side encryption key managed by SQS (SSE-SQS).
+   *
+   * To learn more about SSE-SQS on Amazon SQS, please visit the
+   * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
+   */
+  SQS_MANAGED = 'SQS_MANAGED'
 }
 
 /**
@@ -369,14 +386,26 @@ export class Queue extends QueueBase {
     this.deadLetterQueue = props.deadLetterQueue;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
-      let encryption = props.encryption || QueueEncryption.UNENCRYPTED;
+      let encryption = props.encryption;
+
+      if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
+        throw new Error("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used");
+      }
 
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
         encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
       }
 
-      if (encryption === QueueEncryption.UNENCRYPTED) {
+      if (!encryption) {
         return { encryptionProps: {} };
+      }
+
+      if (encryption === QueueEncryption.UNENCRYPTED) {
+        return {
+          encryptionProps: {
+            sqsManagedSseEnabled: false,
+          },
+        };
       }
 
       if (encryption === QueueEncryption.KMS_MANAGED) {
@@ -402,7 +431,20 @@ export class Queue extends QueueBase {
         };
       }
 
+      if (encryption === QueueEncryption.SQS_MANAGED) {
+        return {
+          encryptionProps: {
+            sqsManagedSseEnabled: true,
+          },
+        };
+      }
+
       throw new Error(`Unexpected 'encryptionType': ${encryption}`);
+    }
+
+    // Enforce encryption of data in transit
+    if (props.enforceSSL) {
+      this.enforceSSLStatement();
     }
   }
 
@@ -447,6 +489,22 @@ export class Queue extends QueueBase {
       fifoQueue,
     };
   }
+
+  /**
+   * Adds an iam statement to enforce encryption of data in transit.
+   */
+  private enforceSSLStatement() {
+    const statement = new iam.PolicyStatement({
+      actions: ['sqs:*'],
+      conditions: {
+        Bool: { 'aws:SecureTransport': 'false' },
+      },
+      effect: iam.Effect.DENY,
+      resources: [this.queueArn],
+      principals: [new iam.AnyPrincipal()],
+    });
+    this.addToResourcePolicy(statement);
+  }
 }
 
 interface FifoProps {
@@ -459,4 +517,5 @@ interface FifoProps {
 interface EncryptionProps {
   readonly kmsMasterKeyId?: string;
   readonly kmsDataKeyReusePeriodSeconds?: number;
+  readonly sqsManagedSseEnabled?: boolean;
 }

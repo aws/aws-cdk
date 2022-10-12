@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "integ.opensearch.vpc": {
+    "cdk-integ-opensearch-vpc-test/DefaultTest": {
       "stacks": [
         "cdk-integ-opensearch-vpc"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-integ-opensearch-vpc-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegopensearchvpctestDefaultTestDeployAssertF8864CE2"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

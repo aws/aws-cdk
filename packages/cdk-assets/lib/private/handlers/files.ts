@@ -27,6 +27,8 @@ export class FileAssetHandler implements IAssetHandler {
     this.fileCacheRoot = path.join(workDir, '.cache');
   }
 
+  public async build(): Promise<void> {}
+
   public async publish(): Promise<void> {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
     const s3Url = `s3://${destination.bucketName}/${destination.objectKey}`;
@@ -141,7 +143,7 @@ export class FileAssetHandler implements IAssetHandler {
       }
 
       this.host.emitMessage(EventType.BUILD, `Zip ${fullPath} -> ${packagedPath}`);
-      await zipDirectory(fullPath, packagedPath);
+      await zipDirectory(fullPath, packagedPath, (m) => this.host.emitMessage(EventType.DEBUG, m));
       return { packagedPath, contentType };
     } else {
       const contentType = mime.getType(fullPath) ?? 'application/octet-stream';

@@ -16,7 +16,7 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
     stack.dependencies
       .map(({ id }) => id)
       .filter((id) => !id.endsWith('.assets'))
-      .every((id) => deploymentStates[id] === 'completed');
+      .every((id) => !deploymentStates[id] || deploymentStates[id] === 'completed'); // Dependency not selected or already finished
 
   const hasAnyStackFailed = (states: Record<string, DeploymentState>) => Object.values(states).includes('failed');
 
@@ -37,6 +37,8 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
           deploymentStates[stack.id] = 'deploying';
 
           await deployStack(stack).catch((err) => {
+            // By recording the failure immediately as the queued task exits, we prevent the next
+            // queued task from starting (its 'hasAnyStackFailed' will return 'true').
             deploymentStates[stack.id] = 'failed';
             throw err;
           });
@@ -44,6 +46,7 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
           deploymentStates[stack.id] = 'completed';
           enqueueStackDeploys();
         }).catch((err) => {
+          deploymentStates[stack.id] = 'failed';
           deploymentErrors.push(err);
         });
       }
@@ -56,5 +59,11 @@ export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], 
 
   if (deploymentErrors.length) {
     throw Error(`Stack Deployments Failed: ${deploymentErrors}`);
+  }
+
+  // We shouldn't be able to get here, but check it anyway
+  const neverUnblocked = Object.entries(deploymentStates).filter(([_, s]) => s === 'pending').map(([n, _]) => n);
+  if (neverUnblocked.length > 0) {
+    throw new Error(`The following stacks never became unblocked: ${neverUnblocked.join(', ')}. Please report this at https://github.com/aws/aws-cdk/issues`);
   }
 };

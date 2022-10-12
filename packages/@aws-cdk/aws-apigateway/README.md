@@ -389,6 +389,22 @@ declare const lambdaFn: lambda.Function;
 importedKey.grantRead(lambdaFn);
 ```
 
+### Adding an API Key to an imported RestApi
+
+API Keys are added to ApiGateway Stages, not to the API itself. When you import a RestApi
+it does not have any information on the Stages that may be associated with it. Since adding an API
+Key requires a stage, you should instead add the Api Key to the imported Stage.
+
+```ts
+declare const restApi: apigateway.IRestApi;
+const importedStage = apigateway.Stage.fromStageAttributes(this, 'imported-stage', {
+  stageName: 'myStageName',
+  restApi,
+});
+
+importedStage.addApiKey('MyApiKey');
+```
+
 ### ⚠️ Multiple API Keys
 
 It is possible to specify multiple API keys for a given Usage Plan, by calling `usagePlan.addApiKey()`.
@@ -426,7 +442,7 @@ declare const api: apigateway.RestApi;
 
 const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
   customerId: 'hello-customer',
-  resources: [api],
+  stages: [api.deploymentStage],
   quota: {
     limit: 10000,
     period: apigateway.Period.MONTH
@@ -724,7 +740,51 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 
 A full working example is shown below.
 
-[Full token authorizer example](test/authorizers/integ.token-authorizer.lit.ts).
+```ts
+import * as path from 'path';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { App, Stack } from '@aws-cdk/core';
+import { MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer, Cors } from '../../lib';
+
+/// !show
+const app = new App();
+const stack = new Stack(app, 'TokenAuthorizerInteg');
+
+const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
+});
+
+const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
+  handler: authorizerFn,
+});
+
+const restapi = new RestApi(stack, 'MyRestApi', {
+  cloudWatchRole: true,
+  defaultMethodOptions: {
+    authorizer,
+  },
+  defaultCorsPreflightOptions: {
+    allowOrigins: Cors.ALL_ORIGINS,
+  },
+});
+
+
+restapi.root.addMethod('ANY', new MockIntegration({
+  integrationResponses: [
+    { statusCode: '200' },
+  ],
+  passthroughBehavior: PassthroughBehavior.NEVER,
+  requestTemplates: {
+    'application/json': '{ "statusCode": 200 }',
+  },
+}), {
+  methodResponses: [
+    { statusCode: '200' },
+  ],
+});
+```
 
 By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
 however, be modified by changing the `identitySource` property.
@@ -842,18 +902,29 @@ API.
 The following example will configure API Gateway to emit logs and data traces to
 AWS CloudWatch for all API calls:
 
-> By default, an IAM role will be created and associated with API Gateway to
-allow it to write logs and metrics to AWS CloudWatch unless `cloudWatchRole` is
-set to `false`.
+> Note: whether or not this is enabled or disabled by default is controlled by the
+`@aws-cdk/aws-apigateway:disableCloudWatchRole` feature flag. When this feature flag
+is set to `false` the default behavior will set `cloudWatchRole=true`
+
+This is controlled via the `@aws-cdk/aws-apigateway:disableCloudWatchRole` feature flag and
+is disabled by default. When enabled (or `@aws-cdk/aws-apigateway:disableCloudWatchRole=false`),
+an IAM role will be created and associated with API Gateway to allow it to write logs and metrics to AWS CloudWatch.
 
 ```ts
 const api = new apigateway.RestApi(this, 'books', {
+  cloudWatchRole: true,
   deployOptions: {
     loggingLevel: apigateway.MethodLoggingLevel.INFO,
     dataTraceEnabled: true
   }
 })
 ```
+
+> Note: there can only be a single apigateway.CfnAccount per AWS environment
+so if you create multiple `RestApi`s with `cloudWatchRole=true` each new `RestApi`
+will overwrite the `CfnAccount`. It is recommended to set `cloudWatchRole=false`
+(the default behavior if `@aws-cdk/aws-apigateway:disableCloudWatchRole` is enabled)
+and only create a single CloudWatch role and account per environment.
 
 ### Deep dive: Invalidation of deployments
 
@@ -939,8 +1010,8 @@ domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
 domain.addBasePathMapping(api2, { basePath: 'boom' });
 ```
 
-You can specify the API `Stage` to which this base path URL will map to. By default, this will be the
-`deploymentStage` of the `RestApi`.
+By default, the base path URL will map to the `deploymentStage` of the `RestApi`.
+You can specify a different API `Stage` to which the base path URL will map to.
 
 ```ts
 declare const domain: apigateway.DomainName;
@@ -955,6 +1026,19 @@ const betaStage = new apigateway.Stage(this, 'beta-stage', {
 domain.addBasePathMapping(restapi, { basePath: 'api/beta', stage: betaStage });
 ```
 
+It is possible to create a base path mapping without associating it with a
+stage by using the `attachToStage` property. When set to `false`, the stage must be
+included in the URL when invoking the API. For example,
+<https://example.com/myapi/prod> will invoke the stage named `prod` from the
+`myapi` base path mapping.
+
+```ts
+declare const domain: apigateway.DomainName;
+declare const api: apigateway.RestApi;
+
+domain.addBasePathMapping(api, { basePath: 'myapi', attachToStage: false });
+```
+
 If you don't specify `basePath`, all URLs under this domain will be mapped
 to the API, and you won't be able to map another API to the same domain:
 
@@ -966,6 +1050,23 @@ domain.addBasePathMapping(api);
 
 This can also be achieved through the `mapping` configuration when defining the
 domain as demonstrated above.
+
+Base path mappings can also be created with the `BasePathMapping` resource.
+
+```ts
+declare const api: apigateway.RestApi;
+
+const domainName = apigateway.DomainName.fromDomainNameAttributes(this, 'DomainName', {
+  domainName: 'domainName',
+  domainNameAliasHostedZoneId: 'domainNameAliasHostedZoneId',
+  domainNameAliasTarget: 'domainNameAliasTarget',
+});
+
+new apigateway.BasePathMapping(this, 'BasePathMapping', {
+  domainName: domainName,
+  restApi: api,
+});
+```
 
 If you wish to setup this domain with an Amazon Route53 alias, use the `targets.ApiGatewayDomain`:
 
@@ -1044,7 +1145,8 @@ new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
     accessLogFormat: apigateway.AccessLogFormat.custom(
-      `${apigateway.AccessLogField.contextRequestId()} ${apigateway.AccessLogField.contextErrorMessage()} ${apigateway.AccessLogField.contextErrorMessageString()}`
+      `${apigateway.AccessLogField.contextRequestId()} ${apigateway.AccessLogField.contextErrorMessage()} ${apigateway.AccessLogField.contextErrorMessageString()}
+      ${apigateway.AccessLogField.contextAuthorizerError()} ${apigateway.AccessLogField.contextAuthorizerIntegrationStatus()}`
     )
   }
 });

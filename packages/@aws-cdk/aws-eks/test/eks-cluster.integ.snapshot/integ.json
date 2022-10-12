@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "integ.eks-cluster": {
+    "aws-cdk-eks-cluster/DefaultTest": {
       "stacks": [
         "aws-cdk-eks-cluster-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "assertionStack": "aws-cdk-eks-cluster/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterDefaultTestDeployAssertFBF4B356"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

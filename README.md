@@ -28,6 +28,8 @@ The CDK is available in the following languages:
 * .NET ([.NET Core ≥ 3.1](https://dotnet.microsoft.com/download))
 * Go ([Go ≥ 1.16.4](https://golang.org/))
 
+Third-party Language Deprecation: language version is only supported until its EOL (End Of Life) shared by the vendor or community and is subject to change with prior notice.
+
 \
 Jump To:
 [Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide) |

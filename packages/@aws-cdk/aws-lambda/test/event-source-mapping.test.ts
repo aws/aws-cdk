@@ -1,6 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition } from '../lib';
+import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
 
 let stack: cdk.Stack;
 let fn: Function;
@@ -154,6 +154,46 @@ describe('event source mapping', () => {
     })).toThrow(/kafkaBootStrapServers must not be empty if set/);
   });
 
+  test('throws if kafkaConsumerGroupId is invalid', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+      kafkaConsumerGroupId: 'some invalid',
+      target: fn,
+    })).toThrow('kafkaConsumerGroupId contain ivalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+  });
+
+  test('throws if kafkaConsumerGroupId is too long', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+      kafkaConsumerGroupId: 'x'.repeat(201),
+      target: fn,
+    })).toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
+  });
+
+  test('not throws if kafkaConsumerGroupId is empty', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+      kafkaConsumerGroupId: '',
+      target: fn,
+    })).not.toThrow();
+  });
+
+  test('not throws if kafkaConsumerGroupId is valid for amazon managed kafka', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+      kafkaConsumerGroupId: 'someValidConsumerGroupId',
+      target: fn,
+    })).not.toThrow();
+  });
+
+  test('not throws if kafkaConsumerGroupId is valid for self managed kafka', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      kafkaBootstrapServers: ['kafka-broker-1:9092', 'kafka-broker-2:9092'],
+      kafkaConsumerGroupId: 'someValidConsumerGroupId',
+      target: fn,
+    })).not.toThrow();
+  });
+
   test('eventSourceArn appears in stack', () => {
     const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
       type: 'String',
@@ -169,6 +209,71 @@ describe('event source mapping', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       EventSourceArn: eventSourceArn,
+    });
+  });
+
+  test('filter with one pattern', () => {
+    const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
+      type: 'String',
+    });
+
+    let eventSourceArn = 'some-arn';
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: eventSourceArn,
+      kafkaTopic: topicNameParam.valueAsString,
+      filters: [
+        FilterCriteria.filter({
+          numericEquals: FilterRule.isEqual(1),
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FilterCriteria: {
+        Filters: [
+          {
+            Pattern: '{"numericEquals":[{"numeric":["=",1]}]}',
+          },
+        ],
+      },
+    });
+  });
+
+  test('filter with more than one pattern', () => {
+    const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
+      type: 'String',
+    });
+
+    let eventSourceArn = 'some-arn';
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: eventSourceArn,
+      kafkaTopic: topicNameParam.valueAsString,
+      filters: [
+        FilterCriteria.filter({
+          orFilter: FilterRule.or('one', 'two'),
+          stringEquals: FilterRule.isEqual('test'),
+        }),
+        FilterCriteria.filter({
+          numericEquals: FilterRule.isEqual(1),
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FilterCriteria: {
+        Filters: [
+          {
+            Pattern: '{"orFilter":["one","two"],"stringEquals":["test"]}',
+          },
+          {
+            Pattern: '{"numericEquals":[{"numeric":["=",1]}]}',
+          },
+        ],
+      },
     });
   });
 

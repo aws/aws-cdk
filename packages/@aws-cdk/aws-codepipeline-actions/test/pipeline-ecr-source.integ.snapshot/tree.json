@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.85"
         }
       },
       "aws-cdk-codepipeline-ecr-source": {
@@ -380,17 +380,99 @@
                           "fqn": "@aws-cdk/aws-iam.Role",
                           "version": "0.0.0"
                         }
+                      },
+                      "awscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule": {
+                        "id": "awscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule",
+                        "path": "aws-cdk-codepipeline-ecr-source/MyPipeline/Source/ECR_Source/awscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-codepipeline-ecr-source/MyPipeline/Source/ECR_Source/awscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                              "aws:cdk:cloudformation:props": {
+                                "eventPattern": {
+                                  "detail-type": [
+                                    "ECR Image Action"
+                                  ],
+                                  "source": [
+                                    "aws.ecr"
+                                  ],
+                                  "detail": {
+                                    "result": [
+                                      "SUCCESS"
+                                    ],
+                                    "repository-name": [
+                                      {
+                                        "Ref": "MyEcrRepo767466D0"
+                                      }
+                                    ],
+                                    "image-tag": [
+                                      "latest"
+                                    ],
+                                    "action-type": [
+                                      "PUSH"
+                                    ]
+                                  }
+                                },
+                                "state": "ENABLED",
+                                "targets": [
+                                  {
+                                    "id": "Target0",
+                                    "arn": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":codepipeline:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "MyPipelineAED38ECF"
+                                          }
+                                        ]
+                                      ]
+                                    },
+                                    "roleArn": {
+                                      "Fn::GetAtt": [
+                                        "MyPipelineEventsRoleFAB99F32",
+                                        "Arn"
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-events.CfnRule",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-events.Rule",
+                          "version": "0.0.0"
+                        }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.85"
                 }
               },
               "EventsRole": {
@@ -550,13 +632,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.85"
                 }
               }
             },
@@ -580,104 +662,83 @@
                   "fqn": "@aws-cdk/aws-ecr.CfnRepository",
                   "version": "0.0.0"
                 }
-              },
-              "awscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule": {
-                "id": "awscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule",
-                "path": "aws-cdk-codepipeline-ecr-source/MyEcrRepo/awscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-codepipeline-ecr-source/MyEcrRepo/awscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Events::Rule",
-                      "aws:cdk:cloudformation:props": {
-                        "eventPattern": {
-                          "source": [
-                            "aws.ecr"
-                          ],
-                          "detail-type": [
-                            "AWS API Call via CloudTrail"
-                          ],
-                          "detail": {
-                            "requestParameters": {
-                              "repositoryName": [
-                                {
-                                  "Ref": "MyEcrRepo767466D0"
-                                }
-                              ],
-                              "imageTag": [
-                                "latest"
-                              ]
-                            },
-                            "eventName": [
-                              "PutImage"
-                            ]
-                          }
-                        },
-                        "state": "ENABLED",
-                        "targets": [
-                          {
-                            "id": "Target0",
-                            "arn": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":codepipeline:",
-                                  {
-                                    "Ref": "AWS::Region"
-                                  },
-                                  ":",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ":",
-                                  {
-                                    "Ref": "MyPipelineAED38ECF"
-                                  }
-                                ]
-                              ]
-                            },
-                            "roleArn": {
-                              "Fn::GetAtt": [
-                                "MyPipelineEventsRoleFAB99F32",
-                                "Arn"
-                              ]
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-events.CfnRule",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-events.Rule",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-ecr.Repository",
               "version": "0.0.0"
             }
+          },
+          "LoginCommand": {
+            "id": "LoginCommand",
+            "path": "aws-cdk-codepipeline-ecr-source/LoginCommand",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          },
+          "PushCommand": {
+            "id": "PushCommand",
+            "path": "aws-cdk-codepipeline-ecr-source/PushCommand",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          },
+          "PipelineConsoleLink": {
+            "id": "PipelineConsoleLink",
+            "path": "aws-cdk-codepipeline-ecr-source/PipelineConsoleLink",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "ecr-source-action": {
+        "id": "ecr-source-action",
+        "path": "ecr-source-action",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ecr-source-action/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ecr-source-action/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ecr-source-action/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

@@ -187,6 +187,43 @@ const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
 });
 ```
 
+Note that if your launch template explicitly specifies network interfaces,
+for example to use an Elastic Fabric Adapter, you must use those security groups rather
+than allow the `ComputeEnvironment` to define them.  This is done by setting
+`useNetworkInterfaceSecurityGroups` in the launch template property of the environment.
+For example:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const efaSecurityGroup = new ec2.SecurityGroup(this, 'EFASecurityGroup', {
+  vpc,
+});
+
+const launchTemplateEFA = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+  launchTemplateName: 'LaunchTemplateName',
+  launchTemplateData: {
+    networkInterfaces: [{
+      deviceIndex: 0,
+      subnetId: vpc.privateSubnets[0].subnetId,
+      interfaceType: 'efa',
+      groups: [efaSecurityGroup.securityGroupId],
+    }],
+  },
+});
+
+const computeEnvironmentEFA = new batch.ComputeEnvironment(this, 'EFAComputeEnv', {
+  managed: true,
+  computeResources: {
+    vpc,
+    launchTemplate: {
+      launchTemplateName: launchTemplateEFA.launchTemplateName as string,
+      useNetworkInterfaceSecurityGroups: true,
+    },
+  },
+});
+```
+
 ### Importing an existing Compute Environment
 
 To import an existing batch compute environment, call `ComputeEnvironment.fromComputeEnvironmentArn()`.
