@@ -137,8 +137,8 @@ describe('domains', () => {
     });
   });
 
-  describe('apiMapping', () => {
-    test('"apiMapping" can be used to automatically map this domain to the deployment stage of an API', () => {
+  describe('multi-level mapping', () => {
+    test('can add a multi-level path', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.RestApi(stack, 'api');
@@ -216,8 +216,12 @@ describe('domains', () => {
         certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       });
       domain.addApiMapping(api.deploymentStage);
+      domain.addApiMapping(api.deploymentStage, { basePath: '//' });
       domain.addApiMapping(api.deploymentStage, {
         basePath: 'v1/my-api',
+      });
+      domain.addApiMapping(api.deploymentStage, {
+        basePath: 'v1//my-api',
       });
 
       // THEN
@@ -242,7 +246,31 @@ describe('domains', () => {
         'Stage': {
           'Ref': 'apiDeploymentStageprod896C8101',
         },
+        'ApiMappingKey': '//',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
+        'DomainName': {
+          'Ref': 'Domain66AC69E0',
+        },
+        'ApiId': {
+          'Ref': 'apiC8550315',
+        },
+        'Stage': {
+          'Ref': 'apiDeploymentStageprod896C8101',
+        },
         'ApiMappingKey': 'v1/my-api',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
+        'DomainName': {
+          'Ref': 'Domain66AC69E0',
+        },
+        'ApiId': {
+          'Ref': 'apiC8550315',
+        },
+        'Stage': {
+          'Ref': 'apiDeploymentStageprod896C8101',
+        },
+        'ApiMappingKey': 'v1//my-api',
       });
     });
 

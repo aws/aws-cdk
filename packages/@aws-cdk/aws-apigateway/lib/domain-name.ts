@@ -194,7 +194,7 @@ export class DomainName extends Resource implements IDomainName {
   }
 
   private isMultiLevel(path?: string): boolean {
-    return (path?.split('/') ?? []).length >= 2;
+    return (path?.split('/').filter(x => !!x) ?? []).length >= 2;
   }
 
   /**
