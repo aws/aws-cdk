@@ -112,7 +112,7 @@
     "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
-    "semver": "^7.3.7",
+    "semver": "^7.3.8",
     "yaml": "1.10.2"
   },
   "devDependencies": {
@@ -368,7 +368,7 @@
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
     "constructs": "^3.3.69",
-    "esbuild": "^0.15.8",
+    "esbuild": "^0.15.10",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
