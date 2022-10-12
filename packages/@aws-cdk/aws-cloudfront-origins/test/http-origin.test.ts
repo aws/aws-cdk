@@ -30,6 +30,7 @@ test('Renders minimal example with just a domain name', () => {
 
 test('renders an example with all available props', () => {
   const origin = new HttpOrigin('www.example.com', {
+    originId: 'MyCustomOrigin',
     originPath: '/app',
     connectionTimeout: Duration.seconds(5),
     connectionAttempts: 2,
@@ -44,7 +45,7 @@ test('renders an example with all available props', () => {
   const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
   expect(originBindConfig.originProperty).toEqual({
-    id: 'StackOrigin029E19582',
+    id: 'MyCustomOrigin',
     domainName: 'www.example.com',
     originPath: '/app',
     connectionTimeout: 5,
