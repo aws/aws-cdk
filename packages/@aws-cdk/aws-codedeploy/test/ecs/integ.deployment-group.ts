@@ -87,6 +87,9 @@ taskDefinition.addContainer('Container', {
 const service = new ecs.FargateService(stack, 'FargateService', {
   cluster,
   taskDefinition,
+  deploymentController: {
+    type: ecs.DeploymentControllerType.CODE_DEPLOY,
+  },
 });
 
 // A second task definition for testing a CodeDeploy deployment of the ECS service to a new task definition

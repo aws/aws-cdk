@@ -407,14 +407,23 @@ When you publish a new version of the task definition and start a CodeDeploy dep
 CodeDeploy can send a small percentage of traffic to the new 'green' task set behind the 'green' target group,
 monitor, and validate before shifting 100% of traffic to the new version.
 
-To create a new CodeDeploy Deployment Group that deploys to a ECS service:
+To create a new CodeDeploy Deployment Group that deploys to an ECS service:
 
 ```ts
 declare const myApplication: codedeploy.EcsApplication;
-declare const service: ecs.FargateService;
-declare const blueTargetGroup = elbv2.ITargetGroup;
-declare const greenTargetGroup = elbv2.ITargetGroup;
-declare const listener = elbv2.IApplicationListener;
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.FargateTaskDefinition;
+declare const blueTargetGroup: elbv2.ITargetGroup;
+declare const greenTargetGroup: elbv2.ITargetGroup;
+declare const listener: elbv2.IApplicationListener;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentController: {
+    type: ecs.DeploymentControllerType.CODE_DEPLOY,
+  },
+});
 
 new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
   services: [service],
@@ -521,10 +530,10 @@ task set/target group prior to shifting any production traffic during the deploy
 ```ts
 declare const myApplication: codedeploy.EcsApplication;
 declare const service: ecs.FargateService;
-declare const blueTargetGroup = elbv2.ITargetGroup;
-declare const greenTargetGroup = elbv2.ITargetGroup;
-declare const listener = elbv2.IApplicationListener;
-declare const testListener = elbv2.IApplicationListener;
+declare const blueTargetGroup: elbv2.ITargetGroup;
+declare const greenTargetGroup: elbv2.ITargetGroup;
+declare const listener: elbv2.IApplicationListener;
+declare const testListener: elbv2.IApplicationListener;
 
 new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
   services: [service],
@@ -535,6 +544,7 @@ new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
     testListener,
   },
   deploymentConfig: codedeploy.EcsDeploymentConfig.CANARY_10PERCENT_5MINUTES,
+});
 ```
 
 Automated validation steps can run during the CodeDeploy deployment after shifting test traffic and before

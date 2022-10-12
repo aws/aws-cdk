@@ -1,6 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { BaseService } from '@aws-cdk/aws-ecs';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -155,20 +154,7 @@ export interface EcsDeploymentGroupProps {
   readonly role?: iam.IRole;
 
   /**
-   * The ECS services to deploy.
-   *
-   * If you provide an {@link ecs.BaseService} such as {@link ecs.FargateService},
-   * the ECS service's deployment controller property will be automatically updated to
-   * `CODE_DEPLOY`.  If you provide an imported ECS service, you are responsible for
-   * configuring the service's deployment controller property to be `CODE_DEPLOY`.
-   *
-   * For non-imported services, the ECS service's task definition property will also
-   * be updated to remove the task definition revision ID.  This change prevents CloudFormation from
-   * attempting to re-deploy the service when a new revision of the task definition is
-   * created by the stack.  In order to deploy a new task definition revision to the ECS
-   * service after stack creation, deploy the change directly through CodeDeploy using
-   * the CodeDeploy APIs or console. When the `CODE_DEPLOY` deployment controller is used,
-   * the ECS service cannot be deployed with a new task definition revision through CloudFormation.
+   * The ECS services to deploy with this Deployment Group.
    */
   readonly services: ecs.IBaseService[];
 
@@ -237,21 +223,6 @@ export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGr
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
     this.deploymentConfig = props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE;
-
-    for (const service of props.services) {
-      if (cdk.Resource.isOwnedResource(service)) {
-        // Ensure the service's deployment controller is CodeDeploy
-        const cfnService = service.node.defaultChild as ecs.CfnService;
-        cfnService.deploymentController = { type: ecs.DeploymentControllerType.CODE_DEPLOY };
-
-        // Strip the revision ID from the service's task definition property to
-        // prevent new task def revisions in the stack from triggering updates
-        // to the stack's ECS service resource
-        const taskDef = (service as BaseService).taskDefinition;
-        cfnService.taskDefinition = taskDef.family;
-        service.node.addDependency(taskDef);
-      }
-    }
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
