@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Annotations, FileSystem } from '@aws-cdk/core';

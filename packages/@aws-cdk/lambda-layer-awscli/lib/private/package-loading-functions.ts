@@ -40,11 +40,37 @@ export function _downloadPackage(packageName: string, packageNpmTarPrefix: strin
     logs.push(`Using package archive already available at location: ${downloadPath}`);
     return downloadPath;
   }
-  logs.push(`Downloading package using npm pack to: ${downloadDir}`);
-  fs.mkdirSync(downloadDir);
-  childproc.execSync(`npm pack ${packageName}@${targetVersion} -q`, {
-    cwd: downloadDir,
-  });
+
+  logs.push(`Creating directory: ${downloadDir}`);
+  try {
+    fs.mkdirSync(downloadDir);
+  } catch (e) {
+    if ((e as any)?.code === 'EEXIST') {
+      logs.push(`Directory ${downloadDir} already exists.`);
+    } else {
+      logs.push('mkdirSync() failed');
+      const eAsError = e as Error;
+      if (eAsError.stack) {
+        logs.push(eAsError.stack);
+      }
+      return undefined;
+    }
+  }
+
+  try {
+    childproc.execSync(`npm pack ${packageName}@${targetVersion} -q`, {
+      cwd: downloadDir,
+    });
+  } catch (e) {
+    logs.push('npm pack failed or timed out');
+    const eAsError = e as Error;
+    logs.push(eAsError.name);
+    logs.push(eAsError.message);
+    if (eAsError.stack) {
+      logs.push(eAsError.stack);
+    }
+  }
+
   if (fs.existsSync(downloadPath)) {
     logs.push('Successfully downloaded using npm pack.');
     return downloadPath;
