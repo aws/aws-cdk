@@ -2,6 +2,8 @@ import { env } from 'process';
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { AwsCliLayer } from '../lib';
+import * as package_loading_functions from '../lib/private/package-loading-functions';
+
 
 describe('create a layer version', () => {
 
@@ -32,7 +34,7 @@ describe('create a layer version', () => {
   test('downloading and installing package', () => {
     // GIVEN
     // Makes AwsCliLayer._tryLoadPackage return undefined
-    jest.spyOn(AwsCliLayer, '_tryLoadPackage').mockReturnValue(undefined);
+    jest.spyOn(package_loading_functions, '_tryLoadPackage').mockReturnValue(undefined);
 
     const stack = new Stack();
 
@@ -50,8 +52,8 @@ describe('create a layer version', () => {
   test('using the fallback', () => {
     // GIVEN
     // Makes AwsCliLayer._tryLoadPackage and AwsCliLayer._downloadPackge return undefined
-    jest.spyOn(AwsCliLayer, '_tryLoadPackage').mockReturnValue(undefined);
-    jest.spyOn(AwsCliLayer, '_downloadPackage').mockReturnValue(undefined);
+    jest.spyOn(package_loading_functions, '_tryLoadPackage').mockReturnValue(undefined);
+    jest.spyOn(package_loading_functions, '_downloadPackage').mockReturnValue(undefined);
 
     const stack = new Stack();
 
