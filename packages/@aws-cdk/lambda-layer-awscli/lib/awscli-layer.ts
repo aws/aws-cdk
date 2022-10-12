@@ -4,7 +4,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Annotations, FileSystem } from '@aws-cdk/core';
 import { debugModeEnabled } from '@aws-cdk/core/lib/debug';
 import { Construct } from 'constructs';
-import { installAndLoadPackage, requireWrapper, _downloadPackage, _tryLoadPackage } from './private/package-loading-functions';
+import { TARGET_VERSION } from './asset-package-version';
+import { installAndLoadPackage, _downloadPackage, _tryLoadPackage } from './private/package-loading-functions';
 
 /**
  * An AWS Lambda layer that includes the AWS CLI.
@@ -18,12 +19,10 @@ export class AwsCliLayer extends lambda.LayerVersion {
     const logs: string[] = [];
     let fallback = false;
 
-    const targetVersion = requireWrapper(path.join(__dirname, '../package.json'), logs).devDependencies[AwsCliLayer.assetPackageName];
-
-    let assetPackage = _tryLoadPackage(AwsCliLayer.assetPackageName, targetVersion, logs);
+    let assetPackage = _tryLoadPackage(AwsCliLayer.assetPackageName, TARGET_VERSION, logs);
 
     if (!assetPackage) {
-      const downloadPath = _downloadPackage(AwsCliLayer.assetPackageName, AwsCliLayer.assetPackageNpmTarPrefix, targetVersion, logs);
+      const downloadPath = _downloadPackage(AwsCliLayer.assetPackageName, AwsCliLayer.assetPackageNpmTarPrefix, TARGET_VERSION, logs);
       if (downloadPath) {
         assetPackage = installAndLoadPackage(AwsCliLayer.assetPackageName, downloadPath, logs);
       }
@@ -32,8 +31,12 @@ export class AwsCliLayer extends lambda.LayerVersion {
     let code;
     if (assetPackage) {
       // ask for feedback here
-      const asset = new assetPackage.AwsCliAsset(scope, `${id}-asset`);
-      code = lambda.Code.fromBucket(asset.bucket, asset.s3ObjectKey);
+      if (!assetPackage.AwsCliAsset) {
+        logs.push(`ERROR: loaded ${AwsCliLayer.assetPackageName}, but AwsCliAsset is undefined in the module.`);
+      } else {
+        const asset = new assetPackage.AwsCliAsset(scope, `${id}-asset`);
+        code = lambda.Code.fromBucket(asset.bucket, asset.s3ObjectKey);
+      }
     }
 
     if (!code) {
@@ -49,6 +52,7 @@ export class AwsCliLayer extends lambda.LayerVersion {
       code: code,
       description: '/opt/awscli/aws',
     });
+    console.log(logs.join('\n'));
 
     if (debugModeEnabled()) {
       Annotations.of(this).addInfo(logs.join('\n'));
