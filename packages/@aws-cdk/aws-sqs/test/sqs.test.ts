@@ -448,6 +448,24 @@ describe('queue encryption', () => {
     });
   });
 
+  test('it is possible to disable encryption (unencrypted)', () => {
+    const stack = new Stack();
+
+    new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.UNENCRYPTED });
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'SqsManagedSseEnabled': false,
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
+  });
+
   test('encryptionMasterKey is not supported if encryption type SQS_MANAGED is used', () => {
     // GIVEN
     const stack = new Stack();
@@ -458,6 +476,51 @@ describe('queue encryption', () => {
       encryption: sqs.QueueEncryption.SQS_MANAGED,
       encryptionMasterKey: key,
     })).toThrow(/'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used/);
+  });
+});
+
+describe('encryption in transit', () => {
+  test('enforceSSL can be enabled', () => {
+    const stack = new Stack();
+    new sqs.Queue(stack, 'Queue', { enforceSSL: true });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+        'QueuePolicy25439813': {
+          'Type': 'AWS::SQS::QueuePolicy',
+          'Properties': {
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 'sqs:*',
+                  'Condition': {
+                    'Bool': {
+                      'aws:SecureTransport': 'false',
+                    },
+                  },
+                  'Effect': 'Deny',
+                  'Principal': {
+                    'AWS': '*',
+                  },
+                  'Resource': {
+                    'Fn::GetAtt': [
+                      'Queue4A7E3555',
+                      'Arn',
+                    ],
+                  },
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+          },
+        },
+      },
+    });
   });
 });
 
