@@ -54,6 +54,13 @@ export interface DeploymentCircuitBreaker {
    */
   readonly rollback?: boolean;
 
+  /**
+   * Whether to use the explicit DeploymentControllerType.ECS when defining the circuit breaker.
+   * To avoid a service replacement when add a CircuitBreaker to an existing ECS service, set this to False.
+   * @default true
+   */
+  readonly useExplicitEcsDeploymentController?: boolean;
+
 }
 
 export interface EcsTarget {
@@ -427,6 +434,10 @@ export abstract class BaseService extends Resource
     }
 
     this.taskDefinition = taskDefinition;
+    // If useExplicitEcsDeploymentController is explicitly set to false
+    const circuitBreakerSetsEcsDeploymentController = (props.circuitBreaker !== undefined
+            && props.circuitBreaker.useExplicitEcsDeploymentController === undefined)
+        || props.circuitBreaker?.useExplicitEcsDeploymentController;
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
@@ -449,7 +460,7 @@ export abstract class BaseService extends Resource
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
-      deploymentController: props.circuitBreaker ? {
+      deploymentController: circuitBreakerSetsEcsDeploymentController ? {
         type: DeploymentControllerType.ECS,
       } : props.deploymentController,
       launchType: launchType,
@@ -464,6 +475,15 @@ export abstract class BaseService extends Resource
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
+    }
+
+    // If the circuit breaker chooses not to set the DeploymentController, and it has been manually set to something other than ECS
+    // Add an error that it is not supported
+    if (props.circuitBreaker
+        && !props.circuitBreaker.useExplicitEcsDeploymentController
+        && props.deploymentController
+        && props.deploymentController.type !== DeploymentControllerType.ECS) {
+      Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
     }
 
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
