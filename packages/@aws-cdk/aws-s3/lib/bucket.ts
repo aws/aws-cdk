@@ -1354,10 +1354,15 @@ export interface BucketProps {
   readonly enforceSSL?: boolean;
 
   /**
-   * Specifies whether Amazon S3 should use an S3 Bucket Key with server-side
-   * encryption using KMS (SSE-KMS) for new objects in the bucket.
+   * Whether Amazon S3 should use its own intermediary key to generate data keys.
    *
-   * Only relevant, when Encryption is set to {@link BucketEncryption.KMS}
+   * Only relevant when using KMS for encryption.
+   *
+   * - If not enabled, every object GET and PUT will cause an API call to KMS (with the
+   *   attendant cost implications of that).
+   * - If enabled, S3 will use its own time-limited key instead.
+   *
+   * Only relevant, when Encryption is set to `BucketEncryption.KMS` or `BucketEncryption.KMS_MANAGED`.
    *
    * @default - false
    */
@@ -1943,7 +1948,7 @@ export class Bucket extends BucketBase {
     }
 
     // if bucketKeyEnabled is set, encryption must be set to KMS.
-    if (props.bucketKeyEnabled && encryptionType !== BucketEncryption.KMS) {
+    if (props.bucketKeyEnabled && ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED].includes(encryptionType)) {
       throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
@@ -1983,7 +1988,10 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.KMS_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } },
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' },
+          },
         ],
       };
       return { bucketEncryption };
@@ -2288,17 +2296,17 @@ export enum BucketEncryption {
   /**
    * Objects in the bucket are not encrypted.
    */
-  UNENCRYPTED = 'NONE',
+  UNENCRYPTED = 'UNENCRYPTED',
 
   /**
    * Server-side KMS encryption with a master key managed by KMS.
    */
-  KMS_MANAGED = 'MANAGED',
+  KMS_MANAGED = 'KMS_MANAGED',
 
   /**
    * Server-side encryption with a master key managed by S3.
    */
-  S3_MANAGED = 'S3MANAGED',
+  S3_MANAGED = 'S3_MANAGED',
 
   /**
    * Server-side encryption with a KMS key managed by the user.

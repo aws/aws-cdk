@@ -79,6 +79,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
   private normalizedZoneName: string;
   private hostedZoneId: string;
   private domainName: string;
+  private _removalPolicy?: cdk.RemovalPolicy;
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
@@ -121,6 +122,18 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     requestorFunction.addToRolePolicy(new iam.PolicyStatement({
       actions: ['route53:changeResourceRecordSets'],
       resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
+      conditions: {
+        'ForAllValues:StringEquals': {
+          'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
+          'route53:ChangeResourceRecordSetsActions': props.cleanupRoute53Records ? ['UPSERT', 'DELETE'] : ['UPSERT'],
+        },
+        'ForAllValues:StringLike': {
+          'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+            addWildcard(props.domainName),
+            ...(props.subjectAlternativeNames ?? []).map(d => addWildcard(d)),
+          ],
+        },
+      },
     }));
 
     const certificate = new cdk.CustomResource(this, 'CertificateRequestorResource', {
@@ -132,6 +145,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
+        RemovalPolicy: cdk.Lazy.any({ produce: () => this._removalPolicy }),
         // Custom resources properties are always converted to strings; might as well be explict here.
         CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
         Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),
@@ -141,6 +155,10 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.certificateArn = certificate.getAtt('Arn').toString();
 
     this.node.addValidation({ validate: () => this.validateDnsValidatedCertificate() });
+  }
+
+  public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
+    this._removalPolicy = policy;
   }
 
   private validateDnsValidatedCertificate(): string[] {
@@ -153,4 +171,12 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     }
     return errors;
   }
+}
+
+// https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/specifying-rrset-conditions.html
+function addWildcard(domainName: string) {
+  if (domainName.startsWith('*.')) {
+    return domainName;
+  }
+  return `*.${domainName}`;
 }
