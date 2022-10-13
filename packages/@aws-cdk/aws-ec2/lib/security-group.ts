@@ -535,10 +535,6 @@ export class SecurityGroup extends SecurityGroupBase {
     const isIpv6 = peer.toEgressRuleConfig().hasOwnProperty('cidrIpv6');
 
     if (!isIpv6 && this.allowAllOutbound) {
-      // In the case of "allowAllOutbound", we don't add any more rules. There
-      // is only one rule which allows all traffic and that subsumes any other
-      // rule.
-
       return;
     } else if (!isIpv6 && !this.allowAllOutbound) {
       // Otherwise, if the bogus rule exists we can now remove it because the
