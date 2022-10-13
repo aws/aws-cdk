@@ -1,0 +1,206 @@
+{
+ "Resources": {
+  "MyRuleA44AB831": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "detail": {
+      "foo": [
+       "bar"
+      ]
+     },
+     "detail-type": [
+      "cdk-integ-custom-rule"
+     ],
+     "source": [
+      "cdk-integ"
+     ]
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": "arn:aws:events:us-east-1:526645680989:event-bus/default",
+      "Id": "SQS",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyRuleEventsRoleF186CAE5",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "MyRuleEventsRoleF186CAE5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyRuleEventsRoleDefaultPolicy5D01F508": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": "arn:aws:events:us-east-1:526645680989:event-bus/default"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyRuleEventsRoleDefaultPolicy5D01F508",
+    "Roles": [
+     {
+      "Ref": "MyRuleEventsRoleF186CAE5"
+     }
+    ]
+   }
+  },
+  "PutEventsCall": {
+   "Type": "Custom::DeployAssert@SdkCallEventBridgeputEvents",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EventBridge",
+    "api": "putEvents",
+    "parameters": {
+     "Entries": [
+      {
+       "Detail": "{\"foo\":\"bar\"}",
+       "DetailType": "cdk-integ-custom-rule",
+       "Source": "cdk-integ"
+      }
+     ]
+    },
+    "flattenResponse": "false",
+    "salt": "1665694041382"
+   },
+   "DependsOn": [
+    "MyRuleEventsRoleDefaultPolicy5D01F508",
+    "MyRuleEventsRoleF186CAE5",
+    "MyRuleA44AB831"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "eventbridge:PutEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "events:PutEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-526645680989-eu-west-1",
+     "S3Key": "456da4984f762c1c25e94bd5f2df6758d2b0884d0dae8ca59bb8f4e3de7c2136.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
