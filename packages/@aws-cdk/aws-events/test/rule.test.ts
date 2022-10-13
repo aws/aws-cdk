@@ -3,8 +3,7 @@ import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
-import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule, Match as m } from '../lib';
-import { Rule } from '../lib/rule';
+import { Rule, EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule, Match as m } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -1015,7 +1014,7 @@ describe('rule', () => {
       const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
       Template.fromStack(eventBusPolicyStack).hasResourceProperties('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
-        'StatementId': `Allow-account-${sourceAccount}-${nodeAddr}`,
+        'StatementId': `Allow-${sourceAccount}-${nodeAddr}`,
         'Principal': sourceAccount,
       });
     });
@@ -1061,6 +1060,39 @@ describe('rule', () => {
           },
         ],
       });
+    });
+
+    test('keeps the event bus policy statement IDs under the 64 character limit', () => {
+      const app = new cdk.App();
+
+      const sourceAccount = '123456789012';
+      const sourceStack = new cdk.Stack(app, 'SourceStack', {
+        env: {
+          account: sourceAccount,
+          region: 'us-west-2',
+        },
+      });
+      const rule = new Rule(sourceStack, 'Rule', {
+        eventPattern: {
+          source: ['some-event'],
+        },
+      });
+
+      const targetAccount = '234567890123';
+      const targetStack = new cdk.Stack(app, 'TargetStack', {
+        env: {
+          account: targetAccount,
+          region: 'us-west-2',
+        },
+      });
+      const targetResource = new Construct(targetStack, 'Resource');
+
+      rule.addTarget(new SomeTarget('Target', targetResource));
+
+      const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
+      const eventBusPolicy = Template.fromStack(eventBusPolicyStack).findResources('AWS::Events::EventBusPolicy').GivePermToOtherAccount;
+
+      expect(eventBusPolicy.Properties.StatementId.length).toBeLessThanOrEqual(64);
     });
   });
 });

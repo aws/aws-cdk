@@ -370,7 +370,10 @@ export class Rule extends Resource implements IRule {
         });
         new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
           action: 'events:PutEvents',
-          statementId: `Allow-account-${sourceAccount}-${this.node.addr}`,
+          // Account IDs have 12 characters, node addresses have 42 characters.
+          // That leaves us with exactly 10 extra characters we can add to the statementId
+          // before it reaches the 64-character limit. Don't go over the limit or deployment will fail!
+          statementId: `Allow-${sourceAccount}-${this.node.addr}`,
           principal: sourceAccount,
         });
       }
