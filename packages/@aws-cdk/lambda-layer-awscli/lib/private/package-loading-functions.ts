@@ -112,5 +112,5 @@ export function findInstallDir(): string | undefined {
   if (!require.main?.paths) {
     return undefined;
   }
-  return require.main.paths[0];
+  return path.dirname(require.main.paths[0]);
 }
