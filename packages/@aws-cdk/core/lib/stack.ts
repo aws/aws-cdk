@@ -139,6 +139,16 @@ export interface StackProps {
    * 'aws:cdk:version-reporting' context key
    */
   readonly analyticsReporting?: boolean;
+
+  /**
+   * Enable this flag to allow native cross region stack references.
+   *
+   * Enabling this will create a CloudFormation custom resource
+   * in both the producing stack and consuming stack in order to perform the export/import
+   *
+   * @default false
+   */
+  readonly optInToCrossRegionReferences?: boolean;
 }
 
 /**
@@ -301,6 +311,13 @@ export class Stack extends Construct implements ITaggable {
   public readonly _versionReportingEnabled: boolean;
 
   /**
+   * Whether cross region references are enabled for this stack
+   *
+   * @internal
+   */
+  public readonly _crossRegionReferences: boolean;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -344,6 +361,7 @@ export class Stack extends Construct implements ITaggable {
     this._missingContext = new Array<cxschema.MissingContext>();
     this._stackDependencies = { };
     this.templateOptions = { };
+    this._crossRegionReferences = !!props.optInToCrossRegionReferences;
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 

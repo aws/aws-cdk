@@ -462,15 +462,14 @@ describe('stack', () => {
     });
   });
 
-  test(`cross-region stack references, ${cxapi.ENABLE_CROSS_REGION_REFERENCES}=true`, () => {
+  test('cross-region stack references, optInToCrossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, optInToCrossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
-    stack2.node.setContext(cxapi.ENABLE_CROSS_REGION_REFERENCES, true);
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, optInToCrossRegionReferences: true });
 
     // WHEN - used in another stack
     new CfnResource(stack2, 'SomeResource', {
@@ -494,15 +493,17 @@ describe('stack', () => {
           Type: 'Custom::CrossRegionExportWriter',
           DeletionPolicy: 'Delete',
           Properties: {
-            Exports: {
-              '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
-                'Fn::GetAtt': [
-                  'SomeResourceExport',
-                  'name',
-                ],
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'name',
+                  ],
+                },
               },
+              region: 'us-east-2',
             },
-            Region: 'us-east-2',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -529,7 +530,7 @@ describe('stack', () => {
   test('cross-region stack references throws error', () => {
     // GIVEN
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, optInToCrossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
@@ -546,22 +547,21 @@ describe('stack', () => {
     // THEN
     expect(() => {
       app.synth();
-    }).toThrow(/Set @aws-cdk\/core:enableCrossRegionReferencesUsingCustomResources=true to enable cross region references/);
+    }).toThrow(/Set optInToCrossRegionReferences=true to enable cross region references/);
   });
 
-  test(`cross region stack references with multiple stacks, ${cxapi.ENABLE_CROSS_REGION_REFERENCES}=true`, () => {
+  test('cross region stack references with multiple stacks, optInToCrossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, optInToCrossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-east-1' } });
+    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-east-1' }, optInToCrossRegionReferences: true });
     const exportResource3 = new CfnResource(stack3, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
-    stack2.node.setContext(cxapi.ENABLE_CROSS_REGION_REFERENCES, true);
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, optInToCrossRegionReferences: true });
 
     // WHEN - used in another stack
     new CfnResource(stack2, 'SomeResource', {
@@ -625,19 +625,21 @@ describe('stack', () => {
         ExportsReader8B249524: {
           DeletionPolicy: 'Delete',
           Properties: {
-            Imports: [
-              '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
-              '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1',
-              '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B',
-            ],
-            Region: 'us-east-2',
+            ReaderProps: {
+              imports: [
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1',
+                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B',
+              ],
+              region: 'us-east-2',
+              prefix: 'Stack2',
+            },
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
                 'Arn',
               ],
             },
-            StackName: 'Stack2',
           },
           Type: 'Custom::CrossRegionExportReader',
           UpdateReplacePolicy: 'Delete',
@@ -661,15 +663,17 @@ describe('stack', () => {
           Type: 'Custom::CrossRegionExportWriter',
           DeletionPolicy: 'Delete',
           Properties: {
-            Exports: {
-              '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B': {
-                'Fn::GetAtt': [
-                  'SomeResourceExport',
-                  'other2',
-                ],
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other2',
+                  ],
+                },
               },
+              region: 'us-east-2',
             },
-            Region: 'us-east-2',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -689,21 +693,23 @@ describe('stack', () => {
           Type: 'Custom::CrossRegionExportWriter',
           DeletionPolicy: 'Delete',
           Properties: {
-            Exports: {
-              '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
-                'Fn::GetAtt': [
-                  'SomeResourceExport',
-                  'name',
-                ],
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'name',
+                  ],
+                },
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other',
+                  ],
+                },
               },
-              '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
-                'Fn::GetAtt': [
-                  'SomeResourceExport',
-                  'other',
-                ],
-              },
+              region: 'us-east-2',
             },
-            Region: 'us-east-2',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -716,19 +722,18 @@ describe('stack', () => {
     });
   });
 
-  test(`cross region stack references with multiple stacks and multiple regions, ${cxapi.ENABLE_CROSS_REGION_REFERENCES}=true`, () => {
+  test('cross region stack references with multiple stacks and multiple regions, optInToCrossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, optInToCrossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-west-1' } });
+    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-west-1' }, optInToCrossRegionReferences: true });
     const exportResource3 = new CfnResource(stack3, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
-    stack2.node.setContext(cxapi.ENABLE_CROSS_REGION_REFERENCES, true);
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, optInToCrossRegionReferences: true });
 
     // WHEN - used in another stack
     new CfnResource(stack2, 'SomeResource', {
@@ -774,15 +779,17 @@ describe('stack', () => {
           Type: 'Custom::CrossRegionExportWriter',
           DeletionPolicy: 'Delete',
           Properties: {
-            Exports: {
-              '/cdk/exports/Stack2/Stack3uswest1FnGetAttSomeResourceExportother2491B5DA7': {
-                'Fn::GetAtt': [
-                  'SomeResourceExport',
-                  'other2',
-                ],
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack3uswest1FnGetAttSomeResourceExportother2491B5DA7': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other2',
+                  ],
+                },
               },
+              region: 'us-east-2',
             },
-            Region: 'us-east-2',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -802,21 +809,23 @@ describe('stack', () => {
           Type: 'Custom::CrossRegionExportWriter',
           DeletionPolicy: 'Delete',
           Properties: {
-            Exports: {
-              '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
-                'Fn::GetAtt': [
-                  'SomeResourceExport',
-                  'name',
-                ],
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'name',
+                  ],
+                },
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other',
+                  ],
+                },
               },
-              '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
-                'Fn::GetAtt': [
-                  'SomeResourceExport',
-                  'other',
-                ],
-              },
+              region: 'us-east-2',
             },
-            Region: 'us-east-2',
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',

@@ -3,26 +3,24 @@ import { Pipeline, Artifact } from '@aws-cdk/aws-codepipeline';
 import { Key } from '@aws-cdk/aws-kms';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { App, Stack, RemovalPolicy } from '@aws-cdk/core';
-import { ENABLE_CROSS_REGION_REFERENCES } from '@aws-cdk/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests';
 import { S3SourceAction, CodeBuildAction } from '../lib';
 
 
 const app = new App({
   treeMetadata: false,
-  postCliContext: {
-    [ENABLE_CROSS_REGION_REFERENCES]: true,
-  },
 });
 const stack1 = new Stack(app, 'integ-pipeline-producer-stack', {
   env: {
     region: 'us-east-1',
   },
+  optInToCrossRegionReferences: true,
 });
 const stack2 = new Stack(app, 'integ-pipeline-consumer-stack', {
   env: {
     region: 'us-east-2',
   },
+  optInToCrossRegionReferences: true,
 });
 
 

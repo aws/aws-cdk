@@ -1,16 +1,12 @@
 import { Queue, IQueue } from '@aws-cdk/aws-sqs';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import { App, Stack, StackProps, NestedStack } from '@aws-cdk/core';
-import { ENABLE_CROSS_REGION_REFERENCES } from '@aws-cdk/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 
 // GIVEN
 const app = new App({
   treeMetadata: false,
-  postCliContext: {
-    [ENABLE_CROSS_REGION_REFERENCES]: true,
-  },
 });
 
 class ProducerStack extends Stack {
@@ -21,6 +17,7 @@ class ProducerStack extends Stack {
       env: {
         region: 'us-east-1',
       },
+      optInToCrossRegionReferences: true,
     });
     const nested = new NestedStack(this, 'IntegNested');
     this.queue = new Queue(this, 'IntegQueue');
@@ -38,6 +35,7 @@ class ConsumerStack extends Stack {
       env: {
         region: 'us-east-2',
       },
+      optInToCrossRegionReferences: true,
     });
 
     const nested = new NestedStack(this, 'IntegNested');

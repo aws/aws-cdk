@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { ENABLE_CROSS_REGION_REFERENCES } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { readFileSync } from 'fs-extra';
 import {
@@ -36,7 +35,7 @@ describe('nested-stack', () => {
     expect(nestedStack.templateOptions.description).toEqual(description);
   });
 
-  test(`can create cross region references when ${ENABLE_CROSS_REGION_REFERENCES}=true`, () => {
+  test('can create cross region references when optInToCrossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -44,14 +43,15 @@ describe('nested-stack', () => {
         account: '123456789012',
         region: 'bermuda-triangle-1337',
       },
+      optInToCrossRegionReferences: true,
     });
     const stack2 = new Stack(app, 'Stack2', {
       env: {
         account: '123456789012',
         region: 'bermuda-triangle-42',
       },
+      optInToCrossRegionReferences: true,
     });
-    stack2.node.setContext(ENABLE_CROSS_REGION_REFERENCES, true);
     const nestedStack = new NestedStack(stack1, 'Nested1');
     const nestedStack2 = new NestedStack(stack2, 'Nested2');
 
@@ -83,17 +83,19 @@ describe('nested-stack', () => {
       ExportsReader8B249524: {
         DeletionPolicy: 'Delete',
         Properties: {
-          Imports: [
-            '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E',
-          ],
-          Region: 'bermuda-triangle-42',
+          ReaderProps: {
+            imports: [
+              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E',
+            ],
+            region: 'bermuda-triangle-42',
+            prefix: 'Stack2',
+          },
           ServiceToken: {
             'Fn::GetAtt': [
               'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
               'Arn',
             ],
           },
-          StackName: 'Stack2',
         },
         DependsOn: [
           'Nested2NestedStackNested2NestedStackResource877A1112',
@@ -116,15 +118,17 @@ describe('nested-stack', () => {
       ExportsWriterbermudatriangle42E59594276156AC73: {
         DeletionPolicy: 'Delete',
         Properties: {
-          Exports: {
-            '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E': {
-              'Fn::GetAtt': [
-                'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
-                'Outputs.Stack1Nested1Resource178AEB067Ref',
-              ],
+          WriterProps: {
+            exports: {
+              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E': {
+                'Fn::GetAtt': [
+                  'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
+                  'Outputs.Stack1Nested1Resource178AEB067Ref',
+                ],
+              },
             },
+            region: 'bermuda-triangle-42',
           },
-          Region: 'bermuda-triangle-42',
           ServiceToken: {
             'Fn::GetAtt': [
               'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -138,7 +142,7 @@ describe('nested-stack', () => {
     });
   });
 
-  test(`cannot create cross region references when ${ENABLE_CROSS_REGION_REFERENCES}=false`, () => {
+  test('cannot create cross region references when optInToCrossRegionReferences=false', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {

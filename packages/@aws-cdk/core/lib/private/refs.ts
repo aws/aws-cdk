@@ -7,8 +7,7 @@ import { IConstruct } from 'constructs';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
-import { ExportWriter } from '../custom-resource-provider/export-writer-provider';
-import { FeatureFlags } from '../feature-flags';
+import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { Names } from '../names';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
@@ -67,11 +66,11 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
 
   // Stacks are in the same account, but different regions
-  if (producerRegion !== consumerRegion && !FeatureFlags.of(consumer).isEnabled(cxapi.ENABLE_CROSS_REGION_REFERENCES)) {
+  if (producerRegion !== consumerRegion && !consumer._crossRegionReferences) {
     throw new Error(
       `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
       'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack. ' +
-      `Set ${cxapi.ENABLE_CROSS_REGION_REFERENCES}=true to enable cross region references`);
+      'Set optInToCrossRegionReferences=true to enable cross region references');
   }
 
   // ----------------------------------------------------------------------
@@ -110,7 +109,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // ----------------------------------------------------------------------
 
   // Stacks are in the same account, but different regions
-  if (producerRegion !== consumerRegion && FeatureFlags.of(consumer).isEnabled(cxapi.ENABLE_CROSS_REGION_REFERENCES)) {
+  if (producerRegion !== consumerRegion && consumer._crossRegionReferences) {
     if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
       throw new Error(
         `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +

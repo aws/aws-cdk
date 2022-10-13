@@ -1,12 +1,12 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { CustomResource } from '../custom-resource';
-import { Lazy } from '../lazy';
-import { Stack } from '../stack';
-import { CustomResourceProvider, CustomResourceProviderRuntime } from './custom-resource-provider';
-import { CfnResource } from '../cfn-resource';
+import { CfnResource } from '../../cfn-resource';
+import { CustomResource } from '../../custom-resource';
+import { Lazy } from '../../lazy';
+import { Stack } from '../../stack';
+import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom-resource-provider';
+import { SSM_EXPORT_PATH_PREFIX, ExportReaderCRProps } from './types';
 
-export const SSM_EXPORT_PATH_PREFIX = 'cdk/exports/';
 
 /**
  * Properties for an ExportReader
@@ -55,13 +55,16 @@ export class ExportReader extends Construct {
       }],
     });
 
+    const properties: ExportReaderCRProps = {
+      region: stack.region,
+      prefix: stack.stackName,
+      imports: Lazy.list({ produce: () => this.importParametersNames }),
+    };
     this.customResource = new CustomResource(this, 'Resource', {
       resourceType: resourceType,
       serviceToken,
       properties: {
-        Region: stack.region,
-        StackName: stack.stackName,
-        Imports: Lazy.list({ produce: () => this.importParametersNames }),
+        ReaderProps: properties,
       },
     });
   }

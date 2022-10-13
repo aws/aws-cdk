@@ -1,7 +1,6 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
-import { ENABLE_CROSS_REGION_REFERENCES } from '@aws-cdk/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests';
 import * as cloudfront from '../lib';
 import { TestOrigin } from './test-origin';
@@ -16,15 +15,13 @@ if (!domainName) throw new Error('For this test you must provide your own Domain
 
 const app = new cdk.App({
   treeMetadata: false,
-  postCliContext: {
-    [ENABLE_CROSS_REGION_REFERENCES]: true,
-  },
 });
 const acmStack = new cdk.Stack(app, 'integ-acm-stack', {
   env: {
     region: 'us-east-1',
     account,
   },
+  optInToCrossRegionReferences: true,
 });
 
 const cloudFrontStack = new cdk.Stack(app, 'integ-cloudfront-stack', {
@@ -32,6 +29,7 @@ const cloudFrontStack = new cdk.Stack(app, 'integ-cloudfront-stack', {
     region: 'us-east-2',
     account,
   },
+  optInToCrossRegionReferences: true,
 });
 
 

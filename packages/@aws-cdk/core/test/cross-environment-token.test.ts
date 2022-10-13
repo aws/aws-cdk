@@ -1,4 +1,3 @@
-import { ENABLE_CROSS_REGION_REFERENCES } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
@@ -187,7 +186,7 @@ describe('cross environment', () => {
       /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
   });
 
-  test(`can reference a deploy-time physical name across regions, when ${ENABLE_CROSS_REGION_REFERENCES}=true`, () => {
+  test('can reference a deploy-time physical name across regions, when optInToCrossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -195,14 +194,15 @@ describe('cross environment', () => {
         account: '123456789012',
         region: 'bermuda-triangle-1337',
       },
+      optInToCrossRegionReferences: true,
     });
     const stack2 = new Stack(app, 'Stack2', {
       env: {
         account: '123456789012',
         region: 'bermuda-triangle-42',
       },
+      optInToCrossRegionReferences: true,
     });
-    stack2.node.setContext(ENABLE_CROSS_REGION_REFERENCES, true);
 
     // WHEN
     const myResource = new MyResource(stack1, 'MyResource');
@@ -219,12 +219,14 @@ describe('cross environment', () => {
       'ExportsWriterbermudatriangle42E59594276156AC73': {
         'DeletionPolicy': 'Delete',
         'Properties': {
-          'Exports': {
-            '/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887': {
-              'Ref': 'MyResource6073B41F',
+          'WriterProps': {
+            'exports': {
+              '/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887': {
+                'Ref': 'MyResource6073B41F',
+              },
             },
+            'region': 'bermuda-triangle-42',
           },
-          'Region': 'bermuda-triangle-42',
           'ServiceToken': {
             'Fn::GetAtt': [
               'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
@@ -243,7 +245,7 @@ describe('cross environment', () => {
     });
   });
 
-  test(`cannot reference a deploy-time physical name across regions, when ${ENABLE_CROSS_REGION_REFERENCES}=false`, () => {
+  test('cannot reference a deploy-time physical name across regions, when optInToCrossRegionReferences=false', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -251,12 +253,14 @@ describe('cross environment', () => {
         account: '123456789012',
         region: 'bermuda-triangle-1337',
       },
+      optInToCrossRegionReferences: true,
     });
     const stack2 = new Stack(app, 'Stack2', {
       env: {
         account: '123456789012',
         region: 'bermuda-triangle-42',
       },
+      optInToCrossRegionReferences: false,
     });
 
     // WHEN

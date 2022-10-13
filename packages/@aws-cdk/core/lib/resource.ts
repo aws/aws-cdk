@@ -1,7 +1,5 @@
-import { ENABLE_CROSS_REGION_REFERENCES } from '@aws-cdk/cx-api';
 import { ArnComponents, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
-import { FeatureFlags } from './feature-flags';
 import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { Reference } from './reference';
@@ -260,7 +258,7 @@ export abstract class Resource extends Construct implements IResource {
 
         if (this.stack.account !== consumingStack.account ||
           (this.stack.region !== consumingStack.region &&
-            !FeatureFlags.of(consumingStack).isEnabled(ENABLE_CROSS_REGION_REFERENCES))) {
+            !consumingStack._crossRegionReferences)) {
           this._enableCrossEnvironment();
           return this.physicalName;
         } else {
@@ -293,7 +291,7 @@ export abstract class Resource extends Construct implements IResource {
         const consumingStack = Stack.of(context.scope);
         if (this.stack.account !== consumingStack.account ||
           (this.stack.region !== consumingStack.region &&
-            !FeatureFlags.of(consumingStack).isEnabled(ENABLE_CROSS_REGION_REFERENCES))) {
+            !consumingStack._crossRegionReferences)) {
           this._enableCrossEnvironment();
           return this.stack.formatArn(arnComponents);
         } else {

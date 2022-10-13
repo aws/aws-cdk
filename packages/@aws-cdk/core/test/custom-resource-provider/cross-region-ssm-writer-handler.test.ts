@@ -1,5 +1,5 @@
-import { handler } from '../../lib/custom-resource-provider/cross-region-ssm-writer-handler';
-import { SSM_EXPORT_PATH_PREFIX } from '../../lib/custom-resource-provider/export-writer-provider';
+import { handler } from '../../lib/custom-resource-provider/cross-region-export-providers/cross-region-ssm-writer-handler';
+import { SSM_EXPORT_PATH_PREFIX } from '../../lib/custom-resource-provider/cross-region-export-providers/types';
 
 let mockPutParameter: jest.Mock ;
 let mocklistTagsForResource: jest.Mock;
@@ -43,10 +43,11 @@ describe('cross-region-ssm-writer throws', () => {
       RequestType: 'Create',
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
-        Region: 'us-east-1',
-        StackName: 'MyStack',
-        Exports: {
-          '/cdk/exports/MyStack/MyExport': 'Value',
+        WriterProps: {
+          region: 'us-east-1',
+          exports: {
+            '/cdk/exports/MyStack/MyExport': 'Value',
+          },
         },
       },
     });
@@ -55,7 +56,7 @@ describe('cross-region-ssm-writer throws', () => {
     mocklistTagsForResource.mockImplementation(() => {
       return {
         TagList: [{
-          Key: 'cdk-strong-ref:MyStack',
+          Key: 'aws-cdk:strong-ref:MyStack',
           Value: 'true',
         }],
       };
@@ -71,19 +72,21 @@ describe('cross-region-ssm-writer throws', () => {
       RequestType: 'Update',
       OldResourceProperties: {
         ServiceToken: '<ServiceToken>',
-        Region: 'us-east-1',
-        StackName: 'MyStack',
-        Exports: {
-          '/cdk/exports/MyStack/MyExport': 'Value',
+        WriterProps: {
+          region: 'us-east-1',
+          exports: {
+            '/cdk/exports/MyStack/MyExport': 'Value',
+          },
         },
       },
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
-        Region: 'us-east-1',
-        StackName: 'MyStack',
-        Exports: {
-          '/cdk/exports/MyStack/MyExport': 'Value',
-          '/cdk/exports/MyStack/AlreadyExists': 'Value',
+        WriterProps: {
+          region: 'us-east-1',
+          exports: {
+            '/cdk/exports/MyStack/MyExport': 'Value',
+            '/cdk/exports/MyStack/AlreadyExists': 'Value',
+          },
         },
       },
     });
@@ -92,7 +95,7 @@ describe('cross-region-ssm-writer throws', () => {
     mocklistTagsForResource.mockImplementation(() => {
       return {
         TagList: [{
-          Key: 'cdk-strong-ref:MyStack',
+          Key: 'aws-cdk:strong-ref:MyStack',
           Value: 'true',
         }],
       };
@@ -108,20 +111,22 @@ describe('cross-region-ssm-writer throws', () => {
       RequestType: 'Update',
       OldResourceProperties: {
         ServiceToken: '<ServiceToken>',
-        Region: 'us-east-1',
-        StackName: 'MyStack',
-        Exports: {
-          '/cdk/exports/MyStack/MyExport': 'Value',
-          '/cdk/exports/MyStack/AlreadyExists': 'Original',
+        WriterProps: {
+          region: 'us-east-1',
+          exports: {
+            '/cdk/exports/MyStack/MyExport': 'Value',
+            '/cdk/exports/MyStack/AlreadyExists': 'Original',
+          },
         },
       },
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
-        Region: 'us-east-1',
-        StackName: 'MyStack',
-        Exports: {
-          '/cdk/exports/MyStack/MyExport': 'Value',
-          '/cdk/exports/MyStack/AlreadyExists': 'NewValue',
+        WriterProps: {
+          region: 'us-east-1',
+          exports: {
+            '/cdk/exports/MyStack/MyExport': 'Value',
+            '/cdk/exports/MyStack/AlreadyExists': 'NewValue',
+          },
         },
       },
     });
@@ -134,7 +139,7 @@ describe('cross-region-ssm-writer throws', () => {
       });
       return {
         TagList: [{
-          Key: 'cdk-strong-ref:MyStack',
+          Key: 'aws-cdk:strong-ref:MyStack',
           Value: 'true',
         }],
       };
@@ -152,10 +157,11 @@ describe('cross-region-ssm-writer entrypoint', () => {
       RequestType: 'Create',
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
-        Region: 'us-east-1',
-        StackName: 'MyStack',
-        Exports: {
-          '/cdk/exports/MyStack/MyExport': 'Value',
+        WriterProps: {
+          region: 'us-east-1',
+          exports: {
+            '/cdk/exports/MyStack/MyExport': 'Value',
+          },
         },
       },
     });
@@ -179,10 +185,11 @@ describe('cross-region-ssm-writer entrypoint', () => {
       RequestType: 'Create',
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
-        Region: 'us-east-1',
-        StackName: 'MyStack',
-        Exports: {
-          '/cdk/exports/MyStack/MyExport': 'Value',
+        WriterProps: {
+          region: 'us-east-1',
+          exports: {
+            '/cdk/exports/MyStack/MyExport': 'Value',
+          },
         },
       },
     });
@@ -209,18 +216,21 @@ describe('cross-region-ssm-writer entrypoint', () => {
       RequestType: 'Update',
       OldResourceProperties: {
         ServiceToken: '<ServiceToken>',
-        StackName: 'MyStack',
-        Exports: {
-          '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
+        WriterProps: {
+          region: 'us-east-1',
+          exports: {
+            '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
+          },
         },
       },
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
-        Region: 'us-east-1',
-        StackName: 'MyStack',
-        Exports: {
-          '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
-          '/cdk/exports/MyStack/MyExport': 'Value',
+        WriterProps: {
+          region: 'us-east-1',
+          exports: {
+            '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
+            '/cdk/exports/MyStack/MyExport': 'Value',
+          },
         },
       },
     });
@@ -244,10 +254,11 @@ describe('cross-region-ssm-writer entrypoint', () => {
       RequestType: 'Delete',
       ResourceProperties: {
         ServiceToken: '<ServiceToken>',
-        Region: 'us-east-1',
-        StackName: 'MyStack',
-        Exports: {
-          '/cdk/exports/MyStack/RemovedExport': 'RemovedValue',
+        WriterProps: {
+          region: 'us-east-1',
+          exports: {
+            '/cdk/exports/MyStack/RemovedExport': 'RemovedValue',
+          },
         },
       },
     });

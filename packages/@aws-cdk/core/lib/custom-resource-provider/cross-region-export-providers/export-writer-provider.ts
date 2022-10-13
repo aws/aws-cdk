@@ -1,17 +1,15 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { CfnDynamicReference, CfnDynamicReferenceService } from '../cfn-dynamic-reference';
-import { CustomResource } from '../custom-resource';
-import { Lazy } from '../lazy';
-import { Intrinsic } from '../private/intrinsic';
-import { makeUniqueId } from '../private/uniqueid';
-import { Reference } from '../reference';
-import { Stack } from '../stack';
-import { CustomResourceProvider, CustomResourceProviderRuntime } from './custom-resource-provider';
+import { CfnDynamicReference, CfnDynamicReferenceService } from '../../cfn-dynamic-reference';
+import { CustomResource } from '../../custom-resource';
+import { Lazy } from '../../lazy';
+import { Intrinsic } from '../../private/intrinsic';
+import { makeUniqueId } from '../../private/uniqueid';
+import { Reference } from '../../reference';
+import { Stack } from '../../stack';
+import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom-resource-provider';
 import { ExportReader } from './export-reader-provider';
-
-type CrossRegionExports = { [exportName: string]: string };
-export const SSM_EXPORT_PATH_PREFIX = 'cdk/exports/';
+import { CrossRegionExports, SSM_EXPORT_PATH_PREFIX, ExportWriterCRProps } from './types';
 
 /**
  * Properties for an ExportReader
@@ -81,12 +79,15 @@ export class ExportWriter extends Construct {
       }],
     });
 
+    const properties: ExportWriterCRProps = {
+      region: region,
+      exports: Lazy.any({ produce: () => this._references }),
+    };
     new CustomResource(this, 'Resource', {
       resourceType: resourceType,
       serviceToken,
       properties: {
-        Region: region,
-        Exports: Lazy.any({ produce: () => this._references }),
+        WriterProps: properties,
       },
     });
   }

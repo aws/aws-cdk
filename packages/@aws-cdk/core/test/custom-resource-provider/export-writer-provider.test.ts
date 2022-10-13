@@ -1,5 +1,5 @@
 import { App, Stack, AssetStaging, CfnResource, NestedStack } from '../../lib';
-import { ExportWriter } from '../../lib/custom-resource-provider/export-writer-provider';
+import { ExportWriter } from '../../lib/custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { toCloudFormation } from '../util';
 
 
@@ -90,20 +90,22 @@ describe('export writer provider', () => {
         ExportWriterA770449C: {
           DeletionPolicy: 'Delete',
           Properties: {
-            Region: 'us-east-1',
+            WriterProps: {
+              region: 'us-east-1',
+              exports: {
+                '/cdk/exports/MyResourceName': {
+                  'Fn::GetAtt': [
+                    'MyResource',
+                    'arn',
+                  ],
+                },
+              },
+            },
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
                 'Arn',
               ],
-            },
-            Exports: {
-              '/cdk/exports/MyResourceName': {
-                'Fn::GetAtt': [
-                  'MyResource',
-                  'arn',
-                ],
-              },
             },
           },
           Type: 'Custom::CrossRegionExportWriter',
@@ -226,11 +228,14 @@ describe('export writer provider', () => {
         ExportsReader8B249524: {
           DeletionPolicy: 'Delete',
           Properties: {
-            Imports: [
-              '/cdk/exports/MyResourceName',
-            ],
-            Region: {
-              Ref: 'AWS::Region',
+            ReaderProps: {
+              imports: [
+                '/cdk/exports/MyResourceName',
+              ],
+              region: {
+                Ref: 'AWS::Region',
+              },
+              prefix: 'Stack2',
             },
             ServiceToken: {
               'Fn::GetAtt': [
@@ -238,7 +243,6 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            StackName: 'Stack2',
           },
           Type: 'Custom::CrossRegionExportReader',
           UpdateReplacePolicy: 'Delete',
@@ -334,20 +338,23 @@ describe('export writer provider', () => {
         ExportWriterA770449C: {
           DeletionPolicy: 'Delete',
           Properties: {
-            Region: 'us-east-1',
+            WriterProps: {
+              region: 'us-east-1',
+              exports: {
+                '/cdk/exports/MyResourceName': {
+                  'Fn::GetAtt': [
+                    'MyResource',
+                    'arn',
+                  ],
+                },
+              },
+
+            },
             ServiceToken: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
                 'Arn',
               ],
-            },
-            Exports: {
-              '/cdk/exports/MyResourceName': {
-                'Fn::GetAtt': [
-                  'MyResource',
-                  'arn',
-                ],
-              },
             },
           },
           Type: 'Custom::CrossRegionExportWriter',
@@ -470,11 +477,14 @@ describe('export writer provider', () => {
         ExportsReader8B249524: {
           DeletionPolicy: 'Delete',
           Properties: {
-            Imports: [
-              '/cdk/exports/MyResourceName',
-            ],
-            Region: {
-              Ref: 'AWS::Region',
+            ReaderProps: {
+              imports: [
+                '/cdk/exports/MyResourceName',
+              ],
+              region: {
+                Ref: 'AWS::Region',
+              },
+              prefix: 'Stack2',
             },
             ServiceToken: {
               'Fn::GetAtt': [
@@ -482,7 +492,6 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            StackName: 'Stack2',
           },
           Type: 'Custom::CrossRegionExportReader',
           UpdateReplacePolicy: 'Delete',
