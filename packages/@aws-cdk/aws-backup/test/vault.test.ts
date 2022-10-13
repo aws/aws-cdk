@@ -2,7 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sns from '@aws-cdk/aws-sns';
-import { ArnFormat, Duration, Stack } from '@aws-cdk/core';
+import { ArnFormat, Duration, Stack, Fn } from '@aws-cdk/core';
 import { BackupVault, BackupVaultEvents } from '../lib';
 
 let stack: Stack;
@@ -292,18 +292,20 @@ test('import from name', () => {
 });
 
 test('import from parameter', () => {
+
   // WHEN
-  const vaultName = '${myVaultName}';
-  const vault = BackupVault.fromBackupVaultName(stack, 'Vault', vaultName);
+  const vaultName = Fn.importValue('VaultName');
+  new BackupVault(stack, 'Vault', {
+    backupVaultName: vaultName,
+  });
 
   // THEN
-  expect(vault.backupVaultName).toEqual(vaultName);
-  expect(vault.backupVaultArn).toEqual(stack.formatArn({
-    service: 'backup',
-    resource: 'backup-vault',
-    resourceName: '${myVaultName}',
-    arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-  }));
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    BackupVaultName: {
+      'Fn::ImportValue': 'VaultName',
+    },
+  });
+
 });
 
 test('grant action', () => {
