@@ -195,19 +195,29 @@ other.
 
 ## Accessing resources in a different stack and region
 
-You can enable the feature flag `@aws-cdk/core:enableCrossRegionReferencesUsingCustomResources`
+You can enable the Stack property `optInToCrossRegionReferences`
 in order to access resources in a different stack _and_ region. With this feature flag
 enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
 an ACM certificate in `us-east-1`.
 
 ```ts
-const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+const stack1 = new Stack(app, 'Stack1', {
+  env: {
+    region: 'us-east-1',
+  },
+  optInToCrossRegionReferences: true,
+});
 const cert = new acm.Certificate(stack1, 'Cert', {
   domainName: '*.example.com',
   validation: acm.CertificateValidation.fromDns(route53.PublicHostedZone.fromHostedZoneId(stack1, 'Zone', 'Z0329774B51CGXTDQV3X')),
 });
 
-const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+const stack2 = new Stack(app, 'Stack2', {
+  env: {
+    region: 'us-east-2',
+  },
+  optInToCrossRegionReferences: true,
+});
 new cloudfront.Distribution(stack2, 'Distribution', {
   defaultBehavior: {
     origin: new origins.HttpOrigin('example.com'),
@@ -227,6 +237,9 @@ is used to reference the SSM parameter which was created.
 In order to mimic strong references, a Custom Resource is also created in the consuming
 stack which marks the SSM parameters as being "imported". When a parameter has been successfully
 imported, the producing stack cannot update the value.
+
+See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/adr/cross-region-stack-references)
+for more details on this feature.
 
 ### Removing automatic cross-stack references
 

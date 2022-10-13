@@ -48,14 +48,16 @@
       "Arn"
      ]
     },
-    "Region": "us-east-2",
-    "StackName": "cross-region-consumer",
-    "Imports": [
-     "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B",
-     "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E",
-     "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B",
-     "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
-    ]
+    "ReaderProps": {
+     "region": "us-east-2",
+     "prefix": "cross-region-consumer",
+     "imports": [
+      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B",
+      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E",
+      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B",
+      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
+     ]
+    }
    },
    "DependsOn": [
     "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
@@ -124,7 +126,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
      },
-     "S3Key": "abb99ab2b779b809c120ce2531aa4570108d2c73e461b9e97966d6804c58d915.zip"
+     "S3Key": "92be7db38242a4b44c0a0f5a7150a6e1df03622d969fa0a5ef0c6cad6852b878.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

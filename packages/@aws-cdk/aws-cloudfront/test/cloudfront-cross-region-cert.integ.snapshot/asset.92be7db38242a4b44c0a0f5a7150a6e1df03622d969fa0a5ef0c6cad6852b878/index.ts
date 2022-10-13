@@ -1,13 +1,14 @@
 /*eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from 'aws-sdk';
+import { ExportReaderCRProps } from '../types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
-  const props = event.ResourceProperties;
-  const imports: string[] = props.Imports;
-  const keyName: string = `cdk-strong-ref:${props.StackName}`;
+  const props: ExportReaderCRProps = event.ResourceProperties.ReaderProps;
+  const imports: string[] = props.imports;
+  const keyName: string = `aws-cdk:strong-ref:${props.prefix}`;
 
-  const ssm = new SSM({ region: props.Region });
+  const ssm = new SSM({ region: props.region });
   try {
     switch (event.RequestType) {
       case 'Create':
@@ -15,10 +16,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         await addTags(ssm, imports, keyName);
         return;
       case 'Update':
-        const oldProps = event.OldResourceProperties;
-        const oldExports: string[] = oldProps.Imports;
-        const newExports = filterExports(imports, oldExports);
-        const paramsToDelete = filterExports(oldExports, imports);
+        const oldProps: ExportReaderCRProps = event.OldResourceProperties.ReaderProps;
+        const oldExports: string[] = oldProps.imports;
+        const newExports = except(imports, oldExports);
+        const paramsToDelete = except(oldExports, imports);
         console.info('Releasing unused SSM Parameter imports');
         if (Object.keys(paramsToDelete).length > 0) {
           await removeTags(ssm, paramsToDelete, keyName);
@@ -28,7 +29,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         return;
       case 'Delete':
         console.info('Deleting all SSM Parameter exports');
-        await deleteParametersByPath(ssm, `/cdk/exports/${props.StackName}/`);
+        await deleteParametersByPath(ssm, `/cdk/exports/${props.prefix}/`);
         return;
       default:
         return;
@@ -89,18 +90,16 @@ async function removeTags(ssm: SSM, parameters: string[], keyName: string): Prom
  * Since this is only run when the resource is deleted that is probably the behavior
  * that is desired.
  */
-async function getParametersByPath(ssm: SSM, path: string, nextToken?: string): Promise<SSM.Parameter[]> {
+async function getParametersByPath(ssm: SSM, path: string): Promise<SSM.Parameter[]> {
   const parameters: SSM.Parameter[] = [];
-  return ssm.getParametersByPath({
-    Path: path,
-    NextToken: nextToken,
-  }).promise().then(async getParametersByPathResult => {
-    parameters.push(...getParametersByPathResult.Parameters ?? []);
-    if (getParametersByPathResult.NextToken) {
-      parameters.push(...await getParametersByPath(ssm, path, getParametersByPathResult.NextToken));
-    }
-    return parameters;
-  });
+  let nextToken: string | undefined;
+  do {
+    const response = await ssm.getParametersByPath({ Path: path, NextToken: nextToken }).promise();
+    parameters.push(...response.Parameters ?? []);
+    nextToken = response.NextToken;
+
+  } while (nextToken);
+  return parameters;
 }
 
 /**
@@ -120,6 +119,6 @@ async function deleteParametersByPath(ssm: SSM, path: string): Promise<void> {
  * @param source the source object to perform the filter on
  * @param filter filter out items that exist in this object
  */
-function filterExports(source: string[], filter: string[]): string[] {
+function except(source: string[], filter: string[]): string[] {
   return source.filter(key => !filter.includes(key));
 }

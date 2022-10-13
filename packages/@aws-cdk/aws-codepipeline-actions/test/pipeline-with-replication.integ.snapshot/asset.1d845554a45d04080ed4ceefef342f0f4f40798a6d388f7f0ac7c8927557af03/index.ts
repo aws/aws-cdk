@@ -1,26 +1,26 @@
 /*eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from 'aws-sdk';
-type CrossRegionExports = { [exportName: string]: string };
+import { CrossRegionExports, ExportWriterCRProps } from '../types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
-  const props = event.ResourceProperties;
-  const exports: CrossRegionExports = props.Exports;
+  const props: ExportWriterCRProps = event.ResourceProperties.WriterProps;
+  const exports = props.exports as CrossRegionExports;
 
-  const ssm = new SSM({ region: props.Region });
+  const ssm = new SSM({ region: props.region });
   try {
     switch (event.RequestType) {
       case 'Create':
-        console.info(`Creating new SSM Parameter exports in region ${props.Region}`);
+        console.info(`Creating new SSM Parameter exports in region ${props.region}`);
         await throwIfAnyInUse(ssm, exports);
         await putParameters(ssm, exports);
         return;
       case 'Update':
-        const oldProps = event.OldResourceProperties;
-        const oldExports: CrossRegionExports = oldProps.Exports;
-        const newExports = filterExports(exports, oldExports);
+        const oldProps: ExportWriterCRProps = event.OldResourceProperties.WriterProps;
+        const oldExports = oldProps.exports as CrossRegionExports;
+        const newExports = except(exports, oldExports);
         await throwIfAnyInUse(ssm, newExports);
-        console.info(`Creating new SSM Parameter exports in region ${props.Region}`);
+        console.info(`Creating new SSM Parameter exports in region ${props.region}`);
         await putParameters(ssm, newExports);
         return;
       case 'Delete':
@@ -61,10 +61,10 @@ async function throwIfAnyInUse(ssm: SSM, parameters: CrossRegionExports): Promis
       }).promise();
       result.TagList?.forEach(tag => {
         const tagParts = tag.Key.split(':');
-        if (tagParts[0] === 'cdk-strong-ref') {
+        if (tagParts[0] === 'aws-cdk' && tagParts[1] === 'strong-ref') {
           tagResults.has(name)
-            ? tagResults.get(name)!.add(tagParts[1])
-            : tagResults.set(name, new Set([tagParts[1]]));
+            ? tagResults.get(name)!.add(tagParts[2])
+            : tagResults.set(name, new Set([tagParts[2]]));
         }
       });
 
@@ -93,7 +93,7 @@ async function throwIfAnyInUse(ssm: SSM, parameters: CrossRegionExports): Promis
  * @param source the source object to perform the filter on
  * @param filter filter out items that exist in this object
  */
-function filterExports(source: CrossRegionExports, filter: CrossRegionExports): CrossRegionExports {
+function except(source: CrossRegionExports, filter: CrossRegionExports): CrossRegionExports {
   return Object.keys(source)
     .filter(key => (!filter.hasOwnProperty(key) || source[key] !== filter[key]))
     .reduce((acc: CrossRegionExports, curr: string) => {

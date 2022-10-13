@@ -628,7 +628,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
      },
-     "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
+     "S3Key": "bb426cfb5fed5237e5928f871893b243ddf86a591a592b558bd29f60e28bad9d.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -845,12 +845,14 @@
       "Arn"
      ]
     },
-    "Region": "us-east-2",
-    "StackName": "integ-pipeline-consumer-stack",
-    "Imports": [
-     "/cdk/exports/integ-pipeline-consumer-stack/integpipelineproducerstackuseast1RefReplicationBucket70D68737DB32483D",
-     "/cdk/exports/integ-pipeline-consumer-stack/integpipelineproducerstackuseast1FnGetAttReplicationKeyFCE40BF4ArnFA0E5A73"
-    ]
+    "ReaderProps": {
+     "region": "us-east-2",
+     "prefix": "integ-pipeline-consumer-stack",
+     "imports": [
+      "/cdk/exports/integ-pipeline-consumer-stack/integpipelineproducerstackuseast1RefReplicationBucket70D68737DB32483D",
+      "/cdk/exports/integ-pipeline-consumer-stack/integpipelineproducerstackuseast1FnGetAttReplicationKeyFCE40BF4ArnFA0E5A73"
+     ]
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -916,7 +918,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
      },
-     "S3Key": "abb99ab2b779b809c120ce2531aa4570108d2c73e461b9e97966d6804c58d915.zip"
+     "S3Key": "92be7db38242a4b44c0a0f5a7150a6e1df03622d969fa0a5ef0c6cad6852b878.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

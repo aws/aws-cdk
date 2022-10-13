@@ -22,10 +22,12 @@
       "Arn"
      ]
     },
-    "Region": "us-east-2",
-    "Exports": {
-     "/cdk/exports/integ-cloudfront-stack/integacmstackuseast1RefCert5C9FAEC18647F8A2": {
-      "Ref": "Cert5C9FAEC1"
+    "WriterProps": {
+     "region": "us-east-2",
+     "exports": {
+      "/cdk/exports/integ-cloudfront-stack/integacmstackuseast1RefCert5C9FAEC18647F8A2": {
+       "Ref": "Cert5C9FAEC1"
+      }
      }
     }
    },
@@ -78,7 +80,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-1",
-     "S3Key": "a44438f0402397af9022e6f4259fb57bbb4bd859db72879f14f40981be45fadc.zip"
+     "S3Key": "1d845554a45d04080ed4ceefef342f0f4f40798a6d388f7f0ac7c8927557af03.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
