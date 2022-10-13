@@ -1,9 +1,10 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { env } from 'process';
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { AwsCliLayer } from '../lib';
 import * as package_loading_functions from '../lib/private/package-loading-functions';
-
 
 describe('create a layer version', () => {
 
@@ -38,15 +39,20 @@ describe('create a layer version', () => {
 
     const stack = new Stack();
 
-    // WHEN
-    new AwsCliLayer(stack, 'MyLayer');
+    try {
+      // WHEN
+      new AwsCliLayer(stack, 'MyLayer');
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
-      Description: '/opt/awscli/aws',
-    });
-    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('.*'));
-    Annotations.fromStack(stack).hasInfo('*', Match.stringLikeRegexp('Installing from: .*/.cdk/npm-cache/'));
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
+        Description: '/opt/awscli/aws',
+      });
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('.*'));
+      Annotations.fromStack(stack).hasInfo('*', Match.stringLikeRegexp('Installing from: .*/.cdk/npm-cache/'));
+    } finally {
+      // this test actually installs @aws-cdk/asset-awscli-v1 and its dependencies to node_modules
+      fs.rmSync(path.join(__dirname, 'node_modules'), { recursive: true, force: true });
+    }
   });
 
   test('using the fallback', () => {
