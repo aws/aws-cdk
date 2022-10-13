@@ -453,7 +453,6 @@
     "./aws-cognito": "./aws-cognito/index.js",
     "./aws-config": "./aws-config/index.js",
     "./aws-connect": "./aws-connect/index.js",
-    "./aws-connectcampaigns": "./aws-connectcampaigns/index.js",
     "./aws-controltower": "./aws-controltower/index.js",
     "./aws-cur": "./aws-cur/index.js",
     "./aws-customerprofiles": "./aws-customerprofiles/index.js",
