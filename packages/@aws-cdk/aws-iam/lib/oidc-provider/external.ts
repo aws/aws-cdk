@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 
+import * as util from 'node:util';
 import * as tls from 'tls';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -20,7 +21,7 @@ function defaultLogger(fmt: string, ...args: any[]) {
 /**
  * Downloads the CA thumbprint from the issuer URL
  */
-async function downloadThumbprint(issuerUrl: string) {
+export async function downloadThumbprint(issuerUrl: string) {
   external.log(`downloading certificate authority thumbprint for ${issuerUrl}`);
   return new Promise<string>((ok, ko) => {
     const purl = url.parse(issuerUrl);
@@ -31,13 +32,63 @@ async function downloadThumbprint(issuerUrl: string) {
     const socket = tls.connect(port, purl.host, { rejectUnauthorized: false, servername: purl.host });
     socket.once('error', ko);
     socket.once('secureConnect', () => {
-      const cert = socket.getPeerCertificate();
+      // This set to `true` would return the entire chain of certificates
+      let cert = socket.getPeerCertificate(true);
+
+      // The root certificate is self signed and will cause a circular reference
+      const unqiueCerts = new Set();
+
+      do {
+        unqiueCerts.add(cert);
+        external.log(`Subject: ${JSON.stringify(cert.subject, null, 4)} and Issuer: ${JSON.stringify(cert.issuer, null, 4)}`);
+        cert = cert.issuerCertificate;
+      } while ( cert && typeof cert === 'object' && !unqiueCerts.has(cert));
+
+      // The last `cert` obtained must be the root certificate
+      // Add `ca: true` when node merges the feature
+      // external.log(`Cert Object ${JSON.stringify(cert, null, 4)}`);
+      ;
+      if (!(util.isDeepStrictEqual(cert.issuer, cert.subject))) {
+        throw new Error(`Unable to obtain root certificate. Received: ${cert}`);
+      }
+
+      const validTo = new Date(cert.valid_to);
+      const certificateValidity = getCertificateValidity(validTo);
+
+      // Warning user if certificate validity is expiring within 6 months
+      if (certificateValidity < 180) {
+        /* eslint-disable-next-line no-console */
+        console.warn(`The root certificate obtained would expire in ${certificateValidity} days!`);
+      }
+
       socket.end();
+
       const thumbprint = cert.fingerprint.split(':').join('');
       external.log(`certificate authority thumbprint for ${issuerUrl} is ${thumbprint}`);
+
       ok(thumbprint);
     });
   });
+}
+
+/**
+ * To get the validity timeline for the certificate
+ * @param certDate The valid to date for the certificate
+ * @returns The number of days the certificate is valid wrt current date
+ */
+function getCertificateValidity(certDate: Date): Number {
+  const millisecondsInDay = 24 * 60 * 60 * 1000;
+  const currentDate = new Date();
+
+  if (certDate.getTime() < currentDate.getTime()) {
+    throw new Error(`The certificate has already expired on: ${certDate}`);
+  }
+
+  const validity = Math.round(
+    Math.abs((certDate.getTime() - currentDate.getTime()) / millisecondsInDay),
+  );
+
+  return validity;
 }
 
 // allows unit test to replace with mocks
