@@ -140,12 +140,6 @@ describe('User Pool Client', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-        Code: {
-          S3Bucket: {
-            'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
-          },
-          S3Key: '105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip',
-        },
         Role: {
           'Fn::GetAtt': [
             'AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2',
@@ -153,7 +147,6 @@ describe('User Pool Client', () => {
           ],
         },
         Handler: 'index.handler',
-        Runtime: 'nodejs14.x',
         Timeout: 120,
       });
     });

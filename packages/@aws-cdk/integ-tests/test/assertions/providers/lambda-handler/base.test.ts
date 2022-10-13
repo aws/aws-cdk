@@ -2,7 +2,7 @@ import * as SDK from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
-import { handler as lambda_handler } from '../../../../lib/assertions/providers/lambda-handler';
+import { handler as lambda_handler, isComplete, onTimeout } from '../../../../lib/assertions/providers/lambda-handler';
 import { CustomResourceHandler } from '../../../../lib/assertions/providers/lambda-handler/base';
 
 interface MyHandlerRequest {
@@ -32,6 +32,7 @@ describe('CustomResourceHandler', () => {
     AWS.mock('S3', 'listBuckets', mockMyApi);
     AWS.mock('StepFunctions', 'startExecution', mockStartExecution);
     jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+    jest.spyOn(console, 'info').mockImplementation(() => { return true; });
   });
 
   afterEach(() => {
@@ -42,6 +43,30 @@ describe('CustomResourceHandler', () => {
   });
 
   describe('lambda handler', () => {
+    test('create async request', async () => {
+      const nocked = nockUp((body) => {
+        return body.Status === 'SUCCESS'
+        && body.Reason === 'OK'
+        && body.Data === {}
+        && body.StackId === 'MyStackId'
+        && body.RequestId === 'MyRequestId'
+        && body.NoEcho === false;
+      });
+      const event = createEvent({
+        stateMachineArn: 'arn',
+        service: 'MyService',
+        api: 'myApi',
+      }, 'Custom::DeployAssert@SdkCall');
+      await lambda_handler(event, standardContext);
+
+      sinon.assert.calledOnce(mockStartExecution);
+      sinon.assert.notCalled(mockMyApi);
+
+      // THEN
+      // started async workflow so no response to CFN
+      expect(nocked.isDone()).toEqual(false);
+    });
+
     test('create sync request', async () => {
       const nocked = nockUp((body) => {
         return body.Status === 'SUCCESS'
@@ -104,6 +129,89 @@ describe('CustomResourceHandler', () => {
       sinon.assert.notCalled(mockStartExecution);
 
       // THEN
+      expect(nocked.isDone()).toEqual(true);
+    });
+  });
+
+  describe('lambda isCompleteHandler', () => {
+    test('basic', async () => {
+      const nocked = nockUp((body) => {
+        return body.Status === 'SUCCESS'
+        && body.Reason === 'OK'
+        && 'apiCallResponse' in body.Data
+        && body.StackId === 'MyStackId'
+        && body.RequestId === 'MyRequestId'
+        && body.NoEcho === false;
+      });
+      const event = createEvent({
+        stateMachineArn: 'arn',
+        service: 'S3',
+        api: 'listBuckets',
+      }, 'Custom::DeployAssert@SdkCall');
+      await isComplete(event, standardContext);
+
+      sinon.assert.calledOnce(mockMyApi);
+
+      // THEN
+      expect(nocked.isDone()).toEqual(true);
+    });
+
+    test('create request with assertions', async () => {
+      const nocked = nockUp((body) => {
+        return body.Status === 'SUCCESS'
+        && body.Reason === 'OK'
+        && body.Data.assertion === '{"status":"success"}'
+        && body.StackId === 'MyStackId'
+        && body.RequestId === 'MyRequestId'
+        && body.NoEcho === false;
+      });
+      const event = createEvent({
+        service: 'S3',
+        api: 'listBuckets',
+        expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'somebucket' }] } }),
+      }, 'Custom::DeployAssert@SdkCall');
+      await isComplete(event, standardContext);
+
+      sinon.assert.calledOnce(mockMyApi);
+
+      // THEN
+      expect(nocked.isDone()).toEqual(true);
+    });
+
+    test('create request with assertions fails', async () => {
+      const nocked = nockUp((body) => {
+        return body.Status === 'FAILED'
+        && (body.Reason?.match(/Expected someotherbucket/) ?? []).length === 1;
+      });
+      const event = createEvent({
+        service: 'S3',
+        api: 'listBuckets',
+        expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'someotherbucket' }] } }),
+      }, 'Custom::DeployAssert@SdkCall');
+      await expect(isComplete(event, standardContext)).rejects.toThrow();
+
+      sinon.assert.calledOnce(mockMyApi);
+      sinon.assert.notCalled(mockStartExecution);
+
+      // THEN
+      expect(nocked.isDone()).toEqual(false);
+    });
+  });
+
+  describe('onTimeout', () => {
+    test('timeout', async () => {
+      const nocked = nockUp((body) => {
+        return body.Status === 'FAILED'
+        && (body.Reason?.match(/Operation timed out/) ?? []).length === 1;
+      });
+      await onTimeout({
+        Cause: JSON.stringify({
+          errorMessage: JSON.stringify(createEvent({
+            service: 'S3',
+            api: 'listBuckets',
+          }, 'Custom::DeployAssert@SdkCall')),
+        }),
+      });
       expect(nocked.isDone()).toEqual(true);
     });
   });

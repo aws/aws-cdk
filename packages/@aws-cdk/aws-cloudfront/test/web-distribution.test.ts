@@ -35,7 +35,7 @@ NQIDAQAB
 
 describe('web distribution', () => {
 
-  test('distribution with custom origin adds custom origin', () => {
+  testDeprecated('distribution with custom origin adds custom origin', () => {
     const stack = new cdk.Stack();
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
@@ -410,7 +410,7 @@ added the ellipsis so a user would know there was more to r...`,
   });
 
 
-  test('distribution with trusted signers on default distribution', () => {
+  testDeprecated('distribution with trusted signers on default distribution', () => {
     const stack = new cdk.Stack();
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
     const pubKey = new PublicKey(stack, 'MyPubKey', {

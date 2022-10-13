@@ -1184,12 +1184,11 @@ export class Stack extends Construct implements ITaggable {
    * Indicates whether the stack requires bundling or not
    */
   public get bundlingRequired() {
-    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
+    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['**'];
 
-    // bundlingStacks is of the form `Stage/Stack`, convert it to `Stage-Stack` before comparing to stack name
     return bundlingStacks.some(pattern => minimatch(
-      this.stackName,
-      pattern.replace('/', '-'),
+      this.node.path, // use the same value for pattern matching as the aws-cdk CLI (displayName / hierarchicalId)
+      pattern,
     ));
   }
 }

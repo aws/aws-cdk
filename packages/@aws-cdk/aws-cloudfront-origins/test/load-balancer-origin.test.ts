@@ -44,11 +44,12 @@ test('Can customize properties of the origin', () => {
     connectionAttempts: 3,
     connectionTimeout: Duration.seconds(5),
     protocolPolicy: cloudfront.OriginProtocolPolicy.MATCH_VIEWER,
+    originId: 'MyCustomOrigin',
   });
   const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
   expect(originBindConfig.originProperty).toEqual({
-    id: 'StackOrigin029E19582',
+    id: 'MyCustomOrigin',
     domainName: loadBalancer.loadBalancerDnsName,
     connectionAttempts: 3,
     connectionTimeout: 5,

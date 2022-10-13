@@ -76,6 +76,18 @@ test('creates CloudFormation Custom Resource', () => {
               ],
             ],
           },
+          Condition: {
+            'ForAllValues:StringEquals': {
+              'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
+              'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+            },
+            'ForAllValues:StringLike': {
+              'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+                '*.test.example.com',
+                '*.test2.example.com',
+              ],
+            },
+          },
         },
       ],
     },

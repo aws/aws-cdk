@@ -26,11 +26,10 @@ const topic = new sns.Topic(this, 'Topic', {
   contentBasedDeduplication: true,
   displayName: 'Customer subscription topic',
   fifo: true,
-  topicName: 'customerTopic',
 });
 ```
 
-Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically added to the topic name if it is not explicitly provided.
+Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically generated and added to the topic name if it is not explicitly provided.
 
 ## Subscriptions
 

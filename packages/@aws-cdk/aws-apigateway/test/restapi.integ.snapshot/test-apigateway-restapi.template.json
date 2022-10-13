@@ -671,6 +671,56 @@
    "DependsOn": [
     "MyHandlerServiceRoleFFA06653"
    ]
+  },
+  "TestDeploymentD77B56866f3141cef1e8fea8ab3b3b8bc90df36d": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    }
+   },
+   "DependsOn": [
+    "myapiv1appliancesGET8FE872EC",
+    "myapiv1booksGETC6B996D0",
+    "myapiv1booksPOST53E2832E",
+    "myapiv1toysGET7348114D",
+    "myapiv1toysPOST55128058",
+    "myapiv1toysPUT59AFBBC2"
+   ]
+  },
+  "TestStage3097EB68": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "DeploymentId": {
+     "Ref": "TestDeploymentD77B56866f3141cef1e8fea8ab3b3b8bc90df36d"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "myapiAccountEC421A0A"
+   ]
+  },
+  "TestStageMyTestApiKeyAB584BD5": {
+   "Type": "AWS::ApiGateway::ApiKey",
+   "Properties": {
+    "Enabled": true,
+    "StageKeys": [
+     {
+      "RestApiId": {
+       "Ref": "myapi4C7BF186"
+      },
+      "StageName": {
+       "Ref": "TestStage3097EB68"
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "myapiAccountEC421A0A"
+   ]
   }
  },
  "Outputs": {

@@ -1,5 +1,5 @@
 import { IKey } from '@aws-cdk/aws-kms';
-import { ArnFormat, Stack } from '@aws-cdk/core';
+import { ArnFormat, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
@@ -82,12 +82,6 @@ export class Topic extends TopicBase {
       physicalName: props.topicName,
     });
 
-    if (props.fifo && !props.topicName) {
-      // NOTE: Workaround for CloudFormation problem reported in CDK issue 12386
-      // see https://github.com/aws/aws-cdk/issues/12386
-      throw new Error('FIFO SNS topics must be given a topic name.');
-    }
-
     if (props.contentBasedDeduplication && !props.fifo) {
       throw new Error('Content based deduplication can only be enabled for FIFO SNS topics.');
     }
@@ -95,6 +89,13 @@ export class Topic extends TopicBase {
     let cfnTopicName: string;
     if (props.fifo && props.topicName && !props.topicName.endsWith('.fifo')) {
       cfnTopicName = this.physicalName + '.fifo';
+    } else if (props.fifo && !props.topicName) {
+      // Max lenght allowed by CloudFormation is 256, we subtract 5 to allow for ".fifo" suffix
+      const prefixName = Names.uniqueResourceName(this, {
+        maxLength: 256 - 5,
+        separator: '-',
+      });
+      cfnTopicName = `${prefixName}.fifo`;
     } else {
       cfnTopicName = this.physicalName;
     }

@@ -42,6 +42,17 @@
        "Statement": [
         {
          "Action": "route53:ChangeResourceRecordSets",
+         "Condition": {
+          "ForAllValues:StringEquals": {
+           "route53:ChangeResourceRecordSetsRecordTypes": [
+            "NS"
+           ],
+           "route53:ChangeResourceRecordSetsActions": [
+            "UPSERT",
+            "DELETE"
+           ]
+          }
+         },
          "Effect": "Allow",
          "Resource": {
           "Fn::Join": [

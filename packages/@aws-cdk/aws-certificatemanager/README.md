@@ -45,6 +45,7 @@ const myHostedZone = new route53.HostedZone(this, 'HostedZone', {
 });
 new acm.Certificate(this, 'Certificate', {
   domainName: 'hello.example.com',
+  certificateName: 'Hello World Service', // Optionally provide an certificate name
   validation: acm.CertificateValidation.fromDns(myHostedZone),
 });
 ```

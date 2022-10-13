@@ -424,6 +424,60 @@ describe('stage', () => {
     });
   });
 
+  test('addApiKey is supported', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false });
+    api.root.addMethod('GET');
+    const stage = new apigateway.Stage(stack, 'Stage', {
+      deployment: api.latestDeployment!,
+    });
+
+    // WHEN
+    stage.addApiKey('MyKey');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
+      StageKeys: [
+        {
+          RestApiId: {
+            Ref: 'testapiD6451F70',
+          },
+          StageName: {
+            Ref: 'Stage0E8C2AF5',
+          },
+        },
+      ],
+    });
+  });
+
+  test('addApiKey is supported on an imported stage', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false });
+    api.root.addMethod('GET');
+    const stage = apigateway.Stage.fromStageAttributes(stack, 'Stage', {
+      restApi: api,
+      stageName: 'MyStage',
+    });
+
+    // WHEN
+    stage.addApiKey('MyKey');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
+      StageKeys: [
+        {
+          RestApiId: {
+            Ref: 'testapiD6451F70',
+          },
+          StageName: 'MyStage',
+        },
+      ],
+    });
+
+  });
+
   describe('Metrics', () => {
     test('metric', () => {
       // GIVEN

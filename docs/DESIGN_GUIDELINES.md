@@ -671,7 +671,7 @@ new lambda.Function(this, 'MyFunction', {
   code: lambda.Code.bucket(myBucket, 'bundle.zip'), // or
   code: lambda.Code.inline('code')
   // etc
-}
+})
 ```
 
 ### Attributes

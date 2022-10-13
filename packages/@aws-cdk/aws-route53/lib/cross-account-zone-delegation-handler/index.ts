@@ -51,7 +51,7 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
 }
 
 async function getCrossAccountCredentials(roleArn: string): Promise<Credentials> {
-  const sts = new STS();
+  const sts = new STS({ stsRegionalEndpoints: 'regional' });
   const timestamp = (new Date()).getTime();
 
   const { Credentials: assumedCredentials } = await sts

@@ -547,6 +547,12 @@
       "HostedZoneId": "fakeId"
      }
     ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-ecs-integ-alb-fg-https/myService/Certificate"
+     }
+    ],
     "ValidationMethod": "DNS"
    }
   },

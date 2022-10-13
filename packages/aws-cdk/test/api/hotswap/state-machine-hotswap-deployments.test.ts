@@ -637,3 +637,40 @@ test('knows how to handle attributes of the AWS::DynamoDB::Table resource', asyn
     }),
   });
 });
+
+test('does not explode if the DependsOn changes', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: '{ Prop: "old-value" }',
+          StateMachineName: 'my-machine',
+        },
+        DependsOn: ['abc'],
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: '{ Prop: "old-value" }',
+            StateMachineName: 'my-machine',
+          },
+        },
+        DependsOn: ['xyz'],
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
+});

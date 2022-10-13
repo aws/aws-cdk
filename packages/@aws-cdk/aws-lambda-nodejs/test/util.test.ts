@@ -182,7 +182,7 @@ describe('extractDependencies', () => {
 
 describe('getTsconfigCompilerOptions', () => {
   test('should extract compiler options and returns as string', () => {
-    const tsconfig = path.join(__dirname, '..', 'tsconfig.json');
+    const tsconfig = path.join(__dirname, 'testtsconfig.json');
     const compilerOptions = getTsconfigCompilerOptions(tsconfig);
     expect(compilerOptions).toEqual([
       '--alwaysStrict',

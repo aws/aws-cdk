@@ -40,6 +40,20 @@ describe('None Data Source configuration', () => {
     });
   });
 
+  test('appsync configures name correctly for token', () => {
+    // WHEN
+    const produceCustom = cdk.Lazy.string({ produce(): string { return 'Produce'; } });
+    api.addNoneDataSource('ds', {
+      name: `${produceCustom}Custom`,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'NONE',
+      Name: 'ProduceCustom',
+    });
+  });
+
   test('appsync configures name and description correctly', () => {
     // WHEN
     api.addNoneDataSource('ds', {

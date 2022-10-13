@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5852aa1b584b0d4cf8c4157e3db81d86fccee7e307bb6aa9eb2490c9c640a88f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ad4787bdd5f9c4b16cdee4831d5642e564049c42cac331b6d4b51b9ab2ae322e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -199,6 +199,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyHandler6B74D312"
+          }
+        ],
+        "/test-apigateway-restapi/TestDeployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestDeploymentD77B56866f3141cef1e8fea8ab3b3b8bc90df36d"
+          }
+        ],
+        "/test-apigateway-restapi/TestStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestStage3097EB68"
+          }
+        ],
+        "/test-apigateway-restapi/TestStage/MyTestApiKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestStageMyTestApiKeyAB584BD5"
           }
         ],
         "/test-apigateway-restapi/BootstrapVersion": [

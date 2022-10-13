@@ -90,24 +90,24 @@ test('bundling stacks defaults to an empty list', () => {
   expect(settings.get(['bundlingStacks'])).toEqual([]);
 });
 
-test('bundling stacks defaults to * for deploy', () => {
+test('bundling stacks defaults to ** for deploy', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({
     _: [Command.DEPLOY],
   });
 
   // THEN
-  expect(settings.get(['bundlingStacks'])).toEqual(['*']);
+  expect(settings.get(['bundlingStacks'])).toEqual(['**']);
 });
 
-test('bundling stacks defaults to * for watch', () => {
+test('bundling stacks defaults to ** for watch', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({
     _: [Command.WATCH],
   });
 
   // THEN
-  expect(settings.get(['bundlingStacks'])).toEqual(['*']);
+  expect(settings.get(['bundlingStacks'])).toEqual(['**']);
 });
 
 test('bundling stacks with deploy exclusively', () => {
