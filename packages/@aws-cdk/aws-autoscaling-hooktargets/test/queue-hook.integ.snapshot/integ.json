@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "queue-hook-test/DefaultTest": {
+      "stacks": [
+        "integ-autoscalinghook-queue"
+      ],
+      "assertionStack": "queue-hook-test/DefaultTest/DeployAssert",
+      "assertionStackName": "queuehooktestDefaultTestDeployAssertCF5493DF"
+    }
+  }
+}
