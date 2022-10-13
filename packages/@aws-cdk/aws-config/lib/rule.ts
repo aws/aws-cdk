@@ -1482,6 +1482,8 @@ export class ResourceType {
   public static readonly EC2_REGISTERED_HA_INSTANCE = new ResourceType('AWS::EC2::RegisteredHAInstance');
   /** EC2 launch template */
   public static readonly EC2_LAUNCH_TEMPLATE = new ResourceType('AWS::EC2::LaunchTemplate');
+  /** EC2 Network Insights Access Scope Analysis */
+  public static readonly EC2_NETWORK_INSIGHTS_ACCESS_SCOPE_ANALYSIS = new ResourceType('AWS::EC2::NetworkInsightsAccessScopeAnalysis');
   /** Amazon ECR repository */
   public static readonly ECR_REPOSITORY = new ResourceType('AWS::ECR::Repository');
   /** Amazon ECR public repository */
@@ -1502,6 +1504,10 @@ export class ResourceType {
   public static readonly EMR_SECURITY_CONFIGURATION = new ResourceType('AWS::EMR::SecurityConfiguration');
   /** Amazon GuardDuty detector */
   public static readonly GUARDDUTY_DETECTOR = new ResourceType('AWS::GuardDuty::Detector');
+  /** Amazon GuardDuty Threat Intel Set */
+  public static readonly GUARDDUTY_THREAT_INTEL_SET = new ResourceType('AWS::GuardDuty::ThreatIntelSet');
+  /** Amazon GuardDuty IP Set */
+  public static readonly GUARDDUTY_IP_SET = new ResourceType(' AWS::GuardDuty::IPSet');
   /** Amazon ElasticSearch domain */
   public static readonly ELASTICSEARCH_DOMAIN = new ResourceType('AWS::Elasticsearch::Domain');
   /** Amazon OpenSearch domain */
@@ -1558,6 +1564,12 @@ export class ResourceType {
   public static readonly SAGEMAKER_MODEL = new ResourceType('AWS::SageMaker::Model');
   /** Amazon SageMaker notebook instance */
   public static readonly SAGEMAKER_NOTEBOOK_INSTANCE = new ResourceType('AWS::SageMaker::NotebookInstance');
+  /** Amazon SageMaker workteam */
+  public static readonly SAGEMAKER_WORKTEAM = new ResourceType('AWS::SageMaker::Workteam');
+  /** Amazon SES Configuration Set */
+  public static readonly SES_CONFIGURATION_SET = new ResourceType('AWS::SES::ConfigurationSet');
+  /** Amazon SES Contact List */
+  public static readonly SES_CONTACT_LIST = new ResourceType('AWS::SES::ContactList');
   /** Amazon S3 account public access block */
   public static readonly S3_ACCOUNT_PUBLIC_ACCESS_BLOCK = new ResourceType('AWS::S3::AccountPublicAccessBlock');
   /** Amazon EC2 customer gateway */
@@ -1588,6 +1600,10 @@ export class ResourceType {
   public static readonly WORKSPACES_CONNECTION_ALIAS = new ResourceType('AWS::WorkSpaces::ConnectionAlias');
   /** Amazon WorkSpaces workSpace */
   public static readonly WORKSPACES_WORKSPACE = new ResourceType('AWS::WorkSpaces::Workspace');
+  /** AWS AppConfig application */
+  public static readonly APPCONFIG_APPLICATION = new ResourceType('AWS::AppConfig::Application');
+  /** AWS AppSync GraphQL Api */
+  public static readonly APPSYNC_GRAPHQL_API = new ResourceType('AWS::AppSync::GraphQLApi');
   /** AWS Backup backup plan */
   public static readonly BACKUP_BACKUP_PLAN = new ResourceType('AWS::Backup::BackupPlan');
   /** AWS Backup backup selection */
@@ -1606,6 +1622,10 @@ export class ResourceType {
   public static readonly CLOUDFORMATION_STACK = new ResourceType('AWS::CloudFormation::Stack');
   /** AWS CloudTrail trail */
   public static readonly CLOUDTRAIL_TRAIL = new ResourceType('AWS::CloudTrail::Trail');
+  /** AWS Cloud Map(ServiceDiscovery) service */
+  public static readonly SERVICEDISCOVERY_SERVICE = new ResourceType('AWS::ServiceDiscovery::Service');
+  /** AWS Cloud Map(ServiceDiscovery) Public Dns Namespace */
+  public static readonly SERVICEDISCOVERY_PUBLIC_DNS_NAMESPACE = new ResourceType('AWS::ServiceDiscovery::PublicDnsNamespace');
   /** AWS CodeBuild project */
   public static readonly CODEBUILD_PROJECT = new ResourceType('AWS::CodeBuild::Project');
   /** AWS CodeDeploy application */
@@ -1624,6 +1644,18 @@ export class ResourceType {
   public static readonly DMS_EVENT_SUBSCRIPTION = new ResourceType('AWS::DMS::EventSubscription');
   /** AWS DMS replication subnet group */
   public static readonly DMS_REPLICATION_SUBNET_GROUP = new ResourceType('AWS::DMS::ReplicationSubnetGroup');
+  /** AWS DataSync location SMB */
+  public static readonly DATASYNC_LOCATION_SMB = new ResourceType('AWS::DataSync::LocationSMB');
+  /** AWS DataSync location FSx Lustre */
+  public static readonly DATASYNC_LOCATION_FSX_LUSTRE = new ResourceType('AWS::DataSync::LocationFSxLustre');
+  /** AWS DataSync location S3 */
+  public static readonly DATASYNC_LOCATION_S3 = new ResourceType('AWS::DataSync::LocationS3');
+  /** AWS DataSync location EFS */
+  public static readonly DATASYNC_LOCATION_EFS = new ResourceType('AWS::DataSync::LocationEFS');
+  /** AWS DataSync task */
+  public static readonly DATASYNC_TASK = new ResourceType('AWS::DataSync::Task');
+  /** AWS DataSync location NFS */
+  public static readonly DATASYNC_LOCATION_NFS = new ResourceType('AWS::DataSync::LocationNFS');
   /** AWS Elastic Beanstalk (EB) application */
   public static readonly ELASTIC_BEANSTALK_APPLICATION = new ResourceType('AWS::ElasticBeanstalk::Application');
   /** AWS Elastic Beanstalk (EB) application version */
