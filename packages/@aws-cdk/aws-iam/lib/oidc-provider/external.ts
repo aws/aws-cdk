@@ -1,5 +1,4 @@
 /* istanbul ignore file */
-
 import { DetailedPeerCertificate } from 'node:tls';
 import * as util from 'node:util';
 import * as tls from 'tls';
@@ -23,45 +22,38 @@ function defaultLogger(fmt: string, ...args: any[]) {
  * Downloads the CA thumbprint from the issuer URL
  */
 export async function downloadThumbprint(issuerUrl: string) {
-  external.log(`downloading certificate authority thumbprint for ${issuerUrl}`);
+
+  external.log(`Downloading certificate authority thumbprint for ${issuerUrl}`);
+
   return new Promise<string>((ok, ko) => {
     const purl = url.parse(issuerUrl);
     const port = purl.port ? parseInt(purl.port, 10) : 443;
+
     if (!purl.host) {
       return ko(new Error(`unable to determine host from issuer url ${issuerUrl}`));
     }
+
     const socket = tls.connect(port, purl.host, { rejectUnauthorized: false, servername: purl.host });
     socket.once('error', ko);
-    external.log('Here-0');
-    external.log(`PURL: ${JSON.stringify(purl, null, 4)}, PORT: ${port}, HOST: ${purl.host}`);
+
     socket.once('secureConnect', () => {
-
-      external.log('Here-1');
-
-      // This set to `true` would return the entire chain of certificates
+      // This set to `true` would return the entire chain of certificates as a circular reference object
       let cert = socket.getPeerCertificate(true);
 
-      external.log('Here-2');
-
-      // The root certificate is self signed and will cause a circular reference
       const unqiueCerts = new Set<DetailedPeerCertificate>();
-
       do {
         unqiueCerts.add(cert);
-        external.log(`Subject: ${JSON.stringify(cert.subject, null, 4)} and Issuer: ${JSON.stringify(cert.issuer, null, 4)}`);
         cert = cert.issuerCertificate;
       } while ( cert && typeof cert === 'object' && !unqiueCerts.has(cert));
 
-      // The last `cert` obtained must be the root certificate
-      // Add `ca: true` when node merges the feature
-
+      // The last `cert` obtained must be the root certificate in the certificate chain
       const rootCert = [...unqiueCerts].pop()!;
 
+      // Add `ca: true` when node merges the feature. Awaiting resolution: https://github.com/nodejs/node/issues/44905
       if (!(util.isDeepStrictEqual(rootCert.issuer, rootCert.subject))) {
-        return ko(new Error(`Subject and Issuer of certificate received are different. Received: \'Subject\' is ${JSON.stringify(rootCert.subject, null, 4)} and \'Issuer\':${JSON.stringify(rootCert.issuer, null, 4)}`));
+        return ko(new Error(`Subject and Issuer of certificate received are different. 
+        Received: \'Subject\' is ${JSON.stringify(rootCert.subject, null, 4)} and \'Issuer\':${JSON.stringify(rootCert.issuer, null, 4)}`));
       }
-
-      external.log(`VINAYAKKKKKK: ${rootCert.valid_to}`);
 
       const validTo = new Date(rootCert.valid_to);
       const certificateValidity = getCertificateValidity(validTo);
@@ -79,7 +71,7 @@ export async function downloadThumbprint(issuerUrl: string) {
       socket.end();
 
       const thumbprint = rootCert.fingerprint.split(':').join('');
-      external.log(`certificate authority thumbprint for ${issuerUrl} is ${thumbprint}`);
+      external.log(`Certificate Authority thumbprint for ${issuerUrl} is ${thumbprint}`);
 
       ok(thumbprint);
     });
@@ -94,8 +86,6 @@ export async function downloadThumbprint(issuerUrl: string) {
 function getCertificateValidity(certDate: Date): Number {
   const millisecondsInDay = 24 * 60 * 60 * 1000;
   const currentDate = new Date();
-
-  external.log(`EXXXX: ${certDate.getTime()} and CURRRR: ${currentDate.getTime()}`);
 
   const validity = Math.round((certDate.getTime() - currentDate.getTime()) / millisecondsInDay);
 

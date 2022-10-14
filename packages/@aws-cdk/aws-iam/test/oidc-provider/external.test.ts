@@ -1,32 +1,30 @@
-/* eslint-disable jest/no-disabled-tests */
-/* eslint-disable no-console */
 import { TLSSocket, DetailedPeerCertificate, Certificate } from 'tls';
 import { downloadThumbprint } from '../../lib/oidc-provider/external';
 
 const chainLength = 3;
 let certificateCount = 0;
-let circularCertificate: DetailedPeerCertificate;
+let placeholderCertificate: DetailedPeerCertificate;
 let peerCertificate: DetailedPeerCertificate;
 
 describe('downloadThumbprint', () => {
-
-  beforeEach(() => {
-    certificateCount = 0;
-    peerCertificate = createChainedCertificateObject();
-    peerCertificate.issuerCertificate.issuerCertificate.issuerCertificate.issuerCertificate = peerCertificate;
-  });
 
   const peerCertificateMock = jest.spyOn(TLSSocket.prototype, 'getPeerCertificate').mockImplementation(()=> {
     return peerCertificate;
   });
 
-  afterEach(() => {
-    peerCertificateMock.mockClear();
+  beforeEach(() => {
+    certificateCount = 0;
+    peerCertificate = createChainedCertificateObject();
+
+    // This is to create a circular reference in the root certificate
+    getRootCertificateFromChain().issuerCertificate = peerCertificate;
+
+    // To have silent test runs for this test
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   test('is able to get root certificate from certificate chain', async () => {
-    console.log(`TESTING: ${getRootCertificateFromChain().subjectaltname}`);
-
     // WHEN
     await downloadThumbprint('https://example.com');
 
@@ -47,10 +45,9 @@ describe('downloadThumbprint', () => {
 
     getRootCertificateFromChain().subject = subject;
 
-    // WHEN
+    // THEN
     await expect(() => downloadThumbprint('https://example.com')).rejects.toThrowError(/Subject and Issuer of certificate received are different/);
 
-    // THEN
     expect(peerCertificateMock).toHaveBeenCalledTimes(2);
   });
 
@@ -59,15 +56,16 @@ describe('downloadThumbprint', () => {
     const currentDate = new Date();
     const expiredValidityDate = subtractDaysFromDate(currentDate, 5);
 
-    console.log(`TODAY: ${currentDate} and EXPIRED: ${expiredValidityDate}`);
-
     getRootCertificateFromChain().valid_to = expiredValidityDate.toUTCString();
 
-    // WHEN
+    // THEN
     await expect(() => downloadThumbprint('https://example.com')).rejects.toThrowError(/The certificate has already expired on/);
 
-    // THEN
     expect(peerCertificateMock).toHaveBeenCalledTimes(2);
+  });
+
+  afterEach(() => {
+    peerCertificateMock.mockClear();
   });
 });
 
@@ -105,12 +103,12 @@ function createCertificateObject(): DetailedPeerCertificate {
       exponent: 'exponent-root',
       valid_from: currentDate.toUTCString(),
       valid_to: addDaysToDate(currentDate, 200).toUTCString(),
-      fingerprint: '01:02:59:D9:C3:D2:0D:08:F7:82:4E:44:A4:B4:53:C5:E2:3A:87:0D',
+      fingerprint: '01:02:59:D9:C3:D2:0D:08:F7:82:4E:44:A4:B4:53:C5:E2:3A:87:00',
       fingerprint256: '69:AE:1A:6A:D4:3D:C6:C1:1B:EA:C6:23:DE:BA:2A:14:62:62:93:5C:7A:EA:06:41:9B:0B:BC:87:CE:48:4E:00',
       ext_key_usage: ['key-usage-root'],
       serialNumber: 'serial-number-root',
       raw: Buffer.alloc(10),
-      issuerCertificate: circularCertificate,
+      issuerCertificate: placeholderCertificate,
     };
   }
 
