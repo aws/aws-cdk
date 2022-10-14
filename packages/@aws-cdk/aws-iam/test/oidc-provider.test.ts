@@ -434,8 +434,3 @@ describe('OIDC issuer', () => {
 async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
   return handler.handler(event as any);
 }
-
-
-// Make sure root certificates are obtained
-// Make sure relevant errors are thrown when expected
-// Make sure validity is printed
