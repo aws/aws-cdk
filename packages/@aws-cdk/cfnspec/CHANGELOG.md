@@ -1,3 +1,35 @@
+# CloudFormation Resource Specification v93.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::Cognito::UserPoolDomain CloudFrontDistribution (__added__)
+* AWS::EC2::VPCEndpoint Id (__deleted__)
+* AWS::EC2::VPCEndpoint DnsEntries.DuplicatesAllowed (__deleted__)
+* AWS::EC2::VPCEndpoint NetworkInterfaceIds.DuplicatesAllowed (__deleted__)
+* AWS::Redshift::EndpointAccess VpcSecurityGroups (__deleted__)
+
+## Property Changes
+
+* AWS::RDS::DBCluster Domain (__added__)
+* AWS::RDS::DBCluster DomainIAMRoleName (__added__)
+* AWS::RDS::DBCluster NetworkType (__added__)
+* AWS::RDS::DBInstance NetworkType (__added__)
+* AWS::Redshift::EndpointAccess VpcEndpoint (__added__)
+* AWS::Redshift::EndpointAccess VpcSecurityGroups (__added__)
+
+## Property Type Changes
+
+* AWS::Budgets::Budget.AutoAdjustData (__added__)
+* AWS::Budgets::Budget.HistoricalOptions (__added__)
+* AWS::Budgets::Budget.BudgetData AutoAdjustData (__added__)
+
+## Unapplied changes
+
+* AWS::Rekognition is at 92.0.0
+
 # CloudFormation Resource Specification v92.0.0
 
 ## New Resource Types
