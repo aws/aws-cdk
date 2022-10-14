@@ -31,7 +31,7 @@ new sfn.StateMachine(stack, 'StateMachine', {
   timeout: cdk.Duration.seconds(30),
 });
 
-new integ.IntegTest(app, 'SQSFilterCriteria', {
+new integ.IntegTest(app, 'ListAtAfterParallel', {
   testCases: [stack],
 });
 

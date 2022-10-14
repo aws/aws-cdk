@@ -1,12 +1,12 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "SQSFilterCriteria/DefaultTest": {
+    "ListAtAfterParallel/DefaultTest": {
       "stacks": [
         "listAt-after-parallel"
       ],
-      "assertionStack": "SQSFilterCriteria/DefaultTest/DeployAssert",
-      "assertionStackName": "SQSFilterCriteriaDefaultTestDeployAssert70A9A808"
+      "assertionStack": "ListAtAfterParallel/DefaultTest/DeployAssert",
+      "assertionStackName": "ListAtAfterParallelDefaultTestDeployAssert1589F6AD"
     }
   }
 }
