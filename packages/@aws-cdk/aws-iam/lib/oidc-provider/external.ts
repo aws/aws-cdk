@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 
+import { DetailedPeerCertificate } from 'node:tls';
 import * as util from 'node:util';
 import * as tls from 'tls';
 import * as url from 'url';
@@ -31,12 +32,19 @@ export async function downloadThumbprint(issuerUrl: string) {
     }
     const socket = tls.connect(port, purl.host, { rejectUnauthorized: false, servername: purl.host });
     socket.once('error', ko);
+    external.log('Here-0');
+    external.log(`PURL: ${JSON.stringify(purl, null, 4)}, PORT: ${port}, HOST: ${purl.host}`);
     socket.once('secureConnect', () => {
+
+      external.log('Here-1');
+
       // This set to `true` would return the entire chain of certificates
       let cert = socket.getPeerCertificate(true);
 
+      external.log('Here-2');
+
       // The root certificate is self signed and will cause a circular reference
-      const unqiueCerts = new Set();
+      const unqiueCerts = new Set<DetailedPeerCertificate>();
 
       do {
         unqiueCerts.add(cert);
@@ -46,14 +54,21 @@ export async function downloadThumbprint(issuerUrl: string) {
 
       // The last `cert` obtained must be the root certificate
       // Add `ca: true` when node merges the feature
-      // external.log(`Cert Object ${JSON.stringify(cert, null, 4)}`);
-      ;
-      if (!(util.isDeepStrictEqual(cert.issuer, cert.subject))) {
-        throw new Error(`Unable to obtain root certificate. Received: ${cert}`);
+
+      const rootCert = [...unqiueCerts].pop()!;
+
+      if (!(util.isDeepStrictEqual(rootCert.issuer, rootCert.subject))) {
+        return ko(new Error(`Subject and Issuer of certificate received are different. Received: \'Subject\' is ${JSON.stringify(rootCert.subject, null, 4)} and \'Issuer\':${JSON.stringify(rootCert.issuer, null, 4)}`));
       }
 
-      const validTo = new Date(cert.valid_to);
+      external.log(`VINAYAKKKKKK: ${rootCert.valid_to}`);
+
+      const validTo = new Date(rootCert.valid_to);
       const certificateValidity = getCertificateValidity(validTo);
+
+      if (certificateValidity < 0) {
+        return ko(new Error(`The certificate has already expired on: ${validTo.toUTCString()}`));
+      }
 
       // Warning user if certificate validity is expiring within 6 months
       if (certificateValidity < 180) {
@@ -63,7 +78,7 @@ export async function downloadThumbprint(issuerUrl: string) {
 
       socket.end();
 
-      const thumbprint = cert.fingerprint.split(':').join('');
+      const thumbprint = rootCert.fingerprint.split(':').join('');
       external.log(`certificate authority thumbprint for ${issuerUrl} is ${thumbprint}`);
 
       ok(thumbprint);
@@ -80,13 +95,9 @@ function getCertificateValidity(certDate: Date): Number {
   const millisecondsInDay = 24 * 60 * 60 * 1000;
   const currentDate = new Date();
 
-  if (certDate.getTime() < currentDate.getTime()) {
-    throw new Error(`The certificate has already expired on: ${certDate}`);
-  }
+  external.log(`EXXXX: ${certDate.getTime()} and CURRRR: ${currentDate.getTime()}`);
 
-  const validity = Math.round(
-    Math.abs((certDate.getTime() - currentDate.getTime()) / millisecondsInDay),
-  );
+  const validity = Math.round((certDate.getTime() - currentDate.getTime()) / millisecondsInDay);
 
   return validity;
 }

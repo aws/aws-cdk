@@ -1,51 +1,73 @@
-// jest.mock('tls', () => {
-//   return {
-//     TLSSocket: {
-//       getPeerCertificate: mockPeerCertificate,
-//     },
-//   };
-// });
-
-let certificateCount = 0;
-const certificates = new Array();
-const peerCertificate = createChainedCertificateObject();
-const mockPeerCertificate = jest.fn().mockReturnValue(peerCertificate);
-
-const mockTLSSocket = {
-  getPeerCertificate: mockPeerCertificate,
-};
-
-// const tlsMock = jest.createMockFromModule('tls');
-
-jest.mock('tls', () => {
-  return {
-    ...jest.requireActual('tls'),
-    TLSSocket: jest.fn(() => mockTLSSocket),
-  };
-});
-
-import { DetailedPeerCertificate } from 'tls';
+/* eslint-disable jest/no-disabled-tests */
+/* eslint-disable no-console */
+import { TLSSocket, DetailedPeerCertificate, Certificate } from 'tls';
 import { downloadThumbprint } from '../../lib/oidc-provider/external';
 
+const chainLength = 3;
+let certificateCount = 0;
+let circularCertificate: DetailedPeerCertificate;
+let peerCertificate: DetailedPeerCertificate;
+
 describe('downloadThumbprint', () => {
+
+  beforeEach(() => {
+    certificateCount = 0;
+    peerCertificate = createChainedCertificateObject();
+    peerCertificate.issuerCertificate.issuerCertificate.issuerCertificate.issuerCertificate = peerCertificate;
+  });
+
+  const peerCertificateMock = jest.spyOn(TLSSocket.prototype, 'getPeerCertificate').mockImplementation(()=> {
+    return peerCertificate;
+  });
+
+  afterEach(() => {
+    peerCertificateMock.mockClear();
+  });
+
   test('is able to get root certificate from certificate chain', async () => {
-    //GIVEN
-    // tlsMock.connect = jest.fn();
+    console.log(`TESTING: ${getRootCertificateFromChain().subjectaltname}`);
 
     // WHEN
     await downloadThumbprint('https://example.com');
+
+    // THEN
+    expect(peerCertificateMock).toHaveBeenCalledTimes(2);
   });
 
-  test('throws when unable to obtain root certificate from certificate chain', () => {
+  test('throws when subject and issuer are different of expected root certificate', async () => {
+    // GIVEN
+    const subject: Certificate = {
+      C: 'another-country-code-root',
+      ST: 'another-street-root',
+      L: 'another-locality-root',
+      O: 'another-organization-root',
+      OU: 'another-organizational-unit-root',
+      CN: 'another-common-name-root',
+    };
 
+    getRootCertificateFromChain().subject = subject;
+
+    // WHEN
+    await expect(() => downloadThumbprint('https://example.com')).rejects.toThrowError(/Subject and Issuer of certificate received are different/);
+
+    // THEN
+    expect(peerCertificateMock).toHaveBeenCalledTimes(2);
   });
 
-  test('throws error when certificate receieved is expired', () => {
+  test('throws error when certificate receieved is expired', async () => {
+    // GIVEN
+    const currentDate = new Date();
+    const expiredValidityDate = subtractDaysFromDate(currentDate, 5);
 
-  });
+    console.log(`TODAY: ${currentDate} and EXPIRED: ${expiredValidityDate}`);
 
-  test('shows warning when certificate obtained is going to expire within 6 months', () => {
+    getRootCertificateFromChain().valid_to = expiredValidityDate.toUTCString();
 
+    // WHEN
+    await expect(() => downloadThumbprint('https://example.com')).rejects.toThrowError(/The certificate has already expired on/);
+
+    // THEN
+    expect(peerCertificateMock).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -56,39 +78,39 @@ function createChainedCertificateObject(): DetailedPeerCertificate {
 function createCertificateObject(): DetailedPeerCertificate {
   const currentDate = new Date();
 
-  if (certificateCount > 3 ) {
+  if (certificateCount == chainLength ) {
     // Root Certificate with circular reference to first certificate
     return {
       subject: {
-        C: `country-code-${certificateCount}`,
-        ST: `street-${certificateCount}`,
-        L: `locality-${certificateCount}`,
-        O: `organization-${certificateCount}`,
-        OU: `organizational-unit-${certificateCount}`,
-        CN: `common-name-${certificateCount}`,
+        C: 'country-code-root',
+        ST: 'street-root',
+        L: 'locality-root',
+        O: 'organization-root',
+        OU: 'organizational-unit-root',
+        CN: 'common-name-root',
       },
       issuer: {
-        C: `country-code-${certificateCount}`,
-        ST: `street-${certificateCount}`,
-        L: `locality-${certificateCount}`,
-        O: `organization-${certificateCount}`,
-        OU: `organizational-unit-${certificateCount}`,
-        CN: `common-name-${certificateCount}`,
+        C: 'country-code-root',
+        ST: 'street-root',
+        L: 'locality-root',
+        O: 'organization-root',
+        OU: 'organizational-unit-root',
+        CN: 'common-name-root',
       },
-      subjectaltname: `subjectal-name-${certificateCount}`,
+      subjectaltname: 'subjectal-name-root',
       infoAccess: {
-        key: [`value-${certificateCount}`],
+        key: ['value-root'],
       },
-      modulus: `modulus-${certificateCount}`,
-      exponent: `exponent-${certificateCount}`,
-      valid_from: currentDate.toString(),
-      valid_to: addDaysToDate(currentDate, 200).toString(),
-      fingerprint: `01:02:59:D9:C3:D2:0D:08:F7:82:4E:44:A4:B4:53:C5:E2:3A:87:${certificateCount}D`,
-      fingerprint256: `69:AE:1A:6A:D4:3D:C6:C1:1B:EA:C6:23:DE:BA:2A:14:62:62:93:5C:7A:EA:06:41:9B:0B:BC:87:CE:48:4E:0${certificateCount}`,
-      ext_key_usage: [`key-usage-${certificateCount}`],
-      serialNumber: `serial-number-${certificateCount}`,
+      modulus: 'modulus-root',
+      exponent: 'exponent-root',
+      valid_from: currentDate.toUTCString(),
+      valid_to: addDaysToDate(currentDate, 200).toUTCString(),
+      fingerprint: '01:02:59:D9:C3:D2:0D:08:F7:82:4E:44:A4:B4:53:C5:E2:3A:87:0D',
+      fingerprint256: '69:AE:1A:6A:D4:3D:C6:C1:1B:EA:C6:23:DE:BA:2A:14:62:62:93:5C:7A:EA:06:41:9B:0B:BC:87:CE:48:4E:00',
+      ext_key_usage: ['key-usage-root'],
+      serialNumber: 'serial-number-root',
       raw: Buffer.alloc(10),
-      issuerCertificate: certificates[0],
+      issuerCertificate: circularCertificate,
     };
   }
 
@@ -96,20 +118,20 @@ function createCertificateObject(): DetailedPeerCertificate {
 
   const certificate = {
     subject: {
-      C: `country-code-${certificateCount}`,
-      ST: `street-${certificateCount}`,
-      L: `locality-${certificateCount}`,
-      O: `organization-${certificateCount}`,
-      OU: `organizational-unit-${certificateCount}`,
-      CN: `common-name-${certificateCount}`,
+      C: `subject-country-code-${certificateCount}`,
+      ST: `subject-street-${certificateCount}`,
+      L: `subject-locality-${certificateCount}`,
+      O: `subject-organization-${certificateCount}`,
+      OU: `subject-organizational-unit-${certificateCount}`,
+      CN: `subject-common-name-${certificateCount}`,
     },
     issuer: {
-      C: `country-code-${certificateCount}`,
-      ST: `street-${certificateCount}`,
-      L: `locality-${certificateCount}`,
-      O: `organization-${certificateCount}`,
-      OU: `organizational-unit-${certificateCount}`,
-      CN: `common-name-${certificateCount}`,
+      C: `issuer-country-code-${certificateCount}`,
+      ST: `issuer-street-${certificateCount}`,
+      L: `issuer-locality-${certificateCount}`,
+      O: `issuer-organization-${certificateCount}`,
+      OU: `issuer-organizational-unit-${certificateCount}`,
+      CN: `issuer-common-name-${certificateCount}`,
     },
     subjectaltname: `subjectal-name-${certificateCount}`,
     infoAccess: {
@@ -117,8 +139,8 @@ function createCertificateObject(): DetailedPeerCertificate {
     },
     modulus: `modulus-${certificateCount}`,
     exponent: `exponent-${certificateCount}`,
-    valid_from: currentDate.toString(),
-    valid_to: addDaysToDate(currentDate, 200).toString(),
+    valid_from: currentDate.toUTCString(),
+    valid_to: addDaysToDate(currentDate, 200).toUTCString(),
     fingerprint: `01:02:59:D9:C3:D2:0D:08:F7:82:4E:44:A4:B4:53:C5:E2:3A:87:${certificateCount}D`,
     fingerprint256: `69:AE:1A:6A:D4:3D:C6:C1:1B:EA:C6:23:DE:BA:2A:14:62:62:93:5C:7A:EA:06:41:9B:0B:BC:87:CE:48:4E:0${certificateCount}`,
     ext_key_usage: [`key-usage-${certificateCount}`],
@@ -127,12 +149,26 @@ function createCertificateObject(): DetailedPeerCertificate {
     issuerCertificate: createCertificateObject(),
   };
 
-  certificates.push(certificate);
-
   return certificate;
 }
 
-function addDaysToDate(date: Date, numberOfDays: number) {
+function addDaysToDate(date: Date, numberOfDays: number): Date {
   const newDate = new Date();
-  return newDate.setDate(date.getDate() + numberOfDays);
+  return new Date(newDate.setDate(date.getDate() + numberOfDays));
+}
+
+function subtractDaysFromDate(date: Date, numberOfDays: number): Date {
+  const newDate = new Date();
+  return new Date(newDate.setDate(date.getDate() - numberOfDays));
+}
+
+function getRootCertificateFromChain(): DetailedPeerCertificate {
+  let rootCert: DetailedPeerCertificate = peerCertificate;
+  let certificateNumber = 0;
+
+  while (chainLength > certificateNumber++) {
+    rootCert = rootCert.issuerCertificate;
+  }
+
+  return rootCert;
 }
