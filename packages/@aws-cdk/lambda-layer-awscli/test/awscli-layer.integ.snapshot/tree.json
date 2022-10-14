@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.123"
         }
       },
       "lambda-layer-awscli-integ-stack": {
@@ -29,7 +29,7 @@
                     "path": "lambda-layer-awscli-integ-stack/AwsCliLayer/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.1.123"
                     }
                   },
                   "AssetBucket": {
@@ -56,7 +56,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "39ee629321f531fffd853b944b2d6f3fa7b5276431c9a4fd4dc681303ab15080.zip"
+                      "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
                     },
                     "description": "/opt/awscli/aws"
                   }
@@ -134,7 +134,7 @@
                     "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.1.123"
                     }
                   },
                   "AssetBucket": {
@@ -317,7 +317,7 @@
                         "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/Code/Stage",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "version": "10.1.123"
                         }
                       },
                       "AssetBucket": {
@@ -394,13 +394,13 @@
                 "path": "lambda-layer-awscli-integ-stack/CustomResourcepython3.7/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.123"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.123"
             }
           },
           "Lambda$python3.9": {
@@ -465,7 +465,7 @@
                     "path": "lambda-layer-awscli-integ-stack/Lambda$python3.9/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.1.123"
                     }
                   },
                   "AssetBucket": {
@@ -648,7 +648,7 @@
                         "path": "lambda-layer-awscli-integ-stack/Providerpython3.9/framework-onEvent/Code/Stage",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.85"
+                          "version": "10.1.123"
                         }
                       },
                       "AssetBucket": {
@@ -725,19 +725,19 @@
                 "path": "lambda-layer-awscli-integ-stack/CustomResourcepython3.9/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.123"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.123"
             }
           }
         },
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.123"
         }
       },
       "lambda-layer-awscli-integ-test": {
@@ -753,7 +753,7 @@
                 "path": "lambda-layer-awscli-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.123"
                 }
               },
               "DeployAssert": {
@@ -761,7 +761,7 @@
                 "path": "lambda-layer-awscli-integ-test/DefaultTest/DeployAssert",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.123"
                 }
               }
             },
@@ -779,7 +779,7 @@
     },
     "constructInfo": {
       "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "version": "10.1.123"
     }
   }
 }
