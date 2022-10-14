@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.177.0](https://github.com/aws/aws-cdk/compare/v1.176.0...v1.177.0) (2022-10-13)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v92.0.0 ([#22436](https://github.com/aws/aws-cdk/issues/22436)) ([1264590](https://github.com/aws/aws-cdk/commit/1264590d867f94fc9667ee0f1248d21e70dc657e))
+
 ## [1.176.0](https://github.com/aws/aws-cdk/compare/v1.175.0...v1.176.0) (2022-10-06)
 
 
