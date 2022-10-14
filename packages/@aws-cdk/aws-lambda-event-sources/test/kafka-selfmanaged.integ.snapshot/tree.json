@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.129"
         }
       },
       "lambda-event-source-kafka-self-managed": {
@@ -156,6 +156,13 @@
                           "Ref": "FC4345940"
                         },
                         "batchSize": 100,
+                        "filterCriteria": {
+                          "filters": [
+                            {
+                              "pattern": "{\"body\":{\"id\":[{\"exists\":true}]}}"
+                            }
+                          ]
+                        },
                         "selfManagedEventSource": {
                           "endpoints": {
                             "kafkaBootstrapServers": [
@@ -255,8 +262,8 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       },
       "LambdaEventSourceKafkaSelfManagedTest": {
@@ -272,15 +279,15 @@
                 "path": "LambdaEventSourceKafkaSelfManagedTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.129"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "LambdaEventSourceKafkaSelfManagedTest/DefaultTest/DeployAssert",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -297,8 +304,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

@@ -89,6 +89,13 @@
      "Ref": "FC4345940"
     },
     "BatchSize": 100,
+    "FilterCriteria": {
+     "Filters": [
+      {
+       "Pattern": "{\"body\":{\"id\":[{\"exists\":true}]}}"
+      }
+     ]
+    },
     "SelfManagedEventSource": {
      "Endpoints": {
       "KafkaBootstrapServers": [

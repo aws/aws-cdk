@@ -29,6 +29,12 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * @default - none
    */
   readonly consumerGroupId?: string;
+  /**
+   * Add filter criteria option
+   *
+   * @default - None
+   */
+  readonly filters?: Array<{[key: string]: any}>;
 }
 
 /**
@@ -133,6 +139,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
+        filters: this.innerProps.filters,
       }),
     );
 
@@ -210,6 +217,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
+        filters: this.innerProps.filters,
       }),
     );
 

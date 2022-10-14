@@ -134,6 +134,39 @@ describe('KafkaEventSource', () => {
 
 
     });
+    test('with filters', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          filters: [
+            lambda.FilterCriteria.filter({
+              body: {
+                id: lambda.FilterRule.exists(),
+              },
+            }),
+          ],
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        FilterCriteria: {
+          Filters: [
+            {
+              Pattern: '{"body":{"id":[{"exists":true}]}}',
+            },
+          ],
+        },
+      });
+    });
   });
 
   describe('self-managed kafka', () => {
@@ -707,6 +740,42 @@ describe('KafkaEventSource', () => {
       // WHEN
       fn.addEventSource(mskEventMapping);
       expect(mskEventMapping.eventSourceMappingId).toBeDefined();
+    });
+
+    test('with filters', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          filters: [
+            lambda.FilterCriteria.filter({
+              body: {
+                id: lambda.FilterRule.exists(),
+              },
+            }),
+          ],
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        FilterCriteria: {
+          Filters: [
+            {
+              Pattern: '{"body":{"id":[{"exists":true}]}}',
+            },
+          ],
+        },
+      });
     });
   });
 });

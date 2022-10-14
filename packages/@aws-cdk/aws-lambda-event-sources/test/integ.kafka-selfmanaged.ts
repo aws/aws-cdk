@@ -44,6 +44,14 @@ zp2mwJn2NYB7AZ7+imp0azDZb+8YG2aUCiyqb6PnnA==
       'my-self-hosted-kafka-broker-3:9092',
     ];
 
+    const filters = [
+      lambda.FilterCriteria.filter({
+        body: {
+          id: lambda.FilterRule.exists(),
+        },
+      }),
+    ];
+
     fn.addEventSource(
       new SelfManagedKafkaEventSource({
         bootstrapServers,
@@ -53,6 +61,7 @@ zp2mwJn2NYB7AZ7+imp0azDZb+8YG2aUCiyqb6PnnA==
         authenticationMethod: AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
         rootCACertificate: rootCASecret,
         startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        filters: filters,
       }),
     );
   }
