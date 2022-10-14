@@ -29,6 +29,14 @@ export interface ApplicationAssociatorProps {
   readonly description?: string;
 
   /**
+   * Stack ID.
+   *
+   * @default - ApplicationAssociatorStack
+   *
+   */
+  readonly stackId?: string;
+
+  /**
    * Stack properties.
    *
    */
@@ -45,6 +53,8 @@ export interface ApplicationAssociatorProps {
  *
  * If cross account stack is detected, then this construct will automatically share the application to consumer accounts.
  * Cross account feature will only work for non environment agnostic stacks.
+ *
+ * The construct creates a dedicated stack for the application.
  */
 export class ApplicationAssociator extends Construct {
   /**
@@ -56,7 +66,7 @@ export class ApplicationAssociator extends Construct {
   constructor(scope: cdk.App, id: string, props: ApplicationAssociatorProps) {
     super(scope, id);
 
-    const applicationStack = new cdk.Stack(scope, 'ApplicationAssociatorStack', props.stackProps);
+    const applicationStack = new cdk.Stack(scope, props.stackId ?? 'ApplicationAssociatorStack', props.stackProps);
 
     if (!!props.applicationArnValue) {
       this.application = Application.fromApplicationArn(applicationStack, 'ImportedApplication', props.applicationArnValue);

@@ -36,7 +36,7 @@
         }
       },
       "dependencies": [
-        "ApplicationAssociatorStack",
+        "AppRegistryApplicationAssociatorStack",
         "integservicecatalogappregistryapplicationresourcesStack4399A149.assets"
       ],
       "metadata": {
@@ -100,7 +100,7 @@
         }
       },
       "dependencies": [
-        "ApplicationAssociatorStack",
+        "AppRegistryApplicationAssociatorStack",
         "integ-servicecatalogappregistry-application.assets"
       ],
       "metadata": {
@@ -135,19 +135,19 @@
       },
       "displayName": "integ-servicecatalogappregistry-application"
     },
-    "ApplicationAssociatorStack.assets": {
+    "AppRegistryApplicationAssociatorStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ApplicationAssociatorStack.assets.json",
+        "file": "AppRegistryApplicationAssociatorStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ApplicationAssociatorStack": {
+    "AppRegistryApplicationAssociatorStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ApplicationAssociatorStack.template.json",
+        "templateFile": "AppRegistryApplicationAssociatorStack.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -155,20 +155,19 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ApplicationAssociatorStack.assets"
+          "AppRegistryApplicationAssociatorStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        },
-        "stackName": "AppRegistryApplicationAssociatorStack"
+        }
       },
       "dependencies": [
-        "ApplicationAssociatorStack.assets"
+        "AppRegistryApplicationAssociatorStack.assets"
       ],
       "metadata": {
-        "/ApplicationAssociatorStack": [
+        "/AppRegistryApplicationAssociatorStack": [
           {
             "type": "aws:cdk:warning",
             "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack."
@@ -178,32 +177,32 @@
             "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack."
           }
         ],
-        "/ApplicationAssociatorStack/DefaultCdkApplication/Resource": [
+        "/AppRegistryApplicationAssociatorStack/DefaultCdkApplication/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DefaultCdkApplication4573D5A3"
           }
         ],
-        "/ApplicationAssociatorStack/AppRegistryAssociation": [
+        "/AppRegistryApplicationAssociatorStack/AppRegistryAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AppRegistryAssociation"
           }
         ],
-        "/ApplicationAssociatorStack/BootstrapVersion": [
+        "/AppRegistryApplicationAssociatorStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ApplicationAssociatorStack/CheckBootstrapVersion": [
+        "/AppRegistryApplicationAssociatorStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ApplicationAssociatorStack"
+      "displayName": "AppRegistryApplicationAssociatorStack"
     }
   }
 }

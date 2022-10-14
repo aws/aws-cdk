@@ -82,6 +82,20 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 ```
 
+You can also specify `stackId` to override the default value:
+
+```ts
+const app = new App();
+const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+    applicationName: 'MyAssociatedApplication',
+    stackId: 'MyAssociatedApplicationStack',
+    stackProps: {
+        stackName: 'MyAssociatedApplicationStack',
+        env: {account: '123456789012', region: 'us-east-1'},
+    },
+});
+```
+
 If you want to re-use an existing Application with ARN: `arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId`
 and want to associate all stacks in the `App` scope to your imported application, then use as shown in the example below:
 
