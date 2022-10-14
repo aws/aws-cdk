@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4f288f361e05d7a0cadc909ac72cad71f5ffa327848daac454f6f4717925e6fb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3baba4814d70454e5129196a158960b4dbb8201dbdb397163fa387f72acb91b3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -241,6 +241,72 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "dbProxyProxyTargetGroup8DA26A77"
+          }
+        ],
+        "/aws-cdk-rds-proxy/sqlserverInstance/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlserverInstanceSubnetGroupCB6696F4"
+          }
+        ],
+        "/aws-cdk-rds-proxy/sqlserverInstance/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlserverInstanceSecurityGroupC109DD7E"
+          }
+        ],
+        "/aws-cdk-rds-proxy/sqlserverInstance/SecurityGroup/from awscdkrdsproxysqlserverProxyProxySecurityGroupEDED3E66:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlserverInstanceSecurityGroupfromawscdkrdsproxysqlserverProxyProxySecurityGroupEDED3E66IndirectPort01113DAD"
+          }
+        ],
+        "/aws-cdk-rds-proxy/sqlserverInstance/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlserverInstanceSecret05A34FA7"
+          }
+        ],
+        "/aws-cdk-rds-proxy/sqlserverInstance/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlserverInstanceSecretAttachmentB3765B7E"
+          }
+        ],
+        "/aws-cdk-rds-proxy/sqlserverInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlserverInstance2AD09B45"
+          }
+        ],
+        "/aws-cdk-rds-proxy/sqlserverProxy/IAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlserverProxyIAMRoleA0C78CD5"
+          }
+        ],
+        "/aws-cdk-rds-proxy/sqlserverProxy/IAMRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlserverProxyIAMRoleDefaultPolicy32E8A10C"
+          }
+        ],
+        "/aws-cdk-rds-proxy/sqlserverProxy/ProxySecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlserverProxyProxySecurityGroupEF2B4380"
+          }
+        ],
+        "/aws-cdk-rds-proxy/sqlserverProxy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlserverProxyEA5AE9E1"
+          }
+        ],
+        "/aws-cdk-rds-proxy/sqlserverProxy/ProxyTargetGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlserverProxyProxyTargetGroup552F1CD5"
           }
         ],
         "/aws-cdk-rds-proxy/BootstrapVersion": [

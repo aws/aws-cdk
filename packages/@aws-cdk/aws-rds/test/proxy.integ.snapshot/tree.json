@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.123"
         }
       },
       "aws-cdk-rds-proxy": {
@@ -1079,6 +1079,441 @@
                     "dbInstanceIdentifiers": [
                       {
                         "Ref": "dbInstance4076B1EC"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBProxyTargetGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-rds.DatabaseProxy",
+              "version": "0.0.0"
+            }
+          },
+          "sqlserverInstance": {
+            "id": "sqlserverInstance",
+            "path": "aws-cdk-rds-proxy/sqlserverInstance",
+            "children": {
+              "SubnetGroup": {
+                "id": "SubnetGroup",
+                "path": "aws-cdk-rds-proxy/sqlserverInstance/SubnetGroup",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-rds-proxy/sqlserverInstance/SubnetGroup/Default",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "dbSubnetGroupDescription": "Subnet group for sqlserverInstance database",
+                        "subnetIds": [
+                          {
+                            "Ref": "vpcPrivateSubnet1Subnet934893E8"
+                          },
+                          {
+                            "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.SubnetGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-rds-proxy/sqlserverInstance/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-proxy/sqlserverInstance/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "Security group for sqlserverInstance database",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "from awscdkrdsproxysqlserverProxyProxySecurityGroupEDED3E66:{IndirectPort}": {
+                    "id": "from awscdkrdsproxysqlserverProxyProxySecurityGroupEDED3E66:{IndirectPort}",
+                    "path": "aws-cdk-rds-proxy/sqlserverInstance/SecurityGroup/from awscdkrdsproxysqlserverProxyProxySecurityGroupEDED3E66:{IndirectPort}",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "Allow connections to the database Instance from the Proxy",
+                        "fromPort": {
+                          "Fn::GetAtt": [
+                            "sqlserverInstance2AD09B45",
+                            "Endpoint.Port"
+                          ]
+                        },
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "sqlserverInstanceSecurityGroupC109DD7E",
+                            "GroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "sqlserverProxyProxySecurityGroupEF2B4380",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": {
+                          "Fn::GetAtt": [
+                            "sqlserverInstance2AD09B45",
+                            "Endpoint.Port"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Secret": {
+                "id": "Secret",
+                "path": "aws-cdk-rds-proxy/sqlserverInstance/Secret",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-proxy/sqlserverInstance/Secret/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                      "aws:cdk:cloudformation:props": {
+                        "description": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "Generated by the CDK for stack: ",
+                              {
+                                "Ref": "AWS::StackName"
+                              }
+                            ]
+                          ]
+                        },
+                        "generateSecretString": {
+                          "passwordLength": 30,
+                          "secretStringTemplate": "{\"username\":\"master\"}",
+                          "generateStringKey": "password",
+                          "excludeCharacters": "\"@/\\"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Attachment": {
+                    "id": "Attachment",
+                    "path": "aws-cdk-rds-proxy/sqlserverInstance/Secret/Attachment",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-rds-proxy/sqlserverInstance/Secret/Attachment/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
+                          "aws:cdk:cloudformation:props": {
+                            "secretId": {
+                              "Ref": "sqlserverInstanceSecret05A34FA7"
+                            },
+                            "targetId": {
+                              "Ref": "sqlserverInstance2AD09B45"
+                            },
+                            "targetType": "AWS::RDS::DBInstance"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.DatabaseSecret",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-rds-proxy/sqlserverInstance/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
+                  "aws:cdk:cloudformation:props": {
+                    "allocatedStorage": "100",
+                    "copyTagsToSnapshot": true,
+                    "dbInstanceClass": "db.t3.medium",
+                    "dbSubnetGroupName": {
+                      "Ref": "sqlserverInstanceSubnetGroupCB6696F4"
+                    },
+                    "engine": "sqlserver-ex",
+                    "engineVersion": "15.00",
+                    "masterUsername": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "sqlserverInstanceSecret05A34FA7"
+                          },
+                          ":SecretString:username::}}"
+                        ]
+                      ]
+                    },
+                    "masterUserPassword": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "sqlserverInstanceSecret05A34FA7"
+                          },
+                          ":SecretString:password::}}"
+                        ]
+                      ]
+                    },
+                    "storageType": "gp2",
+                    "vpcSecurityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "sqlserverInstanceSecurityGroupC109DD7E",
+                          "GroupId"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-rds.DatabaseInstance",
+              "version": "0.0.0"
+            }
+          },
+          "sqlserverProxy": {
+            "id": "sqlserverProxy",
+            "path": "aws-cdk-rds-proxy/sqlserverProxy",
+            "children": {
+              "IAMRole": {
+                "id": "IAMRole",
+                "path": "aws-cdk-rds-proxy/sqlserverProxy/IAMRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-proxy/sqlserverProxy/IAMRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "rds.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-rds-proxy/sqlserverProxy/IAMRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-rds-proxy/sqlserverProxy/IAMRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "secretsmanager:DescribeSecret",
+                                    "secretsmanager:GetSecretValue"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "dbInstanceSecretAttachment88CFBDAE"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "sqlserverProxyIAMRoleDefaultPolicy32E8A10C",
+                            "roles": [
+                              {
+                                "Ref": "sqlserverProxyIAMRoleA0C78CD5"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "ProxySecurityGroup": {
+                "id": "ProxySecurityGroup",
+                "path": "aws-cdk-rds-proxy/sqlserverProxy/ProxySecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-proxy/sqlserverProxy/ProxySecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "SecurityGroup for Database Proxy",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-rds-proxy/sqlserverProxy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBProxy",
+                  "aws:cdk:cloudformation:props": {
+                    "auth": [
+                      {
+                        "authScheme": "SECRETS",
+                        "iamAuth": "DISABLED",
+                        "secretArn": {
+                          "Ref": "dbInstanceSecretAttachment88CFBDAE"
+                        }
+                      }
+                    ],
+                    "dbProxyName": "sqlserverProxy",
+                    "engineFamily": "SQLSERVER",
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "sqlserverProxyIAMRoleA0C78CD5",
+                        "Arn"
+                      ]
+                    },
+                    "vpcSubnetIds": [
+                      {
+                        "Ref": "vpcPrivateSubnet1Subnet934893E8"
+                      },
+                      {
+                        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+                      }
+                    ],
+                    "requireTls": true,
+                    "vpcSecurityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "sqlserverProxyProxySecurityGroupEF2B4380",
+                          "GroupId"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBProxy",
+                  "version": "0.0.0"
+                }
+              },
+              "ProxyTargetGroup": {
+                "id": "ProxyTargetGroup",
+                "path": "aws-cdk-rds-proxy/sqlserverProxy/ProxyTargetGroup",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBProxyTargetGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "dbProxyName": {
+                      "Ref": "sqlserverProxyEA5AE9E1"
+                    },
+                    "targetGroupName": "default",
+                    "connectionPoolConfigurationInfo": {
+                      "connectionBorrowTimeout": 30,
+                      "maxConnectionsPercent": 50
+                    },
+                    "dbInstanceIdentifiers": [
+                      {
+                        "Ref": "sqlserverInstance2AD09B45"
                       }
                     ]
                   }
