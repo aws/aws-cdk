@@ -1633,6 +1633,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
         s3Import: 'S3_INTEGRATION',
         s3Export: 'S3_INTEGRATION',
       },
+      engineFamily: 'SQLSERVER',
     });
   }
 

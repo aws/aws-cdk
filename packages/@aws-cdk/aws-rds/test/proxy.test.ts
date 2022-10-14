@@ -77,6 +77,67 @@ describe('proxy', () => {
     });
   });
 
+  test('create a DB proxy from a SQL Server instance', () => {
+    // GIVEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.sqlServerEx({
+        version: rds.SqlServerEngineVersion.VER_15,
+      }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      secrets: [instance.secret!],
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+      Auth: [
+        {
+          AuthScheme: 'SECRETS',
+          IAMAuth: 'DISABLED',
+          SecretArn: {
+            Ref: 'InstanceSecretAttachment83BEE581',
+          },
+        },
+      ],
+      DBProxyName: 'Proxy',
+      EngineFamily: 'SQLSERVER',
+      RequireTLS: true,
+      RoleArn: {
+        'Fn::GetAtt': [
+          'ProxyIAMRole2FE8AB0F',
+          'Arn',
+        ],
+      },
+      VpcSubnetIds: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyTargetGroup', {
+      DBProxyName: {
+        Ref: 'ProxyCB0DFB71',
+      },
+      ConnectionPoolConfigurationInfo: {},
+      DBInstanceIdentifiers: [
+        {
+          Ref: 'InstanceC1063A87',
+        },
+      ],
+      TargetGroupName: 'default',
+    });
+  });
+
   test('create a DB proxy from a cluster', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
