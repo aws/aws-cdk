@@ -282,6 +282,63 @@ export class ManagedRule extends RuleNew {
 }
 
 /**
+ * The source of the event, such as an AWS service,
+ * that triggers AWS Config to evaluate your AWS resources.
+ */
+enum EventSource {
+
+  /* from aws.config */
+  AWS_CONFIG = 'aws.config',
+
+}
+
+/**
+ * The type of notification that triggers AWS Config to run an evaluation for a rule.
+ */
+enum MessageType {
+
+  /**
+   * Triggers an evaluation when AWS Config delivers a configuration item as a result of a resource change.
+   */
+  CONFIGURATION_ITEM_CHANGE_NOTIFICATION = 'ConfigurationItemChangeNotification',
+
+  /**
+   * Triggers an evaluation when AWS Config delivers an oversized configuration item.
+   */
+  OVERSIZED_CONFIGURATION_ITEM_CHANGE_NOTIFICATION = 'OversizedConfigurationItemChangeNotification',
+
+  /**
+   * Triggers a periodic evaluation at the frequency specified for MaximumExecutionFrequency.
+   */
+  SCHEDULED_NOTIFICATION = 'ScheduledNotification',
+
+  /**
+   * Triggers a periodic evaluation when AWS Config delivers a configuration snapshot.
+   */
+  CONFIGURATION_SNAPSHOT_DELIVERY_COMPLETED = 'ConfigurationSnapshotDeliveryCompleted',
+}
+
+/**
+ * Construction properties for a CustomRule.
+ */
+interface SourceDetail {
+  /**
+   * The source of the event, such as an AWS service,
+   * that triggers AWS Config to evaluate your AWS resources.
+   *
+   */
+  readonly eventSource: EventSource;
+  /**
+   * The frequency at which you want AWS Config to run evaluations for a custom rule with a periodic trigger.
+   */
+  readonly maximumExecutionFrequency?: MaximumExecutionFrequency;
+  /**
+   * The type of notification that triggers AWS Config to run an evaluation for a rule.
+   */
+  readonly messageType: MessageType;
+}
+
+/**
  * Construction properties for a CustomRule.
  */
 export interface CustomRuleProps extends RuleProps {
@@ -331,25 +388,24 @@ export class CustomRule extends RuleNew {
       throw new Error('At least one of `configurationChanges` or `periodic` must be set to true.');
     }
 
-    const sourceDetails: any[] = [];
+    const sourceDetails: SourceDetail[] = [];
     this.ruleScope = props.ruleScope;
-
     if (props.configurationChanges) {
       sourceDetails.push({
-        eventSource: 'aws.config',
-        messageType: 'ConfigurationItemChangeNotification',
+        eventSource: EventSource.AWS_CONFIG,
+        messageType: MessageType.CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
       });
       sourceDetails.push({
-        eventSource: 'aws.config',
-        messageType: 'OversizedConfigurationItemChangeNotification',
+        eventSource: EventSource.AWS_CONFIG,
+        messageType: MessageType.OVERSIZED_CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
       });
     }
 
     if (props.periodic) {
       sourceDetails.push({
-        eventSource: 'aws.config',
+        eventSource: EventSource.AWS_CONFIG,
         maximumExecutionFrequency: props.maximumExecutionFrequency,
-        messageType: 'ScheduledNotification',
+        messageType: MessageType.SCHEDULED_NOTIFICATION,
       });
     }
 
@@ -388,6 +444,88 @@ export class CustomRule extends RuleNew {
     if (props.configurationChanges) {
       this.isCustomWithChanges = true;
     }
+  }
+}
+
+/**
+ * Construction properties for a CustomPolicy.
+ */
+export interface CustomPolicyProps extends RuleProps {
+  /**
+   * The policy definition containing the logic for your AWS Config Custom Policy rule.
+   */
+  readonly policyText: string;
+
+  /**
+   * The boolean expression for enabling debug logging for your AWS Config Custom Policy rule.
+   *
+   * @default false
+   */
+  readonly enableDebugLog?: boolean;
+}
+
+/**
+ * A new custom policy.
+ *
+ * @resource AWS::Config::ConfigRule
+ */
+export class CustomPolicy extends RuleNew {
+  /** @attribute */
+  public readonly configRuleName: string;
+
+  /** @attribute */
+  public readonly configRuleArn: string;
+
+  /** @attribute */
+  public readonly configRuleId: string;
+
+  /** @attribute */
+  public readonly configRuleComplianceType: string;
+
+  constructor(scope: Construct, id: string, props: CustomPolicyProps) {
+    super(scope, id, {
+      physicalName: props.configRuleName,
+    });
+
+    if (!props.policyText || [...props.policyText].length === 0) {
+      throw new Error('Policy Text cannot be empty.');
+    }
+    if ( [...props.policyText].length > 10000 ) {
+      throw new Error('Policy Text is limited to 10,000 characters or less.');
+    }
+
+    const sourceDetails: SourceDetail[] = [];
+    this.ruleScope = props.ruleScope;
+
+    sourceDetails.push({
+      eventSource: EventSource.AWS_CONFIG,
+      messageType: MessageType.CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
+    });
+    sourceDetails.push({
+      eventSource: EventSource.AWS_CONFIG,
+      messageType: MessageType.OVERSIZED_CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
+    });
+    const rule = new CfnConfigRule(this, 'Resource', {
+      configRuleName: this.physicalName,
+      description: props.description,
+      inputParameters: props.inputParameters,
+      scope: Lazy.any({ produce: () => renderScope(this.ruleScope) }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
+      source: {
+        owner: 'CUSTOM_POLICY',
+        sourceDetails,
+        customPolicyDetails: {
+          enableDebugLogDelivery: props.enableDebugLog,
+          policyRuntime: 'guard-2.x.x',
+          policyText: props.policyText,
+        },
+      },
+    });
+
+    this.configRuleName = rule.ref;
+    this.configRuleArn = rule.attrArn;
+    this.configRuleId = rule.attrConfigRuleId;
+    this.configRuleComplianceType = rule.attrComplianceType;
+    this.isCustomWithChanges = true;
   }
 }
 
