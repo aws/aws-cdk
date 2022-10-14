@@ -29,6 +29,19 @@ export interface GitHubFile {
   readonly filename: string;
 }
 
+export interface Review {
+  id: number;
+  user: {
+    login: string
+  };
+  body: string;
+  state: string;
+}
+
+export interface Comment {
+  id: number;
+}
+
 class LinterError extends Error {
   constructor(message: string) {
     super(message);
@@ -158,37 +171,97 @@ export interface PullRequestLinterProps {
 export class PullRequestLinter {
   private readonly client: Octokit;
   private readonly prParams: { owner: string, repo: string, pull_number: number };
+  private readonly issueParams: { owner: string, repo: string, issue_number: number };
 
 
   constructor(private readonly props: PullRequestLinterProps) {
     this.client = props.client;
     this.prParams = { owner: props.owner, repo: props.repo, pull_number: props.number };
+    this.issueParams = { owner: props.owner, repo: props.repo, issue_number: props.number };
   }
 
   /**
-   * Dismisses previous reviews by aws-cdk-automation when changes have been made to the pull request.
+   * Deletes the previous linter comment if it exists.
    */
-  private async dismissPreviousPRLinterReviews(): Promise<void> {
-    const reviews = await this.client.pulls.listReviews(this.prParams);
-    reviews.data.forEach(async (review: any) => {
-      if (review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') {
-        await this.client.pulls.dismissReview({
-          ...this.prParams,
-          review_id: review.id,
-          message: 'Pull Request updated. Dissmissing previous PRLinter Review.',
-        })
-      }
+  private async deletePRLinterComment(): Promise<void> {
+    // Since previous versions of this pr linter didn't add comments, we need to do this check first.
+    const comment = await this.findExistingComment();
+    if (comment) {
+      await this.client.issues.deleteComment({
+        ...this.issueParams,
+        comment_id: comment.id,
+      });
+    };
+  };
+
+  /**
+   * Dismisses previous reviews by aws-cdk-automation when the pull request succeeds the linter.
+   * @param existingReview The review created by a previous run of the linter
+   */
+  private async dismissPRLinterReview(existingReview?: Review): Promise<void> {
+    if (existingReview) {
+      await this.client.pulls.dismissReview({
+        ...this.prParams,
+        review_id: existingReview.id,
+        message: '✅ Updated pull request passes all PRLinter validations. Dissmissing previous PRLinter review.'
+      })
+    }
+  }
+
+  /**
+   * Creates a new review and comment for first run with failure or creates a new comment with new failures for existing reviews.
+   * @param failureMessages The failures received by the pr linter validation checks.
+   * @param existingReview The review created by a previous run of the linter.
+   */
+  private async createOrUpdatePRLinterReview(failureMessages: string[], existingReview?: Review): Promise<void> {
+    const body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}PRs must pass status checks before we can provide a meaningful review.`;
+    if (!existingReview) {
+      await this.client.pulls.createReview({
+        ...this.prParams,
+        body: 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.' +
+          ' If you believe this pull request should receive an exemption, please comment and provide a justification.',
+        event: 'REQUEST_CHANGES',
+      })
+    }
+
+    await this.client.issues.createComment({
+      ...this.issueParams,
+      body,
     })
+
+    throw new LinterError(body);
+  }
+
+  /**
+   * Finds existing review, if present
+   * @returns Existing review, if present
+   */
+  private async findExistingReview(): Promise<Review | undefined> {
+    const reviews = await this.client.pulls.listReviews(this.prParams);
+    return reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
+  }
+
+  /**
+   * Finds existing comment from previous review, if present
+   * @returns Existing comment, if present
+   */
+  private async findExistingComment(): Promise<Comment | undefined> {
+    const comments = await this.client.issues.listComments(this.issueParams);
+    return comments.data.find((comment) => comment.user?.login === 'aws-cdk-automation' && comment.body?.startsWith('The pull request linter fails with the following errors:')) as Comment;
   }
 
   /**
    * Creates a new review, requesting changes, with the reasons that the linter did not pass.
-   * @param failureReasons The list of reasons why the linter failed
+   * @param result The result of the PR Linter run.
    */
-  private async communicateResult(failureReasons: string[]): Promise<void> {
-    const body = `The Pull Request Linter fails with the following errors:${this.formatErrors(failureReasons)}PRs must pass status checks before we can provide a meaningful review.`;
-      await this.client.pulls.createReview({ ...this.prParams, body, event: 'REQUEST_CHANGES', });
-      throw new LinterError(body);
+  private async communicateResult(result: ValidationCollector): Promise<void> {
+    const existingReview = await this.findExistingReview();
+    if (result.isValid()) {
+      console.log("✅  Success");
+      await this.dismissPRLinterReview(existingReview);
+    } else {
+      await this.createOrUpdatePRLinterReview(result.errors, existingReview);
+    }
   }
 
   /**
@@ -245,8 +318,8 @@ export class PullRequestLinter {
       testRuleSet: [ { test: noCliChanges } ],
     });
 
-    await this.dismissPreviousPRLinterReviews();
-    validationCollector.isValid() ? console.log("✅  Success") : await this.communicateResult(validationCollector.errors);
+    await this.deletePRLinterComment();
+    await this.communicateResult(validationCollector);
   }
 
   private formatErrors(errors: string[]) {
@@ -365,7 +438,7 @@ function hasLabel(pr: GitHubPr, labelName: string): boolean {
  */
  function validateTitlePrefix(pr: GitHubPr): TestResult {
   const result = new TestResult();
-  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test)(\([\w_-]+\))?: /;
+  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test|(r|R)evert)(\([\w_-]+\))?: /;
   const m = titleRe.exec(pr.title);
   result.assessFailure(
     !m,

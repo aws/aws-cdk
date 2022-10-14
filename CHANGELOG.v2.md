@@ -2,6 +2,70 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.46.0](https://github.com/aws/aws-cdk/compare/v2.45.0...v2.46.0) (2022-10-13)
+
+
+### Features
+
+* **aws-certificatemanager:** Add ability to specify the certificate name ([#22301](https://github.com/aws/aws-cdk/issues/22301)) ([614ba92](https://github.com/aws/aws-cdk/commit/614ba92ba77e29c10ea4642a64e5b50b5dc775b8))
+* **aws-ec2:** add metadata options support for launchTemplate construct ([#22312](https://github.com/aws/aws-cdk/issues/22312)) ([9297bd0](https://github.com/aws/aws-cdk/commit/9297bd04884ebd05888fd14121256329dac82b43))
+* **cfnspec:** cloudformation spec v92.0.0 ([#22435](https://github.com/aws/aws-cdk/issues/22435)) ([064a1a6](https://github.com/aws/aws-cdk/commit/064a1a650c6f26d6a3087a8d39971ba33413d8ce))
+* **cloudfront-origins:** allow setting a user defined origin id ([#22349](https://github.com/aws/aws-cdk/issues/22349)) ([239215f](https://github.com/aws/aws-cdk/commit/239215fb8ceb4df5cd67669ad5daca39fb65543f)), closes [#2756](https://github.com/aws/aws-cdk/issues/2756)
+* **ec2:** adds persist option to user data on windows instances ([#21709](https://github.com/aws/aws-cdk/issues/21709)) ([cb1506f](https://github.com/aws/aws-cdk/commit/cb1506f090e36a6da78b8a8a1edf9a1256478311))
+* **sns:** topic name with `.fifo` suffix generated automatically ([#22375](https://github.com/aws/aws-cdk/issues/22375)) ([ba201cf](https://github.com/aws/aws-cdk/commit/ba201cf1d9768f9ac5d3328ec425bf566f088a16)), closes [#18740](https://github.com/aws/aws-cdk/issues/18740)
+* **sqs:** add enforceSSL property to enforce encryption of data in transit ([#22363](https://github.com/aws/aws-cdk/issues/22363)) ([f1886cf](https://github.com/aws/aws-cdk/commit/f1886cf82c50abc4e419f1450abfc3df0c5b0324))
+
+
+### Bug Fixes
+
+* **apigateway:** cannot create an ApiKey with an imported RestApi ([#22368](https://github.com/aws/aws-cdk/issues/22368)) ([83c4123](https://github.com/aws/aws-cdk/commit/83c4123273fda2a2e349b55f1e50d5afa1c7dd9d)), closes [#22102](https://github.com/aws/aws-cdk/issues/22102)
+* **apigateway:** CORS OPTIONS method should not require auth ([#22402](https://github.com/aws/aws-cdk/issues/22402)) ([ef72089](https://github.com/aws/aws-cdk/commit/ef72089d7cdf5dbaa1f172eecd29ee525f650b32)), closes [#8615](https://github.com/aws/aws-cdk/issues/8615)
+* **core:** asset bundling skipped when using --exclusively with custom stack name ([#21248](https://github.com/aws/aws-cdk/issues/21248)) ([209ddea](https://github.com/aws/aws-cdk/commit/209ddea44744509d74a080fdbd31cbb978fc8a96)), closes [/github.com/aws/aws-cdk/issues/19927#issuecomment-1189916912](https://github.com/aws//github.com/aws/aws-cdk/issues/19927/issues/issuecomment-1189916912)
+* some custom resources don't work in opt-in regions ([#22370](https://github.com/aws/aws-cdk/issues/22370)) ([456a2c7](https://github.com/aws/aws-cdk/commit/456a2c75881fe8df3803db3787b48f8d9f97f09e)), closes [#22022](https://github.com/aws/aws-cdk/issues/22022)
+* **cli:** state machine hotswap fails if the `DependsOn` change ([#22396](https://github.com/aws/aws-cdk/issues/22396)) ([0d44db2](https://github.com/aws/aws-cdk/commit/0d44db2c211204b85002342ce758aca0552e851c))
+* **core:** Custom Resource type length validation ([#22118](https://github.com/aws/aws-cdk/issues/22118)) ([c186e2d](https://github.com/aws/aws-cdk/commit/c186e2ddcffb25647b971ba1b90faa850552d219))
+* **custom-resources:** provider can fail if S3 has brown-outs ([#22362](https://github.com/aws/aws-cdk/issues/22362)) ([cdedf60](https://github.com/aws/aws-cdk/commit/cdedf606277f50a2f7e20b09560f6e14b11bbc19))
+* **ec2:** cannot deploy SecurityGroup with allowAllIpv6Outbound ([#22414](https://github.com/aws/aws-cdk/issues/22414)) ([bb16d97](https://github.com/aws/aws-cdk/commit/bb16d9729daea2702b32df81fc8259b0afd652fa)), closes [#22407](https://github.com/aws/aws-cdk/issues/22407)
+* **ecs:** removed explicit addition of ecs deployment type when circuit breaker is enabled ([#22328](https://github.com/aws/aws-cdk/issues/22328)) ([635129c](https://github.com/aws/aws-cdk/commit/635129ca95313afef7b3d8fc62d077afbfd0c088)), closes [#16126](https://github.com/aws/aws-cdk/issues/16126) [#16919](https://github.com/aws/aws-cdk/issues/16919)
+* half-written asset zips can be uploaded if process is interrupted ([#22393](https://github.com/aws/aws-cdk/issues/22393)) ([2ed006e](https://github.com/aws/aws-cdk/commit/2ed006e50b15dfca96395d442ccee648abdbb374)), closes [#18459](https://github.com/aws/aws-cdk/issues/18459)
+
+
+### Reverts
+
+* "fix(ecs): removed explicit addition of ecs deployment type when circuit breaker is enabled ([#22328](https://github.com/aws/aws-cdk/issues/22328))" ([#22418](https://github.com/aws/aws-cdk/issues/22418)) ([0f002e2](https://github.com/aws/aws-cdk/commit/0f002e2009bbab2e10c08cdf908c5091ba61b754)), closes [/github.com/aws/aws-cdk/issues/16126#issuecomment-1271626957](https://github.com/aws//github.com/aws/aws-cdk/issues/16126/issues/issuecomment-1271626957)
+
+## [2.45.0](https://github.com/aws/aws-cdk/compare/v2.44.0...v2.45.0) (2022-10-06)
+
+
+### Features
+
+* add `addMetadata()` method to `Stack` ([#22337](https://github.com/aws/aws-cdk/issues/22337)) ([61b2ab7](https://github.com/aws/aws-cdk/commit/61b2ab79f2a044dcceba7fec1a01629873aa4517))
+* **apigateway:** add accessLogField static method ([#22322](https://github.com/aws/aws-cdk/issues/22322)) ([3ce8e47](https://github.com/aws/aws-cdk/commit/3ce8e47159c5f108c2f20d10714117762ad99ffd)), closes [#21650](https://github.com/aws/aws-cdk/issues/21650)
+* **apigateway:** create BasePathMapping without stage ([#21488](https://github.com/aws/aws-cdk/issues/21488)) ([9bb213c](https://github.com/aws/aws-cdk/commit/9bb213c326ec79aca71bb646decd799f8c4954cd)), closes [#15806](https://github.com/aws/aws-cdk/issues/15806)
+* **aws-cloudwatch:** composite alarm actions suppression ([#22330](https://github.com/aws/aws-cdk/issues/22330)) ([19c945e](https://github.com/aws/aws-cdk/commit/19c945e280baa0c074e4d278c5b418042d595fa6))
+* **cfn-include:** allow cyclical dependencies  ([#22126](https://github.com/aws/aws-cdk/issues/22126)) ([2c8195a](https://github.com/aws/aws-cdk/commit/2c8195a0ee0b2832ade598259a4bae5e3ea25eaa))
+* **cfnspec:** cloudformation spec v91.0.0 ([#22305](https://github.com/aws/aws-cdk/issues/22305)) ([0358d51](https://github.com/aws/aws-cdk/commit/0358d51954b3ae32c6d7bdb490d498ab743770ec))
+* **codedeploy:** CodeDeploy deployment config constructs for Lambda and ECS ([#22159](https://github.com/aws/aws-cdk/issues/22159)) ([6840d8e](https://github.com/aws/aws-cdk/commit/6840d8e43381793bd7a51191bddaffc4cb6641d6))
+* **codepipeline-actions:** add elastic beanstalk deploy action ([#22135](https://github.com/aws/aws-cdk/issues/22135)) ([d8acc8a](https://github.com/aws/aws-cdk/commit/d8acc8aa07867be1b1b3cad05b67dab2d7bc3252)), closes [#2516](https://github.com/aws/aws-cdk/issues/2516)
+* **core:** allow overriding the stage name ([#22223](https://github.com/aws/aws-cdk/issues/22223)) ([3d227e5](https://github.com/aws/aws-cdk/commit/3d227e5e8a7452af85470e6e617dd785dcfb6fbe)), closes [40aws-cdk/core/lib/stage.ts#L139](https://github.com/40aws-cdk/core/lib/stage.ts/issues/L139) [40aws-cdk/core/lib/stack.ts#L1139-L1143](https://github.com/40aws-cdk/core/lib/stack.ts/issues/L1139-L1143) [40aws-cdk/core/lib/stack.ts#L106-L111](https://github.com/40aws-cdk/core/lib/stack.ts/issues/L106-L111)
+* **core:** make `StackSynthesizer` easier to subclass ([#22308](https://github.com/aws/aws-cdk/issues/22308)) ([8b2b381](https://github.com/aws/aws-cdk/commit/8b2b38187b709a4e9a37a4de043a84267a9ec937))
+* **sqs:** add SQS managed server side encryption ([#21591](https://github.com/aws/aws-cdk/issues/21591)) ([fa137eb](https://github.com/aws/aws-cdk/commit/fa137eb9f57a0956dae512e41b7a400b401d5642)), closes [#17770](https://github.com/aws/aws-cdk/issues/17770)
+
+
+### Bug Fixes
+
+* **certificatemanager:** unable to set removal policy on DnsValidatedCertificate ([#22122](https://github.com/aws/aws-cdk/issues/22122)) ([bae6554](https://github.com/aws/aws-cdk/commit/bae655419c2f0805c4fa3ea7ef20704539bbb44c)), closes [#22040](https://github.com/aws/aws-cdk/issues/22040) [#22040](https://github.com/aws/aws-cdk/issues/22040) [#20649](https://github.com/aws/aws-cdk/issues/20649) [#14519](https://github.com/aws/aws-cdk/issues/14519)
+* **cli:** large context causes E2BIG error during synthesis on Linux ([#21373](https://github.com/aws/aws-cdk/issues/21373)) ([7040168](https://github.com/aws/aws-cdk/commit/7040168f21f81421b78c44955b39cfca21c6c22d)), closes [#21230](https://github.com/aws/aws-cdk/issues/21230) [#19261](https://github.com/aws/aws-cdk/issues/19261)
+* **core:** addPropertyOverride doesn't work for all intrinsics ([#22294](https://github.com/aws/aws-cdk/issues/22294)) ([e2deca0](https://github.com/aws/aws-cdk/commit/e2deca0f1981f09c9d32c11c8359400191a7d753)), closes [#20608](https://github.com/aws/aws-cdk/issues/20608) [#19971](https://github.com/aws/aws-cdk/issues/19971)
+* **ec2:** cannot allow all ipv6 traffic ([#22279](https://github.com/aws/aws-cdk/issues/22279)) ([f7bbc94](https://github.com/aws/aws-cdk/commit/f7bbc943f00f3e0ceeb0ed03ec03bb36af5b3cb9)), closes [#7094](https://github.com/aws/aws-cdk/issues/7094)
+* **init:** freshly generated go project doesn't build ([#22310](https://github.com/aws/aws-cdk/issues/22310)) ([c6a4e71](https://github.com/aws/aws-cdk/commit/c6a4e71067299b0e0ad65f31e9eec15a4e80ebdb))
+* **region-info:** SSM service principals are incorrect in opt-in regions ([#22327](https://github.com/aws/aws-cdk/issues/22327)) ([b7f0889](https://github.com/aws/aws-cdk/commit/b7f08895c884c9e4e8b672e62f6c7515fa65b3a8))
+* **s3:** Bucket Key cannot be used with KMS_MANAGED key ([#22331](https://github.com/aws/aws-cdk/issues/22331)) ([63d3c54](https://github.com/aws/aws-cdk/commit/63d3c541e571dffe3efab83e69fa9718eef14411))
+* **sns:** race condition exists between sqs queue policy and sns subscription ([#21797](https://github.com/aws/aws-cdk/issues/21797)) ([cf43b03](https://github.com/aws/aws-cdk/commit/cf43b03c0c6231f93ca1db0b24df7c623d55dd2b))
+* **sqs:** SSE-SQS is enabled by default and can't be disabled ([#22321](https://github.com/aws/aws-cdk/issues/22321)) ([43547d3](https://github.com/aws/aws-cdk/commit/43547d3544a02f76c287abfc26570a02cfae65c6)), closes [#22137](https://github.com/aws/aws-cdk/issues/22137)
+* **step-functions:** arn is not valid across partitions ([#22314](https://github.com/aws/aws-cdk/issues/22314)) ([6e16ffe](https://github.com/aws/aws-cdk/commit/6e16ffe8e49f6a5d4ba076ba3d66f564daded96b))
+* **stepfunctions-tasks:** emrcontainers has incorrect validation of entry point arguments ([#22242](https://github.com/aws/aws-cdk/issues/22242)) ([a006b9a](https://github.com/aws/aws-cdk/commit/a006b9a9ec7f743ce276f98bfbdac12a8ee13872)), closes [#22061](https://github.com/aws/aws-cdk/issues/22061)
+
 ## [2.44.0](https://github.com/aws/aws-cdk/compare/v2.43.1...v2.44.0) (2022-09-28)
 
 
