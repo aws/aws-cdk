@@ -52,8 +52,7 @@
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
-    "build+test+extract": "yarn build+test && yarn rosetta:extract",
-    "integ": "integ-runner"
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -66,7 +65,6 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/integ-runner": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.5.2",
     "@types/node": "^14.18.32",
