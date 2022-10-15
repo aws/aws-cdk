@@ -2,11 +2,6 @@ import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import { JsonPath, Pass, StateMachine } from '../lib';
 
-/*
- * Stack verification steps:
- *
- * -- aws stepfunctions describe-state-machine --state-machine-arn <stack-output> has a status of `ACTIVE`
- */
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-intrinsics-integ');
 
