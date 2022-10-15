@@ -27,7 +27,6 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
     zoneName: 'example.com.',
   }),
   redirectHTTP: true,
-  circuitBreaker: { rollback: true },
 });
 
 new integ.IntegTest(app, 'albFargateServiceTest', {

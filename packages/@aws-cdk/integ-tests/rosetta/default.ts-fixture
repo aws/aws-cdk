@@ -20,6 +20,7 @@ import {
   Stack,
   StackProps,
   CustomResource,
+  Duration,
 } from '@aws-cdk/core';
 import * as path from 'path';
 import * as sqs from '@aws-cdk/aws-sqs';
