@@ -528,6 +528,29 @@ test('with custom log format set, it successfully creates with cloudwatch log de
 
 });
 
+test('with custom log format set empty, it not creates with cloudwatch log destination', () => {
+  const stack = getTestStack();
+
+  new FlowLog(stack, 'FlowLogs', {
+    resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
+    customLogFormatFields: [],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+    ResourceType: 'NetworkInterface',
+    TrafficType: 'ALL',
+    ResourceId: 'eni-123455',
+    DeliverLogsPermissionArn: {
+      'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
+    },
+    LogGroupName: {
+      Ref: 'FlowLogsLogGroup9853A85F',
+    },
+  });
+
+});
+
+
 function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', {
     env: { account: '123456789012', region: 'us-east-1' },

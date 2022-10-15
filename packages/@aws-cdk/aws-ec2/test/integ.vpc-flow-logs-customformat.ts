@@ -1,8 +1,7 @@
-import { PolicyStatement, Effect, ServicePrincipal } from '@aws-cdk/aws-iam';
-import * as s3 from '@aws-cdk/aws-s3';
-import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { Bucket } from '@aws-cdk/aws-s3';
+import { App, Stack, StackProps, RemovalPolicy } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
-import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, FlowLogMaxAggregationInterval, LogFormatField } from '../lib';
+import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, LogFormatField } from '../lib';
 
 const app = new App();
 
@@ -20,53 +19,17 @@ class TestStack extends Stack {
       ],
     });
 
+    const bucket = new Bucket(this, 'Bucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
     vpc.addFlowLog('FlowLogsS3', {
-      destination: FlowLogDestination.toS3(),
+      destination: FlowLogDestination.toS3(bucket, 'prefix/'),
       customLogFormatFields: [
         LogFormatField.DST_PORT,
         LogFormatField.SRC_PORT,
       ],
     });
-
-    // const bucket = new s3.Bucket(this, 'Bucket', {
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    //   autoDeleteObjects: true,
-    // });
-    // bucket.addToResourcePolicy(new PolicyStatement({
-    //   effect: Effect.ALLOW,
-    //   principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-    //   actions: ['s3:PutObject'],
-    //   resources: [bucket.arnForObjects(`AWSLogs/${this.account}/*`)],
-    //   conditions: {
-    //     StringEquals: {
-    //       's3:x-amz-acl': 'bucket-owner-full-control',
-    //       'aws:SourceAccount': this.account,
-    //     },
-    //     ArnLike: {
-    //       'aws:SourceArn': this.formatArn({
-    //         service: 'logs',
-    //         resource: '*',
-    //       }),
-    //     },
-    //   },
-    // }));
-    // bucket.addToResourcePolicy(new PolicyStatement({
-    //   effect: Effect.ALLOW,
-    //   principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-    //   actions: ['s3:GetBucketAcl', 's3:ListBucket'],
-    //   resources: [bucket.bucketArn],
-    //   conditions: {
-    //     StringEquals: {
-    //       'aws:SourceAccount': this.account,
-    //     },
-    //     ArnLike: {
-    //       'aws:SourceArn': this.formatArn({
-    //         service: 'logs',
-    //         resource: '*',
-    //       }),
-    //     },
-    //   },
-    // }));
 
   }
 }
