@@ -4,9 +4,9 @@ import { Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
 import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from './common';
+import { InputValidator } from './private/validation';
 import { CloudFormationProductVersion } from './product';
 import { ProductStack } from './product-stack';
-import { InputValidator } from './private/validation';
 
 /**
  * Properties for a ProductStackHistory.
