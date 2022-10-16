@@ -1,14 +1,12 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "integ.cluster": {
+    "ClusterTest/DefaultTest": {
       "stacks": [
         "aws-cdk-neptune-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "ClusterTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterTestDefaultTestDeployAssert6A1BBA9D"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

@@ -731,6 +731,19 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Adds an arbitary key-value pair, with information you want to record about the stack.
+   * These get translated to the Metadata section of the generated template.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
+   */
+  public addMetadata(key: string, value: any) {
+    if (!this.templateOptions.metadata) {
+      this.templateOptions.metadata = {};
+    }
+    this.templateOptions.metadata[key] = value;
+  }
+
+  /**
    * Called implicitly by the `addDependency` helper function in order to
    * realize a dependency between two top-level stacks at the assembly level.
    *
@@ -1171,12 +1184,11 @@ export class Stack extends Construct implements ITaggable {
    * Indicates whether the stack requires bundling or not
    */
   public get bundlingRequired() {
-    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
+    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['**'];
 
-    // bundlingStacks is of the form `Stage/Stack`, convert it to `Stage-Stack` before comparing to stack name
     return bundlingStacks.some(pattern => minimatch(
-      this.stackName,
-      pattern.replace('/', '-'),
+      this.node.path, // use the same value for pattern matching as the aws-cdk CLI (displayName / hierarchicalId)
+      pattern,
     ));
   }
 }

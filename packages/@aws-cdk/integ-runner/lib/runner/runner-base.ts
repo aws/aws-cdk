@@ -321,7 +321,7 @@ export abstract class IntegRunner {
         execCmd: this.cdkApp.split(' '),
         env: {
           ...DEFAULT_SYNTH_OPTIONS.env,
-          CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+          CDK_CONTEXT_JSON: JSON.stringify(this.getContext(DEFAULT_SYNTH_OPTIONS.context)),
         },
         output: path.relative(this.directory, this.snapshotDir),
       });
@@ -361,11 +361,7 @@ export abstract class IntegRunner {
       .filter(([k, _]) => !FUTURE_FLAGS_EXPIRED.includes(k))
       .forEach(([k, v]) => futureFlags[k] = v);
 
-    const enableLookups = (this.actualTestSuite ?? this.expectedTestSuite)?.enableLookups;
     return {
-      // if lookups are enabled then we need to synth
-      // with the "dummy" context
-      ...enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
       ...futureFlags,
       ...this.legacyContext,
       ...additionalContext,
@@ -421,5 +417,8 @@ export const DEFAULT_SYNTH_OPTIONS = {
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
     CDK_INTEG_REGION: 'test-region',
+    CDK_INTEG_HOSTED_ZONE_ID: 'Z23ABC4XYZL05B',
+    CDK_INTEG_HOSTED_ZONE_NAME: 'example.com',
+    CDK_INTEG_DOMAIN_NAME: '*.example.com',
   },
 };

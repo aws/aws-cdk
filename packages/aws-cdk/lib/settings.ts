@@ -256,8 +256,8 @@ export class Settings {
     // If we deploy, diff, synth or watch a list of stacks exclusively we skip
     // bundling for all other stacks.
       bundlingStacks = argv.exclusively
-        ? argv.STACKS ?? ['*']
-        : ['*'];
+        ? argv.STACKS ?? ['**']
+        : ['**'];
     } else { // Skip bundling for all stacks
       bundlingStacks = [];
     }

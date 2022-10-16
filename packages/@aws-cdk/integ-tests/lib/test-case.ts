@@ -1,5 +1,5 @@
 import { IntegManifest, Manifest, TestCase, TestOptions } from '@aws-cdk/cloud-assembly-schema';
-import { attachCustomSynthesis, Stack, ISynthesisSession, StackProps } from '@aws-cdk/core';
+import { attachCustomSynthesis, ISynthesisSession, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDeployAssert } from './assertions';
 import { DeployAssert } from './assertions/private/deploy-assert';
@@ -15,6 +15,13 @@ export interface IntegTestCaseProps extends TestOptions {
    * Stacks to be deployed during the test
    */
   readonly stacks: Stack[];
+
+  /**
+   * Specify a stack to use for assertions
+   *
+   * @default - a stack is created for you
+   */
+  readonly assertionStack?: Stack
 }
 
 /**
@@ -35,7 +42,7 @@ export class IntegTestCase extends Construct {
   constructor(scope: Construct, id: string, private readonly props: IntegTestCaseProps) {
     super(scope, id);
 
-    this._assert = new DeployAssert(this);
+    this._assert = new DeployAssert(this, { stack: props.assertionStack });
     this.assertions = this._assert;
   }
 
@@ -63,7 +70,7 @@ export class IntegTestCase extends Construct {
 /**
  * Properties of an integration test case stack
  */
-export interface IntegTestCaseStackProps extends TestOptions, StackProps {}
+export interface IntegTestCaseStackProps extends TestOptions, StackProps { }
 
 /**
  * An integration test case stack. Allows the definition of test properties
@@ -78,7 +85,7 @@ export class IntegTestCaseStack extends Stack {
    * Returns whether the construct is a IntegTestCaseStack
    */
   public static isIntegTestCaseStack(x: any): x is IntegTestCaseStack {
-    return x !== null && typeof(x) === 'object' && TEST_CASE_STACK_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && TEST_CASE_STACK_SYMBOL in x;
   }
 
   /**
@@ -115,6 +122,23 @@ export interface IntegTestProps extends TestOptions {
    * List of test cases that make up this test
    */
   readonly testCases: Stack[];
+
+  /**
+   * Enable lookups for this test. If lookups are enabled
+   * then `stackUpdateWorkflow` must be set to false.
+   * Lookups should only be enabled when you are explicitly testing
+   * lookups.
+   *
+   * @default false
+   */
+  readonly enableLookups?: boolean;
+
+  /**
+   * Specify a stack to use for assertions
+   *
+   * @default - a stack is created for you
+   */
+  readonly assertionStack?: Stack
 }
 
 /**
@@ -127,9 +151,11 @@ export class IntegTest extends Construct {
    */
   public readonly assertions: IDeployAssert;
   private readonly testCases: IntegTestCase[];
+  private readonly enableLookups?: boolean;
   constructor(scope: Construct, id: string, props: IntegTestProps) {
     super(scope, id);
 
+    this.enableLookups = props.enableLookups;
     const defaultTestCase = new IntegTestCase(this, 'DefaultTest', {
       stacks: props.testCases.filter(stack => !IntegTestCaseStack.isIntegTestCaseStack(stack)),
       hooks: props.hooks,
@@ -138,6 +164,7 @@ export class IntegTest extends Construct {
       allowDestroy: props.allowDestroy,
       cdkCommandOptions: props.cdkCommandOptions,
       stackUpdateWorkflow: props.stackUpdateWorkflow,
+      assertionStack: props.assertionStack,
     });
     this.assertions = defaultTestCase.assertions;
 
@@ -152,7 +179,7 @@ export class IntegTest extends Construct {
       validate: () => {
         attachCustomSynthesis(this, {
           onSynthesize: (session: ISynthesisSession) => {
-            const synthesizer = new IntegManifestSynthesizer(this.testCases);
+            const synthesizer = new IntegManifestSynthesizer(this.testCases, this.enableLookups);
             synthesizer.synthesize(session);
           },
         });

@@ -5,7 +5,7 @@ function invokeJest() {
   # package.json.
   if ! npx --no-install jest --version; then
     echo 'Looks like we need to install jest first. Hold on.' >& 2
-    npm install --prefix .. jest jest-junit aws-sdk axios
+    npm install --prefix .. jest@^27 jest-junit@^14 aws-sdk@^2 axios@^0.27.2
   fi
 
   # This must --runInBand because parallelism is arranged for inside the tests
