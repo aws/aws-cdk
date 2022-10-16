@@ -160,6 +160,8 @@ export class IntegrationTests {
    */
   private static acceptedPrefixes: RegExp = new RegExp('^[iI]nteg[-_.]?');
 
+  private static acceptedSuffixes: RegExp = new RegExp('\\.(py|js|cs|go|java)$');
+
   constructor(private readonly directory: string) {
   }
 
@@ -226,7 +228,9 @@ export class IntegrationTests {
 
   private async discover(): Promise<IntegTest[]> {
     const files = await this.readTree();
-    const integs = files.filter(fileName => IntegrationTests.acceptedPrefixes.test(path.basename(fileName)));
+    const integs = files.filter(fileName => (
+      IntegrationTests.acceptedPrefixes.test(path.basename(fileName)) &&
+        IntegrationTests.acceptedSuffixes.test(path.basename(fileName))));
     return this.request(integs);
   }
 
