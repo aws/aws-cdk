@@ -97,7 +97,7 @@ export class IntegTest {
       ? parsed.name
       : path.join(path.relative(this.info.discoveryRoot, parsed.dir), parsed.name);
 
-    const nakedTestName = IntegrationTests.stripPrefix(parsed.name); // Leave name without 'integ.' and '.ts'
+    const nakedTestName = IntegrationTests.stripPrefixAndSuffix(parsed.base); // Leave name without 'integ.' and '.ts'
     this.normalizedTestName = parsed.name;
     this.snapshotDir = path.join(this.directory, `${nakedTestName}.integ.snapshot`);
     this.temporaryOutputDir = path.join(this.directory, `${CDK_OUTDIR_PREFIX}.${nakedTestName}`);
@@ -147,20 +147,30 @@ export interface IntegrationTestFileConfig {
  */
 export class IntegrationTests {
 
-  public static stripPrefix(fileName: string): string {
-    return fileName.replace(this.acceptedPrefixes, '');
+  public static stripPrefixAndSuffix(fileName: string): string {
+    const [suffix, prefix] = Array.from(this.acceptedSuffixPrefixMapping)
+      .find(([suff]) => suff.test(fileName)) ?? ['', ''];
+
+    return fileName.replace(prefix, '').replace(suffix, '');
   }
 
   /**
-   * Will discover integration tests with naming conventions typical to most languages. Examples:
-   * - TypeScript/JavaScript: integ.test.ts or integ-test.ts
-   * - Python: integ_test.py
+   * Will discover integration tests with naming conventions typical to each language. Examples:
+   * - TypeScript/JavaScript: integ.test.ts or integ-test.ts or integ_test.ts
+   * - Python/Go: integ_test.py
    * - Java/C#: IntegTest.cs
    * @private
    */
-  private static acceptedPrefixes: RegExp = new RegExp('^[iI]nteg[-_.]?');
+  private static acceptedSuffixPrefixMapping: Map<RegExp, RegExp> = new Map<RegExp, RegExp>([
+    [new RegExp('\\.(cs|java)$'), new RegExp('^Integ')],
+    [new RegExp('\\.(py|go)$'), new RegExp('^integ_')],
+    [new RegExp('\\.(js)$'), new RegExp('^integ[-_.]')],
+  ]);
 
-  private static acceptedSuffixes: RegExp = new RegExp('\\.(py|js|cs|go|java)$');
+  private static hasValidPrefixSuffix(fileName: string): boolean {
+    return Array.from(this.acceptedSuffixPrefixMapping)
+      .some(([suffix, prefix]) => suffix.test(fileName) && prefix.test(fileName));
+  }
 
   constructor(private readonly directory: string) {
   }
@@ -228,9 +238,7 @@ export class IntegrationTests {
 
   private async discover(): Promise<IntegTest[]> {
     const files = await this.readTree();
-    const integs = files.filter(fileName => (
-      IntegrationTests.acceptedPrefixes.test(path.basename(fileName)) &&
-        IntegrationTests.acceptedSuffixes.test(path.basename(fileName))));
+    const integs = files.filter(fileName => IntegrationTests.hasValidPrefixSuffix(path.basename(fileName)));
     return this.request(integs);
   }
 
