@@ -68,6 +68,8 @@ to be a self contained CDK app. The runner will execute the following for each f
   Read the list of tests from this file
 - `--disable-update-workflow` (default=`false`)
   If this is set to `true` then the [update workflow](#update-workflow) will be disabled
+- `--test-run-command` (default=`node`)
+    The command used by the test runner to synth the test files. This will depend on the language the tests are written in. For example, if the tests are written in Python, you could set this parameter to 'python', 'python3' or 'python3.8'.
 
 Example:
 
