@@ -135,6 +135,7 @@ export async function runIntegrationTestsInParallel(
         dryRun: options.dryRun,
         verbosity: options.verbosity,
         updateWorkflow: options.updateWorkflow,
+        runCommand: options.runCommand,
       }], {
         on: printResults,
       });

@@ -30,6 +30,7 @@ async function main() {
     .options('from-file', { type: 'string', desc: 'Read TEST names from a file (one TEST per line)' })
     .option('inspect-failures', { type: 'boolean', desc: 'Keep the integ test cloud assembly if a failure occurs for inspection', default: false })
     .option('disable-update-workflow', { type: 'boolean', default: false, desc: 'If this is "true" then the stack update workflow will be disabled' })
+    .option('test-run-command', { type: 'string', default: 'node', desc: 'The CLI command (such as python, node, or others) that will be applied to the test files. Defaults to node.' })
     .strict()
     .argv;
 
@@ -76,6 +77,7 @@ async function main() {
     failedSnapshots = await runSnapshotTests(pool, testsFromArgs, {
       retain: argv['inspect-failures'],
       verbose: Boolean(argv.verbose),
+      runCommand: argv['test-run-command'],
     });
     for (const failure of failedSnapshots) {
       destructiveChanges.push(...failure.destructiveChanges ?? []);
@@ -99,6 +101,7 @@ async function main() {
         dryRun: argv['dry-run'],
         verbosity: argv.verbose,
         updateWorkflow: !argv['disable-update-workflow'],
+        runCommand: argv['test-run-command'],
       });
       testsSucceeded = success;
 

@@ -97,7 +97,7 @@ export class IntegTest {
       ? parsed.name
       : path.join(path.relative(this.info.discoveryRoot, parsed.dir), parsed.name);
 
-    const nakedTestName = parsed.name.slice(6); // Leave name without 'integ.' and '.ts'
+    const nakedTestName = IntegrationTests.stripPrefix(parsed.name); // Leave name without 'integ.' and '.ts'
     this.normalizedTestName = parsed.name;
     this.snapshotDir = path.join(this.directory, `${nakedTestName}.integ.snapshot`);
     this.temporaryOutputDir = path.join(this.directory, `${CDK_OUTDIR_PREFIX}.${nakedTestName}`);
@@ -146,6 +146,20 @@ export interface IntegrationTestFileConfig {
  * Discover integration tests
  */
 export class IntegrationTests {
+
+  public static stripPrefix(fileName: string): string {
+    return fileName.replace(this.acceptedPrefixes, '');
+  }
+
+  /**
+   * Will discover integration tests with naming conventions typical to most languages. Examples:
+   * - TypeScript/JavaScript: integ.test.ts or integ-test.ts
+   * - Python: integ_test.py
+   * - Java/C#: IntegTest.cs
+   * @private
+   */
+  private static acceptedPrefixes: RegExp = new RegExp('^[iI]nteg[-_.]?');
+
   constructor(private readonly directory: string) {
   }
 
@@ -212,7 +226,7 @@ export class IntegrationTests {
 
   private async discover(): Promise<IntegTest[]> {
     const files = await this.readTree();
-    const integs = files.filter(fileName => path.basename(fileName).startsWith('integ.') && path.basename(fileName).endsWith('.js'));
+    const integs = files.filter(fileName => IntegrationTests.acceptedPrefixes.test(path.basename(fileName)));
     return this.request(integs);
   }
 

@@ -103,6 +103,13 @@ export interface SnapshotVerificationOptions {
    * @default false
    */
   readonly verbose?: boolean;
+
+  /**
+   * The CLI command used to run the test files.
+   *
+   * @default - run command will be `node`
+   */
+  readonly runCommand?: string;
 }
 
 /**
@@ -162,6 +169,13 @@ export interface IntegTestOptions {
    * @default true
    */
   readonly updateWorkflow?: boolean;
+
+  /**
+   * The CLI command used to run the test files.
+   *
+   * @default - run command will be `node`
+   */
+  readonly runCommand?: string;
 }
 
 /**

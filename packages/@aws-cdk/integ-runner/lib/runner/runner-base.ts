@@ -50,6 +50,14 @@ export interface IntegRunnerOptions {
   readonly cdk?: ICdk;
 
   /**
+   * Integration tests don't have a cdk.json to get the run command from.
+   * You can specify a custom run command, and it will be applied to all test files.
+   *
+   * @default - test run command will be `node`
+   */
+  readonly runCommand?: string;
+
+  /**
    * Show output from running integration tests
    *
    * @default false
@@ -150,7 +158,10 @@ export abstract class IntegRunner {
       },
     });
     this.cdkOutDir = options.integOutDir ?? this.test.temporaryOutputDir;
-    this.cdkApp = `node ${path.relative(this.directory, this.test.fileName)}`;
+
+    const testRunCommand = options.runCommand ?? 'node';
+    this.cdkApp = `${testRunCommand} ${path.relative(this.directory, this.test.fileName)}`;
+
     this.profile = options.profile;
     if (this.hasSnapshot()) {
       this.expectedTestSuite = this.loadManifest();
