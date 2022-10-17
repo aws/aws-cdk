@@ -74,6 +74,7 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/asset-awscli-v1": "2.1.0",
+    "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
@@ -92,6 +93,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/interfaces": "0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -99,6 +101,11 @@
   },
   "stability": "stable",
   "maturity": "stable",
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/lambda-layer-awscli.AwsCliLayerProps"
+    ]
+  },
   "awscdkio": {
     "announce": false
   },
