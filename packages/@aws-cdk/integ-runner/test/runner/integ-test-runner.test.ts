@@ -554,7 +554,7 @@ describe('IntegTest runIntegTests', () => {
     }));
   });
 
-  test('with custom app run command', () => {
+  test('with custom app run command for Python', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
@@ -580,6 +580,35 @@ describe('IntegTest runIntegTests', () => {
     }));
     expect(destroyMock).toHaveBeenCalledWith(expect.objectContaining({
       app: 'python integ_python_test.py',
+    }));
+  });
+
+  test('with custom app run command for Java', () => {
+    // WHEN
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: 'test/test-data-java/src/main/java/com/myorg/IntegTestJava.java',
+        discoveryRoot: 'test/test-data-java/src/main/java/com/myorg',
+      }),
+      runCommand: 'java -cp $CLASSPATH',
+    });
+    integTest.runIntegTestCase({
+      testCaseName: 'IntegTestJava',
+    });
+
+    // THEN
+    expect(deployMock).toHaveBeenCalledTimes(1);
+    expect(destroyMock).toHaveBeenCalledTimes(1);
+    expect(synthFastMock).toHaveBeenCalledTimes(1);
+    expect(deployMock).toHaveBeenCalledWith(expect.objectContaining({
+      app: 'java -cp $CLASSPATH IntegTestJava.java',
+    }));
+    expect(synthFastMock).toHaveBeenCalledWith(expect.objectContaining({
+      execCmd: ['java', '-cp', '$CLASSPATH', 'IntegTestJava.java'],
+    }));
+    expect(destroyMock).toHaveBeenCalledWith(expect.objectContaining({
+      app: 'java -cp $CLASSPATH IntegTestJava.java',
     }));
   });
 });
