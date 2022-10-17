@@ -8,7 +8,7 @@
                         "op": "add",
                         "path": "/Properties/ServiceConnectDefaults",
                         "value": {
-                            "Documentation": "",
+                            "Documentation": "placeholder",
                             "Type": "ServiceConnectDefaults",
                             "Required": false,
                             "UpdateType": "Immutable"
@@ -25,7 +25,7 @@
                         "op": "add",
                         "path": "/Properties/ServiceConnectConfiguration",
                         "value": {
-                            "Documentation": "",
+                            "Documentation": "placeholder",
                             "Type": "ServiceConnectConfiguration",
                             "Required": false,
                             "UpdateType": "Immutable"
@@ -44,7 +44,7 @@
                         "op": "add",
                         "path": "/Properties/Name",
                         "value": {
-                            "Documentation": "",
+                            "Documentation": "placeholder",
                             "Required": false,
                             "PrimitiveType": "String",
                             "UpdateType": "Immutable"
@@ -54,7 +54,7 @@
                         "op": "add",
                         "path": "/Properties/AppProtocol",
                         "value": {
-                            "Documentation": "",
+                            "Documentation": "placeholder",
                             "Required": false,
                             "PrimitiveType": "String",
                             "UpdateType": "Immutable"

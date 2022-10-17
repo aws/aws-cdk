@@ -7,10 +7,10 @@
                     "op": "add",
                     "path": "/AWS::ECS::Cluster.ServiceConnectDefaults",
                     "value": {
-                        "Documentation": "",
+                        "Documentation": "placeholder",
                         "Properties": {
                             "Namespace": {
-                                "Documentation": "",
+                                "Documentation": "placeholder",
                                 "PrimitiveType": "String",
                                 "Required": true,
                                 "UpdateType": "Mutable"
@@ -22,29 +22,29 @@
                     "op": "add",
                     "path": "/AWS::ECS::Service.ServiceConnectService",
                     "value": {
-                        "Documentation": "",
+                        "Documentation": "placeholder",
                         "Properties": {
                             "PortName": {
-                                "Documentation": "",
+                                "Documentation": "placeholder",
                                 "PrimitiveType": "String",
                                 "Required": true,
                                 "UpdateType": "Immutable"
                             },
                             "DiscoveryName": {
-                                "Documentation": "",
+                                "Documentation": "placeholder",
                                 "PrimitiveType": "String",
                                 "Required": false,
                                 "UpdateType": "Immutable"
                             },
                             "ClientAliases": {
-                                "Documentation": "",
+                                "Documentation": "placeholder",
                                 "Type": "List",
                                 "ItemType": "ServiceConnectClientAlias",
                                 "Required": false,
                                 "UpdateType": "Immutable"
                             },
                             "LogConfiguration": {
-                                "Documentation": "",
+                                "Documentation": "placeholder",
                                 "Type": "LogConfiguration",
                                 "Required": false,
                                 "UpdateType": "Immutable"
@@ -106,16 +106,16 @@
                     "op": "add",
                     "path": "/AWS::ECS::Service.ServiceConnectClientAlias",
                     "value": {
-                        "Documentation": "",
+                        "Documentation": "placeholder",
                         "Properties": {
                             "Port": {
-                                "Documentation": "",
+                                "Documentation": "placeholder",
                                 "PrimitiveType": "Integer",
                                 "Required": true,
                                 "UpdateType": "Immutable"
                             },
                             "DnsName": {
-                                "Documentation": "",
+                                "Documentation": "placeholder",
                                 "PrimitiveType": "String",
                                 "Required": true,
                                 "UpdateType": "Immutable"
@@ -127,29 +127,29 @@
                     "op": "add",
                     "path": "/AWS::ECS::Service.ServiceConnectConfiguration",
                     "value": {
-                        "Documentation": "",
+                        "Documentation": "placeholder",
                         "Properties": {
                             "Enabled": {
-                                "Documentation": "",
+                                "Documentation": "placeholder",
                                 "PrimitiveType": "Boolean",
                                 "Required": true,
                                 "UpdateType": "Immutable"
                             },
                             "Namespace": {
-                                "Documentation": "",
+                                "Documentation": "placeholder",
                                 "PrimitiveType": "String",
                                 "Required": false,
                                 "UpdateType": "Immutable"
                             },
                             "Services": {
-                                "Documentation": "",
+                                "Documentation": "placeholder",
                                 "Type": "List",
                                 "ItemType": "ServiceConnectService",
                                 "Required": false,
                                 "UpdateType": "Immutable"
                             },
                             "LogConfiguration": {
-                                "Documentation": "",
+                                "Documentation": "placeholder",
                                 "Type": "LogConfiguration",
                                 "Required": false,
                                 "UpdateType": "Immutable"
