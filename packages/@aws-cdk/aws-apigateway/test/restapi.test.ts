@@ -977,7 +977,7 @@ describe('restapi', () => {
       });
     });
 
-    test('addApiKey is supported', () => {
+    testDeprecated('addApiKey is supported', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.SpecRestApi(stack, 'myapi', {
@@ -1150,7 +1150,21 @@ describe('restapi', () => {
     });
   });
 
-  test('"disableExecuteApiEndpoint" can disable the default execute-api endpoint', () => {
+  test('disableExecuteApiEndpoint is false when set to false in RestApi', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'my-api', { disableExecuteApiEndpoint: false });
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      DisableExecuteApiEndpoint: false,
+    });
+  });
+
+  test('disableExecuteApiEndpoint is true when set to true in RestApi', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -1164,6 +1178,39 @@ describe('restapi', () => {
     });
   });
 
+  test('disableExecuteApiEndpoint is false when set to false in SpecRestApi', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'my-api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      disableExecuteApiEndpoint: false,
+    });
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      DisableExecuteApiEndpoint: false,
+    });
+  });
+
+  test('disableExecuteApiEndpoint is true when set to true in SpecRestApi', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'my-api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      disableExecuteApiEndpoint: true,
+    });
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      DisableExecuteApiEndpoint: true,
+    });
+  });
 
   describe('Description', () => {
     test('description can be set', () => {

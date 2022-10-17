@@ -1,92 +1,9 @@
-import { CustomResource, Reference, Lazy, CfnResource, Stack, ArnFormat } from '@aws-cdk/core';
+import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
-import { EqualsAssertion } from './assertions';
-import { ExpectedResult, ActualResult } from './common';
+import { ApiCallBase, IApiCall } from './api-call-base';
+import { ExpectedResult } from './common';
 import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
-
-/**
- * Interface for creating a custom resource that will perform
- * an API call using the AWS SDK
- */
-export interface IAwsApiCall extends IConstruct {
-  /**
-   * access the AssertionsProvider. This can be used to add additional IAM policies
-   * the the provider role policy
-   *
-   * @example
-   * declare const apiCall: AwsApiCall;
-   * apiCall.provider.addToRolePolicy({
-   *   Effect: 'Allow',
-   *   Action: ['s3:GetObject'],
-   *   Resource: ['*'],
-   * });
-   */
-  readonly provider: AssertionsProvider;
-
-  /**
-   * Returns the value of an attribute of the custom resource of an arbitrary
-   * type. Attributes are returned from the custom resource provider through the
-   * `Data` map where the key is the attribute name.
-   *
-   * @param attributeName the name of the attribute
-   * @returns a token for `Fn::GetAtt`. Use `Token.asXxx` to encode the returned `Reference` as a specific type or
-   * use the convenience `getAttString` for string attributes.
-   */
-  getAtt(attributeName: string): Reference;
-
-  /**
-   * Returns the value of an attribute of the custom resource of type string.
-   * Attributes are returned from the custom resource provider through the
-   * `Data` map where the key is the attribute name.
-   *
-   * @param attributeName the name of the attribute
-   * @returns a token for `Fn::GetAtt` encoded as a string.
-   */
-  getAttString(attributeName: string): string;
-
-  /**
-   * Assert that the ExpectedResult is equal
-   * to the result of the AwsApiCall
-   *
-   * @example
-   * declare const integ: IntegTest;
-   * const invoke = integ.assertions.invokeFunction({
-   *   functionName: 'my-func',
-   * });
-   * invoke.expect(ExpectedResult.objectLike({ Payload: 'OK' }));
-   */
-  expect(expected: ExpectedResult): void;
-
-  /**
-   * Assert that the ExpectedResult is equal
-   * to the result of the AwsApiCall at the given path.
-   *
-   * For example the SQS.receiveMessage api response would look
-   * like:
-   *
-   * If you wanted to assert the value of `Body` you could do
-   *
-   * @example
-   * const actual = {
-   *   Messages: [{
-   *     MessageId: '',
-   *     ReceiptHandle: '',
-   *     MD5OfBody: '',
-   *     Body: 'hello',
-   *     Attributes: {},
-   *     MD5OfMessageAttributes: {},
-   *     MessageAttributes: {}
-   *   }]
-   * };
-   *
-   *
-   * declare const integ: IntegTest;
-   * const message = integ.assertions.awsApiCall('SQS', 'receiveMessage');
-   *
-   * message.assertAtPath('Messages.0.Body', ExpectedResult.stringLikeRegexp('hello'));
-   */
-  assertAtPath(path: string, expected: ExpectedResult): void;
-}
+import { WaiterStateMachine, WaiterStateMachineOptions } from './waiter-state-machine';
 
 /**
  * Options to perform an AWS JavaScript V2 API call
@@ -111,20 +28,39 @@ export interface AwsApiCallOptions {
 }
 
 /**
- * Options for creating an SDKQuery provider
+ * Construct that creates a custom resource that will perform
+ * a query using the AWS SDK
  */
-export interface AwsApiCallProps extends AwsApiCallOptions {}
+export interface AwsApiCallProps extends AwsApiCallOptions { }
 
 /**
  * Construct that creates a custom resource that will perform
  * a query using the AWS SDK
  */
-export class AwsApiCall extends Construct implements IAwsApiCall {
-  private readonly sdkCallResource: CustomResource;
-  private flattenResponse: string = 'false';
+export class AwsApiCall extends ApiCallBase {
+  public readonly provider: AssertionsProvider;
+
+  /**
+   * access the AssertionsProvider for the waiter state machine.
+   * This can be used to add additional IAM policies
+   * the the provider role policy
+   *
+   * @example
+   * declare const apiCall: AwsApiCall;
+   * apiCall.waiterProvider?.addToRolePolicy({
+   *   Effect: 'Allow',
+   *   Action: ['s3:GetObject'],
+   *   Resource: ['*'],
+   * });
+   */
+  public waiterProvider?: AssertionsProvider;
+
+  protected readonly apiCallResource: CustomResource;
   private readonly name: string;
 
-  public readonly provider: AssertionsProvider;
+  private _assertAtPath?: string;
+  private readonly api: string;
+  private readonly service: string;
 
   constructor(scope: Construct, id: string, props: AwsApiCallProps) {
     super(scope, id);
@@ -132,45 +68,59 @@ export class AwsApiCall extends Construct implements IAwsApiCall {
     this.provider = new AssertionsProvider(this, 'SdkProvider');
     this.provider.addPolicyStatementFromSdkCall(props.service, props.api);
     this.name = `${props.service}${props.api}`;
+    this.api = props.api;
+    this.service = props.service;
 
-    this.sdkCallResource = new CustomResource(this, 'Default', {
+    this.apiCallResource = new CustomResource(this, 'Default', {
       serviceToken: this.provider.serviceToken,
       properties: {
         service: props.service,
         api: props.api,
+        expected: Lazy.any({ produce: () => this.expectedResult }),
+        actualPath: Lazy.string({ produce: () => this._assertAtPath }),
+        stateMachineArn: Lazy.string({ produce: () => this.stateMachineArn }),
         parameters: this.provider.encode(props.parameters),
         flattenResponse: Lazy.string({ produce: () => this.flattenResponse }),
         salt: Date.now().toString(),
       },
-      resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`,
+      resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`.substring(0, 60),
     });
-
     // Needed so that all the policies set up by the provider should be available before the custom resource is provisioned.
-    this.sdkCallResource.node.addDependency(this.provider);
-  }
+    this.apiCallResource.node.addDependency(this.provider);
 
-  public getAtt(attributeName: string): Reference {
-    this.flattenResponse = 'true';
-    return this.sdkCallResource.getAtt(`apiCallResponse.${attributeName}`);
-  }
+    // if expectedResult has been configured then that means
+    // we are making assertions and we should output the results
+    Aspects.of(this).add({
+      visit(node: IConstruct) {
+        if (node instanceof AwsApiCall) {
+          if (node.expectedResult) {
+            const result = node.apiCallResource.getAttString('assertion');
 
-  public getAttString(attributeName: string): string {
-    this.flattenResponse = 'true';
-    return this.sdkCallResource.getAttString(`apiCallResponse.${attributeName}`);
-  }
-
-  public expect(expected: ExpectedResult): void {
-    new EqualsAssertion(this, `AssertEquals${this.name}`, {
-      expected,
-      actual: ActualResult.fromCustomResource(this.sdkCallResource, 'apiCallResponse'),
+            new CfnOutput(node, 'AssertionResults', {
+              value: result,
+            }).overrideLogicalId(`AssertionResults${id}`);
+          }
+        }
+      },
     });
   }
 
-  public assertAtPath(path: string, expected: ExpectedResult): void {
-    new EqualsAssertion(this, `AssertEquals${this.name}`, {
-      expected,
-      actual: ActualResult.fromAwsApiCall(this, path),
+  public assertAtPath(path: string, expected: ExpectedResult): IApiCall {
+    this._assertAtPath = path;
+    this.expectedResult = expected.result;
+    this.flattenResponse = 'true';
+    return this;
+  }
+
+  public waitForAssertions(options?: WaiterStateMachineOptions): IApiCall {
+    const waiter = new WaiterStateMachine(this, 'WaitFor', {
+      ...options,
     });
+    this.stateMachineArn = waiter.stateMachineArn;
+    this.provider.addPolicyStatementFromSdkCall('states', 'StartExecution');
+    waiter.isCompleteProvider.addPolicyStatementFromSdkCall(this.service, this.api);
+    this.waiterProvider = waiter.isCompleteProvider;
+    return this;
   }
 }
 

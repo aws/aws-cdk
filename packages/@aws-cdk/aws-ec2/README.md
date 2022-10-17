@@ -1314,8 +1314,10 @@ vpc.addFlowLog('FlowLogS3', {
   destination: ec2.FlowLogDestination.toS3()
 });
 
+// Only reject traffic and interval every minute.
 vpc.addFlowLog('FlowLogCloudWatch', {
-  trafficType: ec2.FlowLogTrafficType.REJECT
+  trafficType: ec2.FlowLogTrafficType.REJECT,
+  maxAggregationInterval: FlowLogMaxAggregationInterval.ONE_MINUTE,
 });
 ```
 
@@ -1401,6 +1403,21 @@ instance.userData.addExecuteFileCommand({
 });
 asset.grantRead(instance.role);
 ```
+
+### Persisting user data
+
+By default, EC2 UserData is run once on only the first time that an instance is started. It is possible to make the
+user data script run on every start of the instance. 
+
+When creating a Windows UserData you can use the `persist` option to set whether or not to add 
+`<persist>true</persist>` [to the user data script](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html#user-data-scripts). it can be used as follows:
+
+```ts
+const windowsUserData = UserData.forWindows({ persist: true });
+```
+
+For a Linux instance, this can be accomplished by using a Multipart user data to configure cloud-config as detailed
+in: https://aws.amazon.com/premiumsupport/knowledge-center/execute-user-data-ec2/
 
 ### Multipart user data
 
@@ -1504,6 +1521,18 @@ const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
     vpc: vpc,
   }),
+});
+```
+
+And the following demonstrates how to enable metadata options support.
+
+```ts
+new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  httpEndpoint: true,
+  httpProtocolIpv6: true,
+  httpPutResponseHopLimit: 1,
+  httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,
+  instanceMetadataTags: true,
 });
 ```
 
