@@ -257,15 +257,26 @@ describe('Product', () => {
     const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
 
     const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
+      directory: 'product-stack-snapshots/all-versions-test',
       productStack: productStack,
-      currentVersionName: 'v2',
+      currentVersionName: 'v1',
       currentVersionLocked: false,
     });
 
+    new sns.Topic(productStack, 'SNSTopicProductStack');
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        productStackHistory.currentVersion(),
+      ],
+    });
+
+    app.synth();
     const versions = productStackHistory.allVersions();
-    expect(versions.length).toBe(2);
+    expect(versions.length).toBe(1);
     expect(versions[0].productVersionName).toEqual('v1');
-    expect(versions[1].productVersionName).toEqual('v2');
   }),
 
   test('all product stack versions from file system with nested directory', () => {
@@ -275,9 +286,20 @@ describe('Product', () => {
       productStack: productStack,
       currentVersionName: 'v1',
       currentVersionLocked: false,
-      directory: 'product-stack-snapshots/nested',
+      directory: 'product-stack-snapshots/nested-all-versions',
     });
 
+    new sns.Topic(productStack, 'SNSTopicProductStack');
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        productStackHistory.currentVersion(),
+      ],
+    });
+
+    app.synth();
     const versions = productStackHistory.allVersions();
     expect(versions.length).toBe(1);
     expect(versions[0].productVersionName).toEqual('v1');
@@ -285,7 +307,6 @@ describe('Product', () => {
 
   test('fails product test from product stack when template changes and locked', () => {
     const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
-
     const productStackHistory = new ProductStackHistory(stack, 'MyProductStackHistory', {
       productStack: productStack,
       currentVersionName: 'v1',
