@@ -107,9 +107,9 @@ export interface SnapshotVerificationOptions {
   /**
    * The CLI command used to run the test files.
    *
-   * @default - run command will be `node`
+   * @default - based on language of each file
    */
-  readonly runCommand?: string;
+  readonly appCommand?: string;
 }
 
 /**
@@ -173,9 +173,9 @@ export interface IntegTestOptions {
   /**
    * The CLI command used to run the test files.
    *
-   * @default - run command will be `node`
+   * @default - based on language of each file
    */
-  readonly runCommand?: string;
+  readonly appCommand?: string;
 }
 
 /**

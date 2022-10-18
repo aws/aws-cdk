@@ -30,9 +30,13 @@ async function main() {
     .options('from-file', { type: 'string', desc: 'Read TEST names from a file (one TEST per line)' })
     .option('inspect-failures', { type: 'boolean', desc: 'Keep the integ test cloud assembly if a failure occurs for inspection', default: false })
     .option('disable-update-workflow', { type: 'boolean', default: false, desc: 'If this is "true" then the stack update workflow will be disabled' })
-    .option('test-run-command', { type: 'string', default: 'node', desc: 'The CLI command (such as python, node, or others) that will be applied to the test files. Defaults to node.' })
+    .option('app', { type: 'string', default: undefined, desc: 'The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file name should be inserted. Example: --app="python3.8 {filePath}"' })
+    .option('language', { type: 'array', default: ['csharp', 'fsharp', 'go', 'java', 'javascript', 'python', 'typescript'], desc: 'The languages that tests will search for. Defaults to all languages supported by CDK.' })
+    .option('test-regex', { type: 'string', default: undefined, desc: 'A custom pattern in the JS RegExp format to match integration test file prefixes.' })
     .strict()
     .argv;
+
+  const customRegex = argv['test-regex'] ? new RegExp(argv['test-regex']) : undefined;
 
   const pool = workerpool.pool(path.join(__dirname, '../lib/workers/extract/index.js'), {
     maxWorkers: argv['max-workers'],
@@ -57,7 +61,7 @@ async function main() {
   let testsSucceeded = false;
   try {
     if (argv.list) {
-      const tests = await new IntegrationTests(argv.directory).fromCliArgs();
+      const tests = await new IntegrationTests(argv.directory, customRegex, argv.language).fromCliArgs();
       process.stdout.write(tests.map(t => t.discoveryRelativeFileName).join('\n') + '\n');
       return;
     }
@@ -69,7 +73,8 @@ async function main() {
       ? (await fs.readFile(fromFile, { encoding: 'utf8' })).split('\n').filter(x => x)
       : (argv._.length > 0 ? argv._ : undefined); // 'undefined' means no request
 
-    testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromCliArgs(requestedTests, exclude)));
+    testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory), customRegex, argv.language)
+      .fromCliArgs(requestedTests, exclude)));
 
     // always run snapshot tests, but if '--force' is passed then
     // run integration tests on all failed tests, not just those that
@@ -77,7 +82,7 @@ async function main() {
     failedSnapshots = await runSnapshotTests(pool, testsFromArgs, {
       retain: argv['inspect-failures'],
       verbose: Boolean(argv.verbose),
-      runCommand: argv['test-run-command'],
+      appCommand: argv.app,
     });
     for (const failure of failedSnapshots) {
       destructiveChanges.push(...failure.destructiveChanges ?? []);
@@ -101,7 +106,7 @@ async function main() {
         dryRun: argv['dry-run'],
         verbosity: argv.verbose,
         updateWorkflow: !argv['disable-update-workflow'],
-        runCommand: argv['test-run-command'],
+        appCommand: argv.app,
       });
       testsSucceeded = success;
 

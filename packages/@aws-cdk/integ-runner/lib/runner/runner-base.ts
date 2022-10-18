@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS, FUTURE_FLAGS_EXPIRED } from '@aws-cdk/cx-api';
+import { pythonExecutable } from 'aws-cdk/lib/init';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { flatten } from '../utils';
@@ -50,12 +51,12 @@ export interface IntegRunnerOptions {
   readonly cdk?: ICdk;
 
   /**
-   * Integration tests don't have a cdk.json to get the run command from.
    * You can specify a custom run command, and it will be applied to all test files.
+   * If it contains {filePath}, the test file names will be substituted at that place in the command for each run.
    *
    * @default - test run command will be `node`
    */
-  readonly runCommand?: string;
+  readonly appCommand?: string;
 
   /**
    * Show output from running integration tests
@@ -72,6 +73,41 @@ export interface IntegRunnerOptions {
  * Represents an Integration test runner
  */
 export abstract class IntegRunner {
+
+  // Best-effort reconstruction of the classpath of the file in the project.
+  // Example: /absolute/file/path/src/main/java/com/myorg/IntegTest.java -> com.myorg.IntegTest
+  // Should work for standard Java project layouts.
+  private static getJavaClassPath(absoluteFilePath: string): string | undefined {
+    const packagePath = absoluteFilePath.split('/java/').slice(-1)[0];
+    if (!packagePath) {
+      return undefined;
+    }
+    // string.replaceAll isn't available in the TS version the project uses
+    return packagePath.split('/').join('.').replace('.java', '');
+  }
+  // Will find the closest pom.xml file in the directory structure for this file
+  private static getJavaPomPath(executionDirectoryPath: string): string | undefined {
+    // Will generate the full list of ancestors in the directory path
+    // Example: ['/', '/home', '/home/MyUser', '/home/MyUser/Desktop']
+    const dirHierarchy = executionDirectoryPath
+      .split(path.sep)
+      .filter(dirName => dirName !== '')
+      .reduce((hierarchy, segment) => {
+        hierarchy.push(path.join(hierarchy[hierarchy.length - 1], segment));
+        return hierarchy;
+      },
+      // For Windows support
+      [path.toNamespacedPath('/')]);
+
+    for (const parentDir of dirHierarchy.reverse()) {
+      const searchPath = path.join(parentDir, 'pom.xml');
+      if (fs.existsSync(searchPath)) {
+        return path.relative(executionDirectoryPath, searchPath);
+      }
+    }
+    return undefined;
+  }
+
   /**
    * The directory where the snapshot will be stored
    */
@@ -159,8 +195,22 @@ export abstract class IntegRunner {
     });
     this.cdkOutDir = options.integOutDir ?? this.test.temporaryOutputDir;
 
-    const testRunCommand = options.runCommand ?? 'node';
-    this.cdkApp = `${testRunCommand} ${path.relative(this.directory, this.test.fileName)}`;
+    const defaultAppCommands = new Map<string, string>([
+      ['javascript', 'node {filePath}'],
+      ['typescript', 'node -r ts-node/register {filePath}'],
+      ['python', `${pythonExecutable()} {filePath}`],
+      ['go', 'go mod download && go run {filePath}'],
+      ['csharp', 'dotnet run {filePath}'],
+      ['fsharp', 'dotnet run {filePath}'],
+      ['java', `mvn -f ${IntegRunner.getJavaPomPath(path.dirname(options.test.absoluteFileName))} -e -q compile exec:java clean -Dexec.mainClass=${IntegRunner.getJavaClassPath(options.test.absoluteFileName)}`],
+    ]);
+    const testRunCommand = options.appCommand ?? defaultAppCommands.get(this.test.language);
+
+    if (!testRunCommand) {
+      throw new Error('Could not find default run command for this file extension. Try specifying a custom one with the --app flag.');
+    }
+
+    this.cdkApp = testRunCommand.replace('{filePath}', path.relative(this.directory, this.test.fileName));
 
     this.profile = options.profile;
     if (this.hasSnapshot()) {

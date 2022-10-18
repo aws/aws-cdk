@@ -79,6 +79,11 @@ export class IntegTest {
    */
   public readonly temporaryOutputDir: string;
 
+  /**
+   * Language the test is written in
+   */
+  public readonly language: string;
+
   constructor(public readonly info: IntegTestInfo) {
     this.absoluteFileName = path.resolve(info.fileName);
     this.fileName = path.relative(process.cwd(), info.fileName);
@@ -97,10 +102,16 @@ export class IntegTest {
       ? parsed.name
       : path.join(path.relative(this.info.discoveryRoot, parsed.dir), parsed.name);
 
-    const nakedTestName = IntegrationTests.stripPrefixAndSuffix(parsed.base); // Leave name without 'integ.' and '.ts'
+    const nakedTestName = new IntegrationTests(this.directory).stripPrefixAndSuffix(parsed.base); // Leave name without 'integ.' and '.ts'
     this.normalizedTestName = parsed.name;
     this.snapshotDir = path.join(this.directory, `${nakedTestName}.integ.snapshot`);
     this.temporaryOutputDir = path.join(this.directory, `${CDK_OUTDIR_PREFIX}.${nakedTestName}`);
+
+    const language = new IntegrationTests(this.directory).getLanguage(parsed.base);
+    if (!language) {
+      throw new Error('Given file does not match any of the allowed languages for this test');
+    }
+    this.language = language;
   }
 
   /**
@@ -146,14 +157,6 @@ export interface IntegrationTestFileConfig {
  * Discover integration tests
  */
 export class IntegrationTests {
-
-  public static stripPrefixAndSuffix(fileName: string): string {
-    const [suffix, prefix] = Array.from(this.acceptedSuffixPrefixMapping)
-      .find(([suff]) => suff.test(fileName)) ?? ['', ''];
-
-    return fileName.replace(prefix, '').replace(suffix, '');
-  }
-
   /**
    * Will discover integration tests with naming conventions typical to each language. Examples:
    * - TypeScript/JavaScript: integ.test.ts or integ-test.ts or integ_test.ts
@@ -161,18 +164,68 @@ export class IntegrationTests {
    * - Java/C#: IntegTest.cs
    * @private
    */
-  private static acceptedSuffixPrefixMapping: Map<RegExp, RegExp> = new Map<RegExp, RegExp>([
-    [new RegExp('\\.(cs|java)$'), new RegExp('^Integ')],
-    [new RegExp('\\.(py|go)$'), new RegExp('^integ_')],
-    [new RegExp('\\.(js)$'), new RegExp('^integ[-_.]')],
+  private readonly prefixMapping: Map<string, RegExp> = new Map<string, RegExp>([
+    ['csharp', new RegExp(/^Integ/)],
+    ['fsharp', new RegExp(/^Integ/)],
+    ['go', new RegExp(/^integ_/)],
+    ['java', new RegExp(/^Integ/)],
+    ['javascript', new RegExp(/^integ\./)],
+    ['python', new RegExp(/^integ_/)],
+    ['typescript', new RegExp(/^integ\./)],
+  ]);
+  private readonly suffixMapping: Map<string, RegExp> = new Map<string, RegExp>([
+    ['csharp', new RegExp(/\.cs$/)],
+    ['fsharp', new RegExp(/\.fs$/)],
+    ['go', new RegExp(/\.go$/)],
+    ['java', new RegExp(/\.java$/)],
+    ['javascript', new RegExp(/\.js$/)],
+    ['python', new RegExp(/\.py$/)],
+    // Allow files ending in .ts but not in .d.ts
+    ['typescript', new RegExp(/(?<!\.d)\.ts$/)],
   ]);
 
-  private static hasValidPrefixSuffix(fileName: string): boolean {
-    return Array.from(this.acceptedSuffixPrefixMapping)
-      .some(([suffix, prefix]) => suffix.test(fileName) && prefix.test(fileName));
+  constructor(private readonly directory: string, customPrefix?: RegExp, allowedLanguages?: Array<string>) {
+    if (customPrefix) {
+      for (const language of this.prefixMapping.keys()) {
+        this.prefixMapping.set(language, customPrefix);
+      }
+    }
+    if (allowedLanguages) {
+      const disallowedLanguages = Array.from(this.prefixMapping.keys()).filter((language) => !allowedLanguages.includes(language));
+      for (const disallowedLanguage of disallowedLanguages) {
+        this.prefixMapping.delete(disallowedLanguage);
+        this.suffixMapping.delete(disallowedLanguage);
+      }
+    }
   }
 
-  constructor(private readonly directory: string) {
+  public stripPrefixAndSuffix(fileName: string): string {
+    const language = this.getLanguage(fileName);
+    if (!language) {
+      return fileName;
+    }
+
+    const suffix = this.suffixMapping.get(language) ?? '';
+    const prefix = this.prefixMapping.get(language) ?? '';
+
+    return fileName.replace(prefix, '').replace(suffix, '');
+  }
+
+  private hasValidPrefixSuffix(fileName: string): boolean {
+    const language = this.getLanguage(fileName);
+    if (!language) {
+      return false;
+    }
+
+    const suffix = this.suffixMapping.get(language);
+    const prefix = this.prefixMapping.get(language);
+
+    return <boolean>(suffix?.test(fileName) && prefix?.test(fileName));
+  }
+
+  public getLanguage(fileName: string): string | undefined {
+    const [language] = Array.from(this.suffixMapping.entries()).find(([, regex]) => regex.test(fileName)) ?? [undefined, undefined];
+    return language;
   }
 
   /**
@@ -238,8 +291,24 @@ export class IntegrationTests {
 
   private async discover(): Promise<IntegTest[]> {
     const files = await this.readTree();
-    const integs = files.filter(fileName => IntegrationTests.hasValidPrefixSuffix(path.basename(fileName)));
-    return this.request(integs);
+    const integs = files.filter(fileName => this.hasValidPrefixSuffix(path.basename(fileName)));
+
+    const discoveredTestNames = new Set<string>();
+    const integsWithoutDuplicates = new Array<string>();
+
+    // Remove duplicate test names that would just overwrite each other's snapshots anyway.
+    // To make sure the precendence of files is deterministic, iterate the files in lexicographic order.
+    // Additionally, to give precedence to .ts files over their compiled .js version,
+    // use descending lexicographic ordering, so the .ts files are picked up first.
+    for (const integFileName of integs.sort().reverse()) {
+      const testName = this.stripPrefixAndSuffix(path.basename(integFileName));
+      if (!discoveredTestNames.has(testName)) {
+        integsWithoutDuplicates.push(integFileName);
+      }
+      discoveredTestNames.add(testName);
+    }
+
+    return this.request(integsWithoutDuplicates);
   }
 
   private request(files: string[]): IntegTest[] {

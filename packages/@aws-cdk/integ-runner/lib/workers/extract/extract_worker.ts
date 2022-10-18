@@ -27,7 +27,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
         env: {
           AWS_REGION: request.region,
         },
-        runCommand: request.runCommand,
+        appCommand: request.appCommand,
         showOutput: verbosity >= 2,
       }, testInfo.destructiveChanges);
 
@@ -106,7 +106,7 @@ export function snapshotTestWorker(testInfo: IntegTestInfo, options: SnapshotVer
   }, 60_000);
 
   try {
-    const runner = new IntegSnapshotRunner({ test, runCommand: options.runCommand });
+    const runner = new IntegSnapshotRunner({ test, appCommand: options.appCommand });
     if (!runner.hasSnapshot()) {
       workerpool.workerEmit({
         reason: DiagnosticReason.NO_SNAPSHOT,

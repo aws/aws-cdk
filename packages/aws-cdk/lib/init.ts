@@ -46,7 +46,7 @@ export async function cliInit(type?: string, language?: string, canUseNetwork = 
 /**
  * Returns the name of the Python executable for this OS
  */
-function pythonExecutable() {
+export function pythonExecutable() {
   let python = 'python3';
   if (process.platform === 'win32') {
     python = 'python';
