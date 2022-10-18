@@ -1926,6 +1926,16 @@ export class WindowsBuildImage implements IBuildImage {
   });
 
   /**
+   * The standard CodeBuild image `aws/codebuild/windows-base:2019-2.0`, which is
+   * based off Windows Server Core 2019.
+   */
+  public static readonly WIN_SERVER_CORE_2019_BASE_2_0: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:2019-2.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    imageType: WindowsImageType.SERVER_2019,
+  });
+
+  /**
    * @returns a Windows build image from a Docker Hub image.
    */
   public static fromDockerRegistry(
