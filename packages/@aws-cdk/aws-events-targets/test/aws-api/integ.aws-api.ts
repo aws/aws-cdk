@@ -1,5 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
+import { ECS, RDS } from 'aws-sdk';
 import * as targets from '../../lib';
 
 const app = new cdk.App();
@@ -22,7 +23,7 @@ class AwsApi extends cdk.Stack {
       parameters: {
         service: 'cool-service',
         forceNewDeployment: true,
-      } as AWS.ECS.UpdateServiceRequest,
+      } as ECS.UpdateServiceRequest,
     }));
 
     scheduleRule.addTarget(new targets.AwsApi({
@@ -30,7 +31,7 @@ class AwsApi extends cdk.Stack {
       action: 'stopDBInstance',
       parameters: {
         DBInstanceIdentifier: 'dev-instance',
-      } as AWS.RDS.StopDBInstanceMessage,
+      } as RDS.StopDBInstanceMessage,
     }));
 
     // Create snapshots when a DB instance restarts
@@ -48,7 +49,7 @@ class AwsApi extends cdk.Stack {
       action: 'createDBSnapshot',
       parameters: {
         DBInstanceIdentifier: events.EventField.fromPath('$.detail.SourceArn'),
-      } as AWS.RDS.CreateDBSnapshotMessage,
+      } as RDS.CreateDBSnapshotMessage,
     }));
   }
 }
