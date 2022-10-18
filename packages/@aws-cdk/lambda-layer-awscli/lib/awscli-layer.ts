@@ -21,6 +21,7 @@ export interface AwsCliLayerProps {
 export class AwsCliLayer extends lambda.LayerVersion {
   constructor(scope: Construct, id: string, props: AwsCliLayerProps = {}) {
     super(scope, id, {
-      code: props.awsCliAsset ? lambda.Code.fromLambdaLayerAsset(props.awsCliAsset) : lambda.Code.fromLambdaLayerAsset(new AwsCliAsset(scope, `${id}-Default-AwsCli`)));
+      code: props.awsCliAsset ? lambda.Code.fromLambdaLayerAsset(props.awsCliAsset) : lambda.Code.fromLambdaLayerAsset(new AwsCliAsset(scope, `${id}-Default-AwsCli`)),
+    });
   }
 }
