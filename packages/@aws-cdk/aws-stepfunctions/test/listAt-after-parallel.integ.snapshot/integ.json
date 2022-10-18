@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "ListAtAfterParallel/DefaultTest": {
+      "stacks": [
+        "listAt-after-parallel"
+      ],
+      "assertionStack": "ListAtAfterParallel/DefaultTest/DeployAssert",
+      "assertionStackName": "ListAtAfterParallelDefaultTestDeployAssert1589F6AD"
+    }
+  }
+}
