@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -89,8 +90,12 @@ describe('When instantiating SageMaker Model', () => {
     const assembly = app.synth();
 
     // THEN
-    const synthesized = assembly.stacks[0];
-    expect(synthesized.assets.length).toEqual(2);
+    const manifest = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${stack.stackName}.assets.json`), 'utf-8'));
+    // The assembly asset manifest should include:
+    // - Two file assets for the model data asset and the stack template
+    // - One Docker image asset
+    expect(Object.entries(manifest.files)).toHaveLength(2);
+    expect(Object.entries(manifest.dockerImages)).toHaveLength(1);
   });
 
   describe('with a VPC', () => {
