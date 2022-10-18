@@ -1,1 +1,1 @@
-export * from './lambda-layer-asset';
+export * from './asset-source';

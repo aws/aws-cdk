@@ -9,31 +9,20 @@
 
 <!--END STABILITY BANNER-->
 
-This module exports a single interface called `ILambdaLayerAsset` which extends `IConstruct`. It defines the interface for a specific asset that can be passed to a `lambda.LayerVersion`.
+This module exports a single interface called `AssetSource` which defines the
+minimum properties required to create an asset.
 
 Usage:
 
 ```ts
-import { ILambdaLayerAsset } from '@aws-cdk/interfaces';
+import { AssetSource } from '@aws-cdk/interfaces';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as assets from '@aws-cdk/aws-s3-assets';
-imoprt { Construct } from 'constructs';
-
-class MyLayerAsset implements ILambdaLayerAsset {
-  bucketArn: string;
-  key: string;
-
-  constructor(scope: Construct, id: string) {
-    const asset = new assets.Asset(this, 'SampleAsset', {
-      path: path.join(__dirname, 'sample-asset-directory'),
-    });
-    this.bucketArn = asset.bucket.bucketArn;
-    this.key = asset.s3ObjectKey;
-  }
-}
 
 declare const fn: lambda.Function;
+declare const assetSource: AssetSource;
 fn.addLayers(new LayerVersion(this, 'LayerVersion', {
-  code: lambda.Code.fromLambdaLayerAsset(new MyLayerAsset(this, 'LayerCode')),
+  code: lambda.Code.fromAsset(assetSource.path, {
+    assetHash: assetSource.assetHash,
+  }),
 }));
 ```
