@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
+import { ILambdaLayerAsset } from '@aws-cdk/interfaces';
 import { Construct } from 'constructs';
 
 /**
@@ -122,6 +123,14 @@ export abstract class Code {
    */
   public static fromAssetImage(directory: string, props: AssetImageCodeProps = {}) {
     return new AssetImageCode(directory, props);
+  }
+
+  /**
+   * Use an existing ILambdaLayerAsset as the lambda code.
+   * @param asset the asset containing the lambda code
+   */
+  public static fromLambdaLayerAsset(asset: ILambdaLayerAsset) {
+    return new LambdaLayerAssetCode(asset);
   }
 
   /**
@@ -577,4 +586,25 @@ export interface DockerBuildAssetOptions extends cdk.DockerBuildOptions {
    * @default - a unique temporary directory in the system temp directory
    */
   readonly outputPath?: string;
+}
+
+/**
+ * Represents a code object using an asset defined as an ILambdaLayerAsset
+ */
+export class LambdaLayerAssetCode extends Code {
+  public readonly isInline: boolean = false;
+
+  constructor(private readonly asset: ILambdaLayerAsset) {
+    super();
+  }
+
+  public bind(scope: Construct): CodeConfig {
+    const bucket = s3.Bucket.fromBucketArn(scope, 'lambda-layer-asset-bucket', this.asset.bucketArn);
+    return {
+      s3Location: {
+        bucketName: bucket.bucketName,
+        objectKey: this.asset.key,
+      },
+    };
+  }
 }
