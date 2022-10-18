@@ -1,21 +1,23 @@
-import * as path from 'path';
+//import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecrAssets from '@aws-cdk/aws-ecr-assets';
-import * as iam from '@aws-cdk/aws-iam';
-import { App, Stack, CfnOutput } from '@aws-cdk/core';
+//import * as ecrAssets from '@aws-cdk/aws-ecr-assets';
+//import * as iam from '@aws-cdk/aws-iam';
+import { App, Stack/*, CfnOutput*/ } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-21';
+//import * as cdk8s from 'cdk8s';
+//import * as kplus from 'cdk8s-plus-21';
 import * as eks from '../lib';
-import { BucketPinger } from './pinger/bucket-pinger/bucket-pinger';
+//import { BucketPinger } from './pinger/bucket-pinger/bucket-pinger';
 
 
 const app = new App();
 const stack = new Stack(app, 'aws-eks-oidc-provider-test');
 
+/*
 const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docker-image', {
   directory: path.join(__dirname, 'docker-app/app'),
 });
+*/
 
 // just need one nat gateway to simplify the test
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
@@ -24,16 +26,16 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
 // forces the cluster to make an OIDC Provider by default,
 // which we don't want. It will cause dependency issues
 // even if removed via `node.tryRemoveChild()`.
-const cluster = new eks.Cluster(stack, 'Cluster', {
+/*const cluster =*/ new eks.Cluster(stack, 'Cluster', {
   vpc: vpc,
   version: eks.KubernetesVersion.V1_21,
 });
 
 // create the custom OIDC Provider that will fail when given the wrong thumbprint
-cluster.addOpenIdConnectProvider(
+/*cluster.addOpenIdConnectProvider(
   new iam.OpenIdConnectProvider(cluster, 'OpenIdConnectProvider', {
     url: cluster.clusterOpenIdConnectIssuerUrl,
-    thumbprints: /*['aaaaaaaaaaaaa123aaaaaaaaaaaaaaaafaazzaaa'],*/ ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'],
+    thumbprints: /*['aaaaaaaaaaaaa123aaaaaaaaaaaaaaaafaazzaaa'],*/ /*['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'],
     clientIds: ['sts.amazonaws.com'],
   }),
 ); //modify thumbprint in eks lib, not here
@@ -71,6 +73,7 @@ pinger.node.addDependency(cluster);
 new CfnOutput(stack, 'PingerResponse', {
   value: pinger.response,
 });
+*/
 
 new integ.IntegTest(app, 'aws-cdk-eks-service-account-sdk-call', {
   testCases: [stack],
