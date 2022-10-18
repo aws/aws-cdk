@@ -21,8 +21,6 @@ import * as lambda from '@aws-cdk/aws-lambda';
 declare const fn: lambda.Function;
 declare const assetSource: AssetSource;
 fn.addLayers(new LayerVersion(this, 'LayerVersion', {
-  code: lambda.Code.fromAsset(assetSource.path, {
-    assetHash: assetSource.assetHash,
-  }),
+  code: lambda.Code.fromAsset(assetSource.path),
 }));
 ```
