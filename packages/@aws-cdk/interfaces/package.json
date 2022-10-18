@@ -99,10 +99,7 @@
       "docker"
     ]
   },
-  "ubergen": {
-    "exclude": false
-  },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
   }
 }
