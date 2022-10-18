@@ -1,4 +1,4 @@
-# AWS Lambda Layer with the NPM dependency proxy-agent
+# Interfaces for types shared between aws-cdk-lib and other packages
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -9,18 +9,31 @@
 
 <!--END STABILITY BANNER-->
 
-This module exports a single interface called `NodeProxyAgentLayer` which is a `lambda.Layer` that bundles the NPM dependency [`proxy-agent`](https://www.npmjs.com/package/proxy-agent).
-
-> - proxy-agent Version: 5.0.0
+This module exports a single interface called `ILambdaLayerAsset` which extends `IConstruct`. It defines the interface for a specific asset that can be passed to a `lambda.LayerVersion`.
 
 Usage:
 
 ```ts
-import { NodeProxyAgentLayer } from '@aws-cdk/lambda-layer-node-proxy-agent';
+import { ILambdaLayerAsset } from '@aws-cdk/interfaces';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as assets from '@aws-cdk/aws-s3-assets';
+imoprt { Construct } from 'constructs';
+
+class MyLayerAsset implements ILambdaLayerAsset {
+  bucketArn: string;
+  key: string;
+
+  constructor(scope: Construct, id: string) {
+    const asset = new assets.Asset(this, 'SampleAsset', {
+      path: path.join(__dirname, 'sample-asset-directory'),
+    });
+    this.bucketArn = asset.bucket.bucketArn;
+    this.key = asset.s3ObjectKey;
+  }
+}
 
 declare const fn: lambda.Function;
-fn.addLayers(new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer'));
+fn.addLayers(new LayerVersion(this, 'LayerVersion', {
+  code: lambda.Code.fromLambdaLayerAsset(new MyLayerAsset(this, 'LayerCode')),
+}));
 ```
-
-[`proxy-agent`](https://www.npmjs.com/package/proxy-agent) will be installed under `/nodejs/node_modules`.
