@@ -12,18 +12,17 @@ export interface AssetSource {
   readonly path: string;
 
   /**
-   * Specify a custom hash for this asset. If `assetHashType` is set it must
-   * be set to `AssetHashType.CUSTOM`. For consistency, this custom hash will
-   * be SHA256 hashed and encoded as hex. The resulting hash will be the asset
-   * hash.
+   * Specify a custom path for generating the hash for this asset. The hash will
+   * be based on the content of the given file or directory.
    *
-   * NOTE: the hash is used in order to identify a specific revision of the asset, and
-   * used for optimizing and caching deployment activities related to this asset such as
-   * packaging, uploading to Amazon S3, etc. If you chose to customize the hash, you will
-   * need to make sure it is updated every time the asset changes, or otherwise it is
-   * possible that some deployments will not be invalidated.
+   * NOTE: the hash is used in order to identify a specific revision of the
+   * asset, and used for optimizing and caching deployment activities related to
+   * this asset such as packaging, uploading to Amazon S3, etc. If you chose to
+   * customize the source of the has, you will need to make sure it is updated
+   * every time the asset changes, or otherwise it is possible that some
+   * deployments will not be invalidated.
    *
    * @default - Based on the content of the source path
    */
-  readonly assetHash?: string;
+  readonly pathToGenerateAssetHash?: string;
 }
