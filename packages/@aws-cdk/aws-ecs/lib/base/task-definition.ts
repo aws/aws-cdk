@@ -366,7 +366,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * The container definitions.
    */
-  protected readonly containers = new Array<ContainerDefinition>();
+  public readonly containers = new Array<ContainerDefinition>();
 
   /**
    * All volumes
