@@ -1,6 +1,7 @@
-import { AwsCliAsset } from '@aws-cdk/asset-awscli-v1';
+import { AwsCliV1Asset } from '@aws-cdk/asset-awscli-v1';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { ILambdaLayerAsset } from '@aws-cdk/interfaces';
+import { FileSystem } from '@aws-cdk/core';
+import { AssetSource } from '@aws-cdk/interfaces';
 import { Construct } from 'constructs';
 
 /**
@@ -12,7 +13,7 @@ export interface AwsCliLayerProps {
    *
    * @default - An asset containing AWS CLI v1 will be used.
    */
-  readonly awsCliAsset?: ILambdaLayerAsset;
+  readonly awsCliVersion?: AssetSource;
 }
 
 /**
@@ -21,7 +22,14 @@ export interface AwsCliLayerProps {
 export class AwsCliLayer extends lambda.LayerVersion {
   constructor(scope: Construct, id: string, props: AwsCliLayerProps = {}) {
     super(scope, id, {
-      code: props.awsCliAsset ? lambda.Code.fromLambdaLayerAsset(props.awsCliAsset) : lambda.Code.fromLambdaLayerAsset(new AwsCliAsset(scope, `${id}-Default-AwsCli`)),
+      code: createCodeForLayer(props.awsCliVersion ?? new AwsCliV1Asset()),
+      description: '/opt/awscli/aws',
     });
   }
+}
+
+function createCodeForLayer(source: AssetSource): lambda.Code {
+  return lambda.Code.fromAsset(source.path, {
+    assetHash: source.pathToGenerateAssetHash ? FileSystem.fingerprint(source.pathToGenerateAssetHash) : undefined,
+  });
 }

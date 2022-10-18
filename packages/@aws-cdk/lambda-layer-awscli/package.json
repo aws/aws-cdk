@@ -73,7 +73,6 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
@@ -84,7 +83,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/asset-awscli-v1": "2.2.0",
+    "@aws-cdk/asset-awscli-v1": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/interfaces": "0.0.0",
     "constructs": "^10.0.0"
@@ -92,7 +91,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/asset-awscli-v1": "2.2.0",
+    "@aws-cdk/asset-awscli-v1": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/interfaces": "0.0.0",
     "constructs": "^10.0.0"

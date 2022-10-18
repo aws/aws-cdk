@@ -1,8 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
-import { ILambdaLayerAsset } from '@aws-cdk/interfaces';
-import { Construct } from 'constructs';
 import { AwsCliLayer } from '../lib';
 
 test('synthesized to a layer version', () => {
@@ -24,21 +21,11 @@ test('accepts custom aws cli asset', () => {
 
   // WHEN
   new AwsCliLayer(stack, 'MyLayer', {
-    awsCliAsset: new MyAwsCliAsset(stack, 'CustomAwsCliAsset'),
+    awsCliVersion: {
+      path: './test/lambda-handler',
+    },
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
-    Content: {},
-  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {});
 });
-
-class MyAwsCliAsset extends Construct implements ILambdaLayerAsset {
-  bucketArn: string;
-  key: string = 'FakeObjectKey';
-  constructor(scope: Construct, id: string) {
-    super (scope, id);
-    const bucket = new s3.Bucket(this, 'CustomAwsCliBucket');
-    this.bucketArn = bucket.bucketArn;
-  }
-}
