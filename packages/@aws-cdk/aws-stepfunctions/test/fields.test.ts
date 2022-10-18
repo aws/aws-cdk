@@ -63,6 +63,13 @@ describe('Fields', () => {
       }),
     ).toStrictEqual(['$.listField', '$.numField', '$.stringField']);
   }),
+  test('JsonPath.listAt before Parallel', () => {
+    expect(
+      FieldUtils.findReferencedPaths({
+        listAt: JsonPath.listAt('$[0].stringList'),
+      }),
+    ).toStrictEqual(['$[0].stringList']);
+  });
   test('cannot have JsonPath fields in arrays', () => {
     expect(() => FieldUtils.renderObject({
       deep: [JsonPath.stringAt('$.hello')],
