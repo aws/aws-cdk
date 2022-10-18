@@ -1,16 +1,16 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CustomResource, Token, Duration } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 
 export interface PingerProps {
-  readonly url: string;
   readonly securityGroup?: ec2.SecurityGroup;
   readonly vpc?: ec2.IVpc;
   readonly subnets?: ec2.ISubnet[];
 }
-export class Pinger extends Construct {
+export class BucketPinger extends Construct {
 
   private _resource: CustomResource;
 
@@ -24,7 +24,19 @@ export class Pinger extends Construct {
       vpc: props.vpc,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
-      timeout: Duration.minutes(10),
+      timeout: Duration.minutes(1),
+    });
+
+    if (!func.role) {
+      throw new Error('pinger lambda has no execution role!');
+    }
+
+    new iam.Policy(this, 'grant-pinger-lambda-bucket-permission', {
+      statements: [new iam.PolicyStatement({
+        actions: ['s3:DeleteBucket', 's3:ListBucket'],
+        resources: ['arn:aws:s3:::*'],
+      })],
+      roles: [func.role],
     });
 
     const provider = new cr.Provider(this, 'Provider', {
@@ -34,7 +46,7 @@ export class Pinger extends Construct {
     this._resource = new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       properties: {
-        Url: props.url,
+        psuedoProperty: 'changeme1', // update this to trigger the docker to run
       },
     });
   }
