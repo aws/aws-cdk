@@ -642,7 +642,6 @@ class MySqlInstanceEngine extends InstanceEngineBase {
  */
 export interface AuroraMysqlInstanceEngineProps {
   /** The exact version of the engine to use. */
-  // readonly version: MysqlEngineVersion;
   readonly version: AuroraMysqlEngineVersion;
 
 }
