@@ -1,0 +1,268 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "aws-cdk-sagemaker-endpoint.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-sagemaker-endpoint.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-sagemaker-endpoint": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-sagemaker-endpoint.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d39c46ab0ecf9f17745bd0745c0f3050179875423750bce21928c0fefd2a6a27.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-sagemaker-endpoint.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-sagemaker-endpoint.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-sagemaker-endpoint/ModelWithArtifact/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelWithArtifactRole854ED848"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/ModelWithArtifact/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelWithArtifactRoleDefaultPolicy63A6F076"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/ModelWithArtifact/Model": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelWithArtifactModel7EBC6421"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/ModelWithoutArtifact/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelWithoutArtifactRoleB9EF84FD"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/ModelWithoutArtifact/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelWithoutArtifactRoleDefaultPolicyCFDF486F"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/ModelWithoutArtifact/Model": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelWithoutArtifactModel9AB56FA5"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/EndpointConfig/EndpointConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EndpointConfigFD7B6F91"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/Endpoint/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Endpoint8024A810"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/Endpoint/InstanceCount/Target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EndpointInstanceCountTargetDA8C8EDB"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/Endpoint/InstanceCount/Target/LimitRPS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EndpointInstanceCountTargetLimitRPSE1D92DB6"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/Invoker/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Invoker060A9026"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/Invoker/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InvokerDefaultPolicy3FF8208D"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/InvocationsAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InvocationsAlarmBC3830BD"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/InvocationsPerInstanceAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InvocationsPerInstanceAlarm82CBCF29"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/ModelLatencyAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelLatencyAlarm96AC7D24"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/OverheadLatencyAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OverheadLatencyAlarm10D8981B"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/Invocation5XXErrorsAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Invocation5XXErrorsAlarmF9BAF026"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/DiskUtilizationAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DiskUtilizationAlarmE19E4184"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/CPUUtilizationAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CPUUtilizationAlarm4D91B4D0"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/MemoryUtilizationAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MemoryUtilizationAlarm544270BF"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/GPUUtilizationAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GPUUtilizationAlarmEC9BEC6F"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/GPUMemoryUtilizationAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GPUMemoryUtilizationAlarmD03813BC"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/Exports/Output{\"Fn::GetAtt\":[\"Endpoint8024A810\",\"EndpointName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttEndpoint8024A810EndpointNameC77E4EFF"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-sagemaker-endpoint"
+    },
+    "integtestendpointDefaultTestDeployAssert02E18E07.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestendpointDefaultTestDeployAssert02E18E07.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestendpointDefaultTestDeployAssert02E18E07": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestendpointDefaultTestDeployAssert02E18E07.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/27cea2cb68fa288d2723ca8a12b2be428c5da62766c636c8fc28773c77048ec0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestendpointDefaultTestDeployAssert02E18E07.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-sagemaker-endpoint",
+        "integtestendpointDefaultTestDeployAssert02E18E07.assets"
+      ],
+      "metadata": {
+        "/integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSageMakerRuntimeinvokeEndpoint"
+          }
+        ],
+        "/integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSageMakerRuntimeinvokeEndpoint"
+          }
+        ],
+        "/integtest-endpoint/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integtest-endpoint/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integtest-endpoint/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integtest-endpoint/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integtest-endpoint/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
