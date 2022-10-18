@@ -111,9 +111,6 @@
     "announce": false
   },
   "cdk-build": {
-    "pre": [
-      "layer/pre-build.sh"
-    ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
