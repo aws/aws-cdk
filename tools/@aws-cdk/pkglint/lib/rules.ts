@@ -1671,6 +1671,7 @@ export class UbergenPackageVisibility extends ValidationRule {
     'cdk',
     'cdk-assets',
     '@aws-cdk/integ-runner',
+    '@aws-cdk/interfaces',
   ];
 
   public validate(pkg: PackageJson): void {
