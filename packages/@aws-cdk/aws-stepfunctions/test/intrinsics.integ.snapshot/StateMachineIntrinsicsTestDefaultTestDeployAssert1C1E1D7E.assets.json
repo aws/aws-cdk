@@ -1,7 +1,20 @@
 {
   "version": "21.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "3074b79e05e7b98930b6449e01baa3e68b32ecff86328933c2542f7b7fe6fdac": {
+      "source": {
+        "path": "asset.3074b79e05e7b98930b6449e01baa3e68b32ecff86328933c2542f7b7fe6fdac.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3074b79e05e7b98930b6449e01baa3e68b32ecff86328933c2542f7b7fe6fdac.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "9efe81f855fa5f7925cf5a69c0ef1ff9563e05b71711a017100aa3d0e6921ab0": {
       "source": {
         "path": "StateMachineIntrinsicsTestDefaultTestDeployAssert1C1E1D7E.template.json",
         "packaging": "file"
@@ -9,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "9efe81f855fa5f7925cf5a69c0ef1ff9563e05b71711a017100aa3d0e6921ab0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import { JsonPath, Pass, StateMachine } from '../lib';
 
 const app = new cdk.App();
@@ -40,12 +40,17 @@ const pass = new Pass(stack, 'pass', {
   },
 });
 
-new StateMachine(stack, 'StateMachine', {
+const stateMachine = new StateMachine(stack, 'StateMachine', {
   definition: pass,
 });
 
-new integ.IntegTest(app, 'StateMachineIntrinsicsTest', {
+const integ = new IntegTest(app, 'StateMachineIntrinsicsTest', {
   testCases: [stack],
 });
+integ.assertions.awsApiCall('StepFunctions', 'describeStateMachine', {
+  stateMachineArn: stateMachine.stateMachineArn,
+}).expect(ExpectedResult.objectLike({
+  status: 'ACTIVE',
+}));
 
 app.synth();
