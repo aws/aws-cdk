@@ -3,7 +3,7 @@ import { RequireApproval } from '@aws-cdk/cloud-assembly-schema';
 import { DeployOptions, DestroyOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import * as logger from '../logger';
-import { exec, prepareForExec } from '../utils';
+import { exec, chunks } from '../utils';
 import { DestructiveChange, AssertionResults, AssertionResult } from '../workers/common';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
 
@@ -223,7 +223,7 @@ export class IntegTestRunner extends IntegRunner {
     try {
       if (actualTestCase.hooks?.preDestroy) {
         actualTestCase.hooks.preDestroy.forEach(cmd => {
-          exec(prepareForExec(cmd), {
+          exec(chunks(cmd), {
             cwd: path.dirname(this.snapshotDir),
           });
         });
@@ -234,7 +234,7 @@ export class IntegTestRunner extends IntegRunner {
 
       if (actualTestCase.hooks?.postDestroy) {
         actualTestCase.hooks.postDestroy.forEach(cmd => {
-          exec(prepareForExec(cmd), {
+          exec(chunks(cmd), {
             cwd: path.dirname(this.snapshotDir),
           });
         });
@@ -260,7 +260,7 @@ export class IntegTestRunner extends IntegRunner {
     try {
       if (actualTestCase.hooks?.preDeploy) {
         actualTestCase.hooks.preDeploy.forEach(cmd => {
-          exec(prepareForExec(cmd), {
+          exec(chunks(cmd), {
             cwd: path.dirname(this.snapshotDir),
           });
         });
@@ -304,7 +304,7 @@ export class IntegTestRunner extends IntegRunner {
 
       if (actualTestCase.hooks?.postDeploy) {
         actualTestCase.hooks.postDeploy.forEach(cmd => {
-          exec(prepareForExec(cmd), {
+          exec(chunks(cmd), {
             cwd: path.dirname(this.snapshotDir),
           });
         });

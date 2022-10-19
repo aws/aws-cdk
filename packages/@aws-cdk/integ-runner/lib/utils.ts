@@ -42,13 +42,12 @@ export function chain(commands: string[]): string {
 }
 
 /**
- * Prepare command for execution by exec
+ * Split command to chunks by space
  */
-export function prepareForExec(command: string): string[] {
-  let chunks = command.split(/\s+/);
-  const cmd = chunks.shift();
-  if (cmd !== undefined) {
-    return [cmd, chunks.join(' ')];
+export function chunks(command: string): string[] {
+  const result = command.match(/(?:[^\s"]+|"[^"]*")+/g);
+  if (result !== null) {
+    return result;
   }
   return [];
 }

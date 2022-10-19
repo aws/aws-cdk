@@ -359,10 +359,10 @@ describe('IntegTest runIntegTests', () => {
         'echo', ['"postDestroy hook"'],
       ]),
       expect.arrayContaining([
-        'ls', [''],
+        'ls', [],
       ]),
       expect.arrayContaining([
-        'echo', ['-n "No new line"'],
+        'echo', ['-n', '"No new line"'],
       ]),
     ]));
   });
