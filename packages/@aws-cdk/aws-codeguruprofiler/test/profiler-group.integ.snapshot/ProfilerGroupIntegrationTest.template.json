@@ -129,6 +129,13 @@
    }
   }
  },
+ "Outputs": {
+  "MyProfilingGroupName": {
+   "Value": {
+    "Ref": "MyProfilingGroup829F0507"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

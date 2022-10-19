@@ -1,5 +1,5 @@
 import { AccountRootPrincipal, Role } from '@aws-cdk/aws-iam';
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
 import { ProfilingGroup } from '../lib';
 
 class ProfilerGroupIntegrationTest extends Stack {
@@ -18,6 +18,14 @@ class ProfilerGroupIntegrationTest extends Stack {
     });
     profilingGroup.grantRead(readAppRole);
 
+    const importedGroup = ProfilingGroup.fromProfilingGroupName(
+      this,
+      'ImportedProfilingGroup',
+      profilingGroup.profilingGroupName,
+    );
+    new CfnOutput(this, 'MyProfilingGroupName', {
+      value: importedGroup.profilingGroupName,
+    });
   }
 }
 
