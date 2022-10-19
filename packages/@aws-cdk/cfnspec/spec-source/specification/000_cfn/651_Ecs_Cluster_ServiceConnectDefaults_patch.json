@@ -28,26 +28,32 @@
                                 "Documentation": "placeholder",
                                 "PrimitiveType": "String",
                                 "Required": true,
-                                "UpdateType": "Immutable"
+                                "UpdateType": "Mutable"
                             },
                             "DiscoveryName": {
                                 "Documentation": "placeholder",
                                 "PrimitiveType": "String",
                                 "Required": false,
-                                "UpdateType": "Immutable"
+                                "UpdateType": "Mutable"
                             },
                             "ClientAliases": {
                                 "Documentation": "placeholder",
                                 "Type": "List",
                                 "ItemType": "ServiceConnectClientAlias",
                                 "Required": false,
-                                "UpdateType": "Immutable"
+                                "UpdateType": "Mutable"
                             },
                             "LogConfiguration": {
                                 "Documentation": "placeholder",
                                 "Type": "LogConfiguration",
                                 "Required": false,
-                                "UpdateType": "Immutable"
+                                "UpdateType": "Mutable"
+                            },
+                            "IngressPortOverride": {
+                                "Documentation": "placeholder",
+                                "PrimitiveType": "Integer",
+                                "Required": false,
+                                "UpdateType": "Mutable"
                             }
                         }
                     }
@@ -112,13 +118,13 @@
                                 "Documentation": "placeholder",
                                 "PrimitiveType": "Integer",
                                 "Required": true,
-                                "UpdateType": "Immutable"
+                                "UpdateType": "Mutable"
                             },
                             "DnsName": {
                                 "Documentation": "placeholder",
                                 "PrimitiveType": "String",
                                 "Required": true,
-                                "UpdateType": "Immutable"
+                                "UpdateType": "Mutable"
                             }
                         }
                     }
@@ -133,26 +139,26 @@
                                 "Documentation": "placeholder",
                                 "PrimitiveType": "Boolean",
                                 "Required": true,
-                                "UpdateType": "Immutable"
+                                "UpdateType": "Mutable"
                             },
                             "Namespace": {
                                 "Documentation": "placeholder",
                                 "PrimitiveType": "String",
                                 "Required": false,
-                                "UpdateType": "Immutable"
+                                "UpdateType": "Mutable"
                             },
                             "Services": {
                                 "Documentation": "placeholder",
                                 "Type": "List",
                                 "ItemType": "ServiceConnectService",
                                 "Required": false,
-                                "UpdateType": "Immutable"
+                                "UpdateType": "Mutable"
                             },
                             "LogConfiguration": {
                                 "Documentation": "placeholder",
                                 "Type": "LogConfiguration",
                                 "Required": false,
-                                "UpdateType": "Immutable"
+                                "UpdateType": "Mutable"
                             }
                         }
                     }

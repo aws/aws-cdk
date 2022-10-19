@@ -28,7 +28,7 @@
                             "Documentation": "placeholder",
                             "Type": "ServiceConnectConfiguration",
                             "Required": false,
-                            "UpdateType": "Immutable"
+                            "UpdateType": "Mutable"
                         }
                     }
                 ]
