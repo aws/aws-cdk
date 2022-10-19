@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as route53 from '@aws-cdk/aws-route53';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import { Certificate, CertificateValidation } from '../lib';
@@ -376,3 +376,38 @@ describe('Transparency logging settings', () => {
   });
 });
 
+
+describe('Certifcate Name setting', () => {
+  test('the Name tag is defaulted to path', () => {
+    const stack = new Stack(undefined, 'TestStack');
+
+    new Certificate(stack, 'TheCertificate', {
+      domainName: 'test.example.com',
+    });
+
+    Template.fromStack(stack).hasResource('AWS::CertificateManager::Certificate',
+      hasTags([{ Key: 'Name', Value: 'TestStack/TheCertificate' }]),
+    );
+  });
+
+  test('Can provide a custom certificate name', () => {
+    const stack = new Stack(undefined, 'TestStack');
+
+    new Certificate(stack, 'TheCertificate', {
+      domainName: 'test.example.com',
+      certificateName: 'Custom Certificate Name',
+    });
+
+    Template.fromStack(stack).hasResource('AWS::CertificateManager::Certificate',
+      hasTags([{ Key: 'Name', Value: 'Custom Certificate Name' }]),
+    );
+  });
+});
+
+function hasTags(expectedTags: Array<{Key: string, Value: string}>) {
+  return {
+    Properties: {
+      Tags: Match.arrayWith(expectedTags),
+    },
+  };
+}
