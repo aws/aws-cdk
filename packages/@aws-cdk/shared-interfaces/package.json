@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/interfaces",
+  "name": "@aws-cdk/shared-interfaces",
   "version": "0.0.0",
   "description": "A package for defining interfaces shared between aws-cdk-lib and other packages in the CDK ecosystem",
   "main": "lib/index.js",
