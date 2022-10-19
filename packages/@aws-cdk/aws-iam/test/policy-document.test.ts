@@ -147,11 +147,11 @@ describe('IAM policy document', () => {
     const stack = new Stack();
     const perm = new PolicyStatement();
     perm.addResources('MyResource');
-    perm.addActions('Action1', 'Action2', 'Action3');
+    perm.addActions('service:Action1', 'service:Action2', 'service:Action3');
 
     expect(stack.resolve(perm.toStatementJson())).toEqual({
       Effect: 'Allow',
-      Action: ['Action1', 'Action2', 'Action3'],
+      Action: ['service:Action1', 'service:Action2', 'service:Action3'],
       Resource: 'MyResource',
     });
   });
@@ -325,12 +325,12 @@ describe('IAM policy document', () => {
     const stack = new Stack();
 
     const statement = new PolicyStatement();
-    statement.addActions(...Lazy.list({ produce: () => ['a', 'b', 'c'] }));
+    statement.addActions(...Lazy.list({ produce: () => ['service:a', 'service:b', 'service:c'] }));
     statement.addResources(...Lazy.list({ produce: () => ['x', 'y', 'z'] }));
 
     expect(stack.resolve(statement.toStatementJson())).toEqual({
       Effect: 'Allow',
-      Action: ['a', 'b', 'c'],
+      Action: ['service:a', 'service:b', 'service:c'],
       Resource: ['x', 'y', 'z'],
     });
   });
@@ -339,15 +339,15 @@ describe('IAM policy document', () => {
     const stack = new Stack();
 
     const statement = new PolicyStatement();
-    statement.addActions('a');
-    statement.addActions('a');
+    statement.addActions('service:a');
+    statement.addActions('service:a');
 
     statement.addResources('x');
     statement.addResources('x');
 
     expect(stack.resolve(statement.toStatementJson())).toEqual({
       Effect: 'Allow',
-      Action: 'a',
+      Action: 'service:a',
       Resource: 'x',
     });
   });
@@ -356,15 +356,15 @@ describe('IAM policy document', () => {
     const stack = new Stack();
 
     const statement = new PolicyStatement();
-    statement.addNotActions('a');
-    statement.addNotActions('a');
+    statement.addNotActions('service:a');
+    statement.addNotActions('service:a');
 
     statement.addNotResources('x');
     statement.addNotResources('x');
 
     expect(stack.resolve(statement.toStatementJson())).toEqual({
       Effect: 'Allow',
-      NotAction: 'a',
+      NotAction: 'service:a',
       NotResource: 'x',
     });
   });
@@ -421,10 +421,10 @@ describe('IAM policy document', () => {
     s.addArnPrincipal('349494949494');
     s.addServicePrincipal('test.service');
     s.addResources('resource');
-    s.addActions('action');
+    s.addActions('service:action');
 
     expect(stack.resolve(s.toStatementJson())).toEqual({
-      Action: 'action',
+      Action: 'service:action',
       Effect: 'Allow',
       Principal: { AWS: '349494949494', Service: 'test.service' },
       Resource: 'resource',
@@ -723,7 +723,7 @@ describe('IAM policy document', () => {
 
       const statement = new PolicyStatement();
       statement.addResources('resource1', 'resource2');
-      statement.addActions('action1', 'action2');
+      statement.addActions('service:action1', 'service:action2');
       statement.addServicePrincipal('service');
       statement.addConditions({
         a: {
@@ -750,11 +750,11 @@ describe('IAM policy document', () => {
 
       const statement1 = new PolicyStatement();
       statement1.addResources(Lazy.string({ produce: () => 'resource' }));
-      statement1.addActions(Lazy.string({ produce: () => 'action' }));
+      statement1.addActions(Lazy.string({ produce: () => 'service:action' }));
 
       const statement2 = new PolicyStatement();
       statement2.addResources(Lazy.string({ produce: () => 'resource' }));
-      statement2.addActions(Lazy.string({ produce: () => 'action' }));
+      statement2.addActions(Lazy.string({ produce: () => 'service:action' }));
 
       // WHEN
       p.addStatements(statement1);

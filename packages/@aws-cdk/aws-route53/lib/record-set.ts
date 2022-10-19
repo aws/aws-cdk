@@ -255,13 +255,22 @@ export class RecordSet extends Resource implements IRecordSet {
         }],
       });
 
-      provider.addToRolePolicy({ // Add to the singleton policy for this specific provider
+      // Add to the singleton policy for this specific provider
+      provider.addToRolePolicy({
         Effect: 'Allow',
-        Action: [
-          'route53:ChangeResourceRecordSets',
-          'route53:ListResourceRecordSets',
-        ],
+        Action: 'route53:ListResourceRecordSets',
         Resource: props.zone.hostedZoneArn,
+      });
+      provider.addToRolePolicy({
+        Effect: 'Allow',
+        Action: 'route53:ChangeResourceRecordSets',
+        Resource: props.zone.hostedZoneArn,
+        Condition: {
+          'ForAllValues:StringEquals': {
+            'route53:ChangeResourceRecordSetsRecordTypes': [props.recordType],
+            'route53:ChangeResourceRecordSetsActions': ['DELETE'],
+          },
+        },
       });
 
       const customResource = new CustomResource(this, 'DeleteExistingRecordSetCustomResource', {

@@ -1,6 +1,9 @@
+import * as os from 'os';
+import * as path from 'path';
 import { ContextProvider } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import * as fs from 'fs-extra';
 import { CfnResource, DefaultStackSynthesizer, Stack, StackProps } from '../lib';
 import { Annotations } from '../lib/annotations';
 import { App, AppProps } from '../lib/app';
@@ -101,29 +104,55 @@ describe('app', () => {
     });
   });
 
-  test('context can be passed through CDK_CONTEXT', () => {
-    process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
+  test('context can be passed through CONTEXT_OVERFLOW_LOCATION_ENV', async () => {
+    const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
+    const overflow = path.join(contextDir, 'overflow.json');
+    fs.writeJSONSync(overflow, {
       key1: 'val1',
       key2: 'val2',
     });
+    process.env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV] = overflow;
+
     const prog = new App();
     expect(prog.node.tryGetContext('key1')).toEqual('val1');
     expect(prog.node.tryGetContext('key2')).toEqual('val2');
   });
 
-  test('context passed through CDK_CONTEXT has precedence', () => {
+  test('context can be passed through CDK_CONTEXT', async () => {
     process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
       key1: 'val1',
       key2: 'val2',
     });
+
+    const prog = new App();
+    expect(prog.node.tryGetContext('key1')).toEqual('val1');
+    expect(prog.node.tryGetContext('key2')).toEqual('val2');
+  });
+
+  test('context passed through CONTEXT_OVERFLOW_LOCATION_ENV is merged with the context passed through CONTEXT_ENV', async () => {
+    const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
+    const contextLocation = path.join(contextDir, 'context-temp.json');
+    fs.writeJSONSync(contextLocation, {
+      key1: 'val1',
+      key2: 'val2',
+    });
+    process.env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV] = contextLocation;
+
+    process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
+      key3: 'val3',
+      key4: 'val4',
+    });
+
     const prog = new App({
       context: {
-        key1: 'val3',
-        key2: 'val4',
+        key1: 'val5',
+        key2: 'val6',
       },
     });
     expect(prog.node.tryGetContext('key1')).toEqual('val1');
     expect(prog.node.tryGetContext('key2')).toEqual('val2');
+    expect(prog.node.tryGetContext('key3')).toEqual('val3');
+    expect(prog.node.tryGetContext('key4')).toEqual('val4');
   });
 
   test('context passed through finalContext prop has precedence', () => {

@@ -27,7 +27,7 @@ new AwsCustomResource(stack, 'DescribeVpcAttribute', {
   policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
   timeout: cdk.Duration.minutes(3),
   vpc: vpc,
-  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
 });
 
 new IntegTest(app, 'CustomResourceVpc', {
