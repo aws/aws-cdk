@@ -56,7 +56,7 @@ export interface DeploymentCircuitBreaker {
 
   /**
    * Whether to use the explicit DeploymentControllerType.ECS when defining the circuit breaker.
-   * To avoid a service replacement when add a CircuitBreaker to an existing ECS service, set this to False.
+   * To avoid a service replacement when adding a CircuitBreaker to an existing ECS service, set this to false.
    * @default true
    */
   readonly useExplicitEcsDeploymentController?: boolean;
