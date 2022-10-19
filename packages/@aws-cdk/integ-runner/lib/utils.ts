@@ -46,10 +46,7 @@ export function chain(commands: string[]): string {
  */
 export function chunks(command: string): string[] {
   const result = command.match(/(?:[^\s"]+|"[^"]*")+/g);
-  if (result !== null) {
-    return result;
-  }
-  return [];
+  return result ?? [];
 }
 
 
